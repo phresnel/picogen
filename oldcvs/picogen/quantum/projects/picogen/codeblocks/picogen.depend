@@ -1,0 +1,124 @@
+# depslib dependency file v1.0
+1206181418 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/LinearList.cc
+	"picogen.h"
+
+1206180650 /home/smach/Projects/picogen/include/picogen.h
+	<math.h>
+	<float.h>
+	<string>
+	<sstream>
+	<list>
+	"picogen/misc/exceptions.h"
+	"picogen/misc/geometrics.h"
+	"picogen/misc/functions.h"
+	"picogen/misc/templates.h"
+	"picogen/graphics/cameras.h"
+	"picogen/graphics/image.h"
+	"picogen/graphics/material.h"
+	"picogen/graphics/objects.h"
+	"picogen/graphics/samplers.h"
+
+1206180509 /home/smach/Projects/picogen/include/picogen/misc/exceptions.h
+
+1206180507 /home/smach/Projects/picogen/include/picogen/misc/geometrics.h
+	"geometrics/Transformation.h"
+
+1206180509 /home/smach/Projects/picogen/include/picogen/misc/geometrics/Transformation.h
+
+1206621033 /home/smach/Projects/picogen/include/picogen/misc/functions.h
+
+1206180507 /home/smach/Projects/picogen/include/picogen/misc/templates.h
+
+1206180513 /home/smach/Projects/picogen/include/picogen/graphics/cameras.h
+
+1206874775 /home/smach/Projects/picogen/include/picogen/graphics/image.h
+
+1208515904 /home/smach/Projects/picogen/include/picogen/graphics/material.h
+
+1208539145 /home/smach/Projects/picogen/include/picogen/graphics/objects.h
+	"objects/LinearList.h"
+	"objects/TriBIH.h"
+	"objects/Preetham.h"
+	"objects/SimpleHeightField.h"
+	"objects/VelocityInstance.h"
+	"objects/Sphere.h"
+	"objects/Snow.h"
+	"objects/Rain.h"
+
+1206180721 /home/smach/Projects/picogen/include/picogen/graphics/objects/LinearList.h
+
+1208515918 /home/smach/Projects/picogen/include/picogen/graphics/objects/TriBIH.h
+
+1206589119 /home/smach/Projects/picogen/include/picogen/graphics/objects/Preetham.h
+
+1208515932 /home/smach/Projects/picogen/include/picogen/graphics/objects/SimpleHeightField.h
+
+1206180678 /home/smach/Projects/picogen/include/picogen/graphics/objects/VelocityInstance.h
+
+1206180692 /home/smach/Projects/picogen/include/picogen/graphics/objects/Sphere.h
+
+1206180510 /home/smach/Projects/picogen/include/picogen/graphics/samplers.h
+	"samplers/image/XYIterator.h"
+	"samplers/ray/Simple.h"
+
+1206180663 /home/smach/Projects/picogen/include/picogen/graphics/samplers/image/XYIterator.h
+	"XYIterator.cc.h"
+
+1208537601 /home/smach/Projects/picogen/include/picogen/graphics/samplers/image/XYIterator.cc.h
+
+1208534469 /home/smach/Projects/picogen/include/picogen/graphics/samplers/ray/Simple.h
+
+1206589192 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/Preetham.cc
+	"picogen.h"
+
+1206181442 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/Sphere.cc
+	"picogen.h"
+
+1208516196 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/TriBIH.cc
+	"picogen.h"
+
+1208536419 source:/home/smach/Projects/picogen/src/picosrc/graphics/samplers/ray/Simple.cc
+	"picogen.h"
+
+1208595907 source:/home/smach/Projects/picogen/src/main.cc
+	<iostream>
+	"picogen.h"
+	"picogen/kludges.h"
+	"picossdf/picossdf.h"
+	<iostream>
+	<stdlib.h>
+	<sstream>
+	<SDL/SDL.h>
+	<stdio.h>
+	"picogen.h"
+	"picogen/kludges.h"
+	"compile_info.h"
+
+1206180506 /home/smach/Projects/picogen/include/picogen/kludges.h
+
+1208516232 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/SimpleHeightField.cc
+	"picogen.h"
+
+1205677985 /home/smach/Projects/picogen/include/picossdf/picossdf.h
+	<string>
+	<iostream>
+	<vector>
+
+1206455692 source:/home/smach/Projects/picogen/src/picossdf/picossdf.cc
+	"picogen.h"
+	"picossdf/picossdf.h"
+	<ctype.h>
+	<stdio.h>
+
+1206457549 /home/smach/Projects/picogen/include/compile_info.h
+
+1208595839 /home/smach/Projects/picogen/include/picogen/graphics/objects/Snow.h
+
+1208596021 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/Snow.cc
+	"picogen.h"
+
+1208539098 /home/smach/Projects/picogen/include/picogen/graphics/objects/Rain.h
+
+1208539116 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/Rain.cc
+	"picogen.h"
+
