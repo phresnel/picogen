@@ -84,5 +84,6 @@ namespace objects{
 	#include "objects/Sphere.h"
 	#include "objects/Snow.h"
 	#include "objects/Rain.h"
+	#include "objects/ZBNCubemap.h"
 };
 #endif /* _OBJECTS_H */
