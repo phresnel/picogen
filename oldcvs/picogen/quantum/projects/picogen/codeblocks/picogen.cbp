@@ -75,6 +75,7 @@
 		<Unit filename="../../../include/picogen/graphics/objects/Sphere.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/TriBIH.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/VelocityInstance.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/ZBNCubemap.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers/image/XYIterator.cc.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers/image/XYIterator.h" />
@@ -93,6 +94,7 @@
 		<Unit filename="../../../src/picosrc/graphics/objects/Snow.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Sphere.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/TriBIH.cc" />
+		<Unit filename="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" />
 		<Unit filename="../../../src/picosrc/graphics/samplers/ray/Simple.cc" />
 		<Unit filename="../../../src/picossdf/picossdf.cc" />
 		<Extensions>
