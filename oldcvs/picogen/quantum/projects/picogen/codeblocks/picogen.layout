@@ -13,8 +13,8 @@
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="3">
 		<Cursor position="1000" topLine="0" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects.h" open="1" top="1" tabpos="2">
-		<Cursor position="3305" topLine="60" />
+	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="2">
+		<Cursor position="3012" topLine="60" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/LinearList.h" open="0" top="0" tabpos="0">
 		<Cursor position="1008" topLine="0" />
@@ -91,7 +91,7 @@
 	<File name="../../../src/picosrc/graphics/objects/TriBIH.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1003" topLine="0" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" open="1" top="0" tabpos="1">
+	<File name="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" open="0" top="0" tabpos="1">
 		<Cursor position="1116" topLine="15" />
 	</File>
 	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="0" top="0" tabpos="0">
