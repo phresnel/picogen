@@ -122,19 +122,19 @@
 1208539116 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/Rain.cc
 	"picogen.h"
 
-1209376922 source:/home/smach/Projects/picogen/quantum/src/main.cc
+1209719768 source:/home/smach/Projects/picogen/quantum/src/main.cc
 	<iostream>
-	"picogen.h"
-	"picogen/kludges.h"
-	"picossdf/picossdf.h"
+	<picogen/picogen.h>
+	<picogen/picossdf/picossdf.h>
+	<picogen/experimental/Rain.h>
+	<picogen/experimental/Snow.h>
+	<picogen/experimental/ShaderCC_GCC.h>
+	"compile_info.h"
 	<iostream>
 	<stdlib.h>
 	<sstream>
 	<SDL/SDL.h>
 	<stdio.h>
-	"picogen.h"
-	"picogen/kludges.h"
-	"compile_info.h"
 
 1209376633 /home/smach/Projects/picogen/quantum/include/picogen.h
 	<math.h>
@@ -169,7 +169,7 @@
 
 1209376774 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
 
-1209476574 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
+1209719654 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
 	"objects/LinearList.h"
 	"objects/TriBIH.h"
 	"objects/Preetham.h"
@@ -238,4 +238,32 @@
 
 1209376997 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/TriBIH.cc
 	"picogen.h"
+
+1209476506 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/ZBNCubemap.cc
+	"picogen.h"
+
+1209376979 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
+	"picogen.h"
+
+1209376955 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+	"picogen.h"
+	"picossdf/picossdf.h"
+	<ctype.h>
+	<stdio.h>
+
+1209719954 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Rain.h
+
+1209719943 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Snow.h
+
+1209718585 /home/smach/Projects/picogen/quantum/include/picogen/experimental/ShaderCC_GCC.h
+	<string>
+	<dlfcn.h>
+
+1209720102 source:/home/smach/Projects/picogen/quantum/src/experimental/Rain.cc
+	<picogen/picogen.h>
+	<picogen/experimental/Rain.h>
+
+1209720124 source:/home/smach/Projects/picogen/quantum/src/experimental/Snow.cc
+	<picogen/picogen.h>
+	<picogen/experimental/Snow.h>
 

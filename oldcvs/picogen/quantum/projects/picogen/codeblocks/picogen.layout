@@ -7,14 +7,26 @@
 	<File name="../../../include/picogen.h" open="0" top="0" tabpos="4">
 		<Cursor position="999" topLine="0" />
 	</File>
+	<File name="../../../include/picogen/experimental/Rain.h" open="0" top="0" tabpos="0">
+		<Cursor position="1060" topLine="15" />
+	</File>
+	<File name="../../../include/picogen/experimental/ShaderCC_GCC.h" open="0" top="0" tabpos="0">
+		<Cursor position="1009" topLine="8" />
+	</File>
+	<File name="../../../include/picogen/experimental/Snow.h" open="0" top="0" tabpos="0">
+		<Cursor position="1049" topLine="0" />
+	</File>
+	<File name="../../../include/picogen/experimental/ZBNCubemap.h" open="0" top="0" tabpos="0">
+		<Cursor position="1690" topLine="26" />
+	</File>
 	<File name="../../../include/picogen/graphics/image.h" open="0" top="0" tabpos="0">
 		<Cursor position="998" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="3">
-		<Cursor position="1000" topLine="0" />
+		<Cursor position="1000" topLine="38" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="2">
-		<Cursor position="3012" topLine="60" />
+		<Cursor position="3389" topLine="60" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/LinearList.h" open="0" top="0" tabpos="0">
 		<Cursor position="1008" topLine="0" />
@@ -22,14 +34,8 @@
 	<File name="../../../include/picogen/graphics/objects/Preetham.h" open="0" top="0" tabpos="0">
 		<Cursor position="999" topLine="0" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/Rain.h" open="0" top="0" tabpos="0">
-		<Cursor position="995" topLine="0" />
-	</File>
 	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="0" top="0" tabpos="0">
 		<Cursor position="1008" topLine="0" />
-	</File>
-	<File name="../../../include/picogen/graphics/objects/Snow.h" open="0" top="0" tabpos="3">
-		<Cursor position="0" topLine="42" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/TriBIH.h" open="0" top="0" tabpos="2">
 		<Cursor position="1002" topLine="0" />
@@ -49,6 +55,9 @@
 	<File name="../../../include/picogen/graphics/samplers/ray/Simple.h" open="0" top="0" tabpos="0">
 		<Cursor position="1020" topLine="0" />
 	</File>
+	<File name="../../../include/picogen/kludges.h" open="0" top="0" tabpos="0">
+		<Cursor position="1835" topLine="54" />
+	</File>
 	<File name="../../../include/picogen/misc/exceptions.h" open="0" top="0" tabpos="0">
 		<Cursor position="1002" topLine="45" />
 	</File>
@@ -67,8 +76,11 @@
 	<File name="../../../include/picossdf/picossdf.h" open="0" top="0" tabpos="0">
 		<Cursor position="69" topLine="0" />
 	</File>
+	<File name="../../../src/experimental/ZBNCubemap.cc" open="0" top="0" tabpos="0">
+		<Cursor position="1448" topLine="28" />
+	</File>
 	<File name="../../../src/main.cc" open="0" top="0" tabpos="1">
-		<Cursor position="1104" topLine="18" />
+		<Cursor position="17110" topLine="557" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/LinearList.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1009" topLine="24" />
@@ -76,23 +88,14 @@
 	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1011" topLine="0" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/Rain.cc" open="0" top="0" tabpos="0">
-		<Cursor position="995" topLine="25" />
-	</File>
 	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="0" top="0" tabpos="2">
 		<Cursor position="1009" topLine="0" />
-	</File>
-	<File name="../../../src/picosrc/graphics/objects/Snow.cc" open="0" top="0" tabpos="2">
-		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/Sphere.cc" open="0" top="0" tabpos="0">
 		<Cursor position="998" topLine="0" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/TriBIH.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1003" topLine="0" />
-	</File>
-	<File name="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" open="0" top="0" tabpos="1">
-		<Cursor position="1116" topLine="15" />
 	</File>
 	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="0" top="0" tabpos="0">
 		<Cursor position="97" topLine="0" />
