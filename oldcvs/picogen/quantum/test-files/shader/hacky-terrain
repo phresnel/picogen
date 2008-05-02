@@ -1,0 +1,29 @@
+
+shader(terrain){
+	shade(){
+		using picogen::graphics::image::color::Color;
+		using picogen::misc::prim::real;
+		const real albedo = 1.0;
+		const Color A(1.0,0.0,0.0);
+		const Color B(1.0,1.0,1.0);
+
+		//const Color A(1.0,1.0,1.0);
+		//const Color B(0.8,0.5,0.2);
+
+		const real n = normal[1];
+		const real f = pow(n,4);
+		/*const real ft = n * 3.1415927;
+		const real f = ( 1.0 - cos(ft) ) * 0.5;*/
+		/*const real n2 = n*n;
+		const real n3 = n2*n;
+		const real n4 = n3*n;
+		const real n5 = n4*n;
+		const real f = 6*n5-15*n4+10*n3; // 7 muls*/
+
+		color = (A*(1.0-f) + B*(f))*albedo;
+	}
+};
+
+publish(terrain);
+default(terrain);
+
