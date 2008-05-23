@@ -22,6 +22,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// NOTE this file tagged obsolete, take namespace functional in functional.h instead
 
 #ifndef _FUNCTIONS_H
 #define _FUNCTIONS_H
@@ -684,6 +685,7 @@ namespace functions{
 	};
 
 	namespace uv_to_scalar{
+		typedef vector_to_scalar::PerlinNoise_Elias PerlinNoise_Elias;
 		typedef vector_to_scalar::PerlinNoise       PerlinNoise;
 		typedef vector_to_scalar::Sine              Sine;
 
