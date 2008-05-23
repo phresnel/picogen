@@ -1,0 +1,36 @@
+
+shader(terrain){
+
+	picogen::misc::functions::vector_to_scalar::PerlinNoise heightShaderFunc;
+
+	terrain(){
+		printf( "this is the terrain shader!\n" );
+		heightShaderFunc.setPersistence(0.96);
+		heightShaderFunc.setBaseFrequency( 0.25*0.125 );
+		heightShaderFunc.setOctaves(12);
+		heightShaderFunc.setDomainScale(0.0125);
+		heightShaderFunc.setRangeScale(5.0);
+		heightShaderFunc.setMode( heightShaderFunc.normal );
+		heightShaderFunc.setMod( heightShaderFunc.mod_normal );
+		heightShaderFunc.setEvalScale( 2.0 );
+		heightShaderFunc.seed( 3421 );
+	}
+	virtual ~terrain() {}
+
+	shade(){
+		float f = heightShaderFunc.f( position[0], position[1], position[2] );
+		f = f < 0 ? 0 : f > 1 ? 1 : f;
+		//f = f < 0.5 ? 0.0 : 1.0;
+		const Color A(1.0,1.0,1.0); //> snow
+		const Color B(0.1,0.3,0.1); //> grass
+		color = A*f + B*(1-f);
+		
+		/*f = normal[1] < 0.3 ? 0.0 : 1.0;
+		const Color C(0.3,0.3,0.3); //> rock
+		color = color*f + C*(1.0-f);*/
+		//color = Color( 0.7, 0.7, 0.7 );
+	}
+};
+publish(terrain);
+default(terrain);
+
