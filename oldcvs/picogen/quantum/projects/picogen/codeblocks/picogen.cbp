@@ -7,8 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/picogen" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -16,8 +15,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/picogen" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -28,10 +26,9 @@
 				</Linker>
 			</Target>
 			<Target title="optimized AthlonXP">
-				<Option output="picogen" prefix_auto="1" extension_auto="1" />
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-march=athlon-xp" />
 					<Add option="-O3" />
@@ -52,6 +49,26 @@
 					<Add option="-fdata-sections \" />
 				</Compiler>
 			</Target>
+			<Target title="fast compilation">
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+			</Target>
+			<Target title="frontend-wx">
+				<Option output="bin/frontend-wx/picogen" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/frontend-wx/" />
+				<Option object_output="obj/frontend-wx/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="$( wx-config --libs --cpp-flags --cxxflags )" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
@@ -60,14 +77,15 @@
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
+			<Add option="-lboost_regex" />
 		</Linker>
 		<Unit filename="../../../include/compile_info.h" />
 		<Unit filename="../../../include/picogen.h" />
 		<Unit filename="../../../include/picogen/experimental/CloudShader_Bouthors.h" />
+		<Unit filename="../../../include/picogen/experimental/PicoPico.h" />
 		<Unit filename="../../../include/picogen/experimental/Rain.h" />
 		<Unit filename="../../../include/picogen/experimental/ShaderCC_GCC.h" />
 		<Unit filename="../../../include/picogen/experimental/Snow.h" />
-		<Unit filename="../../../include/picogen/experimental/ZBNCubemap.h" />
 		<Unit filename="../../../include/picogen/graphics/cameras.h" />
 		<Unit filename="../../../include/picogen/graphics/image.h" />
 		<Unit filename="../../../include/picogen/graphics/material.h" />
@@ -78,33 +96,49 @@
 		<Unit filename="../../../include/picogen/graphics/objects/Sphere.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/TriBIH.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/VelocityInstance.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/ZBNCubemap.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers/image/XYIterator.cc.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers/image/XYIterator.h" />
+		<Unit filename="../../../include/picogen/graphics/samplers/ray/Preview.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers/ray/Simple.h" />
-		<Unit filename="../../../include/picogen/kludges.h" />
 		<Unit filename="../../../include/picogen/misc/exceptions.h" />
+		<Unit filename="../../../include/picogen/misc/functional.h" />
 		<Unit filename="../../../include/picogen/misc/functions.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics/Transformation.h" />
+		<Unit filename="../../../include/picogen/misc/scripting/AST.h" />
 		<Unit filename="../../../include/picogen/misc/templates.h" />
 		<Unit filename="../../../include/picossdf/picossdf.h" />
+		<Unit filename="../../../src/experimental/PicoPico.cc" />
 		<Unit filename="../../../src/experimental/Rain.cc" />
 		<Unit filename="../../../src/experimental/Snow.cc" />
-		<Unit filename="../../../src/experimental/ZBNCubemap.cc" />
 		<Unit filename="../../../src/main.cc" />
+		<Unit filename="../../../src/picosrc/frontend/app-main.cpp">
+			<Option target="frontend-wx" />
+		</Unit>
 		<Unit filename="../../../src/picosrc/graphics/objects/LinearList.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Preetham.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Sphere.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/TriBIH.cc" />
+		<Unit filename="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" />
+		<Unit filename="../../../src/picosrc/graphics/samplers/ray/Preview.cc" />
 		<Unit filename="../../../src/picosrc/graphics/samplers/ray/Simple.cc" />
+		<Unit filename="../../../src/picosrc/misc/functional.cc" />
 		<Unit filename="../../../src/picossdf/picossdf.cc" />
+		<Unit filename="../../../src/submain/seb.cc" />
 		<Extensions>
 			<envvars />
 			<code_completion />
 			<debugger />
 			<lib_finder disable_auto="1" />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="../../../src/picosrc/frontend/app-main.cpp" main="-- None --" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxDialog wxs="wxsmith/NewDialog.wxs" src="NewDialog.cpp" hdr="NewDialog.h" name="NewDialog" language="CPP" />
+				</resources>
+			</wxsmith>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
