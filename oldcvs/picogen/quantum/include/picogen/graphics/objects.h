@@ -26,6 +26,12 @@
 #ifndef _OBJECTS_H
 #define _OBJECTS_H
 
+#ifdef INSIDE_OBJECTS_H
+#error "INSIDE_OBJECTS_H has already been defined somewhere else"
+#endif
+#define INSIDE_OBJECTS_H
+
+
 namespace objects{
 
 	namespace abstract{
@@ -82,6 +88,7 @@ namespace objects{
 	#include "objects/SimpleHeightField.h"
 	#include "objects/VelocityInstance.h"
 	#include "objects/Sphere.h"
+	#include "objects/ZBNCubemap.h"
 	/*
 	#include "objects/Snow.h"
 	#include "objects/Rain.h"
@@ -89,4 +96,5 @@ namespace objects{
 	//> above files moved to picogen/experimental as long as they are exactly that
 	*/
 };
+#undef INSIDE_OBJECTS_H
 #endif /* _OBJECTS_H */

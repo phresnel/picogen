@@ -32,6 +32,7 @@ namespace samplers{
 	};
 	namespace ray{
 		#include "samplers/ray/Simple.h"
+		#include "samplers/ray/Preview.h"
 	};
 	namespace light{
 	};

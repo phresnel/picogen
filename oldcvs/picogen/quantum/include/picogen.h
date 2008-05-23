@@ -109,7 +109,8 @@ namespace picogen{
 			static const prim::real pi = 3.14159265f;
 		};
 		#include "picogen/misc/geometrics.h"
-		#include "picogen/misc/functions.h"
+		#include "picogen/misc/functions.h" // << obsolete, take "functional.h"
+		//#include "picogen/misc/functional.h"
 		#include "picogen/misc/templates.h"
 	};
 
