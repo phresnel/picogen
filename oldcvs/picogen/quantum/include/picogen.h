@@ -3,7 +3,7 @@
  *
  *  Thu Oct 11 19:25:29 2007
  *  Copyright  2007  Sebastian Mach
- *  root@greenhybrid.net
+ *  seb@greenhybrid.net
  ****************************************************************************/
 
 /*
@@ -92,7 +92,7 @@ namespace picogen{
 				return s.str();
 			}
 		};
-		#include "picogen/misc/exceptions.h"
+		#include <picogen/misc/exceptions.h>
 		namespace prim{
 			typedef double real;
 		};
@@ -108,16 +108,16 @@ namespace picogen{
 			static const prim::real real_min = FLT_MIN;
 			static const prim::real pi = 3.14159265f;
 		};
-		#include "picogen/misc/geometrics.h"
-		#include "picogen/misc/functions.h" // << obsolete, take "functional.h"
+		#include <picogen/misc/geometrics.h>
+		#include <picogen/misc/functions.h> // << obsolete, take "functional.h"
 		//#include "picogen/misc/functional.h"
-		#include "picogen/misc/templates.h"
+		#include <picogen/misc/templates.h>
 	};
 
 	namespace graphics{
-		#include "picogen/graphics/cameras.h"
-		#include "picogen/graphics/image.h"
-		#include "picogen/graphics/material.h"
+		#include <picogen/graphics/cameras.h>
+		#include <picogen/graphics/image.h>
+		#include <picogen/graphics/material.h>
 
 		namespace structs{
 			typedef struct _intersection_t{
@@ -130,10 +130,11 @@ namespace picogen{
 			} intersection_t;
 		};
 
-		#include "picogen/graphics/objects.h"
-		#include "picogen/graphics/samplers.h"
+		#include <picogen/graphics/objects.h>
+		#include <picogen/graphics/samplers.h>
 	};
 
+    #include <picogen/misc/namespace_mnemonics.h>
 };
 
 
