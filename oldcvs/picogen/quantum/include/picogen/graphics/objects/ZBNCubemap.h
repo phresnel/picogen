@@ -26,7 +26,9 @@
 #ifndef _ZBNCUBEMAP_H
 #define _ZBNCUBEMAP_H
 
+#ifndef INSIDE_OBJECTS_H
 namespace picogen{ namespace graphics{ namespace objects{
+#endif // #ifndef INSIDE_OBJECTS_H
 
 class ZBNCubemapPixel{
         typedef picogen::misc::geometrics::Vector3d Vector3d;
@@ -123,7 +125,10 @@ class ZBNCubemap : public picogen::graphics::objects::abstract::IIntersectable
         void unlock();
 };
 
+#ifndef INSIDE_OBJECTS_H
 } } } // namespace picogen{ namespace graphics{ namespace objects{
+#endif // #ifndef INSIDE_OBJECTS_H
+
 
 #endif /* _ZBNCUBEMAP_H */
 
