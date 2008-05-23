@@ -2,7 +2,7 @@
  *            main.cc
  *
  *  Copyright  2007  Sebastian Mach
- *  root@greenhybrid.net
+ *  seb@greenhybrid.net
  ****************************************************************************/
 
 /*
@@ -20,10 +20,72 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+ 
+#include <iostream>
 
 
-extern int main_seb( int argc, char *argv[] );
+static void disclaimer() {
+    using namespace std;
+    cout
+        << "---\n"
+        << "\"picogen\"  Copyright (C) 2007,2008  Sebastian Mach (*1983)\n"
+        << "This program comes with ABSOLUTELY NO WARRANTY." /* for details type `show w'.*/"\n"
+        << "This is free software, and you are welcome to redistribute it\n"
+        << "under certain conditions. " /*type `show c' for details.*/ "\n"
+        << "---\n"
+        << endl
+    ;
+}
 
-int main( int argc, char *argv[] ){
+static void usage() {
+}
+
+static void warranty() {
+}
+
+static void conditions() {
+}
+
+int main( int argc, char *argv[] ) {
+    extern int main_seb( int argc, char *argv[] );
+    extern int main_mkheightmap( int argc, char *argv[] );
+    extern int main_testscenes( int argc, char *argv[] );
+    
+    using namespace std;
+
+    argc--; argv++;
+
+    disclaimer();
+    if( argc == 0 ){ // check if any argument is given, we need at least one
+        usage();
+        return -1;
+    }
+
+    const std::string primary = argv[0];
+    argc--; argv++;
+
+    if( primary == string("show") ){
+        if( argc == 0 ){ // check if any argument is given, we need at least one remaining
+            usage();
+            return -1;
+        }
+        const std::string secondary = argv[0];
+        if( secondary == string("w") ){
+            warranty();
+            return 0;
+        }else if( secondary == string("c") ){
+            conditions();
+            return 0;
+        }
+    }else if( primary == string("mkheightmap") ){
+        return main_mkheightmap( argc, argv );
+    }else if( primary == string("testscene") ){
+        return main_testscenes( argc, argv );
+    }else if( primary == string("seb") ){
+        return main_seb( argc, argv );
+    }else{
+        usage();
+    }
+    
     return 0;
 }
