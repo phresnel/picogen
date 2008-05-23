@@ -107,6 +107,7 @@
 		<Unit filename="../../../include/picogen/misc/functions.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics/Transformation.h" />
+		<Unit filename="../../../include/picogen/misc/namespace_mnemonics.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/AST.h" />
 		<Unit filename="../../../include/picogen/misc/templates.h" />
 		<Unit filename="../../../include/picossdf/picossdf.h" />
@@ -127,7 +128,9 @@
 		<Unit filename="../../../src/picosrc/graphics/samplers/ray/Simple.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional.cc" />
 		<Unit filename="../../../src/picossdf/picossdf.cc" />
+		<Unit filename="../../../src/submain/mkheightmap.cc" />
 		<Unit filename="../../../src/submain/seb.cc" />
+		<Unit filename="../../../src/submain/testscenes.cc" />
 		<Extensions>
 			<envvars />
 			<code_completion />

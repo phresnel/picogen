@@ -122,23 +122,25 @@
 1208539116 source:/home/smach/Projects/picogen/src/picosrc/graphics/objects/Rain.cc
 	"picogen.h"
 
-1211551220 source:/home/smach/Projects/picogen/quantum/src/main.cc
+1211558393 source:/home/smach/Projects/picogen/quantum/src/main.cc
+	<iostream>
 
-1211033978 /home/smach/Projects/picogen/quantum/include/picogen.h
+1211557161 /home/smach/Projects/picogen/quantum/include/picogen.h
 	<math.h>
 	<float.h>
 	<string>
 	<sstream>
 	<list>
-	"picogen/misc/exceptions.h"
-	"picogen/misc/geometrics.h"
-	"picogen/misc/functions.h"
-	"picogen/misc/templates.h"
-	"picogen/graphics/cameras.h"
-	"picogen/graphics/image.h"
-	"picogen/graphics/material.h"
-	"picogen/graphics/objects.h"
-	"picogen/graphics/samplers.h"
+	<picogen/misc/exceptions.h>
+	<picogen/misc/geometrics.h>
+	<picogen/misc/functions.h>
+	<picogen/misc/templates.h>
+	<picogen/graphics/cameras.h>
+	<picogen/graphics/image.h>
+	<picogen/graphics/material.h>
+	<picogen/graphics/objects.h>
+	<picogen/graphics/samplers.h>
+	<picogen/misc/namespace_mnemonics.h>
 
 1209376752 /home/smach/Projects/picogen/quantum/include/picogen/misc/exceptions.h
 
@@ -233,7 +235,7 @@
 	<string>
 	<picogen/picogen.h>
 
-1211213117 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
+1211552661 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
 	"picogen.h"
 
 1209376955 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
@@ -308,4 +310,6 @@
 	<SDL/SDL.h>
 	<stdio.h>
 	<picogen/misc/functional.h>
+
+1211557176 /home/smach/Projects/picogen/quantum/include/picogen/misc/namespace_mnemonics.h
 

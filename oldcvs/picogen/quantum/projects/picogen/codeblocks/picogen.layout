@@ -5,7 +5,7 @@
 		<Cursor position="18" topLine="0" />
 	</File>
 	<File name="../../../include/picogen.h" open="0" top="0" tabpos="4">
-		<Cursor position="3620" topLine="108" />
+		<Cursor position="3043" topLine="97" />
 	</File>
 	<File name="../../../include/picogen/experimental/Rain.h" open="0" top="0" tabpos="0">
 		<Cursor position="1060" topLine="15" />
@@ -76,6 +76,9 @@
 	<File name="../../../include/picogen/misc/geometrics/Transformation.h" open="0" top="0" tabpos="0">
 		<Cursor position="1004" topLine="0" />
 	</File>
+	<File name="../../../include/picogen/misc/namespace_mnemonics.h" open="0" top="0" tabpos="0">
+		<Cursor position="329" topLine="0" />
+	</File>
 	<File name="../../../include/picogen/misc/templates.h" open="0" top="0" tabpos="0">
 		<Cursor position="1016" topLine="0" />
 	</File>
@@ -89,7 +92,7 @@
 		<Cursor position="5027" topLine="123" />
 	</File>
 	<File name="../../../src/main.cc" open="0" top="0" tabpos="2">
-		<Cursor position="1070" topLine="1" />
+		<Cursor position="988" topLine="0" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
@@ -124,7 +127,13 @@
 	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="1">
 		<Cursor position="76" topLine="141" />
 	</File>
+	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="0">
+		<Cursor position="1040" topLine="0" />
+	</File>
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="0">
-		<Cursor position="1464" topLine="16" />
+		<Cursor position="15813" topLine="533" />
+	</File>
+	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="0">
+		<Cursor position="365" topLine="1" />
 	</File>
 </CodeBlocks_layout_file>
