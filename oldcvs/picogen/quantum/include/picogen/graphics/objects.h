@@ -89,10 +89,10 @@ namespace objects{
 	#include "objects/VelocityInstance.h"
 	#include "objects/Sphere.h"
 	#include "objects/ZBNCubemap.h"
+	#include "objects/AABox.h"
 	/*
 	#include "objects/Snow.h"
 	#include "objects/Rain.h"
-	#include "objects/ZBNCubemap.h"
 	//> above files moved to picogen/experimental as long as they are exactly that
 	*/
 };
