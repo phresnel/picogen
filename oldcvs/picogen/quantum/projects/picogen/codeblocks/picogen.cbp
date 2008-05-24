@@ -90,6 +90,7 @@
 		<Unit filename="../../../include/picogen/graphics/image.h" />
 		<Unit filename="../../../include/picogen/graphics/material.h" />
 		<Unit filename="../../../include/picogen/graphics/objects.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/AABox.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/LinearList.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/Preetham.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/SimpleHeightField.h" />
@@ -118,6 +119,7 @@
 		<Unit filename="../../../src/picosrc/frontend/app-main.cpp">
 			<Option target="frontend-wx" />
 		</Unit>
+		<Unit filename="../../../src/picosrc/graphics/objects/AABox.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/LinearList.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Preetham.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" />

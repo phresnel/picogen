@@ -20,22 +20,28 @@
 		<Cursor position="2684" topLine="60" />
 	</File>
 	<File name="../../../include/picogen/graphics/image.h" open="0" top="0" tabpos="0">
-		<Cursor position="4038" topLine="100" />
+		<Cursor position="3147" topLine="84" />
 	</File>
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="3">
-		<Cursor position="1000" topLine="20" />
+		<Cursor position="1980" topLine="41" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="2">
-		<Cursor position="3577" topLine="72" />
+		<Cursor position="3461" topLine="67" />
+	</File>
+	<File name="../../../include/picogen/graphics/objects/AABox.h" open="0" top="0" tabpos="5">
+		<Cursor position="2694" topLine="40" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/LinearList.h" open="0" top="0" tabpos="0">
 		<Cursor position="1031" topLine="22" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Preetham.h" open="0" top="0" tabpos="0">
-		<Cursor position="999" topLine="41" />
+		<Cursor position="2110" topLine="34" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="0" top="0" tabpos="0">
-		<Cursor position="3367" topLine="54" />
+	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="0" top="0" tabpos="8">
+		<Cursor position="3298" topLine="53" />
+	</File>
+	<File name="../../../include/picogen/graphics/objects/Sphere.h" open="0" top="0" tabpos="7">
+		<Cursor position="1836" topLine="33" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/TriBIH.h" open="0" top="0" tabpos="2">
 		<Cursor position="1002" topLine="0" />
@@ -43,8 +49,8 @@
 	<File name="../../../include/picogen/graphics/objects/VelocityInstance.h" open="0" top="0" tabpos="0">
 		<Cursor position="1007" topLine="0" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/ZBNCubemap.h" open="0" top="0" tabpos="0">
-		<Cursor position="4405" topLine="103" />
+	<File name="../../../include/picogen/graphics/objects/ZBNCubemap.h" open="0" top="0" tabpos="4">
+		<Cursor position="3941" topLine="102" />
 	</File>
 	<File name="../../../include/picogen/graphics/samplers.h" open="0" top="0" tabpos="8">
 		<Cursor position="1210" topLine="12" />
@@ -59,7 +65,7 @@
 		<Cursor position="1473" topLine="24" />
 	</File>
 	<File name="../../../include/picogen/graphics/samplers/ray/Simple.h" open="0" top="0" tabpos="4">
-		<Cursor position="79" topLine="0" />
+		<Cursor position="79" topLine="20" />
 	</File>
 	<File name="../../../include/picogen/misc/exceptions.h" open="0" top="0" tabpos="4">
 		<Cursor position="3785" topLine="81" />
@@ -71,13 +77,13 @@
 		<Cursor position="16219" topLine="522" />
 	</File>
 	<File name="../../../include/picogen/misc/geometrics.h" open="0" top="0" tabpos="0">
-		<Cursor position="1002" topLine="0" />
+		<Cursor position="1069" topLine="81" />
 	</File>
 	<File name="../../../include/picogen/misc/geometrics/Transformation.h" open="0" top="0" tabpos="0">
 		<Cursor position="1004" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/misc/namespace_mnemonics.h" open="0" top="0" tabpos="0">
-		<Cursor position="329" topLine="0" />
+		<Cursor position="373" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/misc/templates.h" open="0" top="0" tabpos="0">
 		<Cursor position="1016" topLine="0" />
@@ -91,11 +97,14 @@
 	<File name="../../../src/experimental/Snow.cc" open="0" top="0" tabpos="0">
 		<Cursor position="5027" topLine="123" />
 	</File>
-	<File name="../../../src/main.cc" open="0" top="0" tabpos="2">
-		<Cursor position="988" topLine="0" />
+	<File name="../../../src/main.cc" open="0" top="0" tabpos="1">
+		<Cursor position="2643" topLine="57" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
+	</File>
+	<File name="../../../src/picosrc/graphics/objects/AABox.cc" open="0" top="0" tabpos="6">
+		<Cursor position="8699" topLine="247" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/LinearList.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1009" topLine="24" />
@@ -113,13 +122,13 @@
 		<Cursor position="1003" topLine="0" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" open="0" top="0" tabpos="0">
-		<Cursor position="11590" topLine="353" />
+		<Cursor position="9090" topLine="286" />
 	</File>
 	<File name="../../../src/picosrc/graphics/samplers/ray/Preview.cc" open="0" top="0" tabpos="5">
 		<Cursor position="4136" topLine="115" />
 	</File>
 	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="0" top="0" tabpos="6">
-		<Cursor position="2477" topLine="84" />
+		<Cursor position="3165" topLine="81" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="3">
 		<Cursor position="1094" topLine="10" />
@@ -130,10 +139,10 @@
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1040" topLine="0" />
 	</File>
-	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="0">
-		<Cursor position="15813" topLine="533" />
+	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="3">
+		<Cursor position="14116" topLine="441" />
 	</File>
-	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="0">
-		<Cursor position="365" topLine="1" />
+	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="2">
+		<Cursor position="5325" topLine="149" />
 	</File>
 </CodeBlocks_layout_file>
