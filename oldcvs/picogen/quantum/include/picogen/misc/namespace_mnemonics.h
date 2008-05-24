@@ -8,3 +8,5 @@
  ****************************************************************************/
 
 namespace gob = picogen::graphics::objects;
+namespace geom = picogen::misc::geometrics;
+namespace prim = picogen::misc::prim;
