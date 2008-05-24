@@ -58,7 +58,21 @@ namespace material{
 					image::color::Color &color,
 					const misc::geometrics::Vector3d &normal,
 					const misc::geometrics::Vector3d &position
-				) const = 0;
+				) const = 0;/*{
+				    fprintf( stderr, "%s:%i: function Shade called but not implemented\n", __FILE__, __LINE__ );
+				    throw;
+				}*/
+
+				virtual void Shade(
+					image::color::Color &color,
+					misc::prim::real &L_e,
+					const misc::geometrics::Vector3d &normal,
+					const misc::geometrics::Vector3d &position
+				) const {
+				    // for backwards compatibility we will implement this virtual function,
+				    L_e = 0.0;
+				    Shade( color, normal, position );
+				}
 		};
 	};
 };
