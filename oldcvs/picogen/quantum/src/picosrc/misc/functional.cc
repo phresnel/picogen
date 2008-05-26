@@ -506,6 +506,9 @@ static inline BasicFunction* inlisp_(
                 ss >> f;
                 return constant_( sign*f );
             } break;
+            default:{
+                throw functional_general_exeption( std::string("token unknown: ") + tok );
+            } break;
         }
     }
     return NULL;
