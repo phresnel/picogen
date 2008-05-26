@@ -5,7 +5,7 @@
 		<Cursor position="18" topLine="0" />
 	</File>
 	<File name="../../../include/picogen.h" open="0" top="0" tabpos="4">
-		<Cursor position="3043" topLine="97" />
+		<Cursor position="1241" topLine="15" />
 	</File>
 	<File name="../../../include/picogen/experimental/Rain.h" open="0" top="0" tabpos="0">
 		<Cursor position="1060" topLine="15" />
@@ -70,8 +70,8 @@
 	<File name="../../../include/picogen/misc/exceptions.h" open="0" top="0" tabpos="4">
 		<Cursor position="3785" topLine="81" />
 	</File>
-	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="1">
-		<Cursor position="23082" topLine="441" />
+	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="2">
+		<Cursor position="28175" topLine="552" />
 	</File>
 	<File name="../../../include/picogen/misc/functions.h" open="0" top="0" tabpos="0">
 		<Cursor position="16219" topLine="522" />
@@ -86,7 +86,7 @@
 		<Cursor position="373" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/misc/templates.h" open="0" top="0" tabpos="0">
-		<Cursor position="1016" topLine="0" />
+		<Cursor position="3471" topLine="89" />
 	</File>
 	<File name="../../../include/picossdf/picossdf.h" open="0" top="0" tabpos="0">
 		<Cursor position="69" topLine="0" />
@@ -127,11 +127,11 @@
 	<File name="../../../src/picosrc/graphics/samplers/ray/Preview.cc" open="0" top="0" tabpos="5">
 		<Cursor position="4136" topLine="115" />
 	</File>
-	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="0" top="0" tabpos="6">
-		<Cursor position="3165" topLine="81" />
+	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="0" top="0" tabpos="1">
+		<Cursor position="3670" topLine="105" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="3">
-		<Cursor position="1094" topLine="10" />
+		<Cursor position="24101" topLine="446" />
 	</File>
 	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="1">
 		<Cursor position="76" topLine="141" />
@@ -139,8 +139,8 @@
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1040" topLine="0" />
 	</File>
-	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="3">
-		<Cursor position="14116" topLine="441" />
+	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="1">
+		<Cursor position="16596" topLine="577" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="2">
 		<Cursor position="5325" topLine="149" />

@@ -125,15 +125,17 @@
 1211559240 source:/home/smach/Projects/picogen/quantum/src/main.cc
 	<iostream>
 
-1211557161 /home/smach/Projects/picogen/quantum/include/picogen.h
+1211816521 /home/smach/Projects/picogen/quantum/include/picogen.h
 	<math.h>
 	<float.h>
+	<iostream>
 	<string>
 	<sstream>
 	<list>
 	<picogen/misc/exceptions.h>
 	<picogen/misc/geometrics.h>
 	<picogen/misc/functions.h>
+	<picogen/misc/functional.h>
 	<picogen/misc/templates.h>
 	<picogen/graphics/cameras.h>
 	<picogen/graphics/image.h>
@@ -235,7 +237,7 @@
 	<string>
 	<picogen/picogen.h>
 
-1211636554 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
+1211638569 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
 	"picogen.h"
 
 1209376955 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
@@ -281,11 +283,17 @@
 1210504377 /home/smach/Projects/picogen/quantum/include/picogen/experimental/AST.h
 	<iostream>
 
-1211219235 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
+1211818851 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
+	<iostream>
+	<sstream>
+	<ctype.h>
 
-1211046687 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
-	<picogen/picogen.h>
-	<picogen/misc/functional.h>
+1211820149 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
+	<picogen.h>
+	<string>
+	<iostream>
+	<sstream>
+	<ctype.h>
 
 1211213112 /home/smach/Projects/picogen/quantum/include/picogen/graphics/samplers/ray/Preview.h
 
@@ -295,7 +303,7 @@
 1210504377 /home/smach/Projects/picogen/quantum/include/picogen/misc/scripting/AST.h
 	<iostream>
 
-1211551534 source:/home/smach/Projects/picogen/quantum/src/submain/seb.cc
+1211820392 source:/home/smach/Projects/picogen/quantum/src/submain/seb.cc
 	<iostream>
 	<picogen/picogen.h>
 	<picogen/picossdf/picossdf.h>
@@ -315,7 +323,7 @@
 
 1211559222 source:/home/smach/Projects/picogen/quantum/src/submain/mkheightmap.cc
 
-1211637351 source:/home/smach/Projects/picogen/quantum/src/submain/testscenes.cc
+1211638135 source:/home/smach/Projects/picogen/quantum/src/submain/testscenes.cc
 	<iostream>
 	<vector>
 	<picogen/picogen.h>
