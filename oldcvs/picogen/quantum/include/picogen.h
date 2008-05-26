@@ -40,11 +40,10 @@
 
 #include <math.h>
 #include <float.h>
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <list>
-
-
 
 
 
@@ -110,7 +109,7 @@ namespace picogen{
 		};
 		#include <picogen/misc/geometrics.h>
 		#include <picogen/misc/functions.h> // << obsolete, take "functional.h"
-		//#include "picogen/misc/functional.h"
+		#include <picogen/misc/functional.h>
 		#include <picogen/misc/templates.h>
 	};
 
