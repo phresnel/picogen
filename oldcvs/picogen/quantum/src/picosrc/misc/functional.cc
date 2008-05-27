@@ -458,7 +458,7 @@ static inline BasicFunction* inlisp_(
 
 
                 default:{
-                    throw functional_general_exeption( std::string("unknown operation: ") );
+                    throw functional_general_exeption( std::string("unknown operation: ") + tok + peekNextToken(it,code) );
                 }
             }
         }else switch( tok ){
@@ -514,7 +514,9 @@ static inline BasicFunction* inlisp_(
     return NULL;
 }
 BasicFunction* inlisp_( const Setup &setup, BasicFunction *root, const std::string &code ) {
-    std::cout << "> " << code << std::endl;
+    if( 0 ){
+        std::cout << "> " << code << std::endl;
+    }
     std::string::const_iterator it = code.begin();
     return inlisp_( setup, root, it, code );
 }
