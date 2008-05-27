@@ -61,6 +61,23 @@ class Transformation{
 			matrix._41 = t.matrix._41;   matrix._42 = t.matrix._42;   matrix._43 = t.matrix._43;   matrix._44 = t.matrix._44;
 		}
 
+		Transformation setTo( const Transformation &t )
+		{
+			matrix._11 = t.matrix._11;   matrix._12 = t.matrix._12;   matrix._13 = t.matrix._13;   matrix._14 = t.matrix._14;
+			matrix._21 = t.matrix._21;   matrix._22 = t.matrix._22;   matrix._23 = t.matrix._23;   matrix._24 = t.matrix._24;
+			matrix._31 = t.matrix._31;   matrix._32 = t.matrix._32;   matrix._33 = t.matrix._33;   matrix._34 = t.matrix._34;
+			matrix._41 = t.matrix._41;   matrix._42 = t.matrix._42;   matrix._43 = t.matrix._43;   matrix._44 = t.matrix._44;
+			return *this;
+		}
+		Transformation operator = ( const Transformation &t )
+		{
+			matrix._11 = t.matrix._11;   matrix._12 = t.matrix._12;   matrix._13 = t.matrix._13;   matrix._14 = t.matrix._14;
+			matrix._21 = t.matrix._21;   matrix._22 = t.matrix._22;   matrix._23 = t.matrix._23;   matrix._24 = t.matrix._24;
+			matrix._31 = t.matrix._31;   matrix._32 = t.matrix._32;   matrix._33 = t.matrix._33;   matrix._34 = t.matrix._34;
+			matrix._41 = t.matrix._41;   matrix._42 = t.matrix._42;   matrix._43 = t.matrix._43;   matrix._44 = t.matrix._44;
+			return *this;
+		}
+
 		Transformation(){
 			matrix._11 = 1.0;   matrix._12 = 0.0;   matrix._13 = 0.0;   matrix._14 = 0.0;
 			matrix._21 = 0.0;   matrix._22 = 1.0;   matrix._23 = 0.0;   matrix._24 = 0.0;
