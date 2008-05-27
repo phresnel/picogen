@@ -162,23 +162,25 @@ AABox::AABox() {
     enable[y_positive] =
     enable[z_negative] =
     enable[z_positive] = true;
+
+    enableOutside_ = true;
 }
 
 AABox::~AABox() {
 }
 
 
-void AABox::setBRDF( face_t face, picogen::graphics::material::abstract::IBRDF* const brdf ) {
+void AABox::setBRDF( face_t face, const picogen::graphics::material::abstract::IBRDF* const brdf ) {
     brdfs[face] = brdf;
 }
 
 
-void AABox::setShader( face_t face, picogen::graphics::material::abstract::IShader* const shader )  {
+void AABox::setShader( face_t face, const picogen::graphics::material::abstract::IShader* const shader )  {
     shaders[face] = shader;
 }
 
 
-void AABox::setBRDF( picogen::graphics::material::abstract::IBRDF* const brdf ) {
+void AABox::setBRDF( const picogen::graphics::material::abstract::IBRDF* const brdf ) {
     setBRDF( x_negative, brdf );
     setBRDF( x_positive, brdf );
     setBRDF( y_negative, brdf );
@@ -188,7 +190,7 @@ void AABox::setBRDF( picogen::graphics::material::abstract::IBRDF* const brdf ) 
 }
 
 
-void AABox::setShader( picogen::graphics::material::abstract::IShader* const shader ) {
+void AABox::setShader( const picogen::graphics::material::abstract::IShader* const shader ) {
     setShader( x_negative, shader );
     setShader( x_positive, shader );
     setShader( y_negative, shader );
@@ -200,6 +202,10 @@ void AABox::setShader( picogen::graphics::material::abstract::IShader* const sha
 
 void AABox::enableFace( face_t face, bool enable ){
     this->enable[ face ] = enable;
+}
+
+void AABox::enableOutside( bool enable ){
+    this->enableOutside_ = enable;
 }
 
 bool AABox::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const {
@@ -228,12 +234,10 @@ bool AABox::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray)
 
     real tmin = 9999999.0;
     bool any = false;
-    bool enableOutside = false;
-
 
     const picogen::graphics::material::abstract::IShader* shader = NULL;
 
-    if( (enableOutside || wx<0.0) && enable[x_negative] ){
+    if( (enableOutside_ || wx<0.0) && enable[x_negative] ){
         const real dist = px - bbMin[0];
         const real t    = dist / -wx;
         const real iy = py + t*wy;
@@ -249,7 +253,7 @@ bool AABox::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray)
             intersection.normal = Vector3d( wx>0.0?-1.0:1.0, 0.0, 0.0 );
         }
     }
-    if( (enableOutside || wx>0.0) && enable[x_positive] ){
+    if( (enableOutside_ || wx>0.0) && enable[x_positive] ){
         const real dist = px - bbMax[0];
         const real t    = dist / -wx;
         const real iy = py + t*wy;
@@ -267,7 +271,7 @@ bool AABox::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray)
     }
 
 
-    if( (enableOutside || wz<0.0) && enable[z_negative] ){
+    if( (enableOutside_ || wz<0.0) && enable[z_negative] ){
         const real dist = pz - bbMin[2];
         const real t    = dist / -wz;
         const real ix = px + t*wx;
@@ -283,7 +287,7 @@ bool AABox::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray)
             intersection.normal = Vector3d( 0.0, 0.0, wz>0.0?-1.0:1.0 );
         }
     }
-    if( (enableOutside || wz>0.0) && enable[z_positive] ){
+    if( (enableOutside_ || wz>0.0) && enable[z_positive] ){
         const real dist = pz - bbMax[2];
         const real t    = dist / -wz;
         const real ix = px + t*wx;
@@ -300,7 +304,7 @@ bool AABox::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray)
         }
     }
 
-    if( (enableOutside || wy<0.0) && enable[y_negative] ){
+    if( (enableOutside_ || wy<0.0) && enable[y_negative] ){
         const real dist = py - bbMin[1];
         const real t    = dist / -wy;
         const real ix = px + t*wx;
@@ -316,7 +320,7 @@ bool AABox::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray)
             intersection.normal = Vector3d( 0.0, wy>0.0?-1.0:1.0, 0.0 );
         }
     }
-    if( (enableOutside || wy>0.0) && enable[y_positive] ){
+    if( (enableOutside_ || wy>0.0) && enable[y_positive] ){
         const real dist = py - bbMax[1];
         const real t    = dist / -wy;
         const real ix = px + t*wx;

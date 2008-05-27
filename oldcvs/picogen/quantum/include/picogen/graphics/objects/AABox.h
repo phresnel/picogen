@@ -60,17 +60,19 @@ class AABox : public picogen::graphics::objects::abstract::IIntersectable
         const picogen::graphics::material::abstract::IBRDF* brdfs[6];
         const picogen::graphics::material::abstract::IShader* shaders[6];
         bool enable[6];
+        bool enableOutside_;
 
 	public:
         AABox();
         virtual ~AABox();
 		virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
 
-		void setBRDF( face_t face, picogen::graphics::material::abstract::IBRDF* const brdf );
-        void setShader( face_t face, picogen::graphics::material::abstract::IShader* const shader );
-        void setBRDF( picogen::graphics::material::abstract::IBRDF* const brdf );
-        void setShader( picogen::graphics::material::abstract::IShader* const shader );
+		void setBRDF( face_t face, const picogen::graphics::material::abstract::IBRDF* const brdf );
+        void setShader( face_t face, const picogen::graphics::material::abstract::IShader* const shader );
+        void setBRDF( const picogen::graphics::material::abstract::IBRDF* const brdf );
+        void setShader( const picogen::graphics::material::abstract::IShader* const shader );
         void enableFace( face_t face, bool enable );
+        void enableOutside( bool enable );
 };
 
 #ifndef INSIDE_OBJECTS_H
