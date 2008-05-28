@@ -1,0 +1,9 @@
+(                                           \
+      find -type f                          \
+    | grep -E "\.(cc|cpp|h|hpp)$"           \
+    | xargs astyle --style=kr               \
+) && (                                      \
+      find -type f                          \
+    | grep -E "\.(cc|cpp|h|hpp)\.orig$"     \
+    | xargs rm                              \
+)
