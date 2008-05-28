@@ -41,24 +41,24 @@ using std::string;
 using namespace picogen::misc::exceptions;
 
 
-namespace picogen{
-namespace graphics{
-namespace objects{
-    
-    
+namespace picogen {
+namespace graphics {
+namespace objects {
+
+
 ZBNCubemapSurface::ZBNCubemapSurface() : surface(NULL), width(0), height(0) {
 }
 
-ZBNCubemapSurface::~ZBNCubemapSurface(){
-    if( NULL != surface ){
+ZBNCubemapSurface::~ZBNCubemapSurface() {
+    if ( NULL != surface ) {
         delete [] surface;
         surface = NULL;
-    }    
+    }
     width = height = 0;
 }
 
-void ZBNCubemapSurface::resize( int new_width, int new_height ){    
-    if( NULL != surface ){
+void ZBNCubemapSurface::resize( int new_width, int new_height ) {
+    if ( NULL != surface ) {
         delete [] surface;
         surface = NULL;
     }
@@ -68,17 +68,17 @@ void ZBNCubemapSurface::resize( int new_width, int new_height ){
     height  = new_height;
 }
 
-void ZBNCubemapSurface::lock(){
+void ZBNCubemapSurface::lock() {
 }
 
-void ZBNCubemapSurface::unlock(){
+void ZBNCubemapSurface::unlock() {
 }
 
-ZBNCubemapPixel ZBNCubemapSurface::getPixel( int x, int y ) const{
-    if( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ){
+ZBNCubemapPixel ZBNCubemapSurface::getPixel( int x, int y ) const {
+    if ( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ) {
         throw coords_out_of_bounds( __FILE__, __LINE__, 0, 0, width, height, x, y );
     }
-    if( NULL==surface ){
+    if ( NULL==surface ) {
         throw null_pointer( __FILE__, __LINE__, string("surface has not been allocated") );
     }
     return surface[ y*width + x ];
@@ -95,45 +95,45 @@ ZBNCubemapPixel & ZBNCubemapSurface::getPixel( int x, int y ){
     return surface[ y*width + x ];
 }*/
 
-ZBNCubemapPixel ZBNCubemapSurface::getPixel( real u, real v ) const{
+ZBNCubemapPixel ZBNCubemapSurface::getPixel( real u, real v ) const {
     const int x = static_cast<int>(u*static_cast<real>(width-1)  + 0.5);
     const int y = static_cast<int>(v*static_cast<real>(height-1) + 0.5);
-    if( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ){
+    if ( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ) {
         throw coords_out_of_bounds( __FILE__, __LINE__, 0, 0, width, height, x, y );
     }
-    if( NULL==surface ){
+    if ( NULL==surface ) {
         throw null_pointer( __FILE__, __LINE__, string("surface has not been allocated") );
     }
     return surface[ y*width + x ];
 }
 
-void ZBNCubemapSurface::setPixel( real u, real v, const ZBNCubemapPixel &p ){
+void ZBNCubemapSurface::setPixel( real u, real v, const ZBNCubemapPixel &p ) {
     const int x = static_cast<int>(u*static_cast<real>(width-1)  + 0.5);
     const int y = static_cast<int>(v*static_cast<real>(height-1) + 0.5);
-    if( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ){
+    if ( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ) {
         throw coords_out_of_bounds( __FILE__, __LINE__, 0, 0, width, height, x, y );
     }
-    if( NULL==surface ){
+    if ( NULL==surface ) {
         throw null_pointer( __FILE__, __LINE__, string("surface has not been allocated") );
     }
     surface[ y*width + x ] = p;
 }
 
-void ZBNCubemapSurface::setPixel( int x, int y, const ZBNCubemapPixel &p ){
-    if( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ){
+void ZBNCubemapSurface::setPixel( int x, int y, const ZBNCubemapPixel &p ) {
+    if ( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ) {
         throw coords_out_of_bounds( __FILE__, __LINE__, 0, 0, width, height, x, y );
     }
-    if( NULL==surface ){
+    if ( NULL==surface ) {
         throw null_pointer( __FILE__, __LINE__, string("surface has not been allocated") );
     }
     surface[ y*width + x ] = p;
 }
 
-int ZBNCubemapSurface::getWidth() const{
+int ZBNCubemapSurface::getWidth() const {
     return width;
 }
 
-int ZBNCubemapSurface::getHeight() const{
+int ZBNCubemapSurface::getHeight() const {
     return height;
 }
 
@@ -143,71 +143,68 @@ int ZBNCubemapSurface::getHeight() const{
 //==-------------------------------------------------------------------------==
 
 
-struct BRDF : public picogen::graphics::material::abstract::IBRDF
-{
-	BRDF(){}
-	virtual bool RandomSample(
-		param_out(picogen::misc::prim::real,brdf),
-		param_out(picogen::misc::prim::real,p),
-		param_out(bool,specular),
-		param_out(picogen::misc::geometrics::Ray,r_out),
-		param_in (picogen::misc::geometrics::Ray,r_in),
-		param_in (picogen::misc::geometrics::Vector3d,N)
-	) const
-	{
-		using picogen::misc::constants::pi;
-		using picogen::misc::prim::real;
-		using picogen::misc::geometrics::Vector3d;
+struct BRDF : public picogen::graphics::material::abstract::IBRDF {
+    BRDF() {}
+    virtual bool RandomSample(
+        param_out(picogen::misc::prim::real,brdf),
+        param_out(picogen::misc::prim::real,p),
+        param_out(bool,specular),
+        param_out(picogen::misc::geometrics::Ray,r_out),
+        param_in (picogen::misc::geometrics::Ray,r_in),
+        param_in (picogen::misc::geometrics::Vector3d,N)
+    ) const {
+        using picogen::misc::constants::pi;
+        using picogen::misc::prim::real;
+        using picogen::misc::geometrics::Vector3d;
 
-		/*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
-			return false;*/
-		r_out.x() = r_in.x();
-		p = 1.0;
-		brdf = 1;
-		do{
-			r_out.w() = Vector3d(
-				static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
-				static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
-				static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0
-			);
-		}while( r_out.w().lengthSq()>1 || N*r_out.w()<0.0 );
+        /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
+        	return false;*/
+        r_out.x() = r_in.x();
+        p = 1.0;
+        brdf = 1;
+        do {
+            r_out.w() = Vector3d(
+                            static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
+                            static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
+                            static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0
+                        );
+        } while ( r_out.w().lengthSq()>1 || N*r_out.w()<0.0 );
 
-		r_out.w() = r_out.w().normal();
-		p = 1.0/(2.0*pi);// / xrt::constants::pi;
-		brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
-		specular = false;
-		return true;
-	}
+        r_out.w() = r_out.w().normal();
+        p = 1.0/(2.0*pi);// / xrt::constants::pi;
+        brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
+        specular = false;
+        return true;
+    }
 };
 static BRDF brdf;
 
-ZBNCubemap::ZBNCubemap(){
+ZBNCubemap::ZBNCubemap() {
 }
 
-ZBNCubemap::~ZBNCubemap(){
+ZBNCubemap::~ZBNCubemap() {
 }
 
-ZBNCubemapSurface &ZBNCubemap::getSurface( face_t face )
-{
+ZBNCubemapSurface &ZBNCubemap::getSurface( face_t face ) {
     return faces[face];
 }
 
-void ZBNCubemap::lock(){
-    if( NULL != faces ){
-        for( int i=0; i<6; ++i )
+void ZBNCubemap::lock() {
+    if ( NULL != faces ) {
+        for ( int i=0; i<6; ++i )
             faces[i].lock();
     }
 }
 
-void ZBNCubemap::unlock(){
-    if( NULL != faces ){
-        for( int i=0; i<6; ++i )
+void ZBNCubemap::unlock() {
+    if ( NULL != faces ) {
+        for ( int i=0; i<6; ++i )
             faces[i].unlock();
     }
 }
 
 
-void ZBNCubemap::getCubeCoords( face_t &face, real &u, real &v, const Vector3d &pos ){
+void ZBNCubemap::getCubeCoords( face_t &face, real &u, real &v, const Vector3d &pos ) {
     static const face_t lut[3][2] = {
         { x_negative, x_positive, },
         { y_negative, y_positive, },
@@ -216,43 +213,43 @@ void ZBNCubemap::getCubeCoords( face_t &face, real &u, real &v, const Vector3d &
 
     int index = 0;
     real max = fabs(pos[0]);
-    if( fabs(pos[1]) > max ){
+    if ( fabs(pos[1]) > max ) {
         index = 1;
         max = fabs(pos[1]);
     }
-    if( fabs(pos[2]) > max ){
+    if ( fabs(pos[2]) > max ) {
         index = 2;
         max = fabs(pos[2]);
     }
     face = (pos[index]<0) ? lut[index][0] : lut[index][1];
 
-    switch( face ){        
-        case x_negative:
-            u = pos[2] / -pos[0];
-            v = pos[1] / -pos[0];
-            break;
-        case x_positive:
-            u = -pos[2] / pos[0];
-            v = pos[1] / pos[0];
-            break;
-        
-        case y_negative:
-            u = pos[0] / -pos[1];
-            v = pos[2] / -pos[1];
-            break;
-        case y_positive:
-            u = pos[0] / pos[1];
-            v = -pos[2] / pos[1];
-            break;
-        
-        case z_negative:
-            u = -pos[0] / -pos[2];
-            v = pos[1] / -pos[2];
-            break;
-        case z_positive:
-            u = pos[0] / pos[2];
-            v = pos[1] / pos[2];
-            break;
+    switch ( face ) {
+    case x_negative:
+        u = pos[2] / -pos[0];
+        v = pos[1] / -pos[0];
+        break;
+    case x_positive:
+        u = -pos[2] / pos[0];
+        v = pos[1] / pos[0];
+        break;
+
+    case y_negative:
+        u = pos[0] / -pos[1];
+        v = pos[2] / -pos[1];
+        break;
+    case y_positive:
+        u = pos[0] / pos[1];
+        v = -pos[2] / pos[1];
+        break;
+
+    case z_negative:
+        u = -pos[0] / -pos[2];
+        v = pos[1] / -pos[2];
+        break;
+    case z_positive:
+        u = pos[0] / pos[2];
+        v = pos[1] / pos[2];
+        break;
     };
 
     // [-1..1] >>> [0..1]
@@ -276,20 +273,20 @@ ZBNCubemapPixel & ZBNCubemap::getPixel( const Vector3d &pos ){
     return faces[face].getPixel( u, v );
 }*/
 
-void ZBNCubemap::setPixel( const Vector3d &pos, const ZBNCubemapPixel &p ){
+void ZBNCubemap::setPixel( const Vector3d &pos, const ZBNCubemapPixel &p ) {
     face_t face;
     real u,v;
     getCubeCoords( face, u, v, pos );
     faces[face].setPixel( u, v, p );
 }
 
-bool ZBNCubemap::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const{
-    if( 0 ){
+bool ZBNCubemap::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const {
+    if ( 0 ) {
         face_t face;
         real u,v;
         getCubeCoords( face, u, v, ray.w() );
         const real eps = 0.025;
-        if( u<eps || v<eps || u>(1.0-eps) || v>(1.0-eps) ){
+        if ( u<eps || v<eps || u>(1.0-eps) || v>(1.0-eps) ) {
             intersection.color = Color(1.0,1.0,1.0);
             intersection.t     = 0.1;
             intersection.side  = misc::constants::outside;
@@ -301,7 +298,7 @@ bool ZBNCubemap::Intersect( param_out(intersection_t,intersection), param_in(Ray
     }
     const ZBNCubemapPixel p = getPixel( ray.w() );
     const real depth = p.getDepth();
-    if( depth > 0.0 ){
+    if ( depth > 0.0 ) {
         intersection.color = p.getColor();
         intersection.t     = depth;
         intersection.side  = misc::constants::outside;
@@ -315,64 +312,64 @@ bool ZBNCubemap::Intersect( param_out(intersection_t,intersection), param_in(Ray
 
 
 
-void ZBNCubemap::render( const Vector3d &origin, const IIntersectable *I ){
-   
+void ZBNCubemap::render( const Vector3d &origin, const IIntersectable *I ) {
+
     static const Vector3d planes[6][3] = { // base | u | v
         { Vector3d(-1,0,0), Vector3d(0,0,1), Vector3d(0,1,0), }, // x-negative
         { Vector3d(1,0,0), Vector3d(0,0,-1), Vector3d(0,1,0), }, // x-positive
-        
+
         { Vector3d(0,-1,0), Vector3d(1,0,0), Vector3d(0,0,1), }, // y-negative
         { Vector3d(0,1,0), Vector3d(1,0,0), Vector3d(0,0,-1), }, // y-positive
-        
+
         { Vector3d(0,0,-1), Vector3d(-1,0,0), Vector3d(0,1,0), }, // z-negative
         { Vector3d(0,0,1), Vector3d(1,0,0), Vector3d(0,1,0), }, // z-positive
     };
-    
+
     lock();
 
     Ray ray;
     ray.x() = origin;
-    
+
     printf( "rendering to ZBNCubemap{" );
     int displayUpdate = 0;
-    for( int face=0; face<6; face++ ){
+    for ( int face=0; face<6; face++ ) {
         int width  = faces[face].getWidth();
         int height = faces[face].getHeight();
         printf( "\n  face %i: width=%i, height=%i\n", face, width, height );
-        for( int y=0; y<height; ++y ){
-            
-            for( int x=0; x<width; ++x ){
+        for ( int y=0; y<height; ++y ) {
+
+            for ( int x=0; x<width; ++x ) {
                 const real u =  -1.0 + 2.0*(static_cast<real>(x)-0.5) / static_cast<real>(width-1);
                 const real v =  -1.0 + 2.0*(static_cast<real>(y)-0.5) / static_cast<real>(height-1);
                 ray.w() = ( planes[face][0] + planes[face][1] * u + planes[face][2] * v ).normal();
-                
+
                 ZBNCubemapPixel pixel = faces[face].getPixel( x, y );
 
                 intersection_t intersection;
                 const real d = pixel.getDepth();
-                if( I->Intersect(intersection,ray) && (d<0.0 || intersection.t < d) ){
+                if ( I->Intersect(intersection,ray) && (d<0.0 || intersection.t < d) ) {
                     pixel.setDepth( intersection.t );
                     pixel.setColor( intersection.color );
                     pixel.setNormal( intersection.normal );
                     faces[face].setPixel( x, y, pixel );
-                }else{
+                } else {
                     //pixel.setDepth( -1.0 );
                 }
             }
-            if( ++displayUpdate > 20 ){
+            if ( ++displayUpdate > 20 ) {
                 displayUpdate = 0;
-                printf( "\r   %.2f%% (%.2f%% total)", 
-                    100.0f * static_cast<float>(y)/static_cast<float>(height),
-                    ( (static_cast<float>(y)/static_cast<float>(height*6))
-                      + static_cast<float>(face)/6.0f
-                    ) * 100.0f
-                );
+                printf( "\r   %.2f%% (%.2f%% total)",
+                        100.0f * static_cast<float>(y)/static_cast<float>(height),
+                        ( (static_cast<float>(y)/static_cast<float>(height*6))
+                          + static_cast<float>(face)/6.0f
+                        ) * 100.0f
+                      );
                 fflush( stdout );
             }
         }
     }
     printf("\n}\n");
-    
+
     unlock();
 }
 

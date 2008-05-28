@@ -45,8 +45,7 @@ raytri_intersect(
     const Ray &ray,
     const real a[], const real b[], const real c[],
     real &t, real &u, real &v,
-    real normal[] )
-{
+    real normal[] ) {
     real vect0[3], vect1[3], nvect[3];
     real det, inv_det;
 
@@ -143,13 +142,11 @@ SimpleHeightField::SimpleHeightField() :
         , m_pBRDF( NULL )
         , m_pShader( NULL )
         , m_pField( NULL )
-        , m_size( 0 )
-{
+        , m_size( 0 ) {
 }
 
 
-SimpleHeightField::~SimpleHeightField()
-{
+SimpleHeightField::~SimpleHeightField() {
     /*
     fprintf( stderr, "destructing SimpleHeightField %xP{\n", (unsigned int)this );
     fprintf( stderr, "  total isec-calls.....: %u\n", (unsigned int)numIntersectQueries );
@@ -165,8 +162,7 @@ SimpleHeightField::~SimpleHeightField()
     m_scaleBox.reset();
 }
 
-void SimpleHeightField::SetBox( param_in( Vector3d, min ), param_in( Vector3d, max ) )
-{
+void SimpleHeightField::SetBox( param_in( Vector3d, min ), param_in( Vector3d, max ) ) {
     m_scaleBox.min() = min;
     m_scaleBox.max() = max;
     m_vScale = max[2] - min[2];
@@ -182,8 +178,7 @@ void SimpleHeightField::SetBox( param_in( Vector3d, min ), param_in( Vector3d, m
 }
 
 
-void SimpleHeightField::updateOptimizerVars()
-{
+void SimpleHeightField::updateOptimizerVars() {
     const Vector3d tmp = m_scaleBox.max() - m_scaleBox.min();
     m_scaleSize[0] = tmp[0];
     m_scaleSize[1] = tmp[1];
@@ -202,18 +197,15 @@ void SimpleHeightField::updateOptimizerVars()
     m_scaleSize_mul_invertHMapSize[2] = m_scaleSize[2] * m_invertHMapSize;
 }
 
-void SimpleHeightField::SetBRDF( material::abstract::IBRDF*  const brdf )
-{
+void SimpleHeightField::SetBRDF( const material::abstract::IBRDF*  brdf ) {
     m_pBRDF = brdf;
 }
 
-void SimpleHeightField::SetShader( material::abstract::IShader* const shader )
-{
+void SimpleHeightField::SetShader( const material::abstract::IShader* shader ) {
     m_pShader = shader;
 }
 
-real SimpleHeightField::smoothedHeightFunc( const misc::functions::abstract::uv_to_scalar *heightFunc, real fu, real fv, real cellSizeU, real cellSizeV )
-{
+real SimpleHeightField::smoothedHeightFunc( const misc::functions::abstract::uv_to_scalar *heightFunc, real fu, real fv, real cellSizeU, real cellSizeV ) {
     const real su = cellSizeU * 0.5;
     const real sv = cellSizeV * 0.5;
     return
@@ -252,7 +244,7 @@ void SimpleHeightField::Init(
     fprintf( stderr, "  determining bounds of height function %xP\n", ( unsigned int )heightFunc );
     real tmin = misc::constants::real_max;
     real tmax = -misc::constants::real_max;
-    if( boundsGuessAccuracy>0.9f ){
+    if ( boundsGuessAccuracy>0.9f ) {
         fprintf( stderr, "   doing this at full accuracy (requested was %.1f%%)\n", boundsGuessAccuracy*100.0f );
         for ( v = 0; v < size; v++ ) {
             const real fv = v / ( real )size;
@@ -270,16 +262,16 @@ void SimpleHeightField::Init(
             /*if( v%(size/10)==0 )
              fprintf( stderr, "." );*/
         }
-    }else{
+    } else {
         fprintf( stderr, "   using random sampling (requested %.1f%% of accuracy)\n", boundsGuessAccuracy*100.0f );
         int numSamples = static_cast<int>(boundsGuessAccuracy*static_cast<float>(size*size));
-        for( int i=0; i<numSamples; ++i ){
+        for ( int i=0; i<numSamples; ++i ) {
             const real fu = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             const real fv = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             const real t = smooth ? smoothedHeightFunc( heightFunc, fu, fv, cellSize, cellSize ) : heightFunc->f( fu, fv );
             tmin = t < tmin ? t : tmin;
             tmax = t > tmax ? t : tmax;
-            if( ++updateDisplay > 1000 ){
+            if ( ++updateDisplay > 1000 ) {
                 updateDisplay = 0;
                 fprintf( stderr, "\r   %.4f%% [%u/%u]", 100.0f*( float )( i ) / ( float )( numSamples ), i, numSamples );
                 fflush( stderr );
@@ -324,8 +316,7 @@ inline int SimpleHeightField::intersectVoxel(
     int u, int v,
     real x1, real z1, real x2, real z2,
     param_in( misc::geometrics::Ray, ray )
-) const
-{
+) const {
     const bool odd = ( u & 1 ) == ( v & 1 );
     const int va = ( v + 1 ) * m_size;
     const int vb = ( v + 0 ) * m_size;
@@ -361,20 +352,21 @@ inline int SimpleHeightField::intersectVoxel(
 
     //> if an intersection is found, than it is necessarily the nearest,
     //> thus we're not going to optimize the if-bodies below
-    if ( 0 != raytri_intersect( ray, A, B, odd ? C : D, t, tu, tv, normal ) ) {
+    int ic;
+    if ( 0 != (ic=raytri_intersect( ray, A, B, odd ? C : D, t, tu, tv, normal )) ) {
         intersection.side = misc::constants::outside;
         intersection.t = t;
-        intersection.normal = Vector3d( normal[0], normal[1], normal[2] );
+        intersection.normal = Vector3d( normal[0], normal[1], normal[2] ) * (ic>0?1:-1);
         intersection.brdf = m_pBRDF;
         intersection.L_e = 0.0;
         return 1;
     }
 
 
-    if ( 0 != raytri_intersect( ray, C, odd ? B : A, D, t, tu, tv, normal ) ) {
+    if ( 0 != (ic=raytri_intersect( ray, C, odd ? B : A, D, t, tu, tv, normal )) ) {
         intersection.side = misc::constants::outside;
         intersection.t = t;
-        intersection.normal = Vector3d( normal[0], normal[1], normal[2] );
+        intersection.normal = Vector3d( normal[0], normal[1], normal[2] ) * (ic>0?1:-1);
         intersection.brdf = m_pBRDF;
         intersection.L_e = 0.0;
         return 1;
@@ -388,8 +380,7 @@ inline int SimpleHeightField::lineIntersection(
     real au, real av,
     real bu, real bv,
     param_in( misc::geometrics::Ray, ray )
-) const
-{
+) const {
     using namespace misc::constants;
 
     int icode = 0;
@@ -487,8 +478,7 @@ inline int SimpleHeightField::lineIntersection(
     return icode;
 }
 
-bool SimpleHeightField::Intersect( param_out( intersection_t, intersection ), param_in( Ray, ray ) ) const
-{
+bool SimpleHeightField::Intersect( param_out( intersection_t, intersection ), param_in( Ray, ray ) ) const {
     using namespace misc::constants;
 
     //>> intersect bounding box; eventually return

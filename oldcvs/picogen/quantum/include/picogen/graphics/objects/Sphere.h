@@ -28,38 +28,37 @@
 
 
 
-class Sphere : public picogen::graphics::objects::abstract::IIntersectable
-{
-	private:
-		typedef misc::prim::real real;
-		typedef misc::geometrics::Vector3d Vector3d;
-		typedef misc::geometrics::Ray Ray;
-		typedef misc::geometrics::BoundingBox BoundingBox;
-		typedef material::abstract::IBRDF IBRDF;
-		typedef structs::intersection_t intersection_t;
-		typedef graphics::image::color::Color Color;
+class Sphere : public picogen::graphics::objects::abstract::IIntersectable {
+private:
+    typedef misc::prim::real real;
+    typedef misc::geometrics::Vector3d Vector3d;
+    typedef misc::geometrics::Ray Ray;
+    typedef misc::geometrics::BoundingBox BoundingBox;
+    typedef material::abstract::IBRDF IBRDF;
+    typedef structs::intersection_t intersection_t;
+    typedef graphics::image::color::Color Color;
 
-	private:
-		Vector3d x;
-		real     r, L_e;
-		Color    color;
-		IBRDF *brdf;
+private:
+    Vector3d x;
+    real     r, L_e;
+    Color    color;
+    IBRDF *brdf;
 
-	public:
-		Sphere();
+public:
+    Sphere();
 
-		void     setPosition( const Vector3d &pos );
-		Vector3d getPosition() const;
-		void     setColor( const Color &color );
-		Color    getColor() const;
-		void     setRadius( real r );
-		real     getRadius() const;
-		void     setEmittance( real e );
-		real     getEmittance() const;
-		void     setBRDF( const IBRDF* brdf );
-		IBRDF*   getBRDF() const;
+    void     setPosition( const Vector3d &pos );
+    Vector3d getPosition() const;
+    void     setColor( const Color &color );
+    Color    getColor() const;
+    void     setRadius( real r );
+    real     getRadius() const;
+    void     setEmittance( real e );
+    real     getEmittance() const;
+    void     setBRDF( const IBRDF* brdf );
+    IBRDF*   getBRDF() const;
 
-		virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
+    virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
 };
 
 

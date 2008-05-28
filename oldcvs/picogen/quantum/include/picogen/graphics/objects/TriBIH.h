@@ -31,86 +31,88 @@
 #define TriBIH_DebugBIHBuild 0
 #define TriBIH_DebugBIHRecConvert 0
 
-class TriBIH : public abstract::ITriScene{
-	private:
+class TriBIH : public abstract::ITriScene {
+private:
 
-		typedef misc::prim::real real;
-		typedef misc::geometrics::Vector3d Vector3d;
-		typedef misc::geometrics::Ray Ray;
-		typedef misc::geometrics::BoundingBox BoundingBox;
-		typedef material::abstract::IBRDF IBRDF;
-		typedef structs::intersection_t intersection_t;
+    typedef misc::prim::real real;
+    typedef misc::geometrics::Vector3d Vector3d;
+    typedef misc::geometrics::Ray Ray;
+    typedef misc::geometrics::BoundingBox BoundingBox;
+    typedef material::abstract::IBRDF IBRDF;
+    typedef structs::intersection_t intersection_t;
 
-		struct t_triangle{
-			Vector3d A,B,C;
-			t_triangle( Vector3d a, Vector3d b, Vector3d c ) : A(a), B(b), C(c) {};
-			t_triangle() : A(), B(), C() {};
-		};
-		typedef std::list<t_triangle> t_trianglelist;
+    struct t_triangle {
+        Vector3d A,B,C;
+        t_triangle( Vector3d a, Vector3d b, Vector3d c ) : A(a), B(b), C(c) {};
+        t_triangle() : A(), B(), C() {};
+    };
+    typedef std::list<t_triangle> t_trianglelist;
 
-		struct bih_node{
-			bool is_leaf;
-			#if TriBIH_VisualizeLeafs
-				BoundingBox aabb;
-			#endif
-			union{
-				struct{
-					unsigned int triangles_begin;
-					unsigned int triangles_end;
-				};
-				struct{
-					unsigned int children;
-					real clip[2];
-					unsigned int axis;
-				};
-			};
-		};
+    struct bih_node {
+        bool is_leaf;
+#if TriBIH_VisualizeLeafs
+        BoundingBox aabb;
+#endif
+        union {
+            struct {
+                unsigned int triangles_begin;
+                unsigned int triangles_end;
+            };
+            struct {
+                unsigned int children;
+                real clip[2];
+                unsigned int axis;
+            };
+        };
+    };
 
-		class bih_build_node{
-				t_trianglelist triangles;
-				BoundingBox aabb;
+    class bih_build_node {
+        t_trianglelist triangles;
+        BoundingBox aabb;
 
-				bih_build_node *p_left, *p_right;
-				real split;
-				int axis;
+        bih_build_node *p_left, *p_right;
+        real split;
+        int axis;
 
-				bool rec_build( const BoundingBox &build_aabb, const unsigned int maxRec );
-				//size_t convert_size() const;
-				unsigned int num_nodes() const;
-				unsigned int num_triangles() const;
-				void rec_convert(
-					bih_node *bih_root, t_triangle *triangles,
-					unsigned int curr,
-					unsigned int &bih_free, unsigned int &tri_free,
-					unsigned int depth,
-					unsigned int &max_tris_in_node, unsigned int &max_depth
-				) const;
-			public:
-				bih_build_node() : triangles(), aabb(), p_left(NULL), p_right(NULL) {}
-				virtual ~bih_build_node() { free(); }
-				void insert( param_in(t_triangle,tri) );
-				bool build( bih_node **bih, t_triangle **triangles );
-				void free();
-		};
+        bool rec_build( const BoundingBox &build_aabb, const unsigned int maxRec );
+        //size_t convert_size() const;
+        unsigned int num_nodes() const;
+        unsigned int num_triangles() const;
+        void rec_convert(
+            bih_node *bih_root, t_triangle *triangles,
+            unsigned int curr,
+            unsigned int &bih_free, unsigned int &tri_free,
+            unsigned int depth,
+            unsigned int &max_tris_in_node, unsigned int &max_depth
+        ) const;
+    public:
+        bih_build_node() : triangles(), aabb(), p_left(NULL), p_right(NULL) {}
+        virtual ~bih_build_node() {
+            free();
+        }
+        void insert( param_in(t_triangle,tri) );
+        bool build( bih_node **bih, t_triangle **triangles );
+        void free();
+    };
 
-		BoundingBox AABB;
-		bih_build_node BIHBuild;
-		bih_node *BIH;
-		t_triangle *Triangles;
-		const IBRDF *BRDF;
-		const material::abstract::IShader *shader;
+    BoundingBox AABB;
+    bih_build_node BIHBuild;
+    bih_node *BIH;
+    t_triangle *Triangles;
+    const IBRDF *BRDF;
+    const material::abstract::IShader *shader;
 
-		bool Intersect( param_out(intersection_t,intersection), const bih_node *curr, real t_min, real t_max, param_in(Ray,ray) ) const;
+    bool Intersect( param_out(intersection_t,intersection), const bih_node *curr, real t_min, real t_max, param_in(Ray,ray) ) const;
 
-	public:
-		TriBIH();
-		virtual ~TriBIH();
-		virtual void SetBRDF( const IBRDF *brdf );
-		virtual void SetShader( const material::abstract::IShader* shader );
-		virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
-		virtual void Insert( param_in(Vector3d,A), param_in(Vector3d,B), param_in(Vector3d,C) );
-		virtual void Flush();
-		virtual void Invalidate();
+public:
+    TriBIH();
+    virtual ~TriBIH();
+    virtual void SetBRDF( const IBRDF *brdf );
+    virtual void SetShader( const material::abstract::IShader* shader );
+    virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
+    virtual void Insert( param_in(Vector3d,A), param_in(Vector3d,B), param_in(Vector3d,C) );
+    virtual void Flush();
+    virtual void Invalidate();
 };
 
 

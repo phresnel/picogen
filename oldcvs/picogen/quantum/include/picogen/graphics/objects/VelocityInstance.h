@@ -26,44 +26,39 @@
 #ifndef _VELOCITYINSTANCE_H
 #define _VELOCITYINSTANCE_H
 
-class VelocityInstance : public abstract::IIntersectable{
-		abstract::IIntersectable *intersectable;
-		misc::geometrics::Vector3d velocity, offset;
-		misc::prim::real timeexp;
-	public:
-		VelocityInstance() : intersectable(NULL), timeexp(1.0) {}
+class VelocityInstance : public abstract::IIntersectable {
+    abstract::IIntersectable *intersectable;
+    misc::geometrics::Vector3d velocity, offset;
+    misc::prim::real timeexp;
+public:
+    VelocityInstance() : intersectable(NULL), timeexp(1.0) {}
 
-		void SetTimeExponent( misc::prim::real t )
-		{
-			timeexp = t;
-		}
-		void SetVelocity( param_in( misc::geometrics::Vector3d, V ) )
-		{
-			velocity = V;
-		}
-		void SetOffset( param_in( misc::geometrics::Vector3d, o ) )
-		{
-			offset = o;
-		}
-		void SetIntersectable( const abstract::IIntersectable* I )
-		{
-			intersectable = const_cast<abstract::IIntersectable*>(I);
-		}
+    void SetTimeExponent( misc::prim::real t ) {
+        timeexp = t;
+    }
+    void SetVelocity( param_in( misc::geometrics::Vector3d, V ) ) {
+        velocity = V;
+    }
+    void SetOffset( param_in( misc::geometrics::Vector3d, o ) ) {
+        offset = o;
+    }
+    void SetIntersectable( const abstract::IIntersectable* I ) {
+        intersectable = const_cast<abstract::IIntersectable*>(I);
+    }
 
-		virtual bool Intersect(
-			param_out(structs::intersection_t,intersection), param_in(misc::geometrics::Ray,ray)
-		) const
-		{
-			using misc::geometrics::Ray;
-			using misc::prim::real;
+    virtual bool Intersect(
+        param_out(structs::intersection_t,intersection), param_in(misc::geometrics::Ray,ray)
+    ) const {
+        using misc::geometrics::Ray;
+        using misc::prim::real;
 
-			if( NULL == intersectable )
-				return false;
-			Ray newRay;
-			newRay.x() = ray.x() + offset + velocity * ( powf( real(rand())/real(RAND_MAX), timeexp ) );
-			newRay.w() = ray.w();
-			return intersectable->Intersect( intersection, newRay );
-		}
+        if ( NULL == intersectable )
+            return false;
+        Ray newRay;
+        newRay.x() = ray.x() + offset + velocity * ( powf( real(rand())/real(RAND_MAX), timeexp ) );
+        newRay.w() = ray.w();
+        return intersectable->Intersect( intersection, newRay );
+    }
 };
 
 

@@ -44,12 +44,12 @@
 
 // target arch
 #if defined(_POSIX_VERSION) or defined(unix) or defined(__unix__) or defined(linux)
- //#define UI_NCURSES
- #define UI_WX
- #define POSIX
- #define ARCH_NAME "POSIX"
+//#define UI_NCURSES
+#define UI_WX
+#define POSIX
+#define ARCH_NAME "POSIX"
 #else
- #error "meh, unsupported target architecture ..."
+#error "meh, unsupported target architecture ..."
 #endif
 
 // user interface info

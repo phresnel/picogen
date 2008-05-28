@@ -26,43 +26,45 @@
 #define _INSTANCE_H
 
 #ifndef INSIDE_OBJECTS_H
-namespace picogen{ namespace graphics{ namespace objects{
+namespace picogen {
+namespace graphics {
+namespace objects {
 #endif // #ifndef INSIDE_OBJECTS_H
 
-class Instance : public picogen::graphics::objects::abstract::IIntersectable
-{
-		picogen::graphics::objects::abstract::IIntersectable *intersectable;
-		picogen::misc::geometrics::Transformation transformation;
+class Instance : public picogen::graphics::objects::abstract::IIntersectable {
+    picogen::graphics::objects::abstract::IIntersectable *intersectable;
+    picogen::misc::geometrics::Transformation transformation;
 
-	public:
-		explicit Instance( picogen::graphics::objects::abstract::IIntersectable *intersectable )
-		: intersectable(intersectable) {}
+public:
+    explicit Instance( picogen::graphics::objects::abstract::IIntersectable *intersectable )
+            : intersectable(intersectable) {}
 
-		void setTransform( const picogen::misc::geometrics::Transformation &transformation ) {
-		    this->transformation = transformation;
-		}
+    void setTransform( const picogen::misc::geometrics::Transformation &transformation ) {
+        this->transformation = transformation;
+    }
 
-		virtual bool Intersect(
-			param_out(structs::intersection_t,intersection), param_in(misc::geometrics::Ray,ray)
-		) const
-		{
-		    const Vector3d A = transformation * ray(0.0);
-		    const Vector3d B = transformation * ray(1.0);
-		    const Ray   tray = Ray( A, (B-A).normal() );
-		    if( intersectable->Intersect( intersection, tray ) ){
-		        const Vector3d i  = tray(intersection.t);
-                intersection.t = ( i - ray(0.0)).length();
-                /*const Vector3d i_ = i + intersection.normal;
-                intersection.normal*/
-                return true;
-		    }else{
-		        return false;
-		    }
-		}
+    virtual bool Intersect(
+        param_out(structs::intersection_t,intersection), param_in(misc::geometrics::Ray,ray)
+    ) const {
+        const Vector3d A = transformation * ray(0.0);
+        const Vector3d B = transformation * ray(1.0);
+        const Ray   tray = Ray( A, (B-A).normal() );
+        if ( intersectable->Intersect( intersection, tray ) ) {
+            const Vector3d i  = tray(intersection.t);
+            intersection.t = ( i - ray(0.0)).length();
+            /*const Vector3d i_ = i + intersection.normal;
+            intersection.normal*/
+            return true;
+        } else {
+            return false;
+        }
+    }
 };
 
 #ifndef INSIDE_OBJECTS_H
-} } } // namespace picogen{ namespace graphics{ namespace objects{
+}
+}
+} // namespace picogen{ namespace graphics{ namespace objects{
 #endif // #ifndef INSIDE_OBJECTS_H
 
 #endif /* _INSTANCE_H */

@@ -27,41 +27,39 @@
 #include <picogen/experimental/Snow.h>
 
 
-struct SnowBRDF : public picogen::graphics::material::abstract::IBRDF
-{
-	SnowBRDF(){}
-	virtual bool RandomSample(
-		param_out(picogen::misc::prim::real,brdf),
-		param_out(picogen::misc::prim::real,p),
-		param_out(bool,specular),
-		param_out(picogen::misc::geometrics::Ray,r_out),
-		param_in (picogen::misc::geometrics::Ray,r_in),
-		param_in (picogen::misc::geometrics::Vector3d,N)
-	) const
-	{
-		using picogen::misc::constants::pi;
-		using picogen::misc::prim::real;
-		using picogen::misc::geometrics::Vector3d;
+struct SnowBRDF : public picogen::graphics::material::abstract::IBRDF {
+    SnowBRDF() {}
+    virtual bool RandomSample(
+        param_out(picogen::misc::prim::real,brdf),
+        param_out(picogen::misc::prim::real,p),
+        param_out(bool,specular),
+        param_out(picogen::misc::geometrics::Ray,r_out),
+        param_in (picogen::misc::geometrics::Ray,r_in),
+        param_in (picogen::misc::geometrics::Vector3d,N)
+    ) const {
+        using picogen::misc::constants::pi;
+        using picogen::misc::prim::real;
+        using picogen::misc::geometrics::Vector3d;
 
-		/*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
-			return false;*/
-		r_out.x() = r_in.x();
-		p = 1.0;
-		brdf = 1;
-		do{
-			r_out.w() = Vector3d(
-				static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
-				static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
-				static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0
-			);
-		}while( r_out.w().lengthSq()>1 || N*r_out.w()<0.0 );
+        /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
+        	return false;*/
+        r_out.x() = r_in.x();
+        p = 1.0;
+        brdf = 1;
+        do {
+            r_out.w() = Vector3d(
+                            static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
+                            static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0,
+                            static_cast<real>( rand() % 20000 ) / 10000.0 - 1.0
+                        );
+        } while ( r_out.w().lengthSq()>1 || N*r_out.w()<0.0 );
 
-		r_out.w() = r_out.w().normal();
-		p = 1.0/(2.0*pi);// / xrt::constants::pi;
-		brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
-		specular = false;
-		return true;
-	}
+        r_out.w() = r_out.w().normal();
+        p = 1.0/(2.0*pi);// / xrt::constants::pi;
+        brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
+        specular = false;
+        return true;
+    }
 };
 static SnowBRDF snowBRDF;
 
@@ -76,18 +74,18 @@ using picogen::graphics::structs::intersection_t;
 using picogen::graphics::image::color::Color;
 
 
-namespace picogen{
-namespace graphics{
-namespace objects{
+namespace picogen {
+namespace graphics {
+namespace objects {
 
-Snow::Snow(){
+Snow::Snow() {
     fprintf( stderr, "creating Snow-object{\n" );
     real raise = 1.5;
     real range = 10.0, minDist = 0.0, maxDist = range;
     real freq = 10.0;
     numSnowSpheres = 12;
     snowSpheres = new SnowSphere[numSnowSpheres];
-    for( unsigned int u=0; u<numSnowSpheres; ++u ){
+    for ( unsigned int u=0; u<numSnowSpheres; ++u ) {
         snowSpheres[u].snowMap.setPersistence(0.96);
         snowSpheres[u].snowMap.setBaseFrequency( 1.0 );
         snowSpheres[u].snowMap.setOctaves(3);
@@ -120,24 +118,24 @@ Snow::Snow(){
     fprintf( stderr, "  done.\n}\n" );
 }
 
-Snow::~Snow(){
+Snow::~Snow() {
     delete [] snowSpheres;
     numSnowSpheres = 0;
 }
 
-bool Snow::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const{
+bool Snow::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const {
 
     //Vector3d v = velocity * ( powf( real(rand())/real(RAND_MAX), timeexp ) );
 
-    for( unsigned int u=0; u<numSnowSpheres; ++u ){
+    for ( unsigned int u=0; u<numSnowSpheres; ++u ) {
         const real snow = fabs(
-            snowSpheres[u].snowMap.f(
-                ray.w()[0],
-                ray.w()[1],
-                ray.w()[2]
-            )
-        );
-        if( snow < 0.57 )
+                              snowSpheres[u].snowMap.f(
+                                  ray.w()[0],
+                                  ray.w()[1],
+                                  ray.w()[2]
+                              )
+                          );
+        if ( snow < 0.57 )
             continue;
 
         const real t = snow*snowSpheres[u].minDistance + (1.0-snow)*snowSpheres[u].maxDistance;

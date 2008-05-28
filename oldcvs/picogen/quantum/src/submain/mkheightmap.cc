@@ -20,7 +20,31 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
-int main_mkheightmap( int argc, char *argv[] ){
+
+
+#include <iostream>
+#include <picogen.h>
+
+std::string inlispEditor() {
+    using namespace std;
+    char s[1024];
+    fgets( s, sizeof(s), stdin );
+    return std::string( s );
+}
+
+int main_mkheightmap( int argc, char *argv[] ) {
+    using namespace std;
+    cout << "Type in some formula in inlisp-syntax: " << endl;
+
+    const string code = inlispEditor();
+    cout << "you have written:\n   " << code << "\n";
+
+    using namespace picogen::misc::functional;
+    try {
+        Function_R2_R1 fun( code );
+    } catch ( const functional_general_exeption &e ) {
+        cerr << "there was some error in your function:\n   " << e.getMessage() << endl;
+    }
+
     return 0;
 }

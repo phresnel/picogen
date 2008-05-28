@@ -58,7 +58,7 @@ using namespace boost;
 
 
 
-typedef enum TokenType{
+typedef enum TokenType {
     int_token,
     float_token,
     id_token,
@@ -67,20 +67,19 @@ typedef enum TokenType{
     omitted_token
 };
 
-typedef struct TokenDescriptor{
+typedef struct TokenDescriptor {
     const TokenType tokenType;
     const std::string name;
     const boost::regex regex;
     const bool omit;
     TokenDescriptor( TokenType tokenType, std::string name, boost::regex regex, bool omit = false )
-    : tokenType( tokenType ), name(name), regex(regex), omit(omit)
-    {
+            : tokenType( tokenType ), name(name), regex(regex), omit(omit) {
     }
 };
 
 // \d is any digit (as with [[:digit:]])
 static const TokenDescriptor tokenDescriptors[] = {
-     TokenDescriptor( float_token,    "float",      regex( "\\d+\\.\\d+" ) )
+    TokenDescriptor( float_token,    "float",      regex( "\\d+\\.\\d+" ) )
     ,TokenDescriptor( int_token,      "int",        regex( "\\d+" ) )
     ,TokenDescriptor( keyword_token,  "keyword",    regex( "if|else|do|while|for" ) )
     ,TokenDescriptor( id_token,       "identifier", regex( "[[:alpha:]]([[:alpha:]]|[[:digit:]])*" ) )
@@ -91,13 +90,12 @@ static const int tokenDescriptorCount = sizeof(tokenDescriptors) / sizeof(tokenD
 
 
 
-struct Token{
+struct Token {
     const TokenDescriptor * tokenDescriptor;
     std::string value;
     // TODO remember start/end of token (for good dumping of error messages)
     Token( const TokenDescriptor *tokenDescriptor, std::string value )
-    : tokenDescriptor(tokenDescriptor), value(value)
-    {
+            : tokenDescriptor(tokenDescriptor), value(value) {
     }
 };
 
@@ -134,7 +132,7 @@ struct Token{
 // parsing
 //==-------------------------------------------------------------==//
 
-static int getTokenPrecedence( const std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ){
+static int getTokenPrecedence( const std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ) {
     /*
     static std::map<int, char> binopPrecedence; // will be initialized once in PicoPico
     //--------------------------------------------------------
@@ -150,19 +148,19 @@ static int getTokenPrecedence( const std::vector<Token>::const_iterator &curr, c
     if( binopPrecedence.end() == binopPrecedence.find(ch) )
         return -1;
     return binopPrecedence[ch];
-    */    
-    if( curr == end )
+    */
+    if ( curr == end )
         return -1;
-    if( curr->value == "+" || curr->value == "-"  )
+    if ( curr->value == "+" || curr->value == "-"  )
         return 20;
-    if( curr->value == "*" || curr->value == "/"  )
+    if ( curr->value == "*" || curr->value == "/"  )
         return 40;
     return -1;
 }
 
-static bool tokenEquals( string checkee, const std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ){
+static bool tokenEquals( string checkee, const std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ) {
     // hehe, "checkee"...like it :)
-    if( curr == end )
+    if ( curr == end )
         return false;
     return curr->value == checkee;
 }
@@ -179,28 +177,48 @@ static ExprAST *parseBlock( std::vector<Token>::const_iterator &curr, const std:
 static ExprAST *parseIntExpr(
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
-){
+) {
     // convert token value-string to integer
     int result = 0;
     int mag = 1;
 
     std::string::const_iterator d = curr->value.end();
-    if( curr->value.size() > 0 ) do{
-        --d;
-        switch( *d ){
-            case '0': result += 0*mag; break;
-            case '1': result += 1*mag; break;
-            case '2': result += 2*mag; break;
-            case '3': result += 3*mag; break;
-            case '4': result += 4*mag; break;
-            case '5': result += 5*mag; break;
-            case '6': result += 6*mag; break;
-            case '7': result += 7*mag; break;
-            case '8': result += 8*mag; break;
-            case '9': result += 9*mag; break;
-        };
-        mag *= 10;
-    }while( d != curr->value.begin() );
+    if ( curr->value.size() > 0 ) do {
+            --d;
+            switch ( *d ) {
+            case '0':
+                result += 0*mag;
+                break;
+            case '1':
+                result += 1*mag;
+                break;
+            case '2':
+                result += 2*mag;
+                break;
+            case '3':
+                result += 3*mag;
+                break;
+            case '4':
+                result += 4*mag;
+                break;
+            case '5':
+                result += 5*mag;
+                break;
+            case '6':
+                result += 6*mag;
+                break;
+            case '7':
+                result += 7*mag;
+                break;
+            case '8':
+                result += 8*mag;
+                break;
+            case '9':
+                result += 9*mag;
+                break;
+            };
+            mag *= 10;
+        } while ( d != curr->value.begin() );
 
     ++curr;
     return new IntExprAST( result );
@@ -210,7 +228,7 @@ static ExprAST *parseIntExpr(
 static ExprAST *parseFloatExpr(
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
-){
+) {
     // convert token value-string to float
     float result = 0;
     // TODO write overflow save str-to-float converter
@@ -223,7 +241,7 @@ static ExprAST *parseFloatExpr(
 static ExprAST *parseIdExpr(
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
-){
+) {
     return new IdExprAST( (curr++)->value );
 }
 
@@ -238,14 +256,14 @@ static ExprAST *parseBinOpRhs(
     int exprPrec,
     ExprAST *lhs
     // --
-){
-    if( curr == end )
+) {
+    if ( curr == end )
         return lhs;
 
-    while( 1 ){	
+    while ( 1 ) {
         const int tokPrec = getTokenPrecedence(curr,end);
 
-        if( tokPrec < exprPrec ){
+        if ( tokPrec < exprPrec ) {
             return lhs;
         }
 
@@ -253,14 +271,14 @@ static ExprAST *parseBinOpRhs(
         ++curr;
 
         ExprAST *rhs = parsePrimary( curr, end );
-        if( NULL == rhs )
+        if ( NULL == rhs )
             return NULL;
 
         // look ahead next token precedence
         const int nextTokPrec = getTokenPrecedence(curr,end);
-        if( tokPrec < nextTokPrec ){
+        if ( tokPrec < nextTokPrec ) {
             rhs = parseBinOpRhs( curr, end, tokPrec+1, rhs );
-            if( NULL == rhs )
+            if ( NULL == rhs )
                 return NULL;
         }
 
@@ -278,9 +296,9 @@ static ExprAST *parseBinOpRhs(
 static ExprAST *parseExpr(
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
-){
+) {
     ExprAST *lhs = parsePrimary( curr, end );
-    if( lhs == NULL )
+    if ( lhs == NULL )
         return NULL;
     return parseBinOpRhs( curr, end, 0, lhs );
 }
@@ -289,13 +307,13 @@ static ExprAST *parseExpr(
 static ExprAST *parseParenExpr(
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
-){
-    if( !tokenEquals( "(", curr, end ) ) // assert "(" to be the start token of this parenthesized expression
+) {
+    if ( !tokenEquals( "(", curr, end ) ) // assert "(" to be the start token of this parenthesized expression
         return NULL;
     ++curr; // eat '('
     ExprAST *ast = parseExpr( curr, end );
-    if( curr != end && ast != NULL ){
-        if( curr->value != ")" )
+    if ( curr != end && ast != NULL ) {
+        if ( curr->value != ")" )
             return NULL;
         ++curr;
         return ast;
@@ -306,21 +324,21 @@ static ExprAST *parseParenExpr(
 static ExprAST *parsePrimary(
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
-){
-    if( curr != end ){
-        switch( curr->tokenDescriptor->tokenType ){
-            case int_token:
-                return parseIntExpr( curr, end );
-            case float_token:
-                return parseFloatExpr( curr, end );
-            case id_token:
-                return parseIdExpr( curr, end );
-            case other_token:
-                if( curr->value == "(" )
-                    return parseParenExpr( curr, end );
-                break;
-            default:
-                ;
+) {
+    if ( curr != end ) {
+        switch ( curr->tokenDescriptor->tokenType ) {
+        case int_token:
+            return parseIntExpr( curr, end );
+        case float_token:
+            return parseFloatExpr( curr, end );
+        case id_token:
+            return parseIdExpr( curr, end );
+        case other_token:
+            if ( curr->value == "(" )
+                return parseParenExpr( curr, end );
+            break;
+        default:
+            ;
         }
     }
     return NULL;
@@ -347,36 +365,36 @@ static ExprAST *parseBracketedBlock( std::vector<Token>::const_iterator &curr, c
 }
 */
 
-static ExprAST *parseStatement( std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ){
-    if( curr != end ){        
+static ExprAST *parseStatement( std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ) {
+    if ( curr != end ) {
         ExprAST *tmpAST;
-        
+
         // empty-statement ?
-        if( tokenEquals( ";", curr, end ) ){
+        if ( tokenEquals( ";", curr, end ) ) {
             ++curr;
             return NULL;
         }
 
         // block-statement ?
-        if( tokenEquals( "{", curr, end ) ){
+        if ( tokenEquals( "{", curr, end ) ) {
             ++curr;
             tmpAST = parseBlock( curr, end );
-            if( NULL!=tmpAST && tokenEquals( "}", curr, end ) ){
+            if ( NULL!=tmpAST && tokenEquals( "}", curr, end ) ) {
                 ++curr;
-            }else{
-                if( NULL != tmpAST )
+            } else {
+                if ( NULL != tmpAST )
                     delete tmpAST;
                 tmpAST = NULL;
             }
             return tmpAST;
         }
-        
+
         // if-then[-else] ?
-        if( tokenEquals( "if", curr, end ) ){
+        if ( tokenEquals( "if", curr, end ) ) {
             ++curr;
             // scan if-clause
             const ExprAST *if_clause = parseParenExpr( curr, end );
-            if( NULL == if_clause ){
+            if ( NULL == if_clause ) {
                 cout << "error: malformed if-clause" << endl;
                 return NULL;
             }
@@ -388,11 +406,11 @@ static ExprAST *parseStatement( std::vector<Token>::const_iterator &curr, const 
         }
 
         // while-loop ?
-        if( tokenEquals( "while", curr, end ) ){
+        if ( tokenEquals( "while", curr, end ) ) {
             ++curr;
             // scan condition
             const ExprAST *cond = parseParenExpr( curr, end );
-            if( NULL == cond ){
+            if ( NULL == cond ) {
                 cout << "error: malformed while-condition" << endl;
                 return NULL;
             }
@@ -400,63 +418,63 @@ static ExprAST *parseStatement( std::vector<Token>::const_iterator &curr, const 
             const ExprAST *body = parseStatement( curr, end );
             return new WhileLoopAST( cond, body );
         }
-        
+
         // do-while-loop ?
-        if( tokenEquals( "do", curr, end ) ){
+        if ( tokenEquals( "do", curr, end ) ) {
             ++curr;
             // scan body
             const ExprAST *body = parseStatement( curr, end );
             // scan condition
-            if( !tokenEquals( "while", curr, end ) ){
+            if ( !tokenEquals( "while", curr, end ) ) {
                 cout << "error: missing 'while' in do-while-statement" << endl;
                 return NULL;
             }
             ++curr;
             const ExprAST *cond = parseParenExpr( curr, end );
-            if( NULL == cond ){
+            if ( NULL == cond ) {
                 cout << "error: malformed do-while-condition" << endl;
                 return NULL;
             }
             // close with ";"
-            if( !tokenEquals( ";", curr, end ) ){
+            if ( !tokenEquals( ";", curr, end ) ) {
                 cout << "error: missing ';' after do-while-statement" << endl;
                 return NULL;
             }
             ++curr;
             return new DoWhileLoopAST( cond, body );
         }
-        
+
         // for-loop ?
-        if( tokenEquals( "for", curr, end ) ){
+        if ( tokenEquals( "for", curr, end ) ) {
             ++curr;
-            
-            if( !tokenEquals( "(", curr, end ) ){
+
+            if ( !tokenEquals( "(", curr, end ) ) {
                 cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
                 return NULL;
             }
             ++curr;
 
             const ExprAST *init = parseExpr(curr,end);
-            if( !tokenEquals( ";", curr, end ) ){
+            if ( !tokenEquals( ";", curr, end ) ) {
                 cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
                 return NULL;
             }
             ++curr;
-            
+
             const ExprAST *cond = parseExpr(curr,end);
-            if( !tokenEquals( ";", curr, end ) ){
+            if ( !tokenEquals( ";", curr, end ) ) {
                 cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
                 return NULL;
             }
             ++curr;
-            
+
             const ExprAST *iter = parseExpr(curr,end);
-            if( !tokenEquals( ")", curr, end ) ){
+            if ( !tokenEquals( ")", curr, end ) ) {
                 cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
                 return NULL;
             }
             ++curr;
-            
+
             const ExprAST *body = parseStatement( curr, end );
 
             // let's now build a while-loop
@@ -470,12 +488,12 @@ static ExprAST *parseStatement( std::vector<Token>::const_iterator &curr, const 
             fullCorpse->addTail( while_ );
             return fullCorpse;
         }
-        
-        
+
+
         // try to parse a simple statement
         tmpAST = parseExpr( curr, end );
-        if( tmpAST != NULL ){
-            if( tokenEquals( ";", curr, end ) ){ // simple statement must end on ";"
+        if ( tmpAST != NULL ) {
+            if ( tokenEquals( ";", curr, end ) ) { // simple statement must end on ";"
                 ++curr;
                 return tmpAST;
             }
@@ -486,21 +504,21 @@ static ExprAST *parseStatement( std::vector<Token>::const_iterator &curr, const 
     return NULL;
 }
 
-static ExprAST *parseBlock( std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ){
+static ExprAST *parseBlock( std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end ) {
     BlockAST *block = NULL;
-    if( curr != end ){
-        while( curr != end ){
-            if( tokenEquals( "}", curr, end ) ){ // this is more an soon-"}"-catch-optimisation. parseStatement() below should also return NULL when detecting a closing bracket
+    if ( curr != end ) {
+        while ( curr != end ) {
+            if ( tokenEquals( "}", curr, end ) ) { // this is more an soon-"}"-catch-optimisation. parseStatement() below should also return NULL when detecting a closing bracket
                 return block;
             }
-            
+
             ExprAST *tmp = NULL;
 
             tmp = parseStatement( curr, end );
-            if( tmp == NULL ){ // skip empty // TODO what to do on error? >> try catch throw
+            if ( tmp == NULL ) { // skip empty // TODO what to do on error? >> try catch throw
                 continue;
             }
-            if( NULL == block ){ // first block element? then do not build a BlockAST yet
+            if ( NULL == block ) { // first block element? then do not build a BlockAST yet
                 block = new BlockAST();
             }
             block->addTail( tmp );
@@ -511,11 +529,11 @@ static ExprAST *parseBlock( std::vector<Token>::const_iterator &curr, const std:
 
 
 
-namespace picogen{ // TODO find proper namespace for this
+namespace picogen { // TODO find proper namespace for this
 
-PicoPico::PicoPico(){
+PicoPico::PicoPico() {
 
-    std::string code( 
+    std::string code(
         "if(alpha) for( init; cond; iter ){ body;}"
     );
 
@@ -526,32 +544,32 @@ PicoPico::PicoPico(){
     vector<Token> tokens;
 
     // tokenize
-    while( begin != end ){
+    while ( begin != end ) {
         bool found = false;
-        for( int i=0; i<tokenDescriptorCount; ++i ){
+        for ( int i=0; i<tokenDescriptorCount; ++i ) {
             bool matches = regex_search(
-                begin,
-                end,
-                results,
-                tokenDescriptors[i].regex,
-                match_continuous | match_nosubs | format_first_only
-            );
-            if( matches ){
+                               begin,
+                               end,
+                               results,
+                               tokenDescriptors[i].regex,
+                               match_continuous | match_nosubs | format_first_only
+                           );
+            if ( matches ) {
                 //cout << "match for '" << tokenDescriptors[i].name << "'! (" << string( results[0].first, results[0].second ) << ")" << endl;
                 begin = results[0].second;
                 found = true;
-                if( !tokenDescriptors[i].omit )
+                if ( !tokenDescriptors[i].omit )
                     tokens.push_back( Token( &tokenDescriptors[i], string(results[0].first,results[0].second) ) );
                 break;
             }
         }
-        if( !found ){
+        if ( !found ) {
             cerr << "Error while tokenizing at \"" <<
-                ( (string(begin,end).length() > 25) // print maximum n chars
-                    ? ( string(begin,begin+25) + string("......") ) // (if rest of string.length > n, then cat '......' into output)
-                    : string( begin, end )
-                )
-                << "\"" << endl;
+                 ( (string(begin,end).length() > 25) // print maximum n chars
+                   ? ( string(begin,begin+25) + string("......") ) // (if rest of string.length > n, then cat '......' into output)
+                   : string( begin, end )
+                 )
+                 << "\"" << endl;
             // TODO throw or something
             break;
         }
@@ -559,27 +577,27 @@ PicoPico::PicoPico(){
 
     // done
     vector<Token>::const_iterator it;
-    #if 1
+#if 1
     cout << endl;
-    for( it=tokens.begin(); it != tokens.end(); ++it ){
+    for ( it=tokens.begin(); it != tokens.end(); ++it ) {
         cout << "[" << it->tokenDescriptor->name << "(" << it->value << ")" << "]";
     }
     cout << endl;
-    #endif // #if 0
+#endif // #if 0
 
     // parse
     vector<Token>::const_iterator curr = tokens.begin();
     const ExprAST *ast = parseBlock( curr, tokens.end() ); //parsePrimary( curr, tokens.end() );
-    if( ast != NULL ){
+    if ( ast != NULL ) {
         cout << endl << "program's AST:\n";
         ast->print(1);
-    }else{
+    } else {
         cout << "parse error or no program" << endl;
     }
 }
 
 
-PicoPico::~PicoPico(){
+PicoPico::~PicoPico() {
 }
 
 

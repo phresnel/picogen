@@ -34,118 +34,106 @@ using picogen::graphics::structs::intersection_t;
 using picogen::graphics::image::color::Color;
 
 
-namespace picogen{
-namespace graphics{
-namespace objects{
+namespace picogen {
+namespace graphics {
+namespace objects {
 
 Sphere::Sphere() :
-	x(0.0,0.0,0.0), r(1.0),
-	color(1.0,1.0,1.0),
-	brdf(NULL)
-{
+        x(0.0,0.0,0.0), r(1.0),
+        color(1.0,1.0,1.0),
+        brdf(NULL) {
 }
 
 
-void Sphere::setPosition( const Vector3d &pos )
-{
-	x = pos;
+void Sphere::setPosition( const Vector3d &pos ) {
+    x = pos;
 }
 
-Vector3d Sphere::getPosition() const
-{
-	return x;
+Vector3d Sphere::getPosition() const {
+    return x;
 }
 
-void Sphere::setColor( const Color &c )
-{
-	color = c;
+void Sphere::setColor( const Color &c ) {
+    color = c;
 }
 
-Color Sphere::getColor() const
-{
-	return color;
+Color Sphere::getColor() const {
+    return color;
 }
 
-void Sphere::setRadius( real radius )
-{
-	r = radius;
+void Sphere::setRadius( real radius ) {
+    r = radius;
 }
 
 
-real Sphere::getRadius() const
-{
-	return r;
+real Sphere::getRadius() const {
+    return r;
 }
 
-void Sphere::setEmittance( real e )
-{
-	L_e = e;
+void Sphere::setEmittance( real e ) {
+    L_e = e;
 }
 
-real Sphere::getEmittance() const
-{
-	return L_e;
+real Sphere::getEmittance() const {
+    return L_e;
 }
 
-void Sphere::setBRDF( const IBRDF* b )
-{
-	brdf = const_cast<IBRDF*>(b);
+void Sphere::setBRDF( const IBRDF* b ) {
+    brdf = const_cast<IBRDF*>(b);
 }
 
-IBRDF* Sphere::getBRDF() const
-{
-	return brdf;
+IBRDF* Sphere::getBRDF() const {
+    return brdf;
 }
 
 
-bool Sphere::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const
-{
-	intersection.color = Color(1,0,0);
+bool Sphere::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const {
+    intersection.color = Color(1,0,0);
 
-	using namespace picogen::misc::constants;
+    using namespace picogen::misc::constants;
 
-	side currSide = noside;
-	int i;
-	Vector3d v;
-	real sqrV = 0;
-	real b    = 0;
+    side currSide = noside;
+    int i;
+    Vector3d v;
+    real sqrV = 0;
+    real b    = 0;
 
-	for( i=0; i<3; i++ ){
-		v[i]  = ray.x()[i] - this->x[i];
-		b    -= v[i] * ray.w()[i];
-		sqrV += v[i] * v[i];
-	}
+    for ( i=0; i<3; i++ ) {
+        v[i]  = ray.x()[i] - this->x[i];
+        b    -= v[i] * ray.w()[i];
+        sqrV += v[i] * v[i];
+    }
 
-	real det = (b * b) - sqrV + r*r;
-	real i1, i2;
+    real det = (b * b) - sqrV + r*r;
+    real i1, i2;
 
-	real currT = real_max;
-	if (det > 0){
-		det = sqrt( det );
-		i1 = b - det;
-		i2 = b + det;
-		if ( i2>0 ){
-			if( i1<0 ){
-				currT = i2;
-				currSide = inside;
-			}else{
-				currT = i1;
-				currSide = outside;
-			}
-		}
-	}
-	if( currSide != noside ){
-		if( currSide == inside ){
-			intersection.normal = (x - ray(currT)).normal();
-		}else{
-			intersection.normal = (ray(currT) - x).normal();
-		}
-		intersection.t = currT;
-		intersection.color = color;
-		intersection.brdf = brdf;
-		intersection.L_e = L_e;
-	}
-	return currSide != noside;
+    real currT = real_max;
+    if (det > 0) {
+        det = sqrt( det );
+        i1 = b - det;
+        i2 = b + det;
+        if ( i2>0 ) {
+            if ( i1<0 ) {
+                currT = i2;
+                currSide = inside;
+            } else {
+                currT = i1;
+                currSide = outside;
+            }
+        }
+    }
+    if ( currSide != noside ) {
+        if ( currSide == inside ) {
+            intersection.normal = (x - ray(currT)).normal();
+        } else {
+            intersection.normal = (ray(currT) - x).normal();
+        }
+        intersection.t = currT;
+        intersection.color = color;
+        intersection.brdf = brdf;
+        intersection.L_e = L_e;
+    }
+    return currSide != noside;
 }
 
 }; // namespace objects

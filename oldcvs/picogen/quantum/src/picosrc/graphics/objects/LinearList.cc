@@ -25,58 +25,52 @@
 
 #include "picogen.h"
 
-namespace picogen{
-namespace graphics{
-namespace objects{
+namespace picogen {
+namespace graphics {
+namespace objects {
 
 
-LinearList::LinearList()
-{
+LinearList::LinearList() {
 }
 
 
 
-LinearList::~LinearList()
-{
-	Flush();
+LinearList::~LinearList() {
+    Flush();
 }
 
 
 
-bool LinearList::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const
-{
-	intersection.t = misc::constants::real_max;
-	t_objectList::const_iterator it;
-	bool any = false;
-	for( it=m_list.begin(); it!=m_list.end(); it++ ){
-		intersection_t tmp;
-		if( (*it)->Intersect( tmp, ray ) && tmp.t<intersection.t ){
-			any = true;
-			intersection = tmp;
-		}
-	}
-	return any;
+bool LinearList::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const {
+    intersection.t = misc::constants::real_max;
+    t_objectList::const_iterator it;
+    bool any = false;
+    for ( it=m_list.begin(); it!=m_list.end(); it++ ) {
+        intersection_t tmp;
+        if ( (*it)->Intersect( tmp, ray ) && tmp.t<intersection.t ) {
+            any = true;
+            intersection = tmp;
+        }
+    }
+    return any;
 }
 
 
 
-void LinearList::Insert( const abstract::IIntersectable*i )
-{
-	m_list.insert(  m_list.end(), const_cast<IIntersectable*>(i) );
+void LinearList::Insert( const abstract::IIntersectable*i ) {
+    m_list.insert(  m_list.end(), const_cast<IIntersectable*>(i) );
 }
 
 
 
-void LinearList::Invalidate()
-{
-	// nothing to do here, keep off
+void LinearList::Invalidate() {
+    // nothing to do here, keep off
 }
 
 
 
-void LinearList::Flush()
-{
-	m_list.clear();
+void LinearList::Flush() {
+    m_list.clear();
 }
 
 

@@ -31,35 +31,51 @@
 	XYIterator_Template	type XYIterator<t_surface, t_camera, t_pathIntegrator>
 
 
-XYIterator_Template class XYIterator{
-	private:
-		unsigned int m_currX, m_currY;
-		unsigned int m_width, m_height;
-		unsigned int m_numPixelsPerRun;
-		t_camera  m_camera;
-		t_surface m_surface;
-		t_pathIntegrator m_pathIntegrator;
-		bool m_done;
-		bool m_BeginRender_called;
-		//WhittedStyle() {};
-		misc::geometrics::Transformation m_camTransform;
-	public:
-		XYIterator();
-		virtual ~XYIterator();
-		//void SetCamera( t_camera *pCam );
-		//void SetSurface( t_surface *pSurf );
-		misc::geometrics::Transformation &transformation() const { return m_camTransform; }
-		misc::geometrics::Transformation &transformation()       { return m_camTransform; }
-		t_surface &surface() const { return m_surface; }
-		t_surface &surface()       { return m_surface; }
-		t_camera &camera() const { return m_camera; }
-		t_camera &camera()       { return m_camera; }
-		t_pathIntegrator &path_integrator() const { return m_pathIntegrator; }
-		t_pathIntegrator &path_integrator()       { return m_pathIntegrator; }
-		void SetNumPixelsPerContinue( unsigned int num );
-		bool Continue();
-		void BeginRender();
-		void OneMoreRun();
+XYIterator_Template class XYIterator {
+private:
+    unsigned int m_currX, m_currY;
+    unsigned int m_width, m_height;
+    unsigned int m_numPixelsPerRun;
+    t_camera  m_camera;
+    t_surface m_surface;
+    t_pathIntegrator m_pathIntegrator;
+    bool m_done;
+    bool m_BeginRender_called;
+    //WhittedStyle() {};
+    misc::geometrics::Transformation m_camTransform;
+public:
+    XYIterator();
+    virtual ~XYIterator();
+    //void SetCamera( t_camera *pCam );
+    //void SetSurface( t_surface *pSurf );
+    misc::geometrics::Transformation &transformation() const {
+        return m_camTransform;
+    }
+    misc::geometrics::Transformation &transformation()       {
+        return m_camTransform;
+    }
+    t_surface &surface() const {
+        return m_surface;
+    }
+    t_surface &surface()       {
+        return m_surface;
+    }
+    t_camera &camera() const {
+        return m_camera;
+    }
+    t_camera &camera()       {
+        return m_camera;
+    }
+    t_pathIntegrator &path_integrator() const {
+        return m_pathIntegrator;
+    }
+    t_pathIntegrator &path_integrator()       {
+        return m_pathIntegrator;
+    }
+    void SetNumPixelsPerContinue( unsigned int num );
+    bool Continue();
+    void BeginRender();
+    void OneMoreRun();
 };
 
 // meh :|

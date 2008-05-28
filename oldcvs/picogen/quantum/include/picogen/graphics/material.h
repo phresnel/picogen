@@ -26,55 +26,55 @@
 #ifndef _MATERIAL_H
 #define _MATERIAL_H
 
-namespace material{
-	namespace abstract{
-		class IBRDF{
-			public:
-				virtual ~IBRDF() {};
-				// RandomSample assumes the in-/out.params to be in world
-				// space  W , rather than in unit space U with the y-axis
-				// being   (0|1|0).      Consequently,    if    necessary,
-				// RandomSample,   if  necessary,   has   to  do  its own
-				// W->U  transformation   on  the  in-parameters  and  it
-				// must   guarantee  that   the   out-parameters  are  in
-				// W-space
-				//
-				// returns false  if  the  in-ray is absorbed, and if so,
-				// the out-params are undefined.
-				virtual bool RandomSample(
-					param_out(misc::prim::real,brdf),
-					param_out(misc::prim::real,p),
-					param_out(bool,specular),
-					param_out(misc::geometrics::Ray,r_out),
-					param_in(misc::geometrics::Ray,r_in),
-					param_in(misc::geometrics::Vector3d,N)
-				) const = 0;
-		};
+namespace material {
+namespace abstract {
+class IBRDF {
+public:
+    virtual ~IBRDF() {};
+    // RandomSample assumes the in-/out.params to be in world
+    // space  W , rather than in unit space U with the y-axis
+    // being   (0|1|0).      Consequently,    if    necessary,
+    // RandomSample,   if  necessary,   has   to  do  its own
+    // W->U  transformation   on  the  in-parameters  and  it
+    // must   guarantee  that   the   out-parameters  are  in
+    // W-space
+    //
+    // returns false  if  the  in-ray is absorbed, and if so,
+    // the out-params are undefined.
+    virtual bool RandomSample(
+        param_out(misc::prim::real,brdf),
+        param_out(misc::prim::real,p),
+        param_out(bool,specular),
+        param_out(misc::geometrics::Ray,r_out),
+        param_in(misc::geometrics::Ray,r_in),
+        param_in(misc::geometrics::Vector3d,N)
+    ) const = 0;
+};
 
-		class IShader{
-			public:
-				virtual ~IShader() {};
-				virtual void Shade(
-					image::color::Color &color,
-					const misc::geometrics::Vector3d &normal,
-					const misc::geometrics::Vector3d &position
-				) const = 0;/*{
+class IShader {
+public:
+    virtual ~IShader() {};
+    virtual void Shade(
+        image::color::Color &color,
+        const misc::geometrics::Vector3d &normal,
+        const misc::geometrics::Vector3d &position
+    ) const = 0;/*{
 				    fprintf( stderr, "%s:%i: function Shade called but not implemented\n", __FILE__, __LINE__ );
 				    throw;
 				}*/
 
-				virtual void Shade(
-					image::color::Color &color,
-					misc::prim::real &L_e,
-					const misc::geometrics::Vector3d &normal,
-					const misc::geometrics::Vector3d &position
-				) const {
-				    // for backwards compatibility we will implement this virtual function,
-				    L_e = 0.0;
-				    Shade( color, normal, position );
-				}
-		};
-	};
+    virtual void Shade(
+        image::color::Color &color,
+        misc::prim::real &L_e,
+        const misc::geometrics::Vector3d &normal,
+        const misc::geometrics::Vector3d &position
+    ) const {
+        // for backwards compatibility we will implement this virtual function,
+        L_e = 0.0;
+        Shade( color, normal, position );
+    }
+};
+};
 };
 
 #endif /* _MATERIAL_H */

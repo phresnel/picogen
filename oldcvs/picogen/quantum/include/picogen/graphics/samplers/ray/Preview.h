@@ -26,26 +26,26 @@
 #ifndef _PREVIEW_H__INCLUDED_
 #define _PREVIEW_H__INCLUDED_
 
-class Preview{
-	private:
-		typedef misc::prim::real              real;
-		typedef misc::geometrics::Vector3d    Vector3d;
-		typedef misc::geometrics::Ray         Ray;
-		typedef graphics::image::color::Color Color;
-		typedef graphics::structs::intersection_t intersection_t;
-		typedef graphics::objects::abstract::IIntersectable IIntersectable;
-		typedef graphics::objects::abstract::ISky ISky;
+class Preview {
+private:
+    typedef misc::prim::real              real;
+    typedef misc::geometrics::Vector3d    Vector3d;
+    typedef misc::geometrics::Ray         Ray;
+    typedef graphics::image::color::Color Color;
+    typedef graphics::structs::intersection_t intersection_t;
+    typedef graphics::objects::abstract::IIntersectable IIntersectable;
+    typedef graphics::objects::abstract::ISky ISky;
 
-		IIntersectable *m_intersectable;
-		ISky *m_skyShader;
-		Color L_i( param_in(Ray,ray), bool specularOrFirst, param_out(intersection_t,primaryIntersection), unsigned int max );
-	public:
-		Preview( IIntersectable *intersectable );
-		Preview();
-		virtual ~Preview();
-		void SetIntersectable( IIntersectable *intersectable );
-		void SetSky( ISky *skyShader );
-		bool Integrate( param_out(Color, color), param_out(intersection_t,primaryIntersection), param_in(Ray,ray) );
+    IIntersectable *m_intersectable;
+    ISky *m_skyShader;
+    Color L_i( param_in(Ray,ray), bool specularOrFirst, param_out(intersection_t,primaryIntersection), unsigned int max );
+public:
+    Preview( IIntersectable *intersectable );
+    Preview();
+    virtual ~Preview();
+    void SetIntersectable( IIntersectable *intersectable );
+    void SetSky( ISky *skyShader );
+    bool Integrate( param_out(Color, color), param_out(intersection_t,primaryIntersection), param_in(Ray,ray) );
 };
 
 
