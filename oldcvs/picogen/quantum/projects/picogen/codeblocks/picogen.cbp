@@ -79,6 +79,7 @@
 			<Add option="`sdl-config --libs`" />
 			<Add option="-lboost_regex" />
 		</Linker>
+		<Unit filename="../../../include/common.h" />
 		<Unit filename="../../../include/compile_info.h" />
 		<Unit filename="../../../include/picogen.h" />
 		<Unit filename="../../../include/picogen/experimental/CloudShader_Bouthors.h" />
@@ -91,6 +92,8 @@
 		<Unit filename="../../../include/picogen/graphics/material.h" />
 		<Unit filename="../../../include/picogen/graphics/objects.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/AABox.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/CloudsBouthors.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/Instance.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/LinearList.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/Preetham.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/SimpleHeightField.h" />
@@ -108,7 +111,6 @@
 		<Unit filename="../../../include/picogen/misc/functions.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics/Transformation.h" />
-		<Unit filename="../../../include/picogen/misc/namespace_mnemonics.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/AST.h" />
 		<Unit filename="../../../include/picogen/misc/templates.h" />
 		<Unit filename="../../../include/picossdf/picossdf.h" />
