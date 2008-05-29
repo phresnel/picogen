@@ -1,9 +1,18 @@
 (                                           \
       find -type f                          \
     | grep -E "\.(cc|cpp|h|hpp)$"           \
-    | xargs astyle --style=kr               \
-) && (                                      \
-      find -type f                          \
-    | grep -E "\.(cc|cpp|h|hpp)\.orig$"     \
-    | xargs rm                              \
+    | xargs astyle                          \
+        --style=kr                          \
+        --indent-namespaces                 \
+        --indent-classes                    \
+        --indent-switches                   \
+        --indent-preprocessor               \
+        --unpad=paren                       \
+        --pad=paren-out                     \
+        --convert-tabs                      \
+        --min-conditional-indent=4          \
+        --suffix=none                       \
+        --one-line=keep-statements          \
 )
+
+echo "done!"
