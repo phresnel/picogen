@@ -25,46 +25,56 @@
 #ifndef _INSTANCE_H
 #define _INSTANCE_H
 
-#ifndef INSIDE_OBJECTS_H
 namespace picogen {
-namespace graphics {
-namespace objects {
-#endif // #ifndef INSIDE_OBJECTS_H
+    namespace graphics {
+        namespace objects {
 
-class Instance : public picogen::graphics::objects::abstract::IIntersectable {
-    picogen::graphics::objects::abstract::IIntersectable *intersectable;
-    picogen::misc::geometrics::Transformation transformation;
+            class Instance : public ::picogen::graphics::objects::abstract::IIntersectable {
+                private:
+                    /// \todo only typedef in the actually needed types
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                    typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                    typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                    typedef ::picogen::graphics::objects::abstract::ISky ISky;
+                    typedef ::picogen::graphics::image::color::Color Color;
+                    typedef ::picogen::misc::geometrics::Transformation Transformation;
 
-public:
-    explicit Instance( picogen::graphics::objects::abstract::IIntersectable *intersectable )
-            : intersectable(intersectable) {}
+                private:
+                    ::picogen::common::IIntersectable *intersectable;
+                    ::picogen::common::Transformation transformation;
 
-    void setTransform( const picogen::misc::geometrics::Transformation &transformation ) {
-        this->transformation = transformation;
-    }
+                public:
+                    explicit Instance (IIntersectable *intersectable)
+                            : intersectable (intersectable) {}
 
-    virtual bool Intersect(
-        param_out(structs::intersection_t,intersection), param_in(misc::geometrics::Ray,ray)
-    ) const {
-        const Vector3d A = transformation * ray(0.0);
-        const Vector3d B = transformation * ray(1.0);
-        const Ray   tray = Ray( A, (B-A).normal() );
-        if ( intersectable->Intersect( intersection, tray ) ) {
-            const Vector3d i  = tray(intersection.t);
-            intersection.t = ( i - ray(0.0)).length();
-            /*const Vector3d i_ = i + intersection.normal;
-            intersection.normal*/
-            return true;
-        } else {
-            return false;
+                    void setTransform (const Transformation &transformation) {
+                        this->transformation = transformation;
+                    }
+
+                    virtual bool Intersect (
+                        param_out (intersection_t,intersection), param_in (Ray,ray)
+                    ) const {
+                        const Vector3d A = transformation * ray (0.0);
+                        const Vector3d B = transformation * ray (1.0);
+                        const Ray   tray = Ray (A, (B-A).normal());
+                        if (intersectable->Intersect (intersection, tray)) {
+                            const Vector3d i  = tray (intersection.t);
+                            intersection.t = (i - ray (0.0)).length();
+                            /*const Vector3d i_ = i + intersection.normal;
+                            intersection.normal*/
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+            };
+
         }
     }
-};
-
-#ifndef INSIDE_OBJECTS_H
-}
-}
 } // namespace picogen{ namespace graphics{ namespace objects{
-#endif // #ifndef INSIDE_OBJECTS_H
 
 #endif /* _INSTANCE_H */

@@ -46,10 +46,10 @@ static void warranty() {
 static void conditions() {
 }
 
-int main( int argc, char *argv[] ) {
-    extern int main_seb( int argc, char *argv[] );
-    extern int main_mkheightmap( int argc, char *argv[] );
-    extern int main_testscenes( int argc, char *argv[] );
+int main (int argc, char *argv[]) {
+    extern int main_seb (int argc, char *argv[]);
+    extern int main_mkheightmap (int argc, char *argv[]);
+    extern int main_testscenes (int argc, char *argv[]);
 
     using namespace std;
 
@@ -57,7 +57,7 @@ int main( int argc, char *argv[] ) {
     argv++;
 
     disclaimer();
-    if ( argc == 0 ) { // check if any argument is given, we need at least one
+    if (argc == 0) {   // check if any argument is given, we need at least one
         usage();
         return -1;
     }
@@ -66,25 +66,25 @@ int main( int argc, char *argv[] ) {
     argc--;
     argv++;
 
-    if ( primary == string("show") ) {
-        if ( argc == 0 ) { // check if any argument is given, we need at least one remaining
+    if (primary == string ("show")) {
+        if (argc == 0) {   // check if any argument is given, we need at least one remaining
             usage();
             return -1;
         }
         const std::string secondary = argv[0];
-        if ( secondary == string("w") ) {
+        if (secondary == string ("w")) {
             warranty();
             return 0;
-        } else if ( secondary == string("c") ) {
+        } else if (secondary == string ("c")) {
             conditions();
             return 0;
         }
-    } else if ( primary == string("mkheightmap") ) {
-        return main_mkheightmap( argc, argv );
-    } else if ( primary == string("testscene") ) {
-        return main_testscenes( argc, argv );
-    } else if ( primary == string("seb") ) {
-        return main_seb( argc, argv );
+    } else if (primary == string ("mkheightmap")) {
+        return main_mkheightmap (argc, argv);
+    } else if (primary == string ("testscene")) {
+        return main_testscenes (argc, argv);
+    } else if (primary == string ("seb")) {
+        return main_seb (argc, argv);
     } else {
         usage();
     }

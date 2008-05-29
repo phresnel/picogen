@@ -36,19 +36,19 @@ using picogen::graphics::image::color::Color;
 
 
 namespace picogen {
-namespace graphics {
-namespace objects {
+    namespace graphics {
+        namespace objects {
 
-Rain::Rain() {
-}
+            Rain::Rain() {
+            }
 
-Rain::~Rain() {
-}
+            Rain::~Rain() {
+            }
 
-bool Rain::Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const {
-    return false;
-}
+            bool Rain::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+                return false;
+            }
 
-};
-};
+        };
+    };
 };

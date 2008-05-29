@@ -28,29 +28,32 @@
 
 
 namespace picogen {
-namespace graphics {
-namespace objects {
+    namespace graphics {
+        namespace objects {
 
-class Rain : public picogen::graphics::objects::abstract::IIntersectable {
-private:
-    typedef picogen::misc::prim::real real;
-    typedef picogen::misc::geometrics::Vector3d Vector3d;
-    typedef picogen::misc::geometrics::Ray Ray;
-    typedef picogen::misc::geometrics::BoundingBox BoundingBox;
-    typedef picogen::graphics::material::abstract::IBRDF IBRDF;
-    typedef picogen::graphics::structs::intersection_t intersection_t;
-    typedef picogen::graphics::image::color::Color Color;
+            class Rain : public ::picogen::graphics::objects::abstract::IIntersectable {
+                private:
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                    typedef ::picogen::graphics::material::abstract::IShader IShader;
+                    typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                    typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                    typedef ::picogen::graphics::image::color::Color Color;
+                    typedef ::picogen::misc::functions::vector_to_scalar::PerlinNoise PerlinNoise;
 
-private:
+                private:
 
-public:
-    Rain();
-    virtual ~Rain();
-    virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
-};
+                public:
+                    Rain();
+                    virtual ~Rain();
+                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+            };
 
-}
-}
+        }
+    }
 } // namespace picogen{ namespace graphics{ namespace objects{
 
 #endif /* _SNOW_H */

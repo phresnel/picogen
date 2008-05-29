@@ -27,104 +27,104 @@
 #include <vector>
 
 class PicoSSDF {
-private:
+    private:
 
-    // --- data for printing verbose error messages -----------------
-    std::string filename;
-    std::string errcurrentline; // only used on error
-    std::string errreason;      // ditto
-    unsigned int linenumber;
-    enum parse_err {
-        OKAY,
-        FILE_NOT_FOUND,
-        SYNTAX_ERROR
-    };
-    // --------------------------------------------------------------
-
-
-    // --- definition of blocks -------------------------------------
-    enum BLOCK_TYPE {
-        BLOCK_LIST,
-        BLOCK_TRI_BIH
-    };
-    static const inline std::string blockTypeAsString( BLOCK_TYPE type ) {
-        switch ( type ) {
-        case BLOCK_LIST:
-            return std::string( "list" );
-        case BLOCK_TRI_BIH:
-            return std::string( "tri-bih" );
+        // --- data for printing verbose error messages -----------------
+        std::string filename;
+        std::string errcurrentline; // only used on error
+        std::string errreason;      // ditto
+        unsigned int linenumber;
+        enum parse_err {
+            OKAY,
+            FILE_NOT_FOUND,
+            SYNTAX_ERROR
         };
-        return std::string("<unknown>");
-    }
+        // --------------------------------------------------------------
 
-    class Block {
-    public:
-        const BLOCK_TYPE type;
-        Block( BLOCK_TYPE type ) : type(type) {};
-        Block( const Block &block ) : type(block.type) {
-            //const_cast<BLOCK_TYPE&>(type) = block.type;
+
+        // --- definition of blocks -------------------------------------
+        enum BLOCK_TYPE {
+            BLOCK_LIST,
+            BLOCK_TRI_BIH
+        };
+        static const inline std::string blockTypeAsString (BLOCK_TYPE type) {
+            switch (type) {
+                case BLOCK_LIST:
+                    return std::string ("list");
+                case BLOCK_TRI_BIH:
+                    return std::string ("tri-bih");
+            };
+            return std::string ("<unknown>");
         }
-        const Block &operator = ( const Block &block ) {
-            const_cast<BLOCK_TYPE&>(type) = block.type;
-            return *this;
+
+        class Block {
+            public:
+                const BLOCK_TYPE type;
+                Block (BLOCK_TYPE type) : type (type) {};
+                Block (const Block &block) : type (block.type) {
+                    //const_cast<BLOCK_TYPE&>(type) = block.type;
+                }
+                const Block &operator = (const Block &block) {
+                    const_cast<BLOCK_TYPE&> (type) = block.type;
+                    return *this;
+                }
+                virtual bool isBlockAllowed (BLOCK_TYPE) {
+                    return true;
+                }
+        };
+        class ListBlock : public Block {
+            public:
+                ListBlock() : Block (BLOCK_LIST) {}
+        };
+        class TriBIHBlock : public Block {
+            public:
+                TriBIHBlock() : Block (BLOCK_TRI_BIH) {}
+                virtual bool isBlockAllowed (BLOCK_TYPE) {
+                    return false;
+                }
+        };
+        std::vector<Block*> blockStack;
+        parse_err push_block (BLOCK_TYPE);
+        parse_err pop_block();
+
+        // --------------------------------------------------------------
+
+
+        // ---- parsing functions ---------------------------------------
+        inline static bool isidchar (char s) {
+            return (isalnum (s) ||s=='-');
         }
-        virtual bool isBlockAllowed( BLOCK_TYPE ) {
-            return true;
-        }
-    };
-    class ListBlock : public Block {
+        parse_err parse();
+        parse_err interpretLine (char *line);
+        // --------------------------------------------------------------
     public:
-        ListBlock() : Block( BLOCK_LIST ) {}
-    };
-    class TriBIHBlock : public Block {
-    public:
-        TriBIHBlock() : Block( BLOCK_TRI_BIH ) {}
-        virtual bool isBlockAllowed( BLOCK_TYPE ) {
-            return false;
-        }
-    };
-    std::vector<Block*> blockStack;
-    parse_err push_block( BLOCK_TYPE );
-    parse_err pop_block();
-
-    // --------------------------------------------------------------
 
 
-    // ---- parsing functions ---------------------------------------
-    inline static bool isidchar( char s ) {
-        return (isalnum(s)||s=='-');
-    }
-    parse_err parse();
-    parse_err interpretLine( char *line );
-    // --------------------------------------------------------------
-public:
+        PicoSSDF (const std::string &filename);
 
-
-    PicoSSDF( const std::string &filename );
-
-    // ---- exceptions ----------------------------------------------
-    class exception_file_not_found {
-    public:
-        const std::string file;
-        exception_file_not_found( const std::string &file ) : file(file) {}
-    };
-    class exception_unknown {
-    public:
-        const std::string file;
-        exception_unknown( const std::string &file ) : file(file) {}
-    };
-    class exception_syntax_error {
-    public:
-        const std::string file, curr, reason;
-        const unsigned int line;
-        exception_syntax_error(
-            const std::string &file,
-            const std::string &curr,
-            const std::string &reason,
-            unsigned int line
-        ): file(file), curr(curr), reason(reason), line(line) {}
-    };
-    // ---- parsing functions ---------------------------------------
+        // ---- exceptions ----------------------------------------------
+        class exception_file_not_found {
+            public:
+                const std::string file;
+                exception_file_not_found (const std::string &file) : file (file) {}
+        };
+        class exception_unknown {
+            public:
+                const std::string file;
+                exception_unknown (const std::string &file) : file (file) {}
+        };
+        class exception_syntax_error {
+            public:
+                const std::string file, curr, reason;
+                const unsigned int line;
+                exception_syntax_error (
+                    const std::string &file,
+                    const std::string &curr,
+                    const std::string &reason,
+                    unsigned int line
+                ) : file (file), curr (curr), reason (reason), line (line) {}
+        };
+        // ---- parsing functions ---------------------------------------
 };
 
 

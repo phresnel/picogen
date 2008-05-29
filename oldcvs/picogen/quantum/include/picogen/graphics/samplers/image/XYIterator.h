@@ -28,55 +28,68 @@
 
 #define XYIterator_Template template <class t_surface, class t_camera, class t_pathIntegrator>
 #define XYIterator_Member( type ) \
-	XYIterator_Template	type XYIterator<t_surface, t_camera, t_pathIntegrator>
+    XYIterator_Template type XYIterator<t_surface, t_camera, t_pathIntegrator>
 
+namespace picogen {
+    namespace graphics {
+        namespace samplers {
+            namespace screen {
+                XYIterator_Template class XYIterator {
+                    private:
+                        typedef ::picogen::misc::prim::real real;
+                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::misc::geometrics::Ray Ray;
+                        typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                        typedef ::picogen::misc::geometrics::Transformation Transformation;
+                        typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                        typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                        typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                        typedef ::picogen::graphics::image::color::Color Color;
 
-XYIterator_Template class XYIterator {
-private:
-    unsigned int m_currX, m_currY;
-    unsigned int m_width, m_height;
-    unsigned int m_numPixelsPerRun;
-    t_camera  m_camera;
-    t_surface m_surface;
-    t_pathIntegrator m_pathIntegrator;
-    bool m_done;
-    bool m_BeginRender_called;
-    //WhittedStyle() {};
-    misc::geometrics::Transformation m_camTransform;
-public:
-    XYIterator();
-    virtual ~XYIterator();
-    //void SetCamera( t_camera *pCam );
-    //void SetSurface( t_surface *pSurf );
-    misc::geometrics::Transformation &transformation() const {
-        return m_camTransform;
-    }
-    misc::geometrics::Transformation &transformation()       {
-        return m_camTransform;
-    }
-    t_surface &surface() const {
-        return m_surface;
-    }
-    t_surface &surface()       {
-        return m_surface;
-    }
-    t_camera &camera() const {
-        return m_camera;
-    }
-    t_camera &camera()       {
-        return m_camera;
-    }
-    t_pathIntegrator &path_integrator() const {
-        return m_pathIntegrator;
-    }
-    t_pathIntegrator &path_integrator()       {
-        return m_pathIntegrator;
-    }
-    void SetNumPixelsPerContinue( unsigned int num );
-    bool Continue();
-    void BeginRender();
-    void OneMoreRun();
-};
+                        unsigned int m_currX, m_currY;
+                        unsigned int m_width, m_height;
+                        unsigned int m_numPixelsPerRun;
+                        t_camera  m_camera;
+                        t_surface m_surface;
+                        t_pathIntegrator m_pathIntegrator;
+                        bool m_done;
+                        bool m_BeginRender_called;
+                        //WhittedStyle() {};
+                        Transformation m_camTransform;
+                    public:
+                        XYIterator();
+                        virtual ~XYIterator();
+                        //void SetCamera( t_camera *pCam );
+                        //void SetSurface( t_surface *pSurf );
+                        Transformation &transformation() const {
+                            return m_camTransform;
+                        }
+                        Transformation &transformation()       {
+                            return m_camTransform;
+                        }
+                        t_surface &surface() const {
+                            return m_surface;
+                        }
+                        t_surface &surface()       {
+                            return m_surface;
+                        }
+                        t_camera &camera() const {
+                            return m_camera;
+                        }
+                        t_camera &camera()       {
+                            return m_camera;
+                        }
+                        t_pathIntegrator &path_integrator() const {
+                            return m_pathIntegrator;
+                        }
+                        t_pathIntegrator &path_integrator()       {
+                            return m_pathIntegrator;
+                        }
+                        void SetNumPixelsPerContinue (unsigned int num);
+                        bool Continue();
+                        void BeginRender();
+                        void OneMoreRun();
+                };
 
 // meh :|
 // looks like as long as gcc does not support  the  'export'  keyword
@@ -88,8 +101,13 @@ public:
 // inside the class-definition, but rather below
 // - -
 
+            } // { namespace screen {
+        } // namespace samplers
+    } // namespace graphics {
+} // namespace picogen {
 #include "XYIterator.cc.h"
 #undef XYIterator_Template
 #undef XYIterator_Member
+
 
 #endif /* _XYITERATOR_H */

@@ -26,27 +26,41 @@
 #ifndef _RAYSAMP_SIMPLE_H
 #define _RAYSAMP_SIMPLE_H
 
-class Simple {
-private:
-    typedef misc::prim::real              real;
-    typedef misc::geometrics::Vector3d    Vector3d;
-    typedef misc::geometrics::Ray         Ray;
-    typedef graphics::image::color::Color Color;
-    typedef graphics::structs::intersection_t intersection_t;
-    typedef graphics::objects::abstract::IIntersectable IIntersectable;
-    typedef graphics::objects::abstract::ISky ISky;
+namespace picogen {
+    namespace graphics {
+        namespace samplers {
+            namespace ray {
+                class Simple {
+                    private:
+                        /// \todo only typedef in the actually needed types
+                        typedef ::picogen::misc::prim::real real;
+                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::misc::geometrics::Ray Ray;
+                        typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                        typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                        typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                        typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                        typedef ::picogen::graphics::objects::abstract::ISky ISky;
+                        typedef ::picogen::graphics::image::color::Color Color;
+                        typedef ::picogen::misc::geometrics::Transformation Transformation;
 
-    IIntersectable *m_intersectable;
-    ISky *m_skyShader;
-    Color L_i( param_in(Ray,ray), bool specularOrFirst, param_out(intersection_t,primaryIntersection), unsigned int max );
-public:
-    Simple( IIntersectable *intersectable );
-    Simple();
-    virtual ~Simple();
-    void SetIntersectable( IIntersectable *intersectable );
-    void SetSky( ISky *skyShader );
-    bool Integrate( param_out(Color, color), param_out(intersection_t,primaryIntersection), param_in(Ray,ray) );
-};
+                        IIntersectable *m_intersectable;
+                        ISky *m_skyShader;
+                        Color L_i (param_in (Ray,ray), bool specularOrFirst, param_out (intersection_t,primaryIntersection), unsigned int max);
+                    public:
+                        Simple (IIntersectable *intersectable);
+                        Simple();
+                        virtual ~Simple();
+                        void SetIntersectable (IIntersectable *intersectable);
+                        void SetSky (ISky *skyShader);
+                        bool Integrate (param_out (Color, color), param_out (intersection_t,primaryIntersection), param_in (Ray,ray));
+                };
+
+
+            } // namespace ray {
+        } // namespace samplers {
+    } // namespace graphics {
+} // namespace picogen {
 
 
 #endif /* _RAYSAMP_SIMPLE_H */

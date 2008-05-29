@@ -49,20 +49,20 @@
 
 #ifdef XRT_DEBUG
 namespace xrt {
-namespace debug {
-static int _call_stack_index = 0;
-static std::string _call_stack[0xFF];
-};
+    namespace debug {
+        static int _call_stack_index = 0;
+        static std::string _call_stack[0xFF];
+    };
 };
 #define XRT_CALL_STACK_PUSH( name ) { \
-		if( xrt::debug::_call_stack_index>=0xFF ){\
-			fprintf( stderr, "probably unbalanced calls to CALL_STACK_(PUSH|POP) or maybe too deep recursion\n" );\
-			throw;\
-		} \
-		xrt::debug::_call_stack[xrt::debug::_call_stack_index++] = name;\
-	}
+        if( xrt::debug::_call_stack_index>=0xFF ){\
+            fprintf( stderr, "probably unbalanced calls to CALL_STACK_(PUSH|POP) or maybe too deep recursion\n" );\
+            throw;\
+        } \
+        xrt::debug::_call_stack[xrt::debug::_call_stack_index++] = name;\
+    }
 #define XRT_CALL_STACK_POP()        { xrt::debug::_call_stack_index--; \
-		if(xrt::debug::_call_stack_index<0){ fprintf( stderr, "unbalanced calls to CALL_STACK_(PUSH|POP)\n" ); throw; } }
+        if(xrt::debug::_call_stack_index<0){ fprintf( stderr, "unbalanced calls to CALL_STACK_(PUSH|POP)\n" ); throw; } }
 #define XRT_CALL_STACK_LENGTH()         xrt::debug::_call_stack_index
 #define XRT_CALL_STACK_GET_STR( index ) xrt::debug::_call_stack[index]
 #else
@@ -79,62 +79,110 @@ static std::string _call_stack[0xFF];
 #define param_out(type,name) type &name
 #define param_in(type,name)  const type &name
 
+
+namespace picogen {
+    namespace graphics {
+        namespace structs {
+        }
+        namespace objects {
+            namespace abstract {
+                class IIntersectable;
+                class IScene;
+                class ITriScene;
+                class ISky;
+            }
+        }
+        namespace image {
+            namespace color {
+            }
+        }
+        namespace material {
+            namespace abstract {
+            }
+        }
+    }
+    namespace misc {
+        namespace prim {
+        }
+        namespace constants {
+        }
+        namespace geometrics {
+        }
+    }
+}
+#include <picogen/misc/namespace_mnemonics.h>
+
 namespace picogen {
 
-namespace misc {
-namespace string_helpers {
-template <class T> inline std::string tostring( T val ) {
-    XRT_CALL_STACK_PUSH( "template <class T> inline std::string tostring( T val )" );
-    std::stringstream s;
-    s << val;
-    XRT_CALL_STACK_POP();
-    return s.str();
-}
-};
+    namespace misc {
+        namespace string_helpers {
+            template <class T> inline std::string tostring (T val) {
+                XRT_CALL_STACK_PUSH ("template <class T> inline std::string tostring( T val )");
+                std::stringstream s;
+                s << val;
+                XRT_CALL_STACK_POP();
+                return s.str();
+            }
+        } // namespace string_helpers {
+    } // namespace misc
+} // namespace picogen
+
 #include <picogen/misc/exceptions.h>
-namespace prim {
-typedef double real;
-};
 
-namespace constants {
-typedef enum side {
-    inside = -1,
-    noside = 0,
-    outside = 1
-};
-static const prim::real epsilon = 0.0001;
-static const prim::real real_max = FLT_MAX;
-static const prim::real real_min = FLT_MIN;
-static const prim::real pi = 3.14159265f;
-};
+namespace picogen {
+    namespace misc {
+        namespace prim {
+            typedef double real;
+        } // namespace prim {
+
+        namespace constants {
+            typedef enum side {
+                inside = -1,
+                noside = 0,
+                outside = 1
+            };
+            static const prim::real epsilon = 0.0001;
+            static const prim::real real_max = FLT_MAX;
+            static const prim::real real_min = FLT_MIN;
+            static const prim::real pi = 3.14159265f;
+        } // namespace constants {
+    } // namespace misc {
+} // namespace picogen {
+
+
+
 #include <picogen/misc/geometrics.h>
-#include <picogen/misc/functions.h> // << obsolete, take "functional.h"
-#include <picogen/misc/functional.h>
 #include <picogen/misc/templates.h>
-};
 
-namespace graphics {
-#include <picogen/graphics/cameras.h>
 #include <picogen/graphics/image.h>
 #include <picogen/graphics/material.h>
 
-namespace structs {
-typedef struct _intersection_t {
-    image::color::Color color;
-    misc::prim::real t;
-    misc::constants::side side;
-    misc::geometrics::Vector3d normal;
-    const material::abstract::IBRDF *brdf;
-    misc::prim::real L_e;
-} intersection_t;
-};
+namespace picogen {
+    namespace graphics {
+        namespace structs {
+            class intersection_t {
+                private:
+                    typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                public:
+                    image::color::Color color;
+                    ::picogen::misc::prim::real t;
+                    ::picogen::misc::constants::side side;
+                    ::picogen::misc::geometrics::Vector3d normal;
+                    IBRDF const *brdf;
+                    ::picogen::misc::prim::real L_e;
+            };
+        }
+    }
+}
 
+#include <picogen/misc/functions.h> // << obsolete, take "functional.h"
+#include <picogen/misc/functional.h>
+
+#include <picogen/graphics/cameras.h>
 #include <picogen/graphics/objects.h>
 #include <picogen/graphics/samplers.h>
-};
 
-#include <picogen/misc/namespace_mnemonics.h>
-};
+#include <picogen/common.h>
 
 
 

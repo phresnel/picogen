@@ -26,16 +26,17 @@
 #ifndef _PICOPICO_H
 #define _PICOPICO_H
 
-namespace picogen { // TODO find proper namespace for this
+namespace picogen {
 
-class PicoPico {
+    /// \todo find proper namespace for this
+    class PicoPico {
 
-public:
+        public:
 
-    PicoPico(); // stub!
-    virtual ~PicoPico();
+            PicoPico(); // stub!
+            virtual ~PicoPico();
 
-};
+    };
 
 } // namespace picogen{
 

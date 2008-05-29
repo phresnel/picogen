@@ -26,61 +26,58 @@
 #ifndef _AABOX_H
 #define _AABOX_H
 
-#ifndef INSIDE_OBJECTS_H
 namespace picogen {
-namespace graphics {
-namespace objects {
-#endif // #ifndef INSIDE_OBJECTS_H
+    namespace graphics {
+        namespace objects {
+
+            class AABox : public ::picogen::graphics::objects::abstract::IIntersectable {
+                public:
+                    typedef enum face_t {
+                        x_negative=0,
+                        x_positive=1,
+                        y_negative=2,
+                        y_positive=3,
+                        z_negative=4,
+                        z_positive=5
+                    };
+
+                private:
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                    typedef ::picogen::graphics::material::abstract::IShader IShader;
+                    typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                    typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                    typedef ::picogen::graphics::image::color::Color Color;
+                    typedef ::picogen::misc::functions::vector_to_scalar::PerlinNoise PerlinNoise;
+
+                private:
 
 
-class AABox : public picogen::graphics::objects::abstract::IIntersectable {
-public:
-    typedef enum face_t {
-        x_negative=0,
-        x_positive=1,
-        y_negative=2,
-        y_positive=3,
-        z_negative=4,
-        z_positive=5
-    };
+                    const IBRDF* brdfs[6];
+                    const IShader* shaders[6];
+                    bool enable[6];
+                    bool enableOutside_;
 
-private:
-    typedef picogen::misc::prim::real real;
-    typedef picogen::misc::geometrics::Vector3d Vector3d;
-    typedef picogen::misc::geometrics::Ray Ray;
-    typedef picogen::misc::geometrics::BoundingBox BoundingBox;
-    typedef picogen::graphics::material::abstract::IBRDF IBRDF;
-    typedef picogen::graphics::structs::intersection_t intersection_t;
-    typedef picogen::graphics::objects::abstract::IIntersectable IIntersectable;
-    typedef picogen::graphics::image::color::Color Color;
-    typedef picogen::misc::functions::vector_to_scalar::PerlinNoise PerlinNoise;
+                public:
+                    AABox();
+                    virtual ~AABox();
+                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
 
-private:
+                    void setBRDF (face_t face, const IBRDF* const brdf);
+                    void setShader (face_t face, const IShader* const shader);
+                    void setBRDF (const IBRDF* const brdf);
+                    void setShader (const IShader* const shader);
+                    void enableFace (face_t face, bool enable);
+                    void enableOutside (bool enable);
+            };
 
-
-    const picogen::graphics::material::abstract::IBRDF* brdfs[6];
-    const picogen::graphics::material::abstract::IShader* shaders[6];
-    bool enable[6];
-    bool enableOutside_;
-
-public:
-    AABox();
-    virtual ~AABox();
-    virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
-
-    void setBRDF( face_t face, const picogen::graphics::material::abstract::IBRDF* const brdf );
-    void setShader( face_t face, const picogen::graphics::material::abstract::IShader* const shader );
-    void setBRDF( const picogen::graphics::material::abstract::IBRDF* const brdf );
-    void setShader( const picogen::graphics::material::abstract::IShader* const shader );
-    void enableFace( face_t face, bool enable );
-    void enableOutside( bool enable );
-};
-
-#ifndef INSIDE_OBJECTS_H
-}
-}
+        }
+    }
 } // namespace picogen{ namespace graphics{ namespace objects{
-#endif // #ifndef INSIDE_OBJECTS_H
+
 
 
 #endif /* _AABOX_H */

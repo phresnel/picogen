@@ -27,49 +27,51 @@
 #define _SNOW_H
 
 namespace picogen {
-namespace graphics {
-namespace objects {
+    namespace graphics {
+        namespace objects {
 
-class Snow : public picogen::graphics::objects::abstract::IIntersectable {
-private:
-    typedef picogen::misc::prim::real real;
-    typedef picogen::misc::geometrics::Vector3d Vector3d;
-    typedef picogen::misc::geometrics::Ray Ray;
-    typedef picogen::misc::geometrics::BoundingBox BoundingBox;
-    typedef picogen::graphics::material::abstract::IBRDF IBRDF;
-    typedef picogen::graphics::structs::intersection_t intersection_t;
-    typedef picogen::graphics::image::color::Color Color;
-    typedef picogen::misc::functions::vector_to_scalar::PerlinNoise PerlinNoise;
+            class Snow : public ::picogen::graphics::objects::abstract::IIntersectable {
+                private:
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                    typedef ::picogen::graphics::material::abstract::IShader IShader;
+                    typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                    typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                    typedef ::picogen::graphics::image::color::Color Color;
+                    typedef ::picogen::misc::functions::vector_to_scalar::PerlinNoise PerlinNoise;
 
-private:
+                private:
 
-    typedef struct SnowSphere {
-        real minDistance, maxDistance;
-        PerlinNoise snowMap;
-    };
-    unsigned int numSnowSpheres;
-    SnowSphere *snowSpheres;
+                    typedef struct SnowSphere {
+                        real minDistance, maxDistance;
+                        PerlinNoise snowMap;
+                    };
+                    unsigned int numSnowSpheres;
+                    SnowSphere *snowSpheres;
 
-    /*real timeexp;
-    Vector3d velocity;*/
+                    /*real timeexp;
+                    Vector3d velocity;*/
 
-public:
-    Snow();
-    virtual ~Snow();
-    virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
+                public:
+                    Snow();
+                    virtual ~Snow();
+                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
 
-    /*void SetTimeExponent( misc::prim::real t )
-    {
-    	timeexp = t;
+                    /*void SetTimeExponent( misc::prim::real t )
+                    {
+                     timeexp = t;
+                    }
+                    void SetVelocity( param_in( misc::geometrics::Vector3d, V ) )
+                    {
+                     velocity = V;
+                    }*/
+            };
+
+        }
     }
-    void SetVelocity( param_in( misc::geometrics::Vector3d, V ) )
-    {
-    	velocity = V;
-    }*/
-};
-
-}
-}
 } // namespace picogen{ namespace graphics{ namespace objects{
 
 #endif /* _SNOW_H */

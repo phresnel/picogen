@@ -26,16 +26,22 @@
 #ifndef _SAMPLERS_H
 #define _SAMPLERS_H
 
-namespace samplers {
-namespace screen {
 #include "samplers/image/XYIterator.h"
-};
-namespace ray {
 #include "samplers/ray/Simple.h"
 #include "samplers/ray/Preview.h"
-};
-namespace light {
-};
-};
+
+
+namespace picogen {
+    namespace graphics {
+        namespace samplers {
+            namespace screen {
+            }
+            namespace ray {
+            }
+            namespace light {
+            }
+        }
+    }
+}
 
 #endif /* _SAMPLERS_H */

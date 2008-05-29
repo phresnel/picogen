@@ -26,40 +26,51 @@
 #ifndef _VELOCITYINSTANCE_H
 #define _VELOCITYINSTANCE_H
 
-class VelocityInstance : public abstract::IIntersectable {
-    abstract::IIntersectable *intersectable;
-    misc::geometrics::Vector3d velocity, offset;
-    misc::prim::real timeexp;
-public:
-    VelocityInstance() : intersectable(NULL), timeexp(1.0) {}
+namespace picogen {
+    namespace graphics {
+        namespace objects {
 
-    void SetTimeExponent( misc::prim::real t ) {
-        timeexp = t;
-    }
-    void SetVelocity( param_in( misc::geometrics::Vector3d, V ) ) {
-        velocity = V;
-    }
-    void SetOffset( param_in( misc::geometrics::Vector3d, o ) ) {
-        offset = o;
-    }
-    void SetIntersectable( const abstract::IIntersectable* I ) {
-        intersectable = const_cast<abstract::IIntersectable*>(I);
-    }
+            class VelocityInstance : public ::picogen::graphics::objects::abstract::IIntersectable {
+                    typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::graphics::structs::intersection_t intersection_t;
 
-    virtual bool Intersect(
-        param_out(structs::intersection_t,intersection), param_in(misc::geometrics::Ray,ray)
-    ) const {
-        using misc::geometrics::Ray;
-        using misc::prim::real;
+                    IIntersectable *intersectable;
+                    Vector3d velocity, offset;
+                    real timeexp;
+                public:
+                    VelocityInstance() : intersectable (NULL), timeexp (1.0) {}
 
-        if ( NULL == intersectable )
-            return false;
-        Ray newRay;
-        newRay.x() = ray.x() + offset + velocity * ( powf( real(rand())/real(RAND_MAX), timeexp ) );
-        newRay.w() = ray.w();
-        return intersectable->Intersect( intersection, newRay );
-    }
-};
+                    void SetTimeExponent (real t) {
+                        timeexp = t;
+                    }
+                    void SetVelocity (param_in (Vector3d, V)) {
+                        velocity = V;
+                    }
+                    void SetOffset (param_in (Vector3d, o)) {
+                        offset = o;
+                    }
+                    void SetIntersectable (const IIntersectable* I) {
+                        /// \todo  const_cast?
+                        intersectable = const_cast<IIntersectable*> (I);
+                    }
 
+                    virtual bool Intersect (
+                        param_out (intersection_t,intersection), param_in (Ray,ray)
+                    ) const {
+                        if (NULL == intersectable)
+                            return false;
+                        Ray newRay;
+                        newRay.x() = ray.x() + offset + velocity * (powf (real (rand()) /real (RAND_MAX), timeexp));
+                        newRay.w() = ray.w();
+                        return intersectable->Intersect (intersection, newRay);
+                    }
+            };
+
+        }//namespace picogen {
+    }//namespace graphics {
+}// namespace objects {
 
 #endif /* _VELOCITYINSTANCE_H */

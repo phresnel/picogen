@@ -26,25 +26,32 @@
 #ifndef _LINEARLIST_H
 #define _LINEARLIST_H
 
-class LinearList : public abstract::IScene {
-private:
-    typedef misc::prim::real              real;
-    typedef misc::geometrics::Vector3d    Vector3d;
-    typedef misc::geometrics::Ray         Ray;
-    typedef graphics::image::color::Color Color;
-    typedef graphics::structs::intersection_t intersection_t;
+namespace picogen {
+    namespace graphics {
+        namespace objects {
+            class LinearList : public ::picogen::graphics::objects::abstract::IScene {
+                private:
+                    typedef ::picogen::misc::prim::real              real;
+                    typedef ::picogen::misc::geometrics::Vector3d    Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray         Ray;
+                    typedef ::picogen::graphics::image::color::Color Color;
+                    typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                    typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
 
-    typedef std::list<abstract::IIntersectable*>  t_objectList;
-    t_objectList m_list;
-public:
-    LinearList();
-    virtual ~LinearList();
-    virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const;
-    virtual void Insert( const abstract::IIntersectable*i );
-    virtual void Flush();
-    virtual void Invalidate();
-};
+                    typedef ::std::list<IIntersectable*>  t_objectList;
+                    t_objectList m_list;
+                public:
+                    LinearList();
+                    virtual ~LinearList();
+                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+                    virtual void Insert (const IIntersectable*i);
+                    virtual void Flush();
+                    virtual void Invalidate();
+            };
 
+        }
+    }
+}//namespace picogen {namespace graphics {namespace objects {
 
 
 #endif /* _LINEARLIST_H */

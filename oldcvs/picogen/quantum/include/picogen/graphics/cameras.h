@@ -25,128 +25,135 @@
 #ifndef _CAMERAS_H
 #define _CAMERAS_H
 
-namespace cameras {
-class FromPointToRect {
-    typedef misc::prim::real real;
-    typedef misc::geometrics::Vector3d Vector3d;
-    typedef misc::geometrics::Ray Ray;
 
-    real m_width, m_height, m_Z;
-    Vector3d m_position;
-public:
-    FromPointToRect( real width, real height, real Z )
-            : m_width(width), m_height(height), m_Z(Z), m_position(0.0,0.0,0.0) {
-    }
-    FromPointToRect()
-            : m_width(1), m_height(1), m_Z(1), m_position(0.0,0.0,0.0) {
-    }
-    void DefineCamera( real width, real height, real Z ) {
-        XRT_CALL_STACK_PUSH( "void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )" );
-        m_width  = width;
-        m_height = height;
-        m_Z = Z;
-        XRT_CALL_STACK_POP();
-    }
-    /*void SetPosition( Vector3d pos )
-    {
-    	m_position = pos;
-    }*/
-    void RayFromUV( param_out(Ray,ray), const real u, const real v ) const {
-        XRT_CALL_STACK_PUSH( "void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )" );
-        ray.w()[0] = u*m_width-0.5*m_width;
-        ray.w()[1] = -(v*m_height-0.5*m_height);
-        ray.w()[2] = m_Z;
-        ray.w() = ray.w().normal();
-        ray.x() = m_position;
-        XRT_CALL_STACK_POP();
-    }
-};
-class FromPointToRect_Cube {
-    typedef misc::prim::real real;
-    typedef misc::geometrics::Vector3d Vector3d;
-    typedef misc::geometrics::Ray Ray;
+namespace picogen {
+    namespace graphics {
+        namespace cameras {
+            class FromPointToRect {
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
 
-    real m_width, m_height, m_Z;
-    Vector3d m_position;
-public:
-    FromPointToRect_Cube( real width, real height, real Z/*, Vector3d pos*/ )
-            : m_width(width), m_height(height), m_Z(Z), m_position(0.0,0.0,0.0) {
-    }
-    FromPointToRect_Cube()
-            : m_width(1), m_height(1), m_Z(1), m_position(0.0,0.0,0.0) {
-    }
-    void DefineCamera( real width, real height, real Z ) {
-        XRT_CALL_STACK_PUSH( "void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )" );
-        m_width  = 1;
-        m_height = 1;
-        m_Z = 0.5;
-        XRT_CALL_STACK_POP();
-    }
-    /*void SetPosition( Vector3d pos )
-    {
-    	m_position = pos;
-    }*/
-    void RayFromUV( param_out(Ray,ray), const real _u, const real v ) const {
-        XRT_CALL_STACK_PUSH( "void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )" );
-        real u = _u * 4;
-        if ( u<1 ) {
-            ray.w()[2] = ( (u)*m_width-0.5*m_width );
-            ray.w()[1] = -(v*m_height-0.5*m_height);
-            ray.w()[0] = -m_Z;
-        } else if ( u<2 ) {
-            ray.w()[0] = (u-1)*m_width-0.5*m_width;
-            ray.w()[1] = -(v*m_height-0.5*m_height);
-            ray.w()[2] = m_Z;
-        } else if ( u<3 ) {
-            ray.w()[2] = -( (u-2)*m_width-0.5*m_width );
-            ray.w()[1] = -(v*m_height-0.5*m_height);
-            ray.w()[0] = m_Z;
-        } else {
-            ray.w()[0] = -( (u-3)*m_width-0.5*m_width );
-            ray.w()[1] = -(v*m_height-0.5*m_height);
-            ray.w()[2] = -m_Z;
-        }
+                    real m_width, m_height, m_Z;
+                    Vector3d m_position;
+                public:
+                    FromPointToRect (real width, real height, real Z)
+                            : m_width (width), m_height (height), m_Z (Z), m_position (0.0,0.0,0.0) {
+                    }
+                    FromPointToRect()
+                            : m_width (1), m_height (1), m_Z (1), m_position (0.0,0.0,0.0) {
+                    }
+                    void DefineCamera (real width, real height, real Z) {
+                        XRT_CALL_STACK_PUSH ("void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )");
+                        m_width  = width;
+                        m_height = height;
+                        m_Z = Z;
+                        XRT_CALL_STACK_POP();
+                    }
+                    /*void SetPosition( Vector3d pos )
+                    {
+                     m_position = pos;
+                    }*/
+                    void RayFromUV (param_out (Ray,ray), const real u, const real v) const {
+                        XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
+                        ray.w() [0] = u*m_width-0.5*m_width;
+                        ray.w() [1] = - (v*m_height-0.5*m_height);
+                        ray.w() [2] = m_Z;
+                        ray.w() = ray.w().normal();
+                        ray.x() = m_position;
+                        XRT_CALL_STACK_POP();
+                    }
+            };
+            class FromPointToRect_Cube {
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
 
-        ray.w() = ray.w().normal();
-        ray.x() = m_position;
-        XRT_CALL_STACK_POP();
-    }
-};
-class FromPointToRect_Cylinder {
-    typedef misc::prim::real real;
-    typedef misc::geometrics::Vector3d Vector3d;
-    typedef misc::geometrics::Ray Ray;
+                    real m_width, m_height, m_Z;
+                    Vector3d m_position;
+                public:
+                    FromPointToRect_Cube (real width, real height, real Z/*, Vector3d pos*/)
+                            : m_width (width), m_height (height), m_Z (Z), m_position (0.0,0.0,0.0) {
+                    }
+                    FromPointToRect_Cube()
+                            : m_width (1), m_height (1), m_Z (1), m_position (0.0,0.0,0.0) {
+                    }
+                    void DefineCamera (real width, real height, real Z) {
+                        XRT_CALL_STACK_PUSH ("void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )");
+                        m_width  = 1;
+                        m_height = 1;
+                        m_Z = 0.5;
+                        XRT_CALL_STACK_POP();
+                    }
+                    /*void SetPosition( Vector3d pos )
+                    {
+                     m_position = pos;
+                    }*/
+                    void RayFromUV (param_out (Ray,ray), const real _u, const real v) const {
+                        XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
+                        real u = _u * 4;
+                        if (u<1) {
+                            ray.w() [2] = ( (u) *m_width-0.5*m_width);
+                            ray.w() [1] = - (v*m_height-0.5*m_height);
+                            ray.w() [0] = -m_Z;
+                        } else if (u<2) {
+                            ray.w() [0] = (u-1) *m_width-0.5*m_width;
+                            ray.w() [1] = - (v*m_height-0.5*m_height);
+                            ray.w() [2] = m_Z;
+                        } else if (u<3) {
+                            ray.w() [2] = - ( (u-2) *m_width-0.5*m_width);
+                            ray.w() [1] = - (v*m_height-0.5*m_height);
+                            ray.w() [0] = m_Z;
+                        } else {
+                            ray.w() [0] = - ( (u-3) *m_width-0.5*m_width);
+                            ray.w() [1] = - (v*m_height-0.5*m_height);
+                            ray.w() [2] = -m_Z;
+                        }
 
-    real m_width, m_height, m_Z;
-    Vector3d m_position;
-public:
-    FromPointToRect_Cylinder( real width, real height, real Z/*, Vector3d pos*/ )
-            : m_width(width), m_height(height), m_Z(Z), m_position(0.0,0.0,0.0) {
-    }
-    FromPointToRect_Cylinder()
-            : m_width(1), m_height(1), m_Z(1), m_position(0.0,0.0,0.0) {
-    }
-    void DefineCamera( real width, real height, real Z ) {
-        XRT_CALL_STACK_PUSH( "void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )" );
-        m_width  = width;
-        m_height = height;
-        m_Z = Z;
-        XRT_CALL_STACK_POP();
-    }
-    /*void SetPosition( Vector3d pos )
-    {
-    	m_position = pos;
-    }*/
-    void RayFromUV( param_out(Ray,ray), const real u, const real v ) const {
-        XRT_CALL_STACK_PUSH( "void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )" );
-        real a = -u*2*misc::constants::pi;
-        ray.w()[0] = m_Z*cos(a);
-        ray.w()[1] = -(v*m_height-0.5*m_height);
-        ray.w()[2] = m_Z*sin(a);
-        ray.w() = ray.w().normal();
-        ray.x() = m_position;
-        XRT_CALL_STACK_POP();
-    }
-};
-};
+                        ray.w() = ray.w().normal();
+                        ray.x() = m_position;
+                        XRT_CALL_STACK_POP();
+                    }
+            };
+            class FromPointToRect_Cylinder {
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
+
+                    real m_width, m_height, m_Z;
+                    Vector3d m_position;
+                public:
+                    FromPointToRect_Cylinder (real width, real height, real Z/*, Vector3d pos*/)
+                            : m_width (width), m_height (height), m_Z (Z), m_position (0.0,0.0,0.0) {
+                    }
+                    FromPointToRect_Cylinder()
+                            : m_width (1), m_height (1), m_Z (1), m_position (0.0,0.0,0.0) {
+                    }
+                    void DefineCamera (real width, real height, real Z) {
+                        XRT_CALL_STACK_PUSH ("void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )");
+                        m_width  = width;
+                        m_height = height;
+                        m_Z = Z;
+                        XRT_CALL_STACK_POP();
+                    }
+                    /*void SetPosition( Vector3d pos )
+                    {
+                     m_position = pos;
+                    }*/
+                    void RayFromUV (param_out (Ray,ray), const real u, const real v) const {
+                        XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
+                        real a = -u*2*::picogen::misc::constants::pi;
+                        ray.w() [0] = m_Z*cos (a);
+                        ray.w() [1] = - (v*m_height-0.5*m_height);
+                        ray.w() [2] = m_Z*sin (a);
+                        ray.w() = ray.w().normal();
+                        ray.x() = m_position;
+                        XRT_CALL_STACK_POP();
+                    }
+            };
+        } // namespace cameras {
+    }//namespace picogen {
+}//namespace graphics {
+
+
 #endif /* _CAMERAS_H */

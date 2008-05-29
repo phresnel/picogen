@@ -28,11 +28,11 @@
 std::string inlispEditor() {
     using namespace std;
     char s[1024];
-    fgets( s, sizeof(s), stdin );
-    return std::string( s );
+    fgets (s, sizeof (s), stdin);
+    return std::string (s);
 }
 
-int main_mkheightmap( int argc, char *argv[] ) {
+int main_mkheightmap (int argc, char *argv[]) {
     using namespace std;
     cout << "Type in some formula in inlisp-syntax: " << endl;
 
@@ -41,8 +41,8 @@ int main_mkheightmap( int argc, char *argv[] ) {
 
     using namespace picogen::misc::functional;
     try {
-        Function_R2_R1 fun( code );
-    } catch ( const functional_general_exeption &e ) {
+        Function_R2_R1 fun (code);
+    } catch (const functional_general_exeption &e) {
         cerr << "there was some error in your function:\n   " << e.getMessage() << endl;
     }
 

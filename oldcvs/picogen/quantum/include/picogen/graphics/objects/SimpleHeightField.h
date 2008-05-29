@@ -26,59 +26,77 @@
 #ifndef _SIMPLEHEIGHTFIELD_H
 #define _SIMPLEHEIGHTFIELD_H
 
+namespace picogen {
+    namespace graphics {
+        namespace objects {
 
 
-class SimpleHeightField : public abstract::IIntersectable {
-private:
-    typedef unsigned short t_heightVal;
-    misc::geometrics::BoundingBox m_scaleBox;
-    misc::prim::real m_scaleSize[3];
-    misc::prim::real m_vScale;
-    const material::abstract::IBRDF *m_pBRDF;
-    const material::abstract::IShader *m_pShader;
-    t_heightVal *m_pField;
-    unsigned int m_size;
-    misc::prim::real m_scaleBoxMin[3];
-    misc::prim::real m_invertHMapSize;
-    misc::prim::real m_invertScaleSize[3];
-    misc::prim::real m_scaleSize_mul_invertHMapSize[3];
-private:
-    void updateOptimizerVars();
-    inline misc::prim::real htor( t_heightVal v ) const {
-        return ( misc::prim::real( v ) / misc::prim::real( 0xFFFF ) );
-    }
-    inline t_heightVal rtoh( misc::prim::real v ) const {
-        static const misc::prim::real maxF = misc::prim::real( 0xFFFE );
-        const misc::prim::real f = misc::prim::real( v ) * maxF;
-        return t_heightVal( f < 0.0 ? 0 : f >= maxF ? maxF : f );
-    }
 
-    misc::prim::real smoothedHeightFunc( const misc::functions::abstract::uv_to_scalar *heightFunc, misc::prim::real u, misc::prim::real v, misc::prim::real cellSizeX, misc::prim::real cellSizeY );
+            class SimpleHeightField : public ::picogen::graphics::objects::abstract::IIntersectable {
+                    /// \todo de-uglify typenames
+                private:
+                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                    typedef ::picogen::graphics::material::abstract::IShader IShader;
+                    typedef ::picogen::graphics::structs::intersection_t intersection_t;
 
-    inline int intersectVoxel(
-        param_out( structs::intersection_t, intersection ),
-        int u, int v,
-        misc::prim::real x1, misc::prim::real z1, misc::prim::real x2, misc::prim::real z2,
-        param_in( misc::geometrics::Ray, ray ) ) const;
-    inline int lineIntersection(
-        param_out( structs::intersection_t, intersection ),
-        misc::prim::real au, misc::prim::real av,
-        misc::prim::real bu, misc::prim::real bv,
-        param_in( misc::geometrics::Ray, ray ) ) const;
-    /*inline void shade(
-        param_out(image::color::Color,color),
-        param_in(misc::geometrics::Vector3d,normal) ) const;*/
-public:
-    SimpleHeightField();
-    virtual ~SimpleHeightField();
-    void SetBox( param_in( misc::geometrics::Vector3d, min ), param_in( misc::geometrics::Vector3d, max ) );
-    void SetBRDF( const material::abstract::IBRDF* brdf );
-    void SetShader( const material::abstract::IShader* shader );
-    void Init( unsigned int size, const misc::functions::abstract::uv_to_scalar *heightFunc, misc::prim::real boundsGuessAccuracy = 1.0, bool smooth = true );
 
-    virtual bool Intersect( param_out( structs::intersection_t, intersection ), param_in( misc::geometrics::Ray, ray ) ) const;
-};
 
+                    typedef unsigned short t_heightVal;
+                    BoundingBox m_scaleBox;
+                    real m_scaleSize[3];
+                    real m_vScale;
+                    const IBRDF *m_pBRDF;
+                    const IShader *m_pShader;
+                    t_heightVal *m_pField;
+                    unsigned int m_size;
+                    real m_scaleBoxMin[3];
+                    real m_invertHMapSize;
+                    real m_invertScaleSize[3];
+                    real m_scaleSize_mul_invertHMapSize[3];
+                private:
+                    void updateOptimizerVars();
+                    inline real htor (t_heightVal v) const {
+                        return (real (v) / real (0xFFFF));
+                    }
+                    inline t_heightVal rtoh (real v) const {
+                        static const real maxF = real (0xFFFE);
+                        const real f = misc::prim::real (v) * maxF;
+                        return t_heightVal (f < 0.0 ? 0 : f >= maxF ? maxF : f);
+                    }
+
+                    real smoothedHeightFunc (const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real u, real v, real cellSizeX, real cellSizeY);
+
+                    inline int intersectVoxel (
+                        param_out (intersection_t, intersection),
+                        int u, int v,
+                        real x1, real z1, real x2, real z2,
+                        param_in (Ray, ray)) const;
+                    inline int lineIntersection (
+                        param_out (intersection_t, intersection),
+                        real au, real av,
+                        real bu, real bv,
+                        param_in (Ray, ray)) const;
+                    /*inline void shade(
+                        param_out(image::color::Color,color),
+                        param_in(misc::geometrics::Vector3d,normal) ) const;*/
+                public:
+                    SimpleHeightField();
+                    virtual ~SimpleHeightField();
+                    void SetBox (param_in (Vector3d, min), param_in (Vector3d, max));
+                    void SetBRDF (const IBRDF* brdf);
+                    void SetShader (const IShader* shader);
+                    void Init (unsigned int size, const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real boundsGuessAccuracy = 1.0, bool smooth = true);
+
+                    virtual bool Intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const;
+            };
+
+        } // namespace objects {
+    } // namespace graphics {
+} // namespace picogen {
 
 
 

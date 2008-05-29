@@ -26,61 +26,65 @@
 #ifndef _OBJECTS_H
 #define _OBJECTS_H
 
-#ifdef INSIDE_OBJECTS_H
-#error "INSIDE_OBJECTS_H has already been defined somewhere else"
-#endif
-#define INSIDE_OBJECTS_H
 
+namespace picogen {
+    namespace graphics {
 
-namespace objects {
+        namespace objects {
 
-namespace abstract {
-class IIntersectable {
-    typedef misc::prim::real _real;
-    typedef misc::geometrics::Vector3d _Vector3d;
-    typedef misc::geometrics::Ray _Ray;
-    typedef structs::intersection_t _intersection_t;
-public:
-    virtual bool Intersect( param_out(_intersection_t,intersection), param_in(_Ray,ray) ) const = 0;
-    virtual ~IIntersectable() {};
-};
-class IScene : public IIntersectable {
-    typedef misc::prim::real real;
-    typedef misc::geometrics::Vector3d Vector3d;
-    typedef structs::intersection_t intersection_t;
-public:
-    virtual void Insert( const IIntersectable*i ) = 0;
-    virtual void Flush() = 0;
-    virtual void Invalidate() = 0;
-    virtual ~IScene() {}
-};
+            namespace abstract {
+                class IIntersectable {
+                    private:
+                        typedef ::picogen::misc::geometrics::Ray Ray;
+                        typedef ::picogen::graphics::structs::intersection_t intersection_t;
+                    public:
+                        virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const = 0;
+                        virtual ~IIntersectable() {};
+                };
+                class IScene : public IIntersectable {
+                    private:
+                    public:
+                        virtual void Insert (const IIntersectable*i) = 0;
+                        virtual void Flush() = 0;
+                        virtual void Invalidate() = 0;
+                        virtual ~IScene() {}
+                };
 
-//> similar to IScene, but constrained to naked triangles
-class ITriScene : public IIntersectable {
-    typedef misc::prim::real real;
-    typedef misc::geometrics::Vector3d Vector3d;
-    typedef structs::intersection_t intersection_t;
-public:
-    virtual void SetBRDF( const material::abstract::IBRDF *brdf ) = 0;
-    virtual void Insert( param_in(Vector3d,A), param_in(Vector3d,B), param_in(Vector3d,C) ) = 0;
-    virtual void Flush() = 0;
-    virtual void Invalidate() = 0;
-    virtual ~ITriScene() {}
-};
+                //> similar to IScene, but constrained to naked triangles
+                class ITriScene : public IIntersectable {
+                    private:
+                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
+                    public:
+                        virtual void SetBRDF (const IBRDF *brdf) = 0;
+                        virtual void Insert (param_in (Vector3d,A), param_in (Vector3d,B), param_in (Vector3d,C)) = 0;
+                        virtual void Flush() = 0;
+                        virtual void Invalidate() = 0;
+                        virtual ~ITriScene() {}
+                };
 
-class ISky {
-    typedef misc::prim::real real;
-    typedef misc::geometrics::Vector3d Vector3d;
-    typedef misc::geometrics::Ray Ray;
-    typedef structs::intersection_t intersection_t;
-public:
-    virtual ~ISky() {};
-    virtual void Shade( param_out(image::color::Color,color), param_in(Ray,ray) ) const = 0;
-    virtual void SunShade( param_out(image::color::Color,color), param_in(Ray,ray) ) const = 0;
-    virtual void SunSample( param_out(image::color::Color,color), param_out(Ray,ray), param_out(real,p), param_in(Vector3d,position) ) const = 0;
-    virtual void AtmosphereShade( param_out(image::color::Color,color), param_in(image::color::Color,src_color), param_in(Ray,ray), real distance ) const = 0;
-};
-};
+                class ISky {
+                    private:
+                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::misc::geometrics::Ray Ray;
+                        typedef ::picogen::graphics::image::color::Color Color;
+                        typedef ::picogen::misc::prim::real real;
+                    public:
+                        virtual ~ISky() {};
+                        virtual void Shade (param_out (Color,color), param_in (Ray,ray)) const = 0;
+                        virtual void SunShade (param_out (Color,color), param_in (Ray,ray)) const = 0;
+                        virtual void SunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const = 0;
+                        virtual void AtmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const = 0;
+                };
+            } // namespace abstract
+        } // namespace objects
+    } // namespace graphics
+}//namespace picogen
+/*
+#include "objects/Snow.h"
+#include "objects/Rain.h"
+//> above files moved to picogen/experimental as long as they are exactly that
+*/
 
 #include "objects/LinearList.h"
 #include "objects/TriBIH.h"
@@ -90,11 +94,6 @@ public:
 #include "objects/Sphere.h"
 #include "objects/ZBNCubemap.h"
 #include "objects/AABox.h"
-/*
-#include "objects/Snow.h"
-#include "objects/Rain.h"
-//> above files moved to picogen/experimental as long as they are exactly that
-*/
-};
-#undef INSIDE_OBJECTS_H
+
+
 #endif /* _OBJECTS_H */
