@@ -110,7 +110,7 @@ namespace picogen {
         }
     }
 }
-#include <picogen/misc/namespace_mnemonics.h>
+
 
 namespace picogen {
 

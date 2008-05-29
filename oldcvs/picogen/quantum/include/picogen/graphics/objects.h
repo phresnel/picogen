@@ -38,15 +38,15 @@ namespace picogen {
                         typedef ::picogen::misc::geometrics::Ray Ray;
                         typedef ::picogen::graphics::structs::intersection_t intersection_t;
                     public:
-                        virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const = 0;
+                        virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const = 0;
                         virtual ~IIntersectable() {};
                 };
                 class IScene : public IIntersectable {
                     private:
                     public:
-                        virtual void Insert (const IIntersectable*i) = 0;
-                        virtual void Flush() = 0;
-                        virtual void Invalidate() = 0;
+                        virtual void insert (const IIntersectable*i) = 0;
+                        virtual void flush() = 0;
+                        virtual void invalidate() = 0;
                         virtual ~IScene() {}
                 };
 
@@ -56,10 +56,10 @@ namespace picogen {
                         typedef ::picogen::misc::geometrics::Vector3d Vector3d;
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     public:
-                        virtual void SetBRDF (const IBRDF *brdf) = 0;
-                        virtual void Insert (param_in (Vector3d,A), param_in (Vector3d,B), param_in (Vector3d,C)) = 0;
-                        virtual void Flush() = 0;
-                        virtual void Invalidate() = 0;
+                        virtual void setBRDF (const IBRDF *brdf) = 0;
+                        virtual void insert (param_in (Vector3d,A), param_in (Vector3d,B), param_in (Vector3d,C)) = 0;
+                        virtual void flush() = 0;
+                        virtual void invalidate() = 0;
                         virtual ~ITriScene() {}
                 };
 
@@ -71,10 +71,10 @@ namespace picogen {
                         typedef ::picogen::misc::prim::real real;
                     public:
                         virtual ~ISky() {};
-                        virtual void Shade (param_out (Color,color), param_in (Ray,ray)) const = 0;
-                        virtual void SunShade (param_out (Color,color), param_in (Ray,ray)) const = 0;
-                        virtual void SunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const = 0;
-                        virtual void AtmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const = 0;
+                        virtual void shade (param_out (Color,color), param_in (Ray,ray)) const = 0;
+                        virtual void sunShade (param_out (Color,color), param_in (Ray,ray)) const = 0;
+                        virtual void sunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const = 0;
+                        virtual void atmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const = 0;
                 };
             } // namespace abstract
         } // namespace objects

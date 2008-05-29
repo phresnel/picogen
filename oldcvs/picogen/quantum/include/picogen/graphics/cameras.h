@@ -43,7 +43,7 @@ namespace picogen {
                     FromPointToRect()
                             : m_width (1), m_height (1), m_Z (1), m_position (0.0,0.0,0.0) {
                     }
-                    void DefineCamera (real width, real height, real Z) {
+                    void defineCamera (real width, real height, real Z) {
                         XRT_CALL_STACK_PUSH ("void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )");
                         m_width  = width;
                         m_height = height;
@@ -54,7 +54,7 @@ namespace picogen {
                     {
                      m_position = pos;
                     }*/
-                    void RayFromUV (param_out (Ray,ray), const real u, const real v) const {
+                    void rayFromUV (param_out (Ray,ray), const real u, const real v) const {
                         XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
                         ray.w() [0] = u*m_width-0.5*m_width;
                         ray.w() [1] = - (v*m_height-0.5*m_height);
@@ -78,7 +78,7 @@ namespace picogen {
                     FromPointToRect_Cube()
                             : m_width (1), m_height (1), m_Z (1), m_position (0.0,0.0,0.0) {
                     }
-                    void DefineCamera (real width, real height, real Z) {
+                    void defineCamera (real width, real height, real Z) {
                         XRT_CALL_STACK_PUSH ("void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )");
                         m_width  = 1;
                         m_height = 1;
@@ -89,7 +89,7 @@ namespace picogen {
                     {
                      m_position = pos;
                     }*/
-                    void RayFromUV (param_out (Ray,ray), const real _u, const real v) const {
+                    void rayFromUV (param_out (Ray,ray), const real _u, const real v) const {
                         XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
                         real u = _u * 4;
                         if (u<1) {
@@ -129,7 +129,7 @@ namespace picogen {
                     FromPointToRect_Cylinder()
                             : m_width (1), m_height (1), m_Z (1), m_position (0.0,0.0,0.0) {
                     }
-                    void DefineCamera (real width, real height, real Z) {
+                    void defineCamera (real width, real height, real Z) {
                         XRT_CALL_STACK_PUSH ("void FromPointToRect::DefineCamera( base_types::real width, base_types::real height, base_types::real Z )");
                         m_width  = width;
                         m_height = height;
@@ -140,7 +140,7 @@ namespace picogen {
                     {
                      m_position = pos;
                     }*/
-                    void RayFromUV (param_out (Ray,ray), const real u, const real v) const {
+                    void rayFromUV (param_out (Ray,ray), const real u, const real v) const {
                         XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
                         real a = -u*2*::picogen::misc::constants::pi;
                         ray.w() [0] = m_Z*cos (a);

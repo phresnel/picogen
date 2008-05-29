@@ -28,6 +28,8 @@
 namespace picogen {
     namespace misc {
         namespace geometrics {
+
+            /// \todo rewrite whole class. it is crap.
             class Transformation {
 
                     typedef ::picogen::misc::prim::real real;
@@ -48,265 +50,109 @@ namespace picogen {
                         real _21, real _22, real _23, real _24,
                         real _31, real _32, real _33, real _34,
                         real _41, real _42, real _43, real _44) {
-                        matrix._11 = _11;
-                        matrix._12 = _12;
-                        matrix._13 = _13;
-                        matrix._14 = _14;
-                        matrix._21 = _21;
-                        matrix._22 = _22;
-                        matrix._23 = _23;
-                        matrix._24 = _24;
-                        matrix._31 = _31;
-                        matrix._32 = _32;
-                        matrix._33 = _33;
-                        matrix._34 = _34;
-                        matrix._41 = _41;
-                        matrix._42 = _42;
-                        matrix._43 = _43;
-                        matrix._44 = _44;
+                        matrix._11 = _11; matrix._12 = _12; matrix._13 = _13; matrix._14 = _14;
+                        matrix._21 = _21; matrix._22 = _22; matrix._23 = _23; matrix._24 = _24;
+                        matrix._31 = _31; matrix._32 = _32; matrix._33 = _33; matrix._34 = _34;
+                        matrix._41 = _41; matrix._42 = _42; matrix._43 = _43; matrix._44 = _44;
                     }
 
                     Transformation (const Transformation &t) {
-                        matrix._11 = t.matrix._11;
-                        matrix._12 = t.matrix._12;
-                        matrix._13 = t.matrix._13;
-                        matrix._14 = t.matrix._14;
-                        matrix._21 = t.matrix._21;
-                        matrix._22 = t.matrix._22;
-                        matrix._23 = t.matrix._23;
-                        matrix._24 = t.matrix._24;
-                        matrix._31 = t.matrix._31;
-                        matrix._32 = t.matrix._32;
-                        matrix._33 = t.matrix._33;
-                        matrix._34 = t.matrix._34;
-                        matrix._41 = t.matrix._41;
-                        matrix._42 = t.matrix._42;
-                        matrix._43 = t.matrix._43;
-                        matrix._44 = t.matrix._44;
+                        matrix._11 = t.matrix._11; matrix._12 = t.matrix._12; matrix._13 = t.matrix._13; matrix._14 = t.matrix._14;
+                        matrix._21 = t.matrix._21; matrix._22 = t.matrix._22; matrix._23 = t.matrix._23; matrix._24 = t.matrix._24;
+                        matrix._31 = t.matrix._31; matrix._32 = t.matrix._32; matrix._33 = t.matrix._33; matrix._34 = t.matrix._34;
+                        matrix._41 = t.matrix._41; matrix._42 = t.matrix._42; matrix._43 = t.matrix._43; matrix._44 = t.matrix._44;
                     }
 
                     Transformation setTo (const Transformation &t) {
-                        matrix._11 = t.matrix._11;
-                        matrix._12 = t.matrix._12;
-                        matrix._13 = t.matrix._13;
-                        matrix._14 = t.matrix._14;
-                        matrix._21 = t.matrix._21;
-                        matrix._22 = t.matrix._22;
-                        matrix._23 = t.matrix._23;
-                        matrix._24 = t.matrix._24;
-                        matrix._31 = t.matrix._31;
-                        matrix._32 = t.matrix._32;
-                        matrix._33 = t.matrix._33;
-                        matrix._34 = t.matrix._34;
-                        matrix._41 = t.matrix._41;
-                        matrix._42 = t.matrix._42;
-                        matrix._43 = t.matrix._43;
-                        matrix._44 = t.matrix._44;
+                        matrix._11 = t.matrix._11; matrix._12 = t.matrix._12; matrix._13 = t.matrix._13; matrix._14 = t.matrix._14;
+                        matrix._21 = t.matrix._21; matrix._22 = t.matrix._22; matrix._23 = t.matrix._23; matrix._24 = t.matrix._24;
+                        matrix._31 = t.matrix._31; matrix._32 = t.matrix._32; matrix._33 = t.matrix._33; matrix._34 = t.matrix._34;
+                        matrix._41 = t.matrix._41; matrix._42 = t.matrix._42; matrix._43 = t.matrix._43; matrix._44 = t.matrix._44;
                         return *this;
                     }
                     Transformation operator = (const Transformation &t) {
-                        matrix._11 = t.matrix._11;
-                        matrix._12 = t.matrix._12;
-                        matrix._13 = t.matrix._13;
-                        matrix._14 = t.matrix._14;
-                        matrix._21 = t.matrix._21;
-                        matrix._22 = t.matrix._22;
-                        matrix._23 = t.matrix._23;
-                        matrix._24 = t.matrix._24;
-                        matrix._31 = t.matrix._31;
-                        matrix._32 = t.matrix._32;
-                        matrix._33 = t.matrix._33;
-                        matrix._34 = t.matrix._34;
-                        matrix._41 = t.matrix._41;
-                        matrix._42 = t.matrix._42;
-                        matrix._43 = t.matrix._43;
-                        matrix._44 = t.matrix._44;
+                        matrix._11 = t.matrix._11; matrix._12 = t.matrix._12; matrix._13 = t.matrix._13; matrix._14 = t.matrix._14;
+                        matrix._21 = t.matrix._21; matrix._22 = t.matrix._22; matrix._23 = t.matrix._23; matrix._24 = t.matrix._24;
+                        matrix._31 = t.matrix._31; matrix._32 = t.matrix._32; matrix._33 = t.matrix._33; matrix._34 = t.matrix._34;
+                        matrix._41 = t.matrix._41; matrix._42 = t.matrix._42; matrix._43 = t.matrix._43; matrix._44 = t.matrix._44;
                         return *this;
                     }
 
                     Transformation() {
-                        matrix._11 = 1.0;
-                        matrix._12 = 0.0;
-                        matrix._13 = 0.0;
-                        matrix._14 = 0.0;
-                        matrix._21 = 0.0;
-                        matrix._22 = 1.0;
-                        matrix._23 = 0.0;
-                        matrix._24 = 0.0;
-                        matrix._31 = 0.0;
-                        matrix._32 = 0.0;
-                        matrix._33 = 1.0;
-                        matrix._34 = 0.0;
-                        matrix._41 = 0.0;
-                        matrix._42 = 0.0;
-                        matrix._43 = 0.0;
-                        matrix._44 = 1.0;
+                        matrix._11 = 1.0; matrix._12 = 0.0; matrix._13 = 0.0; matrix._14 = 0.0;
+                        matrix._21 = 0.0; matrix._22 = 1.0; matrix._23 = 0.0; matrix._24 = 0.0;
+                        matrix._31 = 0.0; matrix._32 = 0.0; matrix._33 = 1.0; matrix._34 = 0.0;
+                        matrix._41 = 0.0; matrix._42 = 0.0; matrix._43 = 0.0; matrix._44 = 1.0;
                     }
 
 
                     inline Transformation setToIdentity() {
-                        matrix._11 = 1.0;
-                        matrix._12 = 0.0;
-                        matrix._13 = 0.0;
-                        matrix._14 = 0.0;
-                        matrix._21 = 0.0;
-                        matrix._22 = 1.0;
-                        matrix._23 = 0.0;
-                        matrix._24 = 0.0;
-                        matrix._31 = 0.0;
-                        matrix._32 = 0.0;
-                        matrix._33 = 1.0;
-                        matrix._34 = 0.0;
-                        matrix._41 = 0.0;
-                        matrix._42 = 0.0;
-                        matrix._43 = 0.0;
-                        matrix._44 = 1.0;
+                        matrix._11 = 1.0; matrix._12 = 0.0; matrix._13 = 0.0; matrix._14 = 0.0;
+                        matrix._21 = 0.0; matrix._22 = 1.0; matrix._23 = 0.0; matrix._24 = 0.0;
+                        matrix._31 = 0.0; matrix._32 = 0.0; matrix._33 = 1.0; matrix._34 = 0.0;
+                        matrix._41 = 0.0; matrix._42 = 0.0; matrix._43 = 0.0; matrix._44 = 1.0;
                         return *this;
                     }
 
                     inline Transformation setToScaling (real s) {
-                        matrix._11 =   s;
-                        matrix._12 = 0.0;
-                        matrix._13 = 0.0;
-                        matrix._14 = 0.0;
-                        matrix._21 = 0.0;
-                        matrix._22 =   s;
-                        matrix._23 = 0.0;
-                        matrix._24 = 0.0;
-                        matrix._31 = 0.0;
-                        matrix._32 = 0.0;
-                        matrix._33 =   s;
-                        matrix._34 = 0.0;
-                        matrix._41 = 0.0;
-                        matrix._42 = 0.0;
-                        matrix._43 = 0.0;
-                        matrix._44 = 1.0;
+                        matrix._11 =   s; matrix._12 = 0.0; matrix._13 = 0.0; matrix._14 = 0.0;
+                        matrix._21 = 0.0; matrix._22 =   s; matrix._23 = 0.0; matrix._24 = 0.0;
+                        matrix._31 = 0.0; matrix._32 = 0.0; matrix._33 =   s; matrix._34 = 0.0;
+                        matrix._41 = 0.0; matrix._42 = 0.0; matrix._43 = 0.0; matrix._44 = 1.0;
                         return *this;
                     }
 
                     inline Transformation  setToScaling (real x, real y, real z) {
-                        matrix._11 =   x;
-                        matrix._12 = 0.0;
-                        matrix._13 = 0.0;
-                        matrix._14 = 0.0;
-                        matrix._21 = 0.0;
-                        matrix._22 =   y;
-                        matrix._23 = 0.0;
-                        matrix._24 = 0.0;
-                        matrix._31 = 0.0;
-                        matrix._32 = 0.0;
-                        matrix._33 =   z;
-                        matrix._34 = 0.0;
-                        matrix._41 = 0.0;
-                        matrix._42 = 0.0;
-                        matrix._43 = 0.0;
-                        matrix._44 = 1.0;
+                        matrix._11 =   x; matrix._12 = 0.0; matrix._13 = 0.0; matrix._14 = 0.0;
+                        matrix._21 = 0.0; matrix._22 =   y; matrix._23 = 0.0; matrix._24 = 0.0;
+                        matrix._31 = 0.0; matrix._32 = 0.0; matrix._33 =   z; matrix._34 = 0.0;
+                        matrix._41 = 0.0; matrix._42 = 0.0; matrix._43 = 0.0; matrix._44 = 1.0;
                         return *this;
                     }
 
                     inline Transformation setToTranslation (real x, real y, real z) {
-                        matrix._11 =   1;
-                        matrix._12 =   0;
-                        matrix._13 =   0;
-                        matrix._14 =   0;
-                        matrix._21 =   0;
-                        matrix._22 =   1;
-                        matrix._23 =   0;
-                        matrix._24 =   0;
-                        matrix._31 =   0;
-                        matrix._32 =   0;
-                        matrix._33 =   1;
-                        matrix._34 =   0;
-                        matrix._41 =   x;
-                        matrix._42 =   y;
-                        matrix._43 =   z;
-                        matrix._44 =   1;
+                        matrix._11 =   1; matrix._12 =   0; matrix._13 =   0; matrix._14 =   0;
+                        matrix._21 =   0; matrix._22 =   1; matrix._23 =   0; matrix._24 =   0;
+                        matrix._31 =   0; matrix._32 =   0; matrix._33 =   1; matrix._34 =   0;
+                        matrix._41 =   x; matrix._42 =   y; matrix._43 =   z; matrix._44 =   1;
                         return *this;
                     }
 
                     inline Transformation setToTranslation (const Vector3d &v) {
-                        matrix._11 =   1;
-                        matrix._12 =   0;
-                        matrix._13 =   0;
-                        matrix._14 =   0;
-                        matrix._21 =   0;
-                        matrix._22 =   1;
-                        matrix._23 =   0;
-                        matrix._24 =   0;
-                        matrix._31 =   0;
-                        matrix._32 =   0;
-                        matrix._33 =   1;
-                        matrix._34 =   0;
-                        matrix._41 =v[0];
-                        matrix._42 =v[1];
-                        matrix._43 =v[2];
-                        matrix._44 =   1;
+                        matrix._11 =   1; matrix._12 =   0; matrix._13 =   0; matrix._14 =   0;
+                        matrix._21 =   0; matrix._22 =   1; matrix._23 =   0; matrix._24 =   0;
+                        matrix._31 =   0; matrix._32 =   0; matrix._33 =   1; matrix._34 =   0;
+                        matrix._41 =v[0]; matrix._42 =v[1]; matrix._43 =v[2]; matrix._44 =   1;
                         return *this;
                     }
 
                     inline Transformation setToRotationX (real angle) {
                         register const real sina = sin (angle);
                         register const real cosa = cos (angle);
-                        matrix._11 =    1;
-                        matrix._12 =    0;
-                        matrix._13 =    0;
-                        matrix._14 =    0;
-                        matrix._21 =    0;
-                        matrix._22 = cosa;
-                        matrix._23 = sina;
-                        matrix._24 =    0;
-                        matrix._31 =    0;
-                        matrix._32 =-sina;
-                        matrix._33 = cosa;
-                        matrix._34 =    0;
-                        matrix._41 =    0;
-                        matrix._42 =    0;
-                        matrix._43 =    0;
-                        matrix._44 =    1;
+                        matrix._11 =    1; matrix._12 =    0; matrix._13 =    0; matrix._14 =    0;
+                        matrix._21 =    0; matrix._22 = cosa; matrix._23 = sina; matrix._24 =    0;
+                        matrix._31 =    0; matrix._32 =-sina; matrix._33 = cosa; matrix._34 =    0;
+                        matrix._41 =    0; matrix._42 =    0; matrix._43 =    0; matrix._44 =    1;
                         return *this;
                     }
 
                     inline Transformation setToRotationY (real angle) {
                         register const real sina = sin (angle);
                         register const real cosa = cos (angle);
-                        matrix._11 = cosa;
-                        matrix._12 =    0;
-                        matrix._13 =-sina;
-                        matrix._14 =    0;
-                        matrix._21 =    0;
-                        matrix._22 =    1;
-                        matrix._23 =    0;
-                        matrix._24 =    0;
-                        matrix._31 = sina;
-                        matrix._32 =    0;
-                        matrix._33 = cosa;
-                        matrix._34 =    0;
-                        matrix._41 =    0;
-                        matrix._42 =    0;
-                        matrix._43 =    0;
-                        matrix._44 =    1;
+                        matrix._11 = cosa; matrix._12 =    0; matrix._13 =-sina; matrix._14 =    0;
+                        matrix._21 =    0; matrix._22 =    1; matrix._23 =    0; matrix._24 =    0;
+                        matrix._31 = sina; matrix._32 =    0; matrix._33 = cosa; matrix._34 =    0;
+                        matrix._41 =    0; matrix._42 =    0; matrix._43 =    0; matrix._44 =    1;
                         return *this;
                     }
 
                     inline Transformation setToRotationZ (real angle) {
                         register const real sina = sin (angle);
                         register const real cosa = cos (angle);
-                        matrix._11 = cosa;
-                        matrix._12 = sina;
-                        matrix._13 =    0;
-                        matrix._14 =    0;
-                        matrix._21 =-sina;
-                        matrix._22 = cosa;
-                        matrix._23 =    0;
-                        matrix._24 =    0;
-                        matrix._31 =    0;
-                        matrix._32 =    0;
-                        matrix._33 =    1;
-                        matrix._34 =    0;
-                        matrix._41 =    0;
-                        matrix._42 =    0;
-                        matrix._43 =    0;
-                        matrix._44 =    1;
+                        matrix._11 = cosa; matrix._12 = sina; matrix._13 =    0; matrix._14 =    0;
+                        matrix._21 =-sina; matrix._22 = cosa; matrix._23 =    0; matrix._24 =    0;
+                        matrix._31 =    0; matrix._32 =    0; matrix._33 =    1; matrix._34 =    0;
+                        matrix._41 =    0; matrix._42 =    0; matrix._43 =    0; matrix._44 =    1;
                         return *this;
                     }
 

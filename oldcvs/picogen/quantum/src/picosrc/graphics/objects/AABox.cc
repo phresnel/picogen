@@ -27,7 +27,7 @@
 
 struct BRDF : public picogen::graphics::material::abstract::IBRDF {
     BRDF() {}
-    virtual bool RandomSample (
+    virtual bool randomSample (
         param_out (picogen::misc::prim::real,brdf),
         param_out (picogen::misc::prim::real,p),
         param_out (bool,specular),
@@ -62,32 +62,32 @@ struct BRDF : public picogen::graphics::material::abstract::IBRDF {
 static const BRDF diffuseBRDF;
 
 
-class ConstantShader : public picogen::graphics::material::abstract::IShader {
-        picogen::graphics::image::color::Color color;
+class ConstantShader : public ::picogen::graphics::material::abstract::IShader {
+        ::picogen::graphics::image::color::Color color;
     public:
         virtual ~ConstantShader() {};
-        ConstantShader (picogen::graphics::image::color::Color color) : color (color) {}
-        virtual void Shade (
-            picogen::graphics::image::color::Color &color,
-            const picogen::misc::geometrics::Vector3d &normal,
-            const picogen::misc::geometrics::Vector3d &position
+        ConstantShader (::picogen::graphics::image::color::Color color) : color (color) {}
+        virtual void shade (
+            ::picogen::graphics::image::color::Color &color,
+            const ::picogen::misc::geometrics::Vector3d &normal,
+            const ::picogen::misc::geometrics::Vector3d &position
         ) const {
             color = this->color;
         }
 };
 
 class RectLightShader : public picogen::graphics::material::abstract::IShader {
-        picogen::graphics::image::color::Color nonLightColor, lightColor;
-        picogen::prim::real L_e, size, centerX, centerZ;
+        ::picogen::graphics::image::color::Color nonLightColor, lightColor;
+        ::picogen::misc::prim::real L_e, size, centerX, centerZ;
     public:
         virtual ~RectLightShader() {};
         RectLightShader (
-            picogen::graphics::image::color::Color nonLightColor,
-            picogen::graphics::image::color::Color lightColor,
-            picogen::prim::real L_e,
-            picogen::prim::real size,
-            picogen::prim::real centerX,
-            picogen::prim::real centerZ
+            ::picogen::graphics::image::color::Color nonLightColor,
+            ::picogen::graphics::image::color::Color lightColor,
+            ::picogen::misc::prim::real L_e,
+            ::picogen::misc::prim::real size,
+            ::picogen::misc::prim::real centerX,
+            ::picogen::misc::prim::real centerZ
         ) :
                 nonLightColor (nonLightColor),
                 lightColor (lightColor),
@@ -96,19 +96,19 @@ class RectLightShader : public picogen::graphics::material::abstract::IShader {
                 centerX (centerX),
                 centerZ (centerZ) {}
 
-        virtual void Shade (
-            picogen::graphics::image::color::Color &color,
-            const picogen::misc::geometrics::Vector3d &normal,
-            const picogen::misc::geometrics::Vector3d &position
+        virtual void shade (
+            ::picogen::graphics::image::color::Color &color,
+            const ::picogen::misc::geometrics::Vector3d &normal,
+            const ::picogen::misc::geometrics::Vector3d &position
         ) const {
-            color = picogen::graphics::image::color::Color (1.0,0.0,0.0);
+            color = ::picogen::graphics::image::color::Color (1.0,0.0,0.0);
         }
 
-        virtual void Shade (
-            picogen::graphics::image::color::Color &color,
-            picogen::misc::prim::real &L_e,
-            const picogen::misc::geometrics::Vector3d &normal,
-            const picogen::misc::geometrics::Vector3d &position
+        virtual void shade (
+            ::picogen::graphics::image::color::Color &color,
+            ::picogen::misc::prim::real &L_e,
+            const ::picogen::misc::geometrics::Vector3d &normal,
+            const ::picogen::misc::geometrics::Vector3d &position
         ) const {
             if (fabs (position[0]-centerX) <= size && fabs (position[2]-centerZ) <= size) {
                 L_e = this->L_e;
@@ -120,13 +120,13 @@ class RectLightShader : public picogen::graphics::material::abstract::IShader {
         }
 };
 
-static const ConstantShader  red (picogen::graphics::image::color::Color (1.0, 0.3, 0.3));
-static const ConstantShader  green (picogen::graphics::image::color::Color (0.3, 1.0, 0.3));
-static const ConstantShader  blue (picogen::graphics::image::color::Color (0.3, 0.3, 1.0));
-static const ConstantShader  white (picogen::graphics::image::color::Color (1.0, 1.0, 1.0));
+static const ConstantShader  red (::picogen::graphics::image::color::Color (1.0, 0.3, 0.3));
+static const ConstantShader  green (::picogen::graphics::image::color::Color (0.3, 1.0, 0.3));
+static const ConstantShader  blue (::picogen::graphics::image::color::Color (0.3, 0.3, 1.0));
+static const ConstantShader  white (::picogen::graphics::image::color::Color (1.0, 1.0, 1.0));
 static const RectLightShader whiteL (
-    picogen::graphics::image::color::Color (1.0, 1.0, 1.0),
-    picogen::graphics::image::color::Color (1.0, 1.0, 1.0), 10.0,
+    ::picogen::graphics::image::color::Color (1.0, 1.0, 1.0),
+    ::picogen::graphics::image::color::Color (1.0, 1.0, 1.0), 10.0,
     0.25,
     0.0,
     0.0
@@ -167,17 +167,17 @@ namespace picogen {
             }
 
 
-            void AABox::setBRDF (face_t face, const picogen::graphics::material::abstract::IBRDF* const brdf) {
+            void AABox::setBRDF (face_t face, const ::picogen::graphics::material::abstract::IBRDF* const brdf) {
                 brdfs[face] = brdf;
             }
 
 
-            void AABox::setShader (face_t face, const picogen::graphics::material::abstract::IShader* const shader)  {
+            void AABox::setShader (face_t face, const ::picogen::graphics::material::abstract::IShader* const shader)  {
                 shaders[face] = shader;
             }
 
 
-            void AABox::setBRDF (const picogen::graphics::material::abstract::IBRDF* const brdf) {
+            void AABox::setBRDF (const ::picogen::graphics::material::abstract::IBRDF* const brdf) {
                 setBRDF (x_negative, brdf);
                 setBRDF (x_positive, brdf);
                 setBRDF (y_negative, brdf);
@@ -187,7 +187,7 @@ namespace picogen {
             }
 
 
-            void AABox::setShader (const picogen::graphics::material::abstract::IShader* const shader) {
+            void AABox::setShader (const ::picogen::graphics::material::abstract::IShader* const shader) {
                 setShader (x_negative, shader);
                 setShader (x_positive, shader);
                 setShader (y_negative, shader);
@@ -205,8 +205,8 @@ namespace picogen {
                 this->enableOutside_ = enable;
             }
 
-            bool AABox::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
-                using picogen::prim::real;
+            bool AABox::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+                using ::picogen::misc::prim::real;
 
                 const real wx = ray.w() [0];
                 const real wy = ray.w() [1];
@@ -232,7 +232,7 @@ namespace picogen {
                 real tmin = 9999999.0;
                 bool any = false;
 
-                const picogen::graphics::material::abstract::IShader* shader = NULL;
+                const ::picogen::graphics::material::abstract::IShader* shader = NULL;
 
                 if ( (enableOutside_ || wx<0.0) && enable[x_negative]) {
                     const real dist = px - bbMin[0];
@@ -335,12 +335,12 @@ namespace picogen {
                 }
 
                 if (NULL != shader) {
-                    shader->Shade (intersection.color, intersection.L_e, intersection.normal, ray (intersection.t));
+                    shader->shade (intersection.color, intersection.L_e, intersection.normal, ray (intersection.t));
                 }
                 return any;
             }
 
 
-        }
-    }
-} // namespace picogen{ namespace graphics{ namespace objects{
+        } // namespace objects
+    } // namespace graphics
+} // namespace picogen

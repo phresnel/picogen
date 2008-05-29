@@ -86,12 +86,12 @@ namespace picogen {
                 public:
                     SimpleHeightField();
                     virtual ~SimpleHeightField();
-                    void SetBox (param_in (Vector3d, min), param_in (Vector3d, max));
-                    void SetBRDF (const IBRDF* brdf);
-                    void SetShader (const IShader* shader);
-                    void Init (unsigned int size, const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real boundsGuessAccuracy = 1.0, bool smooth = true);
+                    void setBox (param_in (Vector3d, min), param_in (Vector3d, max));
+                    void setBRDF (const IBRDF* brdf);
+                    void setShader (const IShader* shader);
+                    void init (unsigned int size, const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real boundsGuessAccuracy = 1.0, bool smooth = true);
 
-                    virtual bool Intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const;
+                    virtual bool intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const;
             };
 
         } // namespace objects {

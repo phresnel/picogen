@@ -85,10 +85,10 @@ namespace picogen {
                         t_pathIntegrator &path_integrator()       {
                             return m_pathIntegrator;
                         }
-                        void SetNumPixelsPerContinue (unsigned int num);
-                        bool Continue();
-                        void BeginRender();
-                        void OneMoreRun();
+                        void setNumPixelsPerContinue (unsigned int num);
+                        bool renderMore();
+                        void beginRender();
+                        void oneMoreRun();
                 };
 
 // meh :|

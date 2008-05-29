@@ -26,6 +26,8 @@
 #ifndef _ROOT__TEMPLATES__TEMPLATES_H
 #define _ROOT__TEMPLATES__TEMPLATES_H
 
+/// \todo refactor whole file according to camelCase and getters/setters
+
 namespace picogen {
     namespace misc {
 

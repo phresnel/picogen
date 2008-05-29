@@ -153,7 +153,7 @@ struct Lambertian : public picogen::graphics::material::abstract::IBRDF {
     Lambertian() : mirror (0) {}
     Lambertian (real m) : mirror (m) {}
 
-    virtual bool RandomSample (
+    virtual bool randomSample (
         param_out (real,brdf),
         param_out (real,p),
         param_out (bool,specular),
@@ -236,7 +236,7 @@ public:
         this->attenuation = attenuation;
     }
 
-    virtual bool RandomSample (
+    virtual bool randomSample (
         param_out (real,brdf),
         param_out (real,p),
         param_out (bool,specular),
@@ -285,8 +285,8 @@ void insert_quad (
     picogen::misc::geometrics::Vector3d &C,
     picogen::misc::geometrics::Vector3d &D
 ) {
-    scene->Insert (base+A*radius, base+B*radius, base+C*radius);
-    scene->Insert (base+B*radius, base+D*radius, base+C*radius);
+    scene->insert (base+A*radius, base+B*radius, base+C*radius);
+    scene->insert (base+B*radius, base+D*radius, base+C*radius);
 }
 
 // this function renders a box by mapping the cube to the unit sphere
@@ -653,7 +653,7 @@ int main_seb (int argc, char *argv[]) {
         graphics::cameras::FromPointToRect,
         graphics::samplers::ray::Simple
         > renderer;
-        renderer.camera().DefineCamera ( (real) WIDTH/ (real) HEIGHT, 1, 0.7);
+        renderer.camera().defineCamera ( (real) WIDTH/ (real) HEIGHT, 1, 0.7);
 
 
         renderer.surface().reset (WIDTH*2, HEIGHT*2);
@@ -775,10 +775,10 @@ int main_seb (int argc, char *argv[]) {
                 //list.Insert( &trilist );
                 // ++ TEH GROUND ++++++++++++++++++++++++++++++++++++++++++++++
                 heightBRDF.mirror = 0.0;
-                heightField.SetBRDF (&heightBRDF);
-                heightField.SetShader (&heightShader);
-                heightField.SetBox (base+Vector3d (-10000,-3000,-10000), base+Vector3d (10000,0.0,10000));
-                heightField.Init (4096, &moon_multifractal, 0.1, false);
+                heightField.setBRDF (&heightBRDF);
+                heightField.setShader (&heightShader);
+                heightField.setBox (base+Vector3d (-10000,-3000,-10000), base+Vector3d (10000,0.0,10000));
+                heightField.init (4096, &moon_multifractal, 0.1, false);
                 //list.Insert( &heightField );
 
                 // -- TEH GROUND ----------------------------------------------
@@ -787,11 +787,11 @@ int main_seb (int argc, char *argv[]) {
 
             cubemap.render (base+Vector3d (5000, -1300,-10000), &heightField);
         }
-        list.Insert (&cubemap);
+        list.insert (&cubemap);
 
         //graphics::objects::Snow snow;
         //list.Insert( &snow );
-        list.Invalidate();
+        list.invalidate();
 
 //  using namespace picogen::misc::functions;
 //
@@ -940,27 +940,27 @@ int main_seb (int argc, char *argv[]) {
             Transformation().setToRotationY (3.14159*-0.1) *
             Transformation().setToTranslation (base+Vector3d (900,0,-900))
             ;
-        renderer.path_integrator().SetIntersectable (&list);
+        renderer.path_integrator().setIntersectable (&list);
 
         //> setup sky
         graphics::objects::Preetham preetham;
 
 
-        preetham.SetTurbidity (4.7);
-        preetham.SetSunSolidAngleFactor (0.5);
+        preetham.setTurbidity (4.7);
+        preetham.setSunSolidAngleFactor (0.5);
         const real L = 0.2;
         /*preetham.SetColorFilter( Color(1.0,0.8,0.7)*1.0*L );  // > red filter
         preetham.SetSunColor( Color(1.0,0.3,0.2)*3200.0*3.4*L );//*/
-        preetham.SetColorFilter (Color (1.0,1.0,1.0) *1.0*L);
-        preetham.SetSunColor (Color (1.0,0.9,0.8) *43500.0*1.3*L*0.02);//*/
-        preetham.SetSunDirection (Vector3d (200.5,2.25,1.7).normal());
-        preetham.EnableFogHack (1, 0.00082*0.05, 50000);
-        preetham.Invalidate();
+        preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
+        preetham.setSunColor (Color (1.0,0.9,0.8) *43500.0*1.3*L*0.02);//*/
+        preetham.setSunDirection (Vector3d (200.5,2.25,1.7).normal());
+        preetham.enableFogHack (1, 0.00082*0.05, 50000);
+        preetham.invalidate();
 
         //> setup clouds
         //CloudShader cloud_shader;
         //cloud_shader.SetSky( &preetham );
-        renderer.path_integrator().SetSky (&preetham);
+        renderer.path_integrator().setSky (&preetham);
         //clouds.SetSkyShader( &preetham );
         //clouds.SetCloudShader( &cloud_shader );
 
@@ -980,8 +980,8 @@ int main_seb (int argc, char *argv[]) {
         srand (time (NULL));
 
 
-        renderer.SetNumPixelsPerContinue (pixelsPerContinue); //*(HEIGHT/1) );
-        renderer.BeginRender();
+        renderer.setNumPixelsPerContinue (pixelsPerContinue); //*(HEIGHT/1) );
+        renderer.beginRender();
         while (!done) {
             SDL_Event event;
             while (SDL_PollEvent (&event)) {
@@ -1007,11 +1007,11 @@ int main_seb (int argc, char *argv[]) {
                     }
                     if (event.key.keysym.sym == SDLK_c) {
                         pixelsPerContinue-=WIDTH;
-                        renderer.SetNumPixelsPerContinue (pixelsPerContinue);
+                        renderer.setNumPixelsPerContinue (pixelsPerContinue);
                     }
                     if (event.key.keysym.sym == SDLK_v) {
                         pixelsPerContinue+=WIDTH;
-                        renderer.SetNumPixelsPerContinue (pixelsPerContinue);
+                        renderer.setNumPixelsPerContinue (pixelsPerContinue);
                     }
 
                     if (event.key.keysym.sym == SDLK_5) {
@@ -1089,10 +1089,10 @@ int main_seb (int argc, char *argv[]) {
                 }
             }
 
-            bool cont = renderer.Continue();
+            bool cont = renderer.renderMore();
             if (cont) {
                 runCount++;
-                renderer.OneMoreRun();
+                renderer.oneMoreRun();
                 //if( 0 == (runCount%3) )
                 renderer.surface().saveBinaryToFile (checkpointFile);
             } else if (queryingForReallyQuit) {

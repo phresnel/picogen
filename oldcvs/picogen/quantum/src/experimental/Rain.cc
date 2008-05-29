@@ -45,7 +45,7 @@ namespace picogen {
             Rain::~Rain() {
             }
 
-            bool Rain::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+            bool Rain::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
                 return false;
             }
 

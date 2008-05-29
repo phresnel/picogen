@@ -46,7 +46,7 @@ class ConstantShader : public picogen::graphics::material::abstract::IShader {
     public:
         virtual ~ConstantShader() {};
         ConstantShader (picogen::graphics::image::color::Color color) : color (color) {}
-        virtual void Shade (
+        virtual void shade (
             picogen::graphics::image::color::Color &color,
             const picogen::misc::geometrics::Vector3d &normal,
             const picogen::misc::geometrics::Vector3d &position
@@ -66,7 +66,7 @@ struct Lambertian : public picogen::graphics::material::abstract::IBRDF {
     Lambertian() : mirror (0) {}
     Lambertian (real m) : mirror (m) {}
 
-    virtual bool RandomSample (
+    virtual bool randomSample (
         param_out (real,brdf),
         param_out (real,p),
         param_out (bool,specular),
@@ -219,7 +219,7 @@ class PureCornell : public TestScene {
             this->width  = width;
             this->height = height;
             // setup screen and camera
-            renderer.camera().DefineCamera ( (real) width/ (real) height, 1.0, 0.5);
+            renderer.camera().defineCamera ( (real) width/ (real) height, 1.0, 0.5);
             renderer.surface().reset (width*2, height*2);
 
             // setup camera transform
@@ -230,15 +230,15 @@ class PureCornell : public TestScene {
                 ;
 
             // setup and recognize sky
-            preetham.SetTurbidity (2.3);
-            preetham.SetSunSolidAngleFactor (1.0);
+            preetham.setTurbidity (2.3);
+            preetham.setSunSolidAngleFactor (1.0);
             const real L = 0.25;
-            preetham.SetColorFilter (Color (1.0,1.0,1.0) *1.0*L);
-            preetham.SetSunColor (Color (0.95,0.95,1.0) *3000.0*L);
-            preetham.SetSunDirection (Vector3d (-1.0,1.8,-2.3).normal());
-            preetham.EnableFogHack (0, 0.00082*0.05, 50000);
-            preetham.Invalidate();
-            renderer.path_integrator().SetSky (&preetham);
+            preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
+            preetham.setSunColor (Color (0.95,0.95,1.0) *3000.0*L);
+            preetham.setSunDirection (Vector3d (-1.0,1.8,-2.3).normal());
+            preetham.enableFogHack (0, 0.00082*0.05, 50000);
+            preetham.invalidate();
+            renderer.path_integrator().setSky (&preetham);
 
             // setup boxen
             using picogen::misc::geometrics::Transformation;
@@ -250,12 +250,12 @@ class PureCornell : public TestScene {
             );
 
             // recognize scene
-            list.Insert (&box);
+            list.insert (&box);
             //list.Insert( &box1 );
 
             // invalidate and recognize object-list
-            list.Invalidate();
-            renderer.path_integrator().SetIntersectable (&list);
+            list.invalidate();
+            renderer.path_integrator().setIntersectable (&list);
         }
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
@@ -264,14 +264,14 @@ class PureCornell : public TestScene {
         }
 
         virtual void begin() {
-            renderer.BeginRender();
+            renderer.beginRender();
         }
 
         virtual bool renderMore (int numPixels) {
-            renderer.SetNumPixelsPerContinue (numPixels);
-            bool c = renderer.Continue();
+            renderer.setNumPixelsPerContinue (numPixels);
+            bool c = renderer.renderMore();
             if (c) {
-                renderer.OneMoreRun();
+                renderer.oneMoreRun();
             }
             return c;
         }
@@ -323,7 +323,7 @@ class Clouds : public TestScene {
             this->width  = width;
             this->height = height;
             // setup screen and camera
-            renderer.camera().DefineCamera ( (1.0* (real) width) / (real) height, 2.0, 1.0);
+            renderer.camera().defineCamera ( (1.0* (real) width) / (real) height, 2.0, 1.0);
             renderer.surface().reset (width*2, height*2);
 
             // setup camera transform
@@ -334,15 +334,15 @@ class Clouds : public TestScene {
                 ;
 
             // setup and recognize sky
-            preetham.SetTurbidity (2.7);
-            preetham.SetSunSolidAngleFactor (1.0);
+            preetham.setTurbidity (2.7);
+            preetham.setSunSolidAngleFactor (1.0);
             const real L = 0.25;
-            preetham.SetColorFilter (Color (1.0,1.0,1.0) *1.0*L);
-            preetham.SetSunColor (Color (0.95,0.95,1.0) *3000.0*L);
-            preetham.SetSunDirection (Vector3d (0.0,1.0,-1.0).normal());
-            preetham.EnableFogHack (0, 0.00082*0.05, 50000000);
-            preetham.Invalidate();
-            renderer.path_integrator().SetSky (&preetham);
+            preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
+            preetham.setSunColor (Color (0.95,0.95,1.0) *3000.0*L);
+            preetham.setSunDirection (Vector3d (0.0,1.0,-1.0).normal());
+            preetham.enableFogHack (0, 0.00082*0.05, 50000000);
+            preetham.invalidate();
+            renderer.path_integrator().setSky (&preetham);
 
 
             {
@@ -380,15 +380,15 @@ class Clouds : public TestScene {
                 uv_to_scalar::Power moon_multifractal (&function4, 1.0);
 
                 Lambertian lambertian;
-                heightField.SetBRDF (&lambertian);
-                heightField.SetShader (&white);
-                heightField.SetBox (Vector3d (-10000,0,-10000), Vector3d (10000,400.0,10000));
-                heightField.Init (1024, &moon_multifractal, 0.1, false);
+                heightField.setBRDF (&lambertian);
+                heightField.setShader (&white);
+                heightField.setBox (Vector3d (-10000,0,-10000), Vector3d (10000,400.0,10000));
+                heightField.init (1024, &moon_multifractal, 0.1, false);
 
                 cloudcubemap.render (Vector3d (0,400+0*-1300,0), &heightField);
                 clouds.setIntersectable (&cloudcubemap);
                 clouds.setSky (&preetham);
-                list.Insert (&clouds);
+                list.insert (&clouds);
             }
 
             /* terrain */
@@ -409,18 +409,18 @@ class Clouds : public TestScene {
                 uv_to_scalar::Power moon_multifractal (&function4, 0.4);
 
                 Lambertian lambertian;
-                heightField.SetBRDF (&lambertian);
-                heightField.SetShader (&white);
-                heightField.SetBox (Vector3d (-10000,-3000,-10000), Vector3d (10000,0.0,10000));
-                heightField.Init (256, &moon_multifractal, 0.1, false);
+                heightField.setBRDF (&lambertian);
+                heightField.setShader (&white);
+                heightField.setBox (Vector3d (-10000,-3000,-10000), Vector3d (10000,0.0,10000));
+                heightField.init (256, &moon_multifractal, 0.1, false);
 
                 cubemap.render (Vector3d (0,0,0), &heightField);
-                list.Insert (&cubemap);
+                list.insert (&cubemap);
             }
 
             // invalidate and recognize object-list
-            list.Invalidate();
-            renderer.path_integrator().SetIntersectable (&list);
+            list.invalidate();
+            renderer.path_integrator().setIntersectable (&list);
         }
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
@@ -429,13 +429,13 @@ class Clouds : public TestScene {
         }
 
         virtual void begin() {
-            renderer.BeginRender();
+            renderer.beginRender();
         }
         virtual bool renderMore (int numPixels) {
-            renderer.SetNumPixelsPerContinue (numPixels);
-            bool c = renderer.Continue();
+            renderer.setNumPixelsPerContinue (numPixels);
+            bool c = renderer.renderMore();
             if (c) {
-                renderer.OneMoreRun();
+                renderer.oneMoreRun();
             }
             return c;
         }

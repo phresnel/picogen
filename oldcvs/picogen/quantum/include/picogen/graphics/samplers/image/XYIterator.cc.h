@@ -75,7 +75,7 @@ namespace picogen {
                  XRT_CALL_STACK_POP();
                 }
                 */
-                XYIterator_Member (void) ::SetNumPixelsPerContinue (unsigned int num) {
+                XYIterator_Member (void) ::setNumPixelsPerContinue (unsigned int num) {
                     XRT_CALL_STACK_PUSH ("void XYIterator::SetNumPixelsPerContinue( unsigned int num )");
 #ifdef XRT_DEBUG
                     if (m_BeginRender_called)
@@ -87,7 +87,7 @@ namespace picogen {
                     XRT_CALL_STACK_POP();
                 }
 
-                XYIterator_Member (void) ::BeginRender() {
+                XYIterator_Member (void) ::beginRender() {
                     XRT_CALL_STACK_PUSH ("void XYIterator::BeginRender()");
 #ifdef XRT_DEBUG
                     if (m_BeginRender_called)
@@ -112,7 +112,7 @@ namespace picogen {
                     XRT_CALL_STACK_POP();
                 }
 
-                XYIterator_Member (void) ::OneMoreRun() {
+                XYIterator_Member (void) ::oneMoreRun() {
                     XRT_CALL_STACK_PUSH ("void XYIterator::OneMoreRun()");
 #ifdef XRT_DEBUG
                     if (!m_BeginRender_called)
@@ -125,7 +125,7 @@ namespace picogen {
                 }
 
 
-                XYIterator_Member (bool) ::Continue() {
+                XYIterator_Member (bool) ::renderMore() {
                     XRT_CALL_STACK_PUSH ("bool XYIterator::Continue()");
 
 #ifdef XRT_DEBUG
@@ -157,7 +157,7 @@ namespace picogen {
 
                             //> get ray from camera
                             Ray ray;
-                            m_camera.RayFromUV (ray, u, v);
+                            m_camera.rayFromUV (ray, u, v);
 
                             //> transform ray
                             const Vector3d x = ray.x(), w = x + ray.w();
@@ -167,7 +167,7 @@ namespace picogen {
                             //> ray trace
                             Color color;
                             intersection_t I;
-                            if (m_pathIntegrator.Integrate (color, I, ray)) {
+                            if (m_pathIntegrator.integrate (color, I, ray)) {
                                 m_surface (m_currX,m_currY) += color;
                             } else {
                                 m_surface (m_currX,m_currY) += Color (

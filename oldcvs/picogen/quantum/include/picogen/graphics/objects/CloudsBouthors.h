@@ -380,11 +380,11 @@ namespace picogen {
                         this->intersectable = intersectable;
                     }
 
-                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
-                        if (!intersectable->Intersect (intersection, ray))
+                    virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+                        if (!intersectable->intersect (intersection, ray))
                             return false;
 
-                        const Vector3d L = sky->GetSunDirection();
+                        const Vector3d L = sky->getSunDirection();
                         //intersection.L_e = 0.0;//intersection.L_e < 0.0 ? 0.0 : intersection.L_e;
                         real alpha;
                         intersection.L_e = 0.0;

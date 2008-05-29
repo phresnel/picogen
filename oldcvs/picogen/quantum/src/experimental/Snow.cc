@@ -29,7 +29,7 @@
 
 struct SnowBRDF : public picogen::graphics::material::abstract::IBRDF {
     SnowBRDF() {}
-    virtual bool RandomSample (
+    virtual bool randomSample (
         param_out (picogen::misc::prim::real,brdf),
         param_out (picogen::misc::prim::real,p),
         param_out (bool,specular),
@@ -123,7 +123,7 @@ namespace picogen {
                 numSnowSpheres = 0;
             }
 
-            bool Snow::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+            bool Snow::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
 
                 //Vector3d v = velocity * ( powf( real(rand())/real(RAND_MAX), timeexp ) );
 

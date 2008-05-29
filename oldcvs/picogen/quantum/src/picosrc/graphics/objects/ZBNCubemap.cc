@@ -37,8 +37,46 @@ using picogen::graphics::image::color::Color;
 
 
 using std::string;
-
 using namespace picogen::misc::exceptions;
+
+
+struct BRDF : public picogen::graphics::material::abstract::IBRDF {
+    BRDF() {}
+    virtual bool randomSample (
+        param_out (picogen::misc::prim::real,brdf),
+        param_out (picogen::misc::prim::real,p),
+        param_out (bool,specular),
+        param_out (picogen::misc::geometrics::Ray,r_out),
+        param_in (picogen::misc::geometrics::Ray,r_in),
+        param_in (picogen::misc::geometrics::Vector3d,N)
+    ) const {
+        using picogen::misc::constants::pi;
+        using picogen::misc::prim::real;
+        using picogen::misc::geometrics::Vector3d;
+
+        /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
+         return false;*/
+        r_out.setPosition( r_in.getPosition() );
+        p = 1.0;
+        brdf = 1;
+        do {
+            r_out.w() = Vector3d (
+                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
+                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
+                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0
+                        );
+        } while (r_out.getDirection().computeLengthSq() >1 || N*r_out.getDirection() <0.0);
+
+        //r_out.w() = r_out.w().normal();
+        r_out.setDirection( r_out.getDirection().computeNormal() );
+        p = 1.0/ (2.0*pi);// / xrt::constants::pi;
+        brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
+        specular = false;
+        return true;
+    }
+};
+static BRDF brdf;
+
 
 
 namespace picogen {
@@ -49,6 +87,8 @@ namespace picogen {
             ZBNCubemapSurface::ZBNCubemapSurface() : surface (NULL), width (0), height (0) {
             }
 
+
+
             ZBNCubemapSurface::~ZBNCubemapSurface() {
                 if (NULL != surface) {
                     delete [] surface;
@@ -56,6 +96,8 @@ namespace picogen {
                 }
                 width = height = 0;
             }
+
+
 
             void ZBNCubemapSurface::resize (int new_width, int new_height) {
                 if (NULL != surface) {
@@ -68,11 +110,17 @@ namespace picogen {
                 height  = new_height;
             }
 
+
+
             void ZBNCubemapSurface::lock() {
             }
 
+
+
             void ZBNCubemapSurface::unlock() {
             }
+
+
 
             ZBNCubemapPixel ZBNCubemapSurface::getPixel (int x, int y) const {
                 if (! ( (x>=0) & (x<width) & (y>=0) & (y<height))) {
@@ -84,6 +132,8 @@ namespace picogen {
                 return surface[ y*width + x ];
             }
 
+
+
             /*
             ZBNCubemapPixel & ZBNCubemapSurface::getPixel( int x, int y ){
                 if( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ){
@@ -94,6 +144,8 @@ namespace picogen {
                 }
                 return surface[ y*width + x ];
             }*/
+
+
 
             ZBNCubemapPixel ZBNCubemapSurface::getPixel (real u, real v) const {
                 const int x = static_cast<int> (u*static_cast<real> (width-1)  + 0.5);
@@ -107,6 +159,8 @@ namespace picogen {
                 return surface[ y*width + x ];
             }
 
+
+
             void ZBNCubemapSurface::setPixel (real u, real v, const ZBNCubemapPixel &p) {
                 const int x = static_cast<int> (u*static_cast<real> (width-1)  + 0.5);
                 const int y = static_cast<int> (v*static_cast<real> (height-1) + 0.5);
@@ -119,6 +173,8 @@ namespace picogen {
                 surface[ y*width + x ] = p;
             }
 
+
+
             void ZBNCubemapSurface::setPixel (int x, int y, const ZBNCubemapPixel &p) {
                 if (! ( (x>=0) & (x<width) & (y>=0) & (y<height))) {
                     throw coords_out_of_bounds (__FILE__, __LINE__, 0, 0, width, height, x, y);
@@ -129,65 +185,41 @@ namespace picogen {
                 surface[ y*width + x ] = p;
             }
 
+
+
             int ZBNCubemapSurface::getWidth() const {
                 return width;
             }
+
+
 
             int ZBNCubemapSurface::getHeight() const {
                 return height;
             }
 
-//==-------------------------------------------------------------------------==
-//=
-//=
-//==-------------------------------------------------------------------------==
 
 
-            struct BRDF : public picogen::graphics::material::abstract::IBRDF {
-                BRDF() {}
-                virtual bool RandomSample (
-                    param_out (picogen::misc::prim::real,brdf),
-                    param_out (picogen::misc::prim::real,p),
-                    param_out (bool,specular),
-                    param_out (picogen::misc::geometrics::Ray,r_out),
-                    param_in (picogen::misc::geometrics::Ray,r_in),
-                    param_in (picogen::misc::geometrics::Vector3d,N)
-                ) const {
-                    using picogen::misc::constants::pi;
-                    using picogen::misc::prim::real;
-                    using picogen::misc::geometrics::Vector3d;
+            //==-------------------------------------------------------------------------==
+            //=
+            //=
+            //==-------------------------------------------------------------------------==
 
-                    /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
-                     return false;*/
-                    r_out.x() = r_in.x();
-                    p = 1.0;
-                    brdf = 1;
-                    do {
-                        r_out.w() = Vector3d (
-                                        static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                                        static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                                        static_cast<real> (rand() % 20000) / 10000.0 - 1.0
-                                    );
-                    } while (r_out.w().lengthSq() >1 || N*r_out.w() <0.0);
-
-                    r_out.w() = r_out.w().normal();
-                    p = 1.0/ (2.0*pi);// / xrt::constants::pi;
-                    brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
-                    specular = false;
-                    return true;
-                }
-            };
-            static BRDF brdf;
 
             ZBNCubemap::ZBNCubemap() {
             }
 
+
+
             ZBNCubemap::~ZBNCubemap() {
             }
+
+
 
             ZBNCubemapSurface &ZBNCubemap::getSurface (face_t face) {
                 return faces[face];
             }
+
+
 
             void ZBNCubemap::lock() {
                 if (NULL != faces) {
@@ -196,12 +228,15 @@ namespace picogen {
                 }
             }
 
+
+
             void ZBNCubemap::unlock() {
                 if (NULL != faces) {
                     for (int i=0; i<6; ++i)
                         faces[i].unlock();
                 }
             }
+
 
 
             void ZBNCubemap::getCubeCoords (face_t &face, real &u, real &v, const Vector3d &pos) {
@@ -257,12 +292,16 @@ namespace picogen {
                 v = v*0.5+0.5;
             }
 
+
+
             ZBNCubemapPixel ZBNCubemap::getPixel (const Vector3d &pos) const {
                 face_t face;
                 real u,v;
                 getCubeCoords (face, u, v, pos);
                 return faces[face].getPixel (u, v);
             }
+
+
 
             /*
             ZBNCubemapPixel & ZBNCubemap::getPixel( const Vector3d &pos ){
@@ -273,6 +312,8 @@ namespace picogen {
                 return faces[face].getPixel( u, v );
             }*/
 
+
+
             void ZBNCubemap::setPixel (const Vector3d &pos, const ZBNCubemapPixel &p) {
                 face_t face;
                 real u,v;
@@ -280,7 +321,9 @@ namespace picogen {
                 faces[face].setPixel (u, v, p);
             }
 
-            bool ZBNCubemap::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+
+
+            bool ZBNCubemap::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
                 if (0) {
                     face_t face;
                     real u,v;
@@ -347,7 +390,7 @@ namespace picogen {
 
                             intersection_t intersection;
                             const real d = pixel.getDepth();
-                            if (I->Intersect (intersection,ray) && (d<0.0 || intersection.t < d)) {
+                            if (I->intersect (intersection,ray) && (d<0.0 || intersection.t < d)) {
                                 pixel.setDepth (intersection.t);
                                 pixel.setColor (intersection.color);
                                 pixel.setNormal (intersection.normal);

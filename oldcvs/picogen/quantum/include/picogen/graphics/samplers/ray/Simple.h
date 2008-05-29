@@ -51,9 +51,9 @@ namespace picogen {
                         Simple (IIntersectable *intersectable);
                         Simple();
                         virtual ~Simple();
-                        void SetIntersectable (IIntersectable *intersectable);
-                        void SetSky (ISky *skyShader);
-                        bool Integrate (param_out (Color, color), param_out (intersection_t,primaryIntersection), param_in (Ray,ray));
+                        void setIntersectable (IIntersectable *intersectable);
+                        void setSky (ISky *skyShader);
+                        bool integrate (param_out (Color, color), param_out (intersection_t,primaryIntersection), param_in (Ray,ray));
                 };
 
 

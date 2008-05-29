@@ -121,7 +121,7 @@ namespace picogen {
                 public:
                     ZBNCubemap();
                     virtual ~ZBNCubemap();
-                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+                    virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
 
                     ZBNCubemapSurface &getSurface (face_t face);
 

@@ -43,7 +43,7 @@ namespace picogen {
                         //
                         // returns false  if  the  in-ray is absorbed, and if so,
                         // the out-params are undefined.
-                        virtual bool RandomSample (
+                        virtual bool randomSample (
                             param_out (::picogen::misc::prim::real,brdf),
                             param_out (::picogen::misc::prim::real,p),
                             param_out (bool,specular),
@@ -56,13 +56,13 @@ namespace picogen {
                 class IShader {
                     public:
                         virtual ~IShader() {};
-                        virtual void Shade (
+                        virtual void shade (
                             image::color::Color &color,
                             const ::picogen::misc::geometrics::Vector3d &normal,
                             const ::picogen::misc::geometrics::Vector3d &position
                         ) const = 0;
 
-                        virtual void Shade (
+                        virtual void shade (
                             /*::picogen::graphics::*/image::color::Color &color,
                             ::picogen::misc::prim::real &L_e,
                             const ::picogen::misc::geometrics::Vector3d &normal,
@@ -70,7 +70,7 @@ namespace picogen {
                         ) const {
                             // for backwards compatibility we will implement this virtual function,
                             L_e = 0.0;
-                            Shade (color, normal, position);
+                            shade (color, normal, position);
                         }
                 };
             } // namespace abstract

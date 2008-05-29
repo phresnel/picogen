@@ -43,13 +43,13 @@ class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
         bool isValid() const {
             return valid;
         }
-        virtual void Shade (
+        virtual void shade (
             Color &color,
             const Vector3d &normal,
             const Vector3d &position
         ) const {
             if (shader != NULL)
-                shader->Shade (color, normal, position);
+                shader->shade (color, normal, position);
         }
 
         ShaderCC_GCC (::std::string fileName, ::std::string shaderName = std::string ("")) : fileName (fileName), fileHandle (NULL), valid (false), shader (NULL) {

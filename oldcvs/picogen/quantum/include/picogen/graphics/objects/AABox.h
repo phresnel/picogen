@@ -64,7 +64,7 @@ namespace picogen {
                 public:
                     AABox();
                     virtual ~AABox();
-                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+                    virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
 
                     void setBRDF (face_t face, const IBRDF* const brdf);
                     void setShader (face_t face, const IShader* const shader);

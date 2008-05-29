@@ -45,49 +45,68 @@ namespace picogen {
             }
 
 
+
             void Sphere::setPosition (const Vector3d &pos) {
                 x = pos;
             }
+
+
 
             Vector3d Sphere::getPosition() const {
                 return x;
             }
 
+
+
             void Sphere::setColor (const Color &c) {
                 color = c;
             }
 
+
+
             Color Sphere::getColor() const {
                 return color;
             }
+
+
 
             void Sphere::setRadius (real radius) {
                 r = radius;
             }
 
 
+
             real Sphere::getRadius() const {
                 return r;
             }
+
+
 
             void Sphere::setEmittance (real e) {
                 L_e = e;
             }
 
+
+
             real Sphere::getEmittance() const {
                 return L_e;
             }
 
+
+
             void Sphere::setBRDF (const IBRDF* b) {
                 brdf = const_cast<IBRDF*> (b);
             }
+
+
 
             IBRDF* Sphere::getBRDF() const {
                 return brdf;
             }
 
 
-            bool Sphere::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+
+            bool Sphere::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
                 intersection.color = Color (1,0,0);
 
                 using namespace picogen::misc::constants;
@@ -135,6 +154,8 @@ namespace picogen {
                 }
                 return currSide != noside;
             }
+
+
 
         }; // namespace objects
     }; // namespace graphics

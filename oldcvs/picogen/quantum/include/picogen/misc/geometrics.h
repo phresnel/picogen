@@ -35,6 +35,7 @@ namespace picogen {
                     typedef ::picogen::misc::prim::real real;
                     real m[3];
                 public:
+
                     template <class T> inline real &operator [] (T u) {
                         XRT_CALL_STACK_PUSH ("template <class T> inline real& vector3d::operator [] ( T u )");
 #ifdef XRT_DEBUG
@@ -43,6 +44,7 @@ namespace picogen {
                         XRT_CALL_STACK_POP();
                         return m[u]; // do not make any type conversion, so compiler-warnings are produced
                     }
+
                     template <class T> const inline real operator [] (T u) const {
                         XRT_CALL_STACK_PUSH ("template <class T> const inline real vector3d::operator [] ( T u ) const");
 #ifdef XRT_DEBUG
@@ -51,6 +53,7 @@ namespace picogen {
                         XRT_CALL_STACK_POP();
                         return m[u]; // do not make any type conversion, so compiler-warnings are produced
                     }
+
                     Vector3d (real X, real Y, real Z) {
                         XRT_CALL_STACK_PUSH ("vector3d::vector3d( real X, real Y, real Z )");
                         m[0] = X;
@@ -58,43 +61,77 @@ namespace picogen {
                         m[2] = Z;
                         XRT_CALL_STACK_POP();
                     }
+
                     Vector3d() {
                         XRT_CALL_STACK_PUSH ("vector3d::vector3d()");
                         m[0] = m[1] = m[2] = 0;
                         XRT_CALL_STACK_POP();
                     }
-                    inline Vector3d operator = (const Vector3d &v) {
+
+                    inline const Vector3d operator = (const Vector3d &v) {
                         return Vector3d (m[0]=v.m[0], m[1]=v.m[1], m[2]=v.m[2]);
                     }
-                    inline Vector3d operator + (const Vector3d &v) const {
+
+                    inline const Vector3d operator + (const Vector3d &v) const {
                         return Vector3d (m[0]+v.m[0], m[1]+v.m[1], m[2]+v.m[2]);
                     }
-                    inline Vector3d operator - (const Vector3d &v) const {
+
+                    inline const Vector3d operator - (const Vector3d &v) const {
                         return Vector3d (m[0]-v.m[0], m[1]-v.m[1], m[2]-v.m[2]);
                     }
+
                     inline real operator * (const Vector3d &v) const {
                         return (m[0]*v.m[0] + m[1]*v.m[1] + m[2]*v.m[2]);
                     }
+
+                    inline const Vector3d operator * (const real f) const {
+                        return Vector3d (m[0]*f, m[1]*f, m[2]*f);
+                    }
+
+                    inline const Vector3d operator - () const {
+                        return Vector3d (-m[0], -m[1], -m[2]);
+                    }
+
+                    inline const Vector3d computeCross (const Vector3d &v) const {
+                        return Vector3d (
+                                   m[1]*v.m[2] - m[2]*v.m[1],
+                                   m[2]*v.m[0] - m[0]*v.m[2],
+                                   m[0]*v.m[1] - m[1]*v.m[0]);
+                    }
+
+                    inline real computeLengthSq() const {
+                        return m[0]*m[0] + m[1]*m[1] + m[2]*m[2];
+                    }
+                    inline real computeLength() const {
+                        return sqrt (m[0]*m[0] + m[1]*m[1] + m[2]*m[2]);
+                    }
+
+                    inline const Vector3d computeNormal() const {
+                        return *this * (1.0/length());
+                    }
+
+                    // --- below function are deprecated
+                    /// \todo get rid of below function
                     inline Vector3d cross (const Vector3d &v) const {
                         return Vector3d (
                                    m[1]*v.m[2] - m[2]*v.m[1],
                                    m[2]*v.m[0] - m[0]*v.m[2],
                                    m[0]*v.m[1] - m[1]*v.m[0]);
                     }
-                    inline Vector3d operator * (const real f) const {
-                        return Vector3d (m[0]*f, m[1]*f, m[2]*f);
-                    }
+
+                    /// \todo get rid of below function
                     inline real lengthSq() const {
                         return m[0]*m[0] + m[1]*m[1] + m[2]*m[2];
                     }
+
+                    /// \todo get rid of below function
                     inline real length() const {
                         return sqrt (m[0]*m[0] + m[1]*m[1] + m[2]*m[2]);
                     }
+
+                    /// \todo get rid of below function
                     inline Vector3d normal() const {
                         return *this * (1.0/length());
-                    }
-                    inline Vector3d operator - () const {
-                        return Vector3d (-m[0], -m[1], -m[2]);
                     }
             };
 
@@ -102,25 +139,58 @@ namespace picogen {
 
             class Ray {
                 private:
-                    typedef prim::real real;
-                    Vector3d m_x, m_w;
+                    typedef ::picogen::misc::prim::real real;
+                private:
+                    Vector3d position, direction;
                 public:
-                    Ray() : m_x(), m_w() {}
-                    Ray (const Vector3d &x, const Vector3d &w) : m_x (x), m_w (w) {}
-                    inline Vector3d operator () (real f) const {
-                        return m_x + m_w * f;
+                    Ray()
+                        : position(), direction()
+                    {}
+
+                    Ray (const Vector3d &position, const Vector3d &direction)
+                        : position (position), direction (direction)
+                    {}
+
+                    inline const Vector3d operator () (real f) const {
+                        return position + direction * f;
                     }
+
+                    const inline Vector3d getPosition() const {
+                        return position;
+                    }
+
+                    const inline Vector3d getDirection() const {
+                        return direction;
+                    }
+
+                    void setPosition( const Vector3d &position ) {
+                        this->position = position;
+                    }
+
+                    void setDirection( const Vector3d &direction ) {
+                        this->direction = direction;
+                    }
+
+                    // --- below functions are deprecated
+
+                    /// \todo get rid of below function
                     const inline Vector3d x() const {
-                        return m_x;
+                        return position;
                     }
+
+                    /// \todo get rid of below function
                     const inline Vector3d w() const {
-                        return m_w;
+                        return direction;
                     }
+
+                    /// \todo get rid of below function
                     inline Vector3d &x() {
-                        return m_x;
+                        return position;
                     }
+
+                    /// \todo get rid of below function
                     inline Vector3d &w() {
-                        return m_w;
+                        return direction;
                     }
             };
 
@@ -145,28 +215,34 @@ namespace picogen {
                         bbmax = Vector3d (-constants::real_max,-constants::real_max,-constants::real_max);
                     }
 
-                    int get_axis_of_max_extent() const {
+                    int getAxisOfMaxExtent() const {
                         const Vector3d diff = bbmax - bbmin;
                         int ret = 0;
                         if (fabs (diff[1]) > fabs (diff[0]) && fabs (diff[1]) > fabs (diff[2])) ret = 1;
                         if (fabs (diff[2]) > fabs (diff[0]) && fabs (diff[2]) > fabs (diff[1])) ret = 2;
                         return ret;
                     }
-                    const Vector3d median() const {
+
+                    const Vector3d computeMedian() const {
                         return (bbmin+bbmax) *0.5;
                     }
-                    const Vector3d min() const {
+
+                    const Vector3d getMin() const {
                         return bbmin;
                     }
-                    const Vector3d max() const {
+
+                    const Vector3d getMax() const {
                         return bbmax;
                     }
-                    Vector3d &min() {
-                        return bbmin;
+
+                    const void setMin( const Vector3d &b ) {
+                        bbmin = b;
                     }
-                    Vector3d &max() {
-                        return bbmax;
+
+                    const void setMax( const Vector3d &b ) {
+                        bbmax = b;
                     }
+
                     void update (param_in (Vector3d, x)) {
                         if (x[0] < bbmin[0]) bbmin[0] = x[0];
                         if (x[1] < bbmin[1]) bbmin[1] = x[1];
@@ -175,6 +251,7 @@ namespace picogen {
                         if (x[1] > bbmax[1]) bbmax[1] = x[1];
                         if (x[2] > bbmax[2]) bbmax[2] = x[2];
                     }
+
                     bool intersects (param_in (Vector3d,x)) const {
                         return x[0]>=bbmin[0]
                                && x[1]>=bbmin[1]
@@ -184,6 +261,7 @@ namespace picogen {
                                && x[2]<=bbmax[2]
                                ;
                     }
+
                     bool intersect (param_out (real,t_min), param_out (real,t_max), param_in (Ray,r)) const {
                         real tmin, tmax, tymin, tymax, tzmin, tzmax;
 

@@ -43,10 +43,10 @@ namespace picogen {
                 public:
                     LinearList();
                     virtual ~LinearList();
-                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
-                    virtual void Insert (const IIntersectable*i);
-                    virtual void Flush();
-                    virtual void Invalidate();
+                    virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+                    virtual void insert (const IIntersectable*i);
+                    virtual void flush();
+                    virtual void invalidate();
             };
 
         }

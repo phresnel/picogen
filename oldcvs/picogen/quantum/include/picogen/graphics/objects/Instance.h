@@ -55,13 +55,13 @@ namespace picogen {
                         this->transformation = transformation;
                     }
 
-                    virtual bool Intersect (
+                    virtual bool intersect (
                         param_out (intersection_t,intersection), param_in (Ray,ray)
                     ) const {
                         const Vector3d A = transformation * ray (0.0);
                         const Vector3d B = transformation * ray (1.0);
                         const Ray   tray = Ray (A, (B-A).normal());
-                        if (intersectable->Intersect (intersection, tray)) {
+                        if (intersectable->intersect (intersection, tray)) {
                             const Vector3d i  = tray (intersection.t);
                             intersection.t = (i - ray (0.0)).length();
                             /*const Vector3d i_ = i + intersection.normal;

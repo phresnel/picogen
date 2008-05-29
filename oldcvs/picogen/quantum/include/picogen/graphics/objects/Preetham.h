@@ -31,12 +31,14 @@ namespace picogen {
         namespace objects {
 
             class Preetham : public ::picogen::graphics::objects::abstract::ISky {
+
                 private:
                     typedef ::picogen::misc::prim::real              real;
                     typedef ::picogen::misc::geometrics::Vector3d    Vector3d;
                     typedef ::picogen::misc::geometrics::Ray         Ray;
                     typedef ::picogen::graphics::image::color::Color Color;
 
+                private:
                     Vector3d m_sunDirection;
                     real m_T;
                     real m_sunTheta, m_sunPhi;
@@ -49,23 +51,51 @@ namespace picogen {
                     bool m_enableFogHack;
                     real m_fogHackFactor, m_fogHackSatDist;
 
-                    static real Perez (real Theta, real gamma, const real ABCDE[]);
+                private:
+                    static real perez (real Theta, real gamma, const real ABCDE[]);
+
                 public:
+
+                    // -- misc ------------------------------------------------
                     Preetham();
-                    virtual void Shade (param_out (Color,color), param_in (Ray,ray)) const;
-                    virtual void SunShade (param_out (Color,color), param_in (Ray,ray)) const;
-                    virtual void SunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const;
-                    virtual void AtmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const;
-                    Vector3d GetSunDirection() const;
-                    void SetSunDirection (param_in (Vector3d,ray));
-                    void SetSunDirection (real lat, real longi, int sm, int jd, real tOfDay);
-                    void SetTurbidity (real t);
-                    void SetSunSolidAngleFactor (real f);
-                    void SetSunColor (Color col);
-                    Color GetSunColor() const;
-                    void SetColorFilter (Color col);
-                    void Invalidate();
-                    void EnableFogHack (bool enable, real f, real satDist);
+                    void invalidate();
+                    // --------------------------------------------------------
+
+
+
+                    // -- shading / sampling ----------------------------------
+                    virtual void shade (param_out (Color,color), param_in (Ray,ray)) const;
+                    virtual void sunShade (param_out (Color,color), param_in (Ray,ray)) const;
+                    virtual void sunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const;
+                    virtual void atmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const;
+                    // --------------------------------------------------------
+
+
+
+                    // -- sun direction / solid angle -------------------------
+                    Vector3d getSunDirection() const;
+                    void setSunDirection (param_in (Vector3d,ray));
+                    void setSunDirection (real lat, real longi, int sm, int jd, real tOfDay);
+                    void setSunSolidAngleFactor (real f);
+                    // --------------------------------------------------------
+
+
+
+                    // -- sun color -------------------------------------------
+                    void setSunColor (Color col);
+                    Color getSunColor() const;
+                    void setColorFilter (Color col);
+                    // --------------------------------------------------------
+
+
+
+                    // -- atmosphere ------------------------------------------
+                    void setTurbidity (real t);
+                    void enableFogHack (bool enable, real f, real satDist);
+                    // --------------------------------------------------------
+
+
+
             };
 
         }//namespace picogen {

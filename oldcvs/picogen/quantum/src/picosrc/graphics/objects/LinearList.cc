@@ -36,18 +36,18 @@ namespace picogen {
 
 
             LinearList::~LinearList() {
-                Flush();
+                flush();
             }
 
 
 
-            bool LinearList::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+            bool LinearList::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
                 intersection.t = misc::constants::real_max;
                 t_objectList::const_iterator it;
                 bool any = false;
                 for (it=m_list.begin(); it!=m_list.end(); it++) {
                     intersection_t tmp;
-                    if ( (*it)->Intersect (tmp, ray) && tmp.t<intersection.t) {
+                    if ( (*it)->intersect (tmp, ray) && tmp.t<intersection.t) {
                         any = true;
                         intersection = tmp;
                     }
@@ -57,19 +57,19 @@ namespace picogen {
 
 
 
-            void LinearList::Insert (const abstract::IIntersectable*i) {
+            void LinearList::insert (const abstract::IIntersectable*i) {
                 m_list.insert (m_list.end(), const_cast<IIntersectable*> (i));
             }
 
 
 
-            void LinearList::Invalidate() {
+            void LinearList::invalidate() {
                 // nothing to do here, keep off
             }
 
 
 
-            void LinearList::Flush() {
+            void LinearList::flush() {
                 m_list.clear();
             }
 

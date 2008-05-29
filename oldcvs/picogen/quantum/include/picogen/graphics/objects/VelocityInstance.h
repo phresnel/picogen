@@ -43,21 +43,21 @@ namespace picogen {
                 public:
                     VelocityInstance() : intersectable (NULL), timeexp (1.0) {}
 
-                    void SetTimeExponent (real t) {
+                    void setTimeExponent (real t) {
                         timeexp = t;
                     }
-                    void SetVelocity (param_in (Vector3d, V)) {
+                    void setVelocity (param_in (Vector3d, V)) {
                         velocity = V;
                     }
-                    void SetOffset (param_in (Vector3d, o)) {
+                    void setOffset (param_in (Vector3d, o)) {
                         offset = o;
                     }
-                    void SetIntersectable (const IIntersectable* I) {
+                    void setIntersectable (const IIntersectable* I) {
                         /// \todo  const_cast?
                         intersectable = const_cast<IIntersectable*> (I);
                     }
 
-                    virtual bool Intersect (
+                    virtual bool intersect (
                         param_out (intersection_t,intersection), param_in (Ray,ray)
                     ) const {
                         if (NULL == intersectable)
@@ -65,7 +65,7 @@ namespace picogen {
                         Ray newRay;
                         newRay.x() = ray.x() + offset + velocity * (powf (real (rand()) /real (RAND_MAX), timeexp));
                         newRay.w() = ray.w();
-                        return intersectable->Intersect (intersection, newRay);
+                        return intersectable->intersect (intersection, newRay);
                     }
             };
 

@@ -105,7 +105,7 @@ namespace picogen {
                         AverageColor() : m_color (0,0,0), m_alpha (0) {}
                         AverageColor (real r, real g, real b) : m_color (r,g,b), m_alpha (0) {}
                         AverageColor (const Color &col) : m_color (col), m_alpha (1) {}
-                        inline int GetAlpha() const {
+                        inline int getAlpha() const {
                             return (int) m_alpha;
                         }
                         inline AverageColor operator + (const Color &A) const {

@@ -34,105 +34,105 @@ typedef picogen::graphics::structs::intersection_t intersection_t;
 
 
 
+/// \todo bring the following triangle intersector in some intersector-repository or something
+static const real tri_eps = 0.00000001;
+static int
+raytri_intersect (
+    const Ray &ray,
+    const real a[], const real b[], const real c[],
+    real &t, real &u, real &v,
+    real normal[]) {
+    real vect0[3], vect1[3], nvect[3];
+    real det, inv_det;
+
+
+    //SUB(vect0, b,a)
+    vect0[0] = b[0] - a[0];
+    vect0[1] = b[1] - a[1];
+    vect0[2] = b[2] - a[2];
+
+    //SUB(vect1, c,a)
+    vect1[0] = c[0] - a[0];
+    vect1[1] = c[1] - a[1];
+    vect1[2] = c[2] - a[2];
+
+    //CROSS(normal, vect0, vect1);
+    normal[0] = vect0[1] * vect1[2] - vect0[2] * vect1[1];
+    normal[1] = vect0[2] * vect1[0] - vect0[0] * vect1[2];
+    normal[2] = vect0[0] * vect1[1] - vect0[1] * vect1[0];
+
+    /* orientation of the ray with respect to the triangle's normal,
+       also used to calculate output parameters*/
+    //det = - DOT(dir,normal);
+    det = - (ray.w() [0] * normal[0] + ray.w() [1] * normal[1] + ray.w() [2] * normal[2]);
+
+    //---------
+
+    /* if determinant is near zero, ray is parallel to the plane of triangle */
+    if (det > -tri_eps && det < tri_eps) return 0;
+
+    /* calculate vector from ray origin to a */
+    //SUB(vect0,a,orig);
+    vect0[0] = a[0] - ray.x() [0];
+    vect0[1] = a[1] - ray.x() [1];
+    vect0[2] = a[2] - ray.x() [2];
+
+    /* normal vector used to calculate u and v parameters */
+    //CROSS(nvect,dir,vect0);
+    //nvect = ray.w().cross( vect0 );
+    nvect[0] = ray.w() [1] * vect0[2] - ray.w() [2] * vect0[1];
+    nvect[1] = ray.w() [2] * vect0[0] - ray.w() [0] * vect0[2];
+    nvect[2] = ray.w() [0] * vect0[1] - ray.w() [1] * vect0[0];
+
+    inv_det = 1.0 / det;
+    /* calculate vector from ray origin to b*/
+    //SUB(vect1,b,orig);
+    //vect1 = b - ray.x();
+    vect1[0] = b[0] - ray.x() [0];
+    vect1[1] = b[1] - ray.x() [1];
+    vect1[2] = b[2] - ray.x() [2];
+
+    /* calculate v parameter and test bounds */
+    //*v = - DOT(vect1,nvect) * inv_det;
+    //v = -(vect1*nvect*inv_det);
+    v = -inv_det * (vect1[0] * nvect[0] + vect1[1] * nvect[1] + vect1[2] * nvect[2]);
+
+    if (v < 0.0 || v > 1.0) return 0;
+
+    /* calculate vector from ray origin to c*/
+    //SUB(vect1,c,orig);
+    vect1[0] = c[0] - ray.x() [0];
+    vect1[1] = c[1] - ray.x() [1];
+    vect1[2] = c[2] - ray.x() [2];
+
+    /* calculate v parameter and test bounds */
+    //*u = DOT(vect1,nvect) * inv_det;
+    //u = vect1*nvect*inv_det;
+    u = (vect1[0] * nvect[0] + vect1[1] * nvect[1] + vect1[2] * nvect[2]) * inv_det;
+
+    if (u < 0.0 || u + v > 1.0) return 0;
+
+    /* calculate t, ray intersects triangle */
+    //*t = - DOT(vect0,normal) * inv_det;
+    //t = -( vect0* normal * inv_det );
+    t = -inv_det * (vect0[0] * normal[0] + vect0[1] * normal[1] + vect0[2] * normal[2]);
+
+    //---------
+
+    if (t < 0)
+        return 0;
+    const real tmp = 1.0 / sqrt (normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
+    normal[0] *= tmp;
+    normal[1] *= tmp;
+    normal[2] *= tmp;
+    if (ray.w() [0]*normal[0] + ray.w() [1]*normal[1] + ray.w() [2]*normal[2] > 0.0)
+        return -1;
+    return 1;
+}
+
 namespace picogen {
     namespace graphics {
         namespace objects {
-
-
-            static const real tri_eps = 0.00000001;
-            static int
-            raytri_intersect (
-                const Ray &ray,
-                const real a[], const real b[], const real c[],
-                real &t, real &u, real &v,
-                real normal[]) {
-                real vect0[3], vect1[3], nvect[3];
-                real det, inv_det;
-
-
-                //SUB(vect0, b,a)
-                vect0[0] = b[0] - a[0];
-                vect0[1] = b[1] - a[1];
-                vect0[2] = b[2] - a[2];
-
-                //SUB(vect1, c,a)
-                vect1[0] = c[0] - a[0];
-                vect1[1] = c[1] - a[1];
-                vect1[2] = c[2] - a[2];
-
-                //CROSS(normal, vect0, vect1);
-                normal[0] = vect0[1] * vect1[2] - vect0[2] * vect1[1];
-                normal[1] = vect0[2] * vect1[0] - vect0[0] * vect1[2];
-                normal[2] = vect0[0] * vect1[1] - vect0[1] * vect1[0];
-
-                /* orientation of the ray with respect to the triangle's normal,
-                   also used to calculate output parameters*/
-                //det = - DOT(dir,normal);
-                det = - (ray.w() [0] * normal[0] + ray.w() [1] * normal[1] + ray.w() [2] * normal[2]);
-
-                //---------
-
-                /* if determinant is near zero, ray is parallel to the plane of triangle */
-                if (det > -tri_eps && det < tri_eps) return 0;
-
-                /* calculate vector from ray origin to a */
-                //SUB(vect0,a,orig);
-                vect0[0] = a[0] - ray.x() [0];
-                vect0[1] = a[1] - ray.x() [1];
-                vect0[2] = a[2] - ray.x() [2];
-
-                /* normal vector used to calculate u and v parameters */
-                //CROSS(nvect,dir,vect0);
-                //nvect = ray.w().cross( vect0 );
-                nvect[0] = ray.w() [1] * vect0[2] - ray.w() [2] * vect0[1];
-                nvect[1] = ray.w() [2] * vect0[0] - ray.w() [0] * vect0[2];
-                nvect[2] = ray.w() [0] * vect0[1] - ray.w() [1] * vect0[0];
-
-                inv_det = 1.0 / det;
-                /* calculate vector from ray origin to b*/
-                //SUB(vect1,b,orig);
-                //vect1 = b - ray.x();
-                vect1[0] = b[0] - ray.x() [0];
-                vect1[1] = b[1] - ray.x() [1];
-                vect1[2] = b[2] - ray.x() [2];
-
-                /* calculate v parameter and test bounds */
-                //*v = - DOT(vect1,nvect) * inv_det;
-                //v = -(vect1*nvect*inv_det);
-                v = -inv_det * (vect1[0] * nvect[0] + vect1[1] * nvect[1] + vect1[2] * nvect[2]);
-
-                if (v < 0.0 || v > 1.0) return 0;
-
-                /* calculate vector from ray origin to c*/
-                //SUB(vect1,c,orig);
-                vect1[0] = c[0] - ray.x() [0];
-                vect1[1] = c[1] - ray.x() [1];
-                vect1[2] = c[2] - ray.x() [2];
-
-                /* calculate v parameter and test bounds */
-                //*u = DOT(vect1,nvect) * inv_det;
-                //u = vect1*nvect*inv_det;
-                u = (vect1[0] * nvect[0] + vect1[1] * nvect[1] + vect1[2] * nvect[2]) * inv_det;
-
-                if (u < 0.0 || u + v > 1.0) return 0;
-
-                /* calculate t, ray intersects triangle */
-                //*t = - DOT(vect0,normal) * inv_det;
-                //t = -( vect0* normal * inv_det );
-                t = -inv_det * (vect0[0] * normal[0] + vect0[1] * normal[1] + vect0[2] * normal[2]);
-
-                //---------
-
-                if (t < 0)
-                    return 0;
-                const real tmp = 1.0 / sqrt (normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
-                normal[0] *= tmp;
-                normal[1] *= tmp;
-                normal[2] *= tmp;
-                if (ray.w() [0]*normal[0] + ray.w() [1]*normal[1] + ray.w() [2]*normal[2] > 0.0)
-                    return -1;
-                return 1;
-            }
 
 
 
@@ -162,9 +162,11 @@ namespace picogen {
                 m_scaleBox.reset();
             }
 
-            void SimpleHeightField::SetBox (param_in (Vector3d, min), param_in (Vector3d, max)) {
-                m_scaleBox.min() = min;
-                m_scaleBox.max() = max;
+
+
+            void SimpleHeightField::setBox (param_in (Vector3d, min), param_in (Vector3d, max)) {
+                m_scaleBox.setMin( min );
+                m_scaleBox.setMax( max );
                 m_vScale = max[2] - min[2];
 
                 const Vector3d tmp = max - min;
@@ -179,7 +181,7 @@ namespace picogen {
 
 
             void SimpleHeightField::updateOptimizerVars() {
-                const Vector3d tmp = m_scaleBox.max() - m_scaleBox.min();
+                const Vector3d tmp = m_scaleBox.getMax() - m_scaleBox.getMin();
                 m_scaleSize[0] = tmp[0];
                 m_scaleSize[1] = tmp[1];
                 m_scaleSize[2] = tmp[2];
@@ -187,9 +189,9 @@ namespace picogen {
                 m_invertScaleSize[0] = 1.0 / m_scaleSize[0];
                 m_invertScaleSize[1] = 1.0 / m_scaleSize[1];
                 m_invertScaleSize[2] = 1.0 / m_scaleSize[2];
-                m_scaleBoxMin[0] = m_scaleBox.min() [0];
-                m_scaleBoxMin[1] = m_scaleBox.min() [1];
-                m_scaleBoxMin[2] = m_scaleBox.min() [2];
+                m_scaleBoxMin[0] = m_scaleBox.getMin() [0];
+                m_scaleBoxMin[1] = m_scaleBox.getMin() [1];
+                m_scaleBoxMin[2] = m_scaleBox.getMin() [2];
 
                 m_invertHMapSize = 1.0 / (real) (m_size - 1);
                 m_scaleSize_mul_invertHMapSize[0] = m_scaleSize[0] * m_invertHMapSize;
@@ -197,11 +199,11 @@ namespace picogen {
                 m_scaleSize_mul_invertHMapSize[2] = m_scaleSize[2] * m_invertHMapSize;
             }
 
-            void SimpleHeightField::SetBRDF (const material::abstract::IBRDF*  brdf) {
+            void SimpleHeightField::setBRDF (const material::abstract::IBRDF*  brdf) {
                 m_pBRDF = brdf;
             }
 
-            void SimpleHeightField::SetShader (const material::abstract::IShader* shader) {
+            void SimpleHeightField::setShader (const material::abstract::IShader* shader) {
                 m_pShader = shader;
             }
 
@@ -217,7 +219,7 @@ namespace picogen {
                     );
             }
 
-            void SimpleHeightField::Init (
+            void SimpleHeightField::init (
                 unsigned int size,
                 const misc::functions::abstract::uv_to_scalar *heightFunc,
                 real boundsGuessAccuracy,
@@ -449,7 +451,7 @@ namespace picogen {
                 }
 
                 if (NULL != m_pShader) {
-                    m_pShader->Shade (
+                    m_pShader->shade (
                         intersection.color,
                         intersection.normal,
                         ray.x() + ray.w() * intersection.t
@@ -478,7 +480,7 @@ namespace picogen {
                 return icode;
             }
 
-            bool SimpleHeightField::Intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
+            bool SimpleHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
                 using namespace misc::constants;
 
                 //>> intersect bounding box; eventually return
@@ -499,13 +501,13 @@ namespace picogen {
                 gt = gt.normal();
                 //int numSteps = (int)( ( gt.length() / m_scaleSize[0] ) * (real)(m_size-1) );
 
-                Vector3d ibegin = gbegin - m_scaleBox.min();
+                Vector3d ibegin = gbegin - m_scaleBox.getMin();
                 ibegin[0] /= m_scaleSize[0];
                 //ibegin[1] /= m_scaleSize[1];
                 ibegin[2] /= m_scaleSize[2];
                 ibegin = ibegin * ( (real) (m_size - 1));
 
-                Vector3d iend = gend - m_scaleBox.min();
+                Vector3d iend = gend - m_scaleBox.getMin();
                 iend[0] /= m_scaleSize[0];
                 //iend[1] /= m_scaleSize[1];
                 iend[2] /= m_scaleSize[2];

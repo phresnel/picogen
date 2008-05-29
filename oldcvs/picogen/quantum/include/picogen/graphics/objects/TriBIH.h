@@ -107,17 +107,17 @@ namespace picogen {
                     const IBRDF *BRDF;
                     const IShader *shader;
 
-                    bool Intersect (param_out (intersection_t,intersection), const bih_node *curr, real t_min, real t_max, param_in (Ray,ray)) const;
+                    bool intersect (param_out (intersection_t,intersection), const bih_node *curr, real t_min, real t_max, param_in (Ray,ray)) const;
 
                 public:
                     TriBIH();
                     virtual ~TriBIH();
-                    virtual void SetBRDF (const IBRDF *brdf);
-                    virtual void SetShader (const IShader* shader);
-                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
-                    virtual void Insert (param_in (Vector3d,A), param_in (Vector3d,B), param_in (Vector3d,C));
-                    virtual void Flush();
-                    virtual void Invalidate();
+                    virtual void setBRDF (const IBRDF *brdf);
+                    virtual void setShader (const IShader* shader);
+                    virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+                    virtual void insert (param_in (Vector3d,A), param_in (Vector3d,B), param_in (Vector3d,C));
+                    virtual void flush();
+                    virtual void invalidate();
             };
 
 

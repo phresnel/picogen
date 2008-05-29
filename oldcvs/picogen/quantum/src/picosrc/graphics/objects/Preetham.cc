@@ -104,12 +104,15 @@ namespace picogen {
         namespace objects {
 
 
+
             Preetham::Preetham() :
                     m_T (1.8), m_sunSolidAngleFactor (1), m_sunColor (100,100,100), m_colorFilter (1,1,1),
                     m_enableFogHack (false) {
             }
 
-            void Preetham::SetSunDirection (param_in (Vector3d,pw)) {
+
+
+            void Preetham::setSunDirection (param_in (Vector3d,pw)) {
                 Vector3d w = -pw.normal();
                 m_sunDirection = -w;
 
@@ -117,14 +120,17 @@ namespace picogen {
                 m_sunPhi   = atan2 (m_sunDirection[0],m_sunDirection[2]);
             }
 
-            Vector3d Preetham::GetSunDirection() const {
+
+
+            Vector3d Preetham::getSunDirection() const {
                 return m_sunDirection;
             }
 
 
-// from official Preetham code (http://www.cs.utah.edu/vissim/papers/sunsky/)
-// and thus from IES Lighting Handbook p361
-            void Preetham::SetSunDirection (
+
+            // coming from official Preetham code (http://www.cs.utah.edu/vissim/papers/sunsky/)
+            // and thus from IES Lighting Handbook p361
+            void Preetham::setSunDirection (
                 real latitude,
                 real longitude,
                 int _standardMeridian,          // standardMeridian , time zone number, east to west and zero based
@@ -161,29 +167,38 @@ namespace picogen {
             }
 
 
-            void Preetham::SetSunColor (Color color) {
+
+            void Preetham::setSunColor (Color color) {
                 m_sunColor = color;
             }
 
-            Color Preetham::GetSunColor() const {
+
+
+            Color Preetham::getSunColor() const {
                 return m_sunColor;
             }
 
-            void Preetham::SetColorFilter (Color color) {
+
+
+            void Preetham::setColorFilter (Color color) {
                 m_colorFilter = color;
             }
 
-            void Preetham::SetTurbidity (real t) {
+
+
+            void Preetham::setTurbidity (real t) {
                 m_T = t;
             }
 
 
-            void Preetham::SetSunSolidAngleFactor (real f) {
+
+            void Preetham::setSunSolidAngleFactor (real f) {
                 m_sunSolidAngleFactor = f;
             }
 
 
-            void Preetham::Invalidate() {
+
+            void Preetham::invalidate() {
                 const real T2 = m_T*m_T;
                 const real theta2 = m_sunTheta*m_sunTheta;
                 const real theta3 = theta2*m_sunTheta;
@@ -225,12 +240,15 @@ namespace picogen {
                 //m_beta = 0.04608365822050 * m_T - 0.04586025928522;
             }
 
-            real Preetham::Perez (real Theta, real gamma, const real p[]) {
+
+
+            real Preetham::perez (real Theta, real gamma, const real p[]) {
                 return (1.0 + p[0]*exp (p[1]/cos (Theta))) * (1.0 + p[2]*exp (p[3]*gamma) + p[4]*pow (cos (gamma),2.0));
             }
 
 
-            void Preetham::Shade (param_out (Color,color), param_in (Ray,in_ray)) const {
+
+            void Preetham::shade (param_out (Color,color), param_in (Ray,in_ray)) const {
                 real /*rho,*/ theta, phi;
 
                 Ray ray = in_ray;
@@ -245,9 +263,9 @@ namespace picogen {
                 else  phi = atan2 (ray.w() [2],ray.w() [0]);
 
                 const real gamma = acos (ray.w() * m_sunDirection);//*/getAngleBetween( theta, phi, m_sunTheta, m_sunPhi );
-                const real x = m_zenith_x * (Perez (theta, gamma, m_perez_x) / Perez (0.0, m_sunTheta, m_perez_x));
-                const real y = m_zenith_y * (Perez (theta, gamma, m_perez_y) / Perez (0.0, m_sunTheta, m_perez_y));
-                const real Y = m_zenith_Y * (Perez (theta, gamma, m_perez_Y) / Perez (0.0, m_sunTheta, m_perez_Y));
+                const real x = m_zenith_x * (perez (theta, gamma, m_perez_x) / perez (0.0, m_sunTheta, m_perez_x));
+                const real y = m_zenith_y * (perez (theta, gamma, m_perez_y) / perez (0.0, m_sunTheta, m_perez_y));
+                const real Y = m_zenith_Y * (perez (theta, gamma, m_perez_Y) / perez (0.0, m_sunTheta, m_perez_Y));
 
 
                 real c[3];
@@ -257,7 +275,8 @@ namespace picogen {
             }
 
 
-            void Preetham::SunShade (param_out (Color,color), param_in (Ray,ray)) const {
+
+            void Preetham::sunShade (param_out (Color,color), param_in (Ray,ray)) const {
                 color = Color (0.0,0.0,0.0);
                 const real gamma = acos (ray.w() * m_sunDirection);//*/getAngleBetween( theta, phi, m_theta, m_phi );
                 real alpha = (m_sunSolidAngle);
@@ -274,7 +293,8 @@ namespace picogen {
             }
 
 
-            void Preetham::SunSample (
+
+            void Preetham::sunSample (
                 param_out (Color,color),
                 param_out (Ray,ray),
                 param_out (real,p),
@@ -313,10 +333,12 @@ namespace picogen {
                 */
             }
 
-            void Preetham::AtmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const {
+
+
+            void Preetham::atmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const {
                 if (m_enableFogHack) {
                     Color sky_color;
-                    Shade (sky_color, ray);
+                    shade (sky_color, ray);
                     const real distance_ = distance>m_fogHackSatDist?m_fogHackSatDist:distance;
                     const real d = 1.0 / (1+m_fogHackFactor*distance_); // 0.00082 was a cool value for '2097'
                     color = src_color*d + sky_color* (1-d);
@@ -325,11 +347,15 @@ namespace picogen {
                 }
             }
 
-            void Preetham::EnableFogHack (bool enable, real f, real satDist) {
+
+
+            void Preetham::enableFogHack (bool enable, real f, real satDist) {
                 m_enableFogHack = enable;
                 m_fogHackFactor = f;
                 m_fogHackSatDist = satDist;
             }
+
+
 
         }; // namespace objects
     }; // namespace graphics

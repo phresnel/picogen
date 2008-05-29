@@ -63,7 +63,7 @@ namespace picogen {
                     void     setBRDF (const IBRDF* brdf);
                     IBRDF*   getBRDF() const;
 
-                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+                    virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
             };
 
         } // namespace objects {

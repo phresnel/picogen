@@ -36,104 +36,111 @@ typedef picogen::misc::geometrics::BoundingBox BoundingBox;
 typedef picogen::graphics::material::abstract::IBRDF IBRDF;
 typedef picogen::graphics::structs::intersection_t intersection_t;
 
+static const real tri_eps = 0.00000001;
+static int
+raytri_intersect (
+    const Ray &ray,
+    const Vector3d &a, const Vector3d &b, const Vector3d &c,
+    real &t, real &u, real &v,
+    Vector3d &normal) {
+    Vector3d vect0, vect1, nvect;
+    real det, inv_det;
+
+
+    //SUB(vect0, b,a)
+    vect0 = b - a;
+
+    //SUB(vect1, c,a)
+    vect1 = c - a;
+
+    //CROSS(normal, vect0, vect1);
+    normal = vect0.cross (vect1);
+
+    /* orientation of the ray with respect to the triangle's normal,
+       also used to calculate output parameters*/
+    //det = - DOT(dir,normal);
+    det = -ray.w() * normal;//-( p_ray->direction.x*normal->x + p_ray->direction.y*normal->y + p_ray->direction.z*normal->z );
+
+    //---------
+
+    /* if determinant is near zero, ray is parallel to the plane of triangle */
+    if (det > -tri_eps && det < tri_eps) return 0;
+
+    /* calculate vector from ray origin to a */
+    //SUB(vect0,a,orig);
+    vect0 = a - ray.x();
+
+    /* normal vector used to calculate u and v parameters */
+    //CROSS(nvect,dir,vect0);
+    nvect = ray.w().cross (vect0);
+
+    inv_det = 1.0 / det;
+    /* calculate vector from ray origin to b*/
+    //SUB(vect1,b,orig);
+    vect1 = b - ray.x();
+
+    /* calculate v parameter and test bounds */
+    //*v = - DOT(vect1,nvect) * inv_det;
+    v = - (vect1*nvect*inv_det);
+
+    if (v < 0.0 || v > 1.0) return 0;
+
+    /* calculate vector from ray origin to c*/
+    //SUB(vect1,c,orig);
+    vect1 = c - ray.x();
+
+    /* calculate v parameter and test bounds */
+    //*u = DOT(vect1,nvect) * inv_det;
+    u = vect1*nvect*inv_det;
+
+    if (u < 0.0 || u + v > 1.0) return 0;
+
+    /* calculate t, ray intersects triangle */
+    //*t = - DOT(vect0,normal) * inv_det;
+    t = - (vect0* normal * inv_det);
+
+    //---------
+
+    if (t < 0)
+        return 0;
+    normal = normal.normal();
+    if (ray.w() * normal > 0.0)
+        return -1;
+    return 1;
+}
+
 namespace picogen {
     namespace graphics {
         namespace objects {
-
-
-            static const real tri_eps = 0.00000001;
-            static int
-            raytri_intersect (
-                const Ray &ray,
-                const Vector3d &a, const Vector3d &b, const Vector3d &c,
-                real &t, real &u, real &v,
-                Vector3d &normal) {
-                Vector3d vect0, vect1, nvect;
-                real det, inv_det;
-
-
-                //SUB(vect0, b,a)
-                vect0 = b - a;
-
-                //SUB(vect1, c,a)
-                vect1 = c - a;
-
-                //CROSS(normal, vect0, vect1);
-                normal = vect0.cross (vect1);
-
-                /* orientation of the ray with respect to the triangle's normal,
-                   also used to calculate output parameters*/
-                //det = - DOT(dir,normal);
-                det = -ray.w() * normal;//-( p_ray->direction.x*normal->x + p_ray->direction.y*normal->y + p_ray->direction.z*normal->z );
-
-                //---------
-
-                /* if determinant is near zero, ray is parallel to the plane of triangle */
-                if (det > -tri_eps && det < tri_eps) return 0;
-
-                /* calculate vector from ray origin to a */
-                //SUB(vect0,a,orig);
-                vect0 = a - ray.x();
-
-                /* normal vector used to calculate u and v parameters */
-                //CROSS(nvect,dir,vect0);
-                nvect = ray.w().cross (vect0);
-
-                inv_det = 1.0 / det;
-                /* calculate vector from ray origin to b*/
-                //SUB(vect1,b,orig);
-                vect1 = b - ray.x();
-
-                /* calculate v parameter and test bounds */
-                //*v = - DOT(vect1,nvect) * inv_det;
-                v = - (vect1*nvect*inv_det);
-
-                if (v < 0.0 || v > 1.0) return 0;
-
-                /* calculate vector from ray origin to c*/
-                //SUB(vect1,c,orig);
-                vect1 = c - ray.x();
-
-                /* calculate v parameter and test bounds */
-                //*u = DOT(vect1,nvect) * inv_det;
-                u = vect1*nvect*inv_det;
-
-                if (u < 0.0 || u + v > 1.0) return 0;
-
-                /* calculate t, ray intersects triangle */
-                //*t = - DOT(vect0,normal) * inv_det;
-                t = - (vect0* normal * inv_det);
-
-                //---------
-
-                if (t < 0)
-                    return 0;
-                normal = normal.normal();
-                if (ray.w() * normal > 0.0)
-                    return -1;
-                return 1;
-            }
-
 
 
 
             TriBIH::TriBIH() : AABB(), BIHBuild(), BIH (NULL), BRDF (NULL), shader (NULL) {
             }
 
+
+
             TriBIH::~TriBIH() {
                 BRDF = NULL;
                 shader = NULL;
-                Flush();
+                flush();
             }
 
-            void TriBIH::SetBRDF (const IBRDF *BRDF) {
+
+
+            void TriBIH::setBRDF (const IBRDF *BRDF) {
                 this->BRDF = BRDF;
             }
-            void TriBIH::SetShader (const material::abstract::IShader *shader) {
+
+
+
+            void TriBIH::setShader (const material::abstract::IShader *shader) {
                 this->shader = shader;
             }
 
-            bool TriBIH::Intersect (
+
+
+            bool TriBIH::intersect (
                 param_out (intersection_t,intersection),
                 const bih_node *node,
                 real t_min,
@@ -220,12 +227,12 @@ namespace picogen {
 
                     //bool i1 = false, i2 = false;
                     if (t_min >= dist_near) {
-                        return Intersect (intersection, node_far, t_min>dist_far ? t_min : dist_far, t_max, ray);
+                        return intersect (intersection, node_far, t_min>dist_far ? t_min : dist_far, t_max, ray);
                     } else if (t_max < dist_far) {
-                        return Intersect (intersection, node_near, t_min, t_max<dist_near ? t_max : dist_near, ray);
+                        return intersect (intersection, node_near, t_min, t_max<dist_near ? t_max : dist_near, ray);
                     } else {
-                        const bool i1 = Intersect (intersection, node_near, t_min, (t_max<dist_near) ? (t_max) : (dist_near), ray);
-                        const bool i2 = Intersect (intersection, node_far, (t_min>dist_far) ? (t_min) : (dist_far), t_max, ray);
+                        const bool i1 = intersect (intersection, node_near, t_min, (t_max<dist_near) ? (t_max) : (dist_near), ray);
+                        const bool i2 = intersect (intersection, node_far, (t_min>dist_far) ? (t_min) : (dist_far), t_max, ray);
                         return i1 || i2;
                     }
 
@@ -260,7 +267,7 @@ namespace picogen {
             }
 
 
-            bool TriBIH::Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
+            bool TriBIH::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
                 using namespace misc::constants;
                 real t_min, t_max;
                 const bool bbhit = AABB.intersect (t_min, t_max, ray);
@@ -271,20 +278,20 @@ namespace picogen {
                     return false;
                 intersection.t = real_max;
                 if (NULL != shader)
-                    shader->Shade (intersection.color,intersection.normal,ray.x() +ray.w() *intersection.t);// = image::color::Color(1.0,0.9,0.8);//image::color::Color(1.0,0.0,0.0)*f + image::color::Color(0.0,0.0,1.0)*(1.0-f);
+                    shader->shade (intersection.color,intersection.normal,ray.x() +ray.w() *intersection.t);// = image::color::Color(1.0,0.9,0.8);//image::color::Color(1.0,0.0,0.0)*f + image::color::Color(0.0,0.0,1.0)*(1.0-f);
                 else
                     intersection.color = image::color::Color (1.0,1.0,1.0);
-                return Intersect (intersection, BIH, t_min, t_max, ray);
+                return intersect (intersection, BIH, t_min, t_max, ray);
             }
 
-            void TriBIH::Insert (param_in (Vector3d,A), param_in (Vector3d,B), param_in (Vector3d,C)) {
+            void TriBIH::insert (param_in (Vector3d,A), param_in (Vector3d,B), param_in (Vector3d,C)) {
                 AABB.update (A);
                 AABB.update (B);
                 AABB.update (C);
                 BIHBuild.insert (t_triangle (A,B,C));
             }
 
-            void TriBIH::Flush() {
+            void TriBIH::flush() {
                 //TempList.clear();
                 if (NULL != BIH)
                     delete [] BIH;
@@ -295,7 +302,7 @@ namespace picogen {
                 BIHBuild.free();
             }
 
-            void TriBIH::Invalidate() {
+            void TriBIH::invalidate() {
                 BIHBuild.build (&BIH, &Triangles);
                 BIHBuild.free();
             }
@@ -349,7 +356,7 @@ namespace picogen {
                         return false;
                     }
 
-                    const Vector3d size = build_aabb.max() - build_aabb.min();
+                    const Vector3d size = build_aabb.getMax() - build_aabb.getMin();
                     unsigned int axes[3];
                     /*axes[0] = build_aabb.get_axis_of_max_extent();
                     axes[1] = (axes[0]+1)%3;
@@ -377,7 +384,7 @@ namespace picogen {
                     bool found;
                     do {
                         axis  = axes[axis_ofs];//(aabb.get_axis_of_max_extent()+axis_ofs)%3;
-                        split = 0.5*build_aabb.min() [axis] + 0.5*build_aabb.max() [axis];
+                        split = 0.5*build_aabb.getMin() [axis] + 0.5*build_aabb.getMax() [axis];
 
                         //> insert triangles into children
                         p_left->free();
@@ -422,9 +429,20 @@ namespace picogen {
 
                         triangles.clear(); // free memory asap
                         //> now build children
-                        BoundingBox aabb_left = build_aabb, aabb_right = build_aabb;
-                        aabb_left.max() [axis] = split;
-                        aabb_right.min() [axis] = split;
+                        // BoundingBox aabb_left = build_aabb, aabb_right = build_aabb;
+                        // aabb_left.max() [axis] = split;
+                        // aabb_right.min() [axis] = split;
+
+                        /// \todo validate below 5 lines
+                        BoundingBox aabb_left=build_aabb, aabb_right=build_aabb;
+                        Vector3d vl = build_aabb.getMax();
+                        Vector3d vr = build_aabb.getMin();
+                        vl[axis] = split;
+                        vr[axis] = split;
+
+                        aabb_left.setMax( vl );
+                        aabb_right.setMin( vr );
+
                         if (!p_left->rec_build (aabb_left, maxRec-1))
                             return false;
                         if (!p_right->rec_build (aabb_right, maxRec-1))
@@ -501,8 +519,8 @@ namespace picogen {
                 //> actual conversion
                 if (p_left != NULL && p_right != NULL) {   //> is inner node
 
-                    curr->clip[0] = p_left->aabb.max() [axis];
-                    curr->clip[1] = p_right->aabb.min() [axis];
+                    curr->clip[0] = p_left->aabb.getMax() [axis];
+                    curr->clip[1] = p_right->aabb.getMin() [axis];
                     curr->is_leaf = false;
                     curr->axis  = axis;
                     curr->children = bih_free;

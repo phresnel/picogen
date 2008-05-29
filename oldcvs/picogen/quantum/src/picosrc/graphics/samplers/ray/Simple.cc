@@ -42,13 +42,13 @@ namespace picogen {
                 Simple::~Simple() {
                 }
 
-                void Simple::SetIntersectable (IIntersectable *intersectable) {
+                void Simple::setIntersectable (IIntersectable *intersectable) {
                     XRT_CALL_STACK_PUSH ("void WhittedStyle::SetIntersectable( abstract::IIntersectable *intersectable )");
                     m_intersectable = intersectable;
                     XRT_CALL_STACK_POP();
                 }
 
-                void Simple::SetSky (ISky *skyShader) {
+                void Simple::setSky (ISky *skyShader) {
                     XRT_CALL_STACK_PUSH ("void WhittedStyle::SetIntersectable( abstract::IIntersectable *intersectable )");
                     m_skyShader = skyShader;
                     XRT_CALL_STACK_POP();
@@ -62,13 +62,13 @@ namespace picogen {
 
                     if (max == 0) {
                         return Color (0.0,0.0,0.0);
-                    } else if (NULL==m_intersectable || !m_intersectable->Intersect (I, ray)) {
+                    } else if (NULL==m_intersectable || !m_intersectable->intersect (I, ray)) {
                         //> apply sky color if there is no object to intersect or no intersection
                         if (NULL != m_skyShader) {
                             Color skyColor, sunColor;
-                            m_skyShader->Shade (skyColor, ray);
+                            m_skyShader->shade (skyColor, ray);
                             if (specularOrFirst) {
-                                m_skyShader->SunShade (sunColor, ray);
+                                m_skyShader->sunShade (sunColor, ray);
                                 return skyColor + sunColor;
                             } else {
                                 return skyColor;
@@ -82,7 +82,7 @@ namespace picogen {
                         real BRDF,pdf;
                         Ray  r_out,  r_in (ray (I.t), ray.w());
                         bool specular = false;
-                        if (I.brdf->RandomSample (BRDF, pdf, specular, r_out, r_in, I.normal)) {
+                        if (I.brdf->randomSample (BRDF, pdf, specular, r_out, r_in, I.normal)) {
                             if (specular == false)
                                 specularOrFirst = false;
 
@@ -101,15 +101,15 @@ namespace picogen {
                                     Ray sunRay;
                                     Color sunColor;
                                     real sun_p = 0.0;
-                                    m_skyShader->SunSample (sunColor, sunRay, sun_p, r_out.x());
+                                    m_skyShader->sunSample (sunColor, sunRay, sun_p, r_out.x());
                                     intersection_t tmp_I;
-                                    if (sun_p > epsilon && (NULL==m_intersectable || !m_intersectable->Intersect (tmp_I, sunRay))) {
+                                    if (sun_p > epsilon && (NULL==m_intersectable || !m_intersectable->intersect (tmp_I, sunRay))) {
                                         real c = I.normal.normal() * sunRay.w();
                                         col += I.color * sunColor * c;
                                     }
                                 }
                                 //*/
-                                m_skyShader->AtmosphereShade (col, col, ray, I.t);
+                                m_skyShader->atmosphereShade (col, col, ray, I.t);
                             }
                             return col;
                         } else {
@@ -119,7 +119,7 @@ namespace picogen {
                     }
                 }
 
-                bool Simple::Integrate (param_out (Color, color), param_out (intersection_t,primaryIntersection), param_in (Ray,ray)) {
+                bool Simple::integrate (param_out (Color, color), param_out (intersection_t,primaryIntersection), param_in (Ray,ray)) {
                     XRT_CALL_STACK_PUSH ("bool WhittedStyle::Integrate( param_out(base_types::color, color), param_in(base_types::ray,ray) )");
 #ifdef XRT_DEBUG
                     if (NULL == m_intersectable)

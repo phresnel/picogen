@@ -58,7 +58,7 @@ namespace picogen {
                 public:
                     Snow();
                     virtual ~Snow();
-                    virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
+                    virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
 
                     /*void SetTimeExponent( misc::prim::real t )
                     {
