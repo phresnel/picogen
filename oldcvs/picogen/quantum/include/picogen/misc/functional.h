@@ -131,7 +131,7 @@ namespace picogen {
 
 
             class Parameter : public BasicFunction {
-                    unsigned int index;
+                    const unsigned int index;
                     explicit Parameter (unsigned int index) : index (index) {}
                     friend BasicFunction * parameter_ (const Setup &setup, unsigned int index);
                 public:
@@ -139,7 +139,7 @@ namespace picogen {
                         return parameters[index];
                     }
             };
-            inline BasicFunction * parameter_ (const Setup &setup, unsigned int index = 0) {
+            inline BasicFunction * parameter_ (const Setup &setup, unsigned int index) {
                 if (index > setup.parameterCount) {
                     ::std::cerr << "index too large. max allowed index is " << setup.parameterCount << ::std::endl;
                 }
