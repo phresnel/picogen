@@ -28,6 +28,7 @@
 
 #include <picogen/picogen.h>
 #include <picogen/graphics/objects/Instance.h>
+#include <picogen/graphics/objects/templates/TriBIH.h>
 
 
 
@@ -38,6 +39,29 @@ using picogen::common::Color;
 using picogen::common::intersection_t;
 
 using picogen::common::Transformation;
+
+using picogen::graphics::objects::templates::TriBIH;
+
+
+
+struct t_triangle {
+    private:
+        Vector3d t[3];
+    public:
+        t_triangle (Vector3d a, Vector3d b, Vector3d c) {
+            t[0] = a;
+            t[1] = b;
+            t[2] = c;
+        }
+        t_triangle() {
+        }
+
+        const Vector3d & operator [] ( int i ) const {
+            return t[i];
+        }
+};
+typedef TriBIH<t_triangle> genBIH;
+static genBIH myGenBIH;
 
 
 
