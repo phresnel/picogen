@@ -23,6 +23,7 @@
 
 
 #include <iostream>
+#include <stdio.h>
 #include <picogen/picogen.h>
 #include <picogen/picossdf/picossdf.h>
 #include <picogen/experimental/PicoPico.h>
