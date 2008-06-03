@@ -21,6 +21,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+/// \todo include IEEE-floating-point binary-export option
+/// \todo include ASCII-export option
+/// \todo include RAW-export option
+/// \todo include PNG-export option
+/// \todo include BMP-export option
+/// \todo include more visualisation modes than only greyscale
+/// \todo include an option to only display a subset of the map
+/// \todo include an option to zoom in/out
+/// \todo include ram-less heightmap creation (will be slower when using normalization)
+/// \todo include an option to sequentially save the heightmap, one chunk by another
+/// \todo include options to set the x/y-center on the height-function
+/// \todo This actually a project global todo: get rid of stuff like FLT_MAX, we want our project be portable.
+
+
+#include <stdio.h>
+#include <curses.h>
+#include <ctype.h>
 
 #include <iostream>
 
@@ -36,48 +53,83 @@ using picogen::common::Vector3d;
 
 template <typename T> struct Heightmap {
 
-    typedef T Hexel; // yes, hexel, as in pixel :P
+    public:
 
-    const real scaling;
-    const unsigned int width;
-    const unsigned int height;
+        typedef T Hexel; // yes, hexel, as in pixel :P
 
-    Hexel *map; // this is going to be a little bit low-level (as compared to operator [] overloading stuff)
+    private:
 
-    Heightmap( real scaling, unsigned int width, unsigned int height )
-    : scaling (scaling), width (width), height (height), map (new Hexel[width*height])
-    { }
-    ~Heightmap() {
-        delete [] map;
-    }
+    public:
 
-    // okay, we provide an operator (), but just for screen dumping (hence i const it)
-    const Hexel operator () ( unsigned int x, unsigned int y ) const {
-        const Hexel tmp = map[ y*width + x ];
-        return tmp < 0.0 ? 0.0 : tmp > 1.0 ? 1.0 : tmp;
-    }
+        /// \todo hide member variables away into private section
+        const real scaling;
+        const unsigned int width;
+        const unsigned int height;
 
-    void fill (const picogen::misc::functional::Function_R2_R1 &f) {
-        for (unsigned int y=0; y<height; y++) {
+        Hexel *map; // this is going to be a little bit low-level (as compared to operator [] overloading stuff)
 
-            const unsigned int ofs_y = y*width;
-            const real v = scaling * (static_cast<real>(y) / static_cast<real>(width));
+        Heightmap( real scaling, unsigned int width, unsigned int height )
+        : scaling (scaling),
+          width (width), height (height), map (new Hexel[width*height])
+        { }
 
-            for (unsigned int x=0; x<width; x++) {
+        ~Heightmap() {
+            delete [] map;
+        }
 
-                const real u = scaling * (static_cast<real>(x) / static_cast<real>(width));
-                map[ x + ofs_y ] = f(u,v); // yay
+        // okay, we provide an operator (), but just for screen dumping (hence i const it)
+        const Hexel operator () ( unsigned int x, unsigned int y ) const {
+            const Hexel tmp = map[ y*width + x ];
+            return tmp < 0.0 ? 0.0 : tmp > 1.0 ? 1.0 : tmp;
+        }
 
+        void fill (const picogen::misc::functional::Function_R2_R1 &f) {
+            for (unsigned int y=0; y<height; y++) {
+
+                const unsigned int ofs_y = y*width;
+                const real v = scaling * (static_cast<real>(y) / static_cast<real>(width));
+
+                for (unsigned int x=0; x<width; x++) {
+
+                    const real u = scaling * (static_cast<real>(x) / static_cast<real>(width));
+                    map[ x + ofs_y ] = static_cast<Hexel>(f(u,v)); // yay.
+
+                }
             }
         }
-    }
+
+        void normalize () {
+            Hexel minHeight_(map[0]);
+            Hexel maxHeight_(map[0]);
+
+            for (unsigned int y=0; y<height; y++) {
+                const unsigned int ofs_y = y*width;
+                for (unsigned int x=0; x<width; x++) {
+                    const Hexel & m = map[ x + ofs_y ];
+                    if( m<minHeight_ )
+                        minHeight_ = m;
+                    if( m>maxHeight_ )
+                        maxHeight_ = m;
+                }
+            }
+
+            const Hexel minHeight(minHeight_);
+            const Hexel height   (1.0 / (maxHeight_ - minHeight_));
+            for (unsigned int y=0; y<height; y++) {
+                const unsigned int ofs_y = y*width;
+                for (unsigned int x=0; x<width; x++) {
+                    Hexel &m = map[ x + ofs_y ];
+                    m = ( m - minHeight ) * height;
+                }
+            }
+        }
 
 };
 
 
 
 
-
+/// \todo strip down function draw
 template<class t_surface>
 void
 draw (
@@ -145,89 +197,222 @@ draw (
 
 
 
-
-
-
-
-std::string inlispEditor() {
+template <typename T> int showPreviewWindow (T &heightmap) {
     using namespace std;
-    char s[1024];
-    fflush (stdin);
-    fgets (s, sizeof (s), stdin);
-    return std::string (s);
-    /*std::string code;
-    std::cin >> code;
-    return code;
-    */
+
+    if (SDL_Init (SDL_INIT_VIDEO) < 0) {
+        cerr << "Unable to init SDL for preview: " << SDL_GetError() << endl;
+        return -1;
+    }
+    atexit (SDL_Quit);
+    SDL_Surface *screen = SDL_SetVideoMode (heightmap.width, heightmap.height, 32, SDL_HWSURFACE);
+    if (0 == screen) {
+        cerr << "Unable to set video-mode for preview: " << SDL_GetError() << endl;
+        return -1;
+    }
+
+    // dump the heightmap onto the screen
+    draw (screen, heightmap, 1.0, 1.0, 1.0);
+
+    bool done = false;
+    while (!done) {
+        SDL_Event event;
+        while (SDL_PollEvent (&event)) {
+            if (event.type == SDL_QUIT) {
+                done = true;
+            } else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    done = true;
+                }
+            }
+        }
+    }
+
+    SDL_FreeSurface (screen);
+    SDL_Quit();
+    return 0;
 }
+
+
+void printUsage() {
+}
+
 
 int main_mkheightmap (int argc, char *argv[]) {
 
     using namespace std;
     using namespace picogen::misc::functional;
 
+    if (argc<=0) {
+        cerr << "error: no arguments given to `picogen mkheightmap`" << endl;
+        printUsage();
+        return -1;
+    }
 
-    bool doContinue = true;
+    typedef enum Lingua_t {
+        Lingua_inlisp,
+        Lingua_unknown
+    } Lingua;
+    std::string code("");
+    Lingua lingua = Lingua_unknown;
+    bool showPreview = false;
+    unsigned int width=512, height=512;
+    float scaling = 100.0;
+    //float heightmapNormalizationAccuracy = -1.0;
+    bool doNormalize = false;
 
-    while (doContinue) {
-        using namespace std;
-        cout << "Type in some formula in inlisp-syntax: " << endl;
+    while (argc>0) {
+        const std::string option( argv[0] );
+        argc--;
+        argv++;
 
-        const string code = inlispEditor();
-
-        if (doContinue) {
-
-            cout << "you have written:\n   " << code << "\n";
-
-            SDL_Surface *screen = 0;
-            using namespace picogen::misc::functional;
-            try {
-                Heightmap<double> h( 100.0, 512, 512 );
-                h.fill (Function_R2_R1 (code));
-
-
-                if (SDL_Init (SDL_INIT_VIDEO) < 0) {
-                    cerr << "Unable to init SDL: " << SDL_GetError() << endl;
-                    return 1;
-                }
-                atexit (SDL_Quit);
-                SDL_Surface *screen = SDL_SetVideoMode (h.width, h.height, 32, SDL_HWSURFACE);
-                if (0 == screen) {
-                    cerr << "Unable to set video-mode: " << SDL_GetError() << endl;
-                    return 1;
-                }
-
-
-                // dump the heightmap onto the screen
-                /// \todo include more visualisation modes than only greyscale
-                /// \todo include an option to only display a subset of the map
-                /// \todo include an option to zoom in/out
-                draw (screen,h,1.0,1.0,1.0);
-
-                // so, what do we next?
-                bool isOptionValid = false;
-                while (!isOptionValid) {
-                    string whatNext;
-                    cout << "What next? (q! to quit, c to continue heightmap grinding): ";
-                    cin >> whatNext;
-                    if ( whatNext == string ("q!")) {
-                        isOptionValid = true;
-                        doContinue = false;
-                    } else if ( whatNext == string ("c")) {
-                        isOptionValid = true;
-                    } else {
-                    }
-                }
-
-            } catch (const functional_general_exeption &e) {
-                cerr << "there was some error in your function:\n   " << e.getMessage() << endl;
-            }
-            if (0 != screen) {
-                SDL_FreeSurface (screen);
-                screen = 0;
-            }
-            SDL_Quit();
+        // -Lx
+        if (option[1] == 'L' && Lingua_unknown != lingua) {
+            // we already have read some code, more is not allowed
+            cerr << "error: only one formula/program allowed" << endl;
+            printUsage();
+            return -1;
         }
+        if (option == "-Lin" || option == "--inlisp") {
+            lingua = Lingua_inlisp;
+            if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            code = string (argv[0]);
+            argc--;
+            argv++;
+        } else if (option == "-p" || option == "--preview") {
+            showPreview = true;
+        } else if (option == "-w"  || option == "--width") {
+
+            if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            const string intStr = string (argv[0]);
+            argc--;
+            argv++;
+            // check for unsigned-integer'ness
+            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                if (!isdigit (*it)) {
+                    cerr << "error: only positive integer numbers are allowed for option " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+            }
+            /// \todo get rid of below sscanf
+            sscanf (intStr.c_str(), "%u", &width);
+
+        } else if (option == "-h"  || option == "--height") {
+            if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            const string intStr = string (argv[0]);
+            argc--;
+            argv++;
+            // check for unsigned-integer'ness
+            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                if (!isdigit (*it)) {
+                    cerr << "error: only positive integer numbers are allowed for option " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+            }
+            /// \todo get rid of below sscanf
+            sscanf (intStr.c_str(), "%u", &height);
+        } else if (option == "-W"  || option == "--domain-width") {
+            if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            const string intStr = string (argv[0]);
+            argc--;
+            argv++;
+            // check for unsigned-integer'ness
+            bool hasDot = false;
+            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                if (*it == '.') {
+                    if (hasDot) {
+                        cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                        printUsage();
+                        return -1;
+                    }
+                    hasDot = true;
+                }else if (!isdigit (*it)) {
+                    cerr << "error: only floating point numbers are allowed for option " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+            }
+            /// \todo get rid of below sscanf
+            sscanf (intStr.c_str(), "%f", &scaling);
+        } else if (option == "-n"  || option == "--normalize") {
+            doNormalize = true;
+            /*if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            const string intStr = string (argv[0]);
+            argc--;
+            argv++;
+            // check for unsigned-integer'ness
+            bool hasDot = false;
+            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                if (*it == '.') {
+                    if (hasDot) {
+                        cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                        printUsage();
+                        return -1;
+                    }
+                    hasDot = true;
+                }else if (!isdigit (*it)) {
+                    cerr << "error: only floating point numbers are allowed for option " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+            }
+            /// \todo get rid of below sscanf
+            sscanf (intStr.c_str(), "%f", &heightmapNormalizationAccuracy);
+            if (heightmapNormalizationAccuracy < 0.0 || heightmapNormalizationAccuracy > 1.0) {
+                cerr << "error: the argument for option " << option << " must be >= 0.0 and <= 1.0 (where 0.0 being 0%, 1.0 being 100%)" << endl;
+                printUsage();
+                return -1;
+            }*/
+        } else {
+            cerr << "unknown option in argument list: " << option << endl;
+            printUsage();
+            return -1;
+        }
+    }
+
+    if (lingua == Lingua_unknown) {
+        cerr << "error: unkown language or wrong option used" << endl;
+        printUsage();
+        return -1;
+    }
+
+
+
+    try {
+
+        Heightmap<double> heightmap (scaling, width, height);
+        heightmap.fill (Function_R2_R1 (code));
+        if( doNormalize )
+            heightmap.normalize();
+
+        if (showPreview) {
+            return showPreviewWindow (heightmap);
+        }
+    } catch (const functional_general_exeption &e) {
+        cerr << "error: " << e.getMessage() << endl;
+        return -1;
     }
     return 0;
 }
