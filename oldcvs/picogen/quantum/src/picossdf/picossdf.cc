@@ -21,10 +21,13 @@
 
 #define PICOSSDF_CC_STANDALONE 0
 
-#include "picogen.h"
-#include "picossdf/picossdf.h"
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <picogen/picogen.h>
+#include <picogen/picossdf/picossdf.h>
 
 using namespace std;
 
