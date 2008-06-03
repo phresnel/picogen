@@ -85,6 +85,8 @@ namespace picogen {
         namespace structs {
         }
         namespace objects {
+            namespace templates {
+            }
             namespace abstract {
                 class IIntersectable;
                 class IScene;
