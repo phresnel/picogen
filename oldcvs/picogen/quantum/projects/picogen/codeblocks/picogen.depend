@@ -325,8 +325,12 @@
 
 1212048878 /home/smach/Projects/picogen/quantum/include/picogen/misc/namespace_mnemonics.h
 
-1212447697 source:/home/smach/Projects/picogen/quantum/src/submain/mkheightmap.cc
+1212510021 source:/home/smach/Projects/picogen/quantum/src/submain/mkheightmap.cc
+	<stdio.h>
+	<curses.h>
+	<ctype.h>
 	<iostream>
+	<queue>
 	<SDL/SDL.h>
 	<picogen/picogen.h>
 
