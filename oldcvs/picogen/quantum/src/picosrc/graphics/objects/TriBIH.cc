@@ -403,7 +403,7 @@ namespace picogen {
                                 fprintf (stderr, "#fuzzy\n");
 #endif
                                 //> a little bit of fuzzyness
-                                if (rand() &1 == 1) {
+                                if ((rand()&1) == 1) {
                                     ++count_L;
                                     p_left->insert (*it);
                                 } else {
