@@ -492,19 +492,19 @@ case OPERATOR:{                                                  \
                                 if (setup.parameterCount == 0) {
                                     throw functional_general_exeption ("'x' is only declared for functions with at least 1 parameter");
                                 }
-                                return parameter_ (0);
+                                return parameter_ (setup, 0);
                                 break;
                             case 'y':
                                 if (setup.parameterCount <= 1) {
                                     throw functional_general_exeption ("'y' is only declared for functions with at least 2 parameters");
                                 }
-                                return parameter_ (1);
+                                return parameter_ (setup, 1);
                                 break;
                             case 'z':
                                 if (setup.parameterCount <= 2) {
                                     throw functional_general_exeption ("'z' is only declared for functions with at least 3 parameters");
                                 }
-                                return parameter_ (2);
+                                return parameter_ (setup, 2);
                                 break;
                             case '0':
                             case '1':
