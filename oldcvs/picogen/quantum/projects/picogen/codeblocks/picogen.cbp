@@ -101,6 +101,8 @@
 		<Unit filename="../../../include/picogen/graphics/objects/TriBIH.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/VelocityInstance.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/ZBNCubemap.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/templates/TriBIH.cc.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/templates/TriBIH.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers/image/XYIterator.cc.h" />
 		<Unit filename="../../../include/picogen/graphics/samplers/image/XYIterator.h" />
