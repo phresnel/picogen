@@ -161,7 +161,8 @@ draw (
     const t_surface &surface,
     float scale,
     float exp_tone,
-    float saturation
+    float saturation,
+    float waterLevel
 ) {
     if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
         return;
@@ -171,38 +172,19 @@ draw (
         /// \todo get rid of pointer arithmetic
         Uint32 *bufp   = (Uint32*) p_target->pixels + y* (p_target->pitch>>2);
         for (x=0; x<p_target->w; x++) {
-            /*float d = 1.0 / source->density;
-            float r = source->color[0]*scale*d;
-            float g = source->color[1]*scale*d;
-            float b = source->color[2]*scale*d;*/
-            real accu_r=real (0), accu_g=real (0), accu_b=real (0);
-            const real h = surface (x,y);
-            accu_r = accu_g = accu_b = h;
-            /*
-            for (register int u=0; u<2; ++u) for (register int v=0; v<2; ++v) {
-                    real r,g,b;
-                    ( (Color) surface (x*2+u,y*2+v)).to_rgb (r, g, b);
-                    //((xrt::base_types::color)surface((unsigned)x,(unsigned)y)).to_rgb( r, g, b );
-                    // tone map
 
-                    // scale linearly
-                    r *= scale;
-                    g *= scale;
-                    b *= scale;
-                    // saturate color
-                    const float sbrightness = 0.299*r + 0.584*g + 0.144*b;
-                    r = saturation*r + (1-saturation) *sbrightness;
-                    g = saturation*g + (1-saturation) *sbrightness;
-                    b = saturation*b + (1-saturation) *sbrightness;
-                    // final saturation
-                    accu_r += r<0 ? 0 : r>1 ? 1 : r;
-                    accu_g += g<0 ? 0 : g>1 ? 1 : g;
-                    accu_b += b<0 ? 0 : b>1 ? 1 : b;
-                }
-            accu_r *= 0.25;
-            accu_g *= 0.25;
-            accu_b *= 0.25;
-            */
+            real accu_r=real (0), accu_g=real (0), accu_b=real (0);
+            const real h_ = surface (x,y);
+            const real h  = h_<0.0 ? 0.0 : h_>1.0 ? 1.0 : h_;
+
+            if (h<waterLevel) {
+                accu_r = 0.3;
+                accu_g = 0.3;
+                accu_b = 0.8;
+            } else {
+                accu_r = accu_g = accu_b = h;
+            }
+
 
             * (bufp++) =
                 SDL_MapRGB (p_target->format,
@@ -221,7 +203,7 @@ draw (
 
 
 
-template <typename T> int showPreviewWindow (T &heightmap) {
+template <typename T> int showPreviewWindow (T &heightmap, real waterLevel) {
     using namespace std;
 
     if (SDL_Init (SDL_INIT_VIDEO) < 0) {
@@ -236,7 +218,7 @@ template <typename T> int showPreviewWindow (T &heightmap) {
     }
 
     // dump the heightmap onto the screen
-    draw (screen, heightmap, 1.0, 1.0, 1.0);
+    draw (screen, heightmap, 1.0, 1.0, 1.0, waterLevel);
 
     bool done = false;
     while (!done) {
@@ -282,6 +264,7 @@ int main_mkheightmap (int argc, char *argv[]) {
     bool showPreview = false;
     unsigned int width=512, height=512;
     float scaling = 1.0;
+    float waterLevel = -10000000.0;
     unsigned int antiAliasFactor = 1;
     //float heightmapNormalizationAccuracy = -1.0;
     bool doNormalize = false;
@@ -383,9 +366,14 @@ int main_mkheightmap (int argc, char *argv[]) {
             const string intStr = string (argv[0]);
             argc--;
             argv++;
-            // check for unsigned-integer'ness
+
+            // Check for correct format.
             bool hasDot = false;
-            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+            string::const_iterator it = intStr.begin();
+            if (*it == '-' ) {
+                ++it;
+            }
+            for ( ; it!=intStr.end(); ++it) {
                 if (*it == '.') {
                     if (hasDot) {
                         cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
@@ -393,7 +381,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                         return -1;
                     }
                     hasDot = true;
-                }else if (!isdigit (*it)) {
+                } else if (!isdigit (*it)) {
                     cerr << "error: only floating point numbers are allowed for option " << option << endl;
                     printUsage();
                     return -1;
@@ -401,6 +389,39 @@ int main_mkheightmap (int argc, char *argv[]) {
             }
             /// \todo get rid of below sscanf
             sscanf (intStr.c_str(), "%f", &scaling);
+
+        } else if (option == "-l"  || option == "--preview-water-level") {
+            if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            const string intStr = string (argv[0]);
+            argc--;
+            argv++;
+
+            // Check for correct format.
+            bool hasDot = false;
+            string::const_iterator it = intStr.begin();
+            if (*it == '-' ) {
+                ++it;
+            }
+            for ( ; it!=intStr.end(); ++it) {
+                if (*it == '.') {
+                    if (hasDot) {
+                        cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                        printUsage();
+                        return -1;
+                    }
+                    hasDot = true;
+                } else if (!isdigit (*it)) {
+                    cerr << "error: only floating point numbers are allowed for option " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+            }
+            /// \todo get rid of below sscanf
+            sscanf (intStr.c_str(), "%f", &waterLevel);
         } else if (option == "-n"  || option == "--normalize") {
             doNormalize = true;
             /*if (argc<=0) {
@@ -457,7 +478,7 @@ int main_mkheightmap (int argc, char *argv[]) {
             heightmap.normalize();
 
         if (showPreview) {
-            return showPreviewWindow (heightmap);
+            return showPreviewWindow (heightmap, waterLevel);
         }
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
