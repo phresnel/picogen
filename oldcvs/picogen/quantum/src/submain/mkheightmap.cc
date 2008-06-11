@@ -23,10 +23,8 @@
 
 /// \todo add an [optional] alpha channell to the heightmap, so it becomes usefull for creating 2d clouds
 /// \todo include IEEE-floating-point binary-export option
-/// \todo include ASCII-export option
 /// \todo include RAW-export option
 /// \todo include PNG-export option
-/// \todo include BMP-export option
 /// \todo include more visualisation modes than only greyscale
 /// \todo include an option to only display a subset of the map
 /// \todo include an option to zoom in/out
@@ -183,6 +181,13 @@ draw (
                 accu_b = 0.8;
             } else {
                 accu_r = accu_g = accu_b = h;
+
+                /*
+                unsigned int tmp = static_cast<unsigned int> (h * 255.0 * 255.0 * 255.0);
+                accu_r = static_cast<real> ( ( tmp >> 16 ) & 0xFF ) / 255.0;
+                accu_g = static_cast<real> ( ( tmp >>  8 ) & 0xFF ) / 255.0;
+                accu_b = static_cast<real> ( ( tmp >>  0 ) & 0xFF ) / 255.0;
+                */
             }
 
 
@@ -244,6 +249,76 @@ void printUsage() {
 }
 
 
+
+template <typename T> std::string exportText (T &heightmap, const std::string &outputFilename, bool forceOverwrite) {
+    using namespace std;
+
+    // Check if file already exists.
+    if (!forceOverwrite) {
+        FILE *f = fopen (outputFilename.c_str(), "r");
+        if (0 != f) {
+            fclose (f);
+            return "File '" + outputFilename + "' already exists. Remove it or invoke the -f option to force overwrite.";
+        }
+    }
+
+    // Open file for writing.
+    FILE *f = fopen (outputFilename.c_str(), "w");
+    if (0 == f) {
+        return "Could not open '" + outputFilename + "' for writing.";
+    }
+
+    fprintf (f, "width:%u\nheight:%u\nvalues:",
+        static_cast<unsigned int> (heightmap.width),
+        static_cast<unsigned int> (heightmap.height)
+    );
+
+    for (unsigned int y=0; y<heightmap.height; ++y) {
+        for (unsigned int x=0; x<heightmap.width; ++x) {
+            const float h = static_cast<float> (heightmap(x,y));
+            fprintf (f, "%f ", h);
+        }
+    }
+
+    fclose (f);
+    return "";
+}
+
+
+
+template <typename T> std::string exportWinBMP (T &heightmap, const std::string &outputFilename, bool forceOverwrite) {
+    using namespace std;
+
+    // Check if file already exists.
+    if (!forceOverwrite) {
+        FILE *f = fopen (outputFilename.c_str(), "r");
+        if (0 != f) {
+            fclose (f);
+            return "File '" + outputFilename + "' already exists. Remove it or invoke the -f option to force overwrite.";
+        }
+    }
+
+    if (SDL_Init (SDL_INIT_VIDEO) < 0) {
+        return "Unable to init SDL for bitmap export: " + string (SDL_GetError());
+    }
+
+    atexit (SDL_Quit);
+    SDL_Surface *surface = SDL_CreateRGBSurface (SDL_SWSURFACE, heightmap.width, heightmap.height, 32,
+        0xFF000000, 0x00FF0000, 0x0000FF00, 0x00000000);
+    if (0 == surface) {
+        return "Unable to create surface for bitmap export: " + string (SDL_GetError());
+    }
+
+    draw (surface, heightmap, 1.0, 1.0, 1.0, -10000000);
+    SDL_SaveBMP (surface, outputFilename.c_str());
+    SDL_FreeSurface (surface);
+    SDL_Quit();
+    return "";
+}
+
+
+
+
 int main_mkheightmap (int argc, char *argv[]) {
 
     using namespace std;
@@ -255,6 +330,7 @@ int main_mkheightmap (int argc, char *argv[]) {
         return -1;
     }
 
+    /// \todo MINOR Someone please cleanup the following line.
     typedef enum Lingua_t {
         Lingua_inlisp,
         Lingua_unknown
@@ -268,20 +344,34 @@ int main_mkheightmap (int argc, char *argv[]) {
     unsigned int antiAliasFactor = 1;
     //float heightmapNormalizationAccuracy = -1.0;
     bool doNormalize = false;
+    string exportFileNameBase ("mkheightmap-out");
+    bool forceOverwriteFiles = false;
+
+    struct ExportFlags {
+        bool text : 1;
+        bool winBMP : 1;
+        ExportFlags ()
+        : text(false), winBMP(false)
+        {}
+    };
+
+    ExportFlags exportFlags;
 
     while (argc>0) {
         const std::string option( argv[0] );
         argc--;
         argv++;
 
+        /// \todo add an option to specifiy the output-filename
+
         // -Lx
         if (option[1] == 'L' && Lingua_unknown != lingua) {
-            // we already have read some code, more is not allowed
+            // We already have read some code, more is not allowed.
             cerr << "error: only one formula/program allowed" << endl;
             printUsage();
             return -1;
         }
-        if (option == "-Lin" || option == "--inlisp") {
+        if (option == "-Lhs" || option == "--Lheight-slang") {
             lingua = Lingua_inlisp;
             if (argc<=0) {
                 cerr << "error: no argument given to option: " << option << endl;
@@ -291,8 +381,14 @@ int main_mkheightmap (int argc, char *argv[]) {
             code = string (argv[0]);
             argc--;
             argv++;
+        } else if (option == "-Et" || option == "--Etext" ) {
+                exportFlags.text = true;
+        } else if (option == "-Ew" || option == "--Ewindows-bitmap" ) {
+                exportFlags.winBMP = true;
         } else if (option == "-p" || option == "--preview") {
             showPreview = true;
+        } else if (option == "-f" || option == "--force-overwrite") {
+            forceOverwriteFiles = true;
         } else if (option == "-w"  || option == "--width") {
 
             if (argc<=0) {
@@ -480,6 +576,22 @@ int main_mkheightmap (int argc, char *argv[]) {
         if (showPreview) {
             return showPreviewWindow (heightmap, waterLevel);
         }
+
+        #define MKHEIGHTMAP_EXPORT(FLAG,EXT,FUN)                                    \
+        if (exportFlags.FLAG) {                                                     \
+            const string outputFilename = exportFileNameBase + string(EXT);         \
+            cerr << "Exporting as text to file '" + outputFilename + "' ...";       \
+            std::string s = FUN (heightmap, outputFilename, forceOverwriteFiles);   \
+            if (s != string("")) {                                                  \
+                cerr << "\nerror: " << s << endl;                                   \
+            } else {                                                                \
+                cerr << "okay." << endl;                                            \
+            }                                                                       \
+        }
+
+        MKHEIGHTMAP_EXPORT (text, ".txt", exportText );
+        MKHEIGHTMAP_EXPORT (winBMP, ".bmp", exportWinBMP );
+
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
         return -1;
