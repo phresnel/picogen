@@ -104,10 +104,14 @@ namespace picogen {
             };
 #endif
 
+
+
             struct Setup {
                 const unsigned int parameterCount;
                 Setup (unsigned int parameterCount) : parameterCount (parameterCount) {}
             };
+
+
 
             class BasicFunction {
                 public:
@@ -128,6 +132,7 @@ namespace picogen {
             inline BasicFunction * constant_ (real_t value) {
                 return new Constant (value);
             }
+
 
 
             class Parameter : public BasicFunction {
@@ -225,68 +230,93 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1 ){                           
 
 
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Inv, inv_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return 1.0 / (*p1) (parameters);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return 1.0 / (*p1) (parameters);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Inv, inv_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Sin, sin_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return sin ( (*p1) (parameters));
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return sin ( (*p1) (parameters));
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Sin, sin_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Cos, cos_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return sin ( (*p1) (parameters));
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return sin ( (*p1) (parameters));
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Cos, cos_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Floor, floor_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return ::floor ( (*p1) (parameters));
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return ::floor ( (*p1) (parameters));
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Floor, floor_);
 
+
+
+            FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Abs, abs_)
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return ::fabs ( (*p1) (parameters));
+                    }
+            FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Abs, abs_);
+
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Trunc, trunc_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return static_cast<real_t> (static_cast<int> ( (*p1) (parameters)));
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return static_cast<real_t> (static_cast<int> ( (*p1) (parameters)));
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Trunc, trunc_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Frac, frac_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                real_t tmp = (*p1) (parameters);
-                return tmp - ::floor (tmp);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        real_t tmp = (*p1) (parameters);
+                        return tmp - ::floor (tmp);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Frac, frac_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Neg, neg_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return - (*p1) (parameters);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return - (*p1) (parameters);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Neg, neg_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Not, not_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                const bool a = !FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
-                return FUNCTIONAL_BOOL_TO_REAL (a);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const bool a = !FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
+                        return FUNCTIONAL_BOOL_TO_REAL (a);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Not, not_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Sqrt, sqrt_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return ::sqrt ( (*p1) (parameters));
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return ::sqrt ( (*p1) (parameters));
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Sqrt, sqrt_);
 
 #undef FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN
@@ -327,48 +357,56 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2 ){        
 #endif
 
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (Pow, pow_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return ::pow ( (*p1) (parameters), (*p2) (parameters));
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return ::pow ( (*p1) (parameters), (*p2) (parameters));
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Pow, pow_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (And, and_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                const bool a = FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
-                const bool b = a && FUNCTIONAL_REAL_TO_BOOL ( (*p2) (parameters));
-                return  FUNCTIONAL_BOOL_TO_REAL (b);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const bool a = FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
+                        const bool b = a && FUNCTIONAL_REAL_TO_BOOL ( (*p2) (parameters));
+                        return  FUNCTIONAL_BOOL_TO_REAL (b);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (And, and_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (Or, or_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                const bool a = FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
-                const bool b = a || FUNCTIONAL_REAL_TO_BOOL ( (*p2) (parameters));
-                return  FUNCTIONAL_BOOL_TO_REAL (b);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const bool a = FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
+                        const bool b = a || FUNCTIONAL_REAL_TO_BOOL ( (*p2) (parameters));
+                        return  FUNCTIONAL_BOOL_TO_REAL (b);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Or, or_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (Xor, xor_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                const bool a = FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
-                const bool b = FUNCTIONAL_REAL_TO_BOOL ( (*p2) (parameters));
-                const bool c = a != b;
-                return  FUNCTIONAL_BOOL_TO_REAL (c);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const bool a = FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters));
+                        const bool b = FUNCTIONAL_REAL_TO_BOOL ( (*p2) (parameters));
+                        const bool c = a != b;
+                        return  FUNCTIONAL_BOOL_TO_REAL (c);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Xor, xor_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (Call, call_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                const real_t parameters_ [] = {
-                    (*p2) (parameters)
-                };
-                return (*p1) (parameters_);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const real_t parameters_ [] = {
+                            (*p2) (parameters)
+                        };
+                        return (*p1) (parameters_);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Call, call_);
 
 #undef FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN
@@ -416,25 +454,28 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
 #endif
 
             FUNCTIONAL_RR_IMPLEMENT_FUN_3_BEGIN (IfElse, if_else_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                return FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters))
-                       ? (*p2) (parameters)
-                       : (*p3) (parameters)
-                       ;
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return FUNCTIONAL_REAL_TO_BOOL ( (*p1) (parameters))
+                               ? (*p2) (parameters)
+                               : (*p3) (parameters)
+                               ;
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_3_END (IfElse, if_else_);
 
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_3_BEGIN (Call2, call2_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                const real_t parameters_ [] = {
-                    (*p2) (parameters),
-                    (*p3) (parameters)
-                };
-                return (*p1) (parameters_);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const real_t parameters_ [] = {
+                            (*p2) (parameters),
+                            (*p3) (parameters)
+                        };
+                        return (*p1) (parameters_);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_3_END (Call2, call2_);
+
 
 
 #undef FUNCTIONAL_RR_IMPLEMENT_FUN_3_BEGIN
@@ -487,15 +528,15 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
 
 
             FUNCTIONAL_RR_IMPLEMENT_FUN_4_BEGIN (Call3, call3_)
-public:
-            virtual real_t operator () (const real_t * const parameters) const {
-                const real_t parameters_ [] = {
-                    (*p2) (parameters),
-                    (*p3) (parameters),
-                    (*p4) (parameters)
-                };
-                return (*p1) (parameters_);
-            }
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const real_t parameters_ [] = {
+                            (*p2) (parameters),
+                            (*p3) (parameters),
+                            (*p4) (parameters)
+                        };
+                        return (*p1) (parameters_);
+                    }
             FUNCTIONAL_RR_IMPLEMENT_FUN_4_END (Call3, call3_);
 
 
@@ -530,6 +571,8 @@ public:
                     }
             };
 
+
+
             class Function_R2_R1 : public BasicFunction {
                 private:
                     BasicFunction *fun;
@@ -553,6 +596,8 @@ public:
                         return (*fun) (parameters);
                     }
             };
+
+
 
             class Function_R3_R1 : public BasicFunction {
                 private:
@@ -587,6 +632,7 @@ public:
 #undef FUNCTIONAL_BOOL_TO_REAL
 #undef FUNCTIONAL_REAL_TO_BOOL
 
+//#include "functional_ex.h"
 
 #endif // _FUNCTIONAL_H
 
