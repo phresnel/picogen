@@ -132,8 +132,18 @@ namespace picogen {
                             }
 
                             ++it; // eat '('
+                            int balance = 1; // This will allow e.g. embedded inlisp within the function configuration.
                             string parameterValue = "";
-                            while (*it!=')' && it!=code.end()) {
+                            while (it!=code.end()) {
+                                if (*it==')') {
+                                    balance--;
+                                    if (balance == 0) {
+                                        break;
+                                    }
+                                }
+                                if (*it=='(' ) {
+                                    balance++;
+                                }
                                 parameterValue += *it;
                                 ++it;
                             }
@@ -146,6 +156,9 @@ namespace picogen {
                             skipWhitespace (it, code);
 
                             parameters[parameterName] = parameterValue;
+                            if (0) {
+                                cout << parameterName << "{" << parameters[parameterName] << "}" << endl;
+                            }
                         }
                         ++it; // eat ']'
                         cout << endl;
@@ -630,13 +643,18 @@ case OPERATOR:{                                                  \
                                     sign = -1;
                                 }
                                 std::string number ("");
-                                while ( (isdigit (tok) || tok=='.') && it != code.end()) {
+                                /// \todo URGENT: If the number is not ended by a blank, then the following char (e.g. ')') will be eaten up.
+                                ///               Consider streaming in a number directly from the code-string.
+                                while (isdigit (tok) || tok=='.') {
                                     if (tok=='.')
                                         ++dotCount;
                                     number = number + tok;
-                                    tok = *it++; // look ahead
+                                    if (it == code.end()) {
+                                        tok = '\0'; // This will cause nothing but to break this loop.
+                                    } else {
+                                        tok = *it++; // Next token.
+                                    }
                                 }
-                                --it;
                                 if (dotCount > 1) {
                                     throw functional_general_exeption (std::string ("too many dots in float-number: ") + number);
                                 }
