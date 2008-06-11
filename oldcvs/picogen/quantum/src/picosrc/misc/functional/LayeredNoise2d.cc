@@ -38,9 +38,8 @@ namespace picogen {
 
 
             LayeredNoise2d::LayeredNoise2d (std::map<std::string,std::string> &parameters, BasicFunction *ufun, BasicFunction *vfun)
-                        : ufun(ufun), vfun(vfun)
+                        : ufun(ufun), vfun(vfun), noiseEvalFun(0), persistenceFun(0)
                         , enableBilinearNoiseMapFilter(true)
-                        , persistence(0.5)
                         , noiseDepth(4)
                         , frequency(2)
             {
@@ -48,7 +47,6 @@ namespace picogen {
                 typedef map<string,string> Map;
 
                 unsigned int seed=42;
-                unsigned int layer0_size = 4;
 
                 //====---- - - -  -   -    -      -
                 // Scan Parameters.
@@ -57,21 +55,18 @@ namespace picogen {
 
                 for ( Map::const_iterator it=parameters.begin(); it!=parameters.end(); ++it ) {
                     const string name = it->first;
+                    /// \todo Add some shorter Mnenomics.
                     if (name == string("seed")) {
                         istringstream hmmm (parameters[name]);
                         hmmm >> seed;
                     } else if (name == string("frequency") ) {
                         istringstream hmmm (parameters[name]);
                         hmmm >> frequency;
-                    }else if (name == string("size")) {
-                        istringstream hmmm (parameters[name]);
-                        hmmm >> layer0_size;
                     } else if (name == string("layercount")) {
                         istringstream hmmm (parameters[name]);
                         hmmm >> noiseDepth;
                     } else if (name == string("persistence")) {
-                        istringstream hmmm (parameters[name]);
-                        hmmm >> persistence;
+                        persistenceFun = new Function_R1_R1 (parameters[name]); // Note that this line may throw.
                     } else if (name == string("noisemapfilter")) {
                         istringstream hmmm (parameters[name]);
                         string filterType;
@@ -83,14 +78,27 @@ namespace picogen {
                         } else {
                             throw functional_general_exeption ("unknown filter type for 'noisemapfilter': '" + filterType + "' (only 'bilinear' and 'nearest' are supported)");
                         }
-
-                    }else {
+                    } else if (name == string("levelEvaluationFunction")) {
+                        noiseEvalFun = new Function_R1_R1 (parameters[name]); // Note that this line may throw.
+                    } else {
                         nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
                     }
                 }
                 // Any parameters set that we don't know?
                 if (nonExistantParameterNames != "") {
                     throw functional_general_exeption ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                }
+
+                // Do we already have a noise evaluation function?
+                if (0 == noiseEvalFun) {
+                    // No, create one.
+                    noiseEvalFun = new Function_R1_R1("x"); // This line may throw.
+                }
+
+                // Do we already have a persistence function?
+                if (0 == persistenceFun) {
+                    // No, create one.
+                    persistenceFun = new Function_R1_R1("0.5");  // This line may throw.
                 }
 
 
@@ -126,79 +134,96 @@ namespace picogen {
                 if (0 != rngLut) {
                     delete [] rngLut;
                 }
-                if (0 != vfun ) {
+                if (0 != vfun) {
                     delete vfun;
                 }
-                if (0 != ufun ) {
+                if (0 != ufun) {
                     delete ufun;
                 }
+                if (0 != noiseEvalFun) {
+                    delete noiseEvalFun;
+                }
+                if (0 != persistenceFun ) {
+                    delete persistenceFun;
+                }
             }
-
-
-
-            real_t LayeredNoise2d::operator () (const real_t * const parameters) const {
-                return operator () ((*ufun) (parameters), (*vfun) (parameters), static_cast<real> (frequency), 1.0, 0);
-            }
-
 
 
 // const float *vg = lot_vals[ (i+lot_ofs[ (j+lot_ofs[k&0xFE]) &0xFE]) &0xFE ];
-
 //#define LN2D_RNG( u, v, depth ) rngLut [ ((v) + offsetLut [((u) + offsetLut [(depth) &offsetLutMask]) &offsetLutMask]) &offsetLutMask]
 #define LN2D_LUTINDEX(u, v, depth )  (((v) + offsetLut [((u) + offsetLut [(depth) %offsetLutSize]) %offsetLutSize]) %offsetLutSize)
 #define LN2D_RNG(u, v, depth ) rngLut [ LN2D_LUTINDEX (u, v, depth) ]
 
-            real_t LayeredNoise2d::operator () (real_t x, real_t y, real_t domainScale, real_t rangeScale, unsigned int depth ) const {
+            real_t LayeredNoise2d::operator () (const real_t * const parameters) const {
+
                 using namespace std;
-                if (depth >= noiseDepth) {
-                    return 0.0;
-                }
+
+                const real_t x = (*ufun) (parameters);
+                const real_t y = (*vfun) (parameters);
+                real_t domainScale = static_cast<real> (frequency);
+                real_t rangeScale = 1.0;
 
                 if (enableBilinearNoiseMapFilter) {
-                    const real         u___ = x;
-                    const real         u__  = u___ - ::floor (u___); // > [0..1)
-                    const real         u_   = u__ * (domainScale-1);
-                    const unsigned int u    = static_cast<unsigned int>(u_);
-                    const unsigned int u1   = static_cast<unsigned int>(1 + u_);
+                    real sum = 0;
+                    for (unsigned int depth=0; depth<noiseDepth; ++depth) {
+                        const real         u__  = x - ::floor (x); // > [0..1)
+                        const real         u_   = u__ * (domainScale-1);
+                        const unsigned int u    = static_cast<unsigned int>(u_);
+                        const unsigned int u1   = static_cast<unsigned int>(1 + u_);
 
-                    const real         v___ = y;
-                    const real         v__  = v___ - ::floor (v___); // > [0..1)
-                    const real         v_   = v__ * (domainScale-1);
-                    const unsigned int v    = static_cast<unsigned int>(v_);
-                    const unsigned int v1   = static_cast<unsigned int>(1 + v_);
+                        const real         v__  = y - ::floor (y); // > [0..1)
+                        const real         v_   = v__ * (domainScale-1);
+                        const unsigned int v    = static_cast<unsigned int>(v_);
+                        const unsigned int v1   = static_cast<unsigned int>(1 + v_);
 
-                    // 0...........|1...........|2
-                    // ............|............|
-                    // ............|............|
-                    // ............|............|
-                    const real pu = ( u_ - static_cast<real> (u) );
-                    const real pv = ( v_ - static_cast<real> (v) );
+                        // 0...........|1...........|2
+                        // ............|............|
+                        // ............|............|
+                        // ............|............|
+                        const real pu = ( u_ - static_cast<real> (u) );
+                        const real pv = ( v_ - static_cast<real> (v) );
 
-                    const real A = LN2D_RNG( u  , v  , depth);
-                    const real B = LN2D_RNG( u1 , v  , depth);
-                    const real C = LN2D_RNG( u  , v1 , depth);
-                    const real D = LN2D_RNG( u1 , v1 , depth);
+                        const real A = LN2D_RNG( u  , v  , depth);
+                        const real B = LN2D_RNG( u1 , v  , depth);
+                        const real C = LN2D_RNG( u  , v1 , depth);
+                        const real D = LN2D_RNG( u1 , v1 , depth);
 
-                    const real P = A*(1.0-pu) + B*(pu);
-                    const real Q = C*(1.0-pu) + D*(pu);
+                        const real P = A*(1.0-pu) + B*(pu);
+                        const real Q = C*(1.0-pu) + D*(pu);
 
-                    const real Z = P*(1.0-pv) + Q*(pv);
+                        const real Z = P*(1.0-pv) + Q*(pv);
 
-                    return Z * rangeScale + (*this) (x, y, domainScale*2.0, rangeScale*persistence, 1+depth);
+                        const real H = (*noiseEvalFun) (Z * rangeScale);
+
+                        rangeScale   = rangeScale * (*persistenceFun) (H);
+                        domainScale *= 2.0;
+
+                        sum += H;
+                    }
+                    return sum;
                 } else {
-                    const real         u__ = x;
-                    const real         u_  = u__ - ::floor (u__); // > [0..1)
-                    const unsigned int u   = static_cast<unsigned int>(u_ * (domainScale));
+                    real sum = 0;
+                    for (unsigned int depth=0; depth<noiseDepth; ++depth) {
+                        const real         u__  = x - ::floor (x); // > [0..1)
+                        const real         u_   = u__ * (domainScale);
+                        const unsigned int u    = static_cast<unsigned int>(u_);
 
-                    const real         v__ = y;
-                    const real         v_  = v__ - ::floor (v__); // > [0..1)
-                    const unsigned int v   = static_cast<unsigned int>(v_ * (domainScale));
+                        const real         v__  = y - ::floor (y); // > [0..1)
+                        const real         v_   = v__ * (domainScale);
+                        const unsigned int v    = static_cast<unsigned int>(v_);
 
-                    return LN2D_RNG(u, v, depth) * rangeScale
-                        + (*this) (x, y, domainScale*2.0, rangeScale*persistence, 1+depth);
+                        const real Z = LN2D_RNG( u, v, depth);
+
+                        const real H = (*noiseEvalFun) (Z * rangeScale);
+
+                        rangeScale   = rangeScale * (*persistenceFun) (H);
+                        domainScale *= 2.0;
+
+                        sum += H;
+                    }
+                    return sum;
                 }
             }
-
 
 
         } // namespace functional {

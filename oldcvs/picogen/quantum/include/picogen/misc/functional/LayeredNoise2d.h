@@ -38,9 +38,11 @@ namespace picogen {
                     typedef ::picogen::misc::prim::real real;
 
                     BasicFunction *ufun, *vfun;
+                    Function_R1_R1 *noiseEvalFun;
+                    Function_R1_R1 *persistenceFun;
 
                     bool enableBilinearNoiseMapFilter;
-                    real persistence;
+                    //real persistence;
 
                     unsigned int noiseDepth;
                     unsigned int *offsetLut;
