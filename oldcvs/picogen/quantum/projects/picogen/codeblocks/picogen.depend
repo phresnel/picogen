@@ -151,7 +151,7 @@
 
 1212060323 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics/Transformation.h
 
-1212448045 /home/smach/Projects/picogen/quantum/include/picogen/misc/functions.h
+1212930664 /home/smach/Projects/picogen/quantum/include/picogen/misc/functions.h
 	<stdio.h>
 	<stdlib.h>
 
@@ -287,17 +287,20 @@
 1210504377 /home/smach/Projects/picogen/quantum/include/picogen/experimental/AST.h
 	<iostream>
 
-1212448556 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
+1213170454 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
 	<iostream>
 	<sstream>
 	<ctype.h>
 
-1212448546 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
-	<picogen.h>
+1213121494 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
+	<ctype.h>
 	<string>
 	<iostream>
 	<sstream>
-	<ctype.h>
+	<map>
+	<picogen.h>
+	<picogen/misc/functional_ex.h>
+	<picogen/misc/functional/LayeredNoise2d.h>
 
 1212047782 /home/smach/Projects/picogen/quantum/include/picogen/graphics/samplers/ray/Preview.h
 
@@ -306,7 +309,7 @@
 1212049192 /home/smach/Projects/picogen/quantum/include/picogen/misc/scripting/AST.h
 	<iostream>
 
-1212448017 source:/home/smach/Projects/picogen/quantum/src/submain/seb.cc
+1213169974 source:/home/smach/Projects/picogen/quantum/src/submain/seb.cc
 	<iostream>
 	<stdio.h>
 	<picogen/picogen.h>
@@ -325,12 +328,11 @@
 
 1212048878 /home/smach/Projects/picogen/quantum/include/picogen/misc/namespace_mnemonics.h
 
-1212510021 source:/home/smach/Projects/picogen/quantum/src/submain/mkheightmap.cc
+1213015620 source:/home/smach/Projects/picogen/quantum/src/submain/mkheightmap.cc
 	<stdio.h>
 	<curses.h>
 	<ctype.h>
 	<iostream>
-	<queue>
 	<SDL/SDL.h>
 	<picogen/picogen.h>
 
@@ -357,4 +359,16 @@
 	"TriBIH.cc.h"
 
 1212163995 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/templates/TriBIH.cc.h
+
+1213011939 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional_ex.h
+
+1213170158 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/LayeredNoise2d.h
+	<map>
+	<boost/random.hpp>
+	<picogen.h>
+
+1213120671 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/LayeredNoise2d.cc
+	<string>
+	<sstream>
+	<picogen/misc/functional/LayeredNoise2d.h>
 

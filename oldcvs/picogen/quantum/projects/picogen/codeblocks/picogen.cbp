@@ -110,6 +110,7 @@
 		<Unit filename="../../../include/picogen/graphics/samplers/ray/Simple.h" />
 		<Unit filename="../../../include/picogen/misc/exceptions.h" />
 		<Unit filename="../../../include/picogen/misc/functional.h" />
+		<Unit filename="../../../include/picogen/misc/functional/LayeredNoise2d.h" />
 		<Unit filename="../../../include/picogen/misc/functions.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics/Transformation.h" />
@@ -133,6 +134,7 @@
 		<Unit filename="../../../src/picosrc/graphics/samplers/ray/Preview.cc" />
 		<Unit filename="../../../src/picosrc/graphics/samplers/ray/Simple.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional.cc" />
+		<Unit filename="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" />
 		<Unit filename="../../../src/picossdf/picossdf.cc" />
 		<Unit filename="../../../src/submain/mkheightmap.cc" />
 		<Unit filename="../../../src/submain/seb.cc" />
