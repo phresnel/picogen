@@ -545,7 +545,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
 
 
 
-            BasicFunction* inlisp_ (const Setup &setup, BasicFunction *root, const ::std::string &code);
+            BasicFunction* heightslang_ (const Setup &setup, BasicFunction *root, const ::std::string &code);
 
             class Function_R1_R1 : public BasicFunction {
                 private:
@@ -558,7 +558,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     }
                     explicit Function_R1_R1 (BasicFunction * fun) : fun (fun) {
                     }
-                    explicit Function_R1_R1 (const ::std::string &str) : fun (inlisp_ (Setup (1),this,str)) {
+                    explicit Function_R1_R1 (const ::std::string &str) : fun (heightslang_ (Setup (1),this,str)) {
                     }
 
                     real_t operator () (real_t x) const {
@@ -584,7 +584,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     }
                     explicit Function_R2_R1 (BasicFunction * fun) : fun (fun) {
                     }
-                    explicit Function_R2_R1 (const ::std::string &str) : fun (inlisp_ (Setup (2),this,str)) {
+                    explicit Function_R2_R1 (const ::std::string &str) : fun (heightslang_ (Setup (2),this,str)) {
                     }
 
                     real_t operator () (real_t x, real_t y) const {
@@ -610,7 +610,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     }
                     explicit Function_R3_R1 (BasicFunction * fun) : fun (fun) {
                     }
-                    explicit Function_R3_R1 (const ::std::string &str) : fun (inlisp_ (Setup (3),this,str)) {
+                    explicit Function_R3_R1 (const ::std::string &str) : fun (heightslang_ (Setup (3),this,str)) {
                     }
 
                     real_t operator () (real_t x, real_t y, real_t z) const {

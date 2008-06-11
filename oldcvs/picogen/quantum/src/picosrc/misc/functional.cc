@@ -37,7 +37,7 @@ namespace picogen {
         namespace functional {
 
 
-            static inline BasicFunction* inlisp_ (
+            static inline BasicFunction* heightslang_ (
                 const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
                 BasicFunction *root,                ///< The top node, usually one of Function_R1_R1, Function_R2_R1, or similar. Needed to allow recursion in the inlisp-code.
                 std::string::const_iterator &it,    ///< Iterator to the current element of "code" being processed.
@@ -163,8 +163,8 @@ namespace picogen {
                         ++it; // eat ']'
                         cout << endl;
 
-                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                        BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                        BasicFunction *p2 = heightslang_ (setup,root,it,code);
                         if (nextToken (it,code) != ')') {
                             throw functional_general_exeption ("missing ')'");
                         }
@@ -187,7 +187,7 @@ namespace picogen {
             /// \brief Compiles a source-string in a kind of lisp-syntax into a BasicFunction
             ///
             /// "inlisp" means "inlisp is not lisp" (lisp itself meaning "list processor", which inlisp is definitely not)
-            static inline BasicFunction* inlisp_ (
+            static inline BasicFunction* heightslang_ (
                 const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
                 BasicFunction *root,                ///< The top node, usually one of Function_R1_R1, Function_R2_R1, or similar. Needed to allow recursion in the inlisp-code.
                 std::string::const_iterator &it,    ///< Iterator to the current element of "code" being processed.
@@ -204,48 +204,48 @@ namespace picogen {
                                 break;
 
                                 // +, -, *, /, ^, =
-#ifndef FUNCTIONAL_INLISP_IMPLEMENT_BINOP
-#define FUNCTIONAL_INLISP_IMPLEMENT_BINOP( OPERATOR, ALLOCATOR ) \
+#ifndef FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP
+#define FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP( OPERATOR, ALLOCATOR ) \
 case OPERATOR:{                                                  \
-    BasicFunction *p1 = inlisp_(setup,root,it,code);             \
-    BasicFunction *p2 = inlisp_(setup,root,it,code);             \
+    BasicFunction *p1 = heightslang_(setup,root,it,code);             \
+    BasicFunction *p2 = heightslang_(setup,root,it,code);             \
     if( nextToken(it,code) != ')' ) {                            \
         throw functional_general_exeption( "missing ')'" );      \
     }                                                            \
     return ALLOCATOR( p1, p2 );                                  \
 } break;
-                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('+', add_);
-                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('-', sub_);
-                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('*', mul_);
-                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('/', div_);
-                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('^', pow_);
-                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('=', equal_);
-#undef FUNCTIONAL_INLISP_IMPLEMENT_BINOP
+                                FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP ('+', add_);
+                                FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP ('-', sub_);
+                                FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP ('*', mul_);
+                                FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP ('/', div_);
+                                FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP ('^', pow_);
+                                FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP ('=', equal_);
+#undef FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP
 #else
-#error "FUNCTIONAL_INLISP_IMPLEMENT_BINOP already defiend somewhere else"
+#error "FUNCTIONAL_HEIGHTSLANG_IMPLEMENT_BINOP already defiend somewhere else"
 #endif
 
                             // <, <=, <>, >, >=, ?
                             case '<': {
                                 if ('=' == peekNextToken (it,code)) {
                                     nextToken (it,code);
-                                    BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                    BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                    BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
                                         throw functional_general_exeption ("missing ')'");
                                     }
                                     return less_equal_ (p1, p2);
                                 } else if ('>' == peekNextToken (it,code)) {
                                     nextToken (it,code);
-                                    BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                    BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                    BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
                                         throw functional_general_exeption ("missing ')'");
                                     }
                                     return not_equal_ (p1, p2);
                                 } else {
-                                    BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                    BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                    BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
                                         throw functional_general_exeption ("missing ')'");
                                     }
@@ -257,15 +257,15 @@ case OPERATOR:{                                                  \
                             case '>': {
                                 if ('=' == peekNextToken (it,code)) {
                                     nextToken (it,code);
-                                    BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                    BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                    BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
                                         throw functional_general_exeption ("missing ')'");
                                     }
                                     return greater_equal_ (p1, p2);
                                 } else {
-                                    BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                    BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                    BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
                                         throw functional_general_exeption ("missing ')'");
                                     }
@@ -280,8 +280,8 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('r' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                        BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                        BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -300,8 +300,8 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('d' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                        BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                        BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -313,7 +313,7 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('s' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -330,8 +330,8 @@ case OPERATOR:{                                                  \
                             case 'o': {
                                 if ('r' == peekNextToken (it,code)) {
                                     nextToken (it,code);
-                                    BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                    BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                    BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
                                         throw functional_general_exeption ("missing ')'");
                                     }
@@ -344,9 +344,9 @@ case OPERATOR:{                                                  \
 
 
                             case '?': {
-                                BasicFunction *p1 = inlisp_ (setup,root,it,code);
-                                BasicFunction *p2 = inlisp_ (setup,root,it,code);
-                                BasicFunction *p3 = inlisp_ (setup,root,it,code);
+                                BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                BasicFunction *p2 = heightslang_ (setup,root,it,code);
+                                BasicFunction *p3 = heightslang_ (setup,root,it,code);
                                 if (nextToken (it,code) != ')') {
                                     throw functional_general_exeption ("missing ')'");
                                 }
@@ -363,7 +363,7 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('g' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -375,7 +375,7 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('t' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -395,7 +395,7 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('v' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -415,7 +415,7 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('n' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -429,7 +429,7 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         if ('t' == peekNextToken (it,code)) {
                                             nextToken (it,code);
-                                            BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                            BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                             if (nextToken (it,code) != ')') {
                                                 throw functional_general_exeption ("missing ')'");
                                             }
@@ -446,7 +446,7 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         if ('f' == peekNextToken (it,code)) {
                                             nextToken (it,code);
-                                            BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                            BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                             if (NULL == p1) {
                                                 throw functional_general_exeption ("missing argument for 'self'-operation");
                                             }
@@ -460,7 +460,7 @@ case OPERATOR:{                                                  \
                                                 nextToken (it,code);
                                                 return call_ (root, p1);
                                             }
-                                            BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                                            BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                             if (NULL == p2) {
                                                 throw functional_general_exeption ("it looks like the 'self'-operation is called with 2 arguments, but the 2nd argument is missing");
                                             }
@@ -476,7 +476,7 @@ case OPERATOR:{                                                  \
                                             }
 
 
-                                            BasicFunction *p3 = inlisp_ (setup,root,it,code);
+                                            BasicFunction *p3 = heightslang_ (setup,root,it,code);
                                             if (NULL == p3) {
                                                 throw functional_general_exeption ("it looks like the 'self'-operation is called with 3 arguments, but the 3rd argument is missing");
                                             }
@@ -509,7 +509,7 @@ case OPERATOR:{                                                  \
                                     nextToken (it,code);
                                     if ('s' == peekNextToken (it,code)) {
                                         nextToken (it,code);
-                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                        BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
                                             throw functional_general_exeption ("missing ')'");
                                         }
@@ -532,7 +532,7 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         if ('c' == peekNextToken (it,code)) {
                                             nextToken (it,code);
-                                            BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                            BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                             if (nextToken (it,code) != ')') {
                                                 throw functional_general_exeption ("missing ')'");
                                             }
@@ -551,7 +551,7 @@ case OPERATOR:{                                                  \
                                             nextToken (it,code);
                                             if ('r' == peekNextToken (it,code)) {
                                                 nextToken (it,code);
-                                                BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                                BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                                 if (nextToken (it,code) != ')') {
                                                     throw functional_general_exeption ("missing ')'");
                                                 }
@@ -581,7 +581,7 @@ case OPERATOR:{                                                  \
                                             nextToken (it,code);
                                             if ('c' == peekNextToken (it,code)) {
                                                 nextToken (it,code);
-                                                BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                                BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                                 if (nextToken (it,code) != ')') {
                                                     throw functional_general_exeption ("missing ')'");
                                                 }
@@ -679,9 +679,9 @@ case OPERATOR:{                                                  \
 /// \brief Compiles a source-string in a kind of lisp-syntax into a BasicFunction
 ///
 /// "inlisp" means "inlisp is not lisp" (lisp itself meaning "list processor", which inlisp is definitely not).
-/// This function actually wraps around "static inline BasicFunction* inlisp_( const Setup &setup, BasicFunction
+/// This function actually wraps around "static inline BasicFunction* heightslang_( const Setup &setup, BasicFunction
 /// *root, std::string::const_iterator &it, const std::string &code )".
-            BasicFunction* inlisp_ (
+            BasicFunction* heightslang_ (
                 const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
                 BasicFunction *root,                ///< The top node, usually one of Function_R1_R1, Function_R2_R1, or similar. Needed to allow recursion in the inlisp-code.
                 const std::string &code             ///< The inlisp code.
@@ -690,7 +690,7 @@ case OPERATOR:{                                                  \
                     std::cout << "> " << code << std::endl;
                 }
                 std::string::const_iterator it = code.begin();
-                return inlisp_ (setup, root, it, code);
+                return heightslang_ (setup, root, it, code);
             }
 
 
