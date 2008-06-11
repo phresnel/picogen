@@ -22,31 +22,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ctype.h>
 
-#include <picogen.h>
 #include <string>
 #include <iostream>
 #include <sstream>
-#include <ctype.h>
+#include <map>
 
+#include <picogen.h>
+#include <picogen/misc/functional/LayeredNoise2d.h>
 
 namespace picogen {
     namespace misc {
         namespace functional {
 
 
-            /*RR::BasicFunction *optimize( RR::BasicFunction *f ){
-                return f;
-            }*/
+            static inline BasicFunction* inlisp_ (
+                const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
+                BasicFunction *root,                ///< The top node, usually one of Function_R1_R1, Function_R2_R1, or similar. Needed to allow recursion in the inlisp-code.
+                std::string::const_iterator &it,    ///< Iterator to the current element of "code" being processed.
+                const std::string &code             ///< The inlisp code.
+            );
 
 
-
-/// \brief Gets the next token-char from code and iterates to the next one.
-///
-/// If the 'end-of-file' (more specifically, the end of the string) has already been reached, then '\0' is returned;
-/// \param it Iterator pointing to the current element in "code" being processed.
-/// \param code Reference to the code being processed.
-            static inline char nextToken (::std::string::const_iterator &it, const ::std::string &code) {
+            static inline void skipWhitespace (::std::string::const_iterator &it, const ::std::string &code) {
                 if (it != code.end()) {
                     //++it;
                     while (
@@ -60,6 +59,15 @@ namespace picogen {
                         ++it;
                     }
                 }
+            }
+
+            /// \brief Gets the next token-char from code and iterates to the next one.
+            ///
+            /// If the 'end-of-file' (more specifically, the end of the string) has already been reached, then '\0' is returned;
+            /// \param it Iterator pointing to the current element in "code" being processed.
+            /// \param code Reference to the code being processed.
+            static inline char nextToken (::std::string::const_iterator &it, const ::std::string &code) {
+                skipWhitespace (it, code);
                 if (it != code.end()) {
                     char ret = *it;
                     ++it;
@@ -70,10 +78,10 @@ namespace picogen {
 
 
 
-/// \brief Peeks to the next token in that it returns the next token, but without iterating to the next one.
-///
-/// \param it Iterator pointing to the current element in "code" being processed.
-/// \param code Reference to the code being processed.
+            /// \brief Peeks to the next token in that it returns the next token, but without iterating to the next one.
+            ///
+            /// \param it Iterator pointing to the current element in "code" being processed.
+            /// \param code Reference to the code being processed.
             static inline char peekNextToken (const ::std::string::const_iterator &it, const ::std::string &code) {
                 ::std::string::const_iterator my_it = it;
                 char ret = nextToken (my_it,code);
@@ -82,9 +90,90 @@ namespace picogen {
 
 
 
-/// \brief Compiles a source-string in a kind of lisp-syntax into a BasicFunction
-///
-/// "inlisp" means "inlisp is not lisp" (lisp itself meaning "list processor", which inlisp is definitely not)
+            static inline BasicFunction* createHooked (
+                const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
+                BasicFunction *root,                ///< The top node, usually one of Function_R1_R1, Function_R2_R1, or similar. Needed to allow recursion in the inlisp-code.
+                std::string::const_iterator &it,    ///< Iterator to the current element of "code" being processed.
+                const std::string &code             ///< The inlisp code.
+            ) {
+                using namespace std;
+                char tok = nextToken (it, code);
+                switch (tok) {
+                    case '2':{
+                        string hookName = "";
+                        skipWhitespace (it, code);
+                        while (isalnum (*it) && it!=code.end()) {
+                            hookName += *it;
+                            ++it;
+                        }
+
+                        map<string,string> parameters;
+                        skipWhitespace (it, code);
+                        while (*it != ']') {
+                            // Scan parameter name.
+                            skipWhitespace (it, code);
+                            if (')' == *it || it == code.end()) {
+                                throw functional_general_exeption ("missing ']'");
+                            }
+
+                            if (!isalnum (*it)) {
+                                throw functional_general_exeption ("expected alphanumeric parameter name");
+                            }
+                            string parameterName = "";
+                            while (isalnum (*it) && it!=code.end()) {
+                                parameterName += *it;
+                                ++it;
+                            }
+
+                            // Scan parameter value.
+                            skipWhitespace (it, code);
+                            if (it == code.end() || '(' != *it) {
+                                throw functional_general_exeption ("missing value for parameter " + parameterName);
+                            }
+
+                            ++it; // eat '('
+                            string parameterValue = "";
+                            while (*it!=')' && it!=code.end()) {
+                                parameterValue += *it;
+                                ++it;
+                            }
+
+                            if (*it != ')' || it == code.end()) {
+                                throw functional_general_exeption ("missing ')' for parameter " + parameterName);
+                            }
+
+                            ++it; // eat ')'
+                            skipWhitespace (it, code);
+
+                            parameters[parameterName] = parameterValue;
+                        }
+                        ++it; // eat ']'
+                        cout << endl;
+
+                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                        BasicFunction *p2 = inlisp_ (setup,root,it,code);
+                        if (nextToken (it,code) != ')') {
+                            throw functional_general_exeption ("missing ')'");
+                        }
+
+                        if ("LayeredNoise" == hookName) {
+                            return new LayeredNoise2d (parameters, p1, p2);
+                        } else {
+                            throw functional_general_exeption ("unknown configurable function: '" + hookName + "'");
+                        }
+
+                    }break;
+                    default:
+                        throw functional_general_exeption ("configurable functions are currently only supported with 2 parameters");
+                }
+                return NULL;
+            }
+
+
+
+            /// \brief Compiles a source-string in a kind of lisp-syntax into a BasicFunction
+            ///
+            /// "inlisp" means "inlisp is not lisp" (lisp itself meaning "list processor", which inlisp is definitely not)
             static inline BasicFunction* inlisp_ (
                 const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
                 BasicFunction *root,                ///< The top node, usually one of Function_R1_R1, Function_R2_R1, or similar. Needed to allow recursion in the inlisp-code.
@@ -97,6 +186,10 @@ namespace picogen {
                     if (tok == '(') {
                         switch (tok=nextToken (it,code)) {
 
+                            case '[':
+                                return createHooked (setup, root, it, code);
+                                break;
+
                                 // +, -, *, /, ^, =
 #ifndef FUNCTIONAL_INLISP_IMPLEMENT_BINOP
 #define FUNCTIONAL_INLISP_IMPLEMENT_BINOP( OPERATOR, ALLOCATOR ) \
@@ -108,12 +201,12 @@ case OPERATOR:{                                                  \
     }                                                            \
     return ALLOCATOR( p1, p2 );                                  \
 } break;
-                            FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('+', add_);
-                            FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('-', sub_);
-                            FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('*', mul_);
-                            FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('/', div_);
-                            FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('^', pow_);
-                            FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('=', equal_);
+                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('+', add_);
+                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('-', sub_);
+                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('*', mul_);
+                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('/', div_);
+                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('^', pow_);
+                                FUNCTIONAL_INLISP_IMPLEMENT_BINOP ('=', equal_);
 #undef FUNCTIONAL_INLISP_IMPLEMENT_BINOP
 #else
 #error "FUNCTIONAL_INLISP_IMPLEMENT_BINOP already defiend somewhere else"
@@ -168,7 +261,7 @@ case OPERATOR:{                                                  \
                             }
                             break;
 
-                            // xor, and, or
+                            // xor, abs, and, or
                             case 'x': {
                                 if ('o' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -200,6 +293,18 @@ case OPERATOR:{                                                  \
                                             throw functional_general_exeption ("missing ')'");
                                         }
                                         return and_ (p1, p2);
+                                    } else {
+                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    }
+                                } else if ('b' == peekNextToken (it,code)) {
+                                    nextToken (it,code);
+                                    if ('s' == peekNextToken (it,code)) {
+                                        nextToken (it,code);
+                                        BasicFunction *p1 = inlisp_ (setup,root,it,code);
+                                        if (nextToken (it,code) != ')') {
+                                            throw functional_general_exeption ("missing ')'");
+                                        }
+                                        return abs_ (p1);
                                     } else {
                                         throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
@@ -237,6 +342,7 @@ case OPERATOR:{                                                  \
 
 
                             // {neg, not} {inv} {sin,sqrt} {cos} {floor} {trunc}
+
 
                             // neg, not
                             case 'n': {
