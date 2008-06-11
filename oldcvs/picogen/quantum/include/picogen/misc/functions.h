@@ -443,8 +443,8 @@ namespace picogen {
                 };
 
 
-// a perlin noise implementation using gradients
-// (as Ken Perlin originally invented, afaik)
+                // a perlin noise implementation using gradients
+                // (as Ken Perlin originally invented, afaik)
                 class PerlinNoise
                             : public abstract::vector_to_scalar,
                             public abstract::scalar_to_scalar,
