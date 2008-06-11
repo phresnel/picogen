@@ -21,6 +21,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+/// \todo add an [optional] alpha channell to the heightmap, so it becomes usefull for creating 2d clouds
 /// \todo include IEEE-floating-point binary-export option
 /// \todo include ASCII-export option
 /// \todo include RAW-export option
@@ -73,9 +74,13 @@ template <typename T> struct Heightmap {
           width (width), height (height), map (new Hexel[width*height])
         { }
 
+
+
         ~Heightmap() {
             delete [] map;
         }
+
+
 
         // okay, we provide an operator (), but just for screen dumping (hence i const it)
         const Hexel operator () ( unsigned int x, unsigned int y ) const {
@@ -83,22 +88,41 @@ template <typename T> struct Heightmap {
             return tmp < 0.0 ? 0.0 : tmp > 1.0 ? 1.0 : tmp;
         }
 
-        void fill (const picogen::misc::functional::Function_R2_R1 &f) {
-            for (unsigned int y=0; y<height; y++) {
 
-                const unsigned int ofs_y = y*width;
-                const real v = scaling * (static_cast<real>(y) / static_cast<real>(width));
 
-                for (unsigned int x=0; x<width; x++) {
+        void fillZero() {
+            for (unsigned int x=0; x<width*height; x++) {
+                map[ x ] = static_cast<Hexel>(0.0);
+            }
+        }
 
-                    const real u = scaling * (static_cast<real>(x) / static_cast<real>(width));
-                    map[ x + ofs_y ] = static_cast<Hexel>(f(u,v)); // yay.
+
+
+        void fill (const picogen::misc::functional::Function_R2_R1 &f, unsigned int antiAliasFactor) {
+
+            using namespace std;
+
+            fillZero();
+
+            for (unsigned int y=0; y<height*antiAliasFactor; y++) {
+
+                const unsigned int ofs_y = (y/antiAliasFactor)*width;
+                const real v = scaling * (static_cast<real>(y) / static_cast<real>(width*antiAliasFactor));
+
+                for (unsigned int x=0; x<width*antiAliasFactor; x++) {
+
+                    const real u = scaling * (static_cast<real>(x) / static_cast<real>(width*antiAliasFactor));
+                    map[ (x/antiAliasFactor) + ofs_y ] += static_cast<Hexel>(f(u,v)) / static_cast<Hexel>(antiAliasFactor*antiAliasFactor);
 
                 }
             }
         }
 
+
+
         void normalize () {
+            /// \todo Rewrite to 1d as in fillZero()
+            using namespace std;
             Hexel minHeight_(map[0]);
             Hexel maxHeight_(map[0]);
 
@@ -114,12 +138,12 @@ template <typename T> struct Heightmap {
             }
 
             const Hexel minHeight(minHeight_);
-            const Hexel height   (1.0 / (maxHeight_ - minHeight_));
+            const Hexel totalHeight   (1.0 / (maxHeight_ - minHeight_));
             for (unsigned int y=0; y<height; y++) {
                 const unsigned int ofs_y = y*width;
                 for (unsigned int x=0; x<width; x++) {
                     Hexel &m = map[ x + ofs_y ];
-                    m = ( m - minHeight ) * height;
+                    m = ( m - minHeight ) * totalHeight;
                 }
             }
         }
@@ -257,7 +281,8 @@ int main_mkheightmap (int argc, char *argv[]) {
     Lingua lingua = Lingua_unknown;
     bool showPreview = false;
     unsigned int width=512, height=512;
-    float scaling = 100.0;
+    float scaling = 1.0;
+    unsigned int antiAliasFactor = 1;
     //float heightmapNormalizationAccuracy = -1.0;
     bool doNormalize = false;
 
@@ -325,6 +350,30 @@ int main_mkheightmap (int argc, char *argv[]) {
             }
             /// \todo get rid of below sscanf
             sscanf (intStr.c_str(), "%u", &height);
+        } else if (option == "-a"  || option == "--anti-aliasing") {
+            if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            const string intStr = string (argv[0]);
+            argc--;
+            argv++;
+            // check for unsigned-integer'ness
+            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                if (!isdigit (*it)) {
+                    cerr << "error: only positive integer numbers >= 1 are allowed for option " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+            }
+            /// \todo get rid of below sscanf
+            sscanf (intStr.c_str(), "%u", &antiAliasFactor);
+            if (antiAliasFactor<1) {
+                cerr << "error: only positive integer numbers >= 1 are allowed for option " << option << endl;
+                printUsage();
+                return -1;
+            }
         } else if (option == "-W"  || option == "--domain-width") {
             if (argc<=0) {
                 cerr << "error: no argument given to option: " << option << endl;
@@ -403,7 +452,7 @@ int main_mkheightmap (int argc, char *argv[]) {
     try {
 
         Heightmap<double> heightmap (scaling, width, height);
-        heightmap.fill (Function_R2_R1 (code));
+        heightmap.fill (Function_R2_R1 (code), antiAliasFactor);
         if( doNormalize )
             heightmap.normalize();
 
