@@ -37,14 +37,29 @@ static void disclaimer() {
         ;
 }
 
+
+
 static void usage() {
+    std::cout
+        << "Invocation: picogen [instruction [options for instruction]]\n"
+        << "In the version of picogen you have installed, the following instructions are possible:\n"
+        << "\n"
+        << " mkheightmap :   mkheightmap is a heightmap generation tool.\n"
+        << "                 type 'picogen mkheightmap --help' for further help.\n"
+    << std::endl;
 }
+
+
 
 static void warranty() {
 }
 
+
+
 static void conditions() {
 }
+
+
 
 int main (int argc, char *argv[]) {
     extern int main_seb (int argc, char *argv[]);
@@ -81,11 +96,21 @@ int main (int argc, char *argv[]) {
         }
     } else if (primary == string ("mkheightmap")) {
         return main_mkheightmap (argc, argv);
-    } else if (primary == string ("testscene")) {
+    }
+
+    #ifndef PICOGEN_RELEASE
+    else if (primary == string ("testscene")) {
         return main_testscenes (argc, argv);
-    } else if (primary == string ("seb")) {
+    }
+    #endif
+
+    #ifndef PICOGEN_RELEASE
+    else if (primary == string ("seb")) {
         return main_seb (argc, argv);
-    } else {
+    }
+    #endif
+
+    else {
         usage();
     }
 
