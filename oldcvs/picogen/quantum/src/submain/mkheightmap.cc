@@ -379,228 +379,232 @@ int main_mkheightmap (int argc, char *argv[]) {
     };
 
     ExportFlags exportFlags;
+    try {
+        while (argc>0) {
+            const std::string option (argv[0]);
+            argc--;
+            argv++;
 
-    while (argc>0) {
-        const std::string option( argv[0] );
-        argc--;
-        argv++;
+            /// \todo add an option to specifiy the output-filename
 
-        /// \todo add an option to specifiy the output-filename
-
-        // -Lx
-        if (option[1] == 'L' && Lingua_unknown != lingua) {
-            // We already have read some code, more is not allowed.
-            cerr << "error: only one formula or program allowed" << endl;
-            printUsage();
-            return -1;
-        }
-        if (option == "-Lhs" || option == "--Lheight-slang") {
-            lingua = Lingua_inlisp;
-            if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
+            // -Lx
+            if (option[1] == 'L' && Lingua_unknown != lingua) {
+                // We already have read some code, more is not allowed.
+                cerr << "error: only one formula or program allowed" << endl;
                 printUsage();
                 return -1;
             }
-            code = string (argv[0]);
-            argc--;
-            argv++;
-        } else if (option == "-En" || option == "--ExportName") {
-            if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
-                printUsage();
-                return -1;
-            }
-            exportFileNameBase = string (argv[0]);
-            argc--;
-            argv++;
-        } else if (option == "-Et" || option == "--Etext" ) {
-                exportFlags.text = true;
-        } else if (option == "-Ebmp" || option == "--Ebitmap" ) {
-                exportFlags.winBMP = true;
-        } else if (option == "-p" || option == "--preview") {
-            showPreview = true;
-        } else if (option == "-f" || option == "--force-overwrite") {
-            forceOverwriteFiles = true;
-        } else if (option == "-w"  || option == "--width") {
-
-            if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
-                printUsage();
-                return -1;
-            }
-            const string intStr = string (argv[0]);
-            argc--;
-            argv++;
-            // check for unsigned-integer'ness
-            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
-                if (!isdigit (*it)) {
-                    cerr << "error: only positive integer numbers are allowed for option " << option << endl;
+            if (option == "-Lhs" || option == "--Lheight-slang") {
+                lingua = Lingua_inlisp;
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
                     return -1;
                 }
-            }
-            /// \todo get rid of below sscanf
-            sscanf (intStr.c_str(), "%u", &width);
-
-        } else if (option == "-h"  || option == "--height") {
-            if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
-                printUsage();
-                return -1;
-            }
-            const string intStr = string (argv[0]);
-            argc--;
-            argv++;
-            // check for unsigned-integer'ness
-            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
-                if (!isdigit (*it)) {
-                    cerr << "error: only positive integer numbers are allowed for option " << option << endl;
+                code = string (argv[0]);
+                argc--;
+                argv++;
+            } else if (option == "-En" || option == "--ExportName") {
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
                     return -1;
                 }
-            }
-            /// \todo get rid of below sscanf
-            sscanf (intStr.c_str(), "%u", &height);
-        } else if (option == "-a"  || option == "--anti-aliasing") {
-            if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
-                printUsage();
-                return -1;
-            }
-            const string intStr = string (argv[0]);
-            argc--;
-            argv++;
-            // check for unsigned-integer'ness
-            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
-                if (!isdigit (*it)) {
+                exportFileNameBase = string (argv[0]);
+                argc--;
+                argv++;
+            } else if (option == "-Et" || option == "--Etext" ) {
+                    exportFlags.text = true;
+            } else if (option == "-Ebmp" || option == "--Ebitmap" ) {
+                    exportFlags.winBMP = true;
+            } else if (option == "-p" || option == "--preview") {
+                showPreview = true;
+            } else if (option == "-f" || option == "--force-overwrite") {
+                forceOverwriteFiles = true;
+            } else if (option == "-w"  || option == "--width") {
+
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+                const string intStr = string (argv[0]);
+                argc--;
+                argv++;
+                // check for unsigned-integer'ness
+                for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                    if (!isdigit (*it)) {
+                        cerr << "error: only positive integer numbers are allowed for option " << option << endl;
+                        printUsage();
+                        return -1;
+                    }
+                }
+                /// \todo get rid of below sscanf
+                sscanf (intStr.c_str(), "%u", &width);
+
+            } else if (option == "-h"  || option == "--height") {
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+                const string intStr = string (argv[0]);
+                argc--;
+                argv++;
+                // check for unsigned-integer'ness
+                for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                    if (!isdigit (*it)) {
+                        cerr << "error: only positive integer numbers are allowed for option " << option << endl;
+                        printUsage();
+                        return -1;
+                    }
+                }
+                /// \todo get rid of below sscanf
+                sscanf (intStr.c_str(), "%u", &height);
+            } else if (option == "-a"  || option == "--anti-aliasing") {
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+                const string intStr = string (argv[0]);
+                argc--;
+                argv++;
+                // check for unsigned-integer'ness
+                for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                    if (!isdigit (*it)) {
+                        cerr << "error: only positive integer numbers >= 1 are allowed for option " << option << endl;
+                        printUsage();
+                        return -1;
+                    }
+                }
+                /// \todo get rid of below sscanf
+                sscanf (intStr.c_str(), "%u", &antiAliasFactor);
+                if (antiAliasFactor<1) {
                     cerr << "error: only positive integer numbers >= 1 are allowed for option " << option << endl;
                     printUsage();
                     return -1;
                 }
-            }
-            /// \todo get rid of below sscanf
-            sscanf (intStr.c_str(), "%u", &antiAliasFactor);
-            if (antiAliasFactor<1) {
-                cerr << "error: only positive integer numbers >= 1 are allowed for option " << option << endl;
-                printUsage();
-                return -1;
-            }
-        } else if (option == "-W"  || option == "--domain-width") {
-            if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
-                printUsage();
-                return -1;
-            }
-            const string intStr = string (argv[0]);
-            argc--;
-            argv++;
-
-            // Check for correct format.
-            bool hasDot = false;
-            string::const_iterator it = intStr.begin();
-            if (*it == '-' ) {
-                ++it;
-            }
-            for ( ; it!=intStr.end(); ++it) {
-                if (*it == '.') {
-                    if (hasDot) {
-                        cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
-                        printUsage();
-                        return -1;
-                    }
-                    hasDot = true;
-                } else if (!isdigit (*it)) {
-                    cerr << "error: only floating point numbers are allowed for option " << option << endl;
+            } else if (option == "-W"  || option == "--domain-width") {
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
                     return -1;
                 }
-            }
-            /// \todo get rid of below sscanf
-            sscanf (intStr.c_str(), "%f", &scaling);
+                const string intStr = string (argv[0]);
+                argc--;
+                argv++;
 
-        } else if (option == "-l"  || option == "--preview-water-level") {
-            if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
-                printUsage();
-                return -1;
-            }
-            const string intStr = string (argv[0]);
-            argc--;
-            argv++;
-
-            // Check for correct format.
-            bool hasDot = false;
-            string::const_iterator it = intStr.begin();
-            if (*it == '-' ) {
-                ++it;
-            }
-            for ( ; it!=intStr.end(); ++it) {
-                if (*it == '.') {
-                    if (hasDot) {
-                        cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                // Check for correct format.
+                bool hasDot = false;
+                string::const_iterator it = intStr.begin();
+                if (*it == '-' ) {
+                    ++it;
+                }
+                for ( ; it!=intStr.end(); ++it) {
+                    if (*it == '.') {
+                        if (hasDot) {
+                            cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                            printUsage();
+                            return -1;
+                        }
+                        hasDot = true;
+                    } else if (!isdigit (*it)) {
+                        cerr << "error: only floating point numbers are allowed for option " << option << endl;
                         printUsage();
                         return -1;
                     }
-                    hasDot = true;
-                } else if (!isdigit (*it)) {
-                    cerr << "error: only floating point numbers are allowed for option " << option << endl;
+                }
+                /// \todo get rid of below sscanf
+                sscanf (intStr.c_str(), "%f", &scaling);
+
+            } else if (option == "-l"  || option == "--preview-water-level") {
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
                     return -1;
                 }
-            }
-            /// \todo get rid of below sscanf
-            sscanf (intStr.c_str(), "%f", &waterLevel);
-        } else if (option == "-n"  || option == "--normalize") {
-            doNormalize = true;
-            /*if (argc<=0) {
-                cerr << "error: no argument given to option: " << option << endl;
-                printUsage();
-                return -1;
-            }
-            const string intStr = string (argv[0]);
-            argc--;
-            argv++;
-            // check for unsigned-integer'ness
-            bool hasDot = false;
-            for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
-                if (*it == '.') {
-                    if (hasDot) {
-                        cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                const string intStr = string (argv[0]);
+                argc--;
+                argv++;
+
+                // Check for correct format.
+                bool hasDot = false;
+                string::const_iterator it = intStr.begin();
+                if (*it == '-' ) {
+                    ++it;
+                }
+                for ( ; it!=intStr.end(); ++it) {
+                    if (*it == '.') {
+                        if (hasDot) {
+                            cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                            printUsage();
+                            return -1;
+                        }
+                        hasDot = true;
+                    } else if (!isdigit (*it)) {
+                        cerr << "error: only floating point numbers are allowed for option " << option << endl;
                         printUsage();
                         return -1;
                     }
-                    hasDot = true;
-                }else if (!isdigit (*it)) {
-                    cerr << "error: only floating point numbers are allowed for option " << option << endl;
+                }
+                /// \todo get rid of below sscanf
+                sscanf (intStr.c_str(), "%f", &waterLevel);
+            } else if (option == "-n"  || option == "--normalize") {
+                doNormalize = true;
+                /*if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
                     return -1;
                 }
-            }
-            /// \todo get rid of below sscanf
-            sscanf (intStr.c_str(), "%f", &heightmapNormalizationAccuracy);
-            if (heightmapNormalizationAccuracy < 0.0 || heightmapNormalizationAccuracy > 1.0) {
-                cerr << "error: the argument for option " << option << " must be >= 0.0 and <= 1.0 (where 0.0 being 0%, 1.0 being 100%)" << endl;
+                const string intStr = string (argv[0]);
+                argc--;
+                argv++;
+                // check for unsigned-integer'ness
+                bool hasDot = false;
+                for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
+                    if (*it == '.') {
+                        if (hasDot) {
+                            cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
+                            printUsage();
+                            return -1;
+                        }
+                        hasDot = true;
+                    }else if (!isdigit (*it)) {
+                        cerr << "error: only floating point numbers are allowed for option " << option << endl;
+                        printUsage();
+                        return -1;
+                    }
+                }
+                /// \todo get rid of below sscanf
+                sscanf (intStr.c_str(), "%f", &heightmapNormalizationAccuracy);
+                if (heightmapNormalizationAccuracy < 0.0 || heightmapNormalizationAccuracy > 1.0) {
+                    cerr << "error: the argument for option " << option << " must be >= 0.0 and <= 1.0 (where 0.0 being 0%, 1.0 being 100%)" << endl;
+                    printUsage();
+                    return -1;
+                }*/
+            } else if (option == "--help") {
+                printUsage();
+            } else {
+                cerr << "unknown option in argument list: " << option << endl;
                 printUsage();
                 return -1;
-            }*/
-        } else if (option == "--help") {
-            printUsage();
-        } else {
-            cerr << "unknown option in argument list: " << option << endl;
+            }
+        }
+
+        if (lingua == Lingua_unknown) {
+            cerr << "error: unkown language or wrong option used" << endl;
             printUsage();
             return -1;
         }
-    }
-
-    if (lingua == Lingua_unknown) {
-        cerr << "error: unkown language or wrong option used" << endl;
-        printUsage();
-        return -1;
-    }
 
 
 
-    try {
+
+
+        if (code.size() == 0) {
+            functional_general_exeption ("you gave me no code");
+        }
 
         Heightmap<double> heightmap (scaling, width, height);
         heightmap.fill (Function_R2_R1 (code), antiAliasFactor);
@@ -630,6 +634,8 @@ int main_mkheightmap (int argc, char *argv[]) {
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
         return -1;
+    } catch (...) {
+        cerr << "unknown exception." << endl;
     }
     return 0;
 }
