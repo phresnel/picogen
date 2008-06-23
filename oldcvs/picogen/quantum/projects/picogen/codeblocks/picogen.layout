@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="fast compilation" />
+	<ActiveTarget name="Release" />
 	<File name="../../../include/common.h" open="0" top="0" tabpos="0">
 		<Cursor position="1141" topLine="19" />
 	</File>
@@ -91,14 +91,14 @@
 	<File name="../../../include/picogen/misc/exceptions.h" open="0" top="0" tabpos="18">
 		<Cursor position="5386" topLine="82" />
 	</File>
-	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="3">
-		<Cursor position="8922" topLine="178" />
+	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="6">
+		<Cursor position="29524" topLine="598" />
 	</File>
-	<File name="../../../include/picogen/misc/functional/LayeredNoise2d.h" open="0" top="0" tabpos="6">
-		<Cursor position="1698" topLine="35" />
+	<File name="../../../include/picogen/misc/functional/LayeredNoise2d.h" open="0" top="0" tabpos="2">
+		<Cursor position="1427" topLine="29" />
 	</File>
-	<File name="../../../include/picogen/misc/functions.h" open="0" top="0" tabpos="2">
-		<Cursor position="1" topLine="0" />
+	<File name="../../../include/picogen/misc/functions.h" open="0" top="0" tabpos="5">
+		<Cursor position="25680" topLine="522" />
 	</File>
 	<File name="../../../include/picogen/misc/geometrics.h" open="0" top="0" tabpos="22">
 		<Cursor position="5821" topLine="127" />
@@ -125,7 +125,7 @@
 		<Cursor position="4940" topLine="118" />
 	</File>
 	<File name="../../../src/main.cc" open="0" top="0" tabpos="1">
-		<Cursor position="1753" topLine="61" />
+		<Cursor position="1855" topLine="34" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
@@ -157,17 +157,17 @@
 	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="0" top="0" tabpos="1">
 		<Cursor position="4828" topLine="98" />
 	</File>
-	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="5">
-		<Cursor position="1117" topLine="1" />
+	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="3">
+		<Cursor position="1095" topLine="28" />
 	</File>
-	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="7">
-		<Cursor position="5540" topLine="114" />
+	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="1">
+		<Cursor position="8811" topLine="174" />
 	</File>
 	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="10">
 		<Cursor position="908" topLine="0" />
 	</File>
-	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="1">
-		<Cursor position="3497" topLine="80" />
+	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="4">
+		<Cursor position="22419" topLine="602" />
 	</File>
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
 		<Cursor position="19161" topLine="559" />
