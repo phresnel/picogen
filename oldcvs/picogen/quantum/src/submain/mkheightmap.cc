@@ -245,10 +245,6 @@ template <typename T> int showPreviewWindow (T &heightmap, real waterLevel) {
 }
 
 
-void printUsage() {
-}
-
-
 
 template <typename T> std::string exportText (T &heightmap, const std::string &outputFilename, bool forceOverwrite) {
     using namespace std;
@@ -318,6 +314,33 @@ template <typename T> std::string exportWinBMP (T &heightmap, const std::string 
 
 
 
+static void printUsage() {
+    std::cout
+        << "Invocation of mkheightmap: picogen mkheightmap [options]\n"
+        << "In the version of picogen you have installed, the following options are possible:\n"
+        << "\n"
+        << "-Lhs / --Lheight-slang <program : string>:   define an input program in height-slang syntax.\n"
+        << "                                             (see http://picogen.org for documentation)\n"
+        << " -En / --ExportName <name : string>:         define a basis-name for exported files. default is \n"
+        << "                                             'mkheightmap-out'\n"
+        << "-Et / --Etext:                               export as plaintext. the format is self-explanatory.\n"
+        << "-Ebmp / --Ebitmap:                           export as standard bmp file.\n"
+        << "-p / --preview:                              show a window with the heightmap.\n"
+        << "-l / --preview-water-level <L : floating point>: set a water level for preview (only useful\n"
+        << "                                             together with --preview)\n"
+        << "-f / --force-overwrite:                      force overwriting of existing files.\n"
+        << "-w / --width <positive integer>:             set target width, in pixels. standard is 512.\n"
+        << "-h / --height <positive integer>:            set target height, in pixels. standard is 512.\n"
+        << "-a / --anti-aliasing <X : positive integer>: enable X*X antialiasing. standard is 1.\n"
+        << "-W / --domain-width <S : floating point>:    scales the input coordinates from [0..1)x[0..1) \n"
+        << "                                             to [0..S)x[0..S)\n"
+        << "-n / --normalize :                           enable normalization, that is, scale the height-\n"
+        << "                                             values linearly so that all values are [0..1)\n"
+        << "--help : show this help"
+    << std::endl;
+}
+
+
 
 int main_mkheightmap (int argc, char *argv[]) {
 
@@ -367,7 +390,7 @@ int main_mkheightmap (int argc, char *argv[]) {
         // -Lx
         if (option[1] == 'L' && Lingua_unknown != lingua) {
             // We already have read some code, more is not allowed.
-            cerr << "error: only one formula/program allowed" << endl;
+            cerr << "error: only one formula or program allowed" << endl;
             printUsage();
             return -1;
         }
@@ -381,9 +404,18 @@ int main_mkheightmap (int argc, char *argv[]) {
             code = string (argv[0]);
             argc--;
             argv++;
+        } else if (option == "-En" || option == "--ExportName") {
+            if (argc<=0) {
+                cerr << "error: no argument given to option: " << option << endl;
+                printUsage();
+                return -1;
+            }
+            exportFileNameBase = string (argv[0]);
+            argc--;
+            argv++;
         } else if (option == "-Et" || option == "--Etext" ) {
                 exportFlags.text = true;
-        } else if (option == "-Ew" || option == "--Ewindows-bitmap" ) {
+        } else if (option == "-Ebmp" || option == "--Ebitmap" ) {
                 exportFlags.winBMP = true;
         } else if (option == "-p" || option == "--preview") {
             showPreview = true;
@@ -551,6 +583,8 @@ int main_mkheightmap (int argc, char *argv[]) {
                 printUsage();
                 return -1;
             }*/
+        } else if (option == "--help") {
+            printUsage();
         } else {
             cerr << "unknown option in argument list: " << option << endl;
             printUsage();
@@ -573,10 +607,6 @@ int main_mkheightmap (int argc, char *argv[]) {
         if( doNormalize )
             heightmap.normalize();
 
-        if (showPreview) {
-            return showPreviewWindow (heightmap, waterLevel);
-        }
-
         #define MKHEIGHTMAP_EXPORT(FLAG,EXT,FUN)                                    \
         if (exportFlags.FLAG) {                                                     \
             const string outputFilename = exportFileNameBase + string(EXT);         \
@@ -591,6 +621,11 @@ int main_mkheightmap (int argc, char *argv[]) {
 
         MKHEIGHTMAP_EXPORT (text, ".txt", exportText );
         MKHEIGHTMAP_EXPORT (winBMP, ".bmp", exportWinBMP );
+
+
+        if (showPreview) {
+            return showPreviewWindow (heightmap, waterLevel);
+        }
 
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
