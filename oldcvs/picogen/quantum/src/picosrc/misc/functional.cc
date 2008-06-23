@@ -643,8 +643,6 @@ case OPERATOR:{                                                  \
                                     sign = -1;
                                 }
                                 std::string number ("");
-                                /// \todo URGENT: If the number is not ended by a blank, then the following char (e.g. ')') will be eaten up.
-                                ///               Consider streaming in a number directly from the code-string.
                                 while (isdigit (tok) || tok=='.') {
                                     if (tok=='.')
                                         ++dotCount;
@@ -652,11 +650,15 @@ case OPERATOR:{                                                  \
                                     if (it == code.end()) {
                                         tok = '\0'; // This will cause nothing but to break this loop.
                                     } else {
-                                        tok = *it++; // Next token.
+                                        tok = nextToken (it, code);//*it++; // Next token.
                                     }
                                 }
+                                --it; // This should fix the bug where the next character after the constant is ignored.
                                 if (dotCount > 1) {
                                     throw functional_general_exeption (std::string ("too many dots in float-number: ") + number);
+                                }
+                                if (number.size()<=0) {
+                                    throw functional_general_exeption (std::string ("invalid number (maybe you only wrote a prefix like '-' without the actual number?): '") + number + std::string ("'"));
                                 }
                                 real_t f;
                                 stringstream ss;
