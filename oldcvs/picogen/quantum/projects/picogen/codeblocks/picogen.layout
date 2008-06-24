@@ -92,7 +92,7 @@
 		<Cursor position="5386" topLine="82" />
 	</File>
 	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="6">
-		<Cursor position="29524" topLine="598" />
+		<Cursor position="22987" topLine="459" />
 	</File>
 	<File name="../../../include/picogen/misc/functional/LayeredNoise2d.h" open="0" top="0" tabpos="2">
 		<Cursor position="1427" topLine="29" />
@@ -158,7 +158,7 @@
 		<Cursor position="4828" topLine="98" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="3">
-		<Cursor position="39515" topLine="641" />
+		<Cursor position="40295" topLine="661" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="1">
 		<Cursor position="8811" topLine="174" />
