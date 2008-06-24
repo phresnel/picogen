@@ -13,6 +13,9 @@
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add option="`sdl-config --libs`" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="picogen" prefix_auto="0" extension_auto="0" />
@@ -25,6 +28,21 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="`sdl-config --libs`" />
+				</Linker>
+			</Target>
+			<Target title="Release-Win32">
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-DPICOGEN_RELEASE" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-lmingw32 -lSDLmain -lSDL" />
 				</Linker>
 			</Target>
 			<Target title="optimized AthlonXP">
@@ -50,11 +68,17 @@
 					<Add option="-funsafe-math-optimizations -ffinite-math-only \" />
 					<Add option="-fdata-sections \" />
 				</Compiler>
+				<Linker>
+					<Add option="`sdl-config --libs`" />
+				</Linker>
 			</Target>
 			<Target title="fast compilation">
 				<Option output="picogen" prefix_auto="0" extension_auto="0" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Linker>
+					<Add option="`sdl-config --libs`" />
+				</Linker>
 			</Target>
 			<Target title="frontend-wx">
 				<Option output="bin/frontend-wx/picogen" prefix_auto="1" extension_auto="1" />
@@ -69,6 +93,7 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="$( wx-config --libs --cpp-flags --cxxflags )" />
+					<Add option="`sdl-config --libs`" />
 				</Linker>
 			</Target>
 		</Build>
@@ -78,7 +103,6 @@
 			<Add directory="../../../include" />
 		</Compiler>
 		<Linker>
-			<Add option="`sdl-config --libs`" />
 			<Add option="-lboost_regex" />
 		</Linker>
 		<Unit filename="../../../include/common.h" />

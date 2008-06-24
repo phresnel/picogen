@@ -546,6 +546,11 @@ static std::string getPicogenSaveDirectory() {
     }
     return dirname;
 }
+#else
+#warning "Non native function 'getPicogenSaveDirectory()' in use."
+static std::string getPicogenSaveDirectory() {
+    return ::std::string ("");
+}
 #endif
 
 int init_sys() {

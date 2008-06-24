@@ -67,11 +67,11 @@ int main (int argc, char *argv[]) {
     extern int main_testscenes (int argc, char *argv[]);
 
     using namespace std;
+    disclaimer();
 
     argc--;
     argv++;
 
-    disclaimer();
     if (argc == 0) {   // check if any argument is given, we need at least one
         usage();
         return -1;

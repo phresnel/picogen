@@ -26,6 +26,29 @@
 #define SHADERCC_GG_H__INCLUDED
 
 #include <string>
+
+#ifndef POSIX
+// Stub for non-posix.
+class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
+    public:
+        typedef ::picogen::graphics::material::abstract::IShader IShader;
+        typedef ::picogen::misc::prim::real real;
+        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+        typedef ::picogen::graphics::image::color::Color Color;
+
+        bool isValid() const {return false;}
+        virtual void shade (
+            Color &color,
+            const Vector3d &normal,
+            const Vector3d &position
+        ) const {}
+
+        ShaderCC_GCC (::std::string fileName, ::std::string shaderName = std::string ("")) {}
+        virtual ~ShaderCC_GCC() {}
+};
+
+#else // #ifndef POSIX
+
 #include <dlfcn.h>
 
 // this shader is highly experimantal
@@ -120,6 +143,6 @@ class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
         }
 
 };
-
+#endif // #ifndef POSIX -- selse
 
 #endif // #ifndef SHADERCC_GG_H__INCLUDED

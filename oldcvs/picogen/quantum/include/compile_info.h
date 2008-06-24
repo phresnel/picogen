@@ -45,11 +45,17 @@
 // target arch
 #if defined(_POSIX_VERSION) or defined(unix) or defined(__unix__) or defined(linux)
 //#define UI_NCURSES
-#define UI_WX
-#define POSIX
-#define ARCH_NAME "POSIX"
+# define UI_WX
+# define POSIX
+# define ARCH_NAME "POSIX"
+#elif defined(_WIN32) or defined(WIN32)
+# define UI_WX
+# ifndef WIN32
+#  define WIN32
+# endif
+# define ARCH_NAME "WIN32"
 #else
-#error "meh, unsupported target architecture ..."
+# error "meh, unsupported target architecture ..."
 #endif
 
 // user interface info

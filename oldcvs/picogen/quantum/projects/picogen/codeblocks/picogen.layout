@@ -5,7 +5,7 @@
 		<Cursor position="1141" topLine="19" />
 	</File>
 	<File name="../../../include/compile_info.h" open="0" top="0" tabpos="26">
-		<Cursor position="2089" topLine="39" />
+		<Cursor position="1949" topLine="40" />
 	</File>
 	<File name="../../../include/picogen.h" open="0" top="0" tabpos="3">
 		<Cursor position="3836" topLine="128" />
@@ -20,7 +20,7 @@
 		<Cursor position="2186" topLine="28" />
 	</File>
 	<File name="../../../include/picogen/experimental/ShaderCC_GCC.h" open="0" top="0" tabpos="0">
-		<Cursor position="1966" topLine="27" />
+		<Cursor position="6279" topLine="125" />
 	</File>
 	<File name="../../../include/picogen/experimental/Snow.h" open="0" top="0" tabpos="11">
 		<Cursor position="2062" topLine="34" />
@@ -125,7 +125,7 @@
 		<Cursor position="4940" topLine="118" />
 	</File>
 	<File name="../../../src/main.cc" open="0" top="0" tabpos="1">
-		<Cursor position="1855" topLine="34" />
+		<Cursor position="3225" topLine="95" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
@@ -158,7 +158,7 @@
 		<Cursor position="4828" topLine="98" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="3">
-		<Cursor position="1095" topLine="28" />
+		<Cursor position="39515" topLine="641" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="1">
 		<Cursor position="8811" topLine="174" />
@@ -166,13 +166,13 @@
 	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="10">
 		<Cursor position="908" topLine="0" />
 	</File>
-	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="4">
-		<Cursor position="22419" topLine="602" />
+	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="2">
+		<Cursor position="12186" topLine="327" />
 	</File>
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
-		<Cursor position="19161" topLine="559" />
+		<Cursor position="41421" topLine="1113" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="2">
-		<Cursor position="1231" topLine="14" />
+		<Cursor position="4631" topLine="134" />
 	</File>
 </CodeBlocks_layout_file>

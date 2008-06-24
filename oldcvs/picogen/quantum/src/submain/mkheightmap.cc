@@ -318,24 +318,32 @@ static void printUsage() {
         << "Invocation of mkheightmap: picogen mkheightmap [options]\n"
         << "In the version of picogen you have installed, the following options are possible:\n"
         << "\n"
-        << "-Lhs / --Lheight-slang <program : string>:   define an input program in height-slang syntax.\n"
-        << "                                             (see http://picogen.org for documentation)\n"
-        << " -En / --ExportName <name : string>:         define a basis-name for exported files. default is \n"
-        << "                                             'mkheightmap-out'\n"
-        << "-Et / --Etext:                               export as plaintext. the format is self-explanatory.\n"
-        << "-Ebmp / --Ebitmap:                           export as standard bmp file.\n"
-        << "-p / --preview:                              show a window with the heightmap.\n"
-        << "-l / --preview-water-level <L : floating point>: set a water level for preview (only useful\n"
-        << "                                             together with --preview)\n"
-        << "-f / --force-overwrite:                      force overwriting of existing files.\n"
-        << "-w / --width <positive integer>:             set target width, in pixels. standard is 512.\n"
-        << "-h / --height <positive integer>:            set target height, in pixels. standard is 512.\n"
-        << "-a / --anti-aliasing <X : positive integer>: enable X*X antialiasing. standard is 1.\n"
-        << "-W / --domain-width <S : floating point>:    scales the input coordinates from [0..1)x[0..1) \n"
-        << "                                             to [0..S)x[0..S)\n"
-        << "-n / --normalize :                           enable normalization, that is, scale the height-\n"
-        << "                                             values linearly so that all values are [0..1)\n"
-        << "--help : show this help"
+        << "-Lhs / --Lheight-slang <program : string>:  -define an input program in \n"
+        << "                                             height-slang syntax.\n"
+        << "                                             (see http://picogen.org)\n"
+        << " -En / --ExportName <name : string>:        -define a basis-name for exported \n"
+        << "                                             files. \n"
+        << "                                             default is 'mkheightmap-out'\n"
+        << "-Et / --Etext:                              -export as plaintext. \n"
+        << "                                             the format is self-explanatory.\n"
+        << "-Ebmp / --Ebitmap:                          -export as standard bmp file.\n"
+        << "-p / --preview:                             -show a window with the heightmap.\n"
+        << "-l / --preview-water-level <L : floating point>:-set a water level for preview\n"
+        << "                                             (only useful together with \n"
+        << "                                              --preview)\n"
+        << "-f / --force-overwrite:                     -force overwrite of existing files.\n"
+        << "-w / --width <positive integer>:            -set target width, in pixels. \n"
+        << "                                             standard is 512.\n"
+        << "-h / --height <positive integer>:           -set target height, in pixels. \n"
+        << "                                             standard is 512.\n"
+        << "-a / --anti-aliasing <X : positive integer>:-enable X*X antialiasing.\n"
+        << "                                             standard is 1.\n"
+        << "-W / --domain-width <S : floating point>:   -scales the input coordinates from \n"
+        << "                                             [0..1)x[0..1) to [0..S)x[0..S)\n"
+        << "-n / --normalize :                          -enable normalization, that is, \n"
+        << "                                             scale the height-values linearly \n"
+        << "                                             so that all values are in [0..1)\n"
+        << "--help : show this help and exit"
     << std::endl;
 }
 
@@ -584,6 +592,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 }*/
             } else if (option == "--help") {
                 printUsage();
+                return 0;
             } else {
                 cerr << "unknown option in argument list: " << option << endl;
                 printUsage();
