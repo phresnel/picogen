@@ -465,6 +465,18 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
 
 
 
+            FUNCTIONAL_RR_IMPLEMENT_FUN_3_BEGIN (Lerp, lerp_)
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const real_t a = (*p1) (parameters);
+                        const real_t b = (*p2) (parameters);
+                        const real_t f = (*p3) (parameters);
+                        return a*(1-f) + b*f; // I find this most natural, since with increasing f one increases slowly from a to b.
+                    }
+            FUNCTIONAL_RR_IMPLEMENT_FUN_3_END (Lerp, lerp_);
+
+
+
             FUNCTIONAL_RR_IMPLEMENT_FUN_3_BEGIN (Call2, call2_)
                 public:
                     virtual real_t operator () (const real_t * const parameters) const {
