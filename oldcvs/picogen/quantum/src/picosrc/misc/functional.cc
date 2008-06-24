@@ -571,6 +571,34 @@ case OPERATOR:{                                                  \
                             }
                             break;
 
+
+                            // lerp
+                            case 'l': {
+                                if ('e' == peekNextToken (it,code)) {
+                                    nextToken (it,code);
+                                    if ('r' == peekNextToken (it,code)) {
+                                        nextToken (it,code);
+                                        if ('p' == peekNextToken (it,code)) {
+                                            nextToken (it,code);
+                                            BasicFunction *a = heightslang_ (setup,root,it,code);
+                                            BasicFunction *b = heightslang_ (setup,root,it,code);
+                                            BasicFunction *f = heightslang_ (setup,root,it,code);
+                                            if (nextToken (it,code) != ')') {
+                                                throw functional_general_exeption ("missing ')'");
+                                            }
+                                            return lerp_ (a, b, f);
+                                        } else {
+                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        }
+                                    } else {
+                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    }
+                                } else {
+                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                }
+                            }
+                            break;
+
                             // trunc
                             case 't': {
                                 if ('r' == peekNextToken (it,code)) {
@@ -650,7 +678,7 @@ case OPERATOR:{                                                  \
                                     if (it == code.end()) {
                                         tok = '\0'; // This will cause nothing but to break this loop.
                                     } else {
-                                        tok = nextToken (it, code);//*it++; // Next token.
+                                        tok = *it++; // Next token.
                                     }
                                 }
                                 --it; // This should fix the bug where the next character after the constant is ignored.
