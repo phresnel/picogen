@@ -26,6 +26,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <map>
+#include <sstream>
+
 #include <picogen/picogen.h>
 #include <picogen/picossdf/picossdf.h>
 
@@ -33,7 +36,7 @@ using namespace std;
 
 
 
-PicoSSDF::PicoSSDF (const string &filename) : filename (filename) {
+PicoSSDF::PicoSSDF (const string &filename, SSDFBackend *backend) : filename (filename), backend (backend) {
     switch (parse()) {
         case OKAY:
             break;
@@ -49,6 +52,7 @@ PicoSSDF::PicoSSDF (const string &filename) : filename (filename) {
 }
 
 
+
 PicoSSDF::parse_err PicoSSDF::push_block (BLOCK_TYPE type) {
     if (blockStack.size() >0) {
         // check if the new block is allowed within the current block
@@ -60,39 +64,205 @@ PicoSSDF::parse_err PicoSSDF::push_block (BLOCK_TYPE type) {
                 ;
             return SYNTAX_ERROR;
         }
+    } else {
+        globalBlockCount++;
+        if (globalBlockCount > 1) {
+            errreason = string ("Only one block allowed at global scope.");
+            return SYNTAX_ERROR;
+        }
     }
     switch (type) {
+        case BLOCK_GLOBAL: {
+            blockStack.push_back (new GlobalBlock());
+            backend->beginGlobalBlock();
+        }
+        break;
         case BLOCK_LIST: {
             blockStack.push_back (new ListBlock());
+            backend->beginListBlock ();
         }
         break;
         case BLOCK_TRI_BIH: {
             blockStack.push_back (new TriBIHBlock());
+            backend->beginTriBIHBlock ();
         }
         break;
     };
-    // pretty print log
-    for (unsigned int u=0; u<blockStack.size(); ++u) printf ("  ");
-    printf ("new block\n");
+
+    if (0) {
+        // pretty print log
+        for (unsigned int u=0; u<blockStack.size(); ++u) printf ("  ");
+        printf ("new block\n");
+    }
 
     return OKAY;
 }
+
+
 
 PicoSSDF::parse_err PicoSSDF::pop_block() {
     if (blockStack.size() <= 0) {
         errreason = string ("invalid closing bracket '}'");
         return SYNTAX_ERROR;
     }
+
     Block *block = blockStack.back();
+    switch (block->type) {
+        case BLOCK_GLOBAL: {
+            backend->endGlobalBlock();
+        }
+        break;
+        case BLOCK_LIST: {
+            backend->endListBlock();
+        }
+        break;
+        case BLOCK_TRI_BIH: {
+            backend->endTriBIHBlock();
+        }
+        break;
+    }
     delete block;
 
     // pretty print log
-    for (unsigned int u=0; u<blockStack.size(); ++u) printf ("  ");
-    printf ("compiling block\n");
+    if (0) {
+        for (unsigned int u=0; u<blockStack.size(); ++u) printf ("  ");
+        printf ("compiling block\n");
+    }
 
     blockStack.pop_back();
     return OKAY;
 }
+
+
+
+static const picogen::common::Vector3d scanVector3d (const std::string &str, unsigned int &index) {
+    using namespace std;
+    using picogen::misc::prim::real;
+    using picogen::misc::geometrics::Vector3d;
+    index = 0;
+    string tmp;
+    real ret [3];
+    for (string::const_iterator it=str.begin(); it != str.end(); it++) {
+        if (*it != ',') {
+            tmp += *it;
+        } else {
+            if (index <= 2) {
+                stringstream ss;
+                ss << tmp;
+                ss >> ret [index];
+            }
+            tmp = "";
+            ++index;
+        }
+    }
+    if (index <= 2) {
+        stringstream ss;
+        ss << tmp;
+        ss >> ret [index];
+    }
+    return Vector3d (ret [0], ret [1], ret [2]);
+}
+
+
+
+PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, char *&line) {
+    using namespace ::std;
+    using ::picogen::misc::prim::real;
+    using ::picogen::misc::geometrics::Vector3d;
+    using ::picogen::graphics::image::color::Color;
+
+    // Step 1: Read Parameters.
+    map<string,string> parameters;
+    string name;
+    string value;
+    bool scanName = true;
+    ++line; // Eat '('.
+    while (true) {
+        if (*line == ':') {
+            if (!scanName) {
+                errreason = string ("Expected either ')' or ';'.");
+                return SYNTAX_ERROR;
+            }
+            scanName = false;
+            ++line;
+            continue;
+        } else if (*line == ';' || *line == ')') {
+            scanName = true;
+            parameters [name] = value;
+            name = value = "";
+            if (*line == ')') {
+                break;
+            }
+            ++line;
+            continue;
+        } else if (*line == '\0') {
+            errreason = string ("Missing ')'.");
+            return SYNTAX_ERROR;
+        } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
+            line++;
+            continue;
+        }
+
+        switch (scanName) {
+            case true:  name  += *line; break;
+            case false: value += *line; break;
+        }
+        ++line;
+    }
+
+
+
+    // Step 2: Validate and Convert Parameters to specific Terminal-Type.
+    switch (type) {
+        // Step 2: sphere (radius:<float>; center:<float>,<float>,<float>; color-rgb:<float>,<float>,<float>)
+        case TERMINAL_SPHERE: {
+            real radius = 1.0;
+            Vector3d center (0.0, 0.0, 0.0);
+            Color color (1.0, 1.0, 1.0);
+            while( !parameters.empty() ) {
+                map<string,string>::iterator it;
+                if ((*parameters.begin()).first == string ("radius")) {
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> radius;
+                } else if ((*parameters.begin()).first == string ("center")) {
+                    unsigned int numScalars;
+                    center = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'center'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'center'");
+                        return SYNTAX_ERROR;
+                    }
+                } else if ((*parameters.begin()).first == string ("color-rgb")) {
+                    unsigned int numScalars;
+                    Vector3d col_vec = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'color-rgb'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'color-rgb'");
+                        return SYNTAX_ERROR;
+                    }
+                    color.from_rgb (col_vec [0], col_vec [1], col_vec [2] );
+                } else {
+                    errreason = string ("unknown parameter to sphere: '") + string ((*parameters.begin()).first) + string ("'");
+                    return SYNTAX_ERROR;
+                }
+                parameters.erase (parameters.begin());
+            }
+            backend->addSphereTerminal (radius, center, color);
+            break;
+        }
+    }
+
+    return OKAY;
+}
+
+
 
 PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
     //return SYNTAX_ERROR;
@@ -130,7 +300,7 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
         } else if (!strcmp ("tri-bih", block_name)) {
             type = BLOCK_TRI_BIH;
         } else {
-            errreason = string ("unknown block type");
+            errreason = string ("unknown block type '") + string (block_name) + string ("'");
             return SYNTAX_ERROR;
         }
         // push
@@ -149,8 +319,25 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
         if (OKAY != err)
             return err;
         line++;
+    } else if ('(' == *line) {
+        TERMINAL_TYPE type;
+        if (!strcmp ("sphere", block_name)) {
+            type = TERMINAL_SPHERE;
+        } else {
+            errreason = string ("unknown terminal type '") + string (block_name) + string ("'");
+            return SYNTAX_ERROR;
+        }
+        if (!blockStack.back()->isTerminalAllowed (type)) {
+            errreason = string ("terminal type '") + terminalTypeAsString (type) + string ("' not allowed within block of type '")
+                + blockTypeAsString (blockStack.back()->type) + string ("'");
+            return SYNTAX_ERROR;
+        }
+        parse_err err = read_terminal (type, line);
+        if (OKAY != err)
+            return err;
+        line++;
     } else {
-        // a) this intended tp be a damn fast text file format
+        // a) this is intended to be a damn fast text file format
         // b) i allow blank lines
         // c) but i do not allow other format freeness
         // ca) after a block declarator there must be [blank]*'{'
@@ -169,7 +356,10 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
     return OKAY;
 }
 
+
+
 PicoSSDF::parse_err PicoSSDF::parse() {
+
     // open file, check if okay
     FILE *fin = fopen (filename.c_str(), "r");
     if (0 == fin) {
@@ -182,6 +372,8 @@ PicoSSDF::parse_err PicoSSDF::parse() {
     errreason = string ("");
     // parse
     linenumber = 0;
+    globalBlockCount = 0; // The number of blocks in the implicit global-block
+    push_block (BLOCK_GLOBAL);
     while (1) {
         // get next line
         char curr[1024];
@@ -207,11 +399,13 @@ PicoSSDF::parse_err PicoSSDF::parse() {
             break;
         }
     }
+    pop_block();
 
     // clean up
     fclose (fin);
     return retcode;
 }
+
 
 
 #if PICOSSDF_CC_STANDALONE // to be used when testing standalone
