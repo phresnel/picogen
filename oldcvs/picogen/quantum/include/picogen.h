@@ -138,11 +138,11 @@ namespace picogen {
         } // namespace prim {
 
         namespace constants {
-            typedef enum side {
+            typedef enum {
                 inside = -1,
                 noside = 0,
                 outside = 1
-            };
+            } side;
             static const prim::real epsilon = 0.0001;
             static const prim::real real_max = FLT_MAX;
             static const prim::real real_min = FLT_MIN;

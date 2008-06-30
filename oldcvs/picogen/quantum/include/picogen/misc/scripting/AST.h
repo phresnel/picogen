@@ -33,10 +33,11 @@
 
 // the following code is clearly inspired by the kaleidoscope tutorial on llvm.org
 
-typedef enum Datatype {
+typedef enum {
     int_type,
     float_type
-};
+} Datatype;
+
 
 class ExprAST;
 class FloatExprAST;
@@ -247,7 +248,7 @@ class DoWhileLoopAST : public ExprAST {
 
 class FunProtoAST : public ExprAST {
     public:
-        typedef struct Argument {
+        struct Argument {
             const Datatype type;
             const std::string name;
             Argument (Datatype type, const std::string &name) : type (type), name (name) {}

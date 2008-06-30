@@ -47,7 +47,7 @@ namespace picogen {
                     Vector3d x;
                     real     r, L_e;
                     Color    color;
-                    IBRDF *brdf;
+                    const IBRDF *brdf;
 
                 public:
                     Sphere();
@@ -61,7 +61,7 @@ namespace picogen {
                     void     setEmittance (real e);
                     real     getEmittance() const;
                     void     setBRDF (const IBRDF* brdf);
-                    IBRDF*   getBRDF() const;
+                    const IBRDF*   getBRDF() const;
 
                     virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
             };

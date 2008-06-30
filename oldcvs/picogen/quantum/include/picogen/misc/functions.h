@@ -75,11 +75,11 @@ namespace picogen {
                 class Sine : public abstract::vector_to_scalar, public abstract::scalar_to_scalar, public abstract::uv_to_scalar {
                         typedef prim::real real;
                     public:
-                        typedef enum mode {
+                        typedef enum {
                             normal = 0,
                             ridged,
                             lava
-                        };
+                        } mode;
                     private:
                         mode m_mode;
                     public:
@@ -147,10 +147,10 @@ namespace picogen {
 
                 class Elias_one : public abstract::vector_to_scalar {
                     public:
-                        typedef enum mode {
+                        typedef enum {
                             normal = 0,
                             ridged
-                        };
+                        } mode;
                     private:
                         typedef prim::real real;
                         int m_num_planes;
@@ -231,11 +231,11 @@ namespace picogen {
                 class PerlinNoise_Elias : public abstract::vector_to_scalar, public abstract::scalar_to_scalar, public abstract::uv_to_scalar {
                         typedef prim::real real;
                     public:
-                        typedef enum mode {
+                        typedef enum {
                             normal = 0,
                             ridged,
                             lava
-                        };
+                        } mode;
                     private:
 
 
@@ -451,16 +451,16 @@ namespace picogen {
                             public abstract::uv_to_scalar {
                         typedef prim::real real;
                     public:
-                        typedef enum mode {
+                        typedef enum {
                             normal = 0,
                             ridged,
                             ridged_2,
                             lava
-                        };
-                        typedef enum mod {
+                        } mode;
+                        typedef enum {
                             mod_normal = 0,
                             mod_heterofractal
-                        };
+                        }  mod;
                     private:
 
                         inline static float ease_interpolate (float p, float q, float x) {

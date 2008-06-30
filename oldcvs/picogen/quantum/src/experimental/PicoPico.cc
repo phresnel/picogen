@@ -58,16 +58,16 @@ using namespace boost;
 
 
 
-typedef enum TokenType {
+typedef enum {
     int_token,
     float_token,
     id_token,
     keyword_token,
     other_token,
     omitted_token
-};
+} TokenType;
 
-typedef struct TokenDescriptor {
+struct TokenDescriptor {
     const TokenType tokenType;
     const std::string name;
     const boost::regex regex;

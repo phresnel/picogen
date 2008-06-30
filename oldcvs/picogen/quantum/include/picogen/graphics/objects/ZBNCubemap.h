@@ -96,14 +96,14 @@ namespace picogen {
 
             class ZBNCubemap : public ::picogen::graphics::objects::abstract::IIntersectable {
                 public:
-                    typedef enum face_t {
+                    typedef enum {
                         x_negative=0,
                         x_positive=1,
                         y_negative=2,
                         y_positive=3,
                         z_negative=4,
                         z_positive=5
-                    };
+                    } face_t;
 
                 private:
                     typedef ::picogen::misc::prim::real real;

@@ -70,6 +70,7 @@ namespace picogen {
 
 
             void LinearList::flush() {
+                // TODO URGENT!!!!one delete also the objects themselves
                 m_list.clear();
             }
 

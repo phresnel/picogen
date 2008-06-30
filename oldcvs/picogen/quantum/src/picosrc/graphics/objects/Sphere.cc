@@ -39,7 +39,7 @@ namespace picogen {
         namespace objects {
 
             Sphere::Sphere() :
-                    x (0.0,0.0,0.0), r (1.0),
+                    x (0.0,0.0,0.0), r (1.0), L_e (0.0),
                     color (1.0,1.0,1.0),
                     brdf (NULL) {
             }
@@ -100,7 +100,7 @@ namespace picogen {
 
 
 
-            IBRDF* Sphere::getBRDF() const {
+            const IBRDF* Sphere::getBRDF() const {
                 return brdf;
             }
 
