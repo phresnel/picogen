@@ -26,10 +26,28 @@
 #include <iostream>
 #include <vector>
 
+class SSDFBackend {
+    public:
+        virtual int beginGlobalBlock () = 0;
+        virtual int endGlobalBlock () = 0;
+        virtual int beginListBlock () = 0;
+        virtual int endListBlock () = 0;
+        virtual int beginTriBIHBlock () = 0;
+        virtual int endTriBIHBlock () = 0;
+
+        virtual int addSphereTerminal (
+            ::picogen::misc::prim::real radius,
+            const ::picogen::misc::geometrics::Vector3d &center,
+            const ::picogen::graphics::image::color::Color &color
+        ) = 0;
+};
+
+
+
 class PicoSSDF {
     private:
 
-        // --- data for printing verbose error messages -----------------
+        // --- syntax stuff ---------------------------------------------
         std::string filename;
         std::string errcurrentline; // only used on error
         std::string errreason;      // ditto
@@ -39,16 +57,53 @@ class PicoSSDF {
             FILE_NOT_FOUND,
             SYNTAX_ERROR
         };
+        unsigned int globalBlockCount;
         // --------------------------------------------------------------
+
+
+
+        // --- communication --------------------------------------------
+        SSDFBackend *backend;
+        // --------------------------------------------------------------
+
+
+
+        // --- definition of terminal types -----------------------------
+        enum TERMINAL_TYPE {
+            TERMINAL_SPHERE
+        };
+        static const inline std::string terminalTypeAsString (TERMINAL_TYPE type) {
+            switch (type) {
+                case TERMINAL_SPHERE:
+                    return std::string ("sphere");
+            };
+            return std::string ("<unknown>");
+        }
+
+        class Terminal {
+            public:
+                const TERMINAL_TYPE type;
+                explicit Terminal (TERMINAL_TYPE type) : type (type) {};
+        };
+        class SphereTerminal : public Terminal {
+            public:
+                explicit SphereTerminal () : Terminal (TERMINAL_SPHERE) {};
+        };
+        parse_err read_terminal (TERMINAL_TYPE, char *&line);
+        // --------------------------------------------------------------
+
 
 
         // --- definition of blocks -------------------------------------
         enum BLOCK_TYPE {
             BLOCK_LIST,
-            BLOCK_TRI_BIH
+            BLOCK_TRI_BIH,
+            BLOCK_GLOBAL
         };
         static const inline std::string blockTypeAsString (BLOCK_TYPE type) {
             switch (type) {
+                case BLOCK_GLOBAL:
+                    return std::string ("global");
                 case BLOCK_LIST:
                     return std::string ("list");
                 case BLOCK_TRI_BIH:
@@ -60,8 +115,8 @@ class PicoSSDF {
         class Block {
             public:
                 const BLOCK_TYPE type;
-                Block (BLOCK_TYPE type) : type (type) {};
-                Block (const Block &block) : type (block.type) {
+                explicit Block (BLOCK_TYPE type) : type (type) {};
+                explicit Block (const Block &block) : type (block.type) {
                     //const_cast<BLOCK_TYPE&>(type) = block.type;
                 }
                 const Block &operator = (const Block &block) {
@@ -71,23 +126,37 @@ class PicoSSDF {
                 virtual bool isBlockAllowed (BLOCK_TYPE) {
                     return true;
                 }
+                virtual bool isTerminalAllowed (TERMINAL_TYPE) {
+                    return true;
+                }
+        };
+        class GlobalBlock : public Block {
+            public:
+                explicit GlobalBlock() : Block (BLOCK_GLOBAL) {}
+                virtual bool isTerminalAllowed (TERMINAL_TYPE) {
+                    return false;
+                }
         };
         class ListBlock : public Block {
             public:
-                ListBlock() : Block (BLOCK_LIST) {}
+                explicit ListBlock() : Block (BLOCK_LIST) {}
         };
         class TriBIHBlock : public Block {
             public:
-                TriBIHBlock() : Block (BLOCK_TRI_BIH) {}
+                explicit TriBIHBlock() : Block (BLOCK_TRI_BIH) {}
                 virtual bool isBlockAllowed (BLOCK_TYPE) {
                     return false;
+                }
+                virtual bool isTerminalAllowed (TERMINAL_TYPE type) {
+                    return false; //type==TERMINAL_TRIANGLE;
                 }
         };
         std::vector<Block*> blockStack;
         parse_err push_block (BLOCK_TYPE);
         parse_err pop_block();
-
         // --------------------------------------------------------------
+
+
 
 
         // ---- parsing functions ---------------------------------------
@@ -100,7 +169,7 @@ class PicoSSDF {
     public:
 
 
-        PicoSSDF (const std::string &filename);
+        PicoSSDF (const std::string &filename, SSDFBackend *backend);
 
         // ---- exceptions ----------------------------------------------
         class exception_file_not_found {
