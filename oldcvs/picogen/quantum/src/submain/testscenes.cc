@@ -668,8 +668,11 @@ int main_testscenes (int argc, char *argv[]) {
     static CornellOpenSky cornellOpenSky;
     static Clouds clouds;
     vector<TestScene*> scenes;
+
+    #ifndef PICOGEN_RELEASE
     scenes.push_back (&clouds);
     scenes.push_back (&pureCornell);
+    #endif
     scenes.push_back (&cornellOpenSky);
 
     TestScene* grindScene = NULL;
