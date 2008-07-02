@@ -188,6 +188,10 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, char *&line) {
             continue;
         } else if (*line == ';' || *line == ')') {
             scanName = true;
+            if (parameters.end() != parameters.find (name)) {
+                errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
+                return SYNTAX_ERROR;
+            }
             parameters [name] = value;
             name = value = "";
             if (*line == ')') {
@@ -220,7 +224,6 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, char *&line) {
             Vector3d center (0.0, 0.0, 0.0);
             Color color (1.0, 1.0, 1.0);
             while( !parameters.empty() ) {
-                map<string,string>::iterator it;
                 if ((*parameters.begin()).first == string ("radius")) {
                     stringstream ss;
                     ss << (*parameters.begin()).second;
@@ -258,6 +261,103 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, char *&line) {
             break;
         }
     }
+
+    return OKAY;
+}
+
+
+
+PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, char *&line) {
+    using namespace ::std;
+    using ::picogen::misc::prim::real;
+    using ::picogen::misc::geometrics::Vector3d;
+    using ::picogen::graphics::image::color::Color;
+
+    string type;
+    ++line; // Eat '='
+    while (*line != '\0' && (*line == ' ' || *line == '\t')) // Eat whitespace.
+        ++line;
+
+    while (*line != '\0' && *line != ' ' && *line != '\t' && *line != '(') {
+        type += *line;
+        ++line;
+    }
+
+
+    // TODO: Below, the 'Read Parameters', is redundant. Better write a function "read-parameters" and stuff
+    // Read Parameters.
+    map<string,string> parameters;
+    string name;
+    string value;
+    bool scanName = true;
+    if (*line == '(') { // Parameters are optional.
+        ++line; // Eat '('.
+        while (true) {
+            if (*line == ':') {
+                if (!scanName) {
+                    errreason = string ("Expected either ')' or ';'.");
+                    return SYNTAX_ERROR;
+                }
+                scanName = false;
+                ++line;
+                continue;
+            } else if (*line == ';' || *line == ')') {
+                scanName = true;
+                if (parameters.end() != parameters.find (name)) {
+                    errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
+                    return SYNTAX_ERROR;
+                }
+                parameters [name] = value;
+                name = value = "";
+                if (*line == ')') {
+                    break;
+                }
+                ++line;
+                continue;
+            } else if (*line == '\0') {
+                errreason = string ("Missing ')'.");
+                return SYNTAX_ERROR;
+            } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
+                line++;
+                continue;
+            }
+
+            switch (scanName) {
+                case true:  name  += *line; break;
+                case false: value += *line; break;
+            }
+            ++line;
+        }
+    }
+
+    // Set State.
+    switch (stateType) {
+        case STATE_MATERIAL:
+            if ("lambertian" == type || "specular" == type) {
+                real reflectance = 1.0;
+                while( !parameters.empty() ) {
+                    if ((*parameters.begin()).first == string ("reflectance")) {
+                        stringstream ss;
+                        ss << (*parameters.begin()).second;
+                        ss >> reflectance;
+                        cout << "<<" << reflectance << ">>" << endl;
+                    } else {
+                        errreason = string ("unknown parameter to ") + type + string ("-material: '") + string ((*parameters.begin()).first) + string ("'");
+                        return SYNTAX_ERROR;
+                    }
+                    parameters.erase (parameters.begin ());
+                }
+                if ("lambertian" == type) {
+                    backend->setBRDFToLambertian (reflectance);
+                } else {
+                    backend->setBRDFToSpecular (reflectance);
+                }
+            } else {
+                errreason = string ("material '") + type + string ("' unknown");
+                return SYNTAX_ERROR;
+            }
+            break;
+    };
 
     return OKAY;
 }
@@ -333,6 +433,18 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
             return SYNTAX_ERROR;
         }
         parse_err err = read_terminal (type, line);
+        if (OKAY != err)
+            return err;
+        line++;
+    } else if ('=' == *line) {
+        STATE_TYPE type;
+        if (!strcmp ("brdf", block_name)) {
+            type = STATE_MATERIAL;
+        } else {
+            errreason = string ("unknown state type '") + string (block_name) + string ("'");
+            return SYNTAX_ERROR;
+        }
+        parse_err err = read_state (type, line);
         if (OKAY != err)
             return err;
         line++;
