@@ -45,10 +45,10 @@ namespace picogen {
 
                 private:
 
-                    typedef struct SnowSphere {
+                    typedef struct {
                         real minDistance, maxDistance;
                         PerlinNoise snowMap;
-                    };
+                    } SnowSphere;
                     unsigned int numSnowSpheres;
                     SnowSphere *snowSpheres;
 
