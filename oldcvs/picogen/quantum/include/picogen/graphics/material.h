@@ -78,4 +78,9 @@ namespace picogen {
     } // namespace graphics
 }//namespace picogen
 
+
+// BRDFs
+#include "brdf/Lambertian.h"
+#include "brdf/Specular.h"
+
 #endif /* _MATERIAL_H */
