@@ -27,7 +27,9 @@
 #include <vector>
 
 class SSDFBackend {
+
     public:
+        // Blocks.
         virtual int beginGlobalBlock () = 0;
         virtual int endGlobalBlock () = 0;
         virtual int beginListBlock () = 0;
@@ -35,6 +37,11 @@ class SSDFBackend {
         virtual int beginTriBIHBlock () = 0;
         virtual int endTriBIHBlock () = 0;
 
+        // State setters.
+        virtual int setBRDFToLambertian (::picogen::misc::prim::real reflectance) = 0;
+        virtual int setBRDFToSpecular (::picogen::misc::prim::real reflectance) = 0;
+
+        // Object adders.
         virtual int addSphereTerminal (
             ::picogen::misc::prim::real radius,
             const ::picogen::misc::geometrics::Vector3d &center,
@@ -68,10 +75,26 @@ class PicoSSDF {
 
 
 
+        // --- definition of state types --------------------------------
+        typedef enum {
+            STATE_MATERIAL
+        } STATE_TYPE;
+        static const inline std::string stateTypeAsString (STATE_TYPE type) {
+            switch (type) {
+                case STATE_MATERIAL:
+                    return std::string ("material");
+            };
+            return std::string ("<unknown>");
+        }
+        parse_err read_state (STATE_TYPE, char *&line);
+        // --------------------------------------------------------------
+
+
+
         // --- definition of terminal types -----------------------------
-        enum TERMINAL_TYPE {
+        typedef enum {
             TERMINAL_SPHERE
-        };
+        } TERMINAL_TYPE;
         static const inline std::string terminalTypeAsString (TERMINAL_TYPE type) {
             switch (type) {
                 case TERMINAL_SPHERE:
@@ -95,11 +118,11 @@ class PicoSSDF {
 
 
         // --- definition of blocks -------------------------------------
-        enum BLOCK_TYPE {
+        typedef enum {
             BLOCK_LIST,
             BLOCK_TRI_BIH,
             BLOCK_GLOBAL
-        };
+        } BLOCK_TYPE;
         static const inline std::string blockTypeAsString (BLOCK_TYPE type) {
             switch (type) {
                 case BLOCK_GLOBAL:
