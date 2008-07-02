@@ -113,6 +113,8 @@
 		<Unit filename="../../../include/picogen/experimental/Rain.h" />
 		<Unit filename="../../../include/picogen/experimental/ShaderCC_GCC.h" />
 		<Unit filename="../../../include/picogen/experimental/Snow.h" />
+		<Unit filename="../../../include/picogen/graphics/brdf/Lambertian.h" />
+		<Unit filename="../../../include/picogen/graphics/brdf/Specular.h" />
 		<Unit filename="../../../include/picogen/graphics/cameras.h" />
 		<Unit filename="../../../include/picogen/graphics/image.h" />
 		<Unit filename="../../../include/picogen/graphics/material.h" />
@@ -150,6 +152,8 @@
 		<Unit filename="../../../src/picosrc/frontend/app-main.cpp">
 			<Option target="frontend-wx" />
 		</Unit>
+		<Unit filename="../../../src/picosrc/graphics/brdf/Lambertian.cc" />
+		<Unit filename="../../../src/picosrc/graphics/brdf/Specular.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/AABox.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/LinearList.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Preetham.cc" />
@@ -164,6 +168,7 @@
 		<Unit filename="../../../src/picossdf/picossdf.cc" />
 		<Unit filename="../../../src/submain/mkheightmap.cc" />
 		<Unit filename="../../../src/submain/seb.cc" />
+		<Unit filename="../../../src/submain/ssdf.cc" />
 		<Unit filename="../../../src/submain/testscenes.cc" />
 		<Extensions>
 			<envvars />

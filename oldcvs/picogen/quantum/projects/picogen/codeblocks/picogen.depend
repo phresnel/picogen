@@ -161,7 +161,9 @@
 
 1212059100 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
 
-1212060467 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
+1214924562 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
+	"brdf/Lambertian.h"
+	"brdf/Specular.h"
 
 1212059140 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
 	"objects/Snow.h"
@@ -242,7 +244,7 @@
 1212059190 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
 	"picogen.h"
 
-1214845346 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+1214928952 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
@@ -372,7 +374,7 @@
 	<sstream>
 	<picogen/misc/functional/LayeredNoise2d.h>
 
-1214869650 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1214926681 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<vector>
 	<SDL/SDL.h>
@@ -380,4 +382,14 @@
 	<picogen/picossdf/picossdf.h>
 	<picogen/graphics/objects/Instance.h>
 	<picogen/graphics/objects/templates/TriBIH.h>
+
+1214923869 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Lambertian.h
+
+1214924423 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Lambertian.cc
+	<picogen/picogen.h>
+
+1214924408 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular.h
+
+1214924520 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular.cc
+	<picogen/picogen.h>
 
