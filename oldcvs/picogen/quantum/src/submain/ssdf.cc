@@ -88,51 +88,6 @@ static const ConstantShader  blue (picogen::graphics::image::color::Color (0.3, 
 static const ConstantShader  white (picogen::graphics::image::color::Color (1.0, 1.0, 1.0));
 
 
-struct Lambertian : public IBRDF {
-    const real mirror;
-
-    Lambertian() : mirror (0) {}
-    Lambertian (real m) : mirror (m) {}
-
-    virtual bool randomSample (
-        param_out (real,brdf),
-        param_out (real,p),
-        param_out (bool,specular),
-        param_out (Ray,r_out),
-        param_in (Ray,r_in),
-        param_in (Vector3d,N)
-    ) const {
-        using picogen::misc::constants::pi;
-        /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
-         return false;*/
-        r_out.x() = r_in.x();
-        p = 1.0;
-        brdf = 1;
-        if ( ( (rand() %10000) /10000.0) < mirror) {
-            r_out.w() = r_in.w() - N.normal() *2* (r_in.w() *N.normal());
-
-            p = fabs (N.normal() *r_out.w().normal());
-            brdf = 1.0;
-            specular = true;
-        } else {
-            do {
-                r_out.w() = Vector3d (
-                                static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                                static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                                static_cast<real> (rand() % 20000) / 10000.0 - 1.0
-                            );
-            } while (r_out.w().lengthSq() >1 || N*r_out.w() <0.0);
-
-            r_out.w() = r_out.w().normal();
-            p = (1.0-mirror) / (2.0*pi);// / xrt::constants::pi;
-            brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
-            specular = false;
-        }
-        return true;
-    }
-};
-
-
 template<class t_surface>
 void
 draw (
@@ -253,6 +208,8 @@ class SSDFScene : public Scene, public SSDFBackend {
         SceneStack sceneStack;
 
         IScene *sceneRoot;
+        IBRDF* currentBRDF;
+
         ::std::vector<IBRDF*> brdfStack;
 
         PicoSSDF ssdf;
@@ -297,21 +254,27 @@ class SSDFScene : public Scene, public SSDFBackend {
             return 0;
         }
 
+
+        virtual int setBRDFToLambertian (::picogen::misc::prim::real reflectance) {
+            currentBRDF = new ::picogen::graphics::material::brdf::Lambertian(reflectance);
+            brdfStack.push_back (currentBRDF);
+            return 0;
+        }
+        virtual int setBRDFToSpecular (::picogen::misc::prim::real reflectance) {
+            currentBRDF = new ::picogen::graphics::material::brdf::Specular(reflectance);
+            brdfStack.push_back (currentBRDF);
+            return 0;
+        }
+
         virtual int addSphereTerminal (
             ::picogen::misc::prim::real radius,
             const ::picogen::misc::geometrics::Vector3d &center,
             const ::picogen::graphics::image::color::Color &color
         ) {
             using namespace ::std;
-            /*using ::picogen::misc::prim::real;
-            real r,g,b;
-            color.to_rgb (r, g, b);
-            std::cout << "sphere of radius " << radius
-            << " with center at {" << center [0] << "," << center [1] << "," << center [2] << "}"
-            << " and color rgb{" << r << "," << g << "," << b << "}"
-            << std::endl;*/
-            IBRDF *brdf = new Lambertian(0.0);
-            brdfStack.push_back (brdf);
+            using namespace ::picogen::graphics::material::brdf;
+
+
 
             switch (currentScene.type) {
                 case LINEAR_LIST:{
@@ -319,7 +282,7 @@ class SSDFScene : public Scene, public SSDFBackend {
                     sphere->setColor (color);
                     sphere->setRadius (radius);
                     sphere->setPosition (center);
-                    sphere->setBRDF (brdf);
+                    sphere->setBRDF (currentBRDF);
                     currentScene.linearList->insert (sphere);
                     // TODO URGENT !!!!one1 --> see LinearList.cc
                 }break;
@@ -329,7 +292,8 @@ class SSDFScene : public Scene, public SSDFBackend {
         // --------------------------------------------------------------
 
 
-        explicit SSDFScene(const std::string &filename) : sceneRoot(0), ssdf(filename, this) {
+        explicit SSDFScene(const std::string &filename)
+        : sceneRoot(0), currentBRDF(0), ssdf(filename, this) {
             box.enableOutside (false);
         }
 
@@ -650,7 +614,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (800, 800, grindScene);
+        return grind (320, 320, grindScene);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
