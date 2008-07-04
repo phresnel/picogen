@@ -22,6 +22,8 @@
  */
 
 #include <iostream>
+#include <picogen/picogen.h>
+#include <picogen/compile_info.h>
 
 
 static void disclaimer() {
@@ -68,6 +70,17 @@ int main (int argc, char *argv[]) {
     extern int main_ssdf (int argc, char *argv[]);
 
     using namespace std;
+
+    std::cout << "picogen "
+              << XRT_VERSION_MAJOR << "."
+              << XRT_VERSION_MINOR << "."
+              << XRT_VERSION_PATCH;
+#ifdef XRT_DEBUG
+    std::cout << " debug-build";
+#else
+#endif
+    std::cout << std::endl;
+
     disclaimer();
 
     argc--;
