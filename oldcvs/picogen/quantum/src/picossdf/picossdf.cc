@@ -31,6 +31,9 @@
 
 #include <picogen/picogen.h>
 #include <picogen/picossdf/picossdf.h>
+//#include <picogen/experimental/PicoPico.h>
+#include <picogen/misc/scripting/nano-c.h>
+
 
 using namespace std;
 
@@ -165,7 +168,7 @@ static const picogen::common::Vector3d scanVector3d (const std::string &str, uns
 
 
 
-PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, char *&line) {
+PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&line) {
     using namespace ::std;
     using ::picogen::misc::prim::real;
     using ::picogen::misc::geometrics::Vector3d;
@@ -258,8 +261,81 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, char *&line) {
                 parameters.erase (parameters.begin());
             }
             backend->addSphereTerminal (radius, center, color);
-            break;
-        }
+        } break;
+
+        case TERMINAL_PREETHAM: {
+            while( !parameters.empty() ) {
+                if ((*parameters.begin()).first == string ("turbidity")) {
+                    real tmp;
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> tmp;
+                    backend->preethamSetTurbidity (tmp);
+                } else if ((*parameters.begin()).first == string ("sun-solid-angle-factor")) {
+                    real tmp;
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> tmp;
+                    backend->preethamSetSunSolidAngleFactor (tmp);
+                } else if ((*parameters.begin()).first == string ("direction")) {
+                    unsigned int numScalars;
+                    const Vector3d direction = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    backend->preethamSetSunDirection (direction);
+                } else if ((*parameters.begin()).first == string ("color-filter-rgb")) {
+                    unsigned int numScalars;
+                    Vector3d col_vec = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'color-filter-rgb'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'color-filter-rgb'");
+                        return SYNTAX_ERROR;
+                    }
+                    Color color;
+                    color.from_rgb (col_vec [0], col_vec [1], col_vec [2]);
+                    backend->preethamSetColorFilter (color);
+                } else if ((*parameters.begin()).first == string ("sun-color-rgb")) {
+                    unsigned int numScalars;
+                    Vector3d col_vec = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'sun-color-rgb'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'sun-color-rgb'");
+                        return SYNTAX_ERROR;
+                    }
+                    Color color;
+                    color.from_rgb (col_vec [0], col_vec [1], col_vec [2] );
+                    backend->preethamSetSunColor (color);
+                } else {
+                    errreason = string ("unknown parameter to sunsky: '") + string ((*parameters.begin()).first) + string ("'");
+                    return SYNTAX_ERROR;
+                }
+                parameters.erase (parameters.begin());
+            }
+        } break;
+        /*case TERMINAL_PREETHAM_SET_TURBIDITY: {
+        } break;
+        case TERMINAL_PREETHAM_SET_SUN_SOLID_ANGLE_FACTOR: {
+        } break;
+        case TERMINAL_PREETHAM_SET_COLOR_FILTER: {
+        } break;
+        case TERMINAL_PREETHAM_SET_SUN_COLOR: {
+        } break;
+        case TERMINAL_PREETHAM_SET_SUN_DIRECTION: {
+        } break;
+        case TERMINAL_PREETHAM_ENABLE_FOG_HACK: {
+        } break;*/
     }
 
     return OKAY;
@@ -267,7 +343,7 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, char *&line) {
 
 
 
-PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, char *&line) {
+PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, const char *&line) {
     using namespace ::std;
     using ::picogen::misc::prim::real;
     using ::picogen::misc::geometrics::Vector3d;
@@ -332,7 +408,7 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, char *&line) {
 
     // Set State.
     switch (stateType) {
-        case STATE_MATERIAL:
+        case STATE_MATERIAL:{
             if ("lambertian" == type || "specular" == type) {
                 real reflectance = 1.0;
                 while( !parameters.empty() ) {
@@ -340,7 +416,6 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, char *&line) {
                         stringstream ss;
                         ss << (*parameters.begin()).second;
                         ss >> reflectance;
-                        cout << "<<" << reflectance << ">>" << endl;
                     } else {
                         errreason = string ("unknown parameter to ") + type + string ("-material: '") + string ((*parameters.begin()).first) + string ("'");
                         return SYNTAX_ERROR;
@@ -356,7 +431,7 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, char *&line) {
                 errreason = string ("material '") + type + string ("' unknown");
                 return SYNTAX_ERROR;
             }
-            break;
+        } break;
     };
 
     return OKAY;
@@ -364,7 +439,7 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, char *&line) {
 
 
 
-PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
+PicoSSDF::parse_err PicoSSDF::interpretLine (const char *line) {
     //return SYNTAX_ERROR;
     // skip whitespace
     while (isblank (*line)) ++line;
@@ -423,7 +498,22 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
         TERMINAL_TYPE type;
         if (!strcmp ("sphere", block_name)) {
             type = TERMINAL_SPHERE;
-        } else {
+        } else if (!strcmp ("sunsky", block_name)) {
+            type = TERMINAL_PREETHAM;
+        }
+        /*else if (!strcmp ("preetham-set-turbidity", block_name)) {
+            type = TERMINAL_PREETHAM_SET_TURBIDITY;
+        } else if (!strcmp ("preetham-set-sun-solid-angle-factor", block_name)) {
+            type = TERMINAL_PREETHAM_SET_SUN_SOLID_ANGLE_FACTOR;
+        } else if (!strcmp ("preetham-set-color-filter", block_name)) {
+            type = TERMINAL_PREETHAM_SET_COLOR_FILTER;
+        } else if (!strcmp ("preetham-set-sun-color", block_name)) {
+            type = TERMINAL_PREETHAM_SET_SUN_COLOR;
+        } else if (!strcmp ("preetham-set-sun-direction", block_name)) {
+            type = TERMINAL_PREETHAM_SET_SUN_DIRECTION;
+        } else if (!strcmp ("preetham-enable-fog-hack", block_name)) {
+            type = TERMINAL_PREETHAM_ENABLE_FOG_HACK;
+        }*/ else {
             errreason = string ("unknown terminal type '") + string (block_name) + string ("'");
             return SYNTAX_ERROR;
         }
@@ -470,6 +560,24 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (char *line) {
 
 
 
+PicoSSDF::parse_err PicoSSDF::interpretCode (const std::string &code, string::const_iterator &it) {
+    /*using namespace std;
+    for (; it!=code.end(); ++it) {
+    }*/
+    std::string curr;
+    picogen::NanoC nanoC (code);
+    while (nanoC.next (curr)) {
+        parse_err err = interpretLine (curr.c_str());
+        if (err != OKAY) {
+            errcurrentline = string (curr);
+            return err;
+        }
+    }
+    return OKAY;
+}
+
+
+
 PicoSSDF::parse_err PicoSSDF::parse() {
 
     // open file, check if okay
@@ -485,6 +593,7 @@ PicoSSDF::parse_err PicoSSDF::parse() {
     // parse
     linenumber = 0;
     globalBlockCount = 0; // The number of blocks in the implicit global-block
+    backend->initialize();
     push_block (BLOCK_GLOBAL);
     while (1) {
         // get next line
@@ -499,22 +608,45 @@ PicoSSDF::parse_err PicoSSDF::parse() {
             if (curr[length-1] == '\n')
                 curr[length-1] = '\0';
         }
-
-        // interpret current line
-        parse_err err = interpretLine (curr);
-        if (err != OKAY) {
-            retcode = err;
-            errcurrentline = string (curr);
-            break;
+        // check if we have inline-code
+        char *c = curr;
+        while (*c != '\0' && (*c == ' ' || *c == '\t')) {
+            ++c;
+        }
+        if (c[0] != '\0' && c[0] == '{' && c[1] == '{' ) {
+            // --> Found "{{"
+            string code ("");
+            while (!feof (fin)) {
+                char c1 = fgetc (fin);
+                char c2 = fgetc (fin); // Peek forward.
+                if (c1 == '}' && c2 == '}') {
+                    break;
+                } else {
+                    fseek (fin, -1, SEEK_CUR);
+                    code += c1;
+                }
+            }
+            string::const_iterator it = code.begin();
+            interpretCode (code, it);
+        } else {
+            // interpret current line
+            parse_err err = interpretLine (curr);
+            if (err != OKAY) {
+                retcode = err;
+                errcurrentline = string (curr);
+                break;
+            }
         }
         if (feof (fin)) {
             break;
         }
     }
     pop_block();
+    backend->finish();
 
     // clean up
     fclose (fin);
+exit(0);
     return retcode;
 }
 
