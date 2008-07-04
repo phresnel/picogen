@@ -30,6 +30,7 @@
 #define AST_PRINT_DO_INDENT(indent) for( int i=0; i<indent; ++i ) std::cout << "  ";
 
 #include <iostream>
+#include <vector>
 
 // the following code is clearly inspired by the kaleidoscope tutorial on llvm.org
 
@@ -39,12 +40,15 @@ typedef enum {
 } Datatype;
 
 
+// Forward declare all Node-Types.
 class ExprAST;
 class FloatExprAST;
 class IntExprAST;
 class IdExprAST;
 class CallExprAST;
 class BinaryExprAST;
+class AssignmentExprAST;
+class DeclarationAST;
 class BlockAST;
 class IfBlockAST;
 class WhileLoopAST;
@@ -52,6 +56,62 @@ class DoWhileLoopAST;
 class FunProtoAST;
 class FunAST;
 
+
+// Visitor.
+// Update: okay, this is cool for pretty printing or ast-dumping or so. But not the right for LLVM-IR. Below is better template.
+class ASTVisitor {
+    public:
+        virtual ~ASTVisitor() {};
+
+        virtual void visit (const FloatExprAST*) = 0;
+        virtual void visit (const IntExprAST*) = 0;
+        virtual void visit (const IdExprAST*) = 0;
+        virtual void visit (const CallExprAST*) = 0;
+        virtual void visit (const BinaryExprAST*) = 0;
+        virtual void visit (const AssignmentExprAST*) = 0;
+        virtual void visit (const DeclarationAST*) = 0;
+        virtual void visit (const BlockAST*) = 0;
+        virtual void visit (const IfBlockAST*) = 0;
+        virtual void visit (const WhileLoopAST*) = 0;
+        virtual void visit (const DoWhileLoopAST*) = 0;
+        virtual void visit (const FunProtoAST*) = 0;
+        virtual void visit (const FunAST*) = 0;
+
+        virtual void end (const FloatExprAST*) = 0;
+        virtual void end (const IntExprAST*) = 0;
+        virtual void end (const IdExprAST*) = 0;
+        virtual void end (const CallExprAST*) = 0;
+        virtual void end (const BinaryExprAST*) = 0;
+        virtual void end (const AssignmentExprAST*) = 0;
+        virtual void end (const DeclarationAST*) = 0;
+        virtual void end (const BlockAST*) = 0;
+        virtual void end (const IfBlockAST*) = 0;
+        virtual void end (const WhileLoopAST*) = 0;
+        virtual void end (const DoWhileLoopAST*) = 0;
+        virtual void end (const FunProtoAST*) = 0;
+        virtual void end (const FunAST*) = 0;
+};
+
+class ASTNonRecursingVisitor { // In contrast to Visitor, where a container Node also calls it's childrens' accept
+    public:
+        virtual ~ASTNonRecursingVisitor() {}
+        virtual void visit (const FloatExprAST*) = 0;
+        virtual void visit (const IntExprAST*) = 0;
+        virtual void visit (const IdExprAST*) = 0;
+        virtual void visit (const CallExprAST*) = 0;
+        virtual void visit (const BinaryExprAST*) = 0;
+        virtual void visit (const AssignmentExprAST*) = 0;
+        virtual void visit (const DeclarationAST*) = 0;
+        virtual void visit (const BlockAST*) = 0;
+        virtual void visit (const IfBlockAST*) = 0;
+        virtual void visit (const WhileLoopAST*) = 0;
+        virtual void visit (const DoWhileLoopAST*) = 0;
+        virtual void visit (const FunProtoAST*) = 0;
+        virtual void visit (const FunAST*) = 0;
+};
+
+
+// Implementation.
 class ExprAST {
     public:
         /// \todo store type (?)
@@ -60,9 +120,12 @@ class ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "expr" << std::endl;
         }
+        virtual void accept (ASTVisitor &visitor) const = 0;
+        virtual void accept (ASTNonRecursingVisitor &visitor) const = 0;
 };
 
 class FloatExprAST : public ExprAST {
+    protected:
         const float value;
     public:
         explicit FloatExprAST (float value) : value (value) {}
@@ -74,9 +137,17 @@ class FloatExprAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "floatExpr(" << value << ")" << std::endl;
         }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 class IntExprAST : public ExprAST {
+    protected:
         const int value;
     public:
         explicit IntExprAST (int value) : value (value) {}
@@ -88,9 +159,17 @@ class IntExprAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "intExpr(" << value << ")" << std::endl;
         }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 class IdExprAST : public ExprAST {
+    protected:
         const std::string value;
     public:
         explicit IdExprAST (const std::string &value) : value (value) {}
@@ -102,6 +181,13 @@ class IdExprAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "idExpr(" << value << ")" << std::endl;
         }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 class CallExprAST : public ExprAST {
@@ -110,12 +196,30 @@ class CallExprAST : public ExprAST {
     public:
         explicit CallExprAST (const std::string &callee, const std::vector<ExprAST*> &args)
                 : callee (callee), args (args) {}
-        virtual ~CallExprAST() {}
+        virtual ~CallExprAST() {
+            std::vector<ExprAST*>::const_iterator it = args.begin();
+            while (it != args.end()) {
+                if (*it) delete *it;
+                ++it;
+            }
+        }
         const std::string &getCallee() const {
             return callee;
         }
         const std::vector<ExprAST*> &getArgs() const {
             return args;
+        }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            std::vector<ExprAST*>::const_iterator it = args.begin();
+            while (it != args.end()) {
+                if(0 != (*it)) (*it)->accept (visitor);
+                ++it;
+            }
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
         }
 };
 
@@ -123,9 +227,23 @@ class BinaryExprAST : public ExprAST {
         const char op;
         const ExprAST *lhs;
         const ExprAST *rhs;
+        /*BinaryExprAST(const BinaryExprAST&) : op('\0'), lhs(0), rhs(0) {}
+        const BinaryExprAST & operator = (const BinaryExprAST&) { return *this; }*/
     public:
         explicit BinaryExprAST (char op, const ExprAST *lhs, const ExprAST *rhs) : op (op), lhs (lhs), rhs (rhs) {}
-        virtual ~BinaryExprAST() {}
+        virtual ~BinaryExprAST() {
+            if (lhs) delete lhs;
+            if (rhs) delete rhs;
+        }
+        char getOp () const {
+            return op;
+        }
+        const ExprAST *getLhs () const {
+            return lhs;
+        }
+        const ExprAST *getRhs () const {
+            return rhs;
+        }
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "binaryOpExpr(" << op << "){" << std::endl;
@@ -136,13 +254,92 @@ class BinaryExprAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
         }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            if (lhs) lhs->accept (visitor);
+            if (rhs) rhs->accept (visitor);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
+};
+
+class AssignmentExprAST : public ExprAST {
+        const ExprAST *lhs;
+        const ExprAST *rhs;
+    public:
+        explicit AssignmentExprAST (const ExprAST *lhs, const ExprAST *rhs) : lhs (lhs), rhs (rhs) {}
+        virtual ~AssignmentExprAST() {
+            if (lhs) delete lhs;
+            if (rhs) delete rhs;
+        }
+        const ExprAST *getLhs () const {
+            return lhs;
+        }
+        const ExprAST *getRhs () const {
+            return rhs;
+        }
+        virtual void print (int indent) const {
+            AST_PRINT_DO_INDENT (indent);
+            std::cout << "assignmentExpr(=){" << std::endl;
+            if (lhs != NULL)
+                lhs->print (indent + 1);
+            if (rhs != NULL)
+                rhs->print (indent + 1);
+            AST_PRINT_DO_INDENT (indent);
+            std::cout << "}" << std::endl;
+        }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            if (lhs) lhs->accept (visitor);
+            if (rhs) rhs->accept (visitor);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
+};
+
+class DeclarationAST : public ExprAST {
+        const std::string type;
+        const std::string name;
+    public:
+        explicit DeclarationAST (const std::string &type, const std::string &name) : type(type), name(name) {}
+        virtual ~DeclarationAST() {}
+        const std::string getType () const {
+            return type;
+        }
+        const std::string getName () const {
+            return name;
+        }
+        virtual void print (int indent) const {
+            AST_PRINT_DO_INDENT (indent);
+            std::cout << "declare " << name << ":" << type << std::endl;
+        }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 class BlockAST : public ExprAST {
         std::vector<const ExprAST *> list; // first i had an hierarchical (even when linear) block. but that was ugly to debug.
     public:
         explicit BlockAST() : list() {}
-        virtual ~BlockAST() {}
+        virtual ~BlockAST() {
+            std::vector<const ExprAST *>::iterator it = list.begin();
+            while (it != list.end()) {
+                if (*it) delete *it;
+                ++it;
+            }
+        }
+        const std::vector<const ExprAST *> &getList () const {
+            return list;
+        }
         virtual void addTail (const ExprAST *ast) {
             list.push_back (ast);
         }
@@ -162,6 +359,18 @@ class BlockAST : public ExprAST {
             AST_PRINT_DO_INDENT(indent);
             std::cout << "}" << std::endl;*/
         }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            std::vector<const ExprAST *>::const_iterator it = list.begin();
+            while (it != list.end()) {
+                if(0 != (*it)) (*it)->accept (visitor);
+                ++it;
+            }
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 class IfBlockAST : public ExprAST {
@@ -171,7 +380,20 @@ class IfBlockAST : public ExprAST {
     public:
         explicit IfBlockAST (const ExprAST *if_clause, const ExprAST *if_body, const ExprAST *else_body)
                 : if_clause (if_clause), if_body (if_body), else_body (else_body) {}
-        virtual ~IfBlockAST() {}
+        virtual ~IfBlockAST() {
+            if (if_clause) delete if_clause;
+            if (if_body) delete if_body;
+            if (else_body) delete else_body;
+        }
+        const ExprAST* getIfClause () const {
+            return if_clause;
+        }
+        const ExprAST* getIfBody () const {
+            return if_body;
+        }
+        const ExprAST* getElseBody () const {
+            return else_body;
+        }
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "if-block{" << std::endl;
@@ -192,6 +414,16 @@ class IfBlockAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
         }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            if (if_clause) if_clause->accept (visitor);
+            if (if_body) if_body->accept (visitor);
+            if (else_body) else_body->accept (visitor);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 // we want to avoid pure jump-ast's, so we provide two hardcoded loops (head-controlled and foot-controlled)
@@ -201,7 +433,16 @@ class WhileLoopAST : public ExprAST {
     public:
         explicit WhileLoopAST (const ExprAST *condition, const ExprAST *body)
                 : condition (condition), body (body) {}
-        virtual ~WhileLoopAST() {}
+        virtual ~WhileLoopAST() {
+            if (condition) delete condition;
+            if (body) delete body;
+        }
+        const ExprAST *getCondition () const {
+            return condition;
+        }
+        const ExprAST *getBody () const {
+            return body;
+        }
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "while-loop{" << std::endl;
@@ -217,6 +458,15 @@ class WhileLoopAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
         }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            if (condition) condition->accept (visitor);
+            if (body) body->accept (visitor);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 class DoWhileLoopAST : public ExprAST {
@@ -225,7 +475,16 @@ class DoWhileLoopAST : public ExprAST {
     public:
         explicit DoWhileLoopAST (const ExprAST *condition, const ExprAST *body)
                 : condition (condition), body (body) {}
-        virtual ~DoWhileLoopAST() {}
+        virtual ~DoWhileLoopAST() {
+            if (condition) delete condition;
+            if (body) delete body;
+        }
+        const ExprAST *getCondition () const {
+            return condition;
+        }
+        const ExprAST *getBody () const {
+            return body;
+        }
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "while-loop{" << std::endl;
@@ -242,6 +501,15 @@ class DoWhileLoopAST : public ExprAST {
 
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
+        }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            if (condition) condition->accept (visitor);
+            if (body) body->accept (visitor);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
         }
 };
 
@@ -260,6 +528,14 @@ class FunProtoAST : public ExprAST {
         explicit FunProtoAST (const std::string &name, const std::vector<Argument> &args)
                 : name (name), args (args) {}
         virtual ~FunProtoAST() {}
+
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 class FunAST : public ExprAST {
@@ -268,7 +544,19 @@ class FunAST : public ExprAST {
     public:
         explicit FunAST (const FunProtoAST *prototype, const ExprAST *body)
                 : prototype (prototype), body (body) {}
-        virtual ~FunAST() {}
+        virtual ~FunAST() {
+            if (prototype) delete prototype;
+            if (body) delete body;
+        }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            if (prototype) prototype->accept (visitor);
+            if (body) body->accept (visitor);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
 };
 
 
