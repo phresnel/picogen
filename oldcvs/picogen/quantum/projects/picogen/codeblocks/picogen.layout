@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Release" />
+	<ActiveTarget name="fast compilation" />
 	<File name="../../../include/common.h" open="0" top="0" tabpos="0">
 		<Cursor position="1141" topLine="19" />
 	</File>
@@ -8,13 +8,13 @@
 		<Cursor position="1949" topLine="40" />
 	</File>
 	<File name="../../../include/picogen.h" open="0" top="0" tabpos="3">
-		<Cursor position="3849" topLine="128" />
+		<Cursor position="4878" topLine="146" />
 	</File>
 	<File name="../../../include/picogen/experimental/CloudShader_Bouthors.h" open="0" top="0" tabpos="0">
 		<Cursor position="0" topLine="15" />
 	</File>
-	<File name="../../../include/picogen/experimental/PicoPico.h" open="0" top="0" tabpos="0">
-		<Cursor position="1103" topLine="10" />
+	<File name="../../../include/picogen/experimental/PicoPico.h" open="1" top="0" tabpos="6">
+		<Cursor position="1182" topLine="16" />
 	</File>
 	<File name="../../../include/picogen/experimental/Rain.h" open="0" top="0" tabpos="0">
 		<Cursor position="2186" topLine="28" />
@@ -25,6 +25,12 @@
 	<File name="../../../include/picogen/experimental/Snow.h" open="0" top="0" tabpos="11">
 		<Cursor position="2199" topLine="34" />
 	</File>
+	<File name="../../../include/picogen/graphics/brdf/Lambertian.h" open="0" top="0" tabpos="0">
+		<Cursor position="1741" topLine="21" />
+	</File>
+	<File name="../../../include/picogen/graphics/brdf/Specular.h" open="0" top="0" tabpos="0">
+		<Cursor position="320" topLine="0" />
+	</File>
 	<File name="../../../include/picogen/graphics/cameras.h" open="0" top="0" tabpos="11">
 		<Cursor position="1353" topLine="22" />
 	</File>
@@ -32,13 +38,13 @@
 		<Cursor position="2014" topLine="102" />
 	</File>
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="13">
-		<Cursor position="3455" topLine="49" />
+		<Cursor position="2946" topLine="52" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="14">
-		<Cursor position="3774" topLine="67" />
+		<Cursor position="3749" topLine="67" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/AABox.h" open="0" top="0" tabpos="6">
-		<Cursor position="1254" topLine="51" />
+		<Cursor position="2680" topLine="45" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/CloudsBouthors.h" open="0" top="0" tabpos="6">
 		<Cursor position="16689" topLine="370" />
@@ -106,17 +112,23 @@
 	<File name="../../../include/picogen/misc/geometrics/Transformation.h" open="0" top="0" tabpos="16">
 		<Cursor position="1186" topLine="10" />
 	</File>
-	<File name="../../../include/picogen/misc/scripting/AST.h" open="0" top="0" tabpos="17">
-		<Cursor position="1187" topLine="17" />
+	<File name="../../../include/picogen/misc/scripting/AST.h" open="1" top="0" tabpos="8">
+		<Cursor position="1389" topLine="38" />
+	</File>
+	<File name="../../../include/picogen/misc/scripting/AST2LLVM.h" open="1" top="0" tabpos="9">
+		<Cursor position="1634" topLine="29" />
+	</File>
+	<File name="../../../include/picogen/misc/scripting/nano-c.h" open="1" top="0" tabpos="2">
+		<Cursor position="1106" topLine="4" />
 	</File>
 	<File name="../../../include/picogen/misc/templates.h" open="0" top="0" tabpos="24">
 		<Cursor position="1188" topLine="0" />
 	</File>
-	<File name="../../../include/picossdf/picossdf.h" open="0" top="0" tabpos="25">
-		<Cursor position="5248" topLine="129" />
+	<File name="../../../include/picossdf/picossdf.h" open="1" top="0" tabpos="4">
+		<Cursor position="3529" topLine="90" />
 	</File>
-	<File name="../../../src/experimental/PicoPico.cc" open="0" top="0" tabpos="2">
-		<Cursor position="5987" topLine="506" />
+	<File name="../../../src/experimental/PicoPico.cc" open="1" top="0" tabpos="5">
+		<Cursor position="1982" topLine="32" />
 	</File>
 	<File name="../../../src/experimental/Rain.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1559" topLine="22" />
@@ -125,10 +137,16 @@
 		<Cursor position="4940" topLine="118" />
 	</File>
 	<File name="../../../src/main.cc" open="0" top="0" tabpos="1">
-		<Cursor position="3225" topLine="95" />
+		<Cursor position="1016" topLine="0" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
+	</File>
+	<File name="../../../src/picosrc/graphics/brdf/Lambertian.cc" open="0" top="0" tabpos="5">
+		<Cursor position="1940" topLine="42" />
+	</File>
+	<File name="../../../src/picosrc/graphics/brdf/Specular.cc" open="1" top="0" tabpos="7">
+		<Cursor position="2217" topLine="33" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/AABox.cc" open="0" top="0" tabpos="7">
 		<Cursor position="7726" topLine="191" />
@@ -163,17 +181,23 @@
 	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="1">
 		<Cursor position="1048" topLine="0" />
 	</File>
-	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="10">
-		<Cursor position="1037" topLine="19" />
+	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="1" top="1" tabpos="10">
+		<Cursor position="2839" topLine="81" />
+	</File>
+	<File name="../../../src/picosrc/misc/scripting/nano-c.cc" open="1" top="0" tabpos="3">
+		<Cursor position="952" topLine="15" />
+	</File>
+	<File name="../../../src/picossdf/picossdf.cc" open="1" top="0" tabpos="1">
+		<Cursor position="20280" topLine="555" />
 	</File>
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="2">
 		<Cursor position="12186" topLine="327" />
 	</File>
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
-		<Cursor position="41421" topLine="1113" />
+		<Cursor position="1243" topLine="2" />
 	</File>
-	<File name="../../../src/submain/ssdf.cc" open="0" top="0" tabpos="0">
-		<Cursor position="22265" topLine="636" />
+	<File name="../../../src/submain/ssdf.cc" open="0" top="0" tabpos="1">
+		<Cursor position="22209" topLine="649" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="2">
 		<Cursor position="4273" topLine="96" />
