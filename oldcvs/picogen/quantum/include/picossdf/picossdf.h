@@ -29,6 +29,11 @@
 class SSDFBackend {
 
     public:
+        // Init/Finish
+        virtual int initialize() = 0;
+        virtual int finish() = 0;
+
+
         // Blocks.
         virtual int beginGlobalBlock () = 0;
         virtual int endGlobalBlock () = 0;
@@ -40,6 +45,14 @@ class SSDFBackend {
         // State setters.
         virtual int setBRDFToLambertian (::picogen::misc::prim::real reflectance) = 0;
         virtual int setBRDFToSpecular (::picogen::misc::prim::real reflectance) = 0;
+
+        virtual int preethamEnable (bool enable) = 0;
+        virtual int preethamSetTurbidity (::picogen::misc::prim::real T) = 0;
+        virtual int preethamSetSunSolidAngleFactor (::picogen::misc::prim::real f) = 0;
+        virtual int preethamSetColorFilter (const ::picogen::graphics::image::color::Color &color) = 0;
+        virtual int preethamSetSunColor (const ::picogen::graphics::image::color::Color &color) = 0;
+        virtual int preethamSetSunDirection (const ::picogen::misc::geometrics::Vector3d &direction) = 0;
+        //virtual int preetham.enableFogHack (1, 0.0000041, 500000) = 0;
 
         // Object adders.
         virtual int addSphereTerminal (
@@ -86,7 +99,7 @@ class PicoSSDF {
             };
             return std::string ("<unknown>");
         }
-        parse_err read_state (STATE_TYPE, char *&line);
+        parse_err read_state (STATE_TYPE, const char *&line);
         // --------------------------------------------------------------
 
 
@@ -94,11 +107,22 @@ class PicoSSDF {
         // --- definition of terminal types -----------------------------
         typedef enum {
             TERMINAL_SPHERE
+            ,TERMINAL_PREETHAM
+
+            /*,TERMINAL_PREETHAM_SET_TURBIDITY
+            ,TERMINAL_PREETHAM_SET_SUN_SOLID_ANGLE_FACTOR
+            ,TERMINAL_PREETHAM_SET_COLOR_FILTER
+            ,TERMINAL_PREETHAM_SET_SUN_COLOR
+            ,TERMINAL_PREETHAM_SET_SUN_DIRECTION
+            ,TERMINAL_PREETHAM_ENABLE_FOG_HACK*/
+
         } TERMINAL_TYPE;
         static const inline std::string terminalTypeAsString (TERMINAL_TYPE type) {
             switch (type) {
                 case TERMINAL_SPHERE:
                     return std::string ("sphere");
+                case TERMINAL_PREETHAM:
+                    return std::string ("sunsky");
             };
             return std::string ("<unknown>");
         }
@@ -112,7 +136,7 @@ class PicoSSDF {
             public:
                 explicit SphereTerminal () : Terminal (TERMINAL_SPHERE) {};
         };
-        parse_err read_terminal (TERMINAL_TYPE, char *&line);
+        parse_err read_terminal (TERMINAL_TYPE, const char *&line);
         // --------------------------------------------------------------
 
 
@@ -147,23 +171,43 @@ class PicoSSDF {
                     return *this;
                 }
                 virtual bool isBlockAllowed (BLOCK_TYPE) {
-                    return true;
+                    return false;
                 }
-                virtual bool isTerminalAllowed (TERMINAL_TYPE) {
-                    return true;
-                }
-        };
-        class GlobalBlock : public Block {
-            public:
-                explicit GlobalBlock() : Block (BLOCK_GLOBAL) {}
                 virtual bool isTerminalAllowed (TERMINAL_TYPE) {
                     return false;
                 }
         };
+
+        class GlobalBlock : public Block {
+            public:
+                explicit GlobalBlock() : Block (BLOCK_GLOBAL) {}
+                virtual bool isBlockAllowed (BLOCK_TYPE) {
+                    return true;
+                }
+                virtual bool isTerminalAllowed (TERMINAL_TYPE type) {
+                    switch (type) {
+                        case TERMINAL_PREETHAM:
+                            return true;
+                    };
+                    return false;
+                }
+        };
+
         class ListBlock : public Block {
             public:
                 explicit ListBlock() : Block (BLOCK_LIST) {}
+                virtual bool isBlockAllowed (BLOCK_TYPE) {
+                    return true;
+                }
+                virtual bool isTerminalAllowed (TERMINAL_TYPE type) {
+                    switch (type) {
+                        case TERMINAL_SPHERE:
+                            return true;
+                    };
+                    return false;
+                }
         };
+
         class TriBIHBlock : public Block {
             public:
                 explicit TriBIHBlock() : Block (BLOCK_TRI_BIH) {}
@@ -174,6 +218,7 @@ class PicoSSDF {
                     return false; //type==TERMINAL_TRIANGLE;
                 }
         };
+
         std::vector<Block*> blockStack;
         parse_err push_block (BLOCK_TYPE);
         parse_err pop_block();
@@ -187,7 +232,8 @@ class PicoSSDF {
             return (isalnum (s) ||s=='-');
         }
         parse_err parse();
-        parse_err interpretLine (char *line);
+        parse_err interpretLine (const char *line);
+        parse_err interpretCode (const std::string &code, std::string::const_iterator &it);
         // --------------------------------------------------------------
     public:
 
