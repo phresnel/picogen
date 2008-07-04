@@ -22,7 +22,9 @@
  */
 
 #include <iostream>
+#include <limits>
 #include <vector>
+#include <map>
 
 #include <SDL/SDL.h>
 
@@ -187,6 +189,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         LinearList list;
         ::picogen::common::Preetham   preetham;
+        bool enablePreethamSky;
         ::picogen::common::AABox      box;
 
 
@@ -203,6 +206,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             SCENE_TYPE type;
         };
         typedef ::std::vector<Scene> SceneStack;
+        typedef ::std::string string;
 
         Scene currentScene;
         SceneStack sceneStack;
@@ -210,7 +214,8 @@ class SSDFScene : public Scene, public SSDFBackend {
         IScene *sceneRoot;
         IBRDF* currentBRDF;
 
-        ::std::vector<IBRDF*> brdfStack;
+        //::std::vector<IBRDF*> brdfStack;
+        ::std::map<string,IBRDF*> brdfMap;
 
         PicoSSDF ssdf;
 
@@ -218,18 +223,35 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
         // --- SSDFBackend implementation -------------------------------
+
+        // Init:
+        virtual int initialize () {
+            preetham.setTurbidity (1.9);
+            preetham.setSunSolidAngleFactor (1.0);
+            const real L = 0.25;
+            preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
+            preetham.setSunColor (Color (1.0,0.9,0.8) *1600.0*L);
+            preetham.setSunDirection (Vector3d (-1.7,2.5,3.3).normal());
+            preetham.enableFogHack (1, 0.00082*0.05, 500000);
+            enablePreethamSky = true;
+            return 0;
+        }
+
+        virtual int finish () {
+            return 0;
+        }
+
+        // Global:
         virtual int beginGlobalBlock () {
-            std::cout << "begin global" << std::endl;
             return 0;
         }
         virtual int endGlobalBlock () {
-            std::cout << "end global" << std::endl;
             return 0;
         }
 
 
+        // List:
         virtual int beginListBlock () {
-            std::cout << "begin list" << std::endl;
             currentScene.type = LINEAR_LIST;
             currentScene.linearList = new LinearList;
             if (0 == sceneRoot) {
@@ -239,33 +261,91 @@ class SSDFScene : public Scene, public SSDFBackend {
             return 0;
         }
         virtual int endListBlock () {
-            std::cout << "end list" << std::endl;
             currentScene.linearList->invalidate();
             sceneStack.pop_back();
             currentScene = sceneStack.back();
             return 0;
         }
+
+        // TriBIH:
         virtual int beginTriBIHBlock () {
-            std::cout << "begin tri bih" << std::endl;
+            std::cout << "hmm{{" << std::endl;
             return 0;
         }
         virtual int endTriBIHBlock () {
-            std::cout << "end tri bih" << std::endl;
+            std::cout << "hmm}}" << std::endl;
             return 0;
         }
 
 
         virtual int setBRDFToLambertian (::picogen::misc::prim::real reflectance) {
-            currentBRDF = new ::picogen::graphics::material::brdf::Lambertian(reflectance);
-            brdfStack.push_back (currentBRDF);
+            using namespace std;
+            string brdfId;
+            stringstream ss;
+            ss.precision (numeric_limits<real>::digits10);
+            ss << string ("lambertian:") << reflectance;
+            ss << reflectance;
+            ss >> brdfId;
+
+            if (brdfMap.end() == brdfMap.find (brdfId)) {
+                currentBRDF = new ::picogen::graphics::material::brdf::Lambertian(reflectance);
+                brdfMap [brdfId] = currentBRDF;
+            } else {
+                currentBRDF = brdfMap [brdfId];
+            }
             return 0;
         }
         virtual int setBRDFToSpecular (::picogen::misc::prim::real reflectance) {
-            currentBRDF = new ::picogen::graphics::material::brdf::Specular(reflectance);
-            brdfStack.push_back (currentBRDF);
+            using namespace std;
+            string brdfId;
+            stringstream ss;
+            ss.precision (numeric_limits<real>::digits10);
+            ss << string ("specular:") << reflectance;
+            ss >> brdfId;
+
+            if (brdfMap.end() == brdfMap.find (brdfId)) {
+                currentBRDF = new ::picogen::graphics::material::brdf::Specular(reflectance);
+                brdfMap [brdfId] = currentBRDF;
+            } else {
+                currentBRDF = brdfMap [brdfId];
+            }
             return 0;
         }
 
+
+        // Preetham:
+        virtual int preethamEnable (bool enable) {
+            enablePreethamSky = enable;
+            return 0;
+        }
+
+        virtual int preethamSetTurbidity (::picogen::misc::prim::real T)  {
+            preetham.setTurbidity (T);
+            return 0;
+        }
+
+        virtual int preethamSetSunSolidAngleFactor (::picogen::misc::prim::real f) {
+            preetham.setSunSolidAngleFactor (f);
+            return 0;
+        }
+
+        virtual int preethamSetColorFilter (const ::picogen::graphics::image::color::Color &color) {
+            preetham.setColorFilter (color);
+            return 0;
+        }
+
+        virtual int preethamSetSunColor (const ::picogen::graphics::image::color::Color &color) {
+            preetham.setSunColor (color);
+            return 0;
+        }
+
+        virtual int preethamSetSunDirection (const ::picogen::misc::geometrics::Vector3d &direction) {
+            preetham.setSunDirection (direction.computeNormal());
+            return 0;
+        }
+
+
+        //
         virtual int addSphereTerminal (
             ::picogen::misc::prim::real radius,
             const ::picogen::misc::geometrics::Vector3d &center,
@@ -300,20 +380,22 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
         virtual ~SSDFScene() {
+            using namespace std;
+
             if (0 != sceneRoot)
                 delete sceneRoot;
 
-            ::std::vector<IBRDF*>::iterator it;
-            for (it=brdfStack.begin(); it!=brdfStack.end(); ++it) {
-                delete *it;
+            ::std::map<string,IBRDF*>::iterator it;
+            for (it=brdfMap.begin(); it!=brdfMap.end(); ++it) {
+                delete it->second;
             }
-            brdfStack.clear();
+            brdfMap.clear();
         }
 
 
 
         virtual std::string getName() const {
-            return std::string ("pure-cornell");
+            return std::string ("ssdf-parser+renderer");
         }
 
 
@@ -335,15 +417,12 @@ class SSDFScene : public Scene, public SSDFBackend {
                 ;
 
             // setup and recognize sky
-            preetham.setTurbidity (1.9);
-            preetham.setSunSolidAngleFactor (1.0);
-            const real L = 0.25;
-            preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
-            preetham.setSunColor (Color (1.0,0.9,0.8) *1600.0*L);
-            preetham.setSunDirection (Vector3d (-1.7,2.5,3.3).normal());
-            preetham.enableFogHack (1, 0.00082*0.05, 500000);
             preetham.invalidate();
-            renderer.path_integrator().setSky (&preetham);
+            //if (enablePreethamSky) {
+                renderer.path_integrator().setSky (&preetham);
+            //} else {
+              //  renderer.path_integrator().setSky (0);
+            //}
 
             // setup boxen
             box.enableFace (box.y_positive, false);
@@ -614,7 +693,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (320, 320, grindScene);
+        return grind (2*320, 2*320, grindScene);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
