@@ -26,14 +26,20 @@
 #ifndef _PICOPICO_H
 #define _PICOPICO_H
 
+#include <picogen/misc/scripting/AST.h>
+
 namespace picogen {
 
     /// \todo find proper namespace for this
     class PicoPico {
 
         public:
+            typedef enum {
+                delete_ast=0,
+                return_ast=1
+            } Flags;
 
-            PicoPico(); // stub!
+            PicoPico (const std::string &code, Flags flags=delete_ast, const ExprAST **ast=0); // stub!
             virtual ~PicoPico();
 
     };
