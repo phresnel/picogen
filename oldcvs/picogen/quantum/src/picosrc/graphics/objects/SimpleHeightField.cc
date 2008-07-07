@@ -139,9 +139,9 @@ namespace picogen {
             SimpleHeightField::SimpleHeightField() :
                     m_scaleBox()
                     , m_vScale (0.0)
-                    , m_pBRDF (NULL)
-                    , m_pShader (NULL)
-                    , m_pField (NULL)
+                    , m_pBRDF (0)
+                    , m_pShader (0)
+                    , m_pField (0)
                     , m_size (0) {
             }
 
@@ -153,10 +153,10 @@ namespace picogen {
                 fprintf( stderr, "  marched on heightmap.: %u\n", (unsigned int)numTraversals );
                 fprintf( stderr, "}\n" );*/
 
-                if (m_pField != NULL)
+                if (m_pField != 0)
                     delete [] m_pField;
-                m_pField  = NULL;
-                m_pBRDF   = NULL;
+                m_pField  = 0;
+                m_pBRDF   = 0;
                 m_size    = 0;
                 m_vScale  = 0.0;
                 m_scaleBox.reset();
@@ -228,7 +228,7 @@ namespace picogen {
                 fprintf (stderr, "building SimpleHeightField %xP{\n", (unsigned int) this);
 
 
-                if (m_pField != NULL) {
+                if (m_pField != 0) {
                     fprintf (stderr, "  deleting previously allocated heightfield...");
                     delete [] m_pField;
                     fprintf (stderr, "done\n");
@@ -450,7 +450,7 @@ namespace picogen {
                     }
                 }
 
-                if (NULL != m_pShader) {
+                if (0 != m_pShader) {
                     m_pShader->shade (
                         intersection.color,
                         intersection.normal,

@@ -55,28 +55,28 @@ namespace picogen {
                         XRT_CALL_STACK_POP();
                         return m[u]; // do not make any type conversion, so compiler-warnings are produced
                     }
-                    vector() : m (NULL), length (0) {
+                    vector() : m (0), length (0) {
                         XRT_CALL_STACK_PUSH ("vector::vector()");
                         XRT_CALL_STACK_POP();
                     }
-                    vector (size_t size) : m (NULL), length (0) {
+                    vector (size_t size) : m (0), length (0) {
                         XRT_CALL_STACK_PUSH ("vector::vector( size_t size )");
                         reset (size);
                         XRT_CALL_STACK_POP();
                     }
                     virtual ~vector() {
                         XRT_CALL_STACK_PUSH ("virtual vector::~vector()");
-                        if (m != NULL)
+                        if (m != 0)
                             delete [] m;
-                        m = NULL;
+                        m = 0;
                         length = 0;
                         XRT_CALL_STACK_POP();
                     }
                     void reset (size_t new_length) {
                         XRT_CALL_STACK_PUSH ("void vector::reset( size_t new_length )");
-                        if (m != NULL)
+                        if (m != 0)
                             delete [] m;
-                        m = NULL;
+                        m = 0;
                         length = 0;
                         try {
                             m = new T[new_length];
@@ -84,7 +84,7 @@ namespace picogen {
                             throw exceptions::out_of_memory (__FILE__, __LINE__, new_length);
                         }
 
-                        if (m != NULL) {
+                        if (m != 0) {
                             length = new_length;
                         } else {
                             length = 0;
@@ -100,7 +100,7 @@ namespace picogen {
                     /// \todo write comment about the hackish character of the following two functions
                     bool saveBinaryToFile (std::string fileName) const {
                         FILE *f = fopen (fileName.c_str(), "wb");
-                        if (NULL != f) {
+                        if (0 != f) {
                             fwrite (m, sizeof (T), length, f);
                             fclose (f);
                             return true;
@@ -109,7 +109,7 @@ namespace picogen {
                     }
                     bool loadBinaryFromFile (std::string fileName) {
                         FILE *f = fopen (fileName.c_str(), "rb");
-                        if (NULL != f) {
+                        if (0 != f) {
                             fread (m, sizeof (T), length, f);
                             fclose (f);
                             return true;

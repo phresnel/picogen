@@ -249,7 +249,7 @@ static ExprAST *parseFloatExpr (
 
 
 
-static ExprAST *parseIdExpr (
+static IdExprAST *parseIdExpr (
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
 ) {
@@ -364,7 +364,7 @@ static ExprAST *parsePrimary (
 
 
 
-static ExprAST *parseIdentifier (
+static IdExprAST *parseIdentifier (
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
 ) {
@@ -581,18 +581,18 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
 
 
         // Assignment-statement ?
-        tmpAST = parseIdentifier (curr, end);
-        if (tmpAST != 0) {
+        IdExprAST *tmpId = parseIdentifier (curr, end);
+        if (0 != tmpId) {
             if (tokenEquals ("=", curr, end)) {
                 ++curr;
                 const ExprAST *rhs = parseExpr (curr, end);
                 if (tokenEquals (";", curr, end)) {    // simple statement must end on ";"
                     ++curr;
-                    return new AssignmentExprAST (tmpAST, rhs);
+                    return new AssignmentExprAST (tmpId, rhs);
                 }
                 delete rhs;
             }
-            delete tmpAST;
+            delete tmpId;
         }
         // Rollback.
         curr = backup;

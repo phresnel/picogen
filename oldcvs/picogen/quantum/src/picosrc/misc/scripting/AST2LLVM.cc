@@ -71,7 +71,7 @@ void AST2LLVM::end (const IntExprAST* ast) {
 
 
 void AST2LLVM::end (const IdExprAST*)  {
-    ////std::cout << "IdExpr" << "-" << std::endl;
+
 }
 
 
@@ -107,8 +107,11 @@ void AST2LLVM::end (const BinaryExprAST* ast)   {
 
 
 
-void AST2LLVM::end (const AssignmentExprAST*)   {
-    //std::cout << "AssignmentExpr" << "-" << std::endl;
+void AST2LLVM::end (const AssignmentExprAST *ast) {
+    /*Value *alloc   = values.top().value;  values.pop();
+    Value *initval = values.top().value;  values.pop();
+    //values.push (ValueDescriptor (builder.CreateStore (initval, alloc), ast));
+    if (verbose) values.top().value->dump();*/
 }
 
 

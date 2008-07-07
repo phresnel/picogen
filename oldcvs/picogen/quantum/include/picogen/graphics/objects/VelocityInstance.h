@@ -41,7 +41,7 @@ namespace picogen {
                     Vector3d velocity, offset;
                     real timeexp;
                 public:
-                    VelocityInstance() : intersectable (NULL), timeexp (1.0) {}
+                    VelocityInstance() : intersectable (0), timeexp (1.0) {}
 
                     void setTimeExponent (real t) {
                         timeexp = t;
@@ -60,7 +60,7 @@ namespace picogen {
                     virtual bool intersect (
                         param_out (intersection_t,intersection), param_in (Ray,ray)
                     ) const {
-                        if (NULL == intersectable)
+                        if (0 == intersectable)
                             return false;
                         Ray newRay;
                         newRay.x() = ray.x() + offset + velocity * (powf (real (rand()) /real (RAND_MAX), timeexp));

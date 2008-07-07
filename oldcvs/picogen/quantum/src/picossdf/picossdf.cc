@@ -598,7 +598,7 @@ PicoSSDF::parse_err PicoSSDF::parse() {
     while (1) {
         // get next line
         char curr[1024];
-        if (NULL == fgets (curr, sizeof (curr), fin)) {
+        if (0 == fgets (curr, sizeof (curr), fin)) {
             break;
         }
         ++linenumber;

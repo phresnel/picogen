@@ -232,7 +232,7 @@ namespace picogen {
                 real tmin = 9999999.0;
                 bool any = false;
 
-                const ::picogen::graphics::material::abstract::IShader* shader = NULL;
+                const ::picogen::graphics::material::abstract::IShader* shader = 0;
 
                 if ( (enableOutside_ || wx<0.0) && enable[x_negative]) {
                     const real dist = px - bbMin[0];
@@ -334,7 +334,7 @@ namespace picogen {
                     }
                 }
 
-                if (NULL != shader) {
+                if (0 != shader) {
                     shader->shade (intersection.color, intersection.L_e, intersection.normal, ray (intersection.t));
                 }
                 return any;

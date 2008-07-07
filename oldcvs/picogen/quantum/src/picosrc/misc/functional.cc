@@ -179,7 +179,7 @@ namespace picogen {
                     default:
                         throw functional_general_exeption ("configurable functions are currently only supported with 2 parameters");
                 }
-                return NULL;
+                return 0;
             }
 
 
@@ -447,7 +447,7 @@ case OPERATOR:{                                                  \
                                         if ('f' == peekNextToken (it,code)) {
                                             nextToken (it,code);
                                             BasicFunction *p1 = heightslang_ (setup,root,it,code);
-                                            if (NULL == p1) {
+                                            if (0 == p1) {
                                                 throw functional_general_exeption ("missing argument for 'self'-operation");
                                             }
                                             if (setup.parameterCount < 1) {
@@ -461,7 +461,7 @@ case OPERATOR:{                                                  \
                                                 return call_ (root, p1);
                                             }
                                             BasicFunction *p2 = heightslang_ (setup,root,it,code);
-                                            if (NULL == p2) {
+                                            if (0 == p2) {
                                                 throw functional_general_exeption ("it looks like the 'self'-operation is called with 2 arguments, but the 2nd argument is missing");
                                             }
                                             if (setup.parameterCount < 2) {
@@ -477,7 +477,7 @@ case OPERATOR:{                                                  \
 
 
                                             BasicFunction *p3 = heightslang_ (setup,root,it,code);
-                                            if (NULL == p3) {
+                                            if (0 == p3) {
                                                 throw functional_general_exeption ("it looks like the 'self'-operation is called with 3 arguments, but the 3rd argument is missing");
                                             }
                                             if (setup.parameterCount < 3) {
@@ -701,7 +701,7 @@ case OPERATOR:{                                                  \
                             break;
                         }
                 }
-                return NULL;
+                return 0;
             }
 
 

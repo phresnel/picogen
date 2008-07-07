@@ -330,9 +330,9 @@ namespace picogen {
                     }
 
 
-                    inline Transformation getInverse (real *pDet = NULL) const {
+                    inline Transformation getInverse (real *pDet = 0) const {
                         const real det = getDeterminant();
-                        if (NULL != pDet)
+                        if (0 != pDet)
                             *pDet = det;
                         const real detinv = 1.0 / det;
 

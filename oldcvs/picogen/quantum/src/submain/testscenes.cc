@@ -485,7 +485,7 @@ static int loop (SDL_Surface *screen, TestScene *scene, int width, int height) {
     float exp_tone = 1.0;
     float saturation = 1.0;
 
-    srand (time (NULL));
+    srand (time (0));
 
 
     //renderer.SetNumPixelsPerContinue( pixelsPerContinue );//*(HEIGHT/1) );
@@ -651,7 +651,7 @@ static int grind (int width, int height, TestScene *scene) {
     }
     atexit (SDL_Quit);
     SDL_Surface *screen = SDL_SetVideoMode (width,height,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
-    if (NULL == screen) {
+    if (0 == screen) {
         cerr << "Unable to set video-mode: " << SDL_GetError() << endl;
         return 1;
     }
@@ -675,9 +675,9 @@ int main_testscenes (int argc, char *argv[]) {
     #endif
     scenes.push_back (&cornellOpenSky);
 
-    TestScene* grindScene = NULL;
+    TestScene* grindScene = 0;
 
-    while (NULL == grindScene) {
+    while (0 == grindScene) {
         cout << "the following test-scenes are available:\n\n  ";
         int i=0;
         for (vector<TestScene*>::const_iterator it = scenes.begin(); it != scenes.end(); ++it) {

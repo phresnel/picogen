@@ -115,14 +115,14 @@ namespace picogen {
 
 
 
-            TriBIH::TriBIH() : AABB(), BIHBuild(), BIH (NULL), BRDF (NULL), shader (NULL) {
+            TriBIH::TriBIH() : AABB(), BIHBuild(), BIH (0), BRDF (0), shader (0) {
             }
 
 
 
             TriBIH::~TriBIH() {
-                BRDF = NULL;
-                shader = NULL;
+                BRDF = 0;
+                shader = 0;
                 flush();
             }
 
@@ -277,7 +277,7 @@ namespace picogen {
                 if (t_min>t_max)
                     return false;
                 intersection.t = real_max;
-                if (NULL != shader)
+                if (0 != shader)
                     shader->shade (intersection.color,intersection.normal,ray.x() +ray.w() *intersection.t);// = image::color::Color(1.0,0.9,0.8);//image::color::Color(1.0,0.0,0.0)*f + image::color::Color(0.0,0.0,1.0)*(1.0-f);
                 else
                     intersection.color = image::color::Color (1.0,1.0,1.0);
@@ -293,12 +293,12 @@ namespace picogen {
 
             void TriBIH::flush() {
                 //TempList.clear();
-                if (NULL != BIH)
+                if (0 != BIH)
                     delete [] BIH;
-                BIH = NULL;
-                if (NULL != Triangles)
+                BIH = 0;
+                if (0 != Triangles)
                     delete [] Triangles;
-                Triangles = NULL;
+                Triangles = 0;
                 BIHBuild.free();
             }
 
@@ -319,12 +319,12 @@ namespace picogen {
             void TriBIH::bih_build_node::free() {
                 aabb.reset();
                 triangles.clear();
-                if (NULL != p_left)
+                if (0 != p_left)
                     delete p_left;
-                p_left = NULL;
-                if (NULL != p_right)
+                p_left = 0;
+                if (0 != p_right)
                     delete p_right;
-                p_right = NULL;
+                p_right = 0;
             }
 
 
@@ -347,12 +347,12 @@ namespace picogen {
 
                     //> alloc children + evacuate if anything goes wrong
                     p_left = new bih_build_node;
-                    if (p_left == NULL)
+                    if (p_left == 0)
                         return false;
                     p_right = new bih_build_node;
-                    if (p_right == NULL) {
+                    if (p_right == 0) {
                         delete p_left;
-                        p_left = NULL;
+                        p_left = 0;
                         return false;
                     }
 
@@ -420,7 +420,7 @@ namespace picogen {
                     if (!found) {   //> no good split found, so this becomes leaf node
                         delete p_left;
                         delete p_right;
-                        p_left = p_right = NULL;
+                        p_left = p_right = 0;
 
 #if TriBIH_DebugBIHBuild
                         fprintf (stderr, "#found no good split...\n");
@@ -466,7 +466,7 @@ namespace picogen {
 
             unsigned int TriBIH::bih_build_node::num_nodes() const {
                 /// \todo: debug this piece!
-                if (NULL != p_left && NULL != p_right) {
+                if (0 != p_left && 0 != p_right) {
                     return 1 + p_left->num_nodes() + p_right->num_nodes();
                 }
                 return 1;
@@ -474,7 +474,7 @@ namespace picogen {
 
 
             unsigned int TriBIH::bih_build_node::num_triangles() const {
-                if (NULL != p_left && NULL != p_right) {
+                if (0 != p_left && 0 != p_right) {
                     //> assume that at this point, we don't have any triangles left
                     return p_left->num_triangles() + p_right->num_triangles();
                 }
@@ -511,13 +511,13 @@ namespace picogen {
                     unsigned int i;
                     for (i=0; i<depth; i++)
                         fprintf (stderr, ".");
-                    if ( (p_left==NULL || p_right==NULL)  && p_left!=p_right)
+                    if ( (p_left==0 || p_right==0)  && p_left!=p_right)
                         fprintf (stderr, "{misbuild}");
                 }
 #endif
 
                 //> actual conversion
-                if (p_left != NULL && p_right != NULL) {   //> is inner node
+                if (p_left != 0 && p_right != 0) {   //> is inner node
 
                     curr->clip[0] = p_left->aabb.getMax() [axis];
                     curr->clip[1] = p_right->aabb.getMin() [axis];
@@ -572,12 +572,12 @@ namespace picogen {
 
                 fprintf (stderr, "building bih-structure %xP{\n", (unsigned int) this);
 
-                if (NULL == bih) {
-                    fprintf (stderr, "  parameter 'bih' is null\n}\n");
+                if (0 == bih) {
+                    fprintf (stderr, "  parameter 'bih' is 0\n}\n");
                     return false;
                 }
-                if (NULL == triangles) {
-                    fprintf (stderr, "  parameter 'triangles' is null\n}\n");
+                if (0 == triangles) {
+                    fprintf (stderr, "  parameter 'triangles' is 0\n}\n");
                     return false;
                 }
 
@@ -594,7 +594,7 @@ namespace picogen {
                 fprintf (stderr, "done\n");
                 fprintf (stderr, "  allocating linear array for bih-structure [%u nodes; %.3fMiB]...", numNodes, (float) (sizeof (bih_node) *numNodes) / (1024.0f*1024.0f));
                 *bih       = new bih_node[ numNodes ];
-                if (NULL == *bih) {
+                if (0 == *bih) {
                     fprintf (stderr, "  error on 'new bih_node[...]', probably out of memory\n}\n");
                     return false;
                 }
@@ -603,7 +603,7 @@ namespace picogen {
                 const int numTris = num_triangles();
                 fprintf (stderr, "  allocating linear triangle-array [%u tris; %.3fMiB]...", numTris, (float) (sizeof (t_triangle) *numTris) / (1024.0f*1024.0f));
                 *triangles = new t_triangle[ numTris ];
-                if (NULL == *triangles) {
+                if (0 == *triangles) {
                     delete [] *bih;
                     fprintf (stderr, "  error on 'new t_trianngle[...]', probably out of memory\n}\n");
                     return false;

@@ -30,7 +30,7 @@
 #include <picogen/experimental/Rain.h>
 #include <picogen/experimental/Snow.h>
 #include <picogen/experimental/ShaderCC_GCC.h>
-#include "compile_info.h"
+#include <picogen/compile_info.h>
 
 using picogen::misc::prim::real;
 using picogen::misc::geometrics::Vector3d;
@@ -202,26 +202,26 @@ private:
     real attenuation;
     unsigned int num_drops;
 public:
-    WaterBRDF() : drop_x (NULL), drop_z (NULL), amplitude (NULL), frequency (NULL), num_drops (0) {}
+    WaterBRDF() : drop_x (0), drop_z (0), amplitude (0), frequency (0), num_drops (0) {}
 
     virtual ~WaterBRDF() {
-        if (drop_x != NULL) delete drop_x;
-        drop_x = NULL;
-        if (drop_z != NULL) delete drop_z;
-        drop_z = NULL;
-        if (amplitude != NULL) delete amplitude;
-        amplitude = NULL;
-        if (frequency != NULL) delete frequency;
-        frequency = NULL;
+        if (drop_x != 0) delete drop_x;
+        drop_x = 0;
+        if (drop_z != 0) delete drop_z;
+        drop_z = 0;
+        if (amplitude != 0) delete amplitude;
+        amplitude = 0;
+        if (frequency != 0) delete frequency;
+        frequency = 0;
         num_drops = 0;
     }
     void Init (unsigned int n, real l, real f, real r, real b, real attenuation) {
-        if (drop_x != NULL) delete drop_x;
-        if (drop_z != NULL) delete drop_z;
-        if (amplitude != NULL) delete amplitude;
-        amplitude = NULL;
-        if (frequency != NULL) delete frequency;
-        frequency = NULL;
+        if (drop_x != 0) delete drop_x;
+        if (drop_z != 0) delete drop_z;
+        if (amplitude != 0) delete amplitude;
+        amplitude = 0;
+        if (frequency != 0) delete frequency;
+        frequency = 0;
         drop_x = new real[n];
         drop_z = new real[n];
         amplitude = new real[n];
@@ -530,9 +530,9 @@ static std::string getPicogenSaveDirectory() {
     //   and i am not sure if this is the way it has to be done
     std::string dirname;
     FILE *f = popen ("echo ~", "r");
-    if (NULL != f) {
+    if (0 != f) {
         char buff[1024];
-        while (NULL != fgets (buff, sizeof (buff), f)) {
+        while (0 != fgets (buff, sizeof (buff), f)) {
             const unsigned int len = strlen (buff);
             if (len > 0) {
                 if (buff[len-1] == '\n')
@@ -674,13 +674,13 @@ int main_seb (int argc, char *argv[]) {
                 std::cout << "Type in a filename: ";
                 std::cin >> checkpointFile;
                 FILE *f = fopen (checkpointFile.c_str(), "r");
-                if (f != NULL) {
+                if (f != 0) {
                     fclose (f);
                     renderer.surface().loadBinaryFromFile (checkpointFile);
                     break;
                 } else {
                     f = fopen (checkpointFile.c_str(), "w");
-                    if (f != NULL) {
+                    if (f != 0) {
                         fclose (f);
                         std::cout << "File '" << checkpointFile << "' could not be opened, but created it" << std::endl;
                         break;
@@ -983,7 +983,7 @@ int main_seb (int argc, char *argv[]) {
         float exp_tone = 1.0;
         float saturation = 1.0;
 
-        srand (time (NULL));
+        srand (time (0));
 
 
         renderer.setNumPixelsPerContinue (pixelsPerContinue); //*(HEIGHT/1) );

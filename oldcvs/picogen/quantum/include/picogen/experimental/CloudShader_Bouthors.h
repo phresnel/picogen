@@ -469,8 +469,8 @@ public:
                     8*0.0008, 8, // scale and octave
                     0 // use interpolation (slooooow)
                 ),
-                sky_shader (NULL),
-                cloud_shader (NULL) {
+                sky_shader (0),
+                cloud_shader (0) {
             perlin_sky.setPerlinXOfs (20);
         }
 
@@ -522,7 +522,7 @@ public:
                 intersection.normal = ( (currSide==inside) ? (x-i) : (i-x)).normal();
                 intersection.brdf = &lambertian;
 
-                if (sky_shader != NULL && cloud_shader != NULL) {
+                if (sky_shader != 0 && cloud_shader != 0) {
                     const Vector3d L = sky_shader->GetSunDirection();
                     //intersection.L_e = 0.0;//intersection.L_e < 0.0 ? 0.0 : intersection.L_e;
                     real alpha;

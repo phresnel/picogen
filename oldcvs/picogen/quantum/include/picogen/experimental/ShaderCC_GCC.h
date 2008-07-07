@@ -71,11 +71,11 @@ class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
             const Vector3d &normal,
             const Vector3d &position
         ) const {
-            if (shader != NULL)
+            if (shader != 0)
                 shader->shade (color, normal, position);
         }
 
-        ShaderCC_GCC (::std::string fileName, ::std::string shaderName = std::string ("")) : fileName (fileName), fileHandle (NULL), valid (false), shader (NULL) {
+        ShaderCC_GCC (::std::string fileName, ::std::string shaderName = std::string ("")) : fileName (fileName), fileHandle (0), valid (false), shader (0) {
             using ::std::string;
             string cmdLine;
             string prologue (
@@ -117,14 +117,14 @@ class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
                 } else {
                     // load the library
                     fileHandle = dlopen (libName.c_str(), RTLD_LOCAL | RTLD_LAZY);
-                    if (fileHandle != NULL) {
+                    if (fileHandle != 0) {
                         // either load the default shader (when shaderName=""), or the specified one
                         string initName ("init");
                         if (shaderName != string ("")) {
                             initName = initName + "_" + shaderName;
                         }
                         IShader* (*f) () = (IShader* (*) ()) dlsym (fileHandle, initName.c_str());
-                        if (f != NULL) {
+                        if (f != 0) {
                             shader = f();
                             valid = true;
                         } else {
@@ -138,8 +138,8 @@ class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
         }
 
         virtual ~ShaderCC_GCC() {
-            if (shader != NULL) delete shader;
-            if (fileHandle!=NULL) dlclose (fileHandle);
+            if (shader != 0) delete shader;
+            if (fileHandle!=0) dlclose (fileHandle);
         }
 
 };

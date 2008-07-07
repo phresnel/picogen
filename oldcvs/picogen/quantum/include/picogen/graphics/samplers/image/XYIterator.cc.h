@@ -48,9 +48,9 @@ namespace picogen {
                  #ifdef XRT_DEBUG
                   if( m_BeginRender_called )
                    throw exceptions::invalid_call( __FILE__, __LINE__, "WhittedStyle::SetCamera() cannot be called during rendering" );
-                  if( NULL == p_cam ){
+                  if( 0 == p_cam ){
                    throw exceptions::null_pointer( __FILE__, __LINE__,
-                    "WhittedStyle::SetCamera(...) called with null-pointer as param"
+                    "WhittedStyle::SetCamera(...) called with 0-pointer as param"
                    );
                   }
                  #endif
@@ -65,9 +65,9 @@ namespace picogen {
                  #ifdef XRT_DEBUG
                   if( m_BeginRender_called )
                    throw exceptions::invalid_call( __FILE__, __LINE__, "WhittedStyle::SetSurface() cannot be called during rendering" );
-                  if( NULL == pSurf ){
+                  if( 0 == pSurf ){
                    throw exceptions::null_pointer( __FILE__, __LINE__,
-                    "WhittedStyle::SetSurface(...) called with null-pointer as param"
+                    "WhittedStyle::SetSurface(...) called with 0-pointer as param"
                    );
                   }
                  #endif
@@ -92,12 +92,12 @@ namespace picogen {
 #ifdef XRT_DEBUG
                     if (m_BeginRender_called)
                         throw exceptions::invalid_call (__FILE__, __LINE__, "XYIterator::BeginRender() cannot be called during rendering");
-                    /*if( NULL == m_surface ){
+                    /*if( 0 == m_surface ){
                      throw exceptions::null_pointer( __FILE__, __LINE__,
                       "WhittedStyle::SetSurface(...) not called or called with invalid param."
                      );
                     }
-                    if( NULL == m_camera ){
+                    if( 0 == m_camera ){
                      throw exceptions::null_pointer( __FILE__, __LINE__,
                       "WhittedStyle::SetCamera(...) not called or called with invalid param."
                      );

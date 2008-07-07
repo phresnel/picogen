@@ -41,7 +41,7 @@ namespace picogen {
             Sphere::Sphere() :
                     x (0.0,0.0,0.0), r (1.0), L_e (0.0),
                     color (1.0,1.0,1.0),
-                    brdf (NULL) {
+                    brdf (0) {
             }
 
 

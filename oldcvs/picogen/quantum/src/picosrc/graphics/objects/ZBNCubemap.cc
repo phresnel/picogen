@@ -84,15 +84,15 @@ namespace picogen {
         namespace objects {
 
 
-            ZBNCubemapSurface::ZBNCubemapSurface() : surface (NULL), width (0), height (0) {
+            ZBNCubemapSurface::ZBNCubemapSurface() : surface (0), width (0), height (0) {
             }
 
 
 
             ZBNCubemapSurface::~ZBNCubemapSurface() {
-                if (NULL != surface) {
+                if (0 != surface) {
                     delete [] surface;
-                    surface = NULL;
+                    surface = 0;
                 }
                 width = height = 0;
             }
@@ -100,9 +100,9 @@ namespace picogen {
 
 
             void ZBNCubemapSurface::resize (int new_width, int new_height) {
-                if (NULL != surface) {
+                if (0 != surface) {
                     delete [] surface;
-                    surface = NULL;
+                    surface = 0;
                 }
                 width   = height = 0;
                 surface = new ZBNCubemapPixel[new_width*new_height];
@@ -126,7 +126,7 @@ namespace picogen {
                 if (! ( (x>=0) & (x<width) & (y>=0) & (y<height))) {
                     throw coords_out_of_bounds (__FILE__, __LINE__, 0, 0, width, height, x, y);
                 }
-                if (NULL==surface) {
+                if (0==surface) {
                     throw null_pointer (__FILE__, __LINE__, string ("surface has not been allocated"));
                 }
                 return surface[ y*width + x ];
@@ -139,7 +139,7 @@ namespace picogen {
                 if( !( (x>=0) & (x<width) & (y>=0) & (y<height) ) ){
                     throw coords_out_of_bounds( __FILE__, __LINE__, 0, 0, width, height, x, y );
                 }
-                if( NULL==surface ){
+                if( 0==surface ){
                     throw null_pointer( __FILE__, __LINE__, string("surface has not been allocated") );
                 }
                 return surface[ y*width + x ];
@@ -153,7 +153,7 @@ namespace picogen {
                 if (! ( (x>=0) & (x<width) & (y>=0) & (y<height))) {
                     throw coords_out_of_bounds (__FILE__, __LINE__, 0, 0, width, height, x, y);
                 }
-                if (NULL==surface) {
+                if (0==surface) {
                     throw null_pointer (__FILE__, __LINE__, string ("surface has not been allocated"));
                 }
                 return surface[ y*width + x ];
@@ -167,7 +167,7 @@ namespace picogen {
                 if (! ( (x>=0) & (x<width) & (y>=0) & (y<height))) {
                     throw coords_out_of_bounds (__FILE__, __LINE__, 0, 0, width, height, x, y);
                 }
-                if (NULL==surface) {
+                if (0==surface) {
                     throw null_pointer (__FILE__, __LINE__, string ("surface has not been allocated"));
                 }
                 surface[ y*width + x ] = p;
@@ -179,7 +179,7 @@ namespace picogen {
                 if (! ( (x>=0) & (x<width) & (y>=0) & (y<height))) {
                     throw coords_out_of_bounds (__FILE__, __LINE__, 0, 0, width, height, x, y);
                 }
-                if (NULL==surface) {
+                if (0==surface) {
                     throw null_pointer (__FILE__, __LINE__, string ("surface has not been allocated"));
                 }
                 surface[ y*width + x ] = p;
@@ -222,7 +222,7 @@ namespace picogen {
 
 
             void ZBNCubemap::lock() {
-                if (NULL != faces) {
+                if (0 != faces) {
                     for (int i=0; i<6; ++i)
                         faces[i].lock();
                 }
@@ -231,7 +231,7 @@ namespace picogen {
 
 
             void ZBNCubemap::unlock() {
-                if (NULL != faces) {
+                if (0 != faces) {
                     for (int i=0; i<6; ++i)
                         faces[i].unlock();
                 }

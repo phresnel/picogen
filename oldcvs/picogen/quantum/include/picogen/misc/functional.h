@@ -168,10 +168,10 @@ namespace picogen {
                 return WRAP( (*lhs)( parameters ) OP (*rhs)( parameters ) );            \
             }                                                                           \
             virtual ~CLASSNAME() {                                                      \
-                if( NULL != lhs ) {                                                     \
+                if( 0 != lhs ) {                                                     \
                     delete lhs;                                                         \
                 }                                                                       \
-                if( NULL != rhs ) {                                                     \
+                if( 0 != rhs ) {                                                     \
                     delete rhs;                                                         \
                 }                                                                       \
             }                                                                           \
@@ -209,7 +209,7 @@ namespace picogen {
             friend BasicFunction* ALLOCNAME( BasicFunction *p1 );                       \
         public:                                                                         \
             virtual ~CLASSNAME() {                                                      \
-                if( NULL != p1 ){                                                       \
+                if( 0 != p1 ){                                                       \
                     delete p1;                                                          \
                 }                                                                       \
             }                                                                           \
@@ -334,10 +334,10 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1 ){                           
             friend BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2 );    \
         public:                                                                         \
             virtual ~CLASSNAME() {                                                      \
-                if( NULL != p1 ){                                                       \
+                if( 0 != p1 ){                                                       \
                     delete p1;                                                          \
                 }                                                                       \
-                if( NULL != p2 ){                                                       \
+                if( 0 != p2 ){                                                       \
                     delete p2;                                                          \
                 }                                                                       \
             }                                                                           \
@@ -427,13 +427,13 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2 ){        
                                              BasicFunction *p3 );                                \
         public:                                                                         \
             virtual ~CLASSNAME() {                                                      \
-                if( NULL != p1 ){                                                       \
+                if( 0 != p1 ){                                                       \
                     delete p1;                                                          \
                 }                                                                       \
-                if( NULL != p2 ){                                                       \
+                if( 0 != p2 ){                                                       \
                     delete p2;                                                          \
                 }                                                                       \
-                if( NULL != p3 ){                                                       \
+                if( 0 != p3 ){                                                       \
                     delete p3;                                                          \
                 }                                                                       \
             }                                                                           \
@@ -509,16 +509,16 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                                              BasicFunction *p3, BasicFunction *p4 );             \
         public:                                                                         \
             virtual ~CLASSNAME() {                                                      \
-                if( NULL != p1 ){                                                       \
+                if( 0 != p1 ){                                                       \
                     delete p1;                                                          \
                 }                                                                       \
-                if( NULL != p2 ){                                                       \
+                if( 0 != p2 ){                                                       \
                     delete p2;                                                          \
                 }                                                                       \
-                if( NULL != p3 ){                                                       \
+                if( 0 != p3 ){                                                       \
                     delete p3;                                                          \
                 }                                                                       \
-                if( NULL != p4 ){                                                       \
+                if( 0 != p4 ){                                                       \
                     delete p4;                                                          \
                 }                                                                       \
             }                                                                           \
@@ -564,7 +564,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     BasicFunction *fun;
                 public:
                     virtual ~Function_R1_R1() {
-                        if (NULL != fun) {
+                        if (0 != fun) {
                             delete fun;
                         }
                     }
@@ -590,7 +590,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     BasicFunction *fun;
                 public:
                     virtual ~Function_R2_R1() {
-                        if (NULL != fun) {
+                        if (0 != fun) {
                             delete fun;
                         }
                     }
@@ -616,7 +616,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     BasicFunction *fun;
                 public:
                     virtual ~Function_R3_R1() {
-                        if (NULL != fun) {
+                        if (0 != fun) {
                             delete fun;
                         }
                     }

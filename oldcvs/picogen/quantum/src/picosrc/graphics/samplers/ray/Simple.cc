@@ -32,11 +32,11 @@ namespace picogen {
 
 
                 Simple::Simple (IIntersectable *intersectable)
-                        : m_intersectable (intersectable), m_skyShader (NULL) {
+                        : m_intersectable (intersectable), m_skyShader (0) {
                 }
 
                 Simple::Simple()
-                        : m_intersectable (NULL), m_skyShader (NULL) {
+                        : m_intersectable (0), m_skyShader (0) {
                 }
 
                 Simple::~Simple() {
@@ -62,9 +62,9 @@ namespace picogen {
 
                     if (max == 0) {
                         return Color (0.0,0.0,0.0);
-                    } else if (NULL==m_intersectable || !m_intersectable->intersect (I, ray)) {
+                    } else if (0==m_intersectable || !m_intersectable->intersect (I, ray)) {
                         //> apply sky color if there is no object to intersect or no intersection
-                        if (NULL != m_skyShader) {
+                        if (0 != m_skyShader) {
                             Color skyColor, sunColor;
                             m_skyShader->shade (skyColor, ray);
                             if (specularOrFirst) {
@@ -96,14 +96,14 @@ namespace picogen {
                             col += (I.color*I.L_e) + (L_i (r_out,specularOrFirst,dummyi,max-1) * I.color * f);
 
                             //> atmosphere lighting and shading
-                            if (NULL != m_skyShader) {
+                            if (0 != m_skyShader) {
                                 if (!specularOrFirst) {
                                     Ray sunRay;
                                     Color sunColor;
                                     real sun_p = 0.0;
                                     m_skyShader->sunSample (sunColor, sunRay, sun_p, r_out.x());
                                     intersection_t tmp_I;
-                                    if (sun_p > epsilon && (NULL==m_intersectable || !m_intersectable->intersect (tmp_I, sunRay))) {
+                                    if (sun_p > epsilon && (0==m_intersectable || !m_intersectable->intersect (tmp_I, sunRay))) {
                                         real c = I.normal.normal() * sunRay.w();
                                         col += I.color * sunColor * c;
                                     }
@@ -122,7 +122,7 @@ namespace picogen {
                 bool Simple::integrate (param_out (Color, color), param_out (intersection_t,primaryIntersection), param_in (Ray,ray)) {
                     XRT_CALL_STACK_PUSH ("bool WhittedStyle::Integrate( param_out(base_types::color, color), param_in(base_types::ray,ray) )");
 #ifdef XRT_DEBUG
-                    if (NULL == m_intersectable)
+                    if (0 == m_intersectable)
                         throw exceptions::null_pointer (__FILE__, __LINE__, "WhittedStyle-Integrator Zero Pointer: no intersectable object");
 #endif
                     color = L_i (ray,true,primaryIntersection,15);

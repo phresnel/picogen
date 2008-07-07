@@ -177,20 +177,20 @@ namespace picogen {
                         mode m_mode;
                     public:
                         real T;
-                        Elias_one() : m_num_planes (0), m_planes (NULL), T (0.05) {};
+                        Elias_one() : m_num_planes (0), m_planes (0), T (0.05) {};
                         virtual ~Elias_one() {
-                            if (NULL != m_planes)
+                            if (0 != m_planes)
                                 delete [] m_planes;
                             m_mode = normal;
-                            m_planes = NULL;
+                            m_planes = 0;
                             m_num_planes = 0;
                         }
                         bool seed (int n, int rand) {
-                            if (m_planes != NULL)
+                            if (m_planes != 0)
                                 delete [] m_planes;
                             m_num_planes = 0;
                             m_planes = new t_plane[n];
-                            if (m_planes == NULL)
+                            if (m_planes == 0)
                                 return false;
                             m_num_planes = n;
                             int i;
@@ -690,7 +690,7 @@ namespace picogen {
                 class Sum : public abstract::vector_to_scalar {
                         abstract::vector_to_scalar *a, *b;
                     public:
-                        Sum() : a (NULL), b (NULL) {}
+                        Sum() : a (0), b (0) {}
                         Sum (abstract::vector_to_scalar *_a, abstract::vector_to_scalar *_b) : a (_a), b (_b) {}
                         void setA (abstract::vector_to_scalar *a) {
                             this->a = a;
@@ -699,14 +699,14 @@ namespace picogen {
                             this->b = b;
                         }
                         virtual ::picogen::misc::prim::real f (::picogen::misc::prim::real x, ::picogen::misc::prim::real y, ::picogen::misc::prim::real z) const {
-                            return (NULL!=a?a->f (x,y,z) :0.0) + (NULL!=b?b->f (x,y,z) :0.0);
+                            return (0!=a?a->f (x,y,z) :0.0) + (0!=b?b->f (x,y,z) :0.0);
                         }
                 };
 
                 class Product : public abstract::vector_to_scalar {
                         abstract::vector_to_scalar *a, *b;
                     public:
-                        Product() : a (NULL), b (NULL) {}
+                        Product() : a (0), b (0) {}
                         Product (abstract::vector_to_scalar *_a, abstract::vector_to_scalar *_b) : a (_a), b (_b) {}
                         void setA (abstract::vector_to_scalar *a) {
                             this->a = a;
@@ -715,7 +715,7 @@ namespace picogen {
                             this->b = b;
                         }
                         virtual ::picogen::misc::prim::real f (::picogen::misc::prim::real x, ::picogen::misc::prim::real y, ::picogen::misc::prim::real z) const {
-                            return (NULL!=a?a->f (x,y,z) :0.0) * (NULL!=b?b->f (x,y,z) :0.0);
+                            return (0!=a?a->f (x,y,z) :0.0) * (0!=b?b->f (x,y,z) :0.0);
                         }
                 };
 
@@ -723,7 +723,7 @@ namespace picogen {
                         abstract::vector_to_scalar *a;
                         ::picogen::misc::prim::real p;
                     public:
-                        Power() : a (NULL), p (1.0) {}
+                        Power() : a (0), p (1.0) {}
                         Power (abstract::vector_to_scalar *_a, ::picogen::misc::prim::real _p) : a (_a), p (_p) {}
                         void setA (abstract::vector_to_scalar *a) {
                             this->a = a;
@@ -732,7 +732,7 @@ namespace picogen {
                             this->p = p;
                         }
                         virtual ::picogen::misc::prim::real f (::picogen::misc::prim::real x, ::picogen::misc::prim::real y, ::picogen::misc::prim::real z) const {
-                            return pow ( (NULL!=a?a->f (x,y,z) :0.0), p);
+                            return pow ( (0!=a?a->f (x,y,z) :0.0), p);
                         }
                 };
 
@@ -746,7 +746,7 @@ namespace picogen {
                     public:
                         InputDistorter (abstract::scalar_to_scalar *distortion, abstract::vector_to_scalar *function) :
                                 Distortion (distortion), Function (function) {}
-                        InputDistorter() : Distortion (NULL), Function (NULL) {}
+                        InputDistorter() : Distortion (0), Function (0) {}
                         void setDistortion (abstract::scalar_to_scalar *dist) {
                             Distortion = dist;
                         }
@@ -755,7 +755,7 @@ namespace picogen {
                         }
 
                         virtual real f (real x, real y, real z) const {
-                            if (Distortion == NULL || Function == NULL)
+                            if (Distortion == 0 || Function == 0)
                                 return 0;
                             return Function->f (Distortion->f (x), Distortion->f (y), Distortion->f (z));
                         }
@@ -783,20 +783,20 @@ namespace picogen {
                 class Negate : public abstract::uv_to_scalar {
                         abstract::uv_to_scalar *a;
                     public:
-                        Negate() : a (NULL) {}
+                        Negate() : a (0) {}
                         Negate (abstract::uv_to_scalar *_a) : a (_a) {}
                         void setA (abstract::uv_to_scalar *a) {
                             this->a = a;
                         }
                         virtual ::picogen::misc::prim::real f (::picogen::misc::prim::real x, ::picogen::misc::prim::real y) const {
-                            return - (NULL!=a?a->f (x,y) :0.0);
+                            return - (0!=a?a->f (x,y) :0.0);
                         }
                 };
 
                 class Sum : public abstract::uv_to_scalar {
                         abstract::uv_to_scalar *a, *b;
                     public:
-                        Sum() : a (NULL), b (NULL) {}
+                        Sum() : a (0), b (0) {}
                         Sum (abstract::uv_to_scalar *_a, abstract::uv_to_scalar *_b) : a (_a), b (_b) {}
                         void setA (abstract::uv_to_scalar *a) {
                             this->a = a;
@@ -805,13 +805,13 @@ namespace picogen {
                             this->b = b;
                         }
                         virtual ::picogen::misc::prim::real f (::picogen::misc::prim::real x, ::picogen::misc::prim::real y) const {
-                            return (NULL!=a?a->f (x,y) :0.0) + (NULL!=b?b->f (x,y) :0.0);
+                            return (0!=a?a->f (x,y) :0.0) + (0!=b?b->f (x,y) :0.0);
                         }
                 };
                 class Product : public abstract::uv_to_scalar {
                         abstract::uv_to_scalar *a, *b;
                     public:
-                        Product() : a (NULL), b (NULL) {}
+                        Product() : a (0), b (0) {}
                         Product (abstract::uv_to_scalar *_a, abstract::uv_to_scalar *_b) : a (_a), b (_b) {}
                         void setA (abstract::uv_to_scalar *a) {
                             this->a = a;
@@ -820,7 +820,7 @@ namespace picogen {
                             this->b = b;
                         }
                         virtual ::picogen::misc::prim::real f (::picogen::misc::prim::real x, ::picogen::misc::prim::real y) const {
-                            return (NULL!=a?a->f (x,y) :0.0) * (NULL!=b?b->f (x,y) :0.0);
+                            return (0!=a?a->f (x,y) :0.0) * (0!=b?b->f (x,y) :0.0);
                         }
                 };
 
@@ -828,7 +828,7 @@ namespace picogen {
                         abstract::uv_to_scalar *a;
                         ::picogen::misc::prim::real p;
                     public:
-                        Power() : a (NULL), p (1.0) {}
+                        Power() : a (0), p (1.0) {}
                         Power (abstract::uv_to_scalar *_a, ::picogen::misc::prim::real _p) : a (_a), p (_p) {}
                         void setA (abstract::uv_to_scalar *a) {
                             this->a = a;
@@ -837,7 +837,7 @@ namespace picogen {
                             this->p = p;
                         }
                         virtual ::picogen::misc::prim::real f (::picogen::misc::prim::real x, ::picogen::misc::prim::real y) const {
-                            return pow ( (NULL!=a?a->f (x,y) :0.0), p);
+                            return pow ( (0!=a?a->f (x,y) :0.0), p);
                         }
                 };
             };

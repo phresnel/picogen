@@ -292,7 +292,7 @@ class AssignmentExprAST : public ExprAST {
         }
         virtual void accept (ASTVisitor &visitor) const {
             visitor.visit (this);
-            if (lhs) lhs->accept (visitor);
+            if (id)  id->accept (visitor);
             if (rhs) rhs->accept (visitor);
             visitor.end(this);
         }

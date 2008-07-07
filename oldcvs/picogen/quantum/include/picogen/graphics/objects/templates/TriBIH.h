@@ -110,7 +110,7 @@ namespace picogen {
                                     unsigned int &max_tris_in_node, unsigned int &max_depth
                                 ) const;
                             public:
-                                bih_build_node() : triangles(), aabb(), p_left (NULL), p_right (NULL) {}
+                                bih_build_node() : triangles(), aabb(), p_left (0), p_right (0) {}
                                 virtual ~bih_build_node() {
                                     free();
                                 }
