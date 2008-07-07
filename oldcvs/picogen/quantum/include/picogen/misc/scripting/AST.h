@@ -537,6 +537,12 @@ class FunProtoAST : public ExprAST {
         virtual void accept (ASTNonRecursingVisitor &visitor) const {
             visitor.visit (this);
         }
+        const std::string & getName() const {
+            return name;
+        }
+        const std::vector<Argument> & getArguments() const {
+            return args;
+        }
 };
 
 class FunAST : public ExprAST {
@@ -557,6 +563,12 @@ class FunAST : public ExprAST {
         }
         virtual void accept (ASTNonRecursingVisitor &visitor) const {
             visitor.visit (this);
+        }
+        const FunProtoAST * getPrototype() const {
+            return prototype;
+        }
+        const ExprAST * getBody() const {
+            return body;
         }
 };
 
