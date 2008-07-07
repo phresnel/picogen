@@ -89,7 +89,7 @@ static const TokenDescriptor tokenDescriptors[] = {
     ,TokenDescriptor (int_token,      "int",        regex ("\\d+"))
     ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for"))
     ,TokenDescriptor (typename_token, "typename",   regex ("int|float"))
-    ,TokenDescriptor (id_token,       "identifier", regex ("[[:alpha:]]([[:alpha:]]|[[:digit:]])*"))
+    ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]]|_)([[:alpha:]]|[[:digit:]]|_)*"))
     ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|\\(|\\)|=|;|\\{|\\}"))
     ,TokenDescriptor (omitted_token,  "",           regex ("[[:space:]]+"), true)
 };
@@ -565,15 +565,28 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
         // Declaration?
         // --> Note: currently only support single declaration w/out init.
         if (curr != end && curr->tokenDescriptor->tokenType == typename_token) {
-            const string type = curr->value;
-            ++curr;
-
-            if (curr != end && curr->tokenDescriptor->tokenType == id_token) {
-                const string id = curr->value;
+            //const string type = curr->value;
+            bool isValidDatatype = false;
+            Datatype dt;
+            if ("int" == curr->value) {
+                dt = int_type;
+                isValidDatatype = true;
+            } else if ("float" == curr->value) {
+                dt = float_type;
+                isValidDatatype = true;
+            } else {
+                isValidDatatype = false;
+            }
+            if (isValidDatatype) {
                 ++curr;
-                if (tokenEquals (";", curr, end)) {
+
+                if (curr != end && curr->tokenDescriptor->tokenType == id_token) {
+                    const string id = curr->value;
                     ++curr;
-                    return new DeclarationAST (type, id);
+                    if (tokenEquals (";", curr, end)) {
+                        ++curr;
+                        return new DeclarationAST (dt, id);
+                    }
                 }
             }
             curr = backup; // rollback
