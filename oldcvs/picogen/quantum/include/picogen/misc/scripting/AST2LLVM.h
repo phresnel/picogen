@@ -26,6 +26,7 @@
 #define AST2LLVM_H
 
 #include <stack>
+#include <map>
 
 #include <llvm/DerivedTypes.h>
 #include <llvm/Module.h>
@@ -42,6 +43,25 @@ class AST2LLVM : public ASTVisitor {
             explicit ValueDescriptor (llvm::Value * val, const ExprAST *ast) : value(val), ast(ast) {}
         };
         std::stack<ValueDescriptor> values;
+
+        struct Symbol {
+            public:
+                const Datatype type;
+                const std::string id;
+            protected:
+                friend class std::map<std::string, Symbol>;
+                Symbol () : type(int_type), id("<unknown>") {}
+            public:
+                Symbol (Datatype type, const std::string &id) : type(type), id(id) {}
+                Symbol (const Symbol &sym) : type(sym.type), id(sym.id) {}
+                const Symbol & operator = (const Symbol &sym) {
+                    const_cast<Datatype&>(type) = sym.type;
+                    const_cast<std::string&>(id) = sym.id;
+                    return *this;
+                }
+        };
+        std::map<std::string, Symbol> symtab;
+
         llvm::LLVMBuilder builder;
         bool verbose;
     public:
