@@ -85,8 +85,8 @@ struct TokenDescriptor {
 
 // \d is any digit (as with [[:digit:]])
 static const TokenDescriptor tokenDescriptors[] = {
-    TokenDescriptor (float_token,    "float",      regex ("\\d+\\.\\d+"))
-    ,TokenDescriptor (int_token,      "int",        regex ("\\d+"))
+    TokenDescriptor (float_token,    "float",      regex ("-?\\d+\\.\\d+"))
+    ,TokenDescriptor (int_token,      "int",        regex ("-?\\d+"))
     ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for"))
     ,TokenDescriptor (typename_token, "typename",   regex ("int|float"))
     ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]]|_)([[:alpha:]]|[[:digit:]]|_)*"))
@@ -189,6 +189,12 @@ static ExprAST *parseIntExpr (
 ) {
     // convert token value-string to integer
     int result = 0;
+    /// \todo write overflow save str-to-float converter
+    sscanf (curr->value.c_str(), "%i", &result);
+    ++curr;
+    return new IntExprAST (result);
+    /*
+    int result = 0;
     int mag = 1;
 
     std::string::const_iterator d = curr->value.end();
@@ -230,7 +236,7 @@ static ExprAST *parseIntExpr (
         } while (d != curr->value.begin());
 
     ++curr;
-    return new IntExprAST (result);
+    return new IntExprAST (result);*/
 }
 
 
