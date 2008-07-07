@@ -40,6 +40,7 @@ typedef enum {
 } Datatype;
 
 
+
 // Forward declare all Node-Types.
 class ExprAST;
 class FloatExprAST;
@@ -302,12 +303,12 @@ class AssignmentExprAST : public ExprAST {
 };
 
 class DeclarationAST : public ExprAST {
-        const std::string type;
+        const Datatype type;
         const std::string name;
     public:
-        explicit DeclarationAST (const std::string &type, const std::string &name) : type(type), name(name) {}
+        explicit DeclarationAST (Datatype type, const std::string &name) : type(type), name(name) {}
         virtual ~DeclarationAST() {}
-        const std::string getType () const {
+        const Datatype getType () const {
             return type;
         }
         const std::string getName () const {
