@@ -247,9 +247,9 @@ class BinaryExprAST : public ExprAST {
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "binaryOpExpr(" << op << "){" << std::endl;
-            if (lhs != NULL)
+            if (lhs != 0)
                 lhs->print (indent + 1);
-            if (rhs != NULL)
+            if (rhs != 0)
                 rhs->print (indent + 1);
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
@@ -266,16 +266,16 @@ class BinaryExprAST : public ExprAST {
 };
 
 class AssignmentExprAST : public ExprAST {
-        const ExprAST *lhs;
+        const IdExprAST *id;
         const ExprAST *rhs;
     public:
-        explicit AssignmentExprAST (const ExprAST *lhs, const ExprAST *rhs) : lhs (lhs), rhs (rhs) {}
+        explicit AssignmentExprAST (const IdExprAST *id, const ExprAST *rhs) : id (id), rhs (rhs) {}
         virtual ~AssignmentExprAST() {
-            if (lhs) delete lhs;
+            if (id) delete id;
             if (rhs) delete rhs;
         }
-        const ExprAST *getLhs () const {
-            return lhs;
+        const IdExprAST *getId () const {
+            return id;
         }
         const ExprAST *getRhs () const {
             return rhs;
@@ -283,9 +283,9 @@ class AssignmentExprAST : public ExprAST {
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "assignmentExpr(=){" << std::endl;
-            if (lhs != NULL)
-                lhs->print (indent + 1);
-            if (rhs != NULL)
+            if (id != 0)
+                id->print (indent + 1);
+            if (rhs != 0)
                 rhs->print (indent + 1);
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
@@ -347,7 +347,7 @@ class BlockAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "block{" << std::endl;
             for (std::vector<const ExprAST*>::const_iterator it=list.begin(); it!=list.end(); ++it) {
-                if ( (*it) != NULL)
+                if ( (*it) != 0)
                     (*it)->print (indent+1);
             }
             AST_PRINT_DO_INDENT (indent);
@@ -400,13 +400,13 @@ class IfBlockAST : public ExprAST {
 
             AST_PRINT_DO_INDENT (indent+1);
             std::cout << "if:" << std::endl;
-            if (if_clause != NULL)
+            if (if_clause != 0)
                 if_clause->print (indent+2);
             AST_PRINT_DO_INDENT (indent+1);
             std::cout << "then:" << std::endl;
-            if (if_body != NULL)
+            if (if_body != 0)
                 if_body->print (indent+2);
-            if (else_body != NULL) {
+            if (else_body != 0) {
                 AST_PRINT_DO_INDENT (indent+1);
                 std::cout << "else:" << std::endl;
                 else_body->print (indent+2);
@@ -449,11 +449,11 @@ class WhileLoopAST : public ExprAST {
 
             AST_PRINT_DO_INDENT (indent+1);
             std::cout << "condition:" << std::endl;
-            if (NULL != condition)
+            if (0 != condition)
                 condition->print (indent+2);
             AST_PRINT_DO_INDENT (indent+1);
             std::cout << "body:" << std::endl;
-            if (NULL != body)
+            if (0 != body)
                 body->print (indent+2);
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
@@ -491,12 +491,12 @@ class DoWhileLoopAST : public ExprAST {
 
             AST_PRINT_DO_INDENT (indent+1);
             std::cout << "body:" << std::endl;
-            if (body != NULL)
+            if (body != 0)
                 body->print (indent+2);
 
             AST_PRINT_DO_INDENT (indent+1);
             std::cout << "condition:" << std::endl;
-            if (condition != NULL)
+            if (condition != 0)
                 condition->print (indent+2);
 
             AST_PRINT_DO_INDENT (indent);
