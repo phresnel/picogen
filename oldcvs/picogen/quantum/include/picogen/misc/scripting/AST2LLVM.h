@@ -33,6 +33,7 @@
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Constants.h>
 #include <llvm/Support/LLVMBuilder.h>
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
 
 #include <picogen/misc/scripting/AST.h>
 
@@ -40,34 +41,50 @@ class AST2LLVM : public ASTVisitor {
         struct ValueDescriptor {
             llvm::Value *value;
             const ExprAST *ast;
-            explicit ValueDescriptor (llvm::Value * val, const ExprAST *ast) : value(val), ast(ast) {}
+            const bool isIdentifier;
+            explicit ValueDescriptor (llvm::Value * val, const ExprAST *ast, bool isIdentifier = false)
+            : value(val), ast(ast), isIdentifier(isIdentifier) {}
         };
         std::stack<ValueDescriptor> values;
 
+        struct Symbol;
+        typedef std::map<std::string, Symbol> SymbolTable;
         struct Symbol {
             public:
                 const Datatype type;
                 const std::string id;
+                llvm::AllocaInst * const llvmAlloca;
             protected:
                 friend class std::map<std::string, Symbol>;
-                Symbol () : type(int_type), id("<unknown>") {}
+                Symbol () : type(int_type), id("<unknown>"), llvmAlloca(0) {} // Needed for std::map<>.
             public:
-                Symbol (Datatype type, const std::string &id) : type(type), id(id) {}
-                Symbol (const Symbol &sym) : type(sym.type), id(sym.id) {}
+                Symbol (Datatype type, const std::string &id, llvm::AllocaInst *llvmAlloca)
+                : type(type), id(id), llvmAlloca(llvmAlloca) {}
+
+                Symbol (const Symbol &sym) : type(sym.type), id(sym.id), llvmAlloca(sym.llvmAlloca) {}
                 const Symbol & operator = (const Symbol &sym) {
                     const_cast<Datatype&>(type) = sym.type;
                     const_cast<std::string&>(id) = sym.id;
+                    const_cast<const llvm::AllocaInst*&>(llvmAlloca) = sym.llvmAlloca;
                     return *this;
                 }
         };
-        std::map<std::string, Symbol> symtab;
+        SymbolTable symtab;
+
+        typedef std::map<std::string, llvm::Function*> FunctionTable;
+        FunctionTable funtab;
 
         llvm::LLVMBuilder builder;
+        llvm::Module *module;
+        llvm::ExecutionEngine *executionEngine;
+        void *entryPoint;
         bool verbose;
     public:
 
         AST2LLVM();
         virtual ~AST2LLVM ();
+
+        void compile();
 
         virtual void visit (const FloatExprAST*);
         virtual void visit (const IntExprAST*);
@@ -96,27 +113,6 @@ class AST2LLVM : public ASTVisitor {
         virtual void end (const DoWhileLoopAST*);
         virtual void end (const FunProtoAST*);
         virtual void end (const FunAST*);
-};
-
-
-
-class LLVMCodegen {
-    public:
-        virtual llvm::Value *codegen () = 0;
-};
-
-class LLVMFloatExprAST : public FloatExprAST, public LLVMCodegen {
-    public:
-        virtual llvm::Value *codegen () {
-            return llvm::ConstantFP::get(llvm::Type::FloatTy, llvm::APFloat (value));
-        }
-};
-
-class LLVMIntExprAST : public IntExprAST, public LLVMCodegen {
-    public:
-        virtual llvm::Value *codegen () {
-            return llvm::ConstantInt::get(llvm::Type::Int32Ty, value);
-        }
 };
 
 
