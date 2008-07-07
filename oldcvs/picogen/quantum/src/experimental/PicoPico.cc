@@ -178,7 +178,7 @@ static bool tokenEquals (string checkee, const std::vector<Token>::const_iterato
 
 static ExprAST *parsePrimary (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
 static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
-static ExprAST *parseBlock (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
+static BlockAST *parseBlock (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
 
 
 
@@ -636,7 +636,7 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
 
 
 
-static ExprAST *parseBlock (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
+static BlockAST *parseBlock (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
     BlockAST *block = 0;
     if (curr != end) {
         while (curr != end) {
@@ -652,13 +652,28 @@ static ExprAST *parseBlock (std::vector<Token>::const_iterator &curr, const std:
                 throw;
                 continue;
             }
-            if (0 == block) {   // first block element? then do not build a BlockAST yet
+            if (0 == block) {   // first block element?
                 block = new BlockAST();
             }
             block->addTail (tmp);
         }
     }
     return block;
+}
+
+
+
+static ExprAST *parseTopLevelExpression (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
+    BlockAST *globalBlock = parseBlock (curr, end);
+    if (0 != globalBlock) {
+        // Reminder:
+        //   explicit FunProtoAST (const std::string &name, const std::vector<Argument> &args)
+        //   explicit FunAST (const FunProtoAST *prototype, const ExprAST *body)
+        FunProtoAST *proto = new FunProtoAST ("", std::vector<FunProtoAST::Argument>());
+        return new FunAST (proto, globalBlock);
+    } else {
+        return 0;
+    }
 }
 
 
@@ -707,7 +722,7 @@ namespace picogen { /// \todo find proper namespace for this
 
         // done
         vector<Token>::const_iterator it;
-#if 1
+#if 0
         cout << endl;
         for (it=tokens.begin(); it != tokens.end(); ++it) {
             cout << "[" << it->tokenDescriptor->name << "(" << it->value << ")" << "]";
@@ -715,14 +730,15 @@ namespace picogen { /// \todo find proper namespace for this
         cout << endl;
 #endif // #if 0
 
-        // parse
+        // Parse.
         vector<Token>::const_iterator curr = tokens.begin();
-        const ExprAST *ast_ = parseBlock (curr, tokens.end());  //parsePrimary( curr, tokens.end() );
+        const ExprAST *ast_ = parseTopLevelExpression (curr, tokens.end());
         if (0 != ast_) {
             /*cout << endl << "program's AST:\n";
             ast->print (1);*/
             AST2LLVM llvm;
             ast_->accept (llvm);
+            llvm.compile();
             if ((flags & return_ast) == return_ast && 0 != ast) {
                 *ast = ast_;
             } else {
