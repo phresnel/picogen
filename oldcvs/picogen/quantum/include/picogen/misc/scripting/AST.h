@@ -330,6 +330,9 @@ class DeclarationAST : public ExprAST {
 class BlockAST : public ExprAST {
         std::vector<const ExprAST *> list; // first i had an hierarchical (even when linear) block. but that was ugly to debug.
     public:
+        typedef std::vector<const ExprAST *> vector;
+        typedef std::vector<const ExprAST *>::const_iterator const_iterator;
+
         explicit BlockAST() : list() {}
         virtual ~BlockAST() {
             std::vector<const ExprAST *>::iterator it = list.begin();
@@ -338,9 +341,16 @@ class BlockAST : public ExprAST {
                 ++it;
             }
         }
-        const std::vector<const ExprAST *> &getList () const {
+        const vector &getList () const {
             return list;
         }
+        const_iterator begin() const {
+            return list.begin();
+        }
+        const_iterator end() const {
+            return list.end();
+        }
+        //const
         virtual void addTail (const ExprAST *ast) {
             list.push_back (ast);
         }
