@@ -131,7 +131,6 @@
 		<Unit filename="../../../include/compile_info.h" />
 		<Unit filename="../../../include/picogen.h" />
 		<Unit filename="../../../include/picogen/experimental/CloudShader_Bouthors.h" />
-		<Unit filename="../../../include/picogen/experimental/PicoPico.h" />
 		<Unit filename="../../../include/picogen/experimental/Rain.h" />
 		<Unit filename="../../../include/picogen/experimental/ShaderCC_GCC.h" />
 		<Unit filename="../../../include/picogen/experimental/Snow.h" />
@@ -169,7 +168,6 @@
 		<Unit filename="../../../include/picogen/misc/scripting/nano-c.h" />
 		<Unit filename="../../../include/picogen/misc/templates.h" />
 		<Unit filename="../../../include/picossdf/picossdf.h" />
-		<Unit filename="../../../src/experimental/PicoPico.cc" />
 		<Unit filename="../../../src/experimental/Rain.cc" />
 		<Unit filename="../../../src/experimental/Snow.cc" />
 		<Unit filename="../../../src/main.cc" />
@@ -191,6 +189,7 @@
 		<Unit filename="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/AST2LLVM.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/nano-c.cc" />
+		<Unit filename="../../../src/picosrc/misc/scripting/picogen-c.cc" />
 		<Unit filename="../../../src/picossdf/picossdf.cc" />
 		<Unit filename="../../../src/submain/mkheightmap.cc" />
 		<Unit filename="../../../src/submain/seb.cc" />
