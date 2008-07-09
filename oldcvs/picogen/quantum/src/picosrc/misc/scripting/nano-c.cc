@@ -20,7 +20,7 @@
  */
 
 #include <picogen/picogen.h>
-#include <picogen/experimental/PicoPico.h>
+#include <picogen/misc/scripting/picogen-c.h>
 #include <picogen/misc/scripting/nano-c.h>
 #include <picogen/misc/scripting/AST.h>
 
