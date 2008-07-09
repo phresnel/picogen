@@ -33,6 +33,7 @@ using namespace std;
 AST2LLVM::AST2LLVM()
 : builder(), module (new Module ("me jit")), executionEngine (0), entryPoint(0), verbose (true)
 {
+
 }
 
 
@@ -76,7 +77,15 @@ void AST2LLVM::visit (const BinaryExprAST*) {}
 void AST2LLVM::visit (const AssignmentExprAST*) {}
 void AST2LLVM::visit (const DeclarationAST*) {}
 void AST2LLVM::visit (const BlockAST*) {}
-void AST2LLVM::visit (const IfBlockAST*) {}
+
+
+
+void AST2LLVM::visit (const IfBlockAST *ast) {
+    ast->enableVisit (false, false, false);
+}
+
+
+
 void AST2LLVM::visit (const WhileLoopAST*) {}
 void AST2LLVM::visit (const DoWhileLoopAST*) {}
 
@@ -125,14 +134,12 @@ void AST2LLVM::visit (const FunAST *ast) {
 
 void AST2LLVM::end (const FloatExprAST* ast) {
     values.push (ValueDescriptor (llvm::ConstantFP::get(llvm::Type::FloatTy, llvm::APFloat (ast->getValue())), ast));
-    //if (verbose) values.top().value->dump();
 }
 
 
 
 void AST2LLVM::end (const IntExprAST* ast) {
     values.push (ValueDescriptor (llvm::ConstantInt::get(llvm::Type::Int32Ty, ast->getValue()), ast));
-    //if (verbose) values.top().value->dump();
 }
 
 
@@ -147,22 +154,24 @@ void AST2LLVM::end (const IdExprAST *ast)  {
         throw;
     }
     // B) Profit.
-    values.push (ValueDescriptor (symtab [ast->getValue()].llvmAlloca, ast));
+    AllocaInst *alloca = symtab [ast->getValue()].llvmAlloca;
+    values.push (ValueDescriptor (alloca, ast));
+    values.top().value = builder.CreateLoad (values.top().value);
+    //builder.CreateLoad (valtmp);
+    //values.push (ValueDescriptor (new LoadInst (symtab [ast->getValue()].llvmAlloca, ast->getValue().c_str()), ast));
 }
 
 
 
 void AST2LLVM::end (const CallExprAST*)  {
-    ////std::cout << "CallExpr" << "-" << std::endl;
 }
 
 
 
 void AST2LLVM::end (const BinaryExprAST* ast)   {
-
     // Load rhs.
     Value *rhs   = values.top().value;
-    if (0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
+    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
         // We got to load an id.
         Value *valtmp = rhs;
         rhs = builder.CreateLoad (valtmp);
@@ -171,13 +180,12 @@ void AST2LLVM::end (const BinaryExprAST* ast)   {
 
     // Load lhs.
     Value *lhs   = values.top().value;
-    if (0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
+    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
         // We got to load an id.
         Value *valtmp = lhs;
         lhs = builder.CreateLoad (valtmp);
     }
     values.pop();
-
 
     switch (ast->getOp()) {
         case '+':
@@ -201,18 +209,24 @@ void AST2LLVM::end (const BinaryExprAST* ast)   {
 
 
 void AST2LLVM::end (const AssignmentExprAST *ast) {
-
     // Load val.
     Value *val   = values.top().value;
-    if (0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
+    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
         // We got to load an id.
         Value *valtmp = val;
         val = builder.CreateLoad (valtmp);
     }
     values.pop();
 
+    // This is a bit tricky (not really): in most cases we want to use the value of what an Id points to.
+    // But in assignments, even if not obvious at first, the LHS is actually the mem-ptr and not the value
+    // and to not struggle our code too much we go through the usual routine 'values.top()/pop()'
+    // but then acquire our symtab, which holds the address in llvmAlloca.
+
     // Next: to what we assign
-    Value *alloc = values.top().value;  values.pop();
+    values.pop(); // Value not needed, see above comment.
+    Value *alloc = symtab [ast->getId()->getValue()].llvmAlloca;
+
 
     // Finally create a store.
     values.push (ValueDescriptor (builder.CreateStore (val, alloc), ast));
@@ -258,8 +272,66 @@ void AST2LLVM::end (const BlockAST*)  {
 
 
 
-void AST2LLVM::end (const IfBlockAST*)  {
-    //std::cout << "IfBlock" << "-" << std::endl;
+void AST2LLVM::end (const IfBlockAST *ast)  {
+    Value *val_cond = 0;
+    Value *val_then = 0;
+    Value *val_else = 0;
+
+    // Generate If:
+    ast->getIfClause()->accept (*this);
+    val_cond = values.top().value;
+    values.pop();
+
+    val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "ifcond");
+
+    Function *parentFun = builder.GetInsertBlock()->getParent();
+    BasicBlock *thenBB  = new BasicBlock ("then", parentFun);
+    BasicBlock *elseBB  = new BasicBlock ("else");
+    BasicBlock *mergeBB = new BasicBlock ("ifcont");
+
+    builder.CreateCondBr (val_cond, thenBB, elseBB);
+
+    // Generate Then:
+    builder.SetInsertPoint (thenBB);
+    const ExprAST *ifBody = ast->getIfBody(); // Makes it easier to dbg when saved to var.
+    if (0 != ifBody) {
+        const unsigned int old_size = values.size();
+        ifBody->accept (*this);
+        if (values.size() != old_size) { // Check if any code has been generated.
+            val_then = values.top().value;
+            values.pop();
+        }
+    }
+    builder.CreateBr (mergeBB);
+    thenBB = builder.GetInsertBlock();
+
+    // Generate Else:
+    parentFun->getBasicBlockList().push_back (elseBB); // Remember else-target.
+    builder.SetInsertPoint (elseBB);
+
+    const ExprAST *elseBody = ast->getElseBody(); // Makes it easier to dbg when saved to var.
+    if (0 != elseBody) {
+        const unsigned int old_size = values.size();
+        elseBody->accept (*this);
+        if (values.size() != old_size) { // Check if any code has been generated.
+            val_else = values.top().value;
+            values.pop();
+        }
+    }
+
+    builder.CreateBr (mergeBB);
+    elseBB = builder.GetInsertBlock();
+
+    // Merge:
+    parentFun->getBasicBlockList().push_back (mergeBB);
+    builder.SetInsertPoint(mergeBB);
+
+    /*PHINode *phi = builder.CreatePHI(Type::Int32Ty, "iftmp");
+    phi->addIncoming (val_then, thenBB);
+    phi->addIncoming (val_else, elseBB);
+    values.push (ValueDescriptor (phi, ast));
+    */
+    ast->enableVisit (true, true, true);
 }
 
 
