@@ -90,7 +90,7 @@ static const TokenDescriptor tokenDescriptors[] = {
     ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for"))
     ,TokenDescriptor (typename_token, "typename",   regex ("int|float"))
     ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]]|_)([[:alpha:]]|[[:digit:]]|_)*"))
-    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|\\(|\\)|=|;|\\{|\\}"))
+    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|<|>|\\(|\\)|=|;|\\{|\\}"))
     ,TokenDescriptor (omitted_token,  "",           regex ("[[:space:]]+"), true)
 };
 static const int tokenDescriptorCount = sizeof (tokenDescriptors) / sizeof (tokenDescriptors[0]);
