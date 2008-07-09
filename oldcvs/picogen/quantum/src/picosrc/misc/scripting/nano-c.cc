@@ -30,10 +30,14 @@ using namespace std;
 namespace picogen {
 
     NanoC::NanoC (const std::string &code) : code(code), it(code.begin()) {
-        const ExprAST *ast;
+        const ExprAST *ast = 0;
         PicoPico p(code, PicoPico::return_ast, &ast);
-        if (0 != ast)
+        if (0 != ast) {
+            /*cout << "\nprogram's AST:{{\n";
             ast->print (1);
+            cout << "\n}}" << endl;*/
+            delete ast;
+        }
     }
 
 
