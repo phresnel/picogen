@@ -117,10 +117,10 @@ class ExprAST {
     public:
         /// \todo store type (?)
         virtual ~ExprAST() {}
-        virtual void print (int indent = 0) const {
+        virtual void print (int indent = 0) const = 0;/*{
             AST_PRINT_DO_INDENT (indent);
             std::cout << "expr" << std::endl;
-        }
+        }*/
         virtual void accept (ASTVisitor &visitor) const = 0;
         virtual void accept (ASTNonRecursingVisitor &visitor) const = 0;
 };
@@ -334,7 +334,7 @@ class BlockAST : public ExprAST {
         virtual ~BlockAST() {
             std::vector<const ExprAST *>::iterator it = list.begin();
             while (it != list.end()) {
-                if (*it) delete *it;
+                if (0 != *it) delete *it;
                 ++it;
             }
         }
@@ -363,8 +363,10 @@ class BlockAST : public ExprAST {
         virtual void accept (ASTVisitor &visitor) const {
             visitor.visit (this);
             std::vector<const ExprAST *>::const_iterator it = list.begin();
+            BlockAST_accept_index = 0;
             while (it != list.end()) {
-                if(0 != (*it)) (*it)->accept (visitor);
+                if(0 != (*it))
+                    (*it)->accept (visitor);
                 ++it;
             }
             visitor.end(this);
@@ -378,13 +380,15 @@ class IfBlockAST : public ExprAST {
         const ExprAST *if_clause;
         const ExprAST *if_body;
         const ExprAST *else_body;
+        bool visit_cond, visit_then, visit_else;
     public:
         explicit IfBlockAST (const ExprAST *if_clause, const ExprAST *if_body, const ExprAST *else_body)
-                : if_clause (if_clause), if_body (if_body), else_body (else_body) {}
+                : if_clause (if_clause), if_body (if_body), else_body (else_body)
+                , visit_cond (true), visit_then (true), visit_else (true) {}
         virtual ~IfBlockAST() {
-            if (if_clause) delete if_clause;
-            if (if_body) delete if_body;
-            if (else_body) delete else_body;
+            if (0 != if_clause) delete if_clause;
+            if (0 != if_body) delete if_body;
+            if (0 != else_body) delete else_body;
         }
         const ExprAST* getIfClause () const {
             return if_clause;
@@ -415,11 +419,17 @@ class IfBlockAST : public ExprAST {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "}" << std::endl;
         }
+        /// \todo Damn, that hack below. Got get rid of it.
+        void enableVisit (bool visit_cond_, bool visit_then_, bool visit_else_) const {
+            const_cast<bool&>(visit_cond) = visit_cond_;
+            const_cast<bool&>(visit_then) = visit_then_;
+            const_cast<bool&>(visit_else) = visit_else_;
+        }
         virtual void accept (ASTVisitor &visitor) const {
             visitor.visit (this);
-            if (if_clause) if_clause->accept (visitor);
-            if (if_body) if_body->accept (visitor);
-            if (else_body) else_body->accept (visitor);
+            if (visit_cond && 0!=if_clause) if_clause->accept (visitor);
+            if (visit_then && 0!=if_body) if_body->accept (visitor);
+            if (visit_else && 0!=else_body) else_body->accept (visitor);
             visitor.end(this);
         }
         virtual void accept (ASTNonRecursingVisitor &visitor) const {
@@ -543,6 +553,21 @@ class FunProtoAST : public ExprAST {
         const std::vector<Argument> & getArguments() const {
             return args;
         }
+        virtual void print (int indent) const {
+            using namespace std;
+            AST_PRINT_DO_INDENT (indent);
+            cout << "fun-proto '" << name << "' (";
+            std::vector<Argument>::const_iterator it;
+            for (it = args.begin() ; it != args.end() ; ++it) {
+                cout << it->name << ":";
+                switch (it->type) {
+                    case int_type:   cout << "int";   break;
+                    case float_type: cout << "float"; break;
+                }
+                cout << "; ";
+            }
+            cout << ")" << endl;
+        }
 };
 
 class FunAST : public ExprAST {
@@ -569,6 +594,10 @@ class FunAST : public ExprAST {
         }
         const ExprAST * getBody() const {
             return body;
+        }
+        virtual void print (int indent) const {
+            if (0 != prototype) prototype->print(indent);
+            if (0 != body) body->print(indent);
         }
 };
 

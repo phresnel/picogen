@@ -440,9 +440,11 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
 
         // block-statement ?
         if (tokenEquals ("{", curr, end)) {
+            cout << "teh block start" << endl;
             ++curr;
             tmpAST = parseBlock (curr, end);
-            if (0!=tmpAST && tokenEquals ("}", curr, end)) {
+            if (tokenEquals ("}", curr, end)) {
+                cout << "teh block end: " << tmpAST << endl;
                 ++curr;
             } else {
                 if (0 != tmpAST)
@@ -464,7 +466,12 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
             // scan body
             const ExprAST *if_body = parseStatement (curr, end);
             // scan else
-            const ExprAST *else_body = tokenEquals ("else", curr, end) ? parseStatement (++curr, end) : 0;
+            ExprAST *else_body = 0;
+            if (tokenEquals ("else", curr, end)) {
+                ++curr;
+                else_body = parseStatement (curr, end);
+            } else {
+            }
             return new IfBlockAST (if_clause, if_body, else_body);
         }
 
@@ -637,7 +644,7 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
 
 
 static BlockAST *parseBlock (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
-    BlockAST *block = 0;
+    BlockAST *block = 0;//new BlockAST();
     if (curr != end) {
         while (curr != end) {
             if (tokenEquals ("}", curr, end)) {    // this is more an soon-"}"-catch-optimisation. parseStatement() below should also return 0 when detecting a closing bracket
@@ -647,15 +654,12 @@ static BlockAST *parseBlock (std::vector<Token>::const_iterator &curr, const std
             ExprAST *tmp = 0;
 
             tmp = parseStatement (curr, end);
-            if (tmp == 0) {   // skip empty
-                /// \todo what to do on error? >> try catch throw
-                throw;
-                continue;
+            if (0 != tmp) {
+                if (0 == block) {   // first block element?
+                    block = new BlockAST();
+                }
+                block->addTail (tmp);
             }
-            if (0 == block) {   // first block element?
-                block = new BlockAST();
-            }
-            block->addTail (tmp);
         }
     }
     return block;
@@ -722,23 +726,26 @@ namespace picogen { /// \todo find proper namespace for this
 
         // done
         vector<Token>::const_iterator it;
-#if 0
-        cout << endl;
-        for (it=tokens.begin(); it != tokens.end(); ++it) {
-            cout << "[" << it->tokenDescriptor->name << "(" << it->value << ")" << "]";
+        if (true) {
+            cout << endl;
+            for (it=tokens.begin(); it != tokens.end(); ++it) {
+                cout << "[" << it->tokenDescriptor->name << "(" << it->value << ")" << "]";
+            }
+            cout << endl;
         }
-        cout << endl;
-#endif // #if 0
 
         // Parse.
         vector<Token>::const_iterator curr = tokens.begin();
         const ExprAST *ast_ = parseTopLevelExpression (curr, tokens.end());
         if (0 != ast_) {
-            /*cout << endl << "program's AST:\n";
-            ast->print (1);*/
+
+            cout << "\nprogram's AST:{{\n";
+            ast_->print (1);
+            cout << "\n}}" << endl;
             AST2LLVM llvm;
             ast_->accept (llvm);
             llvm.compile();
+
             if ((flags & return_ast) == return_ast && 0 != ast) {
                 *ast = ast_;
             } else {
