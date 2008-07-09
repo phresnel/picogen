@@ -37,7 +37,7 @@
 
 #include <picogen/misc/scripting/AST.h>
 
-class AST2LLVM : public ASTVisitor {
+class AST2LLVM : public ASTNonRecursingVisitor /*ASTVisitor*/ {
         struct ValueDescriptor {
             llvm::Value *value;
             const ExprAST *ast;
@@ -79,6 +79,19 @@ class AST2LLVM : public ASTVisitor {
         llvm::ExecutionEngine *executionEngine;
         void *entryPoint;
         bool verbose;
+
+        static int walkDepth;
+        static inline void begin (const char *id) {
+            for (int i=0; i<walkDepth; ++i) std::cout << "  ";
+            walkDepth++;
+            std::cout << id << " { " << std::endl;
+        }
+        static inline void end (const char *id) {
+            walkDepth--;
+            for (int i=0; i<walkDepth; ++i) std::cout << "  ";
+            std::cout << "}" << std::endl;
+        }
+
     public:
 
         AST2LLVM();
@@ -100,6 +113,7 @@ class AST2LLVM : public ASTVisitor {
         virtual void visit (const FunProtoAST*);
         virtual void visit (const FunAST*);
 
+        /*
         virtual void end (const FloatExprAST* ast);
         virtual void end (const IntExprAST* ast);
         virtual void end (const IdExprAST*);
@@ -113,6 +127,7 @@ class AST2LLVM : public ASTVisitor {
         virtual void end (const DoWhileLoopAST*);
         virtual void end (const FunProtoAST*);
         virtual void end (const FunAST*);
+        */
 };
 
 
