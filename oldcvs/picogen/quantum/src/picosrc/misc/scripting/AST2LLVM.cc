@@ -29,6 +29,7 @@ using namespace llvm;
 using namespace std;
 
 
+int AST2LLVM::walkDepth = 0;
 
 AST2LLVM::AST2LLVM()
 : builder(), module (new Module ("me jit")), executionEngine (0), entryPoint(0), verbose (true)
@@ -69,82 +70,24 @@ void AST2LLVM::compile() {
 
 
 
-void AST2LLVM::visit (const FloatExprAST*) {}
-void AST2LLVM::visit (const IntExprAST*) {}
-void AST2LLVM::visit (const IdExprAST*) {}
-void AST2LLVM::visit (const CallExprAST*) {}
-void AST2LLVM::visit (const BinaryExprAST*) {}
-void AST2LLVM::visit (const AssignmentExprAST*) {}
-void AST2LLVM::visit (const DeclarationAST*) {}
-void AST2LLVM::visit (const BlockAST*) {}
-
-
-
-void AST2LLVM::visit (const IfBlockAST *ast) {
-    ast->enableVisit (false, false, false);
-}
-
-
-
-void AST2LLVM::visit (const WhileLoopAST*) {}
-void AST2LLVM::visit (const DoWhileLoopAST*) {}
-
-
-
-void AST2LLVM::visit (const FunProtoAST* protoast) {
-    // Reminder:
-    //   FunctionType * get (const Type *Result, const std::vector< const Type * > &Params, bool isVarArg)
-
-    const Type *resultType = Type::Int32Ty;
-    std::vector< const Type * > paramTypes;
-
-    const std::vector<FunProtoAST::Argument> & args = protoast->getArguments();
-    for (std::vector<FunProtoAST::Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
-        switch (it->type) {
-            case int_type:
-                paramTypes.push_back (Type::Int32Ty);
-                break;
-            case float_type:
-                paramTypes.push_back (Type::FloatTy);
-                break;
-        };
-    }
-
-    FunctionType *funtype = FunctionType::get (resultType, paramTypes, false);
-    Function *fun = new Function (funtype, GlobalValue::ExternalLinkage, protoast->getName(), module);
-    Function::arg_iterator ai;
-    unsigned int srcidx = 0;
-    for (ai = fun->arg_begin(); ai != fun->arg_end(); ++ai, ++srcidx) {
-        ai->setName (args [srcidx].name);
-    }
-
-    // hmm
-    BasicBlock *BB = new BasicBlock ("entry", fun);
-    builder.SetInsertPoint(BB);
-
-    funtab [protoast->getName()] = fun;
-}
-
-
-
-void AST2LLVM::visit (const FunAST *ast) {
-}
-
-
-
-void AST2LLVM::end (const FloatExprAST* ast) {
+void AST2LLVM::visit (const FloatExprAST *ast) {
+    begin ("void AST2LLVM::visit (const FloatExprAST *ast)");
     values.push (ValueDescriptor (llvm::ConstantFP::get(llvm::Type::FloatTy, llvm::APFloat (ast->getValue())), ast));
+    end ("void AST2LLVM::visit (const FloatExprAST *ast)");
 }
 
 
 
-void AST2LLVM::end (const IntExprAST* ast) {
+void AST2LLVM::visit (const IntExprAST *ast) {
+    begin ("void AST2LLVM::visit (const IntExprAST *ast)");
     values.push (ValueDescriptor (llvm::ConstantInt::get(llvm::Type::Int32Ty, ast->getValue()), ast));
+    end ("void AST2LLVM::visit (const IntExprAST *ast)");
 }
 
 
 
-void AST2LLVM::end (const IdExprAST *ast)  {
+void AST2LLVM::visit (const IdExprAST *ast) {
+    begin ("void AST2LLVM::visit (const IdExprAST *ast)");
     // A) Check if Id has been declared.
     SymbolTable::const_iterator it = symtab.find (ast->getValue());
     if (it == symtab.end()) {
@@ -159,31 +102,38 @@ void AST2LLVM::end (const IdExprAST *ast)  {
     values.top().value = builder.CreateLoad (values.top().value);
     //builder.CreateLoad (valtmp);
     //values.push (ValueDescriptor (new LoadInst (symtab [ast->getValue()].llvmAlloca, ast->getValue().c_str()), ast));
+    end ("void AST2LLVM::visit (const IdExprAST *ast)");
 }
 
 
 
-void AST2LLVM::end (const CallExprAST*)  {
+void AST2LLVM::visit (const CallExprAST*) {
+    begin ("void AST2LLVM::visit (const CallExprAST*)");
+    end ("void AST2LLVM::visit (const CallExprAST*)");
 }
 
 
 
-void AST2LLVM::end (const BinaryExprAST* ast)   {
-    // Load rhs.
-    Value *rhs   = values.top().value;
-    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
-        // We got to load an id.
-        Value *valtmp = rhs;
-        rhs = builder.CreateLoad (valtmp);
-    }
-    values.pop();
+void AST2LLVM::visit (const BinaryExprAST *ast) {
+    begin ("void AST2LLVM::visit (const BinaryExprAST *ast)");
 
     // Load lhs.
+    ast->getLhs()->accept (*this);
     Value *lhs   = values.top().value;
     if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
         // We got to load an id.
         Value *valtmp = lhs;
         lhs = builder.CreateLoad (valtmp);
+    }
+    values.pop();
+
+    // Load rhs.
+    ast->getRhs()->accept (*this);
+    Value *rhs   = values.top().value;
+    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
+        // We got to load an id.
+        Value *valtmp = rhs;
+        rhs = builder.CreateLoad (valtmp);
     }
     values.pop();
 
@@ -204,11 +154,22 @@ void AST2LLVM::end (const BinaryExprAST* ast)   {
             std::cerr << "!!ouch, unsupported operator in AST2LLVM: " << ast->getOp() << endl;
     };
     //if (verbose) values.top().value->dump();
+    end ("void AST2LLVM::visit (const BinaryExprAST *ast)");
 }
 
 
 
-void AST2LLVM::end (const AssignmentExprAST *ast) {
+void AST2LLVM::visit (const AssignmentExprAST *ast) {
+    begin ("void AST2LLVM::visit (const AssignmentExprAST *ast)");
+
+
+    // Note: the two accept calls below are exactly there because in the beggining AST2LLVM
+    //   did not implement NonRecursingVisitor but rather the recursing one, which resulted
+    //   in such bottom-up behaviour. We could as well accept() at the places exactly were needed
+    //   but right now I am lazy.
+    ast->getId()->accept (*this);
+    ast->getRhs()->accept (*this);
+
     // Load val.
     Value *val   = values.top().value;
     if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
@@ -230,11 +191,16 @@ void AST2LLVM::end (const AssignmentExprAST *ast) {
 
     // Finally create a store.
     values.push (ValueDescriptor (builder.CreateStore (val, alloc), ast));
+    end ("void AST2LLVM::visit (const AssignmentExprAST *ast)");
 }
 
 
 
-void AST2LLVM::end (const DeclarationAST *ast)  {
+void AST2LLVM::visit (const DeclarationAST* ast) {
+    begin ("void AST2LLVM::visit (const DeclarationAST* ast)");
+    // pro
+
+    // epi
     const Type *llvmType = 0;
     switch (ast->getType()) {
         case int_type:
@@ -252,27 +218,26 @@ void AST2LLVM::end (const DeclarationAST *ast)  {
         AllocaInst *tmp = builder.CreateAlloca (llvmType, 0, ast->getName().c_str());
         symtab [ast->getName()] = Symbol (ast->getType(), ast->getName(), tmp);
     }
+    end ("void AST2LLVM::visit (const DeclarationAST* ast)");
 }
 
 
 
-void AST2LLVM::end (const BlockAST*)  {
-    //std::cout << "Block - " << values.size() << std::endl;
-    // What we have now in values is what goes en blok.
-
-    //BasicBlock *BB = builder.Create ("entry",
-    /*
-    BasicBlock *BB = builder.GetInsertBlock ();
-    if (0 != BB) {
-        BasicBlock::iterator it;
-        for (it = BB->begin(); it != BB->end(); ++it) {
-        }
-    }*/
+void AST2LLVM::visit (const BlockAST *ast) {
+    begin ("void AST2LLVM::visit (const BlockAST*)");
+    BlockAST::const_iterator it = ast->begin();
+    while (ast->end() != it) {
+        if (0 != *it)
+            (*it)->accept (*this);
+        ++it;
+    }
+    end ("void AST2LLVM::visit (const BlockAST*)");
 }
 
 
 
-void AST2LLVM::end (const IfBlockAST *ast)  {
+void AST2LLVM::visit (const IfBlockAST *ast) {
+    begin ("void AST2LLVM::visit (const IfBlockAST *ast)");
     Value *val_cond = 0;
     Value *val_then = 0;
     Value *val_else = 0;
@@ -331,29 +296,96 @@ void AST2LLVM::end (const IfBlockAST *ast)  {
     phi->addIncoming (val_else, elseBB);
     values.push (ValueDescriptor (phi, ast));
     */
-    ast->enableVisit (true, true, true);
+    end ("void AST2LLVM::visit (const IfBlockAST *ast)");
 }
 
 
 
-void AST2LLVM::end (const WhileLoopAST*)  {
-    //std::cout << "WhileLoop" << "-" << std::endl;
+void AST2LLVM::visit (const WhileLoopAST*) {
+    begin ("void AST2LLVM::visit (const WhileLoopAST*)");
+    end ("void AST2LLVM::visit (const WhileLoopAST*)");
 }
 
 
 
-void AST2LLVM::end (const DoWhileLoopAST*)  {
-    //std::cout << "DoWhileLoop" << "-" << std::endl;
+void AST2LLVM::visit (const DoWhileLoopAST*) {
+    begin ("void AST2LLVM::visit (const DoWhileLoopAST*)");
+    end ("void AST2LLVM::visit (const DoWhileLoopAST*)");
 }
 
 
 
+void AST2LLVM::visit (const FunProtoAST* protoast) {
+    begin ("void AST2LLVM::visit (const FunProtoAST* protoast)");
+    // Reminder:
+    //   FunctionType * get (const Type *Result, const std::vector< const Type * > &Params, bool isVarArg)
+
+    const Type *resultType = Type::Int32Ty;
+    std::vector<const Type *> paramTypes;
+
+    const std::vector<FunProtoAST::Argument> & args = protoast->getArguments();
+    for (std::vector<FunProtoAST::Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+        switch (it->type) {
+            case int_type:
+                paramTypes.push_back (Type::Int32Ty);
+                break;
+            case float_type:
+                paramTypes.push_back (Type::FloatTy);
+                break;
+        };
+    }
+
+    FunctionType *funtype = FunctionType::get (resultType, paramTypes, false);
+    Function *fun = new Function (funtype, GlobalValue::ExternalLinkage, protoast->getName(), module);
+    Function::arg_iterator ai;
+    unsigned int srcidx = 0;
+    for (ai = fun->arg_begin(); ai != fun->arg_end(); ++ai, ++srcidx) {
+        ai->setName (args [srcidx].name);
+    }
+
+    // hmm
+    BasicBlock *BB = new BasicBlock ("entry", fun);
+    builder.SetInsertPoint(BB);
+
+    funtab [protoast->getName()] = fun;
+    end ("void AST2LLVM::visit (const FunProtoAST* protoast)");
+}
+
+
+
+void AST2LLVM::visit (const FunAST *ast) {
+    begin ("void AST2LLVM::visit (const FunAST *ast)");
+
+    if (0 != ast->getPrototype()) {
+        ast->getPrototype()->accept (*this);
+    }
+
+    if (0 != ast->getBody()) {
+        ast->getBody()->accept (*this);
+    }
+
+    if (values.size() > 0) {
+        Value *retval = values.top().value; values.pop();
+        builder.CreateRet (retval);
+        verifyFunction (*funtab [ast->getPrototype()->getName()]);
+    }
+
+    end ("void AST2LLVM::visit (const FunAST *ast)");
+}
+
+
+/*
+void AST2LLVM::end (const FloatExprAST* ast) {}
+void AST2LLVM::end (const IntExprAST* ast) {}
+void AST2LLVM::end (const IdExprAST *ast)  {}
+void AST2LLVM::end (const CallExprAST*)  {}
+void AST2LLVM::end (const BinaryExprAST* ast)   {}
+void AST2LLVM::end (const AssignmentExprAST *ast) {}
+void AST2LLVM::end (const DeclarationAST *ast)  {}
+void AST2LLVM::end (const BlockAST*)  {}
+void AST2LLVM::end (const IfBlockAST *ast)  {}
+void AST2LLVM::end (const WhileLoopAST*)  {}
+void AST2LLVM::end (const DoWhileLoopAST*)  {}
 void AST2LLVM::end (const FunProtoAST *ast)  {}
-
-
-
-void AST2LLVM::end (const FunAST *ast) {
-    Value *retval = values.top().value; values.pop();
-    builder.CreateRet (retval);
-    verifyFunction (*funtab [ast->getPrototype()->getName()]);
-}
+void AST2LLVM::end (const FunAST *ast) {}
+*/
