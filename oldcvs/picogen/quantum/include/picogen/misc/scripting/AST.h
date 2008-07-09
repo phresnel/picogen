@@ -363,7 +363,6 @@ class BlockAST : public ExprAST {
         virtual void accept (ASTVisitor &visitor) const {
             visitor.visit (this);
             std::vector<const ExprAST *>::const_iterator it = list.begin();
-            BlockAST_accept_index = 0;
             while (it != list.end()) {
                 if(0 != (*it))
                     (*it)->accept (visitor);
