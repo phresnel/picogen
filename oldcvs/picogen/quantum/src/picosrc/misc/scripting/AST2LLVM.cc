@@ -150,6 +150,28 @@ void AST2LLVM::visit (const BinaryExprAST *ast) {
         case '/':
             values.push (ValueDescriptor (builder.CreateFDiv (lhs, rhs, "fdivtmp"), ast));
             break;
+        case '<':
+            // val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "ifcond");
+            values.push (ValueDescriptor (
+                builder.CreateIntCast (builder.CreateICmpSLT (lhs, rhs, "slttmp"),
+                    Type::Int32Ty,
+                    false,
+                    "bool2int32tmp"
+                ),
+                ast
+            ));
+            break;
+        case '>':
+            // val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "ifcond");
+            values.push (ValueDescriptor (
+                builder.CreateIntCast (builder.CreateICmpSGT (lhs, rhs, "slttmp"),
+                    Type::Int32Ty,
+                    false,
+                    "bool2int32tmp"
+                ),
+                ast
+            ));
+            break;
         default:
             std::cerr << "!!ouch, unsupported operator in AST2LLVM: " << ast->getOp() << endl;
     };
@@ -271,7 +293,7 @@ void AST2LLVM::visit (const IfBlockAST *ast) {
     thenBB = builder.GetInsertBlock();
 
     // Generate Else:
-    parentFun->getBasicBlockList().push_back (elseBB); // Remember else-target.
+    parentFun->getBasicBlockList().push_back (elseBB);
     builder.SetInsertPoint (elseBB);
 
     const ExprAST *elseBody = ast->getElseBody(); // Makes it easier to dbg when saved to var.
@@ -301,15 +323,92 @@ void AST2LLVM::visit (const IfBlockAST *ast) {
 
 
 
-void AST2LLVM::visit (const WhileLoopAST*) {
+void AST2LLVM::visit (const WhileLoopAST *ast) {
     begin ("void AST2LLVM::visit (const WhileLoopAST*)");
+    Value *val_cond = 0;
+    Value *val_body = 0;
+
+    Function *parentFun = builder.GetInsertBlock()->getParent();
+    BasicBlock *condBB  = new BasicBlock ("whilecond", parentFun);
+    BasicBlock *bodyBB  = new BasicBlock ("whilebody");
+    BasicBlock *mergeBB = new BasicBlock ("whilemerge");
+
+    builder.CreateBr (condBB);
+
+    // Generate Condition:
+    builder.SetInsertPoint (condBB);
+    ast->getCondition()->accept (*this);
+    val_cond = values.top().value;
+    values.pop();
+    val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "whilecond");
+    builder.CreateCondBr (val_cond, bodyBB, mergeBB);
+
+    // Generate Body:
+    parentFun->getBasicBlockList().push_back (bodyBB);
+    builder.SetInsertPoint (bodyBB);
+
+    const ExprAST *body = ast->getBody(); // Makes it easier to dbg when saved to var.
+    if (0 != body) {
+        const unsigned int old_size = values.size();
+        body->accept (*this);
+        if (values.size() != old_size) { // Check if any code has been generated.
+            val_body = values.top().value;
+            values.pop();
+        }
+    }
+    builder.CreateBr (condBB);
+    bodyBB = builder.GetInsertBlock();
+
+    // Merge:
+    parentFun->getBasicBlockList().push_back (mergeBB);
+    builder.SetInsertPoint(mergeBB);
+
     end ("void AST2LLVM::visit (const WhileLoopAST*)");
 }
 
 
 
-void AST2LLVM::visit (const DoWhileLoopAST*) {
+void AST2LLVM::visit (const DoWhileLoopAST *ast) {
     begin ("void AST2LLVM::visit (const DoWhileLoopAST*)");
+
+    Value *val_cond = 0;
+    Value *val_body = 0;
+
+    Function *parentFun = builder.GetInsertBlock()->getParent();
+    BasicBlock *bodyBB  = new BasicBlock ("whilebody", parentFun);
+    BasicBlock *condBB  = new BasicBlock ("whilecond");
+    BasicBlock *mergeBB = new BasicBlock ("whilemerge");
+
+    builder.CreateBr (bodyBB);
+
+    // Generate Body:
+    builder.SetInsertPoint (bodyBB);
+
+    const ExprAST *body = ast->getBody(); // Makes it easier to dbg when saved to var.
+    if (0 != body) {
+        const unsigned int old_size = values.size();
+        body->accept (*this);
+        if (values.size() != old_size) { // Check if any code has been generated.
+            val_body = values.top().value;
+            values.pop();
+        }
+    }
+    builder.CreateBr (condBB);
+
+    // Generate Condition:
+    parentFun->getBasicBlockList().push_back (condBB);
+    builder.SetInsertPoint (condBB);
+    ast->getCondition()->accept (*this);
+    val_cond = values.top().value;
+    values.pop();
+    val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "whilecond");
+    builder.CreateCondBr (val_cond, bodyBB, mergeBB);
+
+
+    // Merge:
+    parentFun->getBasicBlockList().push_back (mergeBB);
+    builder.SetInsertPoint(mergeBB);
+
     end ("void AST2LLVM::visit (const DoWhileLoopAST*)");
 }
 
