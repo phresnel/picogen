@@ -72,7 +72,7 @@ void AST2LLVM::compile() {
 
 void AST2LLVM::visit (const FloatExprAST *ast) {
     begin ("void AST2LLVM::visit (const FloatExprAST *ast)");
-    values.push (ValueDescriptor (llvm::ConstantFP::get(llvm::Type::FloatTy, llvm::APFloat (ast->getValue())), ast));
+    values.push (ValueDescriptor (llvm::ConstantFP::get(llvm::Type::FloatTy, llvm::APFloat (ast->getValue())), ast, float_type));
     end ("void AST2LLVM::visit (const FloatExprAST *ast)");
 }
 
@@ -80,7 +80,7 @@ void AST2LLVM::visit (const FloatExprAST *ast) {
 
 void AST2LLVM::visit (const IntExprAST *ast) {
     begin ("void AST2LLVM::visit (const IntExprAST *ast)");
-    values.push (ValueDescriptor (llvm::ConstantInt::get(llvm::Type::Int32Ty, ast->getValue()), ast));
+    values.push (ValueDescriptor (llvm::ConstantInt::get(llvm::Type::Int32Ty, ast->getValue()), ast, int_type));
     end ("void AST2LLVM::visit (const IntExprAST *ast)");
 }
 
@@ -98,7 +98,7 @@ void AST2LLVM::visit (const IdExprAST *ast) {
     }
     // B) Profit.
     AllocaInst *alloca = symtab [ast->getValue()].llvmAlloca;
-    values.push (ValueDescriptor (alloca, ast));
+    values.push (ValueDescriptor (alloca, ast, it->second.type));
     values.top().value = builder.CreateLoad (values.top().value);
     //builder.CreateLoad (valtmp);
     //values.push (ValueDescriptor (new LoadInst (symtab [ast->getValue()].llvmAlloca, ast->getValue().c_str()), ast));
@@ -120,35 +120,56 @@ void AST2LLVM::visit (const BinaryExprAST *ast) {
     // Load lhs.
     ast->getLhs()->accept (*this);
     Value *lhs   = values.top().value;
-    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
-        // We got to load an id.
-        Value *valtmp = lhs;
-        lhs = builder.CreateLoad (valtmp);
-    }
+    const Datatype l_type = values.top().type;
     values.pop();
 
     // Load rhs.
     ast->getRhs()->accept (*this);
     Value *rhs   = values.top().value;
-    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
-        // We got to load an id.
-        Value *valtmp = rhs;
-        rhs = builder.CreateLoad (valtmp);
-    }
+    const Datatype r_type = values.top().type;
     values.pop();
+
+    // Check Type Equality.
+    if (l_type != r_type) {
+        std::cerr << "!! types not identical in binop !!" << endl;
+        throw;
+    }
+
+    const Datatype res_type = l_type;
+
+    // Check Type Validity.
+    switch (res_type) {
+        case float_type: case int_type: // fallthrough
+            // Okay.
+            break;
+        case void_type: case mixed_type: // fallthrough
+            std::cerr << "!! unsupported type in binop !!" << endl;
+            throw;
+    };
+
 
     switch (ast->getOp()) {
         case '+':
-            values.push (ValueDescriptor (builder.CreateAdd (lhs, rhs, "addtmp"), ast));
+            values.push (ValueDescriptor (builder.CreateAdd (lhs, rhs, "addtmp"), ast, res_type));
             break;
         case '-':
-            values.push (ValueDescriptor (builder.CreateSub (lhs, rhs, "subtmp"), ast));
+            values.push (ValueDescriptor (builder.CreateSub (lhs, rhs, "subtmp"), ast, res_type));
             break;
         case '*':
-            values.push (ValueDescriptor (builder.CreateMul (lhs, rhs, "multmp"), ast));
+            values.push (ValueDescriptor (builder.CreateMul (lhs, rhs, "multmp"), ast, res_type));
             break;
         case '/':
-            values.push (ValueDescriptor (builder.CreateFDiv (lhs, rhs, "fdivtmp"), ast));
+            switch (res_type) {
+                case int_type:
+                    values.push (ValueDescriptor (builder.CreateSDiv (lhs, rhs, "sdivtmp"), ast, res_type));
+                    break;
+                case float_type:
+                    values.push (ValueDescriptor (builder.CreateFDiv (lhs, rhs, "fdivtmp"), ast, res_type));
+                    break;
+                case void_type: case mixed_type:
+                    std::cerr << "!! unsupported type in division !!" << endl;
+                    throw;
+            };
             break;
         case '<':
             // val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "ifcond");
@@ -158,7 +179,8 @@ void AST2LLVM::visit (const BinaryExprAST *ast) {
                     false,
                     "bool2int32tmp"
                 ),
-                ast
+                ast,
+                res_type
             ));
             break;
         case '>':
@@ -169,7 +191,8 @@ void AST2LLVM::visit (const BinaryExprAST *ast) {
                     false,
                     "bool2int32tmp"
                 ),
-                ast
+                ast,
+                res_type
             ));
             break;
         default:
@@ -194,11 +217,7 @@ void AST2LLVM::visit (const AssignmentExprAST *ast) {
 
     // Load val.
     Value *val   = values.top().value;
-    if (false && 0 != dynamic_cast<const IdExprAST*> (values.top().ast)) {
-        // We got to load an id.
-        Value *valtmp = val;
-        val = builder.CreateLoad (valtmp);
-    }
+    const Datatype r_type = values.top().type;
     values.pop();
 
     // This is a bit tricky (not really): in most cases we want to use the value of what an Id points to.
@@ -207,12 +226,31 @@ void AST2LLVM::visit (const AssignmentExprAST *ast) {
     // but then acquire our symtab, which holds the address in llvmAlloca.
 
     // Next: to what we assign
+    const Datatype l_type = values.top().type;
     values.pop(); // Value not needed, see above comment.
     Value *alloc = symtab [ast->getId()->getValue()].llvmAlloca;
 
 
+    // Check Type Equality.
+    if (l_type != r_type) {
+        std::cerr << "!! types not identical in assignmt !!" << endl;
+        throw;
+    }
+
+    const Datatype res_type = l_type;
+
+    // Check Type Validity.
+    switch (res_type) {
+        case float_type: case int_type: // fallthrough
+            // Okay.
+            break;
+        case void_type: case mixed_type: // fallthrough
+            std::cerr << "!! unsupported type in assignmt !!" << endl;
+            throw;
+    };
+
     // Finally create a store.
-    values.push (ValueDescriptor (builder.CreateStore (val, alloc), ast));
+    values.push (ValueDescriptor (builder.CreateStore (val, alloc), ast, res_type));
     end ("void AST2LLVM::visit (const AssignmentExprAST *ast)");
 }
 
