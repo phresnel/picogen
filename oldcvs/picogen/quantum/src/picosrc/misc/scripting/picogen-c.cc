@@ -158,6 +158,8 @@ static int getTokenPrecedence (const std::vector<Token>::const_iterator &curr, c
     */
     if (curr == end)
         return -1;
+    if (curr->value == "<" || curr->value == ">")
+        return 10;
     if (curr->value == "+" || curr->value == "-")
         return 20;
     if (curr->value == "*" || curr->value == "/")
@@ -302,9 +304,6 @@ static ExprAST *parseBinOpRhs (
         lhs = new BinaryExprAST (binOp, lhs, rhs);
     }
 
-    /*cout << "looking good" << endl;
-    cout << "}}}" << endl;
-    return lhs;*/
     return lhs;
 }
 
