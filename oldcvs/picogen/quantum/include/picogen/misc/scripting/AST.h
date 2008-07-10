@@ -43,6 +43,21 @@ typedef enum {
 
 
 
+typedef enum { // Edit with care, Order Equals Precedence!
+    nop_binop=-1,
+
+    lt_binop=0,
+    le_binop,
+    gt_binop,
+    ge_binop,
+    sub_binop,
+    add_binop,
+    div_binop,
+    mul_binop,
+} BinOp;
+
+
+
 // Forward declare all Node-Types.
 class ExprAST;
 class FloatExprAST;
@@ -227,18 +242,18 @@ class CallExprAST : public ExprAST {
 };
 
 class BinaryExprAST : public ExprAST {
-        const char op;
+        BinOp op;
         const ExprAST *lhs;
         const ExprAST *rhs;
         /*BinaryExprAST(const BinaryExprAST&) : op('\0'), lhs(0), rhs(0) {}
         const BinaryExprAST & operator = (const BinaryExprAST&) { return *this; }*/
     public:
-        explicit BinaryExprAST (char op, const ExprAST *lhs, const ExprAST *rhs) : op (op), lhs (lhs), rhs (rhs) {}
+        explicit BinaryExprAST (BinOp op, const ExprAST *lhs, const ExprAST *rhs) : op (op), lhs (lhs), rhs (rhs) {}
         virtual ~BinaryExprAST() {
             if (lhs) delete lhs;
             if (rhs) delete rhs;
         }
-        char getOp () const {
+        BinOp getOp () const {
             return op;
         }
         const ExprAST *getLhs () const {
