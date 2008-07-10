@@ -266,6 +266,25 @@ static IdExprAST *parseIdExpr (
 
 
 
+
+static IdExprAST *parseIdentifier (
+    std::vector<Token>::const_iterator &curr,
+    const std::vector<Token>::const_iterator &end
+) {
+    if (curr != end) {
+        switch (curr->tokenDescriptor->tokenType) {
+            // identifier-Token.
+            case id_token:
+                return parseIdExpr (curr, end);
+            default:
+                ;
+        }
+    }
+    return 0;
+}
+
+
+
 static ExprAST *parseBinOpRhs (
     // standard parameters
     std::vector<Token>::const_iterator &curr,
@@ -313,9 +332,28 @@ static ExprAST *parseExpr (
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
 ) {
+    // Prepare possible rollback
+    const std::vector<Token>::const_iterator backup = curr;
+
+    // Assignment-statement ?
+    IdExprAST *tmpId = /*dynamic_cast<IdExprAST *> (lhs); //*/parseIdentifier (curr, end);
+    if (0 != tmpId) {
+        if (tokenEquals ("=", curr, end)) {
+            ++curr;
+            const ExprAST *rhs = parseExpr (curr, end);
+            return new AssignmentExprAST (tmpId, rhs);
+        }
+        delete tmpId;
+    }
+    // Rollback.
+    curr = backup;
+
+
     ExprAST *lhs = parsePrimary (curr, end);
     if (lhs == 0)
         return 0;
+
+
     return parseBinOpRhs (curr, end, 0, lhs);
 }
 
@@ -367,23 +405,6 @@ static ExprAST *parsePrimary (
     return 0;
 }
 
-
-
-static IdExprAST *parseIdentifier (
-    std::vector<Token>::const_iterator &curr,
-    const std::vector<Token>::const_iterator &end
-) {
-    if (curr != end) {
-        switch (curr->tokenDescriptor->tokenType) {
-            // identifier-Token.
-            case id_token:
-                return parseIdExpr (curr, end);
-            default:
-                ;
-        }
-    }
-    return 0;
-}
 
 
 /*
@@ -523,14 +544,14 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
             ++curr;
 
             if (!tokenEquals ("(", curr, end)) {
-                cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
+                cout << "error: wrong for-loop syntax (1) (must be like 'for( init; condition; iterative ) body')" << endl;
                 return 0;
             }
             ++curr;
 
             const ExprAST *init = parseExpr (curr,end);
             if (!tokenEquals (";", curr, end)) {
-                cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
+                cout << "error: wrong for-loop syntax (2) (must be like 'for( init; condition; iterative ) body')" << endl;
                 if (0 != init) delete init;
                 return 0;
             }
@@ -538,7 +559,7 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
 
             const ExprAST *cond = parseExpr (curr,end);
             if (!tokenEquals (";", curr, end)) {
-                cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
+                cout << "error: wrong for-loop syntax (3) (must be like 'for( init; condition; iterative ) body')" << endl;
                 if (0 != init) delete init;
                 if (0 != cond) delete cond;
                 return 0;
@@ -547,7 +568,7 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
 
             const ExprAST *iter = parseExpr (curr,end);
             if (!tokenEquals (")", curr, end)) {
-                cout << "error: wrong for-loop syntax (must be like 'for( init; condition; iterative ) body')" << endl;
+                cout << "error: wrong for-loop syntax (4) (must be like 'for( init; condition; iterative ) body')" << endl;
                 if (0 != init) delete init;
                 if (0 != cond) delete cond;
                 if (0 != iter) delete iter;
@@ -603,24 +624,6 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
             }
             curr = backup; // rollback
         }
-
-
-        // Assignment-statement ?
-        IdExprAST *tmpId = parseIdentifier (curr, end);
-        if (0 != tmpId) {
-            if (tokenEquals ("=", curr, end)) {
-                ++curr;
-                const ExprAST *rhs = parseExpr (curr, end);
-                if (tokenEquals (";", curr, end)) {    // simple statement must end on ";"
-                    ++curr;
-                    return new AssignmentExprAST (tmpId, rhs);
-                }
-                delete rhs;
-            }
-            delete tmpId;
-        }
-        // Rollback.
-        curr = backup;
 
 
         // Try to parse a simple statement.
