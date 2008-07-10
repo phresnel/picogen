@@ -36,7 +36,9 @@
 
 typedef enum {
     int_type,
-    float_type
+    float_type,
+    void_type,
+    mixed_type
 } Datatype;
 
 
