@@ -90,7 +90,7 @@ static const TokenDescriptor tokenDescriptors[] = {
     ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for"))
     ,TokenDescriptor (typename_token, "typename",   regex ("int|float"))
     ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]]|_)([[:alpha:]]|[[:digit:]]|_)*"))
-    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|<|>|\\(|\\)|=|;|\\{|\\}"))
+    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|<=|<|>=|>|\\(|\\)|=|;|\\{|\\}"))
     ,TokenDescriptor (omitted_token,  "",           regex ("[[:space:]]+"), true)
 };
 static const int tokenDescriptorCount = sizeof (tokenDescriptors) / sizeof (tokenDescriptors[0]);
@@ -139,7 +139,7 @@ struct Token {
 // parsing
 //==-------------------------------------------------------------==//
 
-static int getTokenPrecedence (const std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
+static BinOp getBinOpFromToken (const std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
     /*
     static std::map<int, char> binopPrecedence; // will be initialized once in PicoPico
     //--------------------------------------------------------
@@ -157,14 +157,19 @@ static int getTokenPrecedence (const std::vector<Token>::const_iterator &curr, c
     return binopPrecedence[ch];
     */
     if (curr == end)
-        return -1;
-    if (curr->value == "<" || curr->value == ">")
-        return 10;
-    if (curr->value == "+" || curr->value == "-")
-        return 20;
-    if (curr->value == "*" || curr->value == "/")
-        return 40;
-    return -1;
+        return nop_binop;
+
+    if (curr->value == "<") return lt_binop;
+    if (curr->value == ">") return gt_binop;
+    if (curr->value == "<=") return le_binop;
+    if (curr->value == ">=") return ge_binop;
+
+    if (curr->value == "+") return add_binop;
+    if (curr->value == "-") return sub_binop;
+    if (curr->value == "*") return mul_binop;
+    if (curr->value == "/") return div_binop;
+
+    return nop_binop;
 }
 
 
@@ -298,13 +303,12 @@ static ExprAST *parseBinOpRhs (
         return lhs;
 
     while (1) {
-        const int tokPrec = getTokenPrecedence (curr,end);
+        const BinOp binOp = getBinOpFromToken (curr, end);
+        const int tokPrec = binOp;
 
         if (tokPrec < exprPrec) {
             return lhs;
         }
-
-        const char binOp = curr->value[0];
         ++curr;
 
         ExprAST *rhs = parsePrimary (curr, end);
@@ -312,7 +316,7 @@ static ExprAST *parseBinOpRhs (
             return 0;
 
         // look ahead next token precedence
-        const int nextTokPrec = getTokenPrecedence (curr,end);
+        BinOp nextTokPrec = getBinOpFromToken (curr,end);
         if (tokPrec < nextTokPrec) {
             rhs = parseBinOpRhs (curr, end, tokPrec+1, rhs);
             if (0 == rhs)
