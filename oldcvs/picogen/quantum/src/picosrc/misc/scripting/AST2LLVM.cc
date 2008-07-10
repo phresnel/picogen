@@ -357,7 +357,6 @@ void AST2LLVM::visit (const WhileLoopAST *ast) {
         }
     }
     builder.CreateBr (condBB);
-    bodyBB = builder.GetInsertBlock();
 
     // Merge:
     parentFun->getBasicBlockList().push_back (mergeBB);
