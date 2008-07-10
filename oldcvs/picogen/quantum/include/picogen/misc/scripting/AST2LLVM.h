@@ -41,9 +41,10 @@ class AST2LLVM : public ASTNonRecursingVisitor /*ASTVisitor*/ {
         struct ValueDescriptor {
             llvm::Value *value;
             const ExprAST *ast;
+            const Datatype type;
             const bool isIdentifier;
-            explicit ValueDescriptor (llvm::Value * val, const ExprAST *ast, bool isIdentifier = false)
-            : value(val), ast(ast), isIdentifier(isIdentifier) {}
+            explicit ValueDescriptor (llvm::Value * val, const ExprAST *ast, Datatype type, bool isIdentifier = false)
+            : value(val), ast(ast), type(type), isIdentifier(isIdentifier) {}
         };
         std::stack<ValueDescriptor> values;
 
