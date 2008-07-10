@@ -574,6 +574,9 @@ class FunProtoAST : public ExprAST {
                 switch (it->type) {
                     case int_type:   cout << "int";   break;
                     case float_type: cout << "float"; break;
+                    case void_type: case mixed_type:
+                        cerr << "!! unsupported type in FunProtoAST::print !!" << endl;
+                        throw;
                 }
                 cout << "; ";
             }
