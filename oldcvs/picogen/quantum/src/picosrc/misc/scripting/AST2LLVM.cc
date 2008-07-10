@@ -231,6 +231,9 @@ void AST2LLVM::visit (const DeclarationAST* ast) {
         case float_type:
             llvmType = Type::FloatTy;
             break;
+        case void_type: case mixed_type:
+            std::cerr << "!! unsupported type in AST2LLVM::visit (const DeclararationAST*) !!" << endl;
+            throw;
     };
 
     if (symtab.end() != symtab.find (ast->getName())) {
@@ -430,6 +433,9 @@ void AST2LLVM::visit (const FunProtoAST* protoast) {
             case float_type:
                 paramTypes.push_back (Type::FloatTy);
                 break;
+            case void_type: case mixed_type:
+                std::cerr << "!! unsupported type in AST2LLVM::visit (const FunProtoAST*) !!" << endl;
+                throw;
         };
     }
 
