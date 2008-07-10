@@ -149,16 +149,16 @@ void AST2LLVM::visit (const BinaryExprAST *ast) {
 
 
     switch (ast->getOp()) {
-        case '+':
+        case add_binop:
             values.push (ValueDescriptor (builder.CreateAdd (lhs, rhs, "addtmp"), ast, res_type));
             break;
-        case '-':
+        case sub_binop:
             values.push (ValueDescriptor (builder.CreateSub (lhs, rhs, "subtmp"), ast, res_type));
             break;
-        case '*':
+        case mul_binop:
             values.push (ValueDescriptor (builder.CreateMul (lhs, rhs, "multmp"), ast, res_type));
             break;
-        case '/':
+        case div_binop:
             switch (res_type) {
                 case int_type:
                     values.push (ValueDescriptor (builder.CreateSDiv (lhs, rhs, "sdivtmp"), ast, res_type));
@@ -171,32 +171,109 @@ void AST2LLVM::visit (const BinaryExprAST *ast) {
                     throw;
             };
             break;
-        case '<':
-            // val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "ifcond");
-            values.push (ValueDescriptor (
-                builder.CreateIntCast (builder.CreateICmpSLT (lhs, rhs, "slttmp"),
-                    Type::Int32Ty,
-                    false,
-                    "bool2int32tmp"
-                ),
-                ast,
-                res_type
-            ));
+        case lt_binop:
+            switch (res_type) {
+                case int_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateICmpSLT (lhs, rhs, "slttmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case float_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateFCmpULT (lhs, rhs, "flttmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case void_type: case mixed_type:
+                    std::cerr << "!! unsupported type in lt !!" << endl;
+                    throw;
+            };
             break;
-        case '>':
-            // val_cond = builder.CreateICmpNE (val_cond, ConstantInt::get(Type::Int32Ty, 0), "ifcond");
-            values.push (ValueDescriptor (
-                builder.CreateIntCast (builder.CreateICmpSGT (lhs, rhs, "slttmp"),
-                    Type::Int32Ty,
-                    false,
-                    "bool2int32tmp"
-                ),
-                ast,
-                res_type
-            ));
+        case gt_binop:
+            switch (res_type) {
+                case int_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateICmpSGT (lhs, rhs, "sgttmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case float_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateFCmpUGT (lhs, rhs, "fgttmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case void_type: case mixed_type:
+                    std::cerr << "!! unsupported type in gt !!" << endl;
+                    throw;
+            };
+            break;
+        case le_binop:
+            switch (res_type) {
+                case int_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateICmpSLE (lhs, rhs, "sletmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case float_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateFCmpULE (lhs, rhs, "fletmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case void_type: case mixed_type:
+                    std::cerr << "!! unsupported type in le !!" << endl;
+                    throw;
+            };
+            break;
+        case ge_binop:
+            switch (res_type) {
+                case int_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateICmpSGE (lhs, rhs, "sgetmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case float_type:
+                    values.push (ValueDescriptor (
+                        builder.CreateIntCast (builder.CreateFCmpUGE (lhs, rhs, "fgetmp"),
+                            Type::Int32Ty, false, "bool2int32tmp"
+                        ),
+                        ast,
+                        int_type
+                    ));
+                    break;
+                case void_type: case mixed_type:
+                    std::cerr << "!! unsupported type in ge !!" << endl;
+                    throw;
+            };
             break;
         default:
             std::cerr << "!!ouch, unsupported operator in AST2LLVM: " << ast->getOp() << endl;
+            throw;
     };
     //if (verbose) values.top().value->dump();
     end ("void AST2LLVM::visit (const BinaryExprAST *ast)");
