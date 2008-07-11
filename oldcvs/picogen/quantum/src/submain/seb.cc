@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <picogen/picogen.h>
 #include <picogen/picossdf/picossdf.h>
-#include <picogen/experimental/PicoPico.h>
 #include <picogen/experimental/Rain.h>
 #include <picogen/experimental/Snow.h>
 #include <picogen/experimental/ShaderCC_GCC.h>
