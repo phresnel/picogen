@@ -13,9 +13,6 @@
 	<File name="../../../include/picogen/experimental/CloudShader_Bouthors.h" open="0" top="0" tabpos="0">
 		<Cursor position="20345" topLine="492" />
 	</File>
-	<File name="../../../include/picogen/experimental/PicoPico.h" open="0" top="0" tabpos="6">
-		<Cursor position="1182" topLine="16" />
-	</File>
 	<File name="../../../include/picogen/experimental/Rain.h" open="0" top="0" tabpos="0">
 		<Cursor position="2186" topLine="28" />
 	</File>
@@ -113,10 +110,10 @@
 		<Cursor position="17284" topLine="302" />
 	</File>
 	<File name="../../../include/picogen/misc/scripting/AST.h" open="0" top="0" tabpos="8">
-		<Cursor position="18794" topLine="526" />
+		<Cursor position="1479" topLine="28" />
 	</File>
 	<File name="../../../include/picogen/misc/scripting/AST2LLVM.h" open="0" top="0" tabpos="9">
-		<Cursor position="2956" topLine="64" />
+		<Cursor position="3178" topLine="56" />
 	</File>
 	<File name="../../../include/picogen/misc/scripting/nano-c.h" open="0" top="0" tabpos="2">
 		<Cursor position="1106" topLine="4" />
@@ -126,9 +123,6 @@
 	</File>
 	<File name="../../../include/picossdf/picossdf.h" open="0" top="0" tabpos="4">
 		<Cursor position="3529" topLine="90" />
-	</File>
-	<File name="../../../src/experimental/PicoPico.cc" open="0" top="0" tabpos="5">
-		<Cursor position="23224" topLine="723" />
 	</File>
 	<File name="../../../src/experimental/Rain.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1559" topLine="22" />
@@ -182,10 +176,13 @@
 		<Cursor position="1048" topLine="0" />
 	</File>
 	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="0" top="0" tabpos="10">
-		<Cursor position="1238" topLine="34" />
+		<Cursor position="7340" topLine="204" />
 	</File>
 	<File name="../../../src/picosrc/misc/scripting/nano-c.cc" open="0" top="0" tabpos="3">
 		<Cursor position="952" topLine="15" />
+	</File>
+	<File name="../../../src/picosrc/misc/scripting/picogen-c.cc" open="0" top="0" tabpos="0">
+		<Cursor position="24128" topLine="747" />
 	</File>
 	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="1">
 		<Cursor position="20889" topLine="568" />
@@ -194,7 +191,7 @@
 		<Cursor position="12186" topLine="327" />
 	</File>
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
-		<Cursor position="35204" topLine="953" />
+		<Cursor position="1443" topLine="12" />
 	</File>
 	<File name="../../../src/submain/ssdf.cc" open="0" top="0" tabpos="1">
 		<Cursor position="21864" topLine="614" />

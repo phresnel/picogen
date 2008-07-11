@@ -96,6 +96,24 @@
 				<Compiler>
 					<Add option="`llvm-config --cflags`" />
 					<Add option="`llvm-config --cppflags`" />
+					<Add option="-O0" />
+				</Compiler>
+				<Linker>
+					<Add option="`sdl-config --libs`" />
+					<Add option="`llvm-config --libs core jit native`" />
+				</Linker>
+			</Target>
+			<Target title="fast compilation / dbg">
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
+				<Option object_output="objs" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters=" ssdf -f ~/picogen/ssdf/testfile.ssdf" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="`llvm-config --cflags`" />
+					<Add option="`llvm-config --cppflags`" />
+					<Add option="-O0" />
 				</Compiler>
 				<Linker>
 					<Add option="`sdl-config --libs`" />
