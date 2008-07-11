@@ -62,6 +62,7 @@ using namespace boost;
 typedef enum {
     int_token,
     float_token,
+    bool_token,
     id_token,
     keyword_token,
     typename_token,
@@ -87,10 +88,11 @@ struct TokenDescriptor {
 static const TokenDescriptor tokenDescriptors[] = {
     TokenDescriptor (float_token,    "float",      regex ("-?\\d+\\.\\d+"))
     ,TokenDescriptor (int_token,      "int",        regex ("-?\\d+"))
+    ,TokenDescriptor (bool_token,      "bool",        regex ("true|false"))
     ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for"))
-    ,TokenDescriptor (typename_token, "typename",   regex ("int|float"))
-    ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]]|_)([[:alpha:]]|[[:digit:]]|_)*"))
-    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|<=|<|>=|>|\\(|\\)|=|;|\\{|\\}"))
+    ,TokenDescriptor (typename_token, "typename",   regex ("int|float|bool"))
+    ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]])([[:alpha:]]|[[:digit:]]|_)*")) // so that id's starting with '_' are reserved, but '_' in the middle or at the end are allowed
+    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|&&|\\|\\||==|!=|<=|<|>=|>|=|\\(|\\)|;|\\{|\\}"))
     ,TokenDescriptor (omitted_token,  "",           regex ("[[:space:]]+"), true)
 };
 static const int tokenDescriptorCount = sizeof (tokenDescriptors) / sizeof (tokenDescriptors[0]);
@@ -159,6 +161,12 @@ static BinOp getBinOpFromToken (const std::vector<Token>::const_iterator &curr, 
     if (curr == end)
         return nop_binop;
 
+    // ! This does NOT say anything about the actual precedence, see BinOp declaration for that !
+    if (curr->value == "||") return log_or_binop;
+    if (curr->value == "&&") return log_and_binop;
+
+    if (curr->value == "==") return eq_binop;
+    if (curr->value == "!=") return ne_binop;
     if (curr->value == "<") return lt_binop;
     if (curr->value == ">") return gt_binop;
     if (curr->value == "<=") return le_binop;
@@ -262,6 +270,25 @@ static ExprAST *parseFloatExpr (
 
 
 
+static ExprAST *parseBoolExpr (
+    std::vector<Token>::const_iterator &curr,
+    const std::vector<Token>::const_iterator &end
+) {
+    bool result;
+    if ("true" == curr->value) {
+        result = true;
+    } else if ("false" == curr->value) {
+        result = false;
+    } else {
+        std::cerr << "!! doh, '" << curr->value << "' is not a boolean !!" << endl;
+        throw;
+    }
+    ++curr;
+    return new BoolExprAST (result);
+}
+
+
+
 static IdExprAST *parseIdExpr (
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
@@ -342,7 +369,12 @@ static ExprAST *parseExpr (
     // Assignment-statement ?
     IdExprAST *tmpId = /*dynamic_cast<IdExprAST *> (lhs); //*/parseIdentifier (curr, end);
     if (0 != tmpId) {
+        cerr << "dang" << endl;
         if (tokenEquals ("=", curr, end)) {
+            if (id_token != backup->tokenDescriptor->tokenType) { // We're checking it here because we can give a good error msg then (see below).
+                cerr << "!! you cannot assign something to a constant !!" << endl;
+                throw;
+            }
             ++curr;
             const ExprAST *rhs = parseExpr (curr, end);
             return new AssignmentExprAST (tmpId, rhs);
@@ -351,7 +383,6 @@ static ExprAST *parseExpr (
     }
     // Rollback.
     curr = backup;
-
 
     ExprAST *lhs = parsePrimary (curr, end);
     if (lhs == 0)
@@ -391,6 +422,9 @@ static ExprAST *parsePrimary (
             // int-Token.
             case int_token:
                 return parseIntExpr (curr, end);
+            // bool-Token.
+            case bool_token:
+                return parseBoolExpr (curr, end);
             // float-Token.
             case float_token:
                 return parseFloatExpr (curr, end);
@@ -611,6 +645,9 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
             } else if ("float" == curr->value) {
                 dt = float_type;
                 isValidDatatype = true;
+            } else if ("bool" == curr->value) {
+                dt = bool_type;
+                isValidDatatype = true;
             } else {
                 isValidDatatype = false;
             }
@@ -731,8 +768,9 @@ namespace picogen { /// \todo find proper namespace for this
         }
 
         // done
-        vector<Token>::const_iterator it;
-        if (true) {
+
+        if (false) { // Dump tokens?
+            vector<Token>::const_iterator it;
             cout << endl;
             for (it=tokens.begin(); it != tokens.end(); ++it) {
                 cout << "[" << it->tokenDescriptor->name << "(" << it->value << ")" << "]";
