@@ -37,6 +37,7 @@
 typedef enum {
     int_type,
     float_type,
+    bool_type,
     void_type,
     mixed_type
 } Datatype;
@@ -46,12 +47,20 @@ typedef enum {
 typedef enum { // Edit with care, Order Equals Precedence!
     nop_binop=-1,
 
-    lt_binop=0,
+    log_or_binop,
+    log_and_binop,
+
+    eq_binop,
+    ne_binop,
+
+    lt_binop,
     le_binop,
     gt_binop,
     ge_binop,
+
     sub_binop,
     add_binop,
+
     div_binop,
     mul_binop,
 } BinOp;
@@ -62,6 +71,7 @@ typedef enum { // Edit with care, Order Equals Precedence!
 class ExprAST;
 class FloatExprAST;
 class IntExprAST;
+class BoolExprAST;
 class IdExprAST;
 class CallExprAST;
 class BinaryExprAST;
@@ -83,6 +93,7 @@ class ASTVisitor {
 
         virtual void visit (const FloatExprAST*) = 0;
         virtual void visit (const IntExprAST*) = 0;
+        virtual void visit (const BoolExprAST*) = 0;
         virtual void visit (const IdExprAST*) = 0;
         virtual void visit (const CallExprAST*) = 0;
         virtual void visit (const BinaryExprAST*) = 0;
@@ -97,6 +108,7 @@ class ASTVisitor {
 
         virtual void end (const FloatExprAST*) = 0;
         virtual void end (const IntExprAST*) = 0;
+        virtual void end (const BoolExprAST*) = 0;
         virtual void end (const IdExprAST*) = 0;
         virtual void end (const CallExprAST*) = 0;
         virtual void end (const BinaryExprAST*) = 0;
@@ -115,6 +127,7 @@ class ASTNonRecursingVisitor { // In contrast to Visitor, where a container Node
         virtual ~ASTNonRecursingVisitor() {}
         virtual void visit (const FloatExprAST*) = 0;
         virtual void visit (const IntExprAST*) = 0;
+        virtual void visit (const BoolExprAST*) = 0;
         virtual void visit (const IdExprAST*) = 0;
         virtual void visit (const CallExprAST*) = 0;
         virtual void visit (const BinaryExprAST*) = 0;
@@ -127,6 +140,7 @@ class ASTNonRecursingVisitor { // In contrast to Visitor, where a container Node
         virtual void visit (const FunProtoAST*) = 0;
         virtual void visit (const FunAST*) = 0;
 };
+
 
 
 // Implementation.
@@ -176,6 +190,28 @@ class IntExprAST : public ExprAST {
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
             std::cout << "intExpr(" << value << ")" << std::endl;
+        }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
+};
+
+class BoolExprAST : public ExprAST {
+    protected:
+        const bool value;
+    public:
+        explicit BoolExprAST (bool value) : value (value) {}
+        virtual ~BoolExprAST() {}
+        bool getValue() const {
+            return value;
+        }
+        virtual void print (int indent) const {
+            AST_PRINT_DO_INDENT (indent);
+            std::cout << "boolExpr(" << value << ")" << std::endl;
         }
         virtual void accept (ASTVisitor &visitor) const {
             visitor.visit (this);
@@ -589,6 +625,7 @@ class FunProtoAST : public ExprAST {
                 switch (it->type) {
                     case int_type:   cout << "int";   break;
                     case float_type: cout << "float"; break;
+                    case bool_type:  cout << "bool"; break;
                     case void_type: case mixed_type:
                         cerr << "!! unsupported type in FunProtoAST::print !!" << endl;
                         throw;
