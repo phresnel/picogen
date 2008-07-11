@@ -102,6 +102,7 @@ class AST2LLVM : public ASTNonRecursingVisitor /*ASTVisitor*/ {
 
         virtual void visit (const FloatExprAST*);
         virtual void visit (const IntExprAST*);
+        virtual void visit (const BoolExprAST*);
         virtual void visit (const IdExprAST*);
         virtual void visit (const CallExprAST*);
         virtual void visit (const BinaryExprAST*);
@@ -113,22 +114,6 @@ class AST2LLVM : public ASTNonRecursingVisitor /*ASTVisitor*/ {
         virtual void visit (const DoWhileLoopAST*);
         virtual void visit (const FunProtoAST*);
         virtual void visit (const FunAST*);
-
-        /*
-        virtual void end (const FloatExprAST* ast);
-        virtual void end (const IntExprAST* ast);
-        virtual void end (const IdExprAST*);
-        virtual void end (const CallExprAST*);
-        virtual void end (const BinaryExprAST* ast);
-        virtual void end (const AssignmentExprAST*);
-        virtual void end (const DeclarationAST*);
-        virtual void end (const BlockAST*);
-        virtual void end (const IfBlockAST*);
-        virtual void end (const WhileLoopAST*);
-        virtual void end (const DoWhileLoopAST*);
-        virtual void end (const FunProtoAST*);
-        virtual void end (const FunAST*);
-        */
 };
 
 
