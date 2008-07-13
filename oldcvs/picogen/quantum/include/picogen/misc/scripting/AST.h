@@ -40,6 +40,7 @@ typedef enum {
     bool_type,
     void_type,
     mixed_type
+    // nonnative_type ?
 } Datatype;
 
 
@@ -593,13 +594,53 @@ class FunProtoAST : public ExprAST {
             const Datatype type;
             const std::string name;
             Argument (Datatype type, const std::string &name) : type (type), name (name) {}
+            Argument (const Argument &arg) : type (arg.type), name (arg.name) {}
+            Argument& operator=(const Argument &arg) {
+                const_cast<Datatype&>(type)    = arg.type;
+                const_cast<std::string&>(name) = arg.name;
+                return *this;
+            }
+            std::string getLvl2aName () const {
+                switch (type) {
+                    case int_type:    return "_i";
+                    case float_type:  return "_f";
+                    case bool_type:   return "_b";
+                    case void_type: // fallthrough
+                    case mixed_type: // fallthrough
+                        break;
+                }
+                return "_unkwn" + name;
+            }
+            std::string getLvl2bName () const {
+                switch (type) {
+                    case int_type:    return "_" + name;
+                    case float_type:  return "_" + name;
+                    case bool_type:   return "_" + name;
+                    case void_type: // fallthrough
+                    case mixed_type: // fallthrough
+                        break;
+                }
+                return "_unkwn" + name;
+            }
+            std::string getLvl3Name () const {
+                switch (type) {
+                    case int_type:    return "_i" + name;
+                    case float_type:  return "_f" + name;
+                    case bool_type:   return "_b" + name;
+                    case void_type: // fallthrough
+                    case mixed_type: // fallthrough
+                        break;
+                }
+                return "_unkwn" + name;
+            }
         };
     private:
+        const Datatype type;
         const std::string name;
         const std::vector<Argument> args;
     public:
-        explicit FunProtoAST (const std::string &name, const std::vector<Argument> &args)
-                : name (name), args (args) {}
+        explicit FunProtoAST (Datatype type, const std::string &name, const std::vector<Argument> &args)
+                : type (type), name (name), args (args) {}
         virtual ~FunProtoAST() {}
 
         virtual void accept (ASTVisitor &visitor) const {
@@ -609,19 +650,50 @@ class FunProtoAST : public ExprAST {
         virtual void accept (ASTNonRecursingVisitor &visitor) const {
             visitor.visit (this);
         }
+        Datatype getType() const {
+            return type;
+        }
         const std::string & getName() const {
             return name;
+        }
+        std::string getLvl1Name() const {
+            return getName();
+        }
+        std::string getLvl2aName() const { // When overloaded by arg-types
+            std::string ret = name;
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+                ret += it->getLvl2aName();
+            }
+            return "_" + ret;
+        }
+        std::string getLvl2bName() const { // When overloaded by arg-names
+            std::string ret = name;
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+                ret += it->getLvl2bName();
+            }
+            return "_" + ret;
+        }
+        std::string getLvl3Name() const { // When overloaded by arg-names and arg-types
+            std::string ret = name;
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+                ret += it->getLvl3Name();
+            }
+            return "_" + ret;
         }
         const std::vector<Argument> & getArguments() const {
             return args;
         }
         virtual void print (int indent) const {
             using namespace std;
-            AST_PRINT_DO_INDENT (indent);
-            cout << "fun-proto '" << name << "' (";
+            AST_PRINT_DO_INDENT (indent);   cout << "fun-proto '" << name << "'\n";
+            AST_PRINT_DO_INDENT (indent);   cout << "  l2a-name: '" << getLvl2aName() << "'\n";
+            AST_PRINT_DO_INDENT (indent);   cout << "  l2b-name: '" << getLvl2bName() << "'\n";
+            AST_PRINT_DO_INDENT (indent);   cout << "  l3-name:  '" << getLvl3Name()  << "')\n";
+            AST_PRINT_DO_INDENT (indent);   cout << " parameters: (";
             std::vector<Argument>::const_iterator it;
             for (it = args.begin() ; it != args.end() ; ++it) {
-                cout << it->name << ":";
+                cout << it->name << " :"
+                ;
                 switch (it->type) {
                     case int_type:   cout << "int";   break;
                     case float_type: cout << "float"; break;
