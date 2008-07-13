@@ -86,13 +86,13 @@ struct TokenDescriptor {
 
 // \d is any digit (as with [[:digit:]])
 static const TokenDescriptor tokenDescriptors[] = {
-    TokenDescriptor (float_token,    "float",      regex ("-?\\d+\\.\\d+"))
+    TokenDescriptor (float_token,     "float",      regex ("-?\\d+\\.\\d+"))
     ,TokenDescriptor (int_token,      "int",        regex ("-?\\d+"))
-    ,TokenDescriptor (bool_token,      "bool",        regex ("true|false"))
+    ,TokenDescriptor (bool_token,     "bool",       regex ("true|false"))
     ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for"))
-    ,TokenDescriptor (typename_token, "typename",   regex ("int|float|bool"))
+    ,TokenDescriptor (typename_token, "typename",   regex ("int|float|bool|void"))
     ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]])([[:alpha:]]|[[:digit:]]|_)*")) // so that id's starting with '_' are reserved, but '_' in the middle or at the end are allowed
-    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|&&|\\|\\||==|!=|<=|<|>=|>|=|\\(|\\)|;|\\{|\\}"))
+    ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|&&|\\|\\||==|!=|<=|<|>=|>|=|\\(|\\)|;|\\{|\\}|,"))
     ,TokenDescriptor (omitted_token,  "",           regex ("[[:space:]]+"), true)
 };
 static const int tokenDescriptorCount = sizeof (tokenDescriptors) / sizeof (tokenDescriptors[0]);
@@ -366,10 +366,9 @@ static ExprAST *parseExpr (
     // Prepare possible rollback
     const std::vector<Token>::const_iterator backup = curr;
 
-    // Assignment-statement ?
-    IdExprAST *tmpId = /*dynamic_cast<IdExprAST *> (lhs); //*/parseIdentifier (curr, end);
-    if (0 != tmpId) {
-        cerr << "dang" << endl;
+    // Assignment-statement?
+    IdExprAST *tmpAst = /*dynamic_cast<IdExprAST *> (lhs); //*/parseIdentifier (curr, end);
+    if (0 != tmpAst) {
         if (tokenEquals ("=", curr, end)) {
             if (id_token != backup->tokenDescriptor->tokenType) { // We're checking it here because we can give a good error msg then (see below).
                 cerr << "!! you cannot assign something to a constant !!" << endl;
@@ -377,11 +376,11 @@ static ExprAST *parseExpr (
             }
             ++curr;
             const ExprAST *rhs = parseExpr (curr, end);
-            return new AssignmentExprAST (tmpId, rhs);
+            return new AssignmentExprAST (tmpAst, rhs);
         }
-        delete tmpId;
+        delete tmpAst;
     }
-    // Rollback.
+    // Rollback
     curr = backup;
 
     ExprAST *lhs = parsePrimary (curr, end);
@@ -483,6 +482,69 @@ static ExprAST *parseBracketedBlock( std::vector<Token>::const_iterator &curr, c
     return body;
 }
 */
+
+
+
+static Datatype strToDatatype (const std::string &str) {
+    /// \todo return a kind of nonnative_type?
+    if ("int" == str) {
+        return int_type;
+    } else if ("float" == str) {
+        return float_type;
+    } else if ("bool" == str) {
+        return bool_type;
+    } else if ("void" == str) {
+        return void_type;
+    } else {
+        cerr << "error: non-native datatype given to function strToDatatype" << endl;
+        throw;
+    }
+}
+
+
+
+bool parsePrototypeArgs (vector<FunProtoAST::Argument> &args, std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
+    // We assume curr->value == "(".
+    ++curr; // Eat "(".
+
+    int index = 1; // Only used for error messages.
+    while (true) {
+        if (curr == end) {
+            cerr << "!! reached end of file before parsing of parameters in function-prototype was complete !!" << endl;
+            return false;
+        }
+        if (typename_token != curr->tokenDescriptor->tokenType) {
+            cerr << "!! expected typename while parsing parameter " << index << " of function prototype !!" << endl;
+            return false;
+        }
+        const Datatype dt = strToDatatype (curr->value);
+        ++curr;
+
+        if (id_token != curr->tokenDescriptor->tokenType) {
+            cerr << "!! expected identifier while parsing parameter " << index << " of function prototype !!" << endl;
+            return false;
+        }
+        const string id = curr->value;
+        ++curr;
+
+        // Can create a parameter now.
+        args.push_back (FunProtoAST::Argument (dt, id));
+
+        // Either end-of-list or comma.
+        if (")" == curr->value) {
+            break;
+        } else if ("," == curr->value) {
+            ++curr;
+            ++index;
+        } else {
+            cerr << "!! expected ',' or ')' after parsing parameter " << index << " of function prototype !!" << endl;
+            return false;
+        }
+    }
+    ++curr; // Eat ")"
+
+    return true;
+}
 
 
 // Phat Function, doh.
@@ -633,37 +695,59 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
         const std::vector<Token>::const_iterator backup = curr;
 
 
-        // Declaration?
+        // Var-Declaration?
         // --> Note: currently only support single declaration w/out init.
-        if (curr != end && curr->tokenDescriptor->tokenType == typename_token) {
+        if (curr != end && typename_token == curr->tokenDescriptor->tokenType) {
             //const string type = curr->value;
-            bool isValidDatatype = false;
-            Datatype dt;
-            if ("int" == curr->value) {
-                dt = int_type;
-                isValidDatatype = true;
-            } else if ("float" == curr->value) {
-                dt = float_type;
-                isValidDatatype = true;
-            } else if ("bool" == curr->value) {
-                dt = bool_type;
-                isValidDatatype = true;
-            } else {
-                isValidDatatype = false;
-            }
-            if (isValidDatatype) {
-                ++curr;
+            const Datatype dt = strToDatatype (curr->value);
 
-                if (curr != end && curr->tokenDescriptor->tokenType == id_token) {
-                    const string id = curr->value;
-                    ++curr;
-                    if (tokenEquals (";", curr, end)) {
-                        ++curr;
-                        return new DeclarationAST (dt, id);
+            ++curr;
+
+            if (curr != end && curr->tokenDescriptor->tokenType == id_token) {
+                const string id = curr->value;
+                ++curr;
+                if (tokenEquals (";", curr, end)) { // Var-Declaration?
+                    if (dt == void_type) {
+                        cerr << "!! you cannot declare a variable void !!" << endl;
+                        throw;
                     }
+                    cout << "decl()" << endl;
+                    ++curr;
+                    return new DeclarationAST (dt, id);
+                } else if (tokenEquals ("(", curr, end)) { // Func-Prototype/Declaration?
+                    /// \todo We should make this one configurable in that the user should decide whether nested functions are allowed.
+                    // explicit FunProtoAST (Datatype type, const std::string &name, const std::vector<Argument> &args)
+                    cout << "func()" << endl;
+                    vector<FunProtoAST::Argument> args;
+                    if (!parsePrototypeArgs (args, curr, end)) {
+                        cerr << "error while parsing arguments" << endl;
+                        throw;
+                    }
+
+                    FunProtoAST *proto = new FunProtoAST (dt, id, args);
+                    if (0 != proto)
+                        proto->print (1);
+
+                    // Decl?
+                    if (curr == end) {
+                        cerr << "!! expected ';' or '{' after parsing function prototype, but reached end of file !!" << endl;
+                        throw;
+                    }
+                    if (";" == curr->value) {
+                        return proto;
+                    } else if ("{" == curr->value) {
+                    } else {
+                        cerr << "!! expected ';' or '{' after parsing function prototype !!" << endl;
+                        throw;
+                    }
+                    exit (41);
+                } else {
+                    cout << "f***" << endl;
+                    exit (41);
                 }
             }
-            curr = backup; // rollback
+            cerr << "!! unknown structure with a beginning typename found !!" << endl;
+            throw;
         }
 
 
@@ -716,7 +800,7 @@ static ExprAST *parseTopLevelExpression (std::vector<Token>::const_iterator &cur
         // Reminder:
         //   explicit FunProtoAST (const std::string &name, const std::vector<Argument> &args)
         //   explicit FunAST (const FunProtoAST *prototype, const ExprAST *body)
-        FunProtoAST *proto = new FunProtoAST ("", std::vector<FunProtoAST::Argument>());
+        FunProtoAST *proto = new FunProtoAST (int_type, "", std::vector<FunProtoAST::Argument>());
         return new FunAST (proto, globalBlock);
     } else {
         return 0;
@@ -769,7 +853,7 @@ namespace picogen { /// \todo find proper namespace for this
 
         // done
 
-        if (false) { // Dump tokens?
+        if (true) { // Dump tokens?
             vector<Token>::const_iterator it;
             cout << endl;
             for (it=tokens.begin(); it != tokens.end(); ++it) {
