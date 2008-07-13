@@ -109,8 +109,8 @@
 	<File name="../../../include/picogen/misc/geometrics/Transformation.h" open="0" top="0" tabpos="16">
 		<Cursor position="17284" topLine="302" />
 	</File>
-	<File name="../../../include/picogen/misc/scripting/AST.h" open="0" top="0" tabpos="8">
-		<Cursor position="1479" topLine="28" />
+	<File name="../../../include/picogen/misc/scripting/AST.h" open="1" top="1" tabpos="3">
+		<Cursor position="24762" topLine="682" />
 	</File>
 	<File name="../../../include/picogen/misc/scripting/AST2LLVM.h" open="0" top="0" tabpos="9">
 		<Cursor position="3178" topLine="56" />
@@ -175,14 +175,14 @@
 	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="1">
 		<Cursor position="1048" topLine="0" />
 	</File>
-	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="0" top="0" tabpos="10">
-		<Cursor position="7340" topLine="204" />
+	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="1" top="0" tabpos="2">
+		<Cursor position="1880" topLine="62" />
 	</File>
 	<File name="../../../src/picosrc/misc/scripting/nano-c.cc" open="0" top="0" tabpos="3">
 		<Cursor position="952" topLine="15" />
 	</File>
-	<File name="../../../src/picosrc/misc/scripting/picogen-c.cc" open="0" top="0" tabpos="0">
-		<Cursor position="24128" topLine="747" />
+	<File name="../../../src/picosrc/misc/scripting/picogen-c.cc" open="1" top="0" tabpos="1">
+		<Cursor position="23073" topLine="714" />
 	</File>
 	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="1">
 		<Cursor position="20889" topLine="568" />
