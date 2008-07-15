@@ -114,6 +114,7 @@ class AST2LLVM : public ASTNonRecursingVisitor /*ASTVisitor*/ {
         virtual void visit (const DoWhileLoopAST*);
         virtual void visit (const FunProtoAST*);
         virtual void visit (const FunAST*);
+        virtual void visit (const RetAST*);
 };
 
 
