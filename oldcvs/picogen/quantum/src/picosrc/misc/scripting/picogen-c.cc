@@ -89,7 +89,7 @@ static const TokenDescriptor tokenDescriptors[] = {
     TokenDescriptor (float_token,     "float",      regex ("-?\\d+\\.\\d+"))
     ,TokenDescriptor (int_token,      "int",        regex ("-?\\d+"))
     ,TokenDescriptor (bool_token,     "bool",       regex ("true|false"))
-    ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for"))
+    ,TokenDescriptor (keyword_token,  "keyword",    regex ("if|else|do|while|for|return"))
     ,TokenDescriptor (typename_token, "typename",   regex ("int|float|bool|void"))
     ,TokenDescriptor (id_token,       "identifier", regex ("([[:alpha:]])([[:alpha:]]|[[:digit:]]|_)*")) // so that id's starting with '_' are reserved, but '_' in the middle or at the end are allowed
     ,TokenDescriptor (other_token,    "other",      regex ("\\+|-|\\*|/|&&|\\|\\||==|!=|<=|<|>=|>|=|\\(|\\)|;|\\{|\\}|,"))
@@ -435,6 +435,13 @@ static ExprAST *parsePrimary (
                 if (curr->value == "(")
                     return parseParenExpr (curr, end);
                 break;
+            // Return Token ?
+            case keyword_token:
+                if (curr->value == "return") {
+                    ++curr;
+                    return new RetAST (parseExpr (curr, end));
+                }
+            // fallthrough !!
             default:
                 ;
         }
@@ -509,6 +516,9 @@ bool parsePrototypeArgs (vector<FunProtoAST::Argument> &args, std::vector<Token>
 
     int index = 1; // Only used for error messages.
     while (true) {
+        if (")" == curr->value) {
+            break;
+        }
         if (curr == end) {
             cerr << "!! reached end of file before parsing of parameters in function-prototype was complete !!" << endl;
             return false;
@@ -736,6 +746,10 @@ static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const 
                     if (";" == curr->value) {
                         return proto;
                     } else if ("{" == curr->value) {
+                        ExprAST *corpse = parseStatement (curr, end);
+                        FunAST *fun = new FunAST (proto, corpse);
+                        //exit (41);
+                        return fun;
                     } else {
                         cerr << "!! expected ';' or '{' after parsing function prototype !!" << endl;
                         throw;
