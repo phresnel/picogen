@@ -84,6 +84,7 @@ class WhileLoopAST;
 class DoWhileLoopAST;
 class FunProtoAST;
 class FunAST;
+class RetAST;
 
 
 // Visitor.
@@ -106,6 +107,7 @@ class ASTVisitor {
         virtual void visit (const DoWhileLoopAST*) = 0;
         virtual void visit (const FunProtoAST*) = 0;
         virtual void visit (const FunAST*) = 0;
+        virtual void visit (const RetAST*) = 0;
 
         virtual void end (const FloatExprAST*) = 0;
         virtual void end (const IntExprAST*) = 0;
@@ -121,6 +123,7 @@ class ASTVisitor {
         virtual void end (const DoWhileLoopAST*) = 0;
         virtual void end (const FunProtoAST*) = 0;
         virtual void end (const FunAST*) = 0;
+        virtual void end (const RetAST*) = 0;
 };
 
 class ASTNonRecursingVisitor { // In contrast to Visitor, where a container Node also calls it's childrens' accept
@@ -140,6 +143,7 @@ class ASTNonRecursingVisitor { // In contrast to Visitor, where a container Node
         virtual void visit (const DoWhileLoopAST*) = 0;
         virtual void visit (const FunProtoAST*) = 0;
         virtual void visit (const FunAST*) = 0;
+        virtual void visit (const RetAST*) = 0;
 };
 
 
@@ -715,13 +719,13 @@ class FunAST : public ExprAST {
         explicit FunAST (const FunProtoAST *prototype, const ExprAST *body)
                 : prototype (prototype), body (body) {}
         virtual ~FunAST() {
-            if (prototype) delete prototype;
-            if (body) delete body;
+            if (0 != prototype) delete prototype;
+            if (0 != body) delete body;
         }
         virtual void accept (ASTVisitor &visitor) const {
             visitor.visit (this);
-            if (prototype) prototype->accept (visitor);
-            if (body) body->accept (visitor);
+            if (0 != prototype) prototype->accept (visitor);
+            if (0 != body) body->accept (visitor);
             visitor.end(this);
         }
         virtual void accept (ASTNonRecursingVisitor &visitor) const {
@@ -739,8 +743,35 @@ class FunAST : public ExprAST {
         }
 };
 
-
-
+class RetAST : public ExprAST {
+        const ExprAST *ret;
+    public:
+        explicit RetAST (const ExprAST *ret)
+                : ret (ret) {}
+        virtual ~RetAST() {
+            if (0 != ret) delete ret;
+        }
+        virtual void accept (ASTVisitor &visitor) const {
+            visitor.visit (this);
+            if (0 != ret) ret->accept (visitor);
+            visitor.end(this);
+        }
+        virtual void accept (ASTNonRecursingVisitor &visitor) const {
+            visitor.visit (this);
+        }
+        const ExprAST * getRet() const {
+            return ret;
+        }
+        virtual void print (int indent) const {
+            AST_PRINT_DO_INDENT (indent);
+            std::cout << "return: ";
+            if (0 != ret) {
+                std::cout << "\n"; ret->print(indent+1);
+            } else {
+                std::cout << "void" << std::endl;
+            }
+        }
+};
 
 
 #endif // AST_H_INCLUDED
