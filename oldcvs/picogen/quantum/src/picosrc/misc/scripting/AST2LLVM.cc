@@ -61,6 +61,7 @@ AST2LLVM::~AST2LLVM () {
 
 
 void AST2LLVM::compile() {
+    std::cerr << "We're ready, but there are still " << values.size() << " entries on the value-stack." << endl;
     module->dump();
     executionEngine = ExecutionEngine::create (module);
     entryPoint = executionEngine->getPointerToFunction (funtab [""]);
@@ -439,8 +440,24 @@ void AST2LLVM::visit (const BlockAST *ast) {
     begin ("void AST2LLVM::visit (const BlockAST*)");
     BlockAST::const_iterator it = ast->begin();
     while (ast->end() != it) {
-        if (0 != *it)
+        if (0 != *it) {
+            const int base = values.size(); // after it->accept, the stack should be +1
             (*it)->accept (*this);
+            const int diff = values.size()-base;
+            if (diff != 0 && diff != 1) {
+                std::cerr << "!! Normally, for each item in a BlockAST, there should be added exactly 0 or exactly 1 value on the stack, but here are +"
+                    <<  values.size()-base << " !!" << endl;
+                throw;
+            }
+            // If that on the stack, if any, does not belong to a return-instr, then send it to heaven.
+            if (0 < diff && 0 == dynamic_cast <const RetAST *> (*it)) {
+                values.pop();
+            }
+            /*const RetAST *ret = dynamic_cast<const RetAST*>(*it);
+            if (0 != ret) {
+                std::cout << "heh!" << endl;
+            }*/
+        }
         ++it;
     }
     end ("void AST2LLVM::visit (const BlockAST*)");
@@ -603,15 +620,33 @@ void AST2LLVM::visit (const DoWhileLoopAST *ast) {
 
 
 
-void AST2LLVM::visit (const FunProtoAST* protoast) {
+void AST2LLVM::visit (const FunProtoAST* proto) {
     begin ("void AST2LLVM::visit (const FunProtoAST* protoast)");
     // Reminder:
     //   FunctionType * get (const Type *Result, const std::vector< const Type * > &Params, bool isVarArg)
 
-    const Type *resultType = Type::Int32Ty;
+    const Type *resultType = 0;//Type::Int32Ty;
+    switch (proto->getType()) {
+        case int_type:
+            resultType = Type::Int32Ty;
+            break;
+        case bool_type:
+            resultType = Type::Int1Ty;
+            break;
+        case float_type:
+            resultType = Type::FloatTy;
+            break;
+        case void_type:
+            resultType = Type::VoidTy;
+            break;
+        case mixed_type:
+            std::cerr << "!! unsupported return-type in AST2LLVM::visit (const FunProtoAST*) (e.g. mixed_type)!!" << endl;
+            throw;
+    };
+
     std::vector<const Type *> paramTypes;
 
-    const std::vector<FunProtoAST::Argument> & args = protoast->getArguments();
+    const std::vector<FunProtoAST::Argument> & args = proto->getArguments();
     for (std::vector<FunProtoAST::Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
         switch (it->type) {
             case int_type:
@@ -629,19 +664,18 @@ void AST2LLVM::visit (const FunProtoAST* protoast) {
         };
     }
 
-    FunctionType *funtype = FunctionType::get (resultType, paramTypes, false);
-    Function *fun = new Function (funtype, GlobalValue::ExternalLinkage, protoast->getName(), module);
-    Function::arg_iterator ai;
-    unsigned int srcidx = 0;
-    for (ai = fun->arg_begin(); ai != fun->arg_end(); ++ai, ++srcidx) {
-        ai->setName (args [srcidx].name);
+    /// \todo How do we handle lvl[2[a|b]|3]-overloading?
+    if (0 == funtab [proto->getName()]) {
+        FunctionType *funtype = FunctionType::get (resultType, paramTypes, false);
+        Function *fun = new Function (funtype, GlobalValue::ExternalLinkage, proto->getName(), module);
+        Function::arg_iterator ai;
+        unsigned int srcidx = 0;
+        for (ai = fun->arg_begin(); ai != fun->arg_end(); ++ai, ++srcidx) {
+            ai->setName (args [srcidx].name);
+        }
+
+        funtab [proto->getName()] = fun;
     }
-
-    // hmm
-    BasicBlock *BB = new BasicBlock ("entry", fun);
-    builder.SetInsertPoint(BB);
-
-    funtab [protoast->getName()] = fun;
     end ("void AST2LLVM::visit (const FunProtoAST* protoast)");
 }
 
@@ -650,19 +684,72 @@ void AST2LLVM::visit (const FunProtoAST* protoast) {
 void AST2LLVM::visit (const FunAST *ast) {
     begin ("void AST2LLVM::visit (const FunAST *ast)");
 
-    if (0 != ast->getPrototype()) {
+    if (0 == ast->getPrototype()) {
+        std::cerr << "!! Prototype cannot be 0 when parsing function !!" << endl;
+        throw;
+    }
+    if (0 == ast->getBody()) {
+        std::cerr << "!! Function-Body cannot be 0 when parsing it !!" << endl;
+        throw;
+    }
+
+    const bool verb = false;
+
+    if (verb) std::cerr << "1) building proto of " << ast->getPrototype()->getName() << endl;
+
+
+    // Get function, if yet created.
+    Function *fun = funtab [ast->getPrototype()->getName()];
+
+    if (0 == fun) {
         ast->getPrototype()->accept (*this);
+        fun = funtab [ast->getPrototype()->getName()];
+        if (0 == fun) {
+            std::cerr << "!! something went wrong while parsing function prototype !!" << endl;
+            throw;
+        }
     }
 
-    if (0 != ast->getBody()) {
-        ast->getBody()->accept (*this);
-    }
+    if (verb) std::cerr << "2) building corpse of " << ast->getPrototype()->getName() << endl;
 
-    if (values.size() > 0) {
+    // Start Inserting into Function.
+    BasicBlock *previousBB = builder.GetInsertBlock();
+
+    //Function *parentFun = builder.GetInsertBlock()->getParent();
+
+    BasicBlock *BB = new BasicBlock ("entry", fun);
+    builder.SetInsertPoint(BB);
+    ast->getBody()->accept (*this);
+
+    // Build Terminator.
+    if (ast->getPrototype()->getType() == void_type) {
+        builder.CreateRetVoid ();
+    } else if (values.size() > 0) {
         Value *retval = values.top().value; values.pop();
         builder.CreateRet (retval);
-        verifyFunction (*funtab [ast->getPrototype()->getName()]);
+    } else {
+        if (verb) std::cerr << "!! missing something on the value-stack while finalizing function '" <<
+            ast->getPrototype()->getName() << "' !!" << endl;
+        throw;
     }
 
+    // Return to inserting to outer function, if nested.
+    if (0 != previousBB) {
+        //BasicBlock *continueBB = new BasicBlock ("cont", previousBB->getParent());
+        builder.SetInsertPoint (previousBB);
+    }
+
+    if (verb) std::cerr << "3) verifying " << ast->getPrototype()->getName() << endl;
+    //verifyFunction (*funtab [ast->getPrototype()->getName()]);
+    if (verb) std::cerr << "4) looks good for " << ast->getPrototype()->getName() << endl;
+
     end ("void AST2LLVM::visit (const FunAST *ast)");
+}
+
+void AST2LLVM::visit (const RetAST *ast) {
+    begin ("void AST2LLVM::visit (const RetAST *ast)");
+    if (0 != ast->getRet()) {
+        ast->getRet()->accept (*this);
+    }
+    end ("void AST2LLVM::visit (const RetAST *ast)");
 }
