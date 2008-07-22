@@ -56,9 +56,6 @@ using namespace boost;
 
 
 
-
-
-
 typedef enum {
     int_token,
     float_token,
@@ -194,7 +191,9 @@ static bool tokenEquals (string checkee, const std::vector<Token>::const_iterato
 static ExprAST *parsePrimary (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
 static ExprAST *parseStatement (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
 static BlockAST *parseBlock (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
-
+static ExprAST *parseExpr (std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end, bool rvalueOnly = false);
+bool parsePrototypeArgs (vector<FunProtoAST::Argument> &args, std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
+bool parseCallArgs (std::vector<ExprAST*> &args, std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end);
 
 
 
@@ -359,29 +358,41 @@ static ExprAST *parseBinOpRhs (
 
 
 
-static ExprAST *parseExpr (
+static ExprAST *parseRValExpr (
     std::vector<Token>::const_iterator &curr,
     const std::vector<Token>::const_iterator &end
 ) {
-    // Prepare possible rollback
-    const std::vector<Token>::const_iterator backup = curr;
+    return parseExpr (curr, end, true);
+}
 
-    // Assignment-statement?
-    IdExprAST *tmpAst = /*dynamic_cast<IdExprAST *> (lhs); //*/parseIdentifier (curr, end);
-    if (0 != tmpAst) {
-        if (tokenEquals ("=", curr, end)) {
-            if (id_token != backup->tokenDescriptor->tokenType) { // We're checking it here because we can give a good error msg then (see below).
-                cerr << "!! you cannot assign something to a constant !!" << endl;
-                throw;
+
+
+static ExprAST *parseExpr (
+    std::vector<Token>::const_iterator &curr,
+    const std::vector<Token>::const_iterator &end,
+    bool rvalueOnly
+) {
+    if (!rvalueOnly) {
+        // Prepare possible rollback
+        const std::vector<Token>::const_iterator backup = curr;
+
+        // Assignment-statement?
+        IdExprAST *tmpAst = /*dynamic_cast<IdExprAST *> (lhs); //*/parseIdentifier (curr, end);
+        if (0 != tmpAst) {
+            if (tokenEquals ("=", curr, end)) {
+                if (id_token != backup->tokenDescriptor->tokenType) { // We're checking it here because we can give a good error msg then (see below).
+                    cerr << "!! you cannot assign something to a constant !!" << endl;
+                    throw;
+                }
+                ++curr;
+                const ExprAST *rhs = parseExpr (curr, end);
+                return new AssignmentExprAST (tmpAst, rhs);
             }
-            ++curr;
-            const ExprAST *rhs = parseExpr (curr, end);
-            return new AssignmentExprAST (tmpAst, rhs);
+            delete tmpAst;
         }
-        delete tmpAst;
+        // Rollback
+        curr = backup;
     }
-    // Rollback
-    curr = backup;
 
     ExprAST *lhs = parsePrimary (curr, end);
     if (lhs == 0)
@@ -428,8 +439,26 @@ static ExprAST *parsePrimary (
             case float_token:
                 return parseFloatExpr (curr, end);
             // identifier-Token.
-            case id_token:
+            case id_token: {
+                // A call, maybe?
+                const std::vector<Token>::const_iterator prev = curr;
+                ++curr;
+                if (curr != end) {
+                    if (curr->value == "(") {
+                        // Looks like a call.
+                        std::vector<ExprAST*> args;
+                        if (parseCallArgs (args, curr, end)) {
+                            return new CallExprAST (prev->value, args);
+                        } else {
+                            cerr << "! something no good at parsing args of call !" << endl;
+                            throw;
+                        }
+                    }
+                }
+                curr = prev; // Rollback.
+                // No call.
                 return parseIdExpr (curr, end);
+            };
             // other Token.
             case other_token:
                 if (curr->value == "(")
@@ -509,6 +538,42 @@ static Datatype strToDatatype (const std::string &str) {
 }
 
 
+bool parseCallArgs (std::vector<ExprAST*> &args, std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
+    // We assume curr->value == "(".
+    ++curr; // Eat "(".
+
+    int index = 1; // Only used for error messages.
+    while (true) {
+        if (")" == curr->value) {
+            break;
+        }
+        if (curr == end) {
+            cerr << "!! reached end of file before parsing of parameters in function-prototype was complete !!" << endl;
+            return false;
+        }
+
+        ExprAST *arg = parseRValExpr (curr, end);
+
+        // Can create a parameter now.
+        args.push_back (arg);
+
+        // Either end-of-list or comma.
+        if (")" == curr->value) {
+            break;
+        } else if ("," == curr->value) {
+            ++curr;
+            ++index;
+        } else {
+            cerr << "!! expected ',' or ')' after parsing parameter " << index << " of function prototype !!" << endl;
+            return false;
+        }
+    }
+    ++curr; // Eat ")"
+
+    return true;
+}
+
+
 
 bool parsePrototypeArgs (vector<FunProtoAST::Argument> &args, std::vector<Token>::const_iterator &curr, const std::vector<Token>::const_iterator &end) {
     // We assume curr->value == "(".
@@ -555,6 +620,7 @@ bool parsePrototypeArgs (vector<FunProtoAST::Argument> &args, std::vector<Token>
 
     return true;
 }
+
 
 
 // Phat Function, doh.
