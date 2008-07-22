@@ -68,6 +68,31 @@ typedef enum { // Edit with care, Order Equals Precedence!
 
 
 
+static const char *binOpToStr (BinOp op) {
+    switch (op) {
+        case nop_binop: return "<unknwn>"; break;
+        case log_or_binop: return "||"; break;
+        case log_and_binop: return "&&"; break;
+
+        case eq_binop: return "=="; break;
+        case ne_binop: return "!="; break;
+
+        case lt_binop: return "<"; break;
+        case le_binop: return "<="; break;
+        case gt_binop: return ">"; break;
+        case ge_binop: return ">="; break;
+
+        case sub_binop: return "-"; break;
+        case add_binop: return "+"; break;
+
+        case div_binop: return "/"; break;
+        case mul_binop: return "*"; break;
+    };
+    return "<unknwn>";
+}
+
+
+
 // Forward declare all Node-Types.
 class ExprAST;
 class FloatExprAST;
@@ -280,6 +305,31 @@ class CallExprAST : public ExprAST {
         virtual void accept (ASTNonRecursingVisitor &visitor) const {
             visitor.visit (this);
         }
+        virtual void print (int indent) const {
+            using namespace std;
+            AST_PRINT_DO_INDENT (indent);   cout << "call '" << callee << "'\n";
+            /*AST_PRINT_DO_INDENT (indent);   cout << "  l2a-name: '" << getLvl2aName() << "'\n";
+            AST_PRINT_DO_INDENT (indent);   cout << "  l2b-name: '" << getLvl2bName() << "'\n";
+            AST_PRINT_DO_INDENT (indent);   cout << "  l3-name:  '" << getLvl3Name()  << "')\n";*/
+            //AST_PRINT_DO_INDENT (indent);   cout << " parameters: (";
+            std::vector<ExprAST*>::const_iterator it;
+            for (it = args.begin() ; it != args.end() ; ++it) {
+                (*it)->print (indent+1);
+                /*
+                cout << it->name << " :"
+                ;
+                switch (it->type) {
+                    case int_type:   cout << "int";   break;
+                    case float_type: cout << "float"; break;
+                    case bool_type:  cout << "bool"; break;
+                    case void_type: case mixed_type:
+                        cerr << "!! unsupported type in FunProtoAST::print !!" << endl;
+                        throw;
+                }
+                cout << "; ";*/
+            }
+            //cout << ")" << endl;
+        }
 };
 
 class BinaryExprAST : public ExprAST {
@@ -305,7 +355,7 @@ class BinaryExprAST : public ExprAST {
         }
         virtual void print (int indent) const {
             AST_PRINT_DO_INDENT (indent);
-            std::cout << "binaryOpExpr(" << op << "){" << std::endl;
+            std::cout << "binaryOpExpr(" << binOpToStr (op) << "){" << std::endl;
             if (lhs != 0)
                 lhs->print (indent + 1);
             if (rhs != 0)
