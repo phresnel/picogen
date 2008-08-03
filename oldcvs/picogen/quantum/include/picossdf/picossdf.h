@@ -54,6 +54,13 @@ class SSDFBackend {
         virtual int preethamSetSunDirection (const ::picogen::misc::geometrics::Vector3d &direction) = 0;
         //virtual int preetham.enableFogHack (1, 0.0000041, 500000) = 0;
 
+        virtual int cameraSetPositionYawPitchRoll (
+            const ::picogen::misc::geometrics::Vector3d &position,
+            ::picogen::misc::prim::real yaw,
+            ::picogen::misc::prim::real pitch,
+            ::picogen::misc::prim::real roll
+        ) = 0;
+
         // Object adders.
         virtual int addSphereTerminal (
             ::picogen::misc::prim::real radius,
@@ -108,14 +115,7 @@ class PicoSSDF {
         typedef enum {
             TERMINAL_SPHERE
             ,TERMINAL_PREETHAM
-
-            /*,TERMINAL_PREETHAM_SET_TURBIDITY
-            ,TERMINAL_PREETHAM_SET_SUN_SOLID_ANGLE_FACTOR
-            ,TERMINAL_PREETHAM_SET_COLOR_FILTER
-            ,TERMINAL_PREETHAM_SET_SUN_COLOR
-            ,TERMINAL_PREETHAM_SET_SUN_DIRECTION
-            ,TERMINAL_PREETHAM_ENABLE_FOG_HACK*/
-
+            ,TERMINAL_SET_CAMERA_YAW_PITCH_ROLL
         } TERMINAL_TYPE;
         static const inline std::string terminalTypeAsString (TERMINAL_TYPE type) {
             switch (type) {
@@ -123,6 +123,8 @@ class PicoSSDF {
                     return std::string ("sphere");
                 case TERMINAL_PREETHAM:
                     return std::string ("sunsky");
+                case TERMINAL_SET_CAMERA_YAW_PITCH_ROLL:
+                    return std::string ("camera-yaw-pitch-roll");
             };
             return std::string ("<unknown>");
         }
@@ -187,6 +189,8 @@ class PicoSSDF {
                 virtual bool isTerminalAllowed (TERMINAL_TYPE type) {
                     switch (type) {
                         case TERMINAL_PREETHAM:
+                            return true;
+                        case TERMINAL_SET_CAMERA_YAW_PITCH_ROLL:
                             return true;
                     };
                     return false;
