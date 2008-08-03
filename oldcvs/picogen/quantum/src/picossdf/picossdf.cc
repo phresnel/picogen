@@ -324,18 +324,45 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                 parameters.erase (parameters.begin());
             }
         } break;
-        /*case TERMINAL_PREETHAM_SET_TURBIDITY: {
+
+        case TERMINAL_SET_CAMERA_YAW_PITCH_ROLL: {
+            Vector3d position (0.0,0.0,0.0);
+            real yaw = 0.0;
+            real pitch = 0.0;
+            real roll = 0.0;
+            while( !parameters.empty() ) {
+                if ((*parameters.begin()).first == string ("position")) {
+                    unsigned int numScalars;
+                    Vector3d vec = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'position'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'position'");
+                        return SYNTAX_ERROR;
+                    }
+                    position = vec;
+                } else if ((*parameters.begin()).first == string ("yaw")) {
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> yaw;
+                } else if ((*parameters.begin()).first == string ("pitch")) {
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> pitch;
+                } else if ((*parameters.begin()).first == string ("roll")) {
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> roll;
+                } else {
+                    errreason = string ("unknown parameter to camera-yaw-pitch-roll: '") + string ((*parameters.begin()).first) + string ("'");
+                    return SYNTAX_ERROR;
+                }
+                parameters.erase (parameters.begin());
+            }
+            backend->cameraSetPositionYawPitchRoll (position, yaw, pitch, roll);
         } break;
-        case TERMINAL_PREETHAM_SET_SUN_SOLID_ANGLE_FACTOR: {
-        } break;
-        case TERMINAL_PREETHAM_SET_COLOR_FILTER: {
-        } break;
-        case TERMINAL_PREETHAM_SET_SUN_COLOR: {
-        } break;
-        case TERMINAL_PREETHAM_SET_SUN_DIRECTION: {
-        } break;
-        case TERMINAL_PREETHAM_ENABLE_FOG_HACK: {
-        } break;*/
     }
 
     return OKAY;
@@ -500,20 +527,9 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (const char *line) {
             type = TERMINAL_SPHERE;
         } else if (!strcmp ("sunsky", block_name)) {
             type = TERMINAL_PREETHAM;
-        }
-        /*else if (!strcmp ("preetham-set-turbidity", block_name)) {
-            type = TERMINAL_PREETHAM_SET_TURBIDITY;
-        } else if (!strcmp ("preetham-set-sun-solid-angle-factor", block_name)) {
-            type = TERMINAL_PREETHAM_SET_SUN_SOLID_ANGLE_FACTOR;
-        } else if (!strcmp ("preetham-set-color-filter", block_name)) {
-            type = TERMINAL_PREETHAM_SET_COLOR_FILTER;
-        } else if (!strcmp ("preetham-set-sun-color", block_name)) {
-            type = TERMINAL_PREETHAM_SET_SUN_COLOR;
-        } else if (!strcmp ("preetham-set-sun-direction", block_name)) {
-            type = TERMINAL_PREETHAM_SET_SUN_DIRECTION;
-        } else if (!strcmp ("preetham-enable-fog-hack", block_name)) {
-            type = TERMINAL_PREETHAM_ENABLE_FOG_HACK;
-        }*/ else {
+        } else if (!strcmp ("camera-yaw-pitch-roll", block_name)) {
+            type = TERMINAL_SET_CAMERA_YAW_PITCH_ROLL;
+        } else {
             errreason = string ("unknown terminal type '") + string (block_name) + string ("'");
             return SYNTAX_ERROR;
         }
@@ -646,7 +662,7 @@ PicoSSDF::parse_err PicoSSDF::parse() {
 
     // clean up
     fclose (fin);
-exit(0);
+//exit(0);
     return retcode;
 }
 
