@@ -26,7 +26,7 @@
 /// \todo: Intersect() fails if bih has not been invalidated
 /// \todo: Intersect() fails if no brdf has been set
 
-#include "picogen.h"
+#include <picogen/picogen.h>
 
 // quick and dirty aliases due to namespace re-ordering
 typedef picogen::misc::prim::real real;

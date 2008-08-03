@@ -24,7 +24,7 @@
 
 
 
-#include "picogen.h"
+#include <picogen/picogen.h>
 
 
 

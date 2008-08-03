@@ -23,7 +23,7 @@
  */
 
 
-#include "picogen.h"
+#include <picogen/picogen.h>
 
 namespace picogen {
     namespace graphics {

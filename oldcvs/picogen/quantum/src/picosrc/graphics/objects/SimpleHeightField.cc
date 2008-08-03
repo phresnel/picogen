@@ -23,7 +23,7 @@
  */
 
 
-#include "picogen.h"
+#include <picogen/picogen.h>
 
 typedef picogen::misc::prim::real real;
 typedef picogen::misc::geometrics::Vector3d Vector3d;
