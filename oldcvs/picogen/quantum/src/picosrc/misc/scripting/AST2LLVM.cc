@@ -63,8 +63,11 @@ AST2LLVM::~AST2LLVM () {
 void AST2LLVM::compile() {
     std::cerr << "We're ready, but there are still " << values.size() << " entries on the value-stack." << endl;
     module->dump();
+    std::cerr << "----" << endl;
     executionEngine = ExecutionEngine::create (module);
+    std::cerr << "----" << endl;
     entryPoint = executionEngine->getPointerToFunction (funtab [""]);
+    std::cerr << "----" << endl;
     int (*FP)() = (int (*)())entryPoint;
     fprintf(stderr, "Evaluated to %i\n", FP());
 }
@@ -112,13 +115,6 @@ void AST2LLVM::visit (const IdExprAST *ast) {
     //builder.CreateLoad (valtmp);
     //values.push (ValueDescriptor (new LoadInst (symtab [ast->getValue()].llvmAlloca, ast->getValue().c_str()), ast));
     end ("void AST2LLVM::visit (const IdExprAST *ast)");
-}
-
-
-
-void AST2LLVM::visit (const CallExprAST*) {
-    begin ("void AST2LLVM::visit (const CallExprAST*)");
-    end ("void AST2LLVM::visit (const CallExprAST*)");
 }
 
 
@@ -425,7 +421,7 @@ void AST2LLVM::visit (const DeclarationAST* ast) {
     };
 
     if (symtab.end() != symtab.find (ast->getName())) {
-        std::cout << "!! already declared!" << std::endl;
+        std::cout << "!! already declared !!" << std::endl;
         throw;
     } else {
         AllocaInst *tmp = builder.CreateAlloca (llvmType, 0, ast->getName().c_str());
@@ -625,6 +621,7 @@ void AST2LLVM::visit (const FunProtoAST* proto) {
     // Reminder:
     //   FunctionType * get (const Type *Result, const std::vector< const Type * > &Params, bool isVarArg)
 
+    // Return type.
     const Type *resultType = 0;//Type::Int32Ty;
     switch (proto->getType()) {
         case int_type:
@@ -644,30 +641,43 @@ void AST2LLVM::visit (const FunProtoAST* proto) {
             throw;
     };
 
+    // Parameters.
     std::vector<const Type *> paramTypes;
 
     const std::vector<FunProtoAST::Argument> & args = proto->getArguments();
     for (std::vector<FunProtoAST::Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+        //const Type *llvmType = 0;
         switch (it->type) {
             case int_type:
                 paramTypes.push_back (Type::Int32Ty);
+                //llvmType = Type::Int32Ty;
                 break;
             case bool_type:
                 paramTypes.push_back (Type::Int1Ty);
+                //llvmType = Type::Int1Ty;
                 break;
             case float_type:
                 paramTypes.push_back (Type::FloatTy);
+                //llvmType = Type::FloatTy;
                 break;
             case void_type: case mixed_type:
                 std::cerr << "!! unsupported type in AST2LLVM::visit (const FunProtoAST*) !!" << endl;
                 throw;
         };
+
+        /*if (symtab.end() != symtab.find (it->name)) {
+            std::cout << "!! already declared !!" << std::endl;
+            throw;
+        } else {
+            AllocaInst *tmp = builder.CreateAlloca (llvmType, 0, it->name.c_str());
+            symtab [it->name] = Symbol (it->type, it->name, tmp);
+        }*/
     }
 
     /// \todo How do we handle lvl[2[a|b]|3]-overloading?
     if (0 == funtab [proto->getName()]) {
         FunctionType *funtype = FunctionType::get (resultType, paramTypes, false);
-        Function *fun = new Function (funtype, GlobalValue::ExternalLinkage, proto->getName(), module);
+        Function *fun = new Function (funtype, GlobalValue::ExternalLinkage, proto->getLvl2aName(), module);
         Function::arg_iterator ai;
         unsigned int srcidx = 0;
         for (ai = fun->arg_begin(); ai != fun->arg_end(); ++ai, ++srcidx) {
@@ -693,7 +703,7 @@ void AST2LLVM::visit (const FunAST *ast) {
         throw;
     }
 
-    const bool verb = false;
+    const bool verb = true;
 
     if (verb) std::cerr << "1) building proto of " << ast->getPrototype()->getName() << endl;
 
@@ -719,6 +729,37 @@ void AST2LLVM::visit (const FunAST *ast) {
 
     BasicBlock *BB = new BasicBlock ("entry", fun);
     builder.SetInsertPoint(BB);
+
+    // ++++++++++++++++++++++++++++
+    const std::vector<FunProtoAST::Argument> & args = ast->getPrototype()->getArguments();
+    for (std::vector<FunProtoAST::Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+        const Type *llvmType = 0;
+        switch (it->type) {
+            case int_type:
+                llvmType = Type::Int32Ty;
+                break;
+            case bool_type:
+                llvmType = Type::Int1Ty;
+                break;
+            case float_type:
+                llvmType = Type::FloatTy;
+                break;
+            case void_type: case mixed_type:
+                std::cerr << "!! unsupported type in AST2LLVM::visit (const FunProtoAST*) !!" << endl;
+                throw;
+        };
+
+        if (symtab.end() != symtab.find (it->name)) {
+            std::cout << "!! already declared !!" << std::endl;
+            throw;
+        } else {
+            AllocaInst *tmp = builder.CreateAlloca (llvmType, 0, it->name.c_str());
+            symtab [it->name] = Symbol (it->type, it->name, tmp);
+        }
+    }
+
+
+    // ----------------------------
     ast->getBody()->accept (*this);
 
     // Build Terminator.
@@ -745,6 +786,40 @@ void AST2LLVM::visit (const FunAST *ast) {
 
     end ("void AST2LLVM::visit (const FunAST *ast)");
 }
+
+
+
+void AST2LLVM::visit (const CallExprAST *ast) {
+    begin ("void AST2LLVM::visit (const CallExprAST*)");
+    string funname = ast->getFunName();
+    std::cerr << funname << endl;
+
+    Function *fun = funtab [funname];//module->getFunction (ast->getFunName());
+    if (0 == fun) {
+        std::cerr << "noes ... " << endl;
+        throw;
+    }
+
+    std::vector<Value*> llvm_args;
+    const std::vector<ExprAST*> &my_args = ast->getArgs();
+    for (std::vector<ExprAST*>::const_iterator it=my_args.begin(); it != my_args.end(); ++it) {
+        const unsigned int old_size = values.size();
+        (*it)->accept (*this);
+        if (values.size() != old_size) { // Check if any code has been generated.
+            llvm_args.push_back (values.top().value);
+            values.pop();
+        } else {
+            std::cerr << "!! something went wrong in visit(CallExprAST*), d'oh !!" << endl;
+        }
+    }
+
+    Value *tmp = builder.CreateCall (fun, llvm_args.begin(), llvm_args.end(), "calltmp");
+    values.push (ValueDescriptor (tmp, ast, int_type)); // ! int_type replace !
+
+    end ("void AST2LLVM::visit (const CallExprAST*)");
+}
+
+
 
 void AST2LLVM::visit (const RetAST *ast) {
     begin ("void AST2LLVM::visit (const RetAST *ast)");
