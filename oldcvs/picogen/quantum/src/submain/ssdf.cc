@@ -190,7 +190,7 @@ class SSDFScene : public Scene, public SSDFBackend {
         LinearList list;
         ::picogen::common::Preetham   preetham;
         bool enablePreethamSky;
-        ::picogen::common::AABox      box;
+        //::picogen::common::AABox      box;
 
 
         typedef ::picogen::graphics::objects::abstract::IScene IScene;
@@ -345,6 +345,22 @@ class SSDFScene : public Scene, public SSDFBackend {
         }
 
 
+        // Camera:
+        virtual int cameraSetPositionYawPitchRoll (
+            const ::picogen::misc::geometrics::Vector3d &position,
+            ::picogen::misc::prim::real yaw,
+            ::picogen::misc::prim::real pitch,
+            ::picogen::misc::prim::real roll
+        ) {
+            renderer.transformation() = //Transformation().setToTranslation (position);
+                Transformation().setToRotationZ (roll) *
+                Transformation().setToRotationX (pitch) *
+                Transformation().setToRotationY (yaw) *
+                Transformation().setToTranslation (position);
+            std::cout << "camera position={" << position[0] << ", " << position[1] << ", " << position[2] << "} ypr{" << yaw << ", " << pitch << ", " << roll << "}" << std::endl;
+            return 0;
+        }
+
         //
         virtual int addSphereTerminal (
             ::picogen::misc::prim::real radius,
@@ -374,7 +390,12 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         explicit SSDFScene(const std::string &filename)
         : sceneRoot(0), currentBRDF(0), ssdf(filename, this) {
-            box.enableOutside (false);
+            // Setup default camera transform.
+            //renderer.transformation() = Transformation().setToTranslation (Vector3d (0.5,2.0,-5.0));
+                /*Transformation().setToRotationX (3.14159*0.0) *
+                Transformation().setToRotationY (3.14159*0.0) *
+                Transformation().setToTranslation (Vector3d (0.0,0.0,-1.5) *1.0)
+                ;*/
         }
 
 
@@ -409,13 +430,6 @@ class SSDFScene : public Scene, public SSDFBackend {
             renderer.camera().defineCamera ( (real) width/ (real) height, 1.0, 0.5);
             renderer.surface().reset (width*2, height*2);
 
-            // setup camera transform
-            renderer.transformation() =
-                Transformation().setToRotationX (3.14159*0.0) *
-                Transformation().setToRotationY (3.14159*0.0) *
-                Transformation().setToTranslation (Vector3d (0.0,0.0,-1.5) *1.0)
-                ;
-
             // setup and recognize sky
             preetham.invalidate();
             //if (enablePreethamSky) {
@@ -425,7 +439,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             //}
 
             // setup boxen
-            box.enableFace (box.y_positive, false);
+            //box.enableFace (box.y_positive, false);
 
             // recognize scene
             /*list.insert (&box);
@@ -693,7 +707,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (2*320, 2*320, grindScene);
+        return grind (800, 800, grindScene);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
