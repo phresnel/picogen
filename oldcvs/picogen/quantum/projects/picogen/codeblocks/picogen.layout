@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="fast compilation" />
+	<ActiveTarget name="optimized AthlonXP" />
 	<File name="../../../include/common.h" open="0" top="0" tabpos="0">
 		<Cursor position="1141" topLine="19" />
 	</File>
@@ -34,8 +34,8 @@
 	<File name="../../../include/picogen/graphics/image.h" open="0" top="0" tabpos="12">
 		<Cursor position="2014" topLine="102" />
 	</File>
-	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="13">
-		<Cursor position="2946" topLine="52" />
+	<File name="../../../include/picogen/graphics/material.h" open="1" top="0" tabpos="10">
+		<Cursor position="3660" topLine="54" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="14">
 		<Cursor position="3749" topLine="67" />
@@ -124,14 +124,14 @@
 	<File name="../../../include/picossdf/picossdf.h" open="0" top="0" tabpos="4">
 		<Cursor position="3529" topLine="90" />
 	</File>
-	<File name="../../../src/experimental/Rain.cc" open="0" top="0" tabpos="0">
-		<Cursor position="1559" topLine="22" />
+	<File name="../../../src/experimental/Rain.cc" open="1" top="0" tabpos="9">
+		<Cursor position="1065" topLine="13" />
 	</File>
 	<File name="../../../src/experimental/Snow.cc" open="0" top="0" tabpos="0">
 		<Cursor position="4940" topLine="118" />
 	</File>
 	<File name="../../../src/main.cc" open="1" top="0" tabpos="6">
-		<Cursor position="3435" topLine="70" />
+		<Cursor position="3358" topLine="88" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
@@ -148,26 +148,26 @@
 	<File name="../../../src/picosrc/graphics/objects/LinearList.cc" open="0" top="0" tabpos="20">
 		<Cursor position="1727" topLine="24" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="0">
-		<Cursor position="12969" topLine="328" />
+	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="1" top="0" tabpos="8">
+		<Cursor position="1136" topLine="10" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="0" top="0" tabpos="2">
-		<Cursor position="18955" topLine="420" />
+	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="1" top="1" tabpos="12">
+		<Cursor position="1038" topLine="9" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/Sphere.cc" open="0" top="0" tabpos="7">
-		<Cursor position="1562" topLine="43" />
+	<File name="../../../src/picosrc/graphics/objects/Sphere.cc" open="1" top="0" tabpos="11">
+		<Cursor position="1000" topLine="9" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/TriBIH.cc" open="0" top="0" tabpos="8">
-		<Cursor position="25007" topLine="573" />
+	<File name="../../../src/picosrc/graphics/objects/TriBIH.cc" open="1" top="0" tabpos="13">
+		<Cursor position="26029" topLine="579" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" open="0" top="0" tabpos="0">
 		<Cursor position="6561" topLine="150" />
 	</File>
-	<File name="../../../src/picosrc/graphics/samplers/ray/Preview.cc" open="0" top="0" tabpos="5">
-		<Cursor position="6112" topLine="93" />
+	<File name="../../../src/picosrc/graphics/samplers/ray/Preview.cc" open="1" top="0" tabpos="14">
+		<Cursor position="1051" topLine="107" />
 	</File>
-	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="0" top="0" tabpos="1">
-		<Cursor position="5849" topLine="93" />
+	<File name="../../../src/picosrc/graphics/samplers/ray/Simple.cc" open="1" top="0" tabpos="15">
+		<Cursor position="1028" topLine="9" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="2">
 		<Cursor position="41844" topLine="671" />
@@ -184,8 +184,8 @@
 	<File name="../../../src/picosrc/misc/scripting/picogen-c.cc" open="1" top="0" tabpos="1">
 		<Cursor position="19393" topLine="616" />
 	</File>
-	<File name="../../../src/picossdf/picossdf.cc" open="1" top="1" tabpos="7">
-		<Cursor position="22220" topLine="631" />
+	<File name="../../../src/picossdf/picossdf.cc" open="1" top="0" tabpos="7">
+		<Cursor position="9605" topLine="280" />
 	</File>
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="2">
 		<Cursor position="12186" topLine="327" />
@@ -194,7 +194,7 @@
 		<Cursor position="1443" topLine="12" />
 	</File>
 	<File name="../../../src/submain/ssdf.cc" open="1" top="0" tabpos="5">
-		<Cursor position="22835" topLine="670" />
+		<Cursor position="23813" topLine="693" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="2">
 		<Cursor position="24517" topLine="647" />
