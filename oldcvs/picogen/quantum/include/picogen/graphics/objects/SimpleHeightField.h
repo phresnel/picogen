@@ -69,6 +69,7 @@ namespace picogen {
                     }
 
                     real smoothedHeightFunc (const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real u, real v, real cellSizeX, real cellSizeY);
+                    real smoothedHeightFunc (const ::picogen::misc::functional::Function_R2_R1 *heightFunc, real u, real v, real cellSizeX, real cellSizeY);
 
                     inline int intersectVoxel (
                         param_out (intersection_t, intersection),
@@ -90,6 +91,7 @@ namespace picogen {
                     void setBRDF (const IBRDF* brdf);
                     void setShader (const IShader* shader);
                     void init (unsigned int size, const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real boundsGuessAccuracy = 1.0, bool smooth = true);
+                    void init (unsigned int size, const ::picogen::misc::functional::Function_R2_R1 *heightFunc, real boundsGuessAccuracy = 1.0, bool smooth = true);
 
                     virtual bool intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const;
             };
