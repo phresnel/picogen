@@ -24,6 +24,7 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+#include <stack>
 #include <map>
 
 #include <SDL/SDL.h>
@@ -176,6 +177,13 @@ class Scene {
 
 class SSDFScene : public Scene, public SSDFBackend {
     protected:
+
+        typedef ::picogen::common::LinearList LinearList;
+        typedef ::picogen::common::TriBIH TriBIH;
+        typedef ::picogen::graphics::objects::abstract::IScene IScene;
+        typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+
+
         ::picogen::graphics::samplers::screen::XYIterator<
             ::picogen::misc::templates::surface<
                 ::picogen::graphics::image::color::AverageColor
@@ -185,7 +193,6 @@ class SSDFScene : public Scene, public SSDFBackend {
         > renderer;
         int width, height;
 
-        typedef ::picogen::common::LinearList LinearList;
 
         LinearList list;
         ::picogen::common::Preetham   preetham;
@@ -193,31 +200,55 @@ class SSDFScene : public Scene, public SSDFBackend {
         //::picogen::common::AABox      box;
 
 
-        typedef ::picogen::graphics::objects::abstract::IScene IScene;
-
         enum SCENE_TYPE {
-             LINEAR_LIST
+             LINEAR_LIST, TRI_BIH
         };
 
         struct Scene {
             union {
                 LinearList *linearList;
+                TriBIH *triBih;
             };
             SCENE_TYPE type;
         };
-        typedef ::std::vector<Scene> SceneStack;
+        typedef ::std::stack<Scene> SceneStack;
         typedef ::std::string string;
 
         Scene currentScene;
         SceneStack sceneStack;
 
-        IScene *sceneRoot;
+        ::picogen::graphics::objects::abstract::IAccelerationStructure *sceneRoot;
         IBRDF* currentBRDF;
 
         //::std::vector<IBRDF*> brdfStack;
         ::std::map<string,IBRDF*> brdfMap;
 
         PicoSSDF ssdf;
+
+
+
+        // TODO: Still a hack, make Scene more OOPish
+        void mergeStackTops () {
+            IIntersectable *is = 0;
+            switch (sceneStack.top().type) {
+                case LINEAR_LIST: is = sceneStack.top().linearList; break;
+                case TRI_BIH: is = sceneStack.top().triBih; break;
+            };
+
+            sceneStack.pop();
+            if (0 < sceneStack.size()) {
+                switch (sceneStack.top().type) {
+                    case LINEAR_LIST: sceneStack.top().linearList->insert (is); break;
+                    case TRI_BIH:
+                        ::std::cerr << "The impossible becomes thruth: mergeStackTops() down to a tri-bih ("
+                            << __FILE__ << "," << __LINE__ << ")";
+                        exit (666);
+                        break;
+                };
+            }
+        }
+
+
 
     public:
 
@@ -257,23 +288,44 @@ class SSDFScene : public Scene, public SSDFBackend {
             if (0 == sceneRoot) {
                 sceneRoot = currentScene.linearList;
             }
-            sceneStack.push_back (currentScene);
+            sceneStack.push (currentScene);
             return 0;
         }
         virtual int endListBlock () {
             currentScene.linearList->invalidate();
-            sceneStack.pop_back();
-            currentScene = sceneStack.back();
+
+            mergeStackTops();
+
+            if (0 < sceneStack.size()) {
+                currentScene =  sceneStack.top();
+            } else {
+                // End of scene hierarchy.
+            }
+
             return 0;
         }
 
         // TriBIH:
         virtual int beginTriBIHBlock () {
-            std::cout << "hmm{{" << std::endl;
+            currentScene.type = TRI_BIH;
+            currentScene.triBih = new TriBIH;
+            if (0 == sceneRoot) {
+                sceneRoot = currentScene.triBih;
+            }
+            sceneStack.push (currentScene);
             return 0;
         }
         virtual int endTriBIHBlock () {
-            std::cout << "hmm}}" << std::endl;
+            currentScene.triBih->invalidate();
+            //sceneStack.pop_back();
+            mergeStackTops();
+
+            if (0 < sceneStack.size()) {
+                currentScene =  sceneStack.top();
+            } else {
+                // End of scene hierarchy.
+            }
+
             return 0;
         }
 
@@ -287,6 +339,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             ss << reflectance;
             ss >> brdfId;
 
+            // Effectively like gcc's -fmerge-all-constants.
             if (brdfMap.end() == brdfMap.find (brdfId)) {
                 currentBRDF = new ::picogen::graphics::material::brdf::Lambertian(reflectance);
                 brdfMap [brdfId] = currentBRDF;
@@ -303,6 +356,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             ss << string ("specular:") << reflectance;
             ss >> brdfId;
 
+            // Effectively like gcc's -fmerge-all-constants.
             if (brdfMap.end() == brdfMap.find (brdfId)) {
                 currentBRDF = new ::picogen::graphics::material::brdf::Specular(reflectance);
                 brdfMap [brdfId] = currentBRDF;
@@ -364,26 +418,34 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
         // Heightmap:
-        virtual int addHeightmap (
+        virtual int addHeightfield (
             const ::picogen::misc::functional::Function_R2_R1 &fun,
             unsigned int resolution,
             const ::picogen::misc::geometrics::Vector3d &center,
             const ::picogen::misc::geometrics::Vector3d &size
         ) {
+            ::picogen::graphics::objects::SimpleHeightField *heightField =
+                new ::picogen::graphics::objects::SimpleHeightField ();
+
+            using namespace ::picogen::misc::functional;
+
+            heightField->setBRDF (currentBRDF);
+            heightField->setShader (&white);
+            heightField->setBox (center-size*0.5, center+size*0.5);
+
+            heightField->init (resolution, &fun, 0.1, false);
             switch (currentScene.type) {
                 case LINEAR_LIST:{
-                    ::picogen::graphics::objects::SimpleHeightField *heightField =
-                        new ::picogen::graphics::objects::SimpleHeightField ();
-
-                    using namespace ::picogen::misc::functional;
-                    heightField->setBRDF (currentBRDF);
-                    heightField->setShader (&white);
-                    heightField->setBox (center-size*0.5, center+size*0.5);
-
-                    heightField->init (resolution, &fun, 0.1, false);
                     currentScene.linearList->insert (heightField);
                     // TODO URGENT !!!!one1 --> see LinearList.cc
-                }break;
+                } break;
+
+                case TRI_BIH:{
+                    currentScene.triBih->setBRDF (currentBRDF);
+                    currentScene.triBih->setShader (&white);
+                    heightField->feedTriScene (currentScene.triBih);
+                    delete heightField;
+                } break;
             };
             return 0;
         }
@@ -410,7 +472,12 @@ class SSDFScene : public Scene, public SSDFBackend {
                     sphere->setBRDF (currentBRDF);
                     currentScene.linearList->insert (sphere);
                     // TODO URGENT !!!!one1 --> see LinearList.cc
-                }break;
+                } break;
+                case TRI_BIH:{
+                    ::std::cerr << "The impossible becomes thruth: addSphereTerminal() within TRI_BIH-Block ("
+                        << __FILE__ << "," << __LINE__ << ")";
+                    exit (666);
+                } break;
             };
             return 0;
         }
