@@ -169,45 +169,61 @@ static const picogen::common::Vector3d scanVector3d (const std::string &str, uns
 
 
 PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&line) {
+    // TODO: Refactor the code in this function with some calls like 'parseVector', 'parseReal' and so forth.
     using namespace ::std;
     using ::picogen::misc::prim::real;
     using ::picogen::misc::geometrics::Vector3d;
     using ::picogen::graphics::image::color::Color;
+    using ::picogen::misc::functional::Function_R2_R1;
 
     // Step 1: Read Parameters.
     map<string,string> parameters;
     string name;
     string value;
     bool scanName = true;
+    int braceBias = 0;
     ++line; // Eat '('.
     while (true) {
-        if (*line == ':') {
-            if (!scanName) {
-                errreason = string ("Expected either ')' or ';'.");
-                return SYNTAX_ERROR;
-            }
-            scanName = false;
-            ++line;
-            continue;
-        } else if (*line == ';' || *line == ')') {
-            scanName = true;
-            if (parameters.end() != parameters.find (name)) {
-                errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
-                return SYNTAX_ERROR;
-            }
-            parameters [name] = value;
-            name = value = "";
-            if (*line == ')') {
-                break;
-            }
-            ++line;
-            continue;
-        } else if (*line == '\0') {
+
+        // Check for end of string (it would give better performance if we would check that last).
+        if (*line == '\0') {
             errreason = string ("Missing ')'.");
             return SYNTAX_ERROR;
-        } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
-            line++;
-            continue;
+        }
+
+        // Check for braces, it could be that we are parsing height-slang.
+        if (0 < braceBias || (!scanName && '(' == *line)) {
+            if ('(' == *line) {
+                ++braceBias;
+            } else if (')' == *line) {
+                --braceBias;
+            }
+        } else {
+            if (*line == ':') {
+                if (!scanName) {
+                    errreason = string ("Expected either ')' or ';'.");
+                    return SYNTAX_ERROR;
+                }
+                scanName = false;
+                ++line;
+                continue;
+            } else if (*line == ';' || *line == ')') {
+                scanName = true;
+                if (parameters.end() != parameters.find (name)) {
+                    errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
+                    return SYNTAX_ERROR;
+                }
+                parameters [name] = value;
+                name = value = "";
+                if (*line == ')') {
+                    break;
+                }
+                ++line;
+                continue;
+            } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
+                line++;
+                continue;
+            }
         }
 
         switch (scanName) {
@@ -261,6 +277,57 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                 parameters.erase (parameters.begin());
             }
             backend->addSphereTerminal (radius, center, color);
+        } break;
+
+        case TERMINAL_HEIGHTSLANG_HEIGHTMAP: {
+            int resolution = 128;
+            Vector3d center (0,0,0), size (1,1,1);
+            ::std::string hs ("0.5");
+
+            while( !parameters.empty() ) {
+                if ((*parameters.begin()).first == string ("resolution")) {
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> resolution;
+                } else if ((*parameters.begin()).first == string ("center")) {
+                    unsigned int numScalars;
+                    const Vector3d tmp = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    center = tmp;
+                } else if ((*parameters.begin()).first == string ("size")) {
+                    unsigned int numScalars;
+                    const Vector3d tmp = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    size = tmp;
+                }  else if ((*parameters.begin()).first == string ("code")) {
+                    hs = (*parameters.begin()).second;
+                }
+                parameters.erase (parameters.begin());
+            }
+
+            try {
+                Function_R2_R1 fun (hs);
+                backend->addHeightmap (fun, resolution, center, size);
+            } catch (::picogen::misc::functional::functional_general_exeption &e) {
+                errreason = string ("Exception caught while generating heightmap from height-slang code: "
+                    + e.getMessage());
+                return SYNTAX_ERROR;
+            }
+
         } break;
 
         case TERMINAL_PREETHAM: {
@@ -529,6 +596,8 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (const char *line) {
             type = TERMINAL_PREETHAM;
         } else if (!strcmp ("camera-yaw-pitch-roll", block_name)) {
             type = TERMINAL_SET_CAMERA_YAW_PITCH_ROLL;
+        } else if (!strcmp ("hs-heightmap", block_name)) {
+            type = TERMINAL_HEIGHTSLANG_HEIGHTMAP;
         } else {
             errreason = string ("unknown terminal type '") + string (block_name) + string ("'");
             return SYNTAX_ERROR;
