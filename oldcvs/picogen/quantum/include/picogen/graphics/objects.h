@@ -41,7 +41,12 @@ namespace picogen {
                         virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const = 0;
                         virtual ~IIntersectable() {};
                 };
-                class IScene : public IIntersectable {
+
+                class IAccelerationStructure : public IIntersectable {
+                    public: virtual void invalidate() = 0;
+                };
+
+                class IScene : public IAccelerationStructure {
                     private:
                     public:
                         virtual void insert (const IIntersectable*i) = 0;
@@ -51,7 +56,7 @@ namespace picogen {
                 };
 
                 //> similar to IScene, but constrained to naked triangles
-                class ITriScene : public IIntersectable {
+                class ITriScene : public IAccelerationStructure {
                     private:
                         typedef ::picogen::misc::geometrics::Vector3d Vector3d;
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
