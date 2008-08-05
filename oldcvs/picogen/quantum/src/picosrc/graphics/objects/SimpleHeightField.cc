@@ -146,6 +146,7 @@ namespace picogen {
             }
 
 
+
             SimpleHeightField::~SimpleHeightField() {
                 /*
                 fprintf( stderr, "destructing SimpleHeightField %xP{\n", (unsigned int)this );
@@ -180,6 +181,7 @@ namespace picogen {
             }
 
 
+
             void SimpleHeightField::updateOptimizerVars() {
                 const Vector3d tmp = m_scaleBox.getMax() - m_scaleBox.getMin();
                 m_scaleSize[0] = tmp[0];
@@ -199,13 +201,19 @@ namespace picogen {
                 m_scaleSize_mul_invertHMapSize[2] = m_scaleSize[2] * m_invertHMapSize;
             }
 
+
+
             void SimpleHeightField::setBRDF (const material::abstract::IBRDF*  brdf) {
                 m_pBRDF = brdf;
             }
 
+
+
             void SimpleHeightField::setShader (const material::abstract::IShader* shader) {
                 m_pShader = shader;
             }
+
+
 
             real SimpleHeightField::smoothedHeightFunc (const misc::functions::abstract::uv_to_scalar *heightFunc, real fu, real fv, real cellSizeU, real cellSizeV) {
                 const real su = cellSizeU * 0.5;
@@ -219,6 +227,118 @@ namespace picogen {
                     );
             }
 
+
+
+            real SimpleHeightField::smoothedHeightFunc (const ::picogen::misc::functional::Function_R2_R1 *heightFunc, real fu, real fv, real cellSizeU, real cellSizeV) {
+                const real su = cellSizeU * 0.5;
+                const real sv = cellSizeV * 0.5;
+                return
+                    0.25*
+                    ((*heightFunc) (fu,   fv)
+                     + (*heightFunc) (fu + su, fv)
+                     + (*heightFunc) (fu,   fv + sv)
+                     + (*heightFunc) (fu + su, fv + sv)
+                    );
+            }
+
+
+
+            // TODO: make template in terms of heightFunc of below function
+            void SimpleHeightField::init (
+                unsigned int size,
+                const ::picogen::misc::functional::Function_R2_R1 *heightFunc,
+                real boundsGuessAccuracy,
+                bool smooth
+            ) {
+                fprintf (stderr, "building SimpleHeightField %xP{\n", (unsigned int) this);
+
+
+                if (m_pField != 0) {
+                    fprintf (stderr, "  deleting previously allocated heightfield...");
+                    delete [] m_pField;
+                    fprintf (stderr, "done\n");
+                }
+                fprintf (stderr, "  allocating %ux%u-heightmap, claiming %.2fMiB (%.3fMTris)...", size, size, float (size*size*sizeof (t_heightVal)) / (1024.0*1024.0), float (size*size*2) / (1e6f));
+                m_pField = new t_heightVal[size*size];
+                fprintf (stderr, "done\n");
+                m_size = size;
+                unsigned int u, v;
+
+                const real cellSize = 1.0 / (real) size;
+
+                // get min and max value of function
+                int updateDisplay = 99999;
+                fprintf (stderr, "  determining bounds of height function %xP\n", (unsigned int) heightFunc);
+                real tmin = misc::constants::real_max;
+                real tmax = -misc::constants::real_max;
+                if (boundsGuessAccuracy>0.9f) {
+                    fprintf (stderr, "   doing this at full accuracy (requested was %.1f%%)\n", boundsGuessAccuracy*100.0f);
+                    for (v = 0; v < size; v++) {
+                        const real fv = v / (real) size;
+                        for (u = 0; u < size; u++) {
+                            const real fu = u / (real) size;
+                            const real t = smooth ? smoothedHeightFunc (heightFunc, fu, fv, cellSize, cellSize) : (*heightFunc) (fu, fv);
+                            tmin = t < tmin ? t : tmin;
+                            tmax = t > tmax ? t : tmax;
+                        }
+                        /*if( ++updateDisplay > 10000 )*/ {
+                            updateDisplay = 0;
+                            fprintf (stderr, "\r   %.4f%% [%u/%u]", 100.0f* (float) (u + v*size) / (float) (size*size), v, size);
+                            fflush (stderr);
+                        }
+                        /*if( v%(size/10)==0 )
+                         fprintf( stderr, "." );*/
+                    }
+                } else {
+                    fprintf (stderr, "   using random sampling (requested %.1f%% of accuracy)\n", boundsGuessAccuracy*100.0f);
+                    int numSamples = static_cast<int> (boundsGuessAccuracy*static_cast<float> (size*size));
+                    for (int i=0; i<numSamples; ++i) {
+                        const real fu = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
+                        const real fv = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
+                        const real t = smooth ? smoothedHeightFunc (heightFunc, fu, fv, cellSize, cellSize) : (*heightFunc) (fu, fv);
+                        tmin = t < tmin ? t : tmin;
+                        tmax = t > tmax ? t : tmax;
+                        if (++updateDisplay > 1000) {
+                            updateDisplay = 0;
+                            fprintf (stderr, "\r   %.4f%% [%u/%u]", 100.0f* (float) (i) / (float) (numSamples), i, numSamples);
+                            fflush (stderr);
+                        }
+                    }
+                }
+                fprintf (stderr, " done\n");
+                const real min = tmin;
+                const real irange = 1.0 / (tmax - tmin);
+
+                fprintf (stderr, "  filling heightmap\n");
+                updateDisplay = 0;
+                for (v = 0; v < size; v++) {
+                    const real fv = v / (real) size;
+                    for (u = 0; u < size; u++) {
+                        const real fu = u / (real) size;
+                        m_pField[u+v*size] = rtoh (
+                                                 ( (smooth ? smoothedHeightFunc (heightFunc, fu, fv, cellSize, cellSize)
+                                                    : (*heightFunc) (fu, fv)
+                                                   ) - min
+                                                 ) * irange
+                                             );
+                    }
+                    /*if( ++updateDisplay > 10000 )*/ {
+                        updateDisplay = 0;
+                        fprintf (stderr, "\r   %.4f%% [%u/%u]", 100.0f* (float) (u + v*size) / (float) (size*size), v, size);
+                        fflush (stderr);
+                    }
+                    /*if( v%(size/10)==0 )
+                     fprintf( stderr, "." );*/
+                }
+                fprintf (stderr, " done\n");
+                fprintf (stderr, "}\n");
+
+                updateOptimizerVars();
+            }
+
+
+
+            // Below function DEPRECATED
             void SimpleHeightField::init (
                 unsigned int size,
                 const misc::functions::abstract::uv_to_scalar *heightFunc,
@@ -290,7 +410,7 @@ namespace picogen {
                     const real fv = v / (real) size;
                     for (u = 0; u < size; u++) {
                         const real fu = u / (real) size;
-                        m_pField[v+u*size] = rtoh (
+                        m_pField[u+v*size] = rtoh (
                                                  ( (smooth ? smoothedHeightFunc (heightFunc, fu, fv, cellSize, cellSize)
                                                     : heightFunc->f (fu, fv)
                                                    ) - min
@@ -376,6 +496,8 @@ namespace picogen {
 
                 return 0;
             }
+
+
 
             inline int SimpleHeightField::lineIntersection (
                 param_out (structs::intersection_t, intersection),
@@ -479,6 +601,8 @@ namespace picogen {
                 }//*/
                 return icode;
             }
+
+
 
             bool SimpleHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
                 using namespace misc::constants;
