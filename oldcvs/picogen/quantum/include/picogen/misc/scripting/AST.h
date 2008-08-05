@@ -287,9 +287,31 @@ class CallExprAST : public ExprAST {
                 ++it;
             }
         }
-        const std::string &getCallee() const {
+        const std::string &getFunName() const {
             return callee;
         }
+        /*
+        const std::string &getLvl2aName() const { // When overloaded by arg-types
+            std::string ret = name;
+            for (std::vector<ExprAST*>::const_iterator it = args.begin(); it != args.end(); ++it) {
+                ret += FunProtoAST::Argument ().getLvl2aName();
+            }
+            return "_" + ret;
+        }*/
+        /*const std::string &getLvl2bName() const { // When overloaded by arg-names
+            std::string ret = name;
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+                ret += it->getLvl2bName();
+            }
+            return "_" + ret;
+        }
+        const std::string &getLvl3Name() const { // When overloaded by arg-names and arg-types
+            std::string ret = name;
+            for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it) {
+                ret += it->getLvl3Name();
+            }
+            return "_" + ret;
+        }*/
         const std::vector<ExprAST*> &getArgs() const {
             return args;
         }
