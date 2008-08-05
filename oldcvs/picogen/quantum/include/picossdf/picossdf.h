@@ -67,6 +67,13 @@ class SSDFBackend {
             const ::picogen::misc::geometrics::Vector3d &center,
             const ::picogen::graphics::image::color::Color &color
         ) = 0;
+
+        virtual int addHeightmap (
+            const ::picogen::misc::functional::Function_R2_R1 &fun,
+            unsigned int resolution,
+            const ::picogen::misc::geometrics::Vector3d &center,
+            const ::picogen::misc::geometrics::Vector3d &size
+        ) = 0;
 };
 
 
@@ -116,6 +123,7 @@ class PicoSSDF {
             TERMINAL_SPHERE
             ,TERMINAL_PREETHAM
             ,TERMINAL_SET_CAMERA_YAW_PITCH_ROLL
+            ,TERMINAL_HEIGHTSLANG_HEIGHTMAP
         } TERMINAL_TYPE;
         static const inline std::string terminalTypeAsString (TERMINAL_TYPE type) {
             switch (type) {
@@ -125,6 +133,8 @@ class PicoSSDF {
                     return std::string ("sunsky");
                 case TERMINAL_SET_CAMERA_YAW_PITCH_ROLL:
                     return std::string ("camera-yaw-pitch-roll");
+                case TERMINAL_HEIGHTSLANG_HEIGHTMAP:
+                    return std::string ("hs-heightmap");
             };
             return std::string ("<unknown>");
         }
@@ -206,6 +216,8 @@ class PicoSSDF {
                 virtual bool isTerminalAllowed (TERMINAL_TYPE type) {
                     switch (type) {
                         case TERMINAL_SPHERE:
+                            return true;
+                        case TERMINAL_HEIGHTSLANG_HEIGHTMAP:
                             return true;
                     };
                     return false;
