@@ -139,7 +139,7 @@ draw (
                     accu_r += r<0 ? 0 : r>1 ? 1 : r;
                     accu_g += g<0 ? 0 : g>1 ? 1 : g;
                     accu_b += b<0 ? 0 : b>1 ? 1 : b;
-                }
+            }
             accu_r *= 0.25;
             accu_g *= 0.25;
             accu_b *= 0.25;
@@ -360,6 +360,35 @@ class SSDFScene : public Scene, public SSDFBackend {
             std::cout << "camera position={" << position[0] << ", " << position[1] << ", " << position[2] << "} ypr{" << yaw << ", " << pitch << ", " << roll << "}" << std::endl;
             return 0;
         }
+
+
+
+        // Heightmap:
+        virtual int addHeightmap (
+            const ::picogen::misc::functional::Function_R2_R1 &fun,
+            unsigned int resolution,
+            const ::picogen::misc::geometrics::Vector3d &center,
+            const ::picogen::misc::geometrics::Vector3d &size
+        ) {
+            switch (currentScene.type) {
+                case LINEAR_LIST:{
+                    ::picogen::graphics::objects::SimpleHeightField *heightField =
+                        new ::picogen::graphics::objects::SimpleHeightField ();
+
+                    using namespace ::picogen::misc::functional;
+                    heightField->setBRDF (currentBRDF);
+                    heightField->setShader (&white);
+                    heightField->setBox (center-size*0.5, center+size*0.5);
+
+                    heightField->init (resolution, &fun, 0.1, false);
+                    currentScene.linearList->insert (heightField);
+                    // TODO URGENT !!!!one1 --> see LinearList.cc
+                }break;
+            };
+            return 0;
+        }
+
+
 
         //
         virtual int addSphereTerminal (
@@ -670,6 +699,7 @@ static int grind (int width, int height, Scene *scene) {
 
 
 static void printUsage() {
+    ::std::cout << "The lazy author of this program has not yet written any usage information. Kick his ass at seb@greenhybrid.net." << ::std::endl;
 }
 
 
@@ -707,7 +737,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (800, 800, grindScene);
+        return grind (320, 240, grindScene);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
