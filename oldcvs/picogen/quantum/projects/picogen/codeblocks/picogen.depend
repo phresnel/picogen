@@ -11,7 +11,7 @@
 
 1214870022 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Snow.h
 
-1215084628 source:/home/smach/Projects/picogen/quantum/src/main.cc
+1217974090 source:/home/smach/Projects/picogen/quantum/src/main.cc
 	<iostream>
 	<picogen/picogen.h>
 	<picogen/compile_info.h>
@@ -25,7 +25,7 @@
 1215426879 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/AABox.cc
 	<picogen/picogen.h>
 
-1214846602 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/LinearList.cc
+1217979002 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/LinearList.cc
 	<picogen/picogen.h>
 
 1217803186 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
@@ -80,7 +80,7 @@
 
 1212059076 /home/smach/Projects/picogen/quantum/include/picogen/graphics/cameras.h
 
-1212059140 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
+1217975289 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
 	"objects/Snow.h"
 	"objects/Rain.h"
 	"objects/LinearList.h"
@@ -98,7 +98,8 @@
 
 1212061143 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Preetham.h
 
-1217871398 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
+1217976662 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
+	<picogen/graphics/objects/TriBIH.h>
 
 1215426861 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/VelocityInstance.h
 
@@ -122,13 +123,13 @@
 
 1212047782 /home/smach/Projects/picogen/quantum/include/picogen/graphics/samplers/ray/Preview.h
 
-1217892638 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/SimpleHeightField.cc
+1217977192 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/SimpleHeightField.cc
 	<picogen/picogen.h>
 
 1217803194 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Sphere.cc
 	<picogen/picogen.h>
 
-1217803277 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/TriBIH.cc
+1217979012 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/TriBIH.cc
 	<picogen/picogen.h>
 
 1215427089 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/ZBNCubemap.cc
@@ -159,7 +160,7 @@
 	<sstream>
 	<picogen/misc/functional/LayeredNoise2d.h>
 
-1217973803 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+1217976156 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
@@ -202,10 +203,11 @@
 	<string>
 	<dlfcn.h>
 
-1217960293 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1217979051 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
+	<stack>
 	<map>
 	<SDL/SDL.h>
 	<picogen/picogen.h>
