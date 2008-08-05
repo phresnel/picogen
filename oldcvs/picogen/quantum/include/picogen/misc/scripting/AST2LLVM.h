@@ -72,6 +72,8 @@ class AST2LLVM : public ASTNonRecursingVisitor /*ASTVisitor*/ {
         };
         SymbolTable symtab;
 
+        // For incarnation Numero Uno, we will only support Function-Overloading as in C++,
+        // hence we will take the lvl1-name of the function as the key.
         typedef std::map<std::string, llvm::Function*> FunctionTable;
         FunctionTable funtab;
 
