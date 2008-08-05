@@ -48,17 +48,23 @@ static void usage() {
         << "\n"
         << " mkheightmap :   mkheightmap is a heightmap generation tool.\n"
         << "                 type 'picogen mkheightmap --help' for further help.\n"
+        << "\n"
+        << " testscene :     some hardcoded testscenes.\n"
+        << "\n"
+        << " ssdf :          for parsing the (not too) static scene definition format.\n"
     << std::endl;
 }
 
 
 
 static void warranty() {
+    ::std::cout << "The lazy author of this program has not yet written any warranty information. Kick his ass at seb@greenhybrid.net." << ::std::endl;
 }
 
 
 
 static void conditions() {
+    ::std::cout << "The lazy author of this program has not yet written any conditions information. Kick his ass at seb@greenhybrid.net." << ::std::endl;
 }
 
 
