@@ -338,6 +338,20 @@ namespace picogen {
 
 
 
+            // Hack.
+            void SimpleHeightField::feedTriScene (::picogen::graphics::objects::abstract::ITriScene *target) const {
+                for (unsigned int v=0; v<m_size; ++v) {
+                    for (unsigned int u=0; u<m_size; ++u) {
+                        Vector3d tris[2][3];
+                        getVoxelTriangles (u, v, tris[0], tris[1]);
+                        target->insert (tris[0][0], tris[0][1], tris[0][2]);
+                        target->insert (tris[1][0], tris[1][1], tris[1][2]);
+                    }
+                }
+            }
+
+
+
             // Below function DEPRECATED
             void SimpleHeightField::init (
                 unsigned int size,
@@ -433,6 +447,41 @@ namespace picogen {
 
 
 
+            inline void SimpleHeightField::getVoxelTriangles (int u, int v, Vector3d tA[], Vector3d tB[]) const {
+                const bool odd = (u & 1) == (v & 1);
+                const int va = (v + 1) * m_size;
+                const int vb = (v + 0) * m_size;
+                const real a_y = m_scaleBoxMin[1] + m_scaleSize[1] * htor (m_pField[   u + va ]);
+                const real b_y = m_scaleBoxMin[1] + m_scaleSize[1] * htor (m_pField[ 1+u + va ]);
+                const real c_y = m_scaleBoxMin[1] + m_scaleSize[1] * htor (m_pField[   u + vb ]);
+                const real d_y = m_scaleBoxMin[1] + m_scaleSize[1] * htor (m_pField[ 1+u + vb ]);
+
+                const real fu1 = static_cast<real>(u) / static_cast<real>(m_size-1);
+                const real fu2 = static_cast<real>(u+1) / static_cast<real>(m_size-1);
+                const real fv1 = static_cast<real>(v) / static_cast<real>(m_size-1);
+                const real fv2 = static_cast<real>(v+1) / static_cast<real>(m_size-1);
+
+                const real x1 = fu1 * m_scaleSize[0] + m_scaleBoxMin[0];
+                const real x2 = fu2 * m_scaleSize[0] + m_scaleBoxMin[0];
+                const real z1 = fv2 * m_scaleSize[2] + m_scaleBoxMin[2];
+                const real z2 = fv1 * m_scaleSize[2] + m_scaleBoxMin[2];
+
+                const Vector3d A (x1, a_y, z1);
+                const Vector3d B (x2, b_y, z1);
+                const Vector3d C (x1, c_y, z2);
+                const Vector3d D (x2, d_y, z2);
+
+                tA[0] = A;
+                tA[1] = B;
+                tA[2] = odd ? C : D;
+
+                tB[0] = C;
+                tB[1] = odd ? B : A;
+                tB[2] = D;
+            }
+
+
+
             inline int SimpleHeightField::intersectVoxel (
                 param_out (structs::intersection_t, intersection),
                 int u, int v,
@@ -446,23 +495,6 @@ namespace picogen {
                 const real b_y = m_scaleBoxMin[1] + m_scaleSize[1] * htor (m_pField[ 1+u + va ]);
                 const real c_y = m_scaleBoxMin[1] + m_scaleSize[1] * htor (m_pField[   u + vb ]);
                 const real d_y = m_scaleBoxMin[1] + m_scaleSize[1] * htor (m_pField[ 1+u + vb ]);
-
-
-                /*
-                const real __max_y = a_y >     b_y ? a_y :   b_y;
-                const real  _max_y = c_y > __max_y ? c_y : __max_y;
-                const real   max_y = d_y >  _max_y ? d_y :  _max_y;
-                const real t_max_y = ( max_y - ray.x()[1] ) / ray.w()[1];
-                if( t_max_y < 0 && ray.x()[1] > max_y )
-                 return 0;
-
-                const real __min_y = a_y <     b_y ? a_y :   b_y;
-                const real  _min_y = c_y < __min_y ? c_y : __min_y;
-                const real   min_y = d_y <  _min_y ? d_y :  _min_y;
-                const real t_min_y = ( min_y - ray.x()[1] ) / ray.w()[1];
-                if( t_min_y < 0 && ray.x()[1] < min_y  )
-                 return 0;
-                */
 
                 const real A[3] = { x1, a_y, z1 };
                 const real B[3] = { x2, b_y, z1 };

@@ -26,6 +26,8 @@
 #ifndef _SIMPLEHEIGHTFIELD_H
 #define _SIMPLEHEIGHTFIELD_H
 
+#include <picogen/graphics/objects.h>
+
 namespace picogen {
     namespace graphics {
         namespace objects {
@@ -81,17 +83,19 @@ namespace picogen {
                         real au, real av,
                         real bu, real bv,
                         param_in (Ray, ray)) const;
-                    /*inline void shade(
-                        param_out(image::color::Color,color),
-                        param_in(misc::geometrics::Vector3d,normal) ) const;*/
+                    inline void getVoxelTriangles (int u, int v, Vector3d A[], Vector3d B[]) const;
+
                 public:
                     SimpleHeightField();
                     virtual ~SimpleHeightField();
                     void setBox (param_in (Vector3d, min), param_in (Vector3d, max));
                     void setBRDF (const IBRDF* brdf);
                     void setShader (const IShader* shader);
+
                     void init (unsigned int size, const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real boundsGuessAccuracy = 1.0, bool smooth = true);
                     void init (unsigned int size, const ::picogen::misc::functional::Function_R2_R1 *heightFunc, real boundsGuessAccuracy = 1.0, bool smooth = true);
+
+                    void feedTriScene (::picogen::graphics::objects::abstract::ITriScene *target) const;
 
                     virtual bool intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const;
             };
