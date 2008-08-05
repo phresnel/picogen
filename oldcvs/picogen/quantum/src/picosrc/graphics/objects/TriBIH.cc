@@ -603,6 +603,7 @@ namespace picogen {
                 const int numTris = num_triangles();
                 fprintf (stderr, "  allocating linear triangle-array [%u tris; %.3fMiB]...", numTris, (float) (sizeof (t_triangle) *numTris) / (1024.0f*1024.0f));
                 *triangles = new t_triangle[ numTris ];
+
                 if (0 == *triangles) {
                     delete [] *bih;
                     fprintf (stderr, "  error on 'new t_trianngle[...]', probably out of memory\n}\n");

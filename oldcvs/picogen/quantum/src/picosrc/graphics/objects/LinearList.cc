@@ -47,6 +47,7 @@ namespace picogen {
                 bool any = false;
                 for (it=m_list.begin(); it!=m_list.end(); it++) {
                     intersection_t tmp;
+
                     if ( (*it)->intersect (tmp, ray) && tmp.t<intersection.t) {
                         any = true;
                         intersection = tmp;
