@@ -279,7 +279,7 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
             backend->addSphereTerminal (radius, center, color);
         } break;
 
-        case TERMINAL_HEIGHTSLANG_HEIGHTMAP: {
+        case TERMINAL_HEIGHTSLANG_HEIGHTFIELD: {
             int resolution = 128;
             Vector3d center (0,0,0), size (1,1,1);
             ::std::string hs ("0.5");
@@ -321,9 +321,9 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
 
             try {
                 Function_R2_R1 fun (hs);
-                backend->addHeightmap (fun, resolution, center, size);
+                backend->addHeightfield (fun, resolution, center, size);
             } catch (::picogen::misc::functional::functional_general_exeption &e) {
-                errreason = string ("Exception caught while generating heightmap from height-slang code: "
+                errreason = string ("Exception caught while generating heightfield from height-slang code: "
                     + e.getMessage());
                 return SYNTAX_ERROR;
             }
@@ -590,26 +590,31 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (const char *line) {
         line++;
     } else if ('(' == *line) {
         TERMINAL_TYPE type;
+
         if (!strcmp ("sphere", block_name)) {
             type = TERMINAL_SPHERE;
         } else if (!strcmp ("sunsky", block_name)) {
             type = TERMINAL_PREETHAM;
         } else if (!strcmp ("camera-yaw-pitch-roll", block_name)) {
             type = TERMINAL_SET_CAMERA_YAW_PITCH_ROLL;
-        } else if (!strcmp ("hs-heightmap", block_name)) {
-            type = TERMINAL_HEIGHTSLANG_HEIGHTMAP;
+        } else if (!strcmp ("hs-heightfield", block_name)) {
+            type = TERMINAL_HEIGHTSLANG_HEIGHTFIELD;
         } else {
             errreason = string ("unknown terminal type '") + string (block_name) + string ("'");
             return SYNTAX_ERROR;
         }
+
         if (!blockStack.back()->isTerminalAllowed (type)) {
             errreason = string ("terminal type '") + terminalTypeAsString (type) + string ("' not allowed within block of type '")
                 + blockTypeAsString (blockStack.back()->type) + string ("'");
             return SYNTAX_ERROR;
         }
+
         parse_err err = read_terminal (type, line);
+
         if (OKAY != err)
             return err;
+
         line++;
     } else if ('=' == *line) {
         STATE_TYPE type;
