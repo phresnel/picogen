@@ -42,7 +42,7 @@ namespace picogen {
                     typedef ::picogen::misc::geometrics::Vector3d Vector3d;
                     typedef ::picogen::misc::geometrics::Ray Ray;
                     typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
-                    typedef ::picogen::misc::functional::Function_R2_R1 *Function_R2_R1;
+                    typedef ::picogen::misc::functional::Function_R2_R1 Function_R2_R1;
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     typedef ::picogen::graphics::material::abstract::IShader IShader;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
