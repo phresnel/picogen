@@ -99,6 +99,7 @@ namespace picogen {
 #include "objects/Sphere.h"
 #include "objects/ZBNCubemap.h"
 #include "objects/AABox.h"
+#include "objects/ImplicitHeightField.h"
 
 
 #endif /* _OBJECTS_H */
