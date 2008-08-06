@@ -74,6 +74,12 @@ class SSDFBackend {
             const ::picogen::misc::geometrics::Vector3d &center,
             const ::picogen::misc::geometrics::Vector3d &size
         ) = 0;
+
+        virtual int addImplicitHeightfield (
+            ::picogen::misc::functional::Function_R2_R1 **fun,
+            const ::picogen::misc::geometrics::Vector3d &center,
+            const ::picogen::misc::geometrics::Vector3d &size
+        ) = 0;
 };
 
 
@@ -124,6 +130,7 @@ class PicoSSDF {
             ,TERMINAL_PREETHAM
             ,TERMINAL_SET_CAMERA_YAW_PITCH_ROLL
             ,TERMINAL_HEIGHTSLANG_HEIGHTFIELD
+            ,TERMINAL_IMPLICIT_HEIGHTSLANG_HEIGHTFIELD
         } TERMINAL_TYPE;
         static const inline std::string terminalTypeAsString (TERMINAL_TYPE type) {
             switch (type) {
@@ -135,6 +142,8 @@ class PicoSSDF {
                     return std::string ("camera-yaw-pitch-roll");
                 case TERMINAL_HEIGHTSLANG_HEIGHTFIELD:
                     return std::string ("hs-heightfield");
+                case TERMINAL_IMPLICIT_HEIGHTSLANG_HEIGHTFIELD:
+                    return std::string ("hs-implicit-heightfield");
             };
             return std::string ("<unknown>");
         }
@@ -218,6 +227,8 @@ class PicoSSDF {
                         case TERMINAL_SPHERE:
                             return true;
                         case TERMINAL_HEIGHTSLANG_HEIGHTFIELD:
+                            return true;
+                        case TERMINAL_IMPLICIT_HEIGHTSLANG_HEIGHTFIELD:
                             return true;
                     };
                     return false;
