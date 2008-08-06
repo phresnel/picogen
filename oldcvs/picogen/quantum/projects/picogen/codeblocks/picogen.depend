@@ -161,7 +161,7 @@
 	<sstream>
 	<picogen/misc/functional/LayeredNoise2d.h>
 
-1217976156 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+1218004585 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
@@ -204,7 +204,7 @@
 	<string>
 	<dlfcn.h>
 
-1217982292 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1218004845 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -282,7 +282,10 @@
 	<picogen/misc/scripting/AST.h>
 	<picogen/misc/scripting/AST2LLVM.h>
 
-1218003463 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/ImplicitHeightField.h
+1218004652 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/ImplicitHeightField.h
 	<picogen/graphics/objects.h>
 	<picogen/misc/functional.h>
+
+1218004881 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/ImplicitHeightField.cc
+	<picogen/picogen.h>
 
