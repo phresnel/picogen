@@ -452,6 +452,39 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
 
+        // Heightmap:
+        virtual int addImplicitHeightfield (
+            ::picogen::misc::functional::Function_R2_R1 **fun,
+            const ::picogen::misc::geometrics::Vector3d &center,
+            const ::picogen::misc::geometrics::Vector3d &size
+        ) {
+            ::picogen::graphics::objects::ImplicitHeightField *heightField =
+                new ::picogen::graphics::objects::ImplicitHeightField ();
+
+            using namespace ::picogen::misc::functional;
+
+            heightField->setBRDF (currentBRDF);
+            heightField->setShader (&white);
+            heightField->setBox (center-size*0.5, center+size*0.5);
+            heightField->setFunction (*fun);
+            //heightField->init (resolution, &fun, 0.1, false);
+            switch (currentScene.type) {
+                case LINEAR_LIST:{
+                    currentScene.linearList->insert (heightField);
+                    // TODO URGENT !!!!one1 --> see LinearList.cc
+                } break;
+
+                case TRI_BIH:{
+                    ::std::cerr << "The impossible becomes thruth: addImplicitHeightfield() within TRI_BIH-Block ("
+                        << __FILE__ << "," << __LINE__ << ")";
+                    exit (666);
+                } break;
+            };
+            return 0;
+        }
+
+
+
         //
         virtual int addSphereTerminal (
             ::picogen::misc::prim::real radius,
@@ -523,7 +556,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             this->width  = width;
             this->height = height;
             // setup screen and camera
-            renderer.camera().defineCamera ( (real) width/ (real) height, 1.0, 0.5);
+            renderer.camera().defineCamera ( (real) width/ (real) height, 1.0, 0.85);
             renderer.surface().reset (width*2, height*2);
 
             // setup and recognize sky
@@ -804,7 +837,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (320, 240, grindScene);
+        return grind (1280, 640, grindScene);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
