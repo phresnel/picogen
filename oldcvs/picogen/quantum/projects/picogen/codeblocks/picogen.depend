@@ -80,7 +80,7 @@
 
 1212059076 /home/smach/Projects/picogen/quantum/include/picogen/graphics/cameras.h
 
-1217975289 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
+1218003018 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
 	"objects/Snow.h"
 	"objects/Rain.h"
 	"objects/LinearList.h"
@@ -91,6 +91,7 @@
 	"objects/Sphere.h"
 	"objects/ZBNCubemap.h"
 	"objects/AABox.h"
+	"objects/ImplicitHeightField.h"
 
 1212058490 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/LinearList.h
 
@@ -98,8 +99,8 @@
 
 1212061143 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Preetham.h
 
-1217976662 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
-	<picogen/graphics/objects/TriBIH.h>
+1217979645 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
+	<picogen/graphics/objects.h>
 
 1215426861 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/VelocityInstance.h
 
@@ -123,7 +124,7 @@
 
 1212047782 /home/smach/Projects/picogen/quantum/include/picogen/graphics/samplers/ray/Preview.h
 
-1217977192 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/SimpleHeightField.cc
+1217979444 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/SimpleHeightField.cc
 	<picogen/picogen.h>
 
 1217803194 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Sphere.cc
@@ -203,7 +204,7 @@
 	<string>
 	<dlfcn.h>
 
-1217979051 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1217982292 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -280,4 +281,8 @@
 	<picogen/misc/scripting/picogen-c.h>
 	<picogen/misc/scripting/AST.h>
 	<picogen/misc/scripting/AST2LLVM.h>
+
+1218003463 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/ImplicitHeightField.h
+	<picogen/graphics/objects.h>
+	<picogen/misc/functional.h>
 
