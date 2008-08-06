@@ -330,6 +330,52 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
 
         } break;
 
+        case TERMINAL_IMPLICIT_HEIGHTSLANG_HEIGHTFIELD: {
+            Vector3d center (0,0,0), size (1,1,1);
+            ::std::string hs ("0.5");
+
+            while( !parameters.empty() ) {
+                if ((*parameters.begin()).first == string ("center")) {
+                    unsigned int numScalars;
+                    const Vector3d tmp = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    center = tmp;
+                } else if ((*parameters.begin()).first == string ("size")) {
+                    unsigned int numScalars;
+                    const Vector3d tmp = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'direction'");
+                        return SYNTAX_ERROR;
+                    }
+                    size = tmp;
+                }  else if ((*parameters.begin()).first == string ("code")) {
+                    hs = (*parameters.begin()).second;
+                }
+                parameters.erase (parameters.begin());
+            }
+
+            try {
+                Function_R2_R1 *fun = new Function_R2_R1 (hs);
+                backend->addImplicitHeightfield (&fun, center, size);
+            } catch (::picogen::misc::functional::functional_general_exeption &e) {
+                errreason = string ("Exception caught while generating heightfield from height-slang code: "
+                    + e.getMessage());
+                return SYNTAX_ERROR;
+            }
+
+        } break;
+
         case TERMINAL_PREETHAM: {
             while( !parameters.empty() ) {
                 if ((*parameters.begin()).first == string ("turbidity")) {
@@ -599,6 +645,8 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (const char *line) {
             type = TERMINAL_SET_CAMERA_YAW_PITCH_ROLL;
         } else if (!strcmp ("hs-heightfield", block_name)) {
             type = TERMINAL_HEIGHTSLANG_HEIGHTFIELD;
+        } else if (!strcmp ("hs-implicit-heightfield", block_name)) {
+            type = TERMINAL_IMPLICIT_HEIGHTSLANG_HEIGHTFIELD;
         } else {
             errreason = string ("unknown terminal type '") + string (block_name) + string ("'");
             return SYNTAX_ERROR;
