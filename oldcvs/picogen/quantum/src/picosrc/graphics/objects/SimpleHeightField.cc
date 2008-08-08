@@ -678,8 +678,6 @@ namespace picogen {
 
             }
 
-
-
         }; // namespace objects
     }; // namespace graphics
 }; // namespace picogen
