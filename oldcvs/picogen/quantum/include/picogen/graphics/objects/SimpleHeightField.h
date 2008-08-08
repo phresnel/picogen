@@ -33,10 +33,13 @@ namespace picogen {
         namespace objects {
 
 
+            class QuadtreeHeightField;
 
             class SimpleHeightField : public ::picogen::graphics::objects::abstract::IIntersectable {
                     /// \todo de-uglify typenames
                 private:
+                    friend class QuadtreeHeightField;
+
                     typedef ::picogen::misc::prim::real real;
                     typedef ::picogen::misc::geometrics::Vector3d Vector3d;
                     typedef ::picogen::misc::geometrics::Ray Ray;
