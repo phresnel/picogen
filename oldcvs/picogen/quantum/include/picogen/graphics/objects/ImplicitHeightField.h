@@ -52,7 +52,8 @@ namespace picogen {
                     const IBRDF *brdf;
                     const IShader *shader;
                     const Function_R2_R1 *function;
-                    Vector3d boxMin, boxMax, boxSize, boxSizeInv;
+                    BoundingBox box;
+                    Vector3d boxSize, boxSizeInv;
 
                 public:
                     ImplicitHeightField();
