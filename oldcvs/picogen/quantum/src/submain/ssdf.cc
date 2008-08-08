@@ -424,10 +424,10 @@ class SSDFScene : public Scene, public SSDFBackend {
             const ::picogen::misc::geometrics::Vector3d &center,
             const ::picogen::misc::geometrics::Vector3d &size
         ) {
-            ::picogen::graphics::objects::SimpleHeightField *heightField =
-                new ::picogen::graphics::objects::SimpleHeightField ();
-
+            using namespace ::picogen::graphics::objects;
             using namespace ::picogen::misc::functional;
+
+            SimpleHeightField *heightField = new SimpleHeightField ();
 
             heightField->setBRDF (currentBRDF);
             heightField->setShader (&white);
@@ -436,7 +436,8 @@ class SSDFScene : public Scene, public SSDFBackend {
             heightField->init (resolution, &fun, 0.1, false);
             switch (currentScene.type) {
                 case LINEAR_LIST:{
-                    currentScene.linearList->insert (heightField);
+                    QuadtreeHeightField *qt = new QuadtreeHeightField (8, heightField);
+                    currentScene.linearList->insert (qt);
                     // TODO URGENT !!!!one1 --> see LinearList.cc
                 } break;
 
@@ -611,7 +612,10 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height) {
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
     // prepare and run loop
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
-    unsigned int pixelsPerContinue = (width*height*4) /32;
+    unsigned int pixelsPerContinue = (width*height*4) / 16;
+    if (pixelsPerContinue <= 0)
+        pixelsPerContinue = width;
+
     unsigned int runCount = 1;
     //clock_t startTime = clock();
     bool done = false;
@@ -837,7 +841,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (1280, 640, grindScene);
+        return grind (320, 320, grindScene);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
