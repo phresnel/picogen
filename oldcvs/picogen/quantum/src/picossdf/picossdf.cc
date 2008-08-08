@@ -313,8 +313,11 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                         return SYNTAX_ERROR;
                     }
                     size = tmp;
-                }  else if ((*parameters.begin()).first == string ("code")) {
+                } else if ((*parameters.begin()).first == string ("code")) {
                     hs = (*parameters.begin()).second;
+                } else {
+                    errreason = string ("unknown parameter to hs-heightfield: '") + string ((*parameters.begin()).first) + string ("'");
+                    return SYNTAX_ERROR;
                 }
                 parameters.erase (parameters.begin());
             }
@@ -359,8 +362,11 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                         return SYNTAX_ERROR;
                     }
                     size = tmp;
-                }  else if ((*parameters.begin()).first == string ("code")) {
+                } else if ((*parameters.begin()).first == string ("code")) {
                     hs = (*parameters.begin()).second;
+                } else {
+                    errreason = string ("unknown parameter to hs-implicit-heightfield: '") + string ((*parameters.begin()).first) + string ("'");
+                    return SYNTAX_ERROR;
                 }
                 parameters.erase (parameters.begin());
             }
