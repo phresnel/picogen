@@ -8,7 +8,7 @@
 		<Cursor position="1949" topLine="40" />
 	</File>
 	<File name="../../../include/picogen.h" open="0" top="0" tabpos="3">
-		<Cursor position="4878" topLine="146" />
+		<Cursor position="4864" topLine="159" />
 	</File>
 	<File name="../../../include/picogen/experimental/CloudShader_Bouthors.h" open="0" top="0" tabpos="0">
 		<Cursor position="20345" topLine="492" />
@@ -37,14 +37,17 @@
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="10">
 		<Cursor position="3660" topLine="54" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects.h" open="1" top="0" tabpos="6">
-		<Cursor position="2221" topLine="40" />
+	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="6">
+		<Cursor position="4345" topLine="72" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/AABox.h" open="0" top="0" tabpos="6">
 		<Cursor position="2680" topLine="45" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/CloudsBouthors.h" open="0" top="0" tabpos="6">
 		<Cursor position="20173" topLine="446" />
+	</File>
+	<File name="../../../include/picogen/graphics/objects/ImplicitHeightField.h" open="1" top="0" tabpos="7">
+		<Cursor position="2255" topLine="33" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Instance.h" open="0" top="0" tabpos="4">
 		<Cursor position="3002" topLine="47" />
@@ -55,8 +58,8 @@
 	<File name="../../../include/picogen/graphics/objects/Preetham.h" open="0" top="0" tabpos="1">
 		<Cursor position="2170" topLine="35" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="1" top="0" tabpos="8">
-		<Cursor position="3903" topLine="68" />
+	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="1" top="1" tabpos="9">
+		<Cursor position="3001" topLine="67" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Sphere.h" open="0" top="0" tabpos="3">
 		<Cursor position="1846" topLine="32" />
@@ -122,7 +125,7 @@
 		<Cursor position="4999" topLine="79" />
 	</File>
 	<File name="../../../include/picossdf/picossdf.h" open="1" top="0" tabpos="4">
-		<Cursor position="1039" topLine="1" />
+		<Cursor position="3179" topLine="56" />
 	</File>
 	<File name="../../../src/experimental/Rain.cc" open="0" top="0" tabpos="9">
 		<Cursor position="1065" topLine="13" />
@@ -145,20 +148,23 @@
 	<File name="../../../src/picosrc/graphics/objects/AABox.cc" open="0" top="0" tabpos="7">
 		<Cursor position="13473" topLine="304" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/LinearList.cc" open="1" top="0" tabpos="9">
+	<File name="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" open="1" top="0" tabpos="6">
+		<Cursor position="4655" topLine="105" />
+	</File>
+	<File name="../../../src/picosrc/graphics/objects/LinearList.cc" open="0" top="0" tabpos="9">
 		<Cursor position="1612" topLine="31" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="8">
 		<Cursor position="1136" topLine="10" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="1" top="0" tabpos="7">
-		<Cursor position="20311" topLine="445" />
+	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="1" top="0" tabpos="8">
+		<Cursor position="13080" topLine="305" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/Sphere.cc" open="0" top="0" tabpos="11">
 		<Cursor position="1000" topLine="9" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/TriBIH.cc" open="1" top="0" tabpos="5">
-		<Cursor position="4264" topLine="133" />
+		<Cursor position="6504" topLine="165" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" open="0" top="0" tabpos="0">
 		<Cursor position="6561" topLine="150" />
@@ -176,7 +182,7 @@
 		<Cursor position="1048" topLine="0" />
 	</File>
 	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="0" top="0" tabpos="2">
-		<Cursor position="26030" topLine="726" />
+		<Cursor position="26852" topLine="575" />
 	</File>
 	<File name="../../../src/picosrc/misc/scripting/nano-c.cc" open="0" top="0" tabpos="3">
 		<Cursor position="952" topLine="15" />
@@ -185,7 +191,7 @@
 		<Cursor position="19393" topLine="616" />
 	</File>
 	<File name="../../../src/picossdf/picossdf.cc" open="1" top="0" tabpos="3">
-		<Cursor position="20656" topLine="559" />
+		<Cursor position="18128" topLine="452" />
 	</File>
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="2">
 		<Cursor position="12186" topLine="327" />
@@ -193,8 +199,8 @@
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
 		<Cursor position="1554" topLine="27" />
 	</File>
-	<File name="../../../src/submain/ssdf.cc" open="1" top="1" tabpos="1">
-		<Cursor position="14481" topLine="411" />
+	<File name="../../../src/submain/ssdf.cc" open="1" top="0" tabpos="1">
+		<Cursor position="28794" topLine="826" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="2">
 		<Cursor position="24517" topLine="647" />
