@@ -188,9 +188,6 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
         ::picogen::graphics::integrators::screen::XYIterator<
-            ::picogen::misc::templates::surface<
-                ::picogen::graphics::color::AverageColor
-            >,
             ::picogen::graphics::integrators::ray::Simple
         > renderer;
         int width, height;
@@ -580,6 +577,11 @@ class SSDFScene : public Scene, public SSDFBackend {
 
             if (0 != renderer.getCamera())
                 delete renderer.getCamera();
+            renderer.setCamera (0);
+
+            if (0 != renderer.getFilm())
+                delete renderer.getFilm();
+            renderer.setFilm (0);
         }
 
 
@@ -597,7 +599,8 @@ class SSDFScene : public Scene, public SSDFBackend {
             this->width  = width;
             this->height = height;
             // setup screen and camera
-            renderer.surface().reset (width*antiAliasingWidth, height*antiAliasingWidth);
+            //renderer.surface().reset (width*antiAliasingWidth, height*antiAliasingWidth);
+
 
             // setup and recognize sky
             preetham.enableFogHack (true, fogExp, fogMaxDist);
@@ -611,6 +614,9 @@ class SSDFScene : public Scene, public SSDFBackend {
             ::picogen::graphics::cameras::FromPointToRect *fptr = new ::picogen::graphics::cameras::FromPointToRect;
             fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
             renderer.setCamera (fptr);
+
+            ::picogen::graphics::film::SimpleColorFilm *film = new ::picogen::graphics::film::SimpleColorFilm (width*antiAliasingWidth, height*antiAliasingWidth);
+            renderer.setFilm (film);
 
             // setup boxen
             //box.enableFace (box.y_positive, false);
@@ -629,7 +635,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
             ::SDL_Flip (screen);
-            ::draw (screen,renderer.surface(), scale, 1.0, saturation, antiAliasingWidth);//scale, exp_tone, saturation);
+            ::draw (screen,*renderer.getFilm(), scale, 1.0, saturation, antiAliasingWidth);//scale, exp_tone, saturation);
         }
 
         virtual void begin() {

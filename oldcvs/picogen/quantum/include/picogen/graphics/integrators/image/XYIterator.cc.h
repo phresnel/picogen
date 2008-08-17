@@ -33,7 +33,7 @@ namespace picogen {
                         m_currX (0), m_currY (0),
                         m_numPixelsPerRun (1),
                         m_camera(0),
-                        m_surface(),
+                        m_film(0),
                         m_done (false),
                         m_BeginRender_called (false) {
                 }
@@ -105,8 +105,8 @@ namespace picogen {
 #endif
                     m_currX = 0;
                     m_currY = 0;
-                    m_width  = m_surface.width();
-                    m_height = m_surface.height();
+                    m_width  = m_film->getWidth();
+                    m_height = m_film->getHeight();
                     m_BeginRender_called = true;
                     m_done = false;
                     XRT_CALL_STACK_POP();
@@ -166,14 +166,20 @@ namespace picogen {
                             //> ray trace
                             Color color;
                             intersection_t I;
+                            structs::sample sample (m_currX, m_currY, u, v, ray);
+
                             if (m_pathIntegrator.integrate (color, I, ray)) {
-                                m_surface (m_currX,m_currY) += color;
+                                sample.primaryIntersection = &I;
+                                sample.color = color;
+                                m_film->addSample (sample);
+                                //m_surface (m_currX,m_currY) += color;
                             } else {
-                                m_surface (m_currX,m_currY) += Color (
+                                m_film->addSample (sample);
+                                /*m_surface (m_currX,m_currY) += Color (
                                                                    ray.w() [0]+0.5,
                                                                    ray.w() [1]+0.5,
                                                                    ray.w() [2]+0.5
-                                                               );
+                                                               );*/
                             }
                             m_currX++;
                         }

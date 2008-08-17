@@ -216,10 +216,7 @@ class TestScene {
 class PureCornell : public TestScene {
     protected:
         picogen::graphics::integrators::screen::XYIterator<
-        picogen::misc::templates::surface<
-        picogen::graphics::color::AverageColor
-        >,
-        picogen::graphics::integrators::ray::Simple
+            picogen::graphics::integrators::ray::Simple
         > renderer;
         int width, height;
         picogen::common::LinearList list;
@@ -245,7 +242,9 @@ class PureCornell : public TestScene {
             ::picogen::graphics::cameras::FromPointToRect *fptr = new ::picogen::graphics::cameras::FromPointToRect;
             fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
             renderer.setCamera (fptr);
-            renderer.surface().reset (width*2, height*2);
+            //renderer.surface().reset (width*2, height*2);
+            ::picogen::graphics::film::SimpleColorFilm *film = new ::picogen::graphics::film::SimpleColorFilm (width*2, height*2);
+            renderer.setFilm (film);
 
             // setup camera transform
             renderer.transformation() =
@@ -285,7 +284,7 @@ class PureCornell : public TestScene {
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
             ::SDL_Flip (screen);
-            ::draw (screen,renderer.surface(), scale, 1.0, saturation);//scale, exp_tone, saturation);
+            ::draw (screen,*renderer.getFilm(), scale, 1.0, saturation);//scale, exp_tone, saturation);
         }
 
         virtual void begin() {
@@ -302,6 +301,7 @@ class PureCornell : public TestScene {
         }
 
         virtual void end() {
+            /// \todo add deletes!!!
         }
 };
 
@@ -322,10 +322,7 @@ class CornellOpenSky : public PureCornell {
 class Clouds : public TestScene {
     private:
         picogen::graphics::integrators::screen::XYIterator<
-        picogen::misc::templates::surface<
-        picogen::graphics::color::AverageColor
-        >,
-        picogen::graphics::integrators::ray::Simple
+            picogen::graphics::integrators::ray::Simple
         > renderer;
         int width, height;
         picogen::graphics::objects::LinearList list;
@@ -350,7 +347,8 @@ class Clouds : public TestScene {
             ::picogen::graphics::cameras::FromPointToRect_Cylinder *fptr = new ::picogen::graphics::cameras::FromPointToRect_Cylinder;
             fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
             renderer.setCamera (fptr);
-            renderer.surface().reset (width*2, height*2);
+            ::picogen::graphics::film::SimpleColorFilm *film = new ::picogen::graphics::film::SimpleColorFilm (width*2, height*2);
+            renderer.setFilm (film);
 
             // setup camera transform
             renderer.transformation() =
@@ -451,7 +449,7 @@ class Clouds : public TestScene {
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
             ::SDL_Flip (screen);
-            ::draw (screen,renderer.surface(), scale, 1.0, saturation);//scale, exp_tone, saturation);
+            ::draw (screen,*renderer.getFilm(), scale, 1.0, saturation);//scale, exp_tone, saturation);
         }
 
         virtual void begin() {
@@ -466,6 +464,7 @@ class Clouds : public TestScene {
             return c;
         }
         virtual void end() {
+            /// \todo add deletes!!!
         }
 };
 

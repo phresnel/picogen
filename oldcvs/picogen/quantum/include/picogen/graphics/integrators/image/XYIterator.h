@@ -26,9 +26,9 @@
 #ifndef _XYITERATOR_H
 #define _XYITERATOR_H
 
-#define XYIterator_Template template <class t_surface, class t_pathIntegrator>
+#define XYIterator_Template template <class t_pathIntegrator>
 #define XYIterator_Member( type ) \
-    XYIterator_Template type XYIterator<t_surface, t_pathIntegrator>
+    XYIterator_Template type XYIterator<t_pathIntegrator>
 
 namespace picogen {
     namespace graphics {
@@ -46,12 +46,13 @@ namespace picogen {
                         typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
                         typedef ::picogen::graphics::color::Color Color;
                         typedef ::picogen::graphics::cameras::abstract::ICamera ICamera;
+                        typedef ::picogen::graphics::film::abstract::IFilm IFilm;
 
                         unsigned int m_currX, m_currY;
                         unsigned int m_width, m_height;
                         unsigned int m_numPixelsPerRun;
                         ICamera *m_camera;
-                        t_surface m_surface;
+                        IFilm *m_film;
                         t_pathIntegrator m_pathIntegrator;
                         bool m_done;
                         bool m_BeginRender_called;
@@ -68,18 +69,25 @@ namespace picogen {
                         Transformation &transformation()       {
                             return m_camTransform;
                         }
-                        t_surface &surface() const {
+                        /*t_surface &surface() const {
                             return m_surface;
                         }
                         t_surface &surface()       {
                             return m_surface;
-                        }
+                        }*/
 
                         ICamera *getCamera () const {
                             return m_camera;
                         }
                         void setCamera (ICamera *camera) {
                             m_camera = camera;
+                        }
+
+                        IFilm *getFilm () const {
+                            return m_film;
+                        }
+                        void setFilm (IFilm *film) {
+                            m_film = film;
                         }
 
                         t_pathIntegrator &path_integrator() const {
