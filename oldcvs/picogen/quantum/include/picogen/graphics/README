@@ -1,0 +1,3 @@
+The directory "samplers" is the old version of "integrators". it is
+kept there so to not break CVS history. If you write an integrator,
+please save it in "integrators".
