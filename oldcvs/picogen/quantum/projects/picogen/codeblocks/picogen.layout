@@ -32,10 +32,10 @@
 		<Cursor position="1353" topLine="22" />
 	</File>
 	<File name="../../../include/picogen/graphics/image.h" open="0" top="0" tabpos="12">
-		<Cursor position="2014" topLine="102" />
+		<Cursor position="2588" topLine="44" />
 	</File>
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="10">
-		<Cursor position="3660" topLine="54" />
+		<Cursor position="3660" topLine="26" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="6">
 		<Cursor position="4345" topLine="72" />
@@ -46,8 +46,8 @@
 	<File name="../../../include/picogen/graphics/objects/CloudsBouthors.h" open="0" top="0" tabpos="6">
 		<Cursor position="20173" topLine="446" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/ImplicitHeightField.h" open="1" top="0" tabpos="7">
-		<Cursor position="2255" topLine="33" />
+	<File name="../../../include/picogen/graphics/objects/ImplicitHeightField.h" open="0" top="0" tabpos="7">
+		<Cursor position="2255" topLine="27" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Instance.h" open="0" top="0" tabpos="4">
 		<Cursor position="3002" topLine="47" />
@@ -58,8 +58,11 @@
 	<File name="../../../include/picogen/graphics/objects/Preetham.h" open="0" top="0" tabpos="1">
 		<Cursor position="2170" topLine="35" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="1" top="1" tabpos="9">
-		<Cursor position="3001" topLine="67" />
+	<File name="../../../include/picogen/graphics/objects/QuadtreeHeightField.h" open="1" top="0" tabpos="8">
+		<Cursor position="2481" topLine="35" />
+	</File>
+	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="1" top="0" tabpos="6">
+		<Cursor position="4942" topLine="96" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Sphere.h" open="0" top="0" tabpos="3">
 		<Cursor position="1846" topLine="32" />
@@ -74,10 +77,10 @@
 		<Cursor position="3604" topLine="82" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/templates/TriBIH.cc.h" open="0" top="0" tabpos="4">
-		<Cursor position="27806" topLine="585" />
+		<Cursor position="26794" topLine="549" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/templates/TriBIH.h" open="0" top="0" tabpos="3">
-		<Cursor position="5035" topLine="80" />
+		<Cursor position="3940" topLine="112" />
 	</File>
 	<File name="../../../include/picogen/graphics/samplers.h" open="0" top="0" tabpos="15">
 		<Cursor position="1106" topLine="15" />
@@ -106,8 +109,8 @@
 	<File name="../../../include/picogen/misc/functions.h" open="0" top="0" tabpos="5">
 		<Cursor position="40463" topLine="807" />
 	</File>
-	<File name="../../../include/picogen/misc/geometrics.h" open="0" top="0" tabpos="22">
-		<Cursor position="5821" topLine="127" />
+	<File name="../../../include/picogen/misc/geometrics.h" open="0" top="0" tabpos="10">
+		<Cursor position="12781" topLine="241" />
 	</File>
 	<File name="../../../include/picogen/misc/geometrics/Transformation.h" open="0" top="0" tabpos="16">
 		<Cursor position="17284" topLine="302" />
@@ -134,7 +137,7 @@
 		<Cursor position="4940" topLine="118" />
 	</File>
 	<File name="../../../src/main.cc" open="1" top="0" tabpos="2">
-		<Cursor position="2078" topLine="32" />
+		<Cursor position="4118" topLine="103" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
@@ -148,22 +151,25 @@
 	<File name="../../../src/picosrc/graphics/objects/AABox.cc" open="0" top="0" tabpos="7">
 		<Cursor position="13473" topLine="304" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" open="1" top="0" tabpos="6">
-		<Cursor position="4655" topLine="105" />
+	<File name="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" open="0" top="0" tabpos="6">
+		<Cursor position="4655" topLine="98" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/LinearList.cc" open="0" top="0" tabpos="9">
 		<Cursor position="1612" topLine="31" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="8">
-		<Cursor position="1136" topLine="10" />
+	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="1" top="0" tabpos="9">
+		<Cursor position="8369" topLine="225" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="1" top="0" tabpos="8">
-		<Cursor position="13080" topLine="305" />
+	<File name="../../../src/picosrc/graphics/objects/QuadtreeHeightField.cc" open="1" top="0" tabpos="7">
+		<Cursor position="1808" topLine="37" />
+	</File>
+	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="1" top="0" tabpos="5">
+		<Cursor position="31781" topLine="745" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/Sphere.cc" open="0" top="0" tabpos="11">
 		<Cursor position="1000" topLine="9" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/TriBIH.cc" open="1" top="0" tabpos="5">
+	<File name="../../../src/picosrc/graphics/objects/TriBIH.cc" open="0" top="0" tabpos="5">
 		<Cursor position="6504" topLine="165" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" open="0" top="0" tabpos="0">
@@ -191,7 +197,7 @@
 		<Cursor position="19393" topLine="616" />
 	</File>
 	<File name="../../../src/picossdf/picossdf.cc" open="1" top="0" tabpos="3">
-		<Cursor position="18128" topLine="452" />
+		<Cursor position="9414" topLine="264" />
 	</File>
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="2">
 		<Cursor position="12186" topLine="327" />
@@ -199,8 +205,8 @@
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
 		<Cursor position="1554" topLine="27" />
 	</File>
-	<File name="../../../src/submain/ssdf.cc" open="1" top="0" tabpos="1">
-		<Cursor position="28794" topLine="826" />
+	<File name="../../../src/submain/ssdf.cc" open="1" top="1" tabpos="1">
+		<Cursor position="5295" topLine="115" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="2">
 		<Cursor position="24517" topLine="647" />

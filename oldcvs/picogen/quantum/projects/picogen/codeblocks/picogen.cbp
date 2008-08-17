@@ -164,6 +164,7 @@
 		<Unit filename="../../../include/picogen/graphics/objects/Instance.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/LinearList.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/Preetham.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/QuadtreeHeightField.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/SimpleHeightField.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/Sphere.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/TriBIH.h" />
@@ -199,6 +200,7 @@
 		<Unit filename="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/LinearList.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Preetham.cc" />
+		<Unit filename="../../../src/picosrc/graphics/objects/QuadtreeHeightField.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Sphere.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/TriBIH.cc" />

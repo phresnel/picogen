@@ -28,7 +28,7 @@
 1217979002 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/LinearList.cc
 	<picogen/picogen.h>
 
-1217803186 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
+1218927911 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
 	<picogen/picogen.h>
 
 1214865927 /home/smach/Projects/picogen/quantum/include/picogen.h
@@ -52,14 +52,14 @@
 
 1212003360 /home/smach/Projects/picogen/quantum/include/picogen/misc/exceptions.h
 
-1212060872 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics.h
+1218735071 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics.h
 	"geometrics/Transformation.h"
 
 1215426878 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics/Transformation.h
 
 1215426878 /home/smach/Projects/picogen/quantum/include/picogen/misc/templates.h
 
-1212059100 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
+1218928387 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
 
 1214924562 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
 	"brdf/Lambertian.h"
@@ -99,7 +99,7 @@
 
 1212061143 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Preetham.h
 
-1218178241 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
+1218293878 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
 	<picogen/graphics/objects.h>
 
 1215426861 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/VelocityInstance.h
@@ -124,7 +124,7 @@
 
 1212047782 /home/smach/Projects/picogen/quantum/include/picogen/graphics/samplers/ray/Preview.h
 
-1218177764 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/SimpleHeightField.cc
+1218382539 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/SimpleHeightField.cc
 	<picogen/picogen.h>
 
 1217803194 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Sphere.cc
@@ -161,7 +161,7 @@
 	<sstream>
 	<picogen/misc/functional/LayeredNoise2d.h>
 
-1218042305 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+1218927842 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
@@ -204,7 +204,7 @@
 	<string>
 	<dlfcn.h>
 
-1218177833 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1218928275 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -215,6 +215,7 @@
 	<picogen/picossdf/picossdf.h>
 	<picogen/graphics/objects/Instance.h>
 	<picogen/graphics/objects/templates/TriBIH.h>
+	<picogen/graphics/objects/QuadtreeHeightField.h>
 
 1212062078 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Instance.h
 
@@ -289,6 +290,12 @@
 1218177022 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/ImplicitHeightField.cc
 	<picogen/picogen.h>
 
-1218178139 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/QuadtreeHeightField.cc
+1218925818 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/QuadtreeHeightField.cc
+	<iostream>
 	<picogen/picogen.h>
+	<picogen/graphics/objects/QuadtreeHeightField.h>
+
+1218922027 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
+	<stdint.h>
+	<picogen/graphics/objects.h>
 
