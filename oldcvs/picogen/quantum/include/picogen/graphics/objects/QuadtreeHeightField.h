@@ -83,7 +83,9 @@ namespace picogen {
                     };
 
                     struct Chunk {
-                        static const unsigned int size = 3;
+                        enum {
+                            size = 3
+                        };
                         Height field [size * size];
                         Height h_min, h_max;
                     };
@@ -93,6 +95,10 @@ namespace picogen {
                         Node *children;
 
                         Node () : chunk(), children (0) {}
+                        ~Node () {
+                            if (0 != children)
+                                delete [] children;
+                        }
                     };
 
 
@@ -111,7 +117,8 @@ namespace picogen {
                         QuadtreeHeightField::Node *node, QuadtreeHeightField::Node *parent,
                         unsigned int left, unsigned int top, unsigned int size, const unsigned int minSize, const unsigned int heightFieldSize,
                         bool smooth,
-                        const Function_R2_R1 &fun, real fun_min, real fun_max
+                        const Function_R2_R1 &fun, real fun_min, real fun_max,
+                        real percentageFinished, real percentageFinishedScale
                     ) ;
 
                     bool intersectNode (
