@@ -2,7 +2,7 @@
  *            film.h
  *
  *  2008-08-17 12:09:00 2008
- *  Copyright  2007  Sebastian Mach
+ *  Copyright  2008  Sebastian Mach
  *  seb@greenhybrid.net
  ****************************************************************************/
 
@@ -27,6 +27,21 @@
 
 namespace picogen {
     namespace graphics {
+        namespace film {
+            namespace abstract {
+                class IFilm {
+                    public:
+                        virtual void addSample (param_in (::picogen::graphics::structs::sample, sample)) = 0;
+                        virtual ::picogen::graphics::color::Color operator () (unsigned int x, unsigned int y) const = 0;
+                        virtual unsigned int getWidth() const = 0;
+                        virtual unsigned int getHeight() const = 0;
+                };
+            } // namespace abstract {
+        } // namespace film {
     } // namespace graphics {
 } // namespace picogen {
+
+#include <picogen/graphics/film/SimpleColorFilm.h>
+
+
 #endif // FILM_H__INCLUDED
