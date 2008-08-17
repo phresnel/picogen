@@ -52,7 +52,9 @@ class SSDFBackend {
         virtual int preethamSetColorFilter (const ::picogen::graphics::image::color::Color &color) = 0;
         virtual int preethamSetSunColor (const ::picogen::graphics::image::color::Color &color) = 0;
         virtual int preethamSetSunDirection (const ::picogen::misc::geometrics::Vector3d &direction) = 0;
-        //virtual int preetham.enableFogHack (1, 0.0000041, 500000) = 0;
+        //virtual int preethamEnableFogHack (::picogen::misc::prim::real exponent, ::picogen::misc::prim::real maxDist) = 0;
+        virtual int preethamSetFogExp (::picogen::misc::prim::real exp) = 0;
+        virtual int preethamSetFogMaxDist (::picogen::misc::prim::real dist) = 0;
 
         virtual int cameraSetPositionYawPitchRoll (
             const ::picogen::misc::geometrics::Vector3d &position,
