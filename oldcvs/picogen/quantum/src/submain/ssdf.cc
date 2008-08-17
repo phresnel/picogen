@@ -33,6 +33,7 @@
 #include <picogen/picossdf/picossdf.h>
 #include <picogen/graphics/objects/Instance.h>
 #include <picogen/graphics/objects/templates/TriBIH.h>
+#include <picogen/graphics/objects/QuadtreeHeightField.h>
 
 
 
@@ -98,10 +99,12 @@ draw (
     const t_surface &surface,
     float scale,
     float exp_tone,
-    float saturation
+    float saturation,
+    int aa_width
 ) {
     if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
         return;
+
     int x,y;
     for (y=0; y<p_target->h; y++) {
         /// \todo FIX we are currently assuming a 32bit SDL buffer
@@ -113,9 +116,9 @@ draw (
             float g = source->color[1]*scale*d;
             float b = source->color[2]*scale*d;*/
             real accu_r=real (0), accu_g=real (0), accu_b=real (0);
-            for (register int u=0; u<2; ++u) for (register int v=0; v<2; ++v) {
+            for (register int u=0; u<aa_width; ++u) for (register int v=0; v<aa_width; ++v) {
                     real r,g,b;
-                    ( (Color) surface (x*2+u,y*2+v)).to_rgb (r, g, b);
+                    ( (Color) surface (x*aa_width+u,y*aa_width+v)).to_rgb (r, g, b);
                     //((xrt::base_types::color)surface((unsigned)x,(unsigned)y)).to_rgb( r, g, b );
                     // tone map
 
@@ -141,9 +144,9 @@ draw (
                     accu_g += g<0 ? 0 : g>1 ? 1 : g;
                     accu_b += b<0 ? 0 : b>1 ? 1 : b;
             }
-            accu_r *= 0.25;
-            accu_g *= 0.25;
-            accu_b *= 0.25;
+            accu_r /= static_cast<real>(aa_width*aa_width);
+            accu_g /= static_cast<real>(aa_width*aa_width);
+            accu_b /= static_cast<real>(aa_width*aa_width);
 
             * (bufp++) =
                 SDL_MapRGB (p_target->format,
@@ -167,7 +170,7 @@ draw (
 class Scene {
     public:
         virtual std::string getName() const = 0;
-        virtual void initRenderer (int width, int height) = 0;
+        virtual void initRenderer (int width, int height, int antiAliasingWidth) = 0;
         virtual void flip (SDL_Surface *screen, float scale, float saturation) = 0;
         virtual void begin() = 0;
         virtual bool renderMore (int numPixels) = 0;  // i wanted to call it continue, but then continue is obviously a reserved word :P
@@ -197,6 +200,7 @@ class SSDFScene : public Scene, public SSDFBackend {
         LinearList list;
         ::picogen::common::Preetham   preetham;
         bool enablePreethamSky;
+        real fogMaxDist, fogExp;
         //::picogen::common::AABox      box;
 
 
@@ -216,6 +220,8 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         Scene currentScene;
         SceneStack sceneStack;
+
+        int antiAliasingWidth;
 
         ::picogen::graphics::objects::abstract::IAccelerationStructure *sceneRoot;
         IBRDF* currentBRDF;
@@ -263,7 +269,9 @@ class SSDFScene : public Scene, public SSDFBackend {
             preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
             preetham.setSunColor (Color (1.0,0.9,0.8) *1600.0*L);
             preetham.setSunDirection (Vector3d (-1.7,2.5,3.3).normal());
-            preetham.enableFogHack (1, 0.00082*0.05, 500000);
+            fogExp = 0.0;
+            fogMaxDist = 100000000.0;
+            preetham.enableFogHack (false, fogExp, fogMaxDist);
             enablePreethamSky = true;
             return 0;
         }
@@ -398,6 +406,22 @@ class SSDFScene : public Scene, public SSDFBackend {
             return 0;
         }
 
+        virtual int preethamSetFogExp (real exp) {
+            fogExp = exp;
+            return 0;
+        }
+
+        virtual int preethamSetFogMaxDist (real dist) {
+            fogMaxDist = dist;
+            return 0;
+        }
+
+        /*virtual int preethamEnableFogHack (real exponent, real maxDist) {
+            preetham.enableFogHack (maxDist>0.0, exponent, maxDist);
+            std::cout << "preetham: {" << exponent << ". " << maxDist << "}" << std::endl;
+            return 0;
+        }*/
+
 
         // Camera:
         virtual int cameraSetPositionYawPitchRoll (
@@ -426,22 +450,35 @@ class SSDFScene : public Scene, public SSDFBackend {
         ) {
             using namespace ::picogen::graphics::objects;
             using namespace ::picogen::misc::functional;
+            using namespace ::picogen::misc::geometrics;
 
-            SimpleHeightField *heightField = new SimpleHeightField ();
-
-            heightField->setBRDF (currentBRDF);
-            heightField->setShader (&white);
-            heightField->setBox (center-size*0.5, center+size*0.5);
-
-            heightField->init (resolution, &fun, 0.1, false);
             switch (currentScene.type) {
                 case LINEAR_LIST:{
-                    QuadtreeHeightField *qt = new QuadtreeHeightField (8, heightField);
-                    currentScene.linearList->insert (qt);
+                    if (false) {//(0 == fork()) {
+                        //currentScene.linearList->insert (heightField);
+                    } else {
+                        QuadtreeHeightField *heightField = QuadtreeHeightField::create(
+                            resolution, fun, BoundingBox (center-size*0.5, (center+size*0.5)), 0.2, false
+                        );
+
+                        heightField->setBRDF (currentBRDF);
+                        heightField->setShader (&white);
+                        //heightField->setBox (center-size*0.5, center+size*0.5);
+
+                        currentScene.linearList->insert (heightField);
+                    }
                     // TODO URGENT !!!!one1 --> see LinearList.cc
                 } break;
 
                 case TRI_BIH:{
+                    SimpleHeightField *heightField = new SimpleHeightField ();
+
+                    heightField->setBRDF (currentBRDF);
+                    heightField->setShader (&white);
+                    heightField->setBox (center-size*0.5, center+size*0.5);
+
+                    heightField->init (resolution, &fun, 0.1, false);
+
                     currentScene.triBih->setBRDF (currentBRDF);
                     currentScene.triBih->setShader (&white);
                     heightField->feedTriScene (currentScene.triBih);
@@ -551,16 +588,18 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
 
-        virtual void initRenderer (int width, int height) {
+        virtual void initRenderer (int width, int height, int antiAliasingWidth) {
             using namespace picogen;
 
+            this->antiAliasingWidth = antiAliasingWidth;
             this->width  = width;
             this->height = height;
             // setup screen and camera
             renderer.camera().defineCamera ( (real) width/ (real) height, 1.0, 0.85);
-            renderer.surface().reset (width*2, height*2);
+            renderer.surface().reset (width*antiAliasingWidth, height*antiAliasingWidth);
 
             // setup and recognize sky
+            preetham.enableFogHack (true, fogExp, fogMaxDist);
             preetham.invalidate();
             //if (enablePreethamSky) {
                 renderer.path_integrator().setSky (&preetham);
@@ -585,7 +624,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
             ::SDL_Flip (screen);
-            ::draw (screen,renderer.surface(), scale, 1.0, saturation);//scale, exp_tone, saturation);
+            ::draw (screen,renderer.surface(), scale, 1.0, saturation, antiAliasingWidth);//scale, exp_tone, saturation);
         }
 
         virtual void begin() {
@@ -781,9 +820,9 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height) {
     return 0;
 }
 
-static int grind (int width, int height, Scene *scene) {
+static int grind (int width, int height, int antiAliasingWidth, Scene *scene) {
     using namespace std;
-    scene->initRenderer (width, height);
+    scene->initRenderer (width, height, antiAliasingWidth);
 
     if (SDL_Init (SDL_INIT_VIDEO) < 0) {
         cerr << "Unable to init SDL: " << SDL_GetError() << endl;
@@ -797,7 +836,7 @@ static int grind (int width, int height, Scene *scene) {
     }
 
     //scene->flip();
-    return loop (screen, scene, width, height);  /// \todo check if SQL cleans up surface resource
+    return loop (screen, scene, width, height);  /// \todo check if SDL cleans up surface resource
 }
 
 
@@ -820,28 +859,71 @@ int main_ssdf (int argc, char *argv[]) {
 
     //++ Options.
     string filename ("");
+    int width = 320;
+    int height = 320;
+    int aaWidth = 1;
     //-- Options.
 
-    const string primary = argv[0];
-    argc--;
-    argv++;
+    while (0<argc) {
+        const string primary = argv[0];
+        --argc;
+        ++argv;
 
-    if (primary == string ("-f") || primary == string ("--filename")) {
-        if (argc == 0) {   // check if any argument is given, we need at least one remaining
-            printUsage();
+        if (primary == string ("-f") || primary == string ("--filename")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            const std::string secondary = argv [0];
+            filename = argv [0];
+            --argc;
+            ++argv;
+        } else if (primary == string ("-w") || primary == string ("--width")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            stringstream ss;
+            ss << argv [0];
+            ss >> width;
+
+            --argc;
+            ++argv;
+        } else if (primary == string ("-h") || primary == string ("--height")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            stringstream ss;
+            ss << argv [0];
+            ss >> height;
+
+            --argc;
+            ++argv;
+        } else if (primary == string ("-a") || primary == string ("--AA-width")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            stringstream ss;
+            ss << argv [0];
+            ss >> aaWidth;
+            if (0 >= aaWidth) {
+
+                aaWidth = 1;
+            }
+
+            --argc;
+            ++argv;
+        } else {
+            cerr << "Parameter '" << primary << "' unknown." << endl;
             return -1;
         }
-        const std::string secondary = argv [0];
-        filename = argv [0];
-    } else {
-        cerr << "Parameter '" << primary << "' unknown." << endl;
-        return -1;
     }
-
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (320, 320, grindScene);
+        return grind (width, height, aaWidth, grindScene);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
