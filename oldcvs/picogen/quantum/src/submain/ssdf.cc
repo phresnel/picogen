@@ -187,11 +187,11 @@ class SSDFScene : public Scene, public SSDFBackend {
         typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
 
 
-        ::picogen::graphics::samplers::screen::XYIterator<
+        ::picogen::graphics::integrators::screen::XYIterator<
             ::picogen::misc::templates::surface<
                 ::picogen::graphics::image::color::AverageColor
             >,
-            ::picogen::graphics::samplers::ray::Simple
+            ::picogen::graphics::integrators::ray::Simple
         > renderer;
         int width, height;
 
