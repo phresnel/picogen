@@ -11,7 +11,7 @@
 
 1214870022 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Snow.h
 
-1218969719 source:/home/smach/Projects/picogen/quantum/src/main.cc
+1218969840 source:/home/smach/Projects/picogen/quantum/src/main.cc
 	<iostream>
 	<picogen/picogen.h>
 	<picogen/compile_info.h>
@@ -31,7 +31,7 @@
 1218927911 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
 	<picogen/picogen.h>
 
-1218969836 /home/smach/Projects/picogen/quantum/include/picogen.h
+1218970921 /home/smach/Projects/picogen/quantum/include/picogen.h
 	<math.h>
 	<float.h>
 	<iostream>
@@ -47,7 +47,7 @@
 	<picogen/misc/functional.h>
 	<picogen/graphics/cameras.h>
 	<picogen/graphics/objects.h>
-	<picogen/graphics/samplers.h>
+	<picogen/graphics/integrators.h>
 	<picogen/common.h>
 
 1212003360 /home/smach/Projects/picogen/quantum/include/picogen/misc/exceptions.h
@@ -204,7 +204,7 @@
 	<string>
 	<dlfcn.h>
 
-1218969158 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1218972567 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -298,4 +298,23 @@
 1218968145 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
 	<stdint.h>
 	<picogen/graphics/objects.h>
+
+1215427092 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Preview.cc
+
+1218970318 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Simple.cc
+	<picogen/picogen.h>
+
+1218972326 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators.h
+	"integrators/image/XYIterator.h"
+	"integrators/ray/Simple.h"
+	"integrators/ray/Preview.h"
+
+1218970723 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.h
+	"XYIterator.cc.h"
+
+1218970735 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.cc.h
+
+1218970749 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Simple.h
+
+1212047782 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Preview.h
 
