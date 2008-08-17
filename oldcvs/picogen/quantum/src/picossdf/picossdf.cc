@@ -408,6 +408,18 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                         return SYNTAX_ERROR;
                     }
                     backend->preethamSetSunDirection (direction);
+                } else if ((*parameters.begin()).first == string ("fog-exponent")) {
+                    real tmp;
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> tmp;
+                    backend->preethamSetFogExp (tmp);
+                } else if ((*parameters.begin()).first == string ("fog-max-distance")) {
+                    real tmp;
+                    stringstream ss;
+                    ss << (*parameters.begin()).second;
+                    ss >> tmp;
+                    backend->preethamSetFogMaxDist (tmp);
                 } else if ((*parameters.begin()).first == string ("color-filter-rgb")) {
                     unsigned int numScalars;
                     Vector3d col_vec = scanVector3d ((*parameters.begin()).second, numScalars);
@@ -483,6 +495,8 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
             backend->cameraSetPositionYawPitchRoll (position, yaw, pitch, roll);
         } break;
     }
+
+    //backend->preethamEnableFogHack (preetham_fog_exp, preetham_fog_max_distance);
 
     return OKAY;
 }
