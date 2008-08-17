@@ -70,7 +70,6 @@ static void conditions() {
 
 
 int main (int argc, char *argv[]) {
-    extern int main_seb (int argc, char *argv[]);
     extern int main_mkheightmap (int argc, char *argv[]);
     extern int main_testscenes (int argc, char *argv[]);
     extern int main_ssdf (int argc, char *argv[]);
@@ -123,14 +122,11 @@ int main (int argc, char *argv[]) {
         return main_testscenes (argc, argv);
     }
 
-    #ifndef PICOGEN_RELEASE
     else if (primary == string ("ssdf")) {
         return main_ssdf (argc, argv);
     }
 
-    else if (primary == string ("seb")) {
-        return main_seb (argc, argv);
-    }
+    #ifndef PICOGEN_RELEASE
     #endif
 
     else {
