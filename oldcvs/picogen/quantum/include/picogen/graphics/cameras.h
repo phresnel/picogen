@@ -29,7 +29,17 @@
 namespace picogen {
     namespace graphics {
         namespace cameras {
-            class FromPointToRect {
+            namespace abstract {
+                class ICamera {
+                        typedef ::picogen::misc::prim::real real;
+                        typedef ::picogen::misc::geometrics::Ray Ray;
+
+                    public:
+                        virtual Ray operator () (const real u, const real v) const = 0;
+                };
+            };
+
+            class FromPointToRect : public abstract::ICamera {
                     typedef ::picogen::misc::prim::real real;
                     typedef ::picogen::misc::geometrics::Vector3d Vector3d;
                     typedef ::picogen::misc::geometrics::Ray Ray;
@@ -54,17 +64,17 @@ namespace picogen {
                     {
                      m_position = pos;
                     }*/
-                    void rayFromUV (param_out (Ray,ray), const real u, const real v) const {
-                        XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
+                    Ray operator () (const real u, const real v) const {
+                        Ray ray;
                         ray.w() [0] = u*m_width-0.5*m_width;
                         ray.w() [1] = - (v*m_height-0.5*m_height);
                         ray.w() [2] = m_Z;
                         ray.w() = ray.w().normal();
                         ray.x() = m_position;
-                        XRT_CALL_STACK_POP();
+                        return ray;
                     }
             };
-            class FromPointToRect_Cube {
+            class FromPointToRect_Cube : public abstract::ICamera {
                     typedef ::picogen::misc::prim::real real;
                     typedef ::picogen::misc::geometrics::Vector3d Vector3d;
                     typedef ::picogen::misc::geometrics::Ray Ray;
@@ -89,9 +99,9 @@ namespace picogen {
                     {
                      m_position = pos;
                     }*/
-                    void rayFromUV (param_out (Ray,ray), const real _u, const real v) const {
-                        XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
-                        real u = _u * 4;
+                    Ray operator () (const real _u, const real v) const {
+                        Ray ray;
+                        const real u = _u * 4;
                         if (u<1) {
                             ray.w() [2] = ( (u) *m_width-0.5*m_width);
                             ray.w() [1] = - (v*m_height-0.5*m_height);
@@ -112,10 +122,10 @@ namespace picogen {
 
                         ray.w() = ray.w().normal();
                         ray.x() = m_position;
-                        XRT_CALL_STACK_POP();
+                        return ray;
                     }
             };
-            class FromPointToRect_Cylinder {
+            class FromPointToRect_Cylinder : public abstract::ICamera {
                     typedef ::picogen::misc::prim::real real;
                     typedef ::picogen::misc::geometrics::Vector3d Vector3d;
                     typedef ::picogen::misc::geometrics::Ray Ray;
@@ -136,19 +146,16 @@ namespace picogen {
                         m_Z = Z;
                         XRT_CALL_STACK_POP();
                     }
-                    /*void SetPosition( Vector3d pos )
-                    {
-                     m_position = pos;
-                    }*/
-                    void rayFromUV (param_out (Ray,ray), const real u, const real v) const {
-                        XRT_CALL_STACK_PUSH ("void FromPointToRect::RayFromUV( param_out(base_types::ray,ray), const base_types::real u, const base_types::real v )");
-                        real a = -u*2*::picogen::misc::constants::pi;
+                    Ray operator () (const real u, const real v) const {
+                        Ray ray;
+                        const real a = -u*2*::picogen::misc::constants::pi;
                         ray.w() [0] = m_Z*cos (a);
                         ray.w() [1] = - (v*m_height-0.5*m_height);
                         ray.w() [2] = m_Z*sin (a);
                         ray.w() = ray.w().normal();
                         ray.x() = m_position;
                         XRT_CALL_STACK_POP();
+                        return ray;
                     }
             };
         } // namespace cameras {
