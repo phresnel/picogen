@@ -31,7 +31,7 @@
 1218977756 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
 	<picogen/picogen.h>
 
-1218977579 /home/smach/Projects/picogen/quantum/include/picogen.h
+1218980146 /home/smach/Projects/picogen/quantum/include/picogen.h
 	<math.h>
 	<float.h>
 	<iostream>
@@ -46,6 +46,7 @@
 	<picogen/misc/functions.h>
 	<picogen/misc/functional.h>
 	<picogen/graphics/cameras.h>
+	<picogen/graphics/film.h>
 	<picogen/graphics/objects.h>
 	<picogen/graphics/integrators.h>
 	<picogen/common.h>
@@ -204,7 +205,7 @@
 	<string>
 	<dlfcn.h>
 
-1218978014 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1218980502 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -225,7 +226,7 @@
 
 1218977932 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/templates/TriBIH.cc.h
 
-1218975999 source:/home/smach/Projects/picogen/quantum/src/submain/testscenes.cc
+1218980802 source:/home/smach/Projects/picogen/quantum/src/submain/testscenes.cc
 	<iostream>
 	<vector>
 	<SDL/SDL.h>
@@ -234,7 +235,7 @@
 	<picogen/graphics/objects/templates/TriBIH.h>
 	<picogen/graphics/objects/CloudsBouthors.h>
 
-1218975996 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/CloudsBouthors.h
+1218977501 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/CloudsBouthors.h
 
 1215609933 source:/home/smach/Projects/picogen/quantum/src/experimental/PicoPico.cc
 	<vector>
@@ -309,12 +310,22 @@
 	"integrators/ray/Simple.h"
 	"integrators/ray/Preview.h"
 
-1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.h
+1218980439 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.h
 	"XYIterator.cc.h"
 
-1218970735 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.cc.h
+1218980109 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.cc.h
 
 1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Simple.h
 
 1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Preview.h
+
+1218980556 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film.h
+	<picogen/graphics/film/SimpleColorFilm.h>
+
+1218980545 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/SimpleColorFilm.h
+
+1218980562 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/SimpleColorFilm.cc
+	<picogen/picogen.h>
+	<picogen/graphics/film.h>
+	<picogen/graphics/film/SimpleColorFilm.h>
 
