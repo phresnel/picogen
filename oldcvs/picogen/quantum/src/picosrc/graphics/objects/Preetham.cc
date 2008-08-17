@@ -72,20 +72,19 @@ static inline real getAngleBetween (real thetav, real phiv, real theta, real phi
     return  acos (cospsi);
 }
 
-
+/*
 static void Yxy_RGB (real *p_color, real Y, real x, real y) {
     real CIE_X = x * (Y / y);
     real CIE_Y = Y;
     real CIE_Z = (1-x-y) * (Y / y);
 
-    /*CIE_X /= 100.0;
-    CIE_Y /= 100.0;
-    CIE_Z /= 100.0;*/
+    //CIE_X /= 100.0;
+    //CIE_Y /= 100.0;
+    //CIE_Z /= 100.0;
 
     p_color[0] =   3.240479 * CIE_X  - 1.537150 * CIE_Y  - 0.498535 * CIE_Z;
     p_color[1] = - 0.969256 * CIE_X  + 1.875991 * CIE_Y  + 0.041556 * CIE_Z;
     p_color[2] =   0.055648 * CIE_X  - 0.204043 * CIE_Y  + 1.057311 * CIE_Z;
-    //*/
 
     for (int i=0; i<3; i++) {
         if (p_color[i] > 0.0031308) {
@@ -95,6 +94,7 @@ static void Yxy_RGB (real *p_color, real Y, real x, real y) {
         }
     }
 }
+*/
 
 
 
@@ -268,9 +268,10 @@ namespace picogen {
                 const real Y = m_zenith_Y * (perez (theta, gamma, m_perez_Y) / perez (0.0, m_sunTheta, m_perez_Y));
 
 
-                real c[3];
+                /*real c[3];
                 Yxy_RGB (c, Y, x, y);
-                color.from_rgb (c[0],c[1],c[2]);
+                color.from_rgb (c[0],c[1],c[2]);*/
+                color.from_Yxy (Y, x, y);
                 color *= m_colorFilter;
             }
 
