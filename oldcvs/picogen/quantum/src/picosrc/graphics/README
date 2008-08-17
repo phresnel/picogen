@@ -1,4 +1,3 @@
-the directory "samplers" should actually be named "integrators". 
-so if you're writing some integrator, please move it to "samplers",
-this has to do with the fact that CVS does not recognize moves
-of files.
+The directory "samplers" is the old version of "integrators". it is
+kept there so to not break CVS history. If you write an integrator,
+please save it in "integrators".
