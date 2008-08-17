@@ -25,7 +25,7 @@
 
 namespace picogen {
     namespace graphics {
-        namespace samplers {
+        namespace integrators {
             namespace screen {
 
 
@@ -182,6 +182,6 @@ namespace picogen {
                     return m_done;
                 }
             } // namespace screen {
-        } // namespace samplers {
+        } // namespace integrators {
     } // namespace graphics {
 } // namespace picogen {

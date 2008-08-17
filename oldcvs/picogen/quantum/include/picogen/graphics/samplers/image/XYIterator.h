@@ -32,7 +32,7 @@
 
 namespace picogen {
     namespace graphics {
-        namespace samplers {
+        namespace integrators {
             namespace screen {
                 XYIterator_Template class XYIterator {
                     private:
@@ -105,7 +105,7 @@ namespace picogen {
 // - -
 
             } // { namespace screen {
-        } // namespace samplers
+        } // namespace integrators
     } // namespace graphics {
 } // namespace picogen {
 #include "XYIterator.cc.h"

@@ -28,7 +28,7 @@
 
 namespace picogen {
     namespace graphics {
-        namespace samplers {
+        namespace integrators {
             namespace ray {
                 class Simple {
                     private:
@@ -58,7 +58,7 @@ namespace picogen {
 
 
             } // namespace ray {
-        } // namespace samplers {
+        } // namespace integrators {
     } // namespace graphics {
 } // namespace picogen {
 
