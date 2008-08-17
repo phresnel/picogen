@@ -26,13 +26,13 @@
 #include <picogen/picogen.h>
 #include <picogen/experimental/Rain.h>
 
-using picogen::misc::prim::real;
-using picogen::misc::geometrics::Vector3d;
-using picogen::misc::geometrics::Ray;
-using picogen::misc::geometrics::BoundingBox;
+using picogen::real;
+using picogen::geometrics::Vector3d;
+using picogen::geometrics::Ray;
+using picogen::geometrics::BoundingBox;
 using picogen::graphics::material::abstract::IBRDF;
 using picogen::graphics::structs::intersection_t;
-using picogen::graphics::image::color::Color;
+using picogen::graphics::color::Color;
 
 
 namespace picogen {

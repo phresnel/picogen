@@ -35,7 +35,7 @@ namespace picogen {
             class LayeredNoise2d : public BasicFunction {
 
                 private:
-                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::real real;
 
                     BasicFunction *ufun, *vfun;
                     Function_R1_R1 *noiseEvalFun;
@@ -65,7 +65,7 @@ namespace picogen {
             class CircleFlatBlur2d : public BasicFunction {
 
                 private:
-                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::real real;
 
                     BasicFunction *ufun, *vfun;
 

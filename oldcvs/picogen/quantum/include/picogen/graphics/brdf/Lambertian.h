@@ -33,9 +33,9 @@ namespace picogen {
 
                 class Lambertian : public ::picogen::graphics::material::abstract::IBRDF {
                     private:
-                        typedef ::picogen::misc::prim::real real;
-                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                        typedef ::picogen::misc::geometrics::Ray Ray;
+                        typedef ::picogen::real real;
+                        typedef ::picogen::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::geometrics::Ray Ray;
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
 
                         const real reflectance;

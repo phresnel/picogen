@@ -36,15 +36,15 @@ namespace picogen {
             namespace screen {
                 XYIterator_Template class XYIterator {
                     private:
-                        typedef ::picogen::misc::prim::real real;
-                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                        typedef ::picogen::misc::geometrics::Ray Ray;
-                        typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
-                        typedef ::picogen::misc::geometrics::Transformation Transformation;
+                        typedef ::picogen::real real;
+                        typedef ::picogen::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::geometrics::Ray Ray;
+                        typedef ::picogen::geometrics::BoundingBox BoundingBox;
+                        typedef ::picogen::geometrics::Transformation Transformation;
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                         typedef ::picogen::graphics::structs::intersection_t intersection_t;
                         typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
-                        typedef ::picogen::graphics::image::color::Color Color;
+                        typedef ::picogen::graphics::color::Color Color;
                         typedef ::picogen::graphics::cameras::abstract::ICamera ICamera;
 
                         unsigned int m_currX, m_currY;

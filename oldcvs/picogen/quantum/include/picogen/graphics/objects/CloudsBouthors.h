@@ -47,7 +47,7 @@ namespace picogen {
 //   // i am not sure about this, maybe one of the two:
 //   // -> http://scienceworld.wolfram.com/physics/PhaseFunction.html
 //   // -> http://omlc.ogi.edu/pubs/prahl-pubs/prahl88/node10.html
-//   return 1.0 / ( 4.0 * picogen::misc::constants::pi );
+//   return 1.0 / ( 4.0 * picogen::constants::pi );
 //  }
 //
 //  real P_S( real theta ) const
@@ -64,7 +64,7 @@ namespace picogen {
 //
 //  real lookup( real *lot, real theta ) const
 //  {
-//   const int u = ( (int)( theta * (180.0/picogen::misc::constants::pi) ) ) / 10;
+//   const int u = ( (int)( theta * (180.0/picogen::constants::pi) ) ) / 10;
 //   return lot[
 //         u < 0 ? 0
 //       : u > 9 ? 9
@@ -79,11 +79,11 @@ namespace picogen {
 //  CloudShader()
 //  {
 //   //H     = 100;              // 100 meters
-//   theta_f = 5.0 * (picogen::misc::constants::pi/180.0);
+//   theta_f = 5.0 * (picogen::constants::pi/180.0);
 //   N_0     = 300 * 1000000.0;  // 300/cm^3
 //   r_e     = 7.0 / 1000000.0;   // 7 micro-meters
 //   P_f     = 0.51;             // 51% for typical configurations
-//   real sigma = ( 1.0 - P_f ) * picogen::misc::constants::pi * r_e * r_e;
+//   real sigma = ( 1.0 - P_f ) * picogen::constants::pi * r_e * r_e;
 //   K = sigma*N_0;
 //
 //   lot_b[0]=1.1796;  lot_c[0]=0.0138;  lot_K_c[0]=0.0265;  lot_t[0]=0.8389;  lot_r[0]=0.0547;
@@ -217,16 +217,16 @@ namespace picogen {
 
                 private:
                     /// \todo only typedef in the actually needed types
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
-                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
+                    typedef ::picogen::geometrics::BoundingBox BoundingBox;
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
                     typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
                     typedef ::picogen::graphics::objects::abstract::ISky ISky;
-                    typedef ::picogen::graphics::image::color::Color Color;
-                    typedef ::picogen::misc::geometrics::Transformation Transformation;
+                    typedef ::picogen::graphics::color::Color Color;
+                    typedef ::picogen::geometrics::Transformation Transformation;
 
                 private:
                     const real theta_f;
@@ -242,7 +242,7 @@ namespace picogen {
                         // i am not sure about this, maybe one of the two:
                         // -> http://scienceworld.wolfram.com/physics/PhaseFunction.html
                         // -> http://omlc.ogi.edu/pubs/prahl-pubs/prahl88/node10.html
-                        return 1.0 / (4.0 * picogen::misc::constants::pi);
+                        return 1.0 / (4.0 * picogen::constants::pi);
                     }
 
                     real P_S (real theta) const {
@@ -278,11 +278,11 @@ namespace picogen {
 
                     CloudShader()
                             :
-                            theta_f (5.0 * (picogen::misc::constants::pi/180.0)),
+                            theta_f (5.0 * (picogen::constants::pi/180.0)),
                             N_0 (300 * 1000000.0),       // 300/cm^3
                             r_e (7.0 / 1000000.0),       // 7 micro-meters
                             P_f (0.51),                  // 51% for typical configurations
-                            sigma_s ( (1.0 - P_f) * picogen::misc::constants::pi * r_e * r_e),
+                            sigma_s ( (1.0 - P_f) * picogen::constants::pi * r_e * r_e),
                             K (sigma_s  * N_0) {         // sigma * N_0
                     }
 
@@ -347,16 +347,16 @@ namespace picogen {
             class CloudsBouthors : public picogen::graphics::objects::abstract::IIntersectable {
                 private:
                     /// \todo only typedef in the actually needed types
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
-                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
+                    typedef ::picogen::geometrics::BoundingBox BoundingBox;
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
                     typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
                     typedef ::picogen::graphics::objects::abstract::ISky ISky;
-                    typedef ::picogen::graphics::image::color::Color Color;
-                    typedef ::picogen::misc::geometrics::Transformation Transformation;
+                    typedef ::picogen::graphics::color::Color Color;
+                    typedef ::picogen::geometrics::Transformation Transformation;
 
 
                 private:
@@ -437,7 +437,7 @@ namespace picogen {
 //
 //    virtual bool Intersect( param_out(intersection_t,intersection), param_in(Ray,ray) ) const
 //    {
-//        using namespace picogen::misc::constants;
+//        using namespace picogen::constants;
 //
 //        side currSide = noside;
 //        int i;

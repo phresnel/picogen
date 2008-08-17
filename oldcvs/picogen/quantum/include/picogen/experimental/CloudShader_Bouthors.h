@@ -231,7 +231,7 @@ namespace cloud_system {
                 // i am not sure about this, maybe one of the two:
                 // -> http://scienceworld.wolfram.com/physics/PhaseFunction.html
                 // -> http://omlc.ogi.edu/pubs/prahl-pubs/prahl88/node10.html
-                return 1.0 / (4.0 * picogen::misc::constants::pi);
+                return 1.0 / (4.0 * picogen::constants::pi);
             }
 
             real P_S (real theta) const {
@@ -244,7 +244,7 @@ namespace cloud_system {
             }
 
             real lookup (real *lot, real theta) const {
-                const int u = ( (int) (theta * (180.0/picogen::misc::constants::pi))) / 10;
+                const int u = ( (int) (theta * (180.0/picogen::constants::pi))) / 10;
                 return lot[
                            u < 0 ? 0
                            : u > 9 ? 9
@@ -262,11 +262,11 @@ namespace cloud_system {
         public:
             CloudShader() {
                 //H     = 100;              // 100 meters
-                theta_f = 5.0 * (picogen::misc::constants::pi/180.0);
+                theta_f = 5.0 * (picogen::constants::pi/180.0);
                 N_0     = 300 * 1000000.0;  // 300/cm^3
                 r_e     = 7.0 / 1000000.0;   // 7 micro-meters
                 P_f     = 0.51;             // 51% for typical configurations
-                real sigma = (1.0 - P_f) * picogen::misc::constants::pi * r_e * r_e;
+                real sigma = (1.0 - P_f) * picogen::constants::pi * r_e * r_e;
                 K = sigma*N_0;
 
                 lot_b[0]=1.1796;
@@ -483,7 +483,7 @@ public:
         }
 
         virtual bool Intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
-            using namespace picogen::misc::constants;
+            using namespace picogen::constants;
 
             side currSide = noside;
             int i;

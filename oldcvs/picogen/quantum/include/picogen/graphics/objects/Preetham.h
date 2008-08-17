@@ -33,10 +33,10 @@ namespace picogen {
             class Preetham : public ::picogen::graphics::objects::abstract::ISky {
 
                 private:
-                    typedef ::picogen::misc::prim::real              real;
-                    typedef ::picogen::misc::geometrics::Vector3d    Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray         Ray;
-                    typedef ::picogen::graphics::image::color::Color Color;
+                    typedef ::picogen::real              real;
+                    typedef ::picogen::geometrics::Vector3d    Vector3d;
+                    typedef ::picogen::geometrics::Ray         Ray;
+                    typedef ::picogen::graphics::color::Color Color;
 
                 private:
                     Vector3d m_sunDirection;

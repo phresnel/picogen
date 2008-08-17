@@ -42,7 +42,7 @@ namespace picogen {
 
 
             bool LinearList::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
-                intersection.t = misc::constants::real_max;
+                intersection.t = constants::real_max;
                 t_objectList::const_iterator it;
                 bool any = false;
                 for (it=m_list.begin(); it!=m_list.end(); it++) {

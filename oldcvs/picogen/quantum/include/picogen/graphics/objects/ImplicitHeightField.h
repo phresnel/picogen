@@ -38,10 +38,10 @@ namespace picogen {
             class ImplicitHeightField : public ::picogen::graphics::objects::abstract::IIntersectable {
                     /// \todo de-uglify typenames
                 private:
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
-                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
+                    typedef ::picogen::geometrics::BoundingBox BoundingBox;
                     typedef ::picogen::misc::functional::Function_R2_R1 Function_R2_R1;
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     typedef ::picogen::graphics::material::abstract::IShader IShader;

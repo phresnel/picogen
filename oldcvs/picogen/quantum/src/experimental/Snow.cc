@@ -30,16 +30,16 @@
 struct SnowBRDF : public picogen::graphics::material::abstract::IBRDF {
     SnowBRDF() {}
     virtual bool randomSample (
-        param_out (picogen::misc::prim::real,brdf),
-        param_out (picogen::misc::prim::real,p),
+        param_out (picogen::real,brdf),
+        param_out (picogen::real,p),
         param_out (bool,specular),
-        param_out (picogen::misc::geometrics::Ray,r_out),
-        param_in (picogen::misc::geometrics::Ray,r_in),
-        param_in (picogen::misc::geometrics::Vector3d,N)
+        param_out (picogen::geometrics::Ray,r_out),
+        param_in (picogen::geometrics::Ray,r_in),
+        param_in (picogen::geometrics::Vector3d,N)
     ) const {
-        using picogen::misc::constants::pi;
-        using picogen::misc::prim::real;
-        using picogen::misc::geometrics::Vector3d;
+        using picogen::constants::pi;
+        using picogen::real;
+        using picogen::geometrics::Vector3d;
 
         /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
          return false;*/
@@ -65,13 +65,13 @@ static SnowBRDF snowBRDF;
 
 
 
-using picogen::misc::prim::real;
-using picogen::misc::geometrics::Vector3d;
-using picogen::misc::geometrics::Ray;
-using picogen::misc::geometrics::BoundingBox;
+using picogen::real;
+using picogen::geometrics::Vector3d;
+using picogen::geometrics::Ray;
+using picogen::geometrics::BoundingBox;
 using picogen::graphics::material::abstract::IBRDF;
 using picogen::graphics::structs::intersection_t;
-using picogen::graphics::image::color::Color;
+using picogen::graphics::color::Color;
 
 
 namespace picogen {
@@ -126,7 +126,6 @@ namespace picogen {
             bool Snow::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
 
                 //Vector3d v = velocity * ( powf( real(rand())/real(RAND_MAX), timeexp ) );
-
                 for (unsigned int u=0; u<numSnowSpheres; ++u) {
                     const real snow = fabs (
                                           snowSpheres[u].snowMap.f (
@@ -141,7 +140,7 @@ namespace picogen {
                     const real t = snow*snowSpheres[u].minDistance + (1.0-snow) *snowSpheres[u].maxDistance;
                     intersection.color = Color (2.5,2.5,2.5);// * (0.5*(float)u/(float)(numSnowSpheres-1));
                     intersection.t     = t;
-                    intersection.side  = misc::constants::outside;
+                    intersection.side  = constants::outside;
                     intersection.normal = Vector3d (0.0,1.0,0.0);
                     intersection.brdf  = &snowBRDF;
                     intersection.L_e   = 0.0;

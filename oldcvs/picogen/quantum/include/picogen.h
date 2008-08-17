@@ -132,23 +132,18 @@ namespace picogen {
 #include <picogen/misc/exceptions.h>
 
 namespace picogen {
-    namespace misc {
-        namespace prim {
-            typedef double real;
-        } // namespace prim {
-
-        namespace constants {
-            typedef enum {
-                inside = -1,
-                noside = 0,
-                outside = 1
-            } side;
-            static const prim::real epsilon = 0.0001;
-            static const prim::real real_max = FLT_MAX;
-            static const prim::real real_min = FLT_MIN;
-            static const prim::real pi = 3.14159265f;
-        } // namespace constants {
-    } // namespace misc {
+    typedef double real;
+    namespace constants {
+        typedef enum {
+            inside = -1,
+            noside = 0,
+            outside = 1
+        } side;
+        static const real epsilon = 0.0001;
+        static const real real_max = FLT_MAX;
+        static const real real_min = FLT_MIN;
+        static const real pi = 3.14159265f;
+    };
 } // namespace picogen {
 
 
@@ -166,12 +161,12 @@ namespace picogen {
                 private:
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                 public:
-                    image::color::Color color;
-                    ::picogen::misc::prim::real t;
-                    ::picogen::misc::constants::side side;
-                    ::picogen::misc::geometrics::Vector3d normal;
+                    color::Color color;
+                    ::picogen::real t;
+                    ::picogen::constants::side side;
+                    ::picogen::geometrics::Vector3d normal;
                     IBRDF const *brdf;
-                    ::picogen::misc::prim::real L_e;
+                    ::picogen::real L_e;
             };
         }
     }

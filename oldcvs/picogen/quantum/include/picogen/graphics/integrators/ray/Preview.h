@@ -33,15 +33,15 @@
 //
 //                class Preview {
 //                    private:
-//                        typedef ::picogen::misc::prim::real real;
-//                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-//                        typedef ::picogen::misc::geometrics::Ray Ray;
-//                        typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+//                        typedef ::picogen::real real;
+//                        typedef ::picogen::geometrics::Vector3d Vector3d;
+//                        typedef ::picogen::geometrics::Ray Ray;
+//                        typedef ::picogen::geometrics::BoundingBox BoundingBox;
 //                        typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
 //                        typedef ::picogen::graphics::structs::intersection_t intersection_t;
 //                        typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
 //                        typedef ::picogen::graphics::objects::abstract::ISky ISky;
-//                        typedef ::picogen::graphics::image::color::Color Color;
+//                        typedef ::picogen::graphics::color::Color Color;
 //
 //                        IIntersectable *m_intersectable;
 //                        ISky *m_skyShader;

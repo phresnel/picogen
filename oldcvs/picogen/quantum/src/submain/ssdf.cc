@@ -37,13 +37,13 @@
 
 
 
-using ::picogen::common::real;
-using ::picogen::common::Vector3d;
-using ::picogen::common::Ray;
-using ::picogen::common::Color;
-using ::picogen::common::intersection_t;
+using ::picogen::real;
+using ::picogen::geometrics::Vector3d;
+using ::picogen::geometrics::Ray;
+using ::picogen::graphics::color::Color;
+using ::picogen::graphics::structs::intersection_t;
 
-using ::picogen::common::Transformation;
+using ::picogen::geometrics::Transformation;
 
 using ::picogen::graphics::objects::templates::TriBIH;
 
@@ -74,22 +74,22 @@ static genBIH myGenBIH;
 
 
 class ConstantShader : public picogen::graphics::material::abstract::IShader {
-        picogen::graphics::image::color::Color color;
+        picogen::graphics::color::Color color;
     public:
         virtual ~ConstantShader() {};
-        ConstantShader (picogen::graphics::image::color::Color color) : color (color) {}
+        ConstantShader (picogen::graphics::color::Color color) : color (color) {}
         virtual void shade (
-            picogen::graphics::image::color::Color &color,
-            const picogen::misc::geometrics::Vector3d &normal,
-            const picogen::misc::geometrics::Vector3d &position
+            picogen::graphics::color::Color &color,
+            const picogen::geometrics::Vector3d &normal,
+            const picogen::geometrics::Vector3d &position
         ) const {
             color = this->color;
         }
 };
-static const ConstantShader  red (picogen::graphics::image::color::Color (1.0, 0.3, 0.3));
-static const ConstantShader  green (picogen::graphics::image::color::Color (0.3, 1.0, 0.3));
-static const ConstantShader  blue (picogen::graphics::image::color::Color (0.3, 0.3, 1.0));
-static const ConstantShader  white (picogen::graphics::image::color::Color (1.0, 1.0, 1.0));
+static const ConstantShader  red (picogen::graphics::color::Color (1.0, 0.3, 0.3));
+static const ConstantShader  green (picogen::graphics::color::Color (0.3, 1.0, 0.3));
+static const ConstantShader  blue (picogen::graphics::color::Color (0.3, 0.3, 1.0));
+static const ConstantShader  white (picogen::graphics::color::Color (1.0, 1.0, 1.0));
 
 
 template<class t_surface>
@@ -189,7 +189,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         ::picogen::graphics::integrators::screen::XYIterator<
             ::picogen::misc::templates::surface<
-                ::picogen::graphics::image::color::AverageColor
+                ::picogen::graphics::color::AverageColor
             >,
             ::picogen::graphics::integrators::ray::Simple
         > renderer;
@@ -337,7 +337,7 @@ class SSDFScene : public Scene, public SSDFBackend {
         }
 
 
-        virtual int setBRDFToLambertian (::picogen::misc::prim::real reflectance) {
+        virtual int setBRDFToLambertian (::picogen::real reflectance) {
             using namespace std;
             string brdfId;
             stringstream ss;
@@ -355,7 +355,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             }
             return 0;
         }
-        virtual int setBRDFToSpecular (::picogen::misc::prim::real reflectance) {
+        virtual int setBRDFToSpecular (::picogen::real reflectance) {
             using namespace std;
             string brdfId;
             stringstream ss;
@@ -380,27 +380,27 @@ class SSDFScene : public Scene, public SSDFBackend {
             return 0;
         }
 
-        virtual int preethamSetTurbidity (::picogen::misc::prim::real T)  {
+        virtual int preethamSetTurbidity (::picogen::real T)  {
             preetham.setTurbidity (T);
             return 0;
         }
 
-        virtual int preethamSetSunSolidAngleFactor (::picogen::misc::prim::real f) {
+        virtual int preethamSetSunSolidAngleFactor (::picogen::real f) {
             preetham.setSunSolidAngleFactor (f);
             return 0;
         }
 
-        virtual int preethamSetColorFilter (const ::picogen::graphics::image::color::Color &color) {
+        virtual int preethamSetColorFilter (const ::picogen::graphics::color::Color &color) {
             preetham.setColorFilter (color);
             return 0;
         }
 
-        virtual int preethamSetSunColor (const ::picogen::graphics::image::color::Color &color) {
+        virtual int preethamSetSunColor (const ::picogen::graphics::color::Color &color) {
             preetham.setSunColor (color);
             return 0;
         }
 
-        virtual int preethamSetSunDirection (const ::picogen::misc::geometrics::Vector3d &direction) {
+        virtual int preethamSetSunDirection (const ::picogen::geometrics::Vector3d &direction) {
             preetham.setSunDirection (direction.computeNormal());
             return 0;
         }
@@ -424,10 +424,10 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         // Camera:
         virtual int cameraSetPositionYawPitchRoll (
-            const ::picogen::misc::geometrics::Vector3d &position,
-            ::picogen::misc::prim::real yaw,
-            ::picogen::misc::prim::real pitch,
-            ::picogen::misc::prim::real roll
+            const ::picogen::geometrics::Vector3d &position,
+            ::picogen::real yaw,
+            ::picogen::real pitch,
+            ::picogen::real roll
         ) {
             renderer.transformation() = //Transformation().setToTranslation (position);
                 Transformation().setToRotationZ (roll) *
@@ -444,12 +444,12 @@ class SSDFScene : public Scene, public SSDFBackend {
         virtual int addHeightfield (
             const ::picogen::misc::functional::Function_R2_R1 &fun,
             unsigned int resolution,
-            const ::picogen::misc::geometrics::Vector3d &center,
-            const ::picogen::misc::geometrics::Vector3d &size
+            const ::picogen::geometrics::Vector3d &center,
+            const ::picogen::geometrics::Vector3d &size
         ) {
             using namespace ::picogen::graphics::objects;
             using namespace ::picogen::misc::functional;
-            using namespace ::picogen::misc::geometrics;
+            using namespace ::picogen::geometrics;
 
             switch (currentScene.type) {
                 case LINEAR_LIST:{
@@ -492,8 +492,8 @@ class SSDFScene : public Scene, public SSDFBackend {
         // Heightmap:
         virtual int addImplicitHeightfield (
             ::picogen::misc::functional::Function_R2_R1 **fun,
-            const ::picogen::misc::geometrics::Vector3d &center,
-            const ::picogen::misc::geometrics::Vector3d &size
+            const ::picogen::geometrics::Vector3d &center,
+            const ::picogen::geometrics::Vector3d &size
         ) {
             ::picogen::graphics::objects::ImplicitHeightField *heightField =
                 new ::picogen::graphics::objects::ImplicitHeightField ();
@@ -524,9 +524,9 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         //
         virtual int addSphereTerminal (
-            ::picogen::misc::prim::real radius,
-            const ::picogen::misc::geometrics::Vector3d &center,
-            const ::picogen::graphics::image::color::Color &color
+            ::picogen::real radius,
+            const ::picogen::geometrics::Vector3d &center,
+            const ::picogen::graphics::color::Color &color
         ) {
             using namespace ::std;
             using namespace ::picogen::graphics::material::brdf;

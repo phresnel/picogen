@@ -39,10 +39,10 @@ namespace picogen {
                 private:
 
                     // Typedefs.
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
-                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
+                    typedef ::picogen::geometrics::BoundingBox BoundingBox;
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     typedef ::picogen::graphics::material::abstract::IShader IShader;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
@@ -168,10 +168,10 @@ namespace picogen {
 
             class QuadtreeHeightField : public ::picogen::graphics::objects::abstract::IIntersectable {
                 private:
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
-                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
+                    typedef ::picogen::geometrics::BoundingBox BoundingBox;
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     typedef ::picogen::graphics::material::abstract::IShader IShader;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
@@ -314,7 +314,7 @@ namespace picogen {
                                             order [3] = 2;
                                         }
 
-                                        intersection.t = ::picogen::misc::constants::real_max;
+                                        intersection.t = ::picogen::constants::real_max;
                                         intersection_t tmp;
                                         unsigned int numIntersections = 0;
 
@@ -328,7 +328,7 @@ namespace picogen {
 
 
                                         */
-                                        intersection.t = ::picogen::misc::constants::real_max;
+                                        intersection.t = ::picogen::constants::real_max;
                                         intersection_t tmp;
                                         for (unsigned int u=0; u<4; ++u) {
                                             bool doesIntersect = children [u].intersect (tmp, field, ray);
@@ -338,7 +338,7 @@ namespace picogen {
                                               //  break;
                                         }
 
-                                        return intersection.t != ::picogen::misc::constants::real_max;
+                                        return intersection.t != ::picogen::constants::real_max;
                                     } break;
                                     case true: {
 
@@ -348,7 +348,7 @@ namespace picogen {
 
                                         if (doesIntersect) {
                                             srand ((unsigned int)(void*)(this));
-                                            intersection.color = ::picogen::graphics::image::color::Color (
+                                            intersection.color = ::picogen::graphics::color::Color (
                                                 (real)rand() / (real)RAND_MAX,
                                                 (real)rand() / (real)RAND_MAX,
                                                 (real)rand() / (real)RAND_MAX

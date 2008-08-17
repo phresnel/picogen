@@ -24,4 +24,9 @@
 
 #ifndef FILM_H__INCLUDED
 #define FILM_H__INCLUDED
+
+namespace picogen {
+    namespace graphics {
+    } // namespace graphics {
+} // namespace picogen {
 #endif // FILM_H__INCLUDED

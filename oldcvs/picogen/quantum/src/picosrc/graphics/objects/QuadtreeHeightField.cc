@@ -29,10 +29,10 @@
 #include <picogen/graphics/objects/QuadtreeHeightField.h>
 
 
-typedef ::picogen::misc::prim::real real;
-typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-typedef ::picogen::misc::geometrics::Ray Ray;
-typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+typedef ::picogen::real real;
+typedef ::picogen::geometrics::Vector3d Vector3d;
+typedef ::picogen::geometrics::Ray Ray;
+typedef ::picogen::geometrics::BoundingBox BoundingBox;
 typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
 typedef ::picogen::graphics::material::abstract::IShader IShader;
 typedef ::picogen::graphics::structs::intersection_t intersection_t;
@@ -135,10 +135,10 @@ raytri_intersect (
     return 1;
 }
 
-typedef picogen::misc::prim::real real;
-typedef picogen::misc::geometrics::Vector3d Vector3d;
-typedef picogen::misc::geometrics::Ray Ray;
-typedef picogen::misc::geometrics::BoundingBox BoundingBox;
+typedef picogen::real real;
+typedef picogen::geometrics::Vector3d Vector3d;
+typedef picogen::geometrics::Ray Ray;
+typedef picogen::geometrics::BoundingBox BoundingBox;
 typedef picogen::graphics::material::abstract::IBRDF IBRDF;
 typedef picogen::graphics::structs::intersection_t intersection_t;
 
@@ -181,8 +181,8 @@ namespace picogen {
                 // get min and max value of function
                 int updateDisplay = 32768;
                 fprintf (stderr, "  determining bounds of height function %xP\n", reinterpret_cast<unsigned int> (&fun) );
-                real h_min = misc::constants::real_max;
-                real h_max = -misc::constants::real_max;
+                real h_min = constants::real_max;
+                real h_max = -constants::real_max;
                 if (boundsGuessAccuracy>0.9f) {
                     fprintf (stderr, "   doing this at full accuracy (requested was %.1f%%)\n", boundsGuessAccuracy*100.0f);
                     for (v = 0; v < size; v++) {
@@ -370,7 +370,7 @@ namespace picogen {
                 param_in (Ray, ray), param_in (QuadtreeHeightField::Node, node),
                 const unsigned int left, const unsigned int top, const unsigned int size
             ) const {
-                using namespace misc::constants;
+                using namespace constants;
 
                 // TODO: avoid casting
                 const real fu_ = static_cast<real> (left) / static_cast<real> (heightFieldSize);
@@ -446,7 +446,7 @@ namespace picogen {
 
                             if (intersection.t != real_max) {
                                 intersection.side = outside;
-                                intersection.color = image::color::Color (1,1,1);
+                                intersection.color = color::Color (1,1,1);
                                 return true;
                             }
                         }
@@ -513,7 +513,7 @@ namespace picogen {
                                 ray.x() + ray.w() * intersection.t
                             );
                         } else {
-                            intersection.color = image::color::Color (1.0, 1.0, 1.0);
+                            intersection.color = color::Color (1.0, 1.0, 1.0);
                         }
                     }
                     intersection.brdf = brdf;

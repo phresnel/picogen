@@ -87,6 +87,38 @@
 					<Add option="`llvm-config --libs core jit native`" />
 				</Linker>
 			</Target>
+			<Target title="optimized AthlonXP - verbose">
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
+				<Option object_output="objs" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-march=athlon-xp" />
+					<Add option="-O3" />
+					<Add option="-s -O3 -fexpensive-optimizations \" />
+					<Add option="-combine  \" />
+					<Add option="-ffast-math \" />
+					<Add option="-ftree-vectorize \" />
+					<Add option="-msse \" />
+					<Add option="-funroll-loops -fvariable-expansion-in-unroller \" />
+					<Add option="-funsafe-loop-optimizations \" />
+					<Add option="-ftree-loop-im \" />
+					<Add option="-funswitch-loops \" />
+					<Add option="-ftree-loop-ivcanon \" />
+					<Add option="-ftracer \" />
+					<Add option="-fprefetch-loop-arrays \" />
+					<Add option="-funsafe-math-optimizations -ffinite-math-only \" />
+					<Add option="-fdata-sections \" />
+					<Add option="`llvm-config --cflags` \" />
+					<Add option="`llvm-config --cppflags` \" />
+					<Add option="-ftree-vectorizer-verbose=1" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="`sdl-config --libs`" />
+					<Add option="`llvm-config --libs core jit native`" />
+				</Linker>
+			</Target>
 			<Target title="fast compilation">
 				<Option output="picogen" prefix_auto="0" extension_auto="0" />
 				<Option object_output="objs" />
@@ -154,6 +186,7 @@
 		<Unit filename="../../../include/picogen/graphics/brdf/Lambertian.h" />
 		<Unit filename="../../../include/picogen/graphics/brdf/Specular.h" />
 		<Unit filename="../../../include/picogen/graphics/cameras.h" />
+		<Unit filename="../../../include/picogen/graphics/film.h" />
 		<Unit filename="../../../include/picogen/graphics/image.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators/image/XYIterator.cc.h" />

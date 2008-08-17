@@ -32,15 +32,15 @@ namespace picogen {
 
             class Snow : public ::picogen::graphics::objects::abstract::IIntersectable {
                 private:
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
-                    typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
+                    typedef ::picogen::geometrics::BoundingBox BoundingBox;
                     typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     typedef ::picogen::graphics::material::abstract::IShader IShader;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
                     typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
-                    typedef ::picogen::graphics::image::color::Color Color;
+                    typedef ::picogen::graphics::color::Color Color;
                     typedef ::picogen::misc::functions::vector_to_scalar::PerlinNoise PerlinNoise;
 
                 private:
@@ -60,11 +60,11 @@ namespace picogen {
                     virtual ~Snow();
                     virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
 
-                    /*void SetTimeExponent( misc::prim::real t )
+                    /*void SetTimeExponent( real t )
                     {
                      timeexp = t;
                     }
-                    void SetVelocity( param_in( misc::geometrics::Vector3d, V ) )
+                    void SetVelocity( param_in( geometrics::Vector3d, V ) )
                     {
                      velocity = V;
                     }*/

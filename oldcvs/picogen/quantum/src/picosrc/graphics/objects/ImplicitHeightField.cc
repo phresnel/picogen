@@ -70,7 +70,7 @@ namespace picogen {
 
             bool ImplicitHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
 
-                using namespace ::picogen::misc::constants;
+                using namespace ::picogen::constants;
 
                 // Intersect bounding box; eventually return.
                 real t_min, t_max;
@@ -87,10 +87,10 @@ namespace picogen {
                 const Vector3d gbegin (gend_[0]*boxSizeInv[0], gend_[1]*boxSizeInv[1], gend_[2]*boxSizeInv[2]);*/
 
 
-                intersection.side = ::picogen::misc::constants::outside;
+                intersection.side = ::picogen::constants::outside;
                 intersection.normal = -ray.getDirection();
                 //intersection.t = 100.0;
-                intersection.color = image::color::Color (1,1,1);
+                intersection.color = color::Color (1,1,1);
                 intersection.brdf = brdf;
                 intersection.L_e = 0.0;
 

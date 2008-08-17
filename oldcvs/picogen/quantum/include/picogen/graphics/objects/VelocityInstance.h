@@ -32,9 +32,9 @@ namespace picogen {
 
             class VelocityInstance : public ::picogen::graphics::objects::abstract::IIntersectable {
                     typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
-                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
+                    typedef ::picogen::real real;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
 
                     IIntersectable *intersectable;

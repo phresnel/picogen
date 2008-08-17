@@ -43,44 +43,44 @@ class SSDFBackend {
         virtual int endTriBIHBlock () = 0;
 
         // State setters.
-        virtual int setBRDFToLambertian (::picogen::misc::prim::real reflectance) = 0;
-        virtual int setBRDFToSpecular (::picogen::misc::prim::real reflectance) = 0;
+        virtual int setBRDFToLambertian (::picogen::real reflectance) = 0;
+        virtual int setBRDFToSpecular (::picogen::real reflectance) = 0;
 
         virtual int preethamEnable (bool enable) = 0;
-        virtual int preethamSetTurbidity (::picogen::misc::prim::real T) = 0;
-        virtual int preethamSetSunSolidAngleFactor (::picogen::misc::prim::real f) = 0;
-        virtual int preethamSetColorFilter (const ::picogen::graphics::image::color::Color &color) = 0;
-        virtual int preethamSetSunColor (const ::picogen::graphics::image::color::Color &color) = 0;
-        virtual int preethamSetSunDirection (const ::picogen::misc::geometrics::Vector3d &direction) = 0;
-        //virtual int preethamEnableFogHack (::picogen::misc::prim::real exponent, ::picogen::misc::prim::real maxDist) = 0;
-        virtual int preethamSetFogExp (::picogen::misc::prim::real exp) = 0;
-        virtual int preethamSetFogMaxDist (::picogen::misc::prim::real dist) = 0;
+        virtual int preethamSetTurbidity (::picogen::real T) = 0;
+        virtual int preethamSetSunSolidAngleFactor (::picogen::real f) = 0;
+        virtual int preethamSetColorFilter (const ::picogen::graphics::color::Color &color) = 0;
+        virtual int preethamSetSunColor (const ::picogen::graphics::color::Color &color) = 0;
+        virtual int preethamSetSunDirection (const ::picogen::geometrics::Vector3d &direction) = 0;
+        //virtual int preethamEnableFogHack (::picogen::real exponent, ::picogen::real maxDist) = 0;
+        virtual int preethamSetFogExp (::picogen::real exp) = 0;
+        virtual int preethamSetFogMaxDist (::picogen::real dist) = 0;
 
         virtual int cameraSetPositionYawPitchRoll (
-            const ::picogen::misc::geometrics::Vector3d &position,
-            ::picogen::misc::prim::real yaw,
-            ::picogen::misc::prim::real pitch,
-            ::picogen::misc::prim::real roll
+            const ::picogen::geometrics::Vector3d &position,
+            ::picogen::real yaw,
+            ::picogen::real pitch,
+            ::picogen::real roll
         ) = 0;
 
         // Object adders.
         virtual int addSphereTerminal (
-            ::picogen::misc::prim::real radius,
-            const ::picogen::misc::geometrics::Vector3d &center,
-            const ::picogen::graphics::image::color::Color &color
+            ::picogen::real radius,
+            const ::picogen::geometrics::Vector3d &center,
+            const ::picogen::graphics::color::Color &color
         ) = 0;
 
         virtual int addHeightfield (
             const ::picogen::misc::functional::Function_R2_R1 &fun,
             unsigned int resolution,
-            const ::picogen::misc::geometrics::Vector3d &center,
-            const ::picogen::misc::geometrics::Vector3d &size
+            const ::picogen::geometrics::Vector3d &center,
+            const ::picogen::geometrics::Vector3d &size
         ) = 0;
 
         virtual int addImplicitHeightfield (
             ::picogen::misc::functional::Function_R2_R1 **fun,
-            const ::picogen::misc::geometrics::Vector3d &center,
-            const ::picogen::misc::geometrics::Vector3d &size
+            const ::picogen::geometrics::Vector3d &center,
+            const ::picogen::geometrics::Vector3d &size
         ) = 0;
 };
 

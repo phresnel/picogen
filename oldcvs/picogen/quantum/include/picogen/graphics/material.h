@@ -44,12 +44,12 @@ namespace picogen {
                         // returns false  if  the  in-ray is absorbed, and if so,
                         // the out-params are undefined.
                         virtual bool randomSample (
-                            param_out (::picogen::misc::prim::real,brdf),
-                            param_out (::picogen::misc::prim::real,p),
+                            param_out (::picogen::real,brdf),
+                            param_out (::picogen::real,p),
                             param_out (bool,specular),
-                            param_out (::picogen::misc::geometrics::Ray,r_out),
-                            param_in (::picogen::misc::geometrics::Ray,r_in),
-                            param_in (::picogen::misc::geometrics::Vector3d,N)
+                            param_out (::picogen::geometrics::Ray,r_out),
+                            param_in (::picogen::geometrics::Ray,r_in),
+                            param_in (::picogen::geometrics::Vector3d,N)
                         ) const = 0;
                 };
 
@@ -57,16 +57,16 @@ namespace picogen {
                     public:
                         virtual ~IShader() {};
                         virtual void shade (
-                            image::color::Color &color,
-                            const ::picogen::misc::geometrics::Vector3d &normal,
-                            const ::picogen::misc::geometrics::Vector3d &position
+                            color::Color &color,
+                            const ::picogen::geometrics::Vector3d &normal,
+                            const ::picogen::geometrics::Vector3d &position
                         ) const = 0;
 
                         virtual void shade (
-                            /*::picogen::graphics::*/image::color::Color &color,
-                            ::picogen::misc::prim::real &L_e,
-                            const ::picogen::misc::geometrics::Vector3d &normal,
-                            const ::picogen::misc::geometrics::Vector3d &position
+                            /*::picogen::graphics::*/color::Color &color,
+                            ::picogen::real &L_e,
+                            const ::picogen::geometrics::Vector3d &normal,
+                            const ::picogen::geometrics::Vector3d &position
                         ) const {
                             // for backwards compatibility we will implement this virtual function,
                             L_e = 0.0;

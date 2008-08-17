@@ -26,13 +26,12 @@
 #define _TRANSFORMATION_H
 
 namespace picogen {
-    namespace misc {
         namespace geometrics {
 
             /// \todo rewrite whole class. it is crap.
             class Transformation {
 
-                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::real real;
                     typedef union _t_matrix {
                         struct {
                             real _11,_12,_13,_14;
@@ -359,7 +358,6 @@ namespace picogen {
             };
 
         } // namespace geometrics {
-    } //namespace misc {
 } //namespace picogen {
 
 

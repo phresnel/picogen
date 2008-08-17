@@ -44,8 +44,8 @@
 #include <picogen/picogen.h>
 
 
-using picogen::common::real;
-using picogen::common::Vector3d;
+using picogen::real;
+using picogen::geometrics::Vector3d;
 
 
 

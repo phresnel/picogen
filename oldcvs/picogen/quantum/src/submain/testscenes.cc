@@ -32,13 +32,13 @@
 
 
 
-using picogen::common::real;
-using picogen::common::Vector3d;
-using picogen::common::Ray;
-using picogen::common::Color;
-using picogen::common::intersection_t;
+using picogen::real;
+using picogen::geometrics::Vector3d;
+using picogen::geometrics::Ray;
+using picogen::graphics::color::Color;
+using picogen::graphics::structs::intersection_t;
 
-using picogen::common::Transformation;
+using picogen::geometrics::Transformation;
 
 using picogen::graphics::objects::templates::TriBIH;
 
@@ -66,22 +66,22 @@ static genBIH myGenBIH;
 
 
 class ConstantShader : public picogen::graphics::material::abstract::IShader {
-        picogen::graphics::image::color::Color color;
+        picogen::graphics::color::Color color;
     public:
         virtual ~ConstantShader() {};
-        ConstantShader (picogen::graphics::image::color::Color color) : color (color) {}
+        ConstantShader (picogen::graphics::color::Color color) : color (color) {}
         virtual void shade (
-            picogen::graphics::image::color::Color &color,
-            const picogen::misc::geometrics::Vector3d &normal,
-            const picogen::misc::geometrics::Vector3d &position
+            picogen::graphics::color::Color &color,
+            const picogen::geometrics::Vector3d &normal,
+            const picogen::geometrics::Vector3d &position
         ) const {
             color = this->color;
         }
 };
-static const ConstantShader  red (picogen::graphics::image::color::Color (1.0, 0.3, 0.3));
-static const ConstantShader  green (picogen::graphics::image::color::Color (0.3, 1.0, 0.3));
-static const ConstantShader  blue (picogen::graphics::image::color::Color (0.3, 0.3, 1.0));
-static const ConstantShader  white (picogen::graphics::image::color::Color (1.0, 1.0, 1.0));
+static const ConstantShader  red (picogen::graphics::color::Color (1.0, 0.3, 0.3));
+static const ConstantShader  green (picogen::graphics::color::Color (0.3, 1.0, 0.3));
+static const ConstantShader  blue (picogen::graphics::color::Color (0.3, 0.3, 1.0));
+static const ConstantShader  white (picogen::graphics::color::Color (1.0, 1.0, 1.0));
 
 
 struct Lambertian : public picogen::graphics::material::abstract::IBRDF {
@@ -98,7 +98,7 @@ struct Lambertian : public picogen::graphics::material::abstract::IBRDF {
         param_in (Ray,r_in),
         param_in (Vector3d,N)
     ) const {
-        using picogen::misc::constants::pi;
+        using picogen::constants::pi;
         /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
          return false;*/
         r_out.x() = r_in.x();
@@ -217,7 +217,7 @@ class PureCornell : public TestScene {
     protected:
         picogen::graphics::integrators::screen::XYIterator<
         picogen::misc::templates::surface<
-        picogen::graphics::image::color::AverageColor
+        picogen::graphics::color::AverageColor
         >,
         picogen::graphics::integrators::ray::Simple
         > renderer;
@@ -266,7 +266,7 @@ class PureCornell : public TestScene {
             renderer.path_integrator().setSky (&preetham);
 
             // setup boxen
-            using picogen::misc::geometrics::Transformation;
+            using picogen::geometrics::Transformation;
             innerbox.setShader (&white);
             box1.setTransform (
                 Transformation().setToScaling (1.0/0.5)
@@ -323,7 +323,7 @@ class Clouds : public TestScene {
     private:
         picogen::graphics::integrators::screen::XYIterator<
         picogen::misc::templates::surface<
-        picogen::graphics::image::color::AverageColor
+        picogen::graphics::color::AverageColor
         >,
         picogen::graphics::integrators::ray::Simple
         > renderer;

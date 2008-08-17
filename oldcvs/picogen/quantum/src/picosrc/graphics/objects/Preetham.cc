@@ -29,13 +29,13 @@
 
 
 using namespace picogen;
-using namespace picogen::misc::constants;
-using misc::prim::real;
-using misc::geometrics::Vector3d;
-using graphics::image::color::Color;
+using namespace picogen::constants;
+using geometrics::Vector3d;
+using graphics::color::Color;
 
 
 
+/// \todo replace orthnormalbasis_from_normal with the version from pbrt (it has no loop inside)
 static inline void orthnormalbasis_from_normal (
     param_out (Vector3d,u),
     param_out (Vector3d,v),

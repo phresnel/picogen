@@ -28,16 +28,16 @@
 struct BRDF : public picogen::graphics::material::abstract::IBRDF {
     BRDF() {}
     virtual bool randomSample (
-        param_out (picogen::misc::prim::real,brdf),
-        param_out (picogen::misc::prim::real,p),
+        param_out (picogen::real,brdf),
+        param_out (picogen::real,p),
         param_out (bool,specular),
-        param_out (picogen::misc::geometrics::Ray,r_out),
-        param_in (picogen::misc::geometrics::Ray,r_in),
-        param_in (picogen::misc::geometrics::Vector3d,N)
+        param_out (picogen::geometrics::Ray,r_out),
+        param_in (picogen::geometrics::Ray,r_in),
+        param_in (picogen::geometrics::Vector3d,N)
     ) const {
-        using picogen::misc::constants::pi;
-        using picogen::misc::prim::real;
-        using picogen::misc::geometrics::Vector3d;
+        using picogen::constants::pi;
+        using picogen::real;
+        using picogen::geometrics::Vector3d;
 
         /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
          return false;*/
@@ -63,31 +63,31 @@ static const BRDF diffuseBRDF;
 
 
 class ConstantShader : public ::picogen::graphics::material::abstract::IShader {
-        ::picogen::graphics::image::color::Color color;
+        ::picogen::graphics::color::Color color;
     public:
         virtual ~ConstantShader() {};
-        ConstantShader (::picogen::graphics::image::color::Color color) : color (color) {}
+        ConstantShader (::picogen::graphics::color::Color color) : color (color) {}
         virtual void shade (
-            ::picogen::graphics::image::color::Color &color,
-            const ::picogen::misc::geometrics::Vector3d &normal,
-            const ::picogen::misc::geometrics::Vector3d &position
+            ::picogen::graphics::color::Color &color,
+            const ::picogen::geometrics::Vector3d &normal,
+            const ::picogen::geometrics::Vector3d &position
         ) const {
             color = this->color;
         }
 };
 
 class RectLightShader : public picogen::graphics::material::abstract::IShader {
-        ::picogen::graphics::image::color::Color nonLightColor, lightColor;
-        ::picogen::misc::prim::real L_e, size, centerX, centerZ;
+        ::picogen::graphics::color::Color nonLightColor, lightColor;
+        ::picogen::real L_e, size, centerX, centerZ;
     public:
         virtual ~RectLightShader() {};
         RectLightShader (
-            ::picogen::graphics::image::color::Color nonLightColor,
-            ::picogen::graphics::image::color::Color lightColor,
-            ::picogen::misc::prim::real L_e,
-            ::picogen::misc::prim::real size,
-            ::picogen::misc::prim::real centerX,
-            ::picogen::misc::prim::real centerZ
+            ::picogen::graphics::color::Color nonLightColor,
+            ::picogen::graphics::color::Color lightColor,
+            ::picogen::real L_e,
+            ::picogen::real size,
+            ::picogen::real centerX,
+            ::picogen::real centerZ
         ) :
                 nonLightColor (nonLightColor),
                 lightColor (lightColor),
@@ -97,18 +97,18 @@ class RectLightShader : public picogen::graphics::material::abstract::IShader {
                 centerZ (centerZ) {}
 
         virtual void shade (
-            ::picogen::graphics::image::color::Color &color,
-            const ::picogen::misc::geometrics::Vector3d &normal,
-            const ::picogen::misc::geometrics::Vector3d &position
+            ::picogen::graphics::color::Color &color,
+            const ::picogen::geometrics::Vector3d &normal,
+            const ::picogen::geometrics::Vector3d &position
         ) const {
-            color = ::picogen::graphics::image::color::Color (1.0,0.0,0.0);
+            color = ::picogen::graphics::color::Color (1.0,0.0,0.0);
         }
 
         virtual void shade (
-            ::picogen::graphics::image::color::Color &color,
-            ::picogen::misc::prim::real &L_e,
-            const ::picogen::misc::geometrics::Vector3d &normal,
-            const ::picogen::misc::geometrics::Vector3d &position
+            ::picogen::graphics::color::Color &color,
+            ::picogen::real &L_e,
+            const ::picogen::geometrics::Vector3d &normal,
+            const ::picogen::geometrics::Vector3d &position
         ) const {
             if (fabs (position[0]-centerX) <= size && fabs (position[2]-centerZ) <= size) {
                 L_e = this->L_e;
@@ -120,13 +120,13 @@ class RectLightShader : public picogen::graphics::material::abstract::IShader {
         }
 };
 
-static const ConstantShader  red (::picogen::graphics::image::color::Color (1.0, 0.3, 0.3));
-static const ConstantShader  green (::picogen::graphics::image::color::Color (0.3, 1.0, 0.3));
-static const ConstantShader  blue (::picogen::graphics::image::color::Color (0.3, 0.3, 1.0));
-static const ConstantShader  white (::picogen::graphics::image::color::Color (1.0, 1.0, 1.0));
+static const ConstantShader  red (::picogen::graphics::color::Color (1.0, 0.3, 0.3));
+static const ConstantShader  green (::picogen::graphics::color::Color (0.3, 1.0, 0.3));
+static const ConstantShader  blue (::picogen::graphics::color::Color (0.3, 0.3, 1.0));
+static const ConstantShader  white (::picogen::graphics::color::Color (1.0, 1.0, 1.0));
 static const RectLightShader whiteL (
-    ::picogen::graphics::image::color::Color (1.0, 1.0, 1.0),
-    ::picogen::graphics::image::color::Color (1.0, 1.0, 1.0), 10.0,
+    ::picogen::graphics::color::Color (1.0, 1.0, 1.0),
+    ::picogen::graphics::color::Color (1.0, 1.0, 1.0), 10.0,
     0.25,
     0.0,
     0.0
@@ -206,7 +206,7 @@ namespace picogen {
             }
 
             bool AABox::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
-                using ::picogen::misc::prim::real;
+                using ::picogen::real;
 
                 const real wx = ray.w() [0];
                 const real wy = ray.w() [1];
@@ -225,7 +225,7 @@ namespace picogen {
 
 
                 intersection.color = Color (1.0,1.0,1.0);
-                intersection.side  = misc::constants::outside;
+                intersection.side  = constants::outside;
                 //intersection.brdf  = &brdf;
                 intersection.L_e   = 0.0;
 

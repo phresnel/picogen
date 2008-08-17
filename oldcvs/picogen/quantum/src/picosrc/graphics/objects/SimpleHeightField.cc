@@ -25,10 +25,10 @@
 
 #include <picogen/picogen.h>
 
-typedef picogen::misc::prim::real real;
-typedef picogen::misc::geometrics::Vector3d Vector3d;
-typedef picogen::misc::geometrics::Ray Ray;
-typedef picogen::misc::geometrics::BoundingBox BoundingBox;
+typedef picogen::real real;
+typedef picogen::geometrics::Vector3d Vector3d;
+typedef picogen::geometrics::Ray Ray;
+typedef picogen::geometrics::BoundingBox BoundingBox;
 typedef picogen::graphics::material::abstract::IBRDF IBRDF;
 typedef picogen::graphics::structs::intersection_t intersection_t;
 
@@ -203,7 +203,7 @@ namespace picogen {
 
 
 
-            ::picogen::misc::geometrics::BoundingBox SimpleHeightField::getBoundingBox() const {
+            ::picogen::geometrics::BoundingBox SimpleHeightField::getBoundingBox() const {
                 return m_scaleBox;
             }
 
@@ -287,8 +287,8 @@ namespace picogen {
                 // get min and max value of function
                 int updateDisplay = 99999;
                 fprintf (stderr, "  determining bounds of height function %xP\n", (unsigned int) heightFunc);
-                real tmin = misc::constants::real_max;
-                real tmax = -misc::constants::real_max;
+                real tmin = constants::real_max;
+                real tmax = -constants::real_max;
                 if (boundsGuessAccuracy>0.9f) {
                     fprintf (stderr, "   doing this at full accuracy (requested was %.1f%%)\n", boundsGuessAccuracy*100.0f);
                     for (v = 0; v < size; v++) {
@@ -396,8 +396,8 @@ namespace picogen {
                 // get min and max value of function
                 int updateDisplay = 99999;
                 fprintf (stderr, "  determining bounds of height function %xP\n", (unsigned int) heightFunc);
-                real tmin = misc::constants::real_max;
-                real tmax = -misc::constants::real_max;
+                real tmin = constants::real_max;
+                real tmax = -constants::real_max;
                 if (boundsGuessAccuracy>0.9f) {
                     fprintf (stderr, "   doing this at full accuracy (requested was %.1f%%)\n", boundsGuessAccuracy*100.0f);
                     for (v = 0; v < size; v++) {
@@ -504,7 +504,7 @@ namespace picogen {
                 param_out (structs::intersection_t, intersection),
                 int u, int v,
                 real x1, real z1, real x2, real z2,
-                param_in (misc::geometrics::Ray, ray)
+                param_in (geometrics::Ray, ray)
             ) const {
                 const bool odd = (u & 1) == (v & 1);
                 const int va = (v + 1) * m_size;
@@ -526,7 +526,7 @@ namespace picogen {
                 //> thus we're not going to optimize the if-bodies below
                 int ic;
                 if (0 != (ic=raytri_intersect (ray, A, B, odd ? C : D, t, tu, tv, normal))) {
-                    intersection.side = misc::constants::outside;
+                    intersection.side = constants::outside;
                     intersection.t = t;
                     intersection.normal = Vector3d (normal[0], normal[1], normal[2]) * (ic>0?1:-1);
                     intersection.brdf = m_pBRDF;
@@ -536,7 +536,7 @@ namespace picogen {
 
 
                 if (0 != (ic=raytri_intersect (ray, C, odd ? B : A, D, t, tu, tv, normal))) {
-                    intersection.side = misc::constants::outside;
+                    intersection.side = constants::outside;
                     intersection.t = t;
                     intersection.normal = Vector3d (normal[0], normal[1], normal[2]) * (ic>0?1:-1);
                     intersection.brdf = m_pBRDF;
@@ -553,9 +553,9 @@ namespace picogen {
                 param_out (structs::intersection_t, intersection),
                 real au, real av,
                 real bu, real bv,
-                param_in (misc::geometrics::Ray, ray)
+                param_in (geometrics::Ray, ray)
             ) const {
-                using namespace misc::constants;
+                using namespace constants;
 
                 int icode = 0;
 
@@ -629,7 +629,7 @@ namespace picogen {
                         ray.x() + ray.w() * intersection.t
                     );
                 } else {
-                    intersection.color = image::color::Color (1.0, 1.0, 1.0);
+                    intersection.color = color::Color (1.0, 1.0, 1.0);
                 }
 
 
@@ -655,7 +655,7 @@ namespace picogen {
 
 
             bool SimpleHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
-                using namespace misc::constants;
+                using namespace constants;
 
                 //>> intersect bounding box; eventually return
                 real t_min, t_max;
@@ -699,7 +699,7 @@ namespace picogen {
 
 
             bool SimpleHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray), real t_min, real t_max) const {
-                using namespace misc::constants;
+                using namespace constants;
 
                 t_min = t_min < epsilon ? epsilon : t_min;
                 if (t_min > t_max)
@@ -739,7 +739,7 @@ namespace picogen {
                 param_out (structs::intersection_t, intersection),
                 int u, int v,
                 real x1, real z1, real x2, real z2,
-                param_in (misc::geometrics::Ray, ray)
+                param_in (geometrics::Ray, ray)
             )*/
 
             bool SimpleHeightField::intersectRectangle (
@@ -775,7 +775,7 @@ namespace picogen {
                                     ray.x() + ray.w() * intersection.t
                                 );
                             } else {
-                                intersection.color = image::color::Color (1.0, 1.0, 1.0);
+                                intersection.color = color::Color (1.0, 1.0, 1.0);
                             }
                             return true;
                         }

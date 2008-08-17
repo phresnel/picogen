@@ -26,14 +26,14 @@
 
 #include <picogen/picogen.h>
 
-using picogen::misc::prim::real;
-using picogen::misc::geometrics::Vector3d;
-using picogen::misc::geometrics::Ray;
-using picogen::misc::geometrics::BoundingBox;
+using picogen::real;
+using picogen::geometrics::Vector3d;
+using picogen::geometrics::Ray;
+using picogen::geometrics::BoundingBox;
 using picogen::graphics::material::abstract::IBRDF;
 using picogen::graphics::structs::intersection_t;
 using picogen::graphics::objects::abstract::IIntersectable;
-using picogen::graphics::image::color::Color;
+using picogen::graphics::color::Color;
 
 
 using std::string;
@@ -43,16 +43,16 @@ using namespace picogen::misc::exceptions;
 struct BRDF : public picogen::graphics::material::abstract::IBRDF {
     BRDF() {}
     virtual bool randomSample (
-        param_out (picogen::misc::prim::real,brdf),
-        param_out (picogen::misc::prim::real,p),
+        param_out (picogen::real,brdf),
+        param_out (picogen::real,p),
         param_out (bool,specular),
-        param_out (picogen::misc::geometrics::Ray,r_out),
-        param_in (picogen::misc::geometrics::Ray,r_in),
-        param_in (picogen::misc::geometrics::Vector3d,N)
+        param_out (picogen::geometrics::Ray,r_out),
+        param_in (picogen::geometrics::Ray,r_in),
+        param_in (picogen::geometrics::Vector3d,N)
     ) const {
-        using picogen::misc::constants::pi;
-        using picogen::misc::prim::real;
-        using picogen::misc::geometrics::Vector3d;
+        using picogen::constants::pi;
+        using picogen::real;
+        using picogen::geometrics::Vector3d;
 
         /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
          return false;*/
@@ -332,7 +332,7 @@ namespace picogen {
                     if (u<eps || v<eps || u> (1.0-eps) || v> (1.0-eps)) {
                         intersection.color = Color (1.0,1.0,1.0);
                         intersection.t     = 0.1;
-                        intersection.side  = misc::constants::outside;
+                        intersection.side  = constants::outside;
                         intersection.normal = Vector3d (0,1,0);
                         intersection.brdf  = &brdf;
                         intersection.L_e   = 1.0;
@@ -344,7 +344,7 @@ namespace picogen {
                 if (depth > 0.0) {
                     intersection.color = p.getColor();
                     intersection.t     = depth;
-                    intersection.side  = misc::constants::outside;
+                    intersection.side  = constants::outside;
                     intersection.normal = p.getNormal();
                     intersection.brdf  = &brdf;
                     intersection.L_e   = 0.0;

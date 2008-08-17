@@ -27,14 +27,12 @@
 
 namespace picogen {
     namespace common {
-        typedef ::picogen::misc::prim::real real;
+        typedef ::picogen::geometrics::Vector3d Vector3d;
+        typedef ::picogen::geometrics::Ray Ray;
+        typedef ::picogen::geometrics::BoundingBox BoundingBox;
+        typedef ::picogen::geometrics::Transformation Transformation;
 
-        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-        typedef ::picogen::misc::geometrics::Ray Ray;
-        typedef ::picogen::misc::geometrics::BoundingBox BoundingBox;
-        typedef ::picogen::misc::geometrics::Transformation Transformation;
-
-        typedef ::picogen::graphics::image::color::Color Color;
+        typedef ::picogen::graphics::color::Color Color;
         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
         typedef ::picogen::graphics::structs::intersection_t intersection_t;
 

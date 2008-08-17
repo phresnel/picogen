@@ -54,8 +54,8 @@ namespace picogen {
                     XRT_CALL_STACK_POP();
                 }
 
-                graphics::image::color::Color Simple::L_i (param_in (Ray,ray), bool specularOrFirst, param_out (intersection_t,primaryIntersection), unsigned int max) {
-                    using namespace misc::constants;
+                graphics::color::Color Simple::L_i (param_in (Ray,ray), bool specularOrFirst, param_out (intersection_t,primaryIntersection), unsigned int max) {
+                    using namespace constants;
 
                     primaryIntersection.t = -1;
                     intersection_t I;

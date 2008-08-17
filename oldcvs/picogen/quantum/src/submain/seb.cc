@@ -31,10 +31,10 @@
 #include <picogen/experimental/ShaderCC_GCC.h>
 #include <picogen/compile_info.h>
 
-using picogen::misc::prim::real;
-using picogen::misc::geometrics::Vector3d;
-using picogen::misc::geometrics::Ray;
-using picogen::graphics::image::color::Color;
+using picogen::real;
+using picogen::geometrics::Vector3d;
+using picogen::geometrics::Ray;
+using picogen::graphics::color::Color;
 using picogen::graphics::structs::intersection_t;
 
 /*
@@ -161,7 +161,7 @@ struct Lambertian : public picogen::graphics::material::abstract::IBRDF {
         param_in (Ray,r_in),
         param_in (Vector3d,N)
     ) const {
-        using picogen::misc::constants::pi;
+        using picogen::constants::pi;
         /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
          return false;*/
         r_out.x() = r_in.x();
@@ -244,7 +244,7 @@ public:
         param_in (Ray,r_in),
         param_in (Vector3d,N)
     ) const {
-        using picogen::misc::constants::pi;
+        using picogen::constants::pi;
 
         r_out.x() = r_in.x();
         //real f = 0.5+0.4*sin( r_in.x()[0]*0.05 );
@@ -278,12 +278,12 @@ public:
 
 void insert_quad (
     picogen::graphics::objects::abstract::ITriScene *scene,
-    picogen::misc::geometrics::Vector3d base,
-    picogen::misc::prim::real radius,
-    picogen::misc::geometrics::Vector3d &A,
-    picogen::misc::geometrics::Vector3d &B,
-    picogen::misc::geometrics::Vector3d &C,
-    picogen::misc::geometrics::Vector3d &D
+    picogen::geometrics::Vector3d base,
+    picogen::real radius,
+    picogen::geometrics::Vector3d &A,
+    picogen::geometrics::Vector3d &B,
+    picogen::geometrics::Vector3d &C,
+    picogen::geometrics::Vector3d &D
 ) {
     scene->insert (base+A*radius, base+B*radius, base+C*radius);
     scene->insert (base+B*radius, base+D*radius, base+C*radius);
@@ -296,12 +296,12 @@ void insert_sphere (
     picogen::graphics::objects::abstract::ITriScene *scene,
     int detail,
     picogen::misc::functions::abstract::vector_to_scalar *function,
-    picogen::misc::geometrics::Vector3d center,
-    picogen::misc::prim::real radius,
+    picogen::geometrics::Vector3d center,
+    picogen::real radius,
     unsigned int mask = 0xFFFFFFFF
 ) {
-    using picogen::misc::prim::real;
-    using picogen::misc::geometrics::Vector3d;
+    using picogen::real;
+    using picogen::geometrics::Vector3d;
     // hmm, how do we write as less as possible ...
     const static real uv[6][2][3] = { // have six pairs of u/v-axes
         { { 1, 0, 0 }, { 0, 0, -1 } },
@@ -397,12 +397,12 @@ void insert_cube (
     picogen::graphics::objects::abstract::ITriScene *scene,
     int detail,
     picogen::misc::functions::abstract::vector_to_scalar *function,
-    picogen::misc::geometrics::Vector3d center,
-    picogen::misc::prim::real radius,
+    picogen::geometrics::Vector3d center,
+    picogen::real radius,
     unsigned int mask = 0xFFFFFFFF
 ) {
-    using picogen::misc::prim::real;
-    using picogen::misc::geometrics::Vector3d;
+    using picogen::real;
+    using picogen::geometrics::Vector3d;
     // hmm, how do we write as less as possible ...
     const static real uv[6][2][3] = { // have six pairs of u/v-axes
         { { 1, 0, 0 }, { 0, 0, -1 } },
@@ -504,12 +504,12 @@ class WaterShader : public picogen::graphics::material::abstract::IShader {
     public:
         virtual ~WaterShader() {};
         virtual void Shade (
-            picogen::graphics::image::color::Color &color,
-            const picogen::misc::geometrics::Vector3d &normal,
-            const picogen::misc::geometrics::Vector3d &position
+            picogen::graphics::color::Color &color,
+            const picogen::geometrics::Vector3d &normal,
+            const picogen::geometrics::Vector3d &position
         ) const {
-            using picogen::graphics::image::color::Color;
-            using picogen::misc::prim::real;
+            using picogen::graphics::color::Color;
+            using picogen::real;
             const real albedo = 0.7;
             //const Color A(0.7,1.0,0.9);
             const Color A (1.0,1.0,1.0);
@@ -646,15 +646,15 @@ int main_seb (int argc, char *argv[]) {
         // setup screen and rendersystem
         // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
         using namespace picogen;
-        using misc::prim::real;
-        using misc::geometrics::Transformation;
+        using real;
+        using geometrics::Transformation;
         const real planet_radius = 100000;//12000*1000;
         bool useAA = true;
         const int WIDTH = 1280,//-(1280/4),
                           HEIGHT = 1024;//-(512/4);
         fprintf (stderr, "Requested resolution is %ix%i; AA is %s\n", WIDTH, HEIGHT, useAA?"on":"off");
         graphics::samplers::screen::XYIterator<
-        misc::templates::surface<graphics::image::color::AverageColor>,
+        misc::templates::surface<graphics::color::AverageColor>,
         graphics::samplers::ray::Simple
         > renderer;
 

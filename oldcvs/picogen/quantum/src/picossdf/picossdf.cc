@@ -140,8 +140,8 @@ PicoSSDF::parse_err PicoSSDF::pop_block() {
 
 static const picogen::common::Vector3d scanVector3d (const std::string &str, unsigned int &index) {
     using namespace std;
-    using picogen::misc::prim::real;
-    using picogen::misc::geometrics::Vector3d;
+    using picogen::real;
+    using picogen::geometrics::Vector3d;
     index = 0;
     string tmp;
     real ret [3];
@@ -171,9 +171,9 @@ static const picogen::common::Vector3d scanVector3d (const std::string &str, uns
 PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&line) {
     // TODO: Refactor the code in this function with some calls like 'parseVector', 'parseReal' and so forth.
     using namespace ::std;
-    using ::picogen::misc::prim::real;
-    using ::picogen::misc::geometrics::Vector3d;
-    using ::picogen::graphics::image::color::Color;
+    using ::picogen::real;
+    using ::picogen::geometrics::Vector3d;
+    using ::picogen::graphics::color::Color;
     using ::picogen::misc::functional::Function_R2_R1;
 
     // Step 1: Read Parameters.
@@ -505,9 +505,9 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
 
 PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, const char *&line) {
     using namespace ::std;
-    using ::picogen::misc::prim::real;
-    using ::picogen::misc::geometrics::Vector3d;
-    using ::picogen::graphics::image::color::Color;
+    using ::picogen::real;
+    using ::picogen::geometrics::Vector3d;
+    using ::picogen::graphics::color::Color;
 
     string type;
     ++line; // Eat '='

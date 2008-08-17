@@ -31,8 +31,8 @@ namespace picogen {
         namespace cameras {
             namespace abstract {
                 class ICamera {
-                        typedef ::picogen::misc::prim::real real;
-                        typedef ::picogen::misc::geometrics::Ray Ray;
+                        typedef ::picogen::real real;
+                        typedef ::picogen::geometrics::Ray Ray;
 
                     public:
                         virtual Ray operator () (const real u, const real v) const = 0;
@@ -40,9 +40,9 @@ namespace picogen {
             };
 
             class FromPointToRect : public abstract::ICamera {
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
 
                     real m_width, m_height, m_Z;
                     Vector3d m_position;
@@ -75,9 +75,9 @@ namespace picogen {
                     }
             };
             class FromPointToRect_Cube : public abstract::ICamera {
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
 
                     real m_width, m_height, m_Z;
                     Vector3d m_position;
@@ -126,9 +126,9 @@ namespace picogen {
                     }
             };
             class FromPointToRect_Cylinder : public abstract::ICamera {
-                    typedef ::picogen::misc::prim::real real;
-                    typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                    typedef ::picogen::misc::geometrics::Ray Ray;
+                    typedef ::picogen::real real;
+                    typedef ::picogen::geometrics::Vector3d Vector3d;
+                    typedef ::picogen::geometrics::Ray Ray;
 
                     real m_width, m_height, m_Z;
                     Vector3d m_position;
@@ -148,7 +148,7 @@ namespace picogen {
                     }
                     Ray operator () (const real u, const real v) const {
                         Ray ray;
-                        const real a = -u*2*::picogen::misc::constants::pi;
+                        const real a = -u*2*::picogen::constants::pi;
                         ray.w() [0] = m_Z*cos (a);
                         ray.w() [1] = - (v*m_height-0.5*m_height);
                         ray.w() [2] = m_Z*sin (a);

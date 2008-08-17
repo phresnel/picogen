@@ -32,9 +32,9 @@
 class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
     public:
         typedef ::picogen::graphics::material::abstract::IShader IShader;
-        typedef ::picogen::misc::prim::real real;
-        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-        typedef ::picogen::graphics::image::color::Color Color;
+        typedef ::picogen::real real;
+        typedef ::picogen::geometrics::Vector3d Vector3d;
+        typedef ::picogen::graphics::color::Color Color;
 
         bool isValid() const {return false;}
         virtual void shade (
@@ -56,8 +56,8 @@ class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
 // WARNING: this class strongly depends on the existence of g++ and the bash!!!
 class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
         typedef ::picogen::graphics::material::abstract::IShader IShader;
-        typedef ::picogen::graphics::image::color::Color Color;
-        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+        typedef ::picogen::graphics::color::Color Color;
+        typedef ::picogen::geometrics::Vector3d Vector3d;
         ::std::string fileName;
         void *fileHandle;
         bool  valid;
@@ -81,8 +81,8 @@ class ShaderCC_GCC : public ::picogen::graphics::material::abstract::IShader {
             string prologue (
                 "#include <stdio.h>\n"
                 "#include <picogen/picogen.h>\n"
-                "using picogen::graphics::image::color::Color;\n"
-                "using picogen::misc::geometrics::Vector3d;\n"
+                "using picogen::graphics::color::Color;\n"
+                "using picogen::geometrics::Vector3d;\n"
                 "#define publish(name) extern \\\"C\\\" picogen::graphics::material::abstract::IShader* init_##name(){ return new name(); }\n"
                 "#define default(name) extern \\\"C\\\" picogen::graphics::material::abstract::IShader* init(){ return new name(); }\n"
                 "#define shade()       virtual void Shade( Color &color, const Vector3d &normal, const Vector3d &position ) const\n"

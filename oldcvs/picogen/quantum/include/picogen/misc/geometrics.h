@@ -27,12 +27,11 @@
 #define _GEOMETRICS_H
 
 namespace picogen {
-    namespace misc {
         namespace geometrics {
 
             class Vector3d {
                 private:
-                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::real real;
                     real m[3];
                 public:
 
@@ -139,7 +138,7 @@ namespace picogen {
 
             class Ray {
                 private:
-                    typedef ::picogen::misc::prim::real real;
+                    typedef ::picogen::real real;
                 private:
                     Vector3d position, direction;
                 public:
@@ -197,7 +196,6 @@ namespace picogen {
 
             class BoundingBox {
                 private:
-                    typedef prim::real real;
                     Vector3d bbmin,bbmax;
                 public:
                     BoundingBox() :
@@ -335,13 +333,12 @@ namespace picogen {
                         t_min = tmin;
                         t_max = tmax;
 
-                        using namespace ::picogen::misc::constants;
+                        using namespace ::picogen::constants;
                         return t_min>epsilon || t_max > epsilon;
                     }
             };
 
         } // namespace geometrics {
-    } //namespace misc {
 } //namespace picogen {
 #include "geometrics/Transformation.h"
 

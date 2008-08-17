@@ -35,7 +35,7 @@ namespace picogen {
             namespace abstract {
                 class IIntersectable {
                     private:
-                        typedef ::picogen::misc::geometrics::Ray Ray;
+                        typedef ::picogen::geometrics::Ray Ray;
                         typedef ::picogen::graphics::structs::intersection_t intersection_t;
                     public:
                         virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const = 0;
@@ -58,7 +58,7 @@ namespace picogen {
                 //> similar to IScene, but constrained to naked triangles
                 class ITriScene : public IAccelerationStructure {
                     private:
-                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::geometrics::Vector3d Vector3d;
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                     public:
                         virtual void setBRDF (const IBRDF *brdf) = 0;
@@ -70,10 +70,10 @@ namespace picogen {
 
                 class ISky {
                     private:
-                        typedef ::picogen::misc::geometrics::Vector3d Vector3d;
-                        typedef ::picogen::misc::geometrics::Ray Ray;
-                        typedef ::picogen::graphics::image::color::Color Color;
-                        typedef ::picogen::misc::prim::real real;
+                        typedef ::picogen::geometrics::Vector3d Vector3d;
+                        typedef ::picogen::geometrics::Ray Ray;
+                        typedef ::picogen::graphics::color::Color Color;
+                        typedef ::picogen::real real;
                     public:
                         virtual ~ISky() {};
                         virtual void shade (param_out (Color,color), param_in (Ray,ray)) const = 0;

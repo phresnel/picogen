@@ -52,7 +52,7 @@ namespace picogen {
                         param_in (Ray,r_in),
                         param_in (Vector3d,N)
                 ) const {
-                    using picogen::misc::constants::pi;
+                    using picogen::constants::pi;
                     if ((static_cast<real> (rand()) / static_cast<real> (RAND_MAX)) > reflectance)
                         return false;
                     r_out.x() = r_in.x();

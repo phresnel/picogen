@@ -58,10 +58,10 @@ namespace picogen {
                     const ::picogen::common::Vector3d &a,
                     const ::picogen::common::Vector3d &b,
                     const ::picogen::common::Vector3d &c,
-                    ::picogen::common::real &t,
-                    ::picogen::common::real &u,
-                    ::picogen::common::real &v,
-                    ::picogen::common::Vector3d &normal
+                    ::picogen::real &t,
+                    ::picogen::real &u,
+                    ::picogen::real &v,
+                    ::picogen::geometrics::Vector3d &normal
                 ) const {
                     Vector3d vect0, vect1, nvect;
                     real det, inv_det;
@@ -150,7 +150,7 @@ namespace picogen {
                     real t_max,
                     param_in (Ray,ray)
                 ) const {
-                    using namespace misc::constants;
+                    using namespace constants;
 
                     /*if( t_min > t_max ){
                      return false;
@@ -165,7 +165,7 @@ namespace picogen {
                                 intersection.side = outside;
                                 intersection.t = t_min;
                                 intersection.normal = -ray.w();
-                                intersection.color = image::color::Color (
+                                intersection.color = color::Color (
                                                          (double) rand() / (double) RAND_MAX,
                                                          (double) rand() / (double) RAND_MAX,
                                                          (double) rand() / (double) RAND_MAX
@@ -194,7 +194,7 @@ namespace picogen {
                                     intersection.normal = N;
                                 }
                                 intersection.t = t;
-                                intersection.color = image::color::Color (1,1,1);
+                                intersection.color = color::Color (1,1,1);
                                 intersection.brdf = BRDF;
                                 intersection.L_e = 0.0;
                                 any = true;
@@ -273,7 +273,7 @@ namespace picogen {
 
 
                 TriBIH_Member(bool)::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
-                    using namespace misc::constants;
+                    using namespace constants;
                     real t_min, t_max;
                     const bool bbhit = AABB.intersect (t_min, t_max, ray);
                     if (!bbhit)
@@ -283,9 +283,9 @@ namespace picogen {
                         return false;
                     intersection.t = real_max;
                     if (0 != shader)
-                        shader->shade (intersection.color,intersection.normal,ray.x() +ray.w() *intersection.t);// = image::color::Color(1.0,0.9,0.8);//image::color::Color(1.0,0.0,0.0)*f + image::color::Color(0.0,0.0,1.0)*(1.0-f);
+                        shader->shade (intersection.color,intersection.normal,ray.x() +ray.w() *intersection.t);// = color::Color(1.0,0.9,0.8);//color::Color(1.0,0.0,0.0)*f + color::Color(0.0,0.0,1.0)*(1.0-f);
                     else
-                        intersection.color = image::color::Color (1.0,1.0,1.0);
+                        intersection.color = color::Color (1.0,1.0,1.0);
                     return intersect (intersection, BIH, t_min, t_max, ray);
                 }
 
@@ -580,7 +580,7 @@ namespace picogen {
 
 
                 TriBIH_Member(bool)::bih_build_node::build (bih_node **bih, t_triangle **triangles) {
-                    using namespace misc::constants;
+                    using namespace constants;
 
                     fprintf (stderr, "building bih-structure %xP{\n", (unsigned int) this);
 

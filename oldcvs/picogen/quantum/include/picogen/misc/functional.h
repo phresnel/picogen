@@ -61,7 +61,7 @@ namespace picogen {
                         return message;
                     }
             };
-            typedef ::picogen::misc::prim::real real_t;
+            typedef ::picogen::real real_t;
 
 #if 0
 // below container is too slow to be used in practice for BasicFunction-calls
