@@ -205,10 +205,15 @@ namespace picogen {
                             bbmax (-constants::real_max,-constants::real_max,-constants::real_max) {
                     }
 
-                    BoundingBox (param_in (Vector3d,a), param_in (Vector3d,b)) :
-                            bbmin (a),
-                            bbmax (b) {
+                    BoundingBox (const Vector3d & bbmin, const Vector3d & bbmax) :
+                            bbmin (bbmin),
+                            bbmax (bbmax) {
                     }
+
+                    /*BoundingBox (Vector3d bbmin, Vector3d bbmax) :
+                            bbmin (bbmin),
+                            bbmax (bbmax) {
+                    }*/
 
                     void reset() {
                         bbmin = Vector3d (constants::real_max,constants::real_max,constants::real_max);
@@ -235,12 +240,32 @@ namespace picogen {
                         return bbmax;
                     }
 
-                    const void setMin( const Vector3d &b ) {
+                    const void setMin (const Vector3d &b) {
                         bbmin = b;
                     }
 
-                    const void setMax( const Vector3d &b ) {
+                    const void setMax (const Vector3d &b) {
                         bbmax = b;
+                    }
+
+                    const real computeWidth () const {
+                        return bbmax[0] - bbmin[0];
+                    }
+
+                    const real computeHeight () const {
+                        return bbmax[1] - bbmin[1];
+                    }
+
+                    const real computeDepth () const {
+                        return bbmax[2] - bbmin[2];
+                    }
+
+                    const real computeSize (unsigned int axis) const {
+                        return bbmax[axis] - bbmin[axis];
+                    }
+
+                    const Vector3d computeCenter () const {
+                        return (bbmin + bbmax) * 0.5;
                     }
 
                     void update (param_in (Vector3d, x)) {
@@ -309,7 +334,9 @@ namespace picogen {
 
                         t_min = tmin;
                         t_max = tmax;
-                        return true;
+
+                        using namespace ::picogen::misc::constants;
+                        return t_min>epsilon || t_max > epsilon;
                     }
             };
 
