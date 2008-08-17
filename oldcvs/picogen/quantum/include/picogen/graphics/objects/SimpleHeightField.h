@@ -37,6 +37,9 @@ namespace picogen {
 
             class SimpleHeightField : public ::picogen::graphics::objects::abstract::IIntersectable {
                     /// \todo de-uglify typenames
+                protected:
+                    typedef unsigned short t_heightVal;
+
                 private:
                     friend class QuadtreeHeightField;
 
@@ -49,8 +52,6 @@ namespace picogen {
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
 
 
-
-                    typedef unsigned short t_heightVal;
                     BoundingBox m_scaleBox;
                     real m_scaleSize[3];
                     real m_vScale;
@@ -64,14 +65,6 @@ namespace picogen {
                     real m_scaleSize_mul_invertHMapSize[3];
                 private:
                     void updateOptimizerVars();
-                    inline real htor (t_heightVal v) const {
-                        return (real (v) / real (0xFFFF));
-                    }
-                    inline t_heightVal rtoh (real v) const {
-                        static const real maxF = real (0xFFFE);
-                        const real f = misc::prim::real (v) * maxF;
-                        return t_heightVal (f < 0.0 ? 0 : f >= maxF ? maxF : f);
-                    }
 
                     real smoothedHeightFunc (const ::picogen::misc::functions::abstract::uv_to_scalar *heightFunc, real u, real v, real cellSizeX, real cellSizeY);
                     real smoothedHeightFunc (const ::picogen::misc::functional::Function_R2_R1 *heightFunc, real u, real v, real cellSizeX, real cellSizeY);
@@ -87,6 +80,30 @@ namespace picogen {
                         real bu, real bv,
                         param_in (Ray, ray)) const;
                     inline void getVoxelTriangles (int u, int v, Vector3d A[], Vector3d B[]) const;
+
+
+                protected:
+
+                    static inline real htor (t_heightVal v) {
+                        return (real (v) / real (0xFFFF));
+                    }
+
+                    static inline t_heightVal rtoh (real v) {
+                        static const real maxF = real (0xFFFE);
+                        const real f = misc::prim::real (v) * maxF;
+                        return t_heightVal (f < 0.0 ? 0 : f >= maxF ? maxF : f);
+                    }
+
+
+                    bool intersect (param_out (intersection_t, intersection), param_in (Ray, ray), real min_t, real max_t) const;
+                    bool intersectRectangle (param_out (intersection_t, intersection), param_in (Ray, ray),
+                        unsigned int Ax, unsigned int Az, unsigned int Bx, unsigned int Bz) const;
+                    BoundingBox getBoundingBox() const;
+
+                    //t_heightVal *m_pField;
+                    t_heightVal getHeight (unsigned int u, unsigned int v) const;
+                    unsigned int getSize() const;
+
 
                 public:
                     SimpleHeightField();
