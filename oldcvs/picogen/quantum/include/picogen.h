@@ -168,6 +168,17 @@ namespace picogen {
                     IBRDF const *brdf;
                     ::picogen::real L_e;
             };
+            struct sample {
+                const unsigned int x, y;
+                const real fx, fy;
+                const geometrics::Ray cameraRay;
+
+                intersection_t *primaryIntersection;
+                color::Color color;
+
+                sample (unsigned int x, unsigned int y, real fx, real fy, geometrics::Ray cameraRay)
+                : x(x), y(y), fx(fx), fy(fy), cameraRay(cameraRay), primaryIntersection (0), color() {}
+            };
         }
     }
 }
@@ -176,6 +187,7 @@ namespace picogen {
 #include <picogen/misc/functional.h>
 
 #include <picogen/graphics/cameras.h>
+#include <picogen/graphics/film.h>
 #include <picogen/graphics/objects.h>
 #include <picogen/graphics/integrators.h>
 
