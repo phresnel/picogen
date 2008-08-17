@@ -219,7 +219,6 @@ class PureCornell : public TestScene {
         picogen::misc::templates::surface<
         picogen::graphics::image::color::AverageColor
         >,
-        picogen::graphics::cameras::FromPointToRect,
         picogen::graphics::samplers::ray::Simple
         > renderer;
         int width, height;
@@ -243,7 +242,9 @@ class PureCornell : public TestScene {
             this->width  = width;
             this->height = height;
             // setup screen and camera
-            renderer.camera().defineCamera ( (real) width/ (real) height, 1.0, 0.5);
+            ::picogen::graphics::cameras::FromPointToRect *fptr = new ::picogen::graphics::cameras::FromPointToRect;
+            fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
+            renderer.setCamera (fptr);
             renderer.surface().reset (width*2, height*2);
 
             // setup camera transform
@@ -324,7 +325,6 @@ class Clouds : public TestScene {
         picogen::misc::templates::surface<
         picogen::graphics::image::color::AverageColor
         >,
-        picogen::graphics::cameras::FromPointToRect_Cylinder,
         picogen::graphics::samplers::ray::Simple
         > renderer;
         int width, height;
@@ -347,7 +347,9 @@ class Clouds : public TestScene {
             this->width  = width;
             this->height = height;
             // setup screen and camera
-            renderer.camera().defineCamera ( (1.0* (real) width) / (real) height, 2.0, 1.0);
+            ::picogen::graphics::cameras::FromPointToRect_Cylinder *fptr = new ::picogen::graphics::cameras::FromPointToRect_Cylinder;
+            fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
+            renderer.setCamera (fptr);
             renderer.surface().reset (width*2, height*2);
 
             // setup camera transform

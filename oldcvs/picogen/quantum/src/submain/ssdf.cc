@@ -191,7 +191,6 @@ class SSDFScene : public Scene, public SSDFBackend {
             ::picogen::misc::templates::surface<
                 ::picogen::graphics::image::color::AverageColor
             >,
-            ::picogen::graphics::cameras::FromPointToRect,
             ::picogen::graphics::samplers::ray::Simple
         > renderer;
         int width, height;
@@ -578,6 +577,9 @@ class SSDFScene : public Scene, public SSDFBackend {
                 delete it->second;
             }
             brdfMap.clear();
+
+            if (0 != renderer.getCamera())
+                delete renderer.getCamera();
         }
 
 
@@ -595,7 +597,6 @@ class SSDFScene : public Scene, public SSDFBackend {
             this->width  = width;
             this->height = height;
             // setup screen and camera
-            renderer.camera().defineCamera ( (real) width/ (real) height, 1.0, 0.85);
             renderer.surface().reset (width*antiAliasingWidth, height*antiAliasingWidth);
 
             // setup and recognize sky
@@ -606,6 +607,10 @@ class SSDFScene : public Scene, public SSDFBackend {
             //} else {
               //  renderer.path_integrator().setSky (0);
             //}
+
+            ::picogen::graphics::cameras::FromPointToRect *fptr = new ::picogen::graphics::cameras::FromPointToRect;
+            fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
+            renderer.setCamera (fptr);
 
             // setup boxen
             //box.enableFace (box.y_positive, false);
