@@ -4,7 +4,7 @@
  *  Copyright  2008  Sebastian Mach
  *  seb@greenhybrid.net
  ****************************************************************************/
-
+#if 0
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -655,10 +655,12 @@ int main_seb (int argc, char *argv[]) {
         fprintf (stderr, "Requested resolution is %ix%i; AA is %s\n", WIDTH, HEIGHT, useAA?"on":"off");
         graphics::samplers::screen::XYIterator<
         misc::templates::surface<graphics::image::color::AverageColor>,
-        graphics::cameras::FromPointToRect,
         graphics::samplers::ray::Simple
         > renderer;
-        renderer.camera().defineCamera ( (real) WIDTH/ (real) HEIGHT, 1, 0.7);
+
+        graphics::cameras::FromPointToRect *fptr = new graphics::cameras::FromPointToRect;
+        renderer.setCamera (fptr);
+        fptr->defineCamera ( (real) WIDTH/ (real) HEIGHT, 1, 0.7);
 
 
         renderer.surface().reset (WIDTH*2, HEIGHT*2);
@@ -1133,3 +1135,6 @@ int main_seb (int argc, char *argv[]) {
     XRT_CALL_STACK_POP();
     return 0;
 }
+
+
+#endif // #if 0
