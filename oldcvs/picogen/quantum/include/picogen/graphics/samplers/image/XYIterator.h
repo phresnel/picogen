@@ -26,9 +26,9 @@
 #ifndef _XYITERATOR_H
 #define _XYITERATOR_H
 
-#define XYIterator_Template template <class t_surface, class t_camera, class t_pathIntegrator>
+#define XYIterator_Template template <class t_surface, class t_pathIntegrator>
 #define XYIterator_Member( type ) \
-    XYIterator_Template type XYIterator<t_surface, t_camera, t_pathIntegrator>
+    XYIterator_Template type XYIterator<t_surface, t_pathIntegrator>
 
 namespace picogen {
     namespace graphics {
@@ -45,11 +45,12 @@ namespace picogen {
                         typedef ::picogen::graphics::structs::intersection_t intersection_t;
                         typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
                         typedef ::picogen::graphics::image::color::Color Color;
+                        typedef ::picogen::graphics::cameras::abstract::ICamera ICamera;
 
                         unsigned int m_currX, m_currY;
                         unsigned int m_width, m_height;
                         unsigned int m_numPixelsPerRun;
-                        t_camera  m_camera;
+                        ICamera *m_camera;
                         t_surface m_surface;
                         t_pathIntegrator m_pathIntegrator;
                         bool m_done;
@@ -73,12 +74,14 @@ namespace picogen {
                         t_surface &surface()       {
                             return m_surface;
                         }
-                        t_camera &camera() const {
+
+                        ICamera *getCamera () const {
                             return m_camera;
                         }
-                        t_camera &camera()       {
-                            return m_camera;
+                        void setCamera (ICamera *camera) {
+                            m_camera = camera;
                         }
+
                         t_pathIntegrator &path_integrator() const {
                             return m_pathIntegrator;
                         }

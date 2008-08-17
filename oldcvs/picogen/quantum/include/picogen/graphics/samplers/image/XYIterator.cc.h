@@ -32,7 +32,7 @@ namespace picogen {
                 XYIterator_Member() ::XYIterator() :
                         m_currX (0), m_currY (0),
                         m_numPixelsPerRun (1),
-                        m_camera(),
+                        m_camera(0),
                         m_surface(),
                         m_done (false),
                         m_BeginRender_called (false) {
@@ -156,8 +156,7 @@ namespace picogen {
                             const real v = (uv+static_cast<real> (m_currY)) / static_cast<real> (m_height-1);
 
                             //> get ray from camera
-                            Ray ray;
-                            m_camera.rayFromUV (ray, u, v);
+                            Ray ray = (*m_camera)(u, v);
 
                             //> transform ray
                             const Vector3d x = ray.x(), w = x + ray.w();
