@@ -218,7 +218,7 @@ namespace picogen {
                         }
                     }
                 }
-                fprintf (stderr, "  done: f(u,v)_{min=%.2f,max=%.2f}\n", static_cast<float> (h_min), static_cast<float> (h_max));
+                fprintf (stderr, "  \ndone: f(u,v)_{min=%.2f,max=%.2f}\n", static_cast<float> (h_min), static_cast<float> (h_max));
                 fprintf (stderr, "  initializing QuadtreeHeightField ... ");
                 QuadtreeHeightField * ret = new QuadtreeHeightField (size, fun, bbox, smooth, h_min, h_max);
                 fprintf (stderr, "done\n");
@@ -232,7 +232,8 @@ namespace picogen {
                 QuadtreeHeightField::Node *node, QuadtreeHeightField::Node *parent,
                 unsigned int left, unsigned int top, unsigned int size, const unsigned int minSize, const unsigned int heightFieldSize,
                 bool smooth,
-                const Function_R2_R1 &fun, real fun_min, real fun_max
+                const Function_R2_R1 &fun, real fun_min, real fun_max,
+                real percentageFinished, real percentageFinishedScale
             ) {
 
                 node->chunk.h_min.h = Height::max;
@@ -244,10 +245,14 @@ namespace picogen {
                     const unsigned int size05 = size >> 1;
                     node->children = new Node [4];
 
-                    initNode (&node->children [0], node, left,        top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max);
-                    initNode (&node->children [1], node, left+size05, top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max);
-                    initNode (&node->children [2], node, left,        top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max);
-                    initNode (&node->children [3], node, left+size05, top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max);
+                    initNode (&node->children [0], node, left,        top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    percentageFinished += 0.25 * percentageFinishedScale;
+                    initNode (&node->children [1], node, left+size05, top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    percentageFinished += 0.25 * percentageFinishedScale;
+                    initNode (&node->children [2], node, left,        top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    percentageFinished += 0.25 * percentageFinishedScale;
+                    initNode (&node->children [3], node, left+size05, top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    percentageFinished += 0.25 * percentageFinishedScale;
 
                     Height childMinHeight, childMaxHeight;
                     childMinHeight.h = Height::max;
@@ -268,6 +273,11 @@ namespace picogen {
                         node->chunk.h_min.h = childMaxHeight.h;
                     if (childMaxHeight.h > node->chunk.h_max.h)
                         node->chunk.h_max.h = childMaxHeight.h;
+                } else {
+                    if ((int)(percentageFinished*100000) % 100 == 0) {
+                        fprintf (stderr, "\r   %.1f%%", 100.0f * percentageFinished);
+                        fflush (stderr);
+                    }
                 }
 
                 const unsigned int step = size / (Chunk::size-1);
@@ -328,7 +338,8 @@ namespace picogen {
                     0, 0, size, // left, top, size
                     2, size, // min size, max size
                     smooth,
-                    fun, h_min, h_max
+                    fun, h_min, h_max,
+                    0.0, 1.0
                 );
 
                 bboxSize [0] = bbox.computeWidth ();
