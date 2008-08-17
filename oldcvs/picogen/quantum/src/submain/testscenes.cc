@@ -215,11 +215,11 @@ class TestScene {
 
 class PureCornell : public TestScene {
     protected:
-        picogen::graphics::samplers::screen::XYIterator<
+        picogen::graphics::integrators::screen::XYIterator<
         picogen::misc::templates::surface<
         picogen::graphics::image::color::AverageColor
         >,
-        picogen::graphics::samplers::ray::Simple
+        picogen::graphics::integrators::ray::Simple
         > renderer;
         int width, height;
         picogen::common::LinearList list;
@@ -321,11 +321,11 @@ class CornellOpenSky : public PureCornell {
 
 class Clouds : public TestScene {
     private:
-        picogen::graphics::samplers::screen::XYIterator<
+        picogen::graphics::integrators::screen::XYIterator<
         picogen::misc::templates::surface<
         picogen::graphics::image::color::AverageColor
         >,
-        picogen::graphics::samplers::ray::Simple
+        picogen::graphics::integrators::ray::Simple
         > renderer;
         int width, height;
         picogen::graphics::objects::LinearList list;

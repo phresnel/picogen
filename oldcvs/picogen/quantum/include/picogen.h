@@ -182,7 +182,7 @@ namespace picogen {
 
 #include <picogen/graphics/cameras.h>
 #include <picogen/graphics/objects.h>
-#include <picogen/graphics/samplers.h>
+#include <picogen/graphics/integrators.h>
 
 #include <picogen/common.h>
 
