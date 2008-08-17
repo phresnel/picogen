@@ -203,6 +203,24 @@ namespace picogen {
 
 
 
+            ::picogen::misc::geometrics::BoundingBox SimpleHeightField::getBoundingBox() const {
+                return m_scaleBox;
+            }
+
+
+
+            SimpleHeightField::t_heightVal SimpleHeightField::getHeight (unsigned int u, unsigned int v) const {
+                return m_pField [u + v*m_size];
+            }
+
+
+
+            unsigned int SimpleHeightField::getSize() const {
+                return m_size;
+            }
+
+
+
             void SimpleHeightField::setBRDF (const material::abstract::IBRDF*  brdf) {
                 m_pBRDF = brdf;
             }
@@ -676,6 +694,94 @@ namespace picogen {
                            ray
                        ) == 1;
 
+            }
+
+
+
+            bool SimpleHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray), real t_min, real t_max) const {
+                using namespace misc::constants;
+
+                t_min = t_min < epsilon ? epsilon : t_min;
+                if (t_min > t_max)
+                    return false;
+
+                //++ (const_cast<unsigned int&>(numIntersectQueries));
+
+                const Vector3d gbegin = ray (t_min);
+                const Vector3d gend = ray (t_max);
+                Vector3d gt = (gend - gbegin);
+                gt[1] = 0.0;
+                gt = gt.normal();
+                //int numSteps = (int)( ( gt.length() / m_scaleSize[0] ) * (real)(m_size-1) );
+
+                Vector3d ibegin = gbegin - m_scaleBox.getMin();
+                ibegin[0] /= m_scaleSize[0];
+                //ibegin[1] /= m_scaleSize[1];
+                ibegin[2] /= m_scaleSize[2];
+                ibegin = ibegin * ((real) (m_size - 1));
+
+                Vector3d iend = gend - m_scaleBox.getMin();
+                iend[0] /= m_scaleSize[0];
+                //iend[1] /= m_scaleSize[1];
+                iend[2] /= m_scaleSize[2];
+                iend = iend * ((real) (m_size - 1));
+
+                return lineIntersection (
+                           intersection,
+                           ibegin[0], ibegin[2],
+                           iend[0],   iend[2],
+                           ray
+                       ) == 1;
+
+            }
+
+            /*inline int SimpleHeightField::intersectVoxel (
+                param_out (structs::intersection_t, intersection),
+                int u, int v,
+                real x1, real z1, real x2, real z2,
+                param_in (misc::geometrics::Ray, ray)
+            )*/
+
+            bool SimpleHeightField::intersectRectangle (
+                param_out (intersection_t, intersection),
+                param_in (Ray, ray),
+                unsigned int Ax, unsigned int Az, unsigned int Bx, unsigned int Bz
+            ) const {
+
+                const int startX = Ax;
+                const int startZ = Az;
+                const int endX = Bx;
+                const int endZ = Bz;
+
+                const real ssx = m_scaleSize_mul_invertHMapSize[0];
+                const real ssz = m_scaleSize_mul_invertHMapSize[2];
+
+                const int stepU = 1;
+                const int stepV = 1;
+
+                for (int v=startZ; v<=endZ; v+=stepV) {
+                    for (int u=startX; u<=endX; u+=stepU) {
+
+                        const real x1 = m_scaleBoxMin[0] + (real) (u) * ssx;
+                        const real x2 = x1 + ssx;
+                        const real z2 = m_scaleBoxMin[2] + (real) (v) * ssz;
+                        const real z1 = z2 + ssz;
+
+                        if (0 != intersectVoxel (intersection, u, v, x1, z1, x2, z2, ray)) {
+                            if (0 != m_pShader) {
+                                m_pShader->shade (
+                                    intersection.color,
+                                    intersection.normal,
+                                    ray.x() + ray.w() * intersection.t
+                                );
+                            } else {
+                                intersection.color = image::color::Color (1.0, 1.0, 1.0);
+                            }
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
 
         }; // namespace objects
