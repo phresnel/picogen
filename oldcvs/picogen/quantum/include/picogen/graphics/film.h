@@ -42,6 +42,9 @@ namespace picogen {
 } // namespace picogen {
 
 #include <picogen/graphics/film/SimpleColorFilm.h>
+#include <picogen/graphics/film/DistanceVis.h>
+#include <picogen/graphics/film/NormalVis.h>
+#include <picogen/graphics/film/RayDirVis.h>
 
 
 #endif // FILM_H__INCLUDED
