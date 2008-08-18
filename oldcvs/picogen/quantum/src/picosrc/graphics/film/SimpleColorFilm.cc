@@ -43,16 +43,6 @@ namespace picogen {
 
 
             void SimpleColorFilm::addSample (param_in (::picogen::graphics::structs::sample, sample)) {
-                /*surface (sample.x, sample.y) += ::picogen::graphics::color::Color(
-                    sample.primaryIntersection->normal [0]+0.5,
-                    sample.primaryIntersection->normal [1]+0.5,
-                    sample.primaryIntersection->normal [2]+0.5
-                );*/
-                /*surface (sample.x, sample.y) += ::picogen::graphics::color::Color(
-                    sample.primaryIntersection->t*0.1,
-                    sample.primaryIntersection->t*0.1,
-                    sample.primaryIntersection->t*0.1
-                );*/
                 surface (sample.x, sample.y) += sample.color;
             }
 
