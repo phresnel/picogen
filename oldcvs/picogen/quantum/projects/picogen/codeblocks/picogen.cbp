@@ -187,6 +187,10 @@
 		<Unit filename="../../../include/picogen/graphics/brdf/Specular.h" />
 		<Unit filename="../../../include/picogen/graphics/cameras.h" />
 		<Unit filename="../../../include/picogen/graphics/film.h" />
+		<Unit filename="../../../include/picogen/graphics/film/DistanceVis.h" />
+		<Unit filename="../../../include/picogen/graphics/film/NormalVis.h" />
+		<Unit filename="../../../include/picogen/graphics/film/RayDirVis.h" />
+		<Unit filename="../../../include/picogen/graphics/film/SimpleColorFilm.h" />
 		<Unit filename="../../../include/picogen/graphics/image.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators/image/XYIterator.cc.h" />
@@ -228,6 +232,10 @@
 		</Unit>
 		<Unit filename="../../../src/picosrc/graphics/brdf/Lambertian.cc" />
 		<Unit filename="../../../src/picosrc/graphics/brdf/Specular.cc" />
+		<Unit filename="../../../src/picosrc/graphics/film/DistanceVis.cc" />
+		<Unit filename="../../../src/picosrc/graphics/film/NormalVis.cc" />
+		<Unit filename="../../../src/picosrc/graphics/film/RayDirVis.cc" />
+		<Unit filename="../../../src/picosrc/graphics/film/SimpleColorFilm.cc" />
 		<Unit filename="../../../src/picosrc/graphics/integrators/ray/Preview.cc" />
 		<Unit filename="../../../src/picosrc/graphics/integrators/ray/Simple.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/AABox.cc" />

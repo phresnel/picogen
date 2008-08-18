@@ -205,7 +205,7 @@
 	<string>
 	<dlfcn.h>
 
-1218980502 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1219039940 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -319,13 +319,37 @@
 
 1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Preview.h
 
-1218980556 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film.h
+1219039603 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film.h
 	<picogen/graphics/film/SimpleColorFilm.h>
+	<picogen/graphics/film/DistanceVis.h>
+	<picogen/graphics/film/NormalVis.h>
+	<picogen/graphics/film/RayDirVis.h>
 
 1218980545 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/SimpleColorFilm.h
 
-1218980562 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/SimpleColorFilm.cc
+1219039668 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/SimpleColorFilm.cc
 	<picogen/picogen.h>
 	<picogen/graphics/film.h>
 	<picogen/graphics/film/SimpleColorFilm.h>
+
+1219039369 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/DistanceVis.cc
+	<picogen/picogen.h>
+	<picogen/graphics/film.h>
+	<picogen/graphics/film/DistanceVis.h>
+
+1219039577 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/DistanceVis.h
+
+1219039621 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/NormalVis.h
+
+1219039641 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/RayDirVis.h
+
+1219039234 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/NormalVis.cc
+	<picogen/picogen.h>
+	<picogen/graphics/film.h>
+	<picogen/graphics/film/NormalVis.h>
+
+1219039735 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/RayDirVis.cc
+	<picogen/picogen.h>
+	<picogen/graphics/film.h>
+	<picogen/graphics/film/RayDirVis.h>
 
