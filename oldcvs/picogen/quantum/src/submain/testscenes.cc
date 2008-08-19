@@ -215,9 +215,7 @@ class TestScene {
 
 class PureCornell : public TestScene {
     protected:
-        picogen::graphics::integrators::screen::XYIterator<
-            picogen::graphics::integrators::ray::Simple
-        > renderer;
+        picogen::graphics::integrators::screen::XYIterator renderer;
         int width, height;
         picogen::common::LinearList list;
         picogen::common::Preetham   preetham;
@@ -262,7 +260,7 @@ class PureCornell : public TestScene {
             preetham.setSunDirection (Vector3d (-1.0,1.8,-2.3).normal());
             preetham.enableFogHack (0, 0.00082*0.05, 50000);
             preetham.invalidate();
-            renderer.path_integrator().setSky (&preetham);
+            //renderer.path_integrator().setSky (&preetham);
 
             // setup boxen
             using picogen::geometrics::Transformation;
@@ -279,7 +277,11 @@ class PureCornell : public TestScene {
 
             // invalidate and recognize object-list
             list.invalidate();
-            renderer.path_integrator().setIntersectable (&list);
+            //renderer.path_integrator().setIntersectable (&list);
+
+            ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
+            surfaceIntegrator->setIntersectable (&list);
+            renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
@@ -321,9 +323,7 @@ class CornellOpenSky : public PureCornell {
 
 class Clouds : public TestScene {
     private:
-        picogen::graphics::integrators::screen::XYIterator<
-            picogen::graphics::integrators::ray::Simple
-        > renderer;
+        picogen::graphics::integrators::screen::XYIterator renderer;
         int width, height;
         picogen::graphics::objects::LinearList list;
         picogen::graphics::objects::Preetham   preetham;
@@ -366,7 +366,7 @@ class Clouds : public TestScene {
             preetham.setSunDirection (Vector3d (0.0,1.0,-1.0).normal());
             preetham.enableFogHack (0, 0.00082*0.05, 50000000);
             preetham.invalidate();
-            renderer.path_integrator().setSky (&preetham);
+            //renderer.path_integrator().setSky (&preetham);
 
 
             {
@@ -444,7 +444,10 @@ class Clouds : public TestScene {
 
             // invalidate and recognize object-list
             list.invalidate();
-            renderer.path_integrator().setIntersectable (&list);
+            //renderer.path_integrator().setIntersectable (&list);
+            ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
+            surfaceIntegrator->setIntersectable (&list);
+            renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {

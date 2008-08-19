@@ -187,9 +187,7 @@ class SSDFScene : public Scene, public SSDFBackend {
         typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
 
 
-        ::picogen::graphics::integrators::screen::XYIterator<
-            ::picogen::graphics::integrators::ray::Simple
-        > renderer;
+        ::picogen::graphics::integrators::screen::XYIterator renderer;
         int width, height;
 
 
@@ -582,6 +580,10 @@ class SSDFScene : public Scene, public SSDFBackend {
             if (0 != renderer.getFilm())
                 delete renderer.getFilm();
             renderer.setFilm (0);
+
+            if (0 != renderer.getSurfaceIntegrator())
+                delete renderer.getSurfaceIntegrator();
+            renderer.setSurfaceIntegrator (0);
         }
 
 
@@ -606,7 +608,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             preetham.enableFogHack (true, fogExp, fogMaxDist);
             preetham.invalidate();
             //if (enablePreethamSky) {
-                renderer.path_integrator().setSky (&preetham);
+                //renderer.path_integrator().setSky (&preetham);
             //} else {
               //  renderer.path_integrator().setSky (0);
             //}
@@ -615,7 +617,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
             renderer.setCamera (fptr);
 
-            ::picogen::graphics::film::SimpleColorFilm *film = new ::picogen::graphics::film::SimpleColorFilm (width*antiAliasingWidth, height*antiAliasingWidth);
+            ::picogen::graphics::film::abstract::IFilm *film = new ::picogen::graphics::film::SimpleColorFilm (width*antiAliasingWidth, height*antiAliasingWidth);
             renderer.setFilm (film);
 
             // setup boxen
@@ -630,7 +632,12 @@ class SSDFScene : public Scene, public SSDFBackend {
                 sceneRoot = new LinearList;
                 sceneRoot->invalidate ();
             }
-            renderer.path_integrator().setIntersectable (sceneRoot);
+            //renderer.path_integrator().setIntersectable (sceneRoot);
+
+
+            ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
+            surfaceIntegrator->setIntersectable (sceneRoot);
+            renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 
         virtual void flip (SDL_Surface *screen, float scale, float saturation) {
