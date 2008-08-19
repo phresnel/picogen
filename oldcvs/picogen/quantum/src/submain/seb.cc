@@ -653,10 +653,7 @@ int main_seb (int argc, char *argv[]) {
         const int WIDTH = 1280,//-(1280/4),
                           HEIGHT = 1024;//-(512/4);
         fprintf (stderr, "Requested resolution is %ix%i; AA is %s\n", WIDTH, HEIGHT, useAA?"on":"off");
-        graphics::samplers::screen::XYIterator<
-        misc::templates::surface<graphics::color::AverageColor>,
-        graphics::samplers::ray::Simple
-        > renderer;
+        graphics::samplers::screen::XYIterator renderer;
 
         graphics::cameras::FromPointToRect *fptr = new graphics::cameras::FromPointToRect;
         renderer.setCamera (fptr);
@@ -947,7 +944,10 @@ int main_seb (int argc, char *argv[]) {
             Transformation().setToRotationY (3.14159*-0.1) *
             Transformation().setToTranslation (base+Vector3d (900,0,-900))
             ;
-        renderer.path_integrator().setIntersectable (&list);
+        //renderer.path_integrator().setIntersectable (&list);
+        ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
+        surfaceIntegrator->setIntersectable (list);
+        renderer.setSurfaceIntegrator (surfaceIntegrator);
 
         //> setup sky
         graphics::objects::Preetham preetham;
