@@ -53,14 +53,14 @@
 
 1212003360 /home/smach/Projects/picogen/quantum/include/picogen/misc/exceptions.h
 
-1218977652 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics.h
+1219082343 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics.h
 	"geometrics/Transformation.h"
 
 1218977503 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics/Transformation.h
 
 1215426878 /home/smach/Projects/picogen/quantum/include/picogen/misc/templates.h
 
-1218977499 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
+1219081694 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
 
 1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
 	"brdf/Lambertian.h"
@@ -143,13 +143,13 @@
 1217803331 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
 	<picogen/picogen.h>
 
-1215426893 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
+1219082290 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
 	<ctype.h>
 	<string>
 	<iostream>
 	<sstream>
 	<map>
-	<picogen.h>
+	<picogen/picogen.h>
 	<picogen/misc/functional/LayeredNoise2d.h>
 
 1218977503 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/LayeredNoise2d.h
@@ -182,7 +182,7 @@
 	<SDL/SDL.h>
 	<picogen/picogen.h>
 
-1218977506 source:/home/smach/Projects/picogen/quantum/src/submain/seb.cc
+1219124922 source:/home/smach/Projects/picogen/quantum/src/submain/seb.cc
 	<iostream>
 	<stdio.h>
 	<picogen/picogen.h>
@@ -205,7 +205,7 @@
 	<string>
 	<dlfcn.h>
 
-1219039940 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1219125247 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -226,7 +226,7 @@
 
 1218977932 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/templates/TriBIH.cc.h
 
-1218980802 source:/home/smach/Projects/picogen/quantum/src/submain/testscenes.cc
+1219125307 source:/home/smach/Projects/picogen/quantum/src/submain/testscenes.cc
 	<iostream>
 	<vector>
 	<SDL/SDL.h>
@@ -305,15 +305,15 @@
 1218977179 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Simple.cc
 	<picogen/picogen.h>
 
-1218972326 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators.h
+1219080972 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators.h
+	"integrators/surface/Path.h"
 	"integrators/image/XYIterator.h"
 	"integrators/ray/Simple.h"
 	"integrators/ray/Preview.h"
 
-1218980439 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.h
-	"XYIterator.cc.h"
+1219125798 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.h
 
-1218980109 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.cc.h
+1219082006 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.cc.h
 
 1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Simple.h
 
@@ -341,9 +341,9 @@
 
 1219039621 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/NormalVis.h
 
-1219039641 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/RayDirVis.h
+1219081743 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/RayDirVis.h
 
-1219039234 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/NormalVis.cc
+1219040031 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/NormalVis.cc
 	<picogen/picogen.h>
 	<picogen/graphics/film.h>
 	<picogen/graphics/film/NormalVis.h>
@@ -352,4 +352,13 @@
 	<picogen/picogen.h>
 	<picogen/graphics/film.h>
 	<picogen/graphics/film/RayDirVis.h>
+
+1219081207 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Path.cc
+	<picogen/picogen.h>
+	<picogen/graphics/integrators/surface/Path.h>
+
+1219081100 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/surface/Path.h
+
+1219125626 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/image/XYIterator.cc
+	<picogen/picogen.h>
 

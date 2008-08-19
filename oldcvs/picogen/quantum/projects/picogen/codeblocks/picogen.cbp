@@ -193,10 +193,10 @@
 		<Unit filename="../../../include/picogen/graphics/film/SimpleColorFilm.h" />
 		<Unit filename="../../../include/picogen/graphics/image.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators.h" />
-		<Unit filename="../../../include/picogen/graphics/integrators/image/XYIterator.cc.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators/image/XYIterator.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators/ray/Preview.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators/ray/Simple.h" />
+		<Unit filename="../../../include/picogen/graphics/integrators/surface/Path.h" />
 		<Unit filename="../../../include/picogen/graphics/material.h" />
 		<Unit filename="../../../include/picogen/graphics/objects.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/AABox.h" />
@@ -236,8 +236,10 @@
 		<Unit filename="../../../src/picosrc/graphics/film/NormalVis.cc" />
 		<Unit filename="../../../src/picosrc/graphics/film/RayDirVis.cc" />
 		<Unit filename="../../../src/picosrc/graphics/film/SimpleColorFilm.cc" />
+		<Unit filename="../../../src/picosrc/graphics/integrators/image/XYIterator.cc" />
 		<Unit filename="../../../src/picosrc/graphics/integrators/ray/Preview.cc" />
 		<Unit filename="../../../src/picosrc/graphics/integrators/ray/Simple.cc" />
+		<Unit filename="../../../src/picosrc/graphics/integrators/surface/Path.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/AABox.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/LinearList.cc" />
