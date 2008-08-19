@@ -29,7 +29,7 @@
 #include <sstream>
 #include <map>
 
-#include <picogen.h>
+#include <picogen/picogen.h>
 #include <picogen/misc/functional/LayeredNoise2d.h>
 
 namespace picogen {
