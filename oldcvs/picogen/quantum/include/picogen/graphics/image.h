@@ -119,11 +119,11 @@ namespace picogen {
                     Color m_color;
                     real  m_alpha;
                 private:
-                    AverageColor (const Color &col, real alpha) : m_color (col), m_alpha (alpha) {}
+                    explicit AverageColor (const Color &col, real alpha) : m_color (col), m_alpha (alpha) {}
                 public:
-                    AverageColor() : m_color (0,0,0), m_alpha (0) {}
-                    AverageColor (real r, real g, real b) : m_color (r,g,b), m_alpha (0) {}
-                    AverageColor (const Color &col) : m_color (col), m_alpha (1) {}
+                    explicit AverageColor() : m_color (0,0,0), m_alpha (0) {}
+                    explicit AverageColor (real r, real g, real b) : m_color (r,g,b), m_alpha (1) {}
+                    explicit AverageColor (const Color &col) : m_color (col), m_alpha (1) {}
                     inline int getAlpha() const {
                         return (int) m_alpha;
                     }
@@ -137,12 +137,12 @@ namespace picogen {
                         return AverageColor (m_color=A, m_alpha=1);
                     }
                     inline operator Color () const {
-                        return m_color * (1.0/m_alpha);
+                        return avg();
                     }
                     inline Color avg() const {
-                        return m_alpha==0 ?
+                        return m_alpha!=0.0 ?
                                m_color * (1.0/m_alpha) :
-                               Color (1,0,0);
+                               Color (0,0,0);
                     }
             };
         } // namespace color
