@@ -26,15 +26,11 @@
 #ifndef _XYITERATOR_H
 #define _XYITERATOR_H
 
-#define XYIterator_Template template <class t_pathIntegrator>
-#define XYIterator_Member( type ) \
-    XYIterator_Template type XYIterator<t_pathIntegrator>
-
 namespace picogen {
     namespace graphics {
         namespace integrators {
             namespace screen {
-                XYIterator_Template class XYIterator {
+                class XYIterator {
                     private:
                         typedef ::picogen::real real;
                         typedef ::picogen::geometrics::Vector3d Vector3d;
@@ -47,34 +43,28 @@ namespace picogen {
                         typedef ::picogen::graphics::color::Color Color;
                         typedef ::picogen::graphics::cameras::abstract::ICamera ICamera;
                         typedef ::picogen::graphics::film::abstract::IFilm IFilm;
+                        typedef ::picogen::graphics::integrators::surface::ISurfaceIntegrator ISurfaceIntegrator;
 
                         unsigned int m_currX, m_currY;
                         unsigned int m_width, m_height;
                         unsigned int m_numPixelsPerRun;
                         ICamera *m_camera;
                         IFilm *m_film;
-                        t_pathIntegrator m_pathIntegrator;
+                        ISurfaceIntegrator *m_surfaceIntegrator;
                         bool m_done;
                         bool m_BeginRender_called;
-                        //WhittedStyle() {};
+
                         Transformation m_camTransform;
                     public:
                         XYIterator();
                         virtual ~XYIterator();
-                        //void SetCamera( t_camera *pCam );
-                        //void SetSurface( t_surface *pSurf );
-                        Transformation &transformation() const {
+
+                        const Transformation &transformation() const {
                             return m_camTransform;
                         }
                         Transformation &transformation()       {
                             return m_camTransform;
                         }
-                        /*t_surface &surface() const {
-                            return m_surface;
-                        }
-                        t_surface &surface()       {
-                            return m_surface;
-                        }*/
 
                         ICamera *getCamera () const {
                             return m_camera;
@@ -90,35 +80,23 @@ namespace picogen {
                             m_film = film;
                         }
 
-                        t_pathIntegrator &path_integrator() const {
-                            return m_pathIntegrator;
+                        ISurfaceIntegrator *getSurfaceIntegrator () const {
+                            return m_surfaceIntegrator;
                         }
-                        t_pathIntegrator &path_integrator()       {
-                            return m_pathIntegrator;
+                        void setSurfaceIntegrator (ISurfaceIntegrator *surfaceIntegrator) {
+                            m_surfaceIntegrator = surfaceIntegrator;
                         }
+
                         void setNumPixelsPerContinue (unsigned int num);
                         bool renderMore();
                         void beginRender();
                         void oneMoreRun();
                 };
 
-// meh :|
-// looks like as long as gcc does not support  the  'export'  keyword
-// and  as  long  as  we want  to  keep  away from  abstract  classes
-// we have  to  crunch  all  function-def's  inside  this  header ...
-// - -
-// - -
-// IF YOU CONTRIBUTE TO THIS FILE:  please do not put the definitions
-// inside the class-definition, but rather below
-// - -
-
-            } // { namespace screen {
+            } // namespace screen {
         } // namespace integrators
     } // namespace graphics {
 } // namespace picogen {
-#include "XYIterator.cc.h"
-#undef XYIterator_Template
-#undef XYIterator_Member
 
 
 #endif /* _XYITERATOR_H */
