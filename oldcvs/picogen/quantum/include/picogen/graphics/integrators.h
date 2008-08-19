@@ -23,25 +23,30 @@
  */
 
 
-#ifndef _SAMPLERS_H
-#define _SAMPLERS_H
-
-#include "integrators/image/XYIterator.h"
-#include "integrators/ray/Simple.h"
-#include "integrators/ray/Preview.h"
-
+#ifndef INTEGRATORS_H__INCLUDED
+#define INTEGRATORS_H__INCLUDED
 
 namespace picogen {
     namespace graphics {
         namespace integrators {
             namespace screen {
             }
-            namespace ray {
-            }
-            namespace light {
+            namespace surface {
+                class ISurfaceIntegrator {
+                    public:
+                        virtual void setIntersectable (const ::picogen::graphics::objects::abstract::IIntersectable *intersectable) = 0;
+                        virtual bool integrate (::picogen::graphics::structs::sample &sample) const = 0;
+                        virtual ~ISurfaceIntegrator() {};
+                };
             }
         }
     }
 }
 
-#endif /* _SAMPLERS_H */
+#include "integrators/surface/Path.h"
+
+#include "integrators/image/XYIterator.h"
+#include "integrators/ray/Simple.h"
+#include "integrators/ray/Preview.h"
+
+#endif /* INTEGRATORS_H__INCLUDED */
