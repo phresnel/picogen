@@ -30,28 +30,93 @@ namespace picogen {
         namespace integrators {
             namespace surface {
 
-                Path::Path() : intersectable (0) {
+                Path::Path() : sample (0) {
                 }
 
 
 
-                void Path::setIntersectable (const ::picogen::graphics::objects::abstract::IIntersectable *intersectable) {
-                    this->intersectable = intersectable;
+                ::picogen::graphics::color::Color Path::L_i (
+                    param_in (Ray,ray),
+                    bool specularOrFirst,
+                    param_out (intersection_t,primaryIntersection),
+                    unsigned int max
+                ) const {
+                    using namespace constants;
+
+                    intersection_t I;
+                    primaryIntersection.t = -1;
+
+                    if (max == 0) {
+                        return Color (0.0,0.0,0.0);
+                    } else if (0==sample->intersectable || !sample->intersectable->intersect (I, ray)) {
+                        //> apply sky color if there is no object to intersect or no intersection
+                        if (0 != sample->skyShader) {
+                            Color skyColor, sunColor;
+                            sample->skyShader->shade (skyColor, ray);
+                            if (specularOrFirst) {
+                                sample->skyShader->sunShade (sunColor, ray);
+                                return skyColor + sunColor;
+                            } else {
+                                return skyColor;
+                            }
+                        } else {
+                            return Color (0.0,0.0,0.0);
+                        }
+                    } else {
+                        //> sample new ray and get brdf/probability
+                        primaryIntersection = I;
+                        real BRDF,pdf;
+                        Ray  r_out,  r_in (ray (I.t), ray.w());
+                        bool specular = false;
+                        if (I.brdf->randomSample (BRDF, pdf, specular, r_out, r_in, I.normal)) {
+                            if (specular == false)
+                                specularOrFirst = false;
+
+                            Color col (0.0,0.0,0.0);
+
+                            //> do epsilon correction
+                            r_out.x() = r_out.x() + I.normal*epsilon;
+                            const real dot = fabs (I.normal.normal() * r_out.w().normal());
+                            const real f = (BRDF*dot) / pdf;
+                            intersection_t dummyi;
+                            col += (I.color*I.L_e) + (L_i (r_out,specularOrFirst,dummyi,max-1) * I.color * f);
+
+                            //> atmosphere lighting and shading
+                            if (0 != sample->skyShader) {
+                                if (!specularOrFirst) {
+                                    Ray sunRay;
+                                    Color sunColor;
+                                    real sun_p = 0.0;
+                                    sample->skyShader->sunSample (sunColor, sunRay, sun_p, r_out.x());
+                                    intersection_t tmp_I;
+                                    if (sun_p > epsilon && (0==sample->intersectable || !sample->intersectable->intersect (tmp_I, sunRay))) {
+                                        real c = I.normal.normal() * sunRay.w();
+                                        col += I.color * sunColor * c;
+                                    }
+                                }
+                                //*/
+                                sample->skyShader->atmosphereShade (col, col, ray, I.t);
+                            }
+                            return col;
+                        } else {
+                            //> has been absorbed
+                            return (I.color*I.L_e);
+                        }
+                    }
                 }
 
 
 
                 bool Path::integrate (::picogen::graphics::structs::sample &sample) const {
-                    /*sample.primaryIntersection->t = 10;
-                    sample.primaryIntersection->normal = Vector3d (0, 1, 0);*/
-                    if (0 != intersectable) {
-                        if (intersectable->intersect (*sample.primaryIntersection, sample.cameraRay)) {
-                            sample.color = sample.primaryIntersection->color;
-                        }
-                    }
+                    this->sample = &sample;
+                    sample.color = L_i (sample.cameraRay, true, *sample.primaryIntersection, 3);
+                    /*if (sample.primaryIntersection->t > 0) {
+                        printf ("{%.1f, %.1f, %.1f}", sample.primaryIntersection->normal[0], sample.primaryIntersection->normal[1], sample.primaryIntersection->normal[2]);
+                    }*/
+
                     //Vector3d w = sample.cameraRay.getDirection();
                     //sample.color = ::picogen::graphics::color::Color (w [0]+0.5, w [1]+0.5, w [2]+0.5);
-                    return true;
+                    return true;//sample.primaryIntersection->t > 0;
                 }
 
             } // namespace surface {

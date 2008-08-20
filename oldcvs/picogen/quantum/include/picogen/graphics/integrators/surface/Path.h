@@ -42,10 +42,15 @@ namespace picogen {
                         typedef ::picogen::graphics::color::Color Color;
                         typedef ::picogen::geometrics::Transformation Transformation;
                     private:
-                        const ::picogen::graphics::objects::abstract::IIntersectable *intersectable;
+
+                        // evil. undo?
+                        mutable ::picogen::graphics::structs::sample * sample;
+
+                        Color L_i (param_in (Ray,ray), bool specularOrFirst, param_out (intersection_t,primaryIntersection), unsigned int max) const;
+
                     public:
+
                         Path ();
-                        void setIntersectable (const ::picogen::graphics::objects::abstract::IIntersectable *intersectable);
                         bool integrate (::picogen::graphics::structs::sample &sample) const;
                 }; // class Path
             } // namespace surface {
