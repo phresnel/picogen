@@ -43,6 +43,7 @@ namespace picogen {
                         typedef ::picogen::graphics::color::Color Color;
                         typedef ::picogen::graphics::cameras::abstract::ICamera ICamera;
                         typedef ::picogen::graphics::film::abstract::IFilm IFilm;
+                        typedef ::picogen::graphics::objects::abstract::ISky ISky;
                         typedef ::picogen::graphics::integrators::surface::ISurfaceIntegrator ISurfaceIntegrator;
 
                         unsigned int m_currX, m_currY;
@@ -50,7 +51,9 @@ namespace picogen {
                         unsigned int m_numPixelsPerRun;
                         ICamera *m_camera;
                         IFilm *m_film;
+                        ISky *m_sky;
                         ISurfaceIntegrator *m_surfaceIntegrator;
+                        IIntersectable *m_intersectable;
                         bool m_done;
                         bool m_BeginRender_called;
 
@@ -78,6 +81,20 @@ namespace picogen {
                         }
                         void setFilm (IFilm *film) {
                             m_film = film;
+                        }
+
+                        ISky *getSky () const {
+                            return m_sky;
+                        }
+                        void setSky (ISky *sky) {
+                            m_sky = sky;
+                        }
+
+                        IIntersectable *getIntersectable () const {
+                            return m_intersectable;
+                        }
+                        void setIntersectable (IIntersectable *intersectable) {
+                            m_intersectable = intersectable;
                         }
 
                         ISurfaceIntegrator *getSurfaceIntegrator () const {
