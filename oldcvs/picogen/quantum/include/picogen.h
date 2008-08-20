@@ -172,12 +172,27 @@ namespace picogen {
                 const unsigned int x, y;
                 const real fx, fy;
                 const geometrics::Ray cameraRay;
+                const ::picogen::graphics::objects::abstract::IIntersectable * const intersectable;
+                const ::picogen::graphics::objects::abstract::ISky * const skyShader; /* for a phase of transition only! to dissappear! */
 
                 intersection_t *primaryIntersection;
                 color::Color color;
 
-                sample (unsigned int x, unsigned int y, real fx, real fy, geometrics::Ray cameraRay)
-                : x(x), y(y), fx(fx), fy(fy), cameraRay(cameraRay), primaryIntersection (0), color() {}
+                sample (
+                    unsigned int x, unsigned int y,
+                    real fx, real fy,
+                    geometrics::Ray cameraRay,
+                    const ::picogen::graphics::objects::abstract::IIntersectable * const intersectable,
+                    const ::picogen::graphics::objects::abstract::ISky * const skyShader
+                )
+                :   x (x), y (y),
+                    fx (fx), fy (fy),
+                    cameraRay (cameraRay),
+                    intersectable (intersectable),
+                    skyShader (skyShader),
+                    primaryIntersection (0),
+                    color()
+                {}
             };
         }
     }
