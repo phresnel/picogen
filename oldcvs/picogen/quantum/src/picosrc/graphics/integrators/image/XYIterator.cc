@@ -33,7 +33,11 @@ namespace picogen {
                 XYIterator ::XYIterator() :
                         m_currX (0), m_currY (0),
                         m_numPixelsPerRun (1),
-                        m_camera (0), m_film (0), m_surfaceIntegrator (0),
+                        m_camera (0),
+                        m_film (0),
+                        m_sky (0),
+                        m_surfaceIntegrator (0),
+                        m_intersectable (0),
                         m_done (false),
                         m_BeginRender_called (false) {
                 }
@@ -166,7 +170,7 @@ namespace picogen {
                             //> ray trace
                             Color color;
                             intersection_t I;
-                            structs::sample sample (m_currX, m_currY, u, v, ray);
+                            structs::sample sample (m_currX, m_currY, u, v, ray, m_intersectable, m_sky);
 
                             intersection_t intersection; // <-- todo: hmmm, should be allocated by the surface integrator
                             sample.primaryIntersection = &intersection;
