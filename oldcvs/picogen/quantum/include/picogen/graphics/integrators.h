@@ -34,7 +34,6 @@ namespace picogen {
             namespace surface {
                 class ISurfaceIntegrator {
                     public:
-                        virtual void setIntersectable (const ::picogen::graphics::objects::abstract::IIntersectable *intersectable) = 0;
                         virtual bool integrate (::picogen::graphics::structs::sample &sample) const = 0;
                         virtual ~ISurfaceIntegrator() {};
                 };
