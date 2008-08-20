@@ -581,6 +581,14 @@ class SSDFScene : public Scene, public SSDFBackend {
                 delete renderer.getFilm();
             renderer.setFilm (0);
 
+            if (0 != renderer.getSky())
+                delete renderer.getSky();
+            renderer.setSky (0);
+
+            if (0 != renderer.getIntersectable())
+                delete renderer.getIntersectable();
+            renderer.setIntersectable (0);
+
             if (0 != renderer.getSurfaceIntegrator())
                 delete renderer.getSurfaceIntegrator();
             renderer.setSurfaceIntegrator (0);
@@ -607,11 +615,11 @@ class SSDFScene : public Scene, public SSDFBackend {
             // setup and recognize sky
             preetham.enableFogHack (true, fogExp, fogMaxDist);
             preetham.invalidate();
-            //if (enablePreethamSky) {
-                //renderer.path_integrator().setSky (&preetham);
-            //} else {
-              //  renderer.path_integrator().setSky (0);
-            //}
+            if (enablePreethamSky) {
+                renderer.setSky (&preetham);
+            } else {
+                renderer.setSky (0);
+            }
 
             ::picogen::graphics::cameras::FromPointToRect *fptr = new ::picogen::graphics::cameras::FromPointToRect;
             fptr->defineCamera ( (real) width/ (real) height, 1.0, 0.85);
@@ -634,9 +642,9 @@ class SSDFScene : public Scene, public SSDFBackend {
             }
             //renderer.path_integrator().setIntersectable (sceneRoot);
 
+            renderer.setIntersectable (sceneRoot);
 
             ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
-            surfaceIntegrator->setIntersectable (sceneRoot);
             renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 

@@ -260,7 +260,7 @@ class PureCornell : public TestScene {
             preetham.setSunDirection (Vector3d (-1.0,1.8,-2.3).normal());
             preetham.enableFogHack (0, 0.00082*0.05, 50000);
             preetham.invalidate();
-            //renderer.path_integrator().setSky (&preetham);
+            renderer.setSky (&preetham);
 
             // setup boxen
             using picogen::geometrics::Transformation;
@@ -277,10 +277,10 @@ class PureCornell : public TestScene {
 
             // invalidate and recognize object-list
             list.invalidate();
-            //renderer.path_integrator().setIntersectable (&list);
+            renderer.setIntersectable (&list);
 
             ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
-            surfaceIntegrator->setIntersectable (&list);
+            //surfaceIntegrator->setIntersectable (&list);
             renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 
@@ -366,7 +366,7 @@ class Clouds : public TestScene {
             preetham.setSunDirection (Vector3d (0.0,1.0,-1.0).normal());
             preetham.enableFogHack (0, 0.00082*0.05, 50000000);
             preetham.invalidate();
-            //renderer.path_integrator().setSky (&preetham);
+            renderer.setSky (&preetham);
 
 
             {
@@ -444,9 +444,9 @@ class Clouds : public TestScene {
 
             // invalidate and recognize object-list
             list.invalidate();
-            //renderer.path_integrator().setIntersectable (&list);
+            renderer.setIntersectable (&list);
             ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
-            surfaceIntegrator->setIntersectable (&list);
+            //surfaceIntegrator->setIntersectable (&list);
             renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 
