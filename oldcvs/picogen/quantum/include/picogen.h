@@ -133,6 +133,10 @@ namespace picogen {
 
 namespace picogen {
     typedef double real;
+
+    typedef uint32_t uint32;
+    typedef int32_t int32;
+
     namespace constants {
         typedef enum {
             inside = -1,
@@ -205,6 +209,8 @@ namespace picogen {
 #include <picogen/graphics/film.h>
 #include <picogen/graphics/objects.h>
 #include <picogen/graphics/integrators.h>
+
+#include <picogen/generators/generators.h>
 
 #include <picogen/common.h>
 
