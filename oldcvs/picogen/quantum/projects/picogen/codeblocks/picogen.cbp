@@ -183,6 +183,12 @@
 		<Unit filename="../../../include/picogen/experimental/Rain.h" />
 		<Unit filename="../../../include/picogen/experimental/ShaderCC_GCC.h" />
 		<Unit filename="../../../include/picogen/experimental/Snow.h" />
+		<Unit filename="../../../include/picogen/foreign/libcoyotl/mtwister.cpp" />
+		<Unit filename="../../../include/picogen/foreign/libcoyotl/mtwister.h" />
+		<Unit filename="../../../include/picogen/foreign/libcoyotl/prng.cpp" />
+		<Unit filename="../../../include/picogen/foreign/libcoyotl/prng.h" />
+		<Unit filename="../../../include/picogen/generators/generators.h" />
+		<Unit filename="../../../include/picogen/generators/rng/MersenneTwister.h" />
 		<Unit filename="../../../include/picogen/graphics/brdf/Lambertian.h" />
 		<Unit filename="../../../include/picogen/graphics/brdf/Specular.h" />
 		<Unit filename="../../../include/picogen/graphics/cameras.h" />
@@ -219,6 +225,7 @@
 		<Unit filename="../../../include/picogen/misc/functions.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics/Transformation.h" />
+		<Unit filename="../../../include/picogen/misc/rng/MersenneTwister.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/AST.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/AST2LLVM.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/nano-c.h" />
@@ -230,6 +237,7 @@
 		<Unit filename="../../../src/picosrc/frontend/app-main.cpp">
 			<Option target="frontend-wx" />
 		</Unit>
+		<Unit filename="../../../src/picosrc/generators/rng/MersenneTwister.cc" />
 		<Unit filename="../../../src/picosrc/graphics/brdf/Lambertian.cc" />
 		<Unit filename="../../../src/picosrc/graphics/brdf/Specular.cc" />
 		<Unit filename="../../../src/picosrc/graphics/film/DistanceVis.cc" />
@@ -251,6 +259,7 @@
 		<Unit filename="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" />
+		<Unit filename="../../../src/picosrc/misc/rng/MersenneTwister.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/AST2LLVM.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/nano-c.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/picogen-c.cc" />

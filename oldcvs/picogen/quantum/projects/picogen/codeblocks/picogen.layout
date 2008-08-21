@@ -7,8 +7,8 @@
 	<File name="../../../include/compile_info.h" open="0" top="0" tabpos="26">
 		<Cursor position="1949" topLine="40" />
 	</File>
-	<File name="../../../include/picogen.h" open="1" top="0" tabpos="5">
-		<Cursor position="5235" topLine="168" />
+	<File name="../../../include/picogen.h" open="0" top="0" tabpos="5">
+		<Cursor position="6182" topLine="187" />
 	</File>
 	<File name="../../../include/picogen/experimental/CloudShader_Bouthors.h" open="0" top="0" tabpos="0">
 		<Cursor position="19055" topLine="459" />
@@ -21,6 +21,18 @@
 	</File>
 	<File name="../../../include/picogen/experimental/Snow.h" open="0" top="0" tabpos="11">
 		<Cursor position="2619" topLine="36" />
+	</File>
+	<File name="../../../include/picogen/foreign/libcoyotl/mtwister.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="3021" topLine="72" />
+	</File>
+	<File name="../../../include/picogen/foreign/libcoyotl/mtwister.h" open="0" top="0" tabpos="0">
+		<Cursor position="3271" topLine="72" />
+	</File>
+	<File name="../../../include/picogen/generators/generators.h" open="0" top="0" tabpos="0">
+		<Cursor position="1094" topLine="8" />
+	</File>
+	<File name="../../../include/picogen/generators/rng/MersenneTwister.h" open="0" top="0" tabpos="0">
+		<Cursor position="1617" topLine="22" />
 	</File>
 	<File name="../../../include/picogen/graphics/brdf/Lambertian.h" open="0" top="0" tabpos="0">
 		<Cursor position="1315" topLine="21" />
@@ -52,16 +64,16 @@
 	<File name="../../../include/picogen/graphics/integrators.h" open="0" top="0" tabpos="0">
 		<Cursor position="1319" topLine="21" />
 	</File>
-	<File name="../../../include/picogen/graphics/integrators/image/XYIterator.h" open="1" top="0" tabpos="6">
-		<Cursor position="4769" topLine="80" />
+	<File name="../../../include/picogen/graphics/integrators/image/XYIterator.h" open="0" top="0" tabpos="6">
+		<Cursor position="1156" topLine="5" />
 	</File>
 	<File name="../../../include/picogen/graphics/integrators/ray/Preview.h" open="0" top="0" tabpos="0">
 		<Cursor position="1344" topLine="12" />
 	</File>
-	<File name="../../../include/picogen/graphics/integrators/ray/Simple.h" open="1" top="0" tabpos="4">
+	<File name="../../../include/picogen/graphics/integrators/ray/Simple.h" open="0" top="0" tabpos="4">
 		<Cursor position="1791" topLine="31" />
 	</File>
-	<File name="../../../include/picogen/graphics/integrators/surface/Path.h" open="1" top="0" tabpos="2">
+	<File name="../../../include/picogen/graphics/integrators/surface/Path.h" open="0" top="0" tabpos="2">
 		<Cursor position="2139" topLine="31" />
 	</File>
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="10">
@@ -130,6 +142,9 @@
 	<File name="../../../include/picogen/misc/geometrics/Transformation.h" open="0" top="0" tabpos="16">
 		<Cursor position="1245" topLine="33" />
 	</File>
+	<File name="../../../include/picogen/misc/rng/MersenneTwister.h" open="0" top="0" tabpos="0">
+		<Cursor position="1061" topLine="0" />
+	</File>
 	<File name="../../../include/picogen/misc/scripting/AST.h" open="0" top="0" tabpos="3">
 		<Cursor position="10077" topLine="266" />
 	</File>
@@ -157,6 +172,9 @@
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
 	</File>
+	<File name="../../../src/picosrc/generators/rng/MersenneTwister.cc" open="0" top="0" tabpos="0">
+		<Cursor position="2430" topLine="57" />
+	</File>
 	<File name="../../../src/picosrc/graphics/brdf/Lambertian.cc" open="0" top="0" tabpos="5">
 		<Cursor position="1792" topLine="42" />
 	</File>
@@ -175,7 +193,7 @@
 	<File name="../../../src/picosrc/graphics/film/SimpleColorFilm.cc" open="0" top="0" tabpos="6">
 		<Cursor position="1591" topLine="30" />
 	</File>
-	<File name="../../../src/picosrc/graphics/integrators/image/XYIterator.cc" open="1" top="0" tabpos="7">
+	<File name="../../../src/picosrc/graphics/integrators/image/XYIterator.cc" open="0" top="0" tabpos="7">
 		<Cursor position="8359" topLine="125" />
 	</File>
 	<File name="../../../src/picosrc/graphics/integrators/ray/Preview.cc" open="0" top="0" tabpos="0">
@@ -184,8 +202,8 @@
 	<File name="../../../src/picosrc/graphics/integrators/ray/Simple.cc" open="0" top="0" tabpos="0">
 		<Cursor position="5962" topLine="106" />
 	</File>
-	<File name="../../../src/picosrc/graphics/integrators/surface/Path.cc" open="1" top="1" tabpos="3">
-		<Cursor position="5519" topLine="96" />
+	<File name="../../../src/picosrc/graphics/integrators/surface/Path.cc" open="0" top="0" tabpos="3">
+		<Cursor position="5301" topLine="96" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/AABox.cc" open="0" top="0" tabpos="7">
 		<Cursor position="7588" topLine="182" />
@@ -220,6 +238,9 @@
 	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="1">
 		<Cursor position="1048" topLine="0" />
 	</File>
+	<File name="../../../src/picosrc/misc/rng/MersenneTwister.cc" open="0" top="0" tabpos="0">
+		<Cursor position="1058" topLine="0" />
+	</File>
 	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="0" top="0" tabpos="2">
 		<Cursor position="26852" topLine="575" />
 	</File>
@@ -238,7 +259,7 @@
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
 		<Cursor position="33482" topLine="929" />
 	</File>
-	<File name="../../../src/submain/ssdf.cc" open="1" top="0" tabpos="1">
+	<File name="../../../src/submain/ssdf.cc" open="0" top="0" tabpos="1">
 		<Cursor position="21264" topLine="610" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="8">
