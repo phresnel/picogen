@@ -26,48 +26,7 @@
 #include <picogen/picogen.h>
 #include <picogen/experimental/Snow.h>
 
-
-struct SnowBRDF : public picogen::graphics::material::abstract::IBRDF {
-
-    private:
-        ::picogen::generators::rng::IRNG *rng;
-    public:
-
-    SnowBRDF() {}
-    virtual void setRNG (::picogen::generators::rng::IRNG *rng) { this->rng = rng; }
-    virtual bool randomSample (
-        param_out (picogen::real,brdf),
-        param_out (picogen::real,p),
-        param_out (bool,specular),
-        param_out (picogen::geometrics::Ray,r_out),
-        param_in (picogen::geometrics::Ray,r_in),
-        param_in (picogen::geometrics::Vector3d,N)
-    ) const {
-        using picogen::constants::pi;
-        using picogen::real;
-        using picogen::geometrics::Vector3d;
-
-        /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
-         return false;*/
-        r_out.x() = r_in.x();
-        p = 1.0;
-        brdf = 1;
-        do {
-            r_out.w() = Vector3d (
-                            rng->randf()*2.0-1.0,
-                            rng->randf()*2.0-1.0,
-                            rng->randf()*2.0-1.0
-                        );
-        } while (r_out.w().lengthSq() >1 || N*r_out.w() <0.0);
-
-        r_out.w() = r_out.w().normal();
-        p = 1.0/ (2.0*pi);// / xrt::constants::pi;
-        brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
-        specular = false;
-        return true;
-    }
-};
-static SnowBRDF snowBRDF;
+static ::picogen::graphics::material::brdf::Lambertian snowBRDF;
 
 
 
