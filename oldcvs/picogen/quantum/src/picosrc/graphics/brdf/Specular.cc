@@ -31,14 +31,14 @@ namespace picogen {
             namespace brdf {
 
                 Specular::Specular()
-                : reflectance (1.0)
+                : reflectance (1.0), rng (0)
                 {
                 }
 
 
 
-                Specular::Specular( real reflectance )
-                : reflectance (reflectance)
+                Specular::Specular (real reflectance)
+                : reflectance (reflectance), rng (0)
                 {
                 }
 
@@ -58,6 +58,10 @@ namespace picogen {
                         param_in (Ray,r_in),
                         param_in (Vector3d,N)
                 ) const {
+                    // Tests {
+                    assert (0 != this->rng);
+                    // }
+
                     using picogen::constants::pi;
                     if (rng->randf() > reflectance)
                         return false;
