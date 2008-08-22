@@ -39,43 +39,7 @@ using picogen::graphics::color::Color;
 using std::string;
 using namespace picogen::misc::exceptions;
 
-
-struct BRDF : public picogen::graphics::material::abstract::IBRDF {
-    BRDF() {}
-    virtual bool randomSample (
-        param_out (picogen::real,brdf),
-        param_out (picogen::real,p),
-        param_out (bool,specular),
-        param_out (picogen::geometrics::Ray,r_out),
-        param_in (picogen::geometrics::Ray,r_in),
-        param_in (picogen::geometrics::Vector3d,N)
-    ) const {
-        using picogen::constants::pi;
-        using picogen::real;
-        using picogen::geometrics::Vector3d;
-
-        /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
-         return false;*/
-        r_out.setPosition( r_in.getPosition() );
-        p = 1.0;
-        brdf = 1;
-        do {
-            r_out.w() = Vector3d (
-                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0
-                        );
-        } while (r_out.getDirection().computeLengthSq() >1 || N*r_out.getDirection() <0.0);
-
-        //r_out.w() = r_out.w().normal();
-        r_out.setDirection( r_out.getDirection().computeNormal() );
-        p = 1.0/ (2.0*pi);// / xrt::constants::pi;
-        brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
-        specular = false;
-        return true;
-    }
-};
-static BRDF brdf;
+static ::picogen::graphics::material::brdf::Lambertian brdf;
 
 
 
