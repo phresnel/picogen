@@ -43,6 +43,8 @@ namespace picogen {
                         //
                         // returns false  if  the  in-ray is absorbed, and if so,
                         // the out-params are undefined.
+
+                        virtual void setRNG (::picogen::generators::rng::IRNG *rng) = 0;
                         virtual bool randomSample (
                             param_out (::picogen::real,brdf),
                             param_out (::picogen::real,p),
