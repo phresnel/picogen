@@ -45,6 +45,9 @@
 #include <sstream>
 #include <list>
 
+// #define NDEBUG
+#include <cassert>
+
 
 
 #ifdef XRT_DEBUG
