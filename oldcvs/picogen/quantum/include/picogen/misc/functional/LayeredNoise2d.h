@@ -23,9 +23,6 @@
  */
 
 #include <map>
-
-#include <boost/random.hpp>
-
 #include <picogen.h>
 
 namespace picogen {
