@@ -31,7 +31,7 @@
 1218977756 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
 	<picogen/picogen.h>
 
-1219344009 /home/smach/Projects/picogen/quantum/include/picogen.h
+1219386660 /home/smach/Projects/picogen/quantum/include/picogen.h
 	<math.h>
 	<float.h>
 	<iostream>
@@ -39,6 +39,7 @@
 	<sstream>
 	<list>
 	<picogen/misc/exceptions.h>
+	<picogen/generators/generators.h>
 	<picogen/misc/geometrics.h>
 	<picogen/misc/templates.h>
 	<picogen/graphics/image.h>
@@ -49,7 +50,6 @@
 	<picogen/graphics/film.h>
 	<picogen/graphics/objects.h>
 	<picogen/graphics/integrators.h>
-	<picogen/generators/generators.h>
 	<picogen/common.h>
 
 1212003360 /home/smach/Projects/picogen/quantum/include/picogen/misc/exceptions.h
@@ -63,13 +63,13 @@
 
 1219081694 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
 
-1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
+1219386709 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
 	"brdf/Lambertian.h"
 	"brdf/Specular.h"
 
-1218977499 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Lambertian.h
+1219386866 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Lambertian.h
 
-1218977499 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular.h
+1219386995 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular.h
 
 1218977653 /home/smach/Projects/picogen/quantum/include/picogen/misc/functions.h
 	<stdio.h>
@@ -153,12 +153,11 @@
 	<picogen/picogen.h>
 	<picogen/misc/functional/LayeredNoise2d.h>
 
-1218977503 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/LayeredNoise2d.h
+1219386371 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/LayeredNoise2d.h
 	<map>
-	<boost/random.hpp>
 	<picogen.h>
 
-1213189788 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/LayeredNoise2d.cc
+1219385847 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/LayeredNoise2d.cc
 	<string>
 	<sstream>
 	<picogen/misc/functional/LayeredNoise2d.h>
@@ -375,16 +374,16 @@
 	<fcntl.h>
 	<stdint.h>
 
-1219342695 source:/home/smach/Projects/picogen/quantum/include/picogen/foreign/libcoyotl/mtwister.cpp
+1219387344 source:/home/smach/Projects/picogen/quantum/include/picogen/foreign/libcoyotl/mtwister.cpp
 	"mtwister.h"
 
 1219342688 /home/smach/Projects/picogen/quantum/include/picogen/foreign/libcoyotl/mtwister.h
 	"prng.h"
 
-1219346923 /home/smach/Projects/picogen/quantum/include/picogen/generators/generators.h
+1219386539 /home/smach/Projects/picogen/quantum/include/picogen/generators/generators.h
 	<picogen/generators/rng/MersenneTwister.h>
 
-1219346506 /home/smach/Projects/picogen/quantum/include/picogen/generators/rng/MersenneTwister.h
+1219386548 /home/smach/Projects/picogen/quantum/include/picogen/generators/rng/MersenneTwister.h
 	<picogen/foreign/libcoyotl/mtwister.h>
 	<picogen/picogen.h>
 

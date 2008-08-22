@@ -259,7 +259,6 @@
 		<Unit filename="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" />
-		<Unit filename="../../../src/picosrc/misc/rng/MersenneTwister.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/AST2LLVM.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/nano-c.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/picogen-c.cc" />
