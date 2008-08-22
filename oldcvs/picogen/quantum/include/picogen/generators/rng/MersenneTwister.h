@@ -33,7 +33,7 @@ namespace picogen {
     namespace generators {
         namespace rng {
 
-            class MersenneTwister {
+            class MersenneTwister : public IRNG {
                     libcoyotl::mtwister coyoteTwister;
                 public:
                     MersenneTwister ();
