@@ -84,51 +84,6 @@ static const ConstantShader  blue (picogen::graphics::color::Color (0.3, 0.3, 1.
 static const ConstantShader  white (picogen::graphics::color::Color (1.0, 1.0, 1.0));
 
 
-struct Lambertian : public picogen::graphics::material::abstract::IBRDF {
-    real mirror;
-
-    Lambertian() : mirror (0) {}
-    Lambertian (real m) : mirror (m) {}
-
-    virtual bool randomSample (
-        param_out (real,brdf),
-        param_out (real,p),
-        param_out (bool,specular),
-        param_out (Ray,r_out),
-        param_in (Ray,r_in),
-        param_in (Vector3d,N)
-    ) const {
-        using picogen::constants::pi;
-        /*if( (static_cast<real>( rand() % 10000 ) / 10000.0)>0.9 )
-         return false;*/
-        r_out.x() = r_in.x();
-        p = 1.0;
-        brdf = 1;
-        if ( ( (rand() %10000) /10000.0) < mirror) {
-            r_out.w() = r_in.w() - N.normal() *2* (r_in.w() *N.normal());
-
-            p = fabs (N.normal() *r_out.w().normal());
-            brdf = 1.0;
-            specular = true;
-        } else {
-            do {
-                r_out.w() = Vector3d (
-                                static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                                static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                                static_cast<real> (rand() % 20000) / 10000.0 - 1.0
-                            );
-            } while (r_out.w().lengthSq() >1 || N*r_out.w() <0.0);
-
-            r_out.w() = r_out.w().normal();
-            p = (1.0-mirror) / (2.0*pi);// / xrt::constants::pi;
-            brdf = 1.0/pi;// / xrt::constants::pi;//r_out.w().normal() * N;// / xrt::constants::pi;
-            specular = false;
-        }
-        return true;
-    }
-};
-
-
 template<class t_surface>
 void
 draw (
@@ -403,7 +358,7 @@ class Clouds : public TestScene {
                 function4.seed (5);
                 uv_to_scalar::Power moon_multifractal (&function4, 1.0);
 
-                Lambertian lambertian;
+                ::picogen::graphics::material::brdf::Lambertian lambertian;
                 heightField.setBRDF (&lambertian);
                 heightField.setShader (&white);
                 heightField.setBox (Vector3d (-10000,0,-10000), Vector3d (10000,400.0,10000));
@@ -432,7 +387,7 @@ class Clouds : public TestScene {
                 function4.seed (5);
                 uv_to_scalar::Power moon_multifractal (&function4, 0.4);
 
-                Lambertian lambertian;
+                ::picogen::graphics::material::brdf::Lambertian lambertian;
                 heightField.setBRDF (&lambertian);
                 heightField.setShader (&white);
                 heightField.setBox (Vector3d (-10000,-3000,-10000), Vector3d (10000,0.0,10000));
