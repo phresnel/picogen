@@ -85,9 +85,14 @@ void mtwister::init_helper()
 uint32_t mtwister::get_rand()
 {
     // Note: variable names match those in original example
+    // Note2: following 2 ifndefs added to keep gcc silent when compiling with USE_METATEMP / seb
+    #ifndef USE_METATEMP
     const uint32_t mag01[2] = { 0, MATRIX_A };
+    #endif // USE_METATEMP
     uint32_t y;
+    #ifndef USE_METATEMP
     size_t   kk;
+    #endif
 
     // Generate N words at a time
     if (m_mti >= N)
