@@ -26,6 +26,13 @@
 #include <picogen/compile_info.h>
 
 
+#ifdef NDEBUG
+#warning "note: assert() macros disabled"
+#else
+#warning "note: assert() macros enabled"
+#endif
+
+
 static void disclaimer() {
     using namespace std;
     cout
