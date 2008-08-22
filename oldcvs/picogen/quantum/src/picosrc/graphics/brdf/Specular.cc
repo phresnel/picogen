@@ -44,6 +44,12 @@ namespace picogen {
 
 
 
+                void Specular::setRNG (::picogen::generators::rng::IRNG *rng) {
+                    this->rng = rng;
+                }
+
+
+
                 bool Specular::randomSample (
                         param_out (real,brdf),
                         param_out (real,p),
@@ -53,7 +59,7 @@ namespace picogen {
                         param_in (Vector3d,N)
                 ) const {
                     using picogen::constants::pi;
-                    if ((static_cast<real> (rand()) / static_cast<real> (RAND_MAX)) > reflectance)
+                    if (rng->randf() > reflectance)
                         return false;
                     r_out.x() = r_in.x();
                     r_out.w() = r_in.w() - N.normal() *2* (r_in.w() *N.normal());

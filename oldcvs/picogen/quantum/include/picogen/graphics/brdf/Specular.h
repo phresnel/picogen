@@ -39,12 +39,15 @@ namespace picogen {
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
 
                         const real reflectance;
+                        ::picogen::generators::rng::IRNG *rng;
 
                     public:
                         Specular();
                         Specular( real reflectance );
 
-                        virtual bool randomSample (
+                        void setRNG (::picogen::generators::rng::IRNG *rng);
+
+                        bool randomSample (
                             param_out (real,brdf),
                             param_out (real,p),
                             param_out (bool,specular),

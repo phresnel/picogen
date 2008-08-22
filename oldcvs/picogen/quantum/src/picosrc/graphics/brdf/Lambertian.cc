@@ -37,9 +37,15 @@ namespace picogen {
 
 
 
-                Lambertian::Lambertian( real reflectance )
+                Lambertian::Lambertian (real reflectance)
                 : reflectance (reflectance)
                 {
+                }
+
+
+
+                void Lambertian::setRNG (::picogen::generators::rng::IRNG *rng) {
+                    this->rng = rng;
                 }
 
 
@@ -53,16 +59,16 @@ namespace picogen {
                         param_in (Vector3d,N)
                 ) const {
                     using ::picogen::constants::pi;
-                    if ((static_cast<real> (rand()) / static_cast<real> (RAND_MAX)) > reflectance)
+                    if (rng->randf() > reflectance)
                         return false;
                     r_out.x() = r_in.x();
                     do {
                         r_out.w() = Vector3d (
-                            (static_cast<real> (rand()) / (0.5 * static_cast<real> (RAND_MAX)))-1.0,
-                            (static_cast<real> (rand()) / (0.5 * static_cast<real> (RAND_MAX)))-1.0,
-                            (static_cast<real> (rand()) / (0.5 * static_cast<real> (RAND_MAX)))-1.0
+                            rng->randf()*2.0-1.0,
+                            rng->randf()*2.0-1.0,
+                            rng->randf()*2.0-1.0
                         );
-                    } while (r_out.w().lengthSq() >1 || N*r_out.w() <0.0);
+                    } while (r_out.w().lengthSq() > 1 || N*r_out.w() < 0.0);
 
                     r_out.w() = r_out.w().normal();
                     p = 1.0 / (2.0*pi);

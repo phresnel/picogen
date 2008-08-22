@@ -28,7 +28,13 @@
 
 
 struct SnowBRDF : public picogen::graphics::material::abstract::IBRDF {
+
+    private:
+        ::picogen::generators::rng::IRNG *rng;
+    public:
+
     SnowBRDF() {}
+    virtual void setRNG (::picogen::generators::rng::IRNG *rng) { this->rng = rng; }
     virtual bool randomSample (
         param_out (picogen::real,brdf),
         param_out (picogen::real,p),
@@ -48,9 +54,9 @@ struct SnowBRDF : public picogen::graphics::material::abstract::IBRDF {
         brdf = 1;
         do {
             r_out.w() = Vector3d (
-                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0,
-                            static_cast<real> (rand() % 20000) / 10000.0 - 1.0
+                            rng->randf()*2.0-1.0,
+                            rng->randf()*2.0-1.0,
+                            rng->randf()*2.0-1.0
                         );
         } while (r_out.w().lengthSq() >1 || N*r_out.w() <0.0);
 
