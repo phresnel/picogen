@@ -34,6 +34,7 @@
 					<Add option="`llvm-config --cflags`" />
 					<Add option="`llvm-config --cppflags`" />
 					<Add option="-DPICOGEN_RELEASE" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -50,6 +51,7 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-DPICOGEN_RELEASE" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -80,6 +82,7 @@
 					<Add option="-fdata-sections \" />
 					<Add option="`llvm-config --cflags` \" />
 					<Add option="`llvm-config --cppflags`" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -112,6 +115,7 @@
 					<Add option="`llvm-config --cflags` \" />
 					<Add option="`llvm-config --cppflags` \" />
 					<Add option="-ftree-vectorizer-verbose=1" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -128,6 +132,7 @@
 					<Add option="`llvm-config --cflags`" />
 					<Add option="`llvm-config --cppflags`" />
 					<Add option="-O0" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="`sdl-config --libs`" />
