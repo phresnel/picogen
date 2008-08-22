@@ -102,6 +102,8 @@ draw (
     float saturation,
     int aa_width
 ) {
+    assert (0 != p_target);
+
     if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
         return;
 
@@ -196,6 +198,8 @@ class SSDFScene : public Scene, public SSDFBackend {
         bool enablePreethamSky;
         real fogMaxDist, fogExp;
         //::picogen::common::AABox      box;
+
+        ::picogen::generators::rng::MersenneTwister twister;
 
 
         enum SCENE_TYPE {
@@ -344,6 +348,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             // Effectively like gcc's -fmerge-all-constants.
             if (brdfMap.end() == brdfMap.find (brdfId)) {
                 currentBRDF = new ::picogen::graphics::material::brdf::Lambertian(reflectance);
+                currentBRDF->setRNG (&twister);
                 brdfMap [brdfId] = currentBRDF;
             } else {
                 currentBRDF = brdfMap [brdfId];
@@ -361,6 +366,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             // Effectively like gcc's -fmerge-all-constants.
             if (brdfMap.end() == brdfMap.find (brdfId)) {
                 currentBRDF = new ::picogen::graphics::material::brdf::Specular(reflectance);
+                currentBRDF->setRNG (&twister);
                 brdfMap [brdfId] = currentBRDF;
             } else {
                 currentBRDF = brdfMap [brdfId];
