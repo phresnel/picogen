@@ -151,12 +151,14 @@ namespace picogen {
 } // namespace picogen {
 
 
+#include <picogen/generators/generators.h>
 
 #include <picogen/misc/geometrics.h>
 #include <picogen/misc/templates.h>
 
 #include <picogen/graphics/image.h>
 #include <picogen/graphics/material.h>
+
 
 namespace picogen {
     namespace graphics {
@@ -209,8 +211,6 @@ namespace picogen {
 #include <picogen/graphics/film.h>
 #include <picogen/graphics/objects.h>
 #include <picogen/graphics/integrators.h>
-
-#include <picogen/generators/generators.h>
 
 #include <picogen/common.h>
 
