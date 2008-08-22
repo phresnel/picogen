@@ -29,6 +29,12 @@
 namespace picogen {
     namespace generators {
         namespace rng {
+            class IRNG {
+                public:
+                    virtual void seed (::picogen::uint32 seed) = 0;
+                    virtual ::picogen::uint32 rand() = 0;
+                    virtual ::picogen::real randf() = 0; // [0..1]
+            };
         } // namespace rng
     } // namespace generators
 } // namespace picogen
