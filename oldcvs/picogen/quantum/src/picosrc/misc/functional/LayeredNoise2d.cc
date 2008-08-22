@@ -106,7 +106,7 @@ namespace picogen {
                 // Initialise Noise.
                 //====---- - - -  -   -    -      -
 
-                srand (seed);
+                ::picogen::generators::rng::MersenneTwister twister (seed);
 
                 unsigned int offsetLutNumBits = 8;
                 offsetLutMask = 0;
@@ -119,8 +119,8 @@ namespace picogen {
                 rngLut    = new real [offsetLutSize];
 
                 for (unsigned int u=0; u<offsetLutSize; ++u) {
-                    offsetLut [u] = static_cast<unsigned int> ( ( static_cast<real> (rand()) / static_cast<real> (RAND_MAX-1) ) * static_cast<real> (offsetLutSize) );
-                    rngLut    [u] = -0.5 + static_cast<real> (rand()) / static_cast<real> (RAND_MAX);
+                    offsetLut [u] = static_cast<unsigned int> ((twister.randf() ) * static_cast<real> (offsetLutSize));
+                    rngLut    [u] = -0.5 + twister.randf();
                 }
 
             }
