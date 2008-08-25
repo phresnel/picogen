@@ -54,6 +54,9 @@ namespace picogen {
                             param_in (Ray,r_in),
                             param_in (Vector3d,N)
                         ) const;
+
+                        bool isSpecular () const;
+                        ::picogen::real getReflectance () const;
                 };
 
             } // namespace brdf {
