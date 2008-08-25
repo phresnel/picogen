@@ -53,6 +53,13 @@ namespace picogen {
                             param_in (::picogen::geometrics::Ray,r_in),
                             param_in (::picogen::geometrics::Vector3d,N)
                         ) const = 0;
+
+                        // These two functions are meant to be helpers
+                        // and should return the *overall* values of each.
+                        // They should be good enough to be usefull for the
+                        // Whitted-surface-integrator.
+                        virtual bool isSpecular () const = 0;
+                        virtual ::picogen::real getReflectance () const = 0;
                 };
 
                 class IShader {
