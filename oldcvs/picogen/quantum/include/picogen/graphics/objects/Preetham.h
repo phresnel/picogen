@@ -33,10 +33,10 @@ namespace picogen {
             class Preetham : public ::picogen::graphics::objects::abstract::ISky {
 
                 private:
-                    typedef ::picogen::real              real;
+                    typedef ::picogen::real                    real;
                     typedef ::picogen::geometrics::Vector3d    Vector3d;
                     typedef ::picogen::geometrics::Ray         Ray;
-                    typedef ::picogen::graphics::color::Color Color;
+                    typedef ::picogen::graphics::color::Color  Color;
 
                 private:
                     Vector3d m_sunDirection;
@@ -64,27 +64,30 @@ namespace picogen {
 
 
                     // -- shading / sampling ----------------------------------
-                    virtual void shade (param_out (Color,color), param_in (Ray,ray)) const;
-                    virtual void sunShade (param_out (Color,color), param_in (Ray,ray)) const;
-                    virtual void sunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const;
-                    virtual void atmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const;
+                    void shade (param_out (Color,color), param_in (Ray,ray)) const;
+                    void sunShade (param_out (Color,color), param_in (Ray,ray)) const;
+                    void sunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const;
+                    void atmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const;
                     // --------------------------------------------------------
 
 
 
                     // -- sun direction / solid angle -------------------------
-                    Vector3d getSunDirection() const;
                     void setSunDirection (param_in (Vector3d,ray));
                     void setSunDirection (real lat, real longi, int sm, int jd, real tOfDay);
                     void setSunSolidAngleFactor (real f);
+                    //Vector3d getSunDirection() const;
+                    void getSunDirection (param_out (Vector3d,direction)) const;
+                    real getSunArealFactor () const;
                     // --------------------------------------------------------
 
 
 
                     // -- sun color -------------------------------------------
                     void setSunColor (Color col);
-                    Color getSunColor() const;
                     void setColorFilter (Color col);
+                    //Color getSunColor() const;
+                    void getSunColor (param_out (Color,color)) const;
                     // --------------------------------------------------------
 
 
