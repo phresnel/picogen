@@ -65,6 +65,7 @@ namespace picogen {
                     } else {
                         //> sample new ray and get brdf/probability
                         primaryIntersection = I;
+                        /*
                         real BRDF,pdf;
                         Ray  r_out,  r_in (ray (I.t), ray.w());
                         bool specular = false;
@@ -94,13 +95,68 @@ namespace picogen {
                                         col += I.color * sunColor * c;
                                     }
                                 }
-                                //*/
                                 sample->skyShader->atmosphereShade (col, col, ray, I.t);
                             }
                             return col;
                         } else {
                             //> has been absorbed
                             return (I.color*I.L_e);
+                        }*/
+
+                        assert (0 != sample->skyShader);
+                        assert (0 != I.brdf);
+
+                        using namespace ::picogen::constants;
+
+                        if (!I.brdf->isSpecular()) {
+                            Vector3d sunDirection;
+                            Color sunColor;
+                            sample->skyShader->getSunDirection (sunDirection);
+                            sample->skyShader->getSunColor (sunColor);
+
+                            const real f__ = fabs (I.normal.normal() * sunDirection.normal());
+                            const real f_ = f__*sample->skyShader->getSunArealFactor ();
+                            const real f = f_ < 0.0 ? 0.0 : f_ > 1.0 ? 1.0 : f_;
+                            //const real f = (I.brdf->normal * dot) / pdf;
+                            intersection_t dummyi;
+                            //col += (I.color*I.L_e) + (L_i (r_out,specularOrFirst,dummyi,max-1) * I.color * f);
+                            return I.color*I.L_e + I.color*sunColor*f;
+                        } else {
+                            Ray  r_out,  r_in (ray (I.t), ray.w());
+                            real BRDF, pdf;
+                            bool specular;
+                            if (I.brdf->randomSample (BRDF, pdf, specular, r_out, r_in, I.normal)) {
+                                if (specular == false)
+                                    specularOrFirst = false;
+
+                                Color col (0.0,0.0,0.0);
+
+                                //> do epsilon correction
+                                r_out.x() = r_out.x() + I.normal*epsilon;
+                                const real dot = fabs (I.normal.normal() * r_out.w().normal());
+                                const real f = (BRDF*dot) / pdf;
+                                intersection_t dummyi;
+                                col += (I.color*I.L_e) + (L_i (r_out,specularOrFirst,dummyi,max-1) * I.color * f);
+
+                                //> atmosphere lighting and shading
+                                if (0 != sample->skyShader) {
+                                    if (!specularOrFirst) {
+                                        Ray sunRay;
+                                        Color sunColor;
+                                        real sun_p = 0.0;
+                                        sample->skyShader->sunSample (sunColor, sunRay, sun_p, r_out.x());
+                                        intersection_t tmp_I;
+                                        if (sun_p > epsilon && (0==sample->intersectable || !sample->intersectable->intersect (tmp_I, sunRay))) {
+                                            real c = I.normal.normal() * sunRay.w();
+                                            col += I.color * sunColor * c;
+                                        }
+                                    }
+                                    sample->skyShader->atmosphereShade (col, col, ray, I.t);
+                                }
+                                return col;
+                            } else {
+                                return (I.color*I.L_e);
+                            }
                         }
                     }
                 }
@@ -109,7 +165,7 @@ namespace picogen {
 
                 bool Whitted::integrate (::picogen::graphics::structs::sample &sample) const {
                     this->sample = &sample;
-                    sample.color = L_i (sample.cameraRay, true, *sample.primaryIntersection, 3);
+                    sample.color = L_i (sample.cameraRay, true, *sample.primaryIntersection, 5);
                     /*if (sample.primaryIntersection->t > 0) {
                         printf ("{%.1f, %.1f, %.1f}", sample.primaryIntersection->normal[0], sample.primaryIntersection->normal[1], sample.primaryIntersection->normal[2]);
                     }*/
