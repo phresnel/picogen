@@ -43,9 +43,12 @@ namespace picogen {
 }
 
 #include "integrators/surface/Path.h"
+#include "integrators/surface/Whitted.h"
 
 #include "integrators/image/XYIterator.h"
+// obsolete ++
 #include "integrators/ray/Simple.h"
 #include "integrators/ray/Preview.h"
+// --
 
 #endif /* INTEGRATORS_H__INCLUDED */
