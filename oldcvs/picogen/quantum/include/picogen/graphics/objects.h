@@ -80,6 +80,9 @@ namespace picogen {
                         virtual void sunShade (param_out (Color,color), param_in (Ray,ray)) const = 0;
                         virtual void sunSample (param_out (Color,color), param_out (Ray,ray), param_out (real,p), param_in (Vector3d,position)) const = 0;
                         virtual void atmosphereShade (param_out (Color,color), param_in (Color,src_color), param_in (Ray,ray), real distance) const = 0;
+                        virtual void getSunColor (param_out (Color,color)) const = 0;
+                        virtual void getSunDirection (param_out (Vector3d,direction)) const = 0;
+                        virtual real getSunArealFactor () const = 0;
                 };
             } // namespace abstract
         } // namespace objects
