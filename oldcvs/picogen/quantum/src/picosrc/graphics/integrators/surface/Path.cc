@@ -109,7 +109,7 @@ namespace picogen {
 
                 bool Path::integrate (::picogen::graphics::structs::sample &sample) const {
                     this->sample = &sample;
-                    sample.color = L_i (sample.cameraRay, true, *sample.primaryIntersection, 3);
+                    sample.color = L_i (sample.cameraRay, true, *sample.primaryIntersection, 10);
                     /*if (sample.primaryIntersection->t > 0) {
                         printf ("{%.1f, %.1f, %.1f}", sample.primaryIntersection->normal[0], sample.primaryIntersection->normal[1], sample.primaryIntersection->normal[2]);
                     }*/
