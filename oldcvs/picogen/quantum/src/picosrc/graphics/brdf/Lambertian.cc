@@ -82,6 +82,19 @@ namespace picogen {
                 }
 
 
+
+                bool Lambertian::isSpecular () const {
+                    return false;
+                }
+
+
+
+                ::picogen::real Lambertian::getReflectance () const {
+                    return reflectance;
+                }
+
+
+
             } // namespace brdf {
         } // namespace material {
     } // namespace graphics {

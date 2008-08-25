@@ -75,6 +75,19 @@ namespace picogen {
                 }
 
 
+
+                bool Specular::isSpecular () const {
+                    return true;
+                }
+
+
+
+                ::picogen::real Specular::getReflectance () const {
+                    return reflectance;
+                }
+
+
+
             } // namespace brdf {
         } // namespace material {
     } // namespace graphics {
