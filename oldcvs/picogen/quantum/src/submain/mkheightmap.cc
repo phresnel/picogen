@@ -81,7 +81,7 @@ template <typename T> struct Heightmap {
 
         // okay, we provide an operator (), but just for screen dumping (hence i const it)
         const Hexel operator () ( unsigned int x, unsigned int y ) const {
-            const Hexel tmp = map[ y*width + x ];
+            const Hexel tmp = map[ ((width-1)-y)*width + x ];
             return tmp < 0.0 ? 0.0 : tmp > 1.0 ? 1.0 : tmp;
         }
 
