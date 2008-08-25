@@ -16,10 +16,10 @@
 	<picogen/picogen.h>
 	<picogen/compile_info.h>
 
-1219426003 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Lambertian.cc
+1219645590 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Lambertian.cc
 	<picogen/picogen.h>
 
-1219426012 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular.cc
+1219645634 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular.cc
 	<picogen/picogen.h>
 
 1219424670 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/AABox.cc
@@ -28,7 +28,7 @@
 1218977180 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/LinearList.cc
 	<picogen/picogen.h>
 
-1218977756 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
+1219646571 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
 	<picogen/picogen.h>
 
 1219426475 /home/smach/Projects/picogen/quantum/include/picogen.h
@@ -64,13 +64,13 @@
 
 1219081694 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
 
-1219386709 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
+1219645491 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
 	"brdf/Lambertian.h"
 	"brdf/Specular.h"
 
-1219386866 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Lambertian.h
+1219645528 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Lambertian.h
 
-1219386995 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular.h
+1219645513 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular.h
 
 1218977653 /home/smach/Projects/picogen/quantum/include/picogen/misc/functions.h
 	<stdio.h>
@@ -83,7 +83,7 @@
 
 1218977499 /home/smach/Projects/picogen/quantum/include/picogen/graphics/cameras.h
 
-1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
+1219646540 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
 	"objects/Snow.h"
 	"objects/Rain.h"
 	"objects/LinearList.h"
@@ -100,7 +100,7 @@
 
 1218977502 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/TriBIH.h
 
-1218977501 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Preetham.h
+1219646573 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Preetham.h
 
 1218977502 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
 	<picogen/graphics/objects.h>
@@ -176,7 +176,7 @@
 
 1215108969 /home/smach/Projects/picogen/quantum/include/picogen/misc/scripting/nano-c.h
 
-1218977907 source:/home/smach/Projects/picogen/quantum/src/submain/mkheightmap.cc
+1219578167 source:/home/smach/Projects/picogen/quantum/src/submain/mkheightmap.cc
 	<stdio.h>
 	<ctype.h>
 	<iostream>
@@ -206,7 +206,7 @@
 	<string>
 	<dlfcn.h>
 
-1219168728 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1219683627 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -236,7 +236,7 @@
 	<picogen/graphics/objects/templates/TriBIH.h>
 	<picogen/graphics/objects/CloudsBouthors.h>
 
-1218977501 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/CloudsBouthors.h
+1219645273 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/CloudsBouthors.h
 
 1215609933 source:/home/smach/Projects/picogen/quantum/src/experimental/PicoPico.cc
 	<vector>
@@ -306,7 +306,7 @@
 1218977179 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Simple.cc
 	<picogen/picogen.h>
 
-1219577306 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators.h
+1219682696 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators.h
 	"integrators/surface/Path.h"
 	"integrators/surface/Whitted.h"
 	"integrators/image/XYIterator.h"
@@ -355,7 +355,7 @@
 	<picogen/graphics/film.h>
 	<picogen/graphics/film/RayDirVis.h>
 
-1219168776 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Path.cc
+1219684483 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Path.cc
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Path.h>
 
@@ -393,4 +393,8 @@
 	<picogen/generators/rng/MersenneTwister.h>
 
 1219577251 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/surface/Whitted.h
+
+1219646615 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
+	<picogen/picogen.h>
+	<picogen/graphics/integrators/surface/Whitted.h>
 
