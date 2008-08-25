@@ -122,8 +122,14 @@ namespace picogen {
 
 
 
-            Vector3d Preetham::getSunDirection() const {
+            /*Vector3d Preetham::getSunDirection() const {
                 return m_sunDirection;
+            }*/
+
+
+
+            void Preetham::getSunDirection (param_out (Vector3d,direction)) const {
+                direction = m_sunDirection;
             }
 
 
@@ -174,9 +180,15 @@ namespace picogen {
 
 
 
-            Color Preetham::getSunColor() const {
-                return m_sunColor;
+            void Preetham::getSunColor (param_out (Color,color)) const {
+                color = m_sunColor;
             }
+
+
+
+            /*Color Preetham::getSunColor() const {
+                return m_sunColor;
+            }*/
 
 
 
@@ -332,6 +344,12 @@ namespace picogen {
                 ray.x() = position;
                 p = 1.0;
                 */
+            }
+
+
+
+            real Preetham::getSunArealFactor () const {
+                return (m_sunSolidAngle/ (4.0*pi));
             }
 
 
