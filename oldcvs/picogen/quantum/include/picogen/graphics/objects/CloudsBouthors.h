@@ -384,7 +384,9 @@ namespace picogen {
                         if (!intersectable->intersect (intersection, ray))
                             return false;
 
-                        const Vector3d L = sky->getSunDirection();
+                        //const Vector3d L = sky->getSunDirection();
+                        Vector3d L;
+                        sky->getSunDirection (L);
                         //intersection.L_e = 0.0;//intersection.L_e < 0.0 ? 0.0 : intersection.L_e;
                         real alpha;
                         intersection.L_e = 0.0;
