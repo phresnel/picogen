@@ -11,7 +11,7 @@
 
 1218977499 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Snow.h
 
-1218969840 source:/home/smach/Projects/picogen/quantum/src/main.cc
+1219426473 source:/home/smach/Projects/picogen/quantum/src/main.cc
 	<iostream>
 	<picogen/picogen.h>
 	<picogen/compile_info.h>
@@ -31,7 +31,7 @@
 1218977756 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/Preetham.cc
 	<picogen/picogen.h>
 
-1219425702 /home/smach/Projects/picogen/quantum/include/picogen.h
+1219426475 /home/smach/Projects/picogen/quantum/include/picogen.h
 	<math.h>
 	<float.h>
 	<iostream>
@@ -306,8 +306,9 @@
 1218977179 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Simple.cc
 	<picogen/picogen.h>
 
-1219166062 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators.h
+1219577306 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators.h
 	"integrators/surface/Path.h"
+	"integrators/surface/Whitted.h"
 	"integrators/image/XYIterator.h"
 	"integrators/ray/Simple.h"
 	"integrators/ray/Preview.h"
@@ -390,4 +391,6 @@
 
 1219346779 source:/home/smach/Projects/picogen/quantum/src/picosrc/generators/rng/MersenneTwister.cc
 	<picogen/generators/rng/MersenneTwister.h>
+
+1219577251 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/surface/Whitted.h
 

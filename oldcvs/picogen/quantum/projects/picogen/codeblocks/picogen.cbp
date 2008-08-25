@@ -208,6 +208,7 @@
 		<Unit filename="../../../include/picogen/graphics/integrators/ray/Preview.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators/ray/Simple.h" />
 		<Unit filename="../../../include/picogen/graphics/integrators/surface/Path.h" />
+		<Unit filename="../../../include/picogen/graphics/integrators/surface/Whitted.h" />
 		<Unit filename="../../../include/picogen/graphics/material.h" />
 		<Unit filename="../../../include/picogen/graphics/objects.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/AABox.h" />
@@ -253,6 +254,7 @@
 		<Unit filename="../../../src/picosrc/graphics/integrators/ray/Preview.cc" />
 		<Unit filename="../../../src/picosrc/graphics/integrators/ray/Simple.cc" />
 		<Unit filename="../../../src/picosrc/graphics/integrators/surface/Path.cc" />
+		<Unit filename="../../../src/picosrc/graphics/integrators/surface/Whitted.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/AABox.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/LinearList.cc" />
