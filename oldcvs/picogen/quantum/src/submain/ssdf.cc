@@ -168,11 +168,15 @@ draw (
 
 
 
+typedef enum surface_integrator_type_t {
+    whitted_style,
+    path_tracing
+} surface_integrator_type;
 
 class Scene {
     public:
         virtual std::string getName() const = 0;
-        virtual void initRenderer (int width, int height, int antiAliasingWidth) = 0;
+        virtual void initRenderer (int width, int height, int antiAliasingWidth, surface_integrator_type stype) = 0;
         virtual void flip (SDL_Surface *screen, float scale, float saturation) = 0;
         virtual void begin() = 0;
         virtual bool renderMore (int numPixels) = 0;  // i wanted to call it continue, but then continue is obviously a reserved word :P
@@ -608,7 +612,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
 
-        virtual void initRenderer (int width, int height, int antiAliasingWidth) {
+        virtual void initRenderer (int width, int height, int antiAliasingWidth, surface_integrator_type stype) {
             using namespace picogen;
 
             this->antiAliasingWidth = antiAliasingWidth;
@@ -650,7 +654,16 @@ class SSDFScene : public Scene, public SSDFBackend {
 
             renderer.setIntersectable (sceneRoot);
 
-            ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
+            ::picogen::graphics::integrators::surface::ISurfaceIntegrator *surfaceIntegrator = 0;
+            switch (stype) {
+                case whitted_style:
+                    surfaceIntegrator = new ::picogen::graphics::integrators::surface::Whitted();
+                    break;
+                case path_tracing:
+                    surfaceIntegrator = new ::picogen::graphics::integrators::surface::Path();
+                    break;
+            };
+            assert (0 != surfaceIntegrator);
             renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 
@@ -678,7 +691,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
 
-static int loop (SDL_Surface *screen, Scene *scene, int width, int height) {
+static int loop (SDL_Surface *screen, Scene *scene, int width, int height, const int loopCount) {
     //scene->flip( screen );
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
     // prepare and run loop
@@ -687,7 +700,7 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height) {
     if (pixelsPerContinue <= 0)
         pixelsPerContinue = width;
 
-    unsigned int runCount = 1;
+    int runCount = 0;
     //clock_t startTime = clock();
     bool done = false;
     bool queryingForReallyQuit = false;
@@ -819,7 +832,7 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height) {
             }
         }
 
-        bool cont = scene->renderMore (pixelsPerContinue);
+        bool cont = (loopCount==-1 || runCount<loopCount) && scene->renderMore (pixelsPerContinue);
         if (cont) {
             runCount++;
             //
@@ -852,9 +865,22 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height) {
     return 0;
 }
 
-static int grind (int width, int height, int antiAliasingWidth, Scene *scene) {
+
+
+static int grind (int width, int height, int antiAliasingWidth, Scene *scene, surface_integrator_type stype) {
     using namespace std;
-    scene->initRenderer (width, height, antiAliasingWidth);
+
+    int loopCount;
+    switch (stype) {
+        case whitted_style:
+            loopCount = 1;
+            break;
+        case path_tracing:
+            loopCount = -1;
+            break;
+    };
+
+    scene->initRenderer (width, height, antiAliasingWidth, stype);
 
     if (SDL_Init (SDL_INIT_VIDEO) < 0) {
         cerr << "Unable to init SDL: " << SDL_GetError() << endl;
@@ -868,7 +894,7 @@ static int grind (int width, int height, int antiAliasingWidth, Scene *scene) {
     }
 
     //scene->flip();
-    return loop (screen, scene, width, height);  /// \todo check if SDL cleans up surface resource
+    return loop (screen, scene, width, height, loopCount);  /// \todo check if SDL cleans up surface resource
 }
 
 
@@ -955,7 +981,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (width, height, aaWidth, grindScene);
+        return grind (width, height, aaWidth, grindScene, whitted_style);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
