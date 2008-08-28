@@ -36,7 +36,6 @@ typedef ::picogen::geometrics::BoundingBox BoundingBox;
 typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
 typedef ::picogen::graphics::material::abstract::IShader IShader;
 typedef ::picogen::graphics::structs::intersection_t intersection_t;
-typedef ::picogen::misc::functional::Function_R2_R1 Function_R2_R1;
 
 /// \todo bring the following triangle intersector in some intersector-repository or something
 static const real tri_eps = 0.00000001;
@@ -151,16 +150,16 @@ namespace picogen {
             //=================================================================
 
             inline real QuadtreeHeightField :: smoothedHeightFunc (
-                const Function_R2_R1 &fun, real fu, real fv, real cellSizeU, real cellSizeV
+                const QuadtreeHeightField::heightFun_t &fun, real fu, real fv, real cellSizeU, real cellSizeV
             ) {
                 const real su = cellSizeU * 0.5;
                 const real sv = cellSizeV * 0.5;
                 return
                     0.25*
-                    (  fun (fu,   fv)
-                     + fun (fu + su, fv)
-                     + fun (fu,   fv + sv)
-                     + fun (fu + su, fv + sv)
+                    (  (*fun) (fu,   fv)
+                     + (*fun) (fu + su, fv)
+                     + (*fun) (fu,   fv + sv)
+                     + (*fun) (fu + su, fv + sv)
                     );
             }
 
@@ -168,7 +167,7 @@ namespace picogen {
 
             QuadtreeHeightField* QuadtreeHeightField :: create (
                 unsigned int size,
-                const Function_R2_R1 &fun,
+                const QuadtreeHeightField::heightFun_t &fun,
                 param_in (BoundingBox, bbox),
                 real boundsGuessAccuracy, bool smooth
             ) {
@@ -190,7 +189,7 @@ namespace picogen {
                         for (u = 0; u < size; u++) {
                             //std::cout << "(" << u << ", " << v << ")";
                             const real fu = u / (real) size;
-                            const real t = smooth ? smoothedHeightFunc (fun, fu, fv, cellSize, cellSize) : fun (fu, fv);
+                            const real t = smooth ? smoothedHeightFunc (fun, fu, fv, cellSize, cellSize) : (*fun) (fu, fv);
                             h_min = t < h_min ? t : h_min;
                             h_max = t > h_max ? t : h_max;
                         }
@@ -208,7 +207,7 @@ namespace picogen {
                     for (int i=0; i<numSamples; ++i) {
                         const real fu = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
                         const real fv = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
-                        const real t = smooth ? smoothedHeightFunc (fun, fu, fv, cellSize, cellSize) : fun (fu, fv);
+                        const real t = smooth ? smoothedHeightFunc (fun, fu, fv, cellSize, cellSize) : (*fun) (fu, fv);
                         h_min = t < h_min ? t : h_min;
                         h_max = t > h_max ? t : h_max;
                         if (++updateDisplay > 1000) {
@@ -232,9 +231,11 @@ namespace picogen {
                 QuadtreeHeightField::Node *node, QuadtreeHeightField::Node *parent,
                 unsigned int left, unsigned int top, unsigned int size, const unsigned int minSize, const unsigned int heightFieldSize,
                 bool smooth,
-                const Function_R2_R1 &fun, real fun_min, real fun_max,
-                real percentageFinished, real percentageFinishedScale
+                const QuadtreeHeightField::heightFun_t &fun, real fun_min, real fun_max,
+                real percentageFinished, real percentageFinishedScale,
+                std::string nodeName
             ) {
+                assert (0 != node);
 
                 node->chunk.h_min.h = Height::max;
                 node->chunk.h_max.h = Height::min;
@@ -244,15 +245,18 @@ namespace picogen {
                 if (!isLeaf) {
                     const unsigned int size05 = size >> 1;
                     node->children = new Node [4];
+                    node->setHasChildrenFlag (true);
 
-                    initNode (&node->children [0], node, left,        top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    initNode (&node->children [0], node, left,        top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"0");
                     percentageFinished += 0.25 * percentageFinishedScale;
-                    initNode (&node->children [1], node, left+size05, top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    initNode (&node->children [1], node, left+size05, top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"1");
                     percentageFinished += 0.25 * percentageFinishedScale;
-                    initNode (&node->children [2], node, left,        top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    initNode (&node->children [2], node, left,        top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"2");
                     percentageFinished += 0.25 * percentageFinishedScale;
-                    initNode (&node->children [3], node, left+size05, top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25);
+                    initNode (&node->children [3], node, left+size05, top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"3");
                     percentageFinished += 0.25 * percentageFinishedScale;
+
+                    node->setChildrenLoadedFlag (true);
 
                     Height childMinHeight, childMaxHeight;
                     childMinHeight.h = Height::max;
@@ -293,7 +297,7 @@ namespace picogen {
                         const real fu = static_cast<real> (u) / static_cast<real> (heightFieldSize);
                         const real fv = static_cast<real> (v) / static_cast<real> (heightFieldSize);
 
-                        const real fh_ = smooth ? smoothedHeightFunc (fun, fu, fv, cellSize, cellSize) : fun (fu, fv);
+                        const real fh_ = smooth ? smoothedHeightFunc (fun, fu, fv, cellSize, cellSize) : (*fun) (fu, fv);
                         const real fh = (fh_-fun_min) / (fun_max-fun_min);
                         Height h;
                         h.fromReal (fh);
@@ -318,6 +322,8 @@ namespace picogen {
                         }
                     }
                 }
+
+                node->serializeChildren (nodeName.c_str());
             }
 
 
@@ -327,19 +333,25 @@ namespace picogen {
 
             QuadtreeHeightField :: QuadtreeHeightField (
                 unsigned int size,
-                const Function_R2_R1 &fun,
+                const QuadtreeHeightField::heightFun_t &fun,
                 const BoundingBox &bbox,
                 bool smooth,
                 real h_min, real h_max
             ) {
                 std::cout << "\n";
+                std::stringstream ss;
+                std::string rootNodeName ("");
+                ss << "qt-0";
+                ss >> rootNodeName;
+
                 initNode (
                     &rootNode, 0,  // node, parent-node
                     0, 0, size, // left, top, size
                     2, size, // min size, max size
                     smooth,
                     fun, h_min, h_max,
-                    0.0, 1.0
+                    0.0, 1.0,
+                    rootNodeName
                 );
 
                 bboxSize [0] = bbox.computeWidth ();
@@ -367,8 +379,9 @@ namespace picogen {
 
             bool QuadtreeHeightField::intersectNode (
                 param_out (intersection_t, intersection),
-                param_in (Ray, ray), param_in (QuadtreeHeightField::Node, node),
-                const unsigned int left, const unsigned int top, const unsigned int size
+                param_in (Ray, ray), QuadtreeHeightField::Node &node,
+                const unsigned int left, const unsigned int top, const unsigned int size,
+                std::string nodeName
             ) const {
                 using namespace constants;
 
@@ -398,7 +411,7 @@ namespace picogen {
                 bool sign_x = ray.w()[0] > 0.0; // TODO: precalculate
                 bool sign_z = ray.w()[2] > 0.0; // TODO: precalculate
 
-                if (0 == node.children) {
+                if (!node.hasChildren()) {
 
                     int step_x = sign_x ? 1 : -1;
                     int step_y = sign_z ? 1 : -1;
@@ -489,10 +502,21 @@ namespace picogen {
                         order [3] = 2;
                     }
 
+                    // unserialize ?
+                    std::string childName[4] = {
+                        nodeName + "0",
+                        nodeName + "1",
+                        nodeName + "2",
+                        nodeName + "3"
+                    };
+                    if (!node.areChildrenLoaded()) {
+                        node.unserializeChildren (nodeName.c_str());
+                    }
 
                     intersection_t tmp;
-                    for (unsigned int u=0; u<4; ++u) {
-                        if (intersectNode (tmp, ray, node.children [order [u]], coords [order [u]][0], coords [order [u]][1], size05)) {
+                    for (unsigned int u=0; u<4; ++u) { // ! TODO: really < 4, or < 3?
+
+                        if (intersectNode (tmp, ray, node.children [order [u]], coords [order [u]][0], coords [order [u]][1], size05, childName [order [u]])) {
                             intersection = tmp;
                             return true;
                         }
@@ -504,7 +528,12 @@ namespace picogen {
 
 
             bool QuadtreeHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
-                if (intersectNode (intersection, ray, rootNode, 0, 0, heightFieldSize)) {
+                std::stringstream ss;
+                std::string rootNodeName ("");
+                ss << "qt-0";
+                ss >> rootNodeName;
+
+                if (intersectNode (intersection, ray, rootNode, 0, 0, heightFieldSize, rootNodeName)) {
                     if(false) {
                         if (0 != shader) {
                             shader->shade (
@@ -545,169 +574,3 @@ namespace picogen {
         }; // namespace objects
     }; // namespace graphics
 }; // namespace picogen
-
-/*
-namespace picogen {
-    namespace graphics {
-        namespace objects {
-
-
-
-            QuadtreeHeightField::QuadtreeHeightField (unsigned int maxSize, SimpleHeightField *simpleHeightField)
-            : field (simpleHeightField)
-            , rootBox (simpleHeightField->getBoundingBox())
-            , rootNode (QuadtreeNode::create (
-                buildChildren (0, 0, simpleHeightField->getSize(), maxSize, rootBox, 0), rootBox,
-                    0, 0, maxSize, maxSize
-                )
-            )
-            {
-            }
-
-
-
-            QuadtreeHeightField::~QuadtreeHeightField() {
-                if (0 != field)
-                    delete field;
-                if (0 != rootNode)
-                    delete rootNode;
-            }
-
-
-
-            bool QuadtreeHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
-                return rootNode->intersect (intersection, *field, ray);
-            }
-
-
-
-            QuadtreeHeightField::QuadtreeNode *
-            QuadtreeHeightField::buildChildren
-            ( unsigned int u, unsigned int v,
-              unsigned int size,
-              const unsigned int maxSize,
-              const BoundingBox &rootBox,
-              BoundingBox *aggregateBB
-            ) const {
-
-                static unsigned int innerNodeId=0;
-
-                const unsigned int heightfieldSize = field->getSize();
-                const unsigned maxRight  = u+size >= heightfieldSize ? heightfieldSize-1 : u+size;
-                const unsigned maxBottom = v+size >= heightfieldSize ? heightfieldSize-1 : v+size;
-
-                if (size<maxSize) {
-                    // init aggregate here
-                    const real rootSize [3] = {
-                        rootBox.computeWidth(),
-                        rootBox.computeHeight(),
-                        rootBox.computeDepth()
-                    };
-
-                    const real rootMin [3] = {
-                        rootBox.getMin() [0],
-                        rootBox.getMin() [1],
-                        rootBox.getMin() [2],
-                    };
-
-                    const unsigned int &left = u;
-                    const unsigned int &top = v;
-
-                    const unsigned right  = maxRight;//left+size >= heightfieldSize ? heightfieldSize-1 : left+size;
-                    const unsigned bottom = maxBottom;//top+size >= heightfieldSize ? heightfieldSize-1 : top+size;
-
-                    if (true) {
-                        std::cout << " <<" << left << ", " << top << ", " << right << ", " << bottom << ">>" << std::endl;
-                    }
-
-                    if (0 != aggregateBB)
-                        aggregateBB->reset();
-
-                    for (unsigned int u=left; u<=right; ++u) {
-                        for (unsigned int v=top; v<=bottom; ++v) {
-
-                            const real fu = static_cast<real> (u) / static_cast<real> (heightfieldSize);
-                            const real fw = SimpleHeightField::htor (field->getHeight (u, v));
-                            const real fv = static_cast<real> (v) / static_cast<real> (heightfieldSize);
-
-                            const Vector3d worldPosition (
-                                rootSize[0] * fu + rootMin[0],
-                                rootSize[1] * fw + rootMin[1],
-                                rootSize[2] * fv + rootMin[2]
-                            );
-
-                            if (0 != aggregateBB)
-                                aggregateBB->update (worldPosition);
-                        }
-                    }
-
-                    if (false) {
-                        static unsigned int counter = 0;
-                        if (0 != aggregateBB) {
-                            const real s [3] = {
-                                aggregateBB->computeWidth(),
-                                aggregateBB->computeHeight(),
-                                aggregateBB->computeDepth()
-                            };
-                            std::cout << "(" << innerNodeId << "." << counter << ")";
-                            std::cout << " size={" << s[0] << "," << s[1] << "," << s[2] << "}";
-                            std::cout << " min={" << aggregateBB->getMin() [0] << "," << aggregateBB->getMin() [1] << "," << aggregateBB->getMin() [2] << "}";
-                            std::cout << " max={" << aggregateBB->getMax() [0] << "," << aggregateBB->getMax() [1] << "," << aggregateBB->getMax() [2] << "}";
-                            std::cout << "\n";
-                        }
-                        ++counter;
-                    }
-                    return 0;
-                } else {
-                    QuadtreeNode *children = QuadtreeNode::createArray(4);
-
-                    const unsigned int halfSize = size>>1;
-
-                    BoundingBox boxes [4];
-                    QuadtreeNode *tmp [4] = {
-                        buildChildren (u,          v+halfSize, halfSize, maxSize, rootBox, &boxes [0]),
-                        buildChildren (u+halfSize, v+halfSize, halfSize, maxSize, rootBox, &boxes [1]),
-                        buildChildren (u,          v,          halfSize, maxSize, rootBox, &boxes [2]),
-                        buildChildren (u+halfSize, v,          halfSize, maxSize, rootBox, &boxes [3])
-                    };
-
-                    //const unsigned int maxRight  = u+halfSize+halfSize >= heightfieldSize ? heightfieldSize-1 : u+halfSize+halfSize;
-                    //const unsigned int maxBottom = v+halfSize+halfSize >= heightfieldSize ? heightfieldSize-1 : v+halfSize+halfSize;
-
-                    children [0].setRectangle (u,          v+halfSize, u+halfSize,          maxBottom );
-                    children [1].setRectangle (u+halfSize, v+halfSize, maxRight,            maxBottom );
-                    children [2].setRectangle (u,          v,          u+halfSize,          v+halfSize          );
-                    children [3].setRectangle (u+halfSize, v,          maxRight,            v+halfSize          );
-
-                    if (0 == tmp [0]) {
-                        std::cout << "{" << std::endl;
-                        std::cout << " ( " << u          <<", "<< v+halfSize<<", "<< u+halfSize         << ", " << maxBottom <<")"<<  std::endl;
-                        std::cout << " ( " << u+halfSize <<", "<< v+halfSize<<", "<< maxRight<< ", " << maxBottom <<")"<<  std::endl;
-                        std::cout << " ( " << u          <<", "<< v         <<", "<< u+halfSize         << ", " << v+halfSize          <<")"<<  std::endl;
-                        std::cout << " ( " << u+halfSize <<", "<< v         <<", "<< maxRight << ", " << v+halfSize          <<")"<<  std::endl;
-                        std::cout << "}" << std::endl;
-                    }
-
-                    if (0 != aggregateBB)
-                        aggregateBB->reset();
-                    for (unsigned int u=0; u<4; ++u) {
-                        children [u].setBoundingBox (boxes [u]);
-                        children [u].setChildren (tmp [u]);
-                        if (0 != aggregateBB) {
-                            aggregateBB->update (boxes [u].getMin());
-                            aggregateBB->update (boxes [u].getMax());
-                        }
-                    }
-
-                    ++innerNodeId;
-                    return children;
-                }
-                return 0;
-            }
-
-
-
-        }; // namespace objects
-    }; // namespace graphics
-}; // namespace picogen
-*/

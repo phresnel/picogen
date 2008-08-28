@@ -28,6 +28,9 @@
 
 // #include <cstdint> // C++0x
 #include <stdint.h>
+#include <cstdio>
+
+#include <boost/intrusive_ptr.hpp>
 
 #include <picogen/graphics/objects.h>
 
@@ -47,6 +50,10 @@ namespace picogen {
                     typedef ::picogen::graphics::material::abstract::IShader IShader;
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
                     typedef ::picogen::misc::functional::Function_R2_R1 Function_R2_R1;
+                    typedef ::picogen::misc::functional::Function_R2_R1_Refcounted Function_R2_R1_Refcounted;
+
+                public:
+                    typedef ::boost::intrusive_ptr<Function_R2_R1_Refcounted> heightFun_t;
 
                 private:
 
@@ -80,6 +87,14 @@ namespace picogen {
                             }
                             this->h = static_cast<uint16_t>(tmp);
                         }
+
+                        void serialize (std::FILE *f) {
+                            std::fwrite (&h, sizeof (h), 1, f);
+                        }
+
+                        void unserialize (std::FILE *f) {
+                            std::fread (&h, sizeof (h), 1, f);
+                        }
                     };
 
                     struct Chunk {
@@ -88,17 +103,199 @@ namespace picogen {
                         };
                         Height field [size * size];
                         Height h_min, h_max;
+
+                        void serialize (std::FILE *f) {
+                            for (int i=0; i<size*size; ++i) {
+                                field [i].serialize (f);
+                            }
+                            h_min.serialize (f);
+                            h_max.serialize (f);
+                        }
+
+                        void unserialize (std::FILE *f) {
+                            for (int i=0; i<size*size; ++i) {
+                                field [i].unserialize (f);
+                            }
+                            h_min.unserialize (f);
+                            h_max.unserialize (f);
+                        }
+
+
+                    };
+
+                    struct NodeBuildInfo {
+                        heightFun_t fun;
                     };
 
                     struct Node {
                         Chunk chunk;
-                        Node *children;
 
-                        Node () : chunk(), children (0) {}
-                        ~Node () {
-                            if (0 != children)
-                                delete [] children;
+                        union {
+                            mutable Node *children;
+                            mutable NodeBuildInfo *buildInfo;
+                        };
+                        /*struct {
+                            uint8_t hasChildren : 1; // either 0==false or >0==true
+                            uint8_t areChildrenLoaded : 1;
+                        }*/
+                        mutable uint8_t flags;
+                        bool hasChildren () const {
+                            return 0 != (flags & 0x1);
                         }
+                        bool areChildrenLoaded () const {
+                            return 0 != (flags & 0x2);
+                        }
+                        void setHasChildrenFlag (bool hasChildren) {
+                            flags = (flags & 0xFE) | (hasChildren ? 0x1 : 0x0);
+                        }
+                        void setChildrenLoadedFlag (bool areLoaded) {
+                            flags = (flags & 0xFD) | (areLoaded ? 0x2 : 0x0);
+                        }
+
+                        Node () : chunk(), children (0), flags (0) {}
+                        ~Node () {
+                            if (hasChildren()) {
+                                if (0 != children)
+                                    delete [] children;
+                            } else if (0 != buildInfo) {
+                                delete buildInfo;
+                            }
+                        }
+
+                        private:
+                        void serialize (const char *name) {
+                            // Important Note!
+                            //  The standard says nothing about the binary
+                            //  representation of '0'-'4', so this function
+                            //  is *not* portable. But as long as the assertion
+                            //  does not fail, it works! DO THE HELL NOT REMOVE
+                            //  THE ASSERTIONS!
+                            assert (('1' - '0') == 1);
+                            assert (('2' - '0') == 2);
+                            assert (('3' - '0') == 3);
+
+                            if (hasChildren() && areChildrenLoaded()) {
+
+                                assert (strlen (name) < 255);
+
+                                char *childName = new char [256];
+                                for (int i=0; i<4; ++i) {
+                                    sprintf (childName, "%s%c", name, i+'0'); // <-- TODO: optimize
+                                    children [i].serialize (childName);
+                                }
+
+                                delete childName;
+                                delete [] children;
+                                children = 0;
+                                setChildrenLoadedFlag (false);
+                            }
+                            std::FILE *f = fopen (name, "wb");
+                            if (0 == f) {
+                                std::cerr << "could not write to file '" << name << std::endl;
+                                throw;
+                            }
+                            chunk.serialize (f);
+                            std::fwrite (&flags, sizeof (flags), 1, f);
+                            std::fclose (f);
+                        }
+
+                        public:
+                        void serializeChildren (const char *name) {
+                            // Important Note!
+                            //  The standard says nothing about the binary
+                            //  representation of '0'-'4', so this function
+                            //  is *not* portable. But as long as the assertion
+                            //  does not fail, it works! DO THE HELL NOT REMOVE
+                            //  THE ASSERTIONS!
+                            assert (('1' - '0') == 1);
+                            assert (('2' - '0') == 2);
+                            assert (('3' - '0') == 3);
+
+                            if (hasChildren() && areChildrenLoaded()) {
+
+                                assert (strlen (name) < 255);
+
+                                char *childName = new char [256];
+                                for (int i=0; i<4; ++i) {
+                                    sprintf (childName, "%s%c", name, i+'0'); // <-- TODO: optimize
+                                    children [i].serialize (childName);
+                                }
+
+                                delete childName;
+                                delete [] children;
+                                children = 0;
+                                setChildrenLoadedFlag (false);
+                            }
+                        }
+
+                        private:
+                        void unserialize (const char *name) {
+                            std::FILE *f = fopen (name, "rb");
+                            if (0 == f) {
+                                std::cerr << "could not read from file '" << name << std::endl;
+                                throw;
+                            }
+                            chunk.unserialize (f);
+                            std::fread (&flags, sizeof (flags), 1, f);
+                            std::fclose (f);
+                        }
+
+                        public:
+                        void unserializeChildren (const char *name) {
+                            // Important Note!
+                            //  The standard says nothing about the binary
+                            //  representation of '0'-'4', so this function
+                            //  is *not* portable. But as long as the assertion
+                            //  does not fail, it works! DO THE HELL NOT REMOVE
+                            //  THE ASSERTIONS!
+                            assert (('1' - '0') == 1);
+                            assert (('2' - '0') == 2);
+                            assert (('3' - '0') == 3);
+
+                            if (hasChildren() && !areChildrenLoaded()) {
+                                assert (strlen (name) < 255);
+
+                                children = new Node [4];
+
+                                char *childName = new char [256];
+                                for (int i=0; i<4; ++i) {
+                                    sprintf (childName, "%s%c", name, i+'0'); // <-- TODO: optimize
+                                    children [i].unserialize (childName);
+                                }
+
+                                delete childName;
+
+                                setChildrenLoadedFlag (true);
+                            }
+                        }
+
+                        /*void unserializeChildren (const char *name) {
+                            // Important Note!
+                            //  The standard says nothing about the binary
+                            //  representation of '0'-'4', so this function
+                            //  is *not* portable. But as long as the assertion
+                            //  does not fail, it works! DO THE HELL NOT REMOVE
+                            //  THE ASSERTIONS!
+                            assert (('1' - '0') == 1);
+                            assert (('2' - '0') == 2);
+                            assert (('3' - '0') == 3);
+
+                            if (hasChildren() && !areChildrenLoaded()) {
+
+                                assert (strlen (name) < 255);
+
+                                char *childName = new char [256];
+                                for (int i=0; i<4; ++i) {
+                                    sprintf (childName, "%s%c", name, i+'0'); // <-- TODO: optimize
+                                    children [i].unserializeChildren (childName);
+                                }
+
+                                delete childName;
+                                delete [] children;
+                                children = 0;
+                                setChildrenLoadedFlag (false);
+                            }
+                        }*/
                     };
 
 
@@ -109,29 +306,32 @@ namespace picogen {
                     const IBRDF *brdf;
                     const IShader *shader;
 
-                    Node rootNode;
+                    mutable Node rootNode;
 
 
+            private:
                     // Private Methods.
                     void initNode (
                         QuadtreeHeightField::Node *node, QuadtreeHeightField::Node *parent,
                         unsigned int left, unsigned int top, unsigned int size, const unsigned int minSize, const unsigned int heightFieldSize,
                         bool smooth,
-                        const Function_R2_R1 &fun, real fun_min, real fun_max,
-                        real percentageFinished, real percentageFinishedScale
+                        const heightFun_t &fun, real fun_min, real fun_max,
+                        real percentageFinished, real percentageFinishedScale,
+                        std::string nodeName
                     ) ;
 
                     bool intersectNode (
                         param_out (intersection_t, intersection),
-                        param_in (Ray, ray), param_in (QuadtreeHeightField::Node, node),
-                        const unsigned int left, const unsigned int top, const unsigned int size
+                        param_in (Ray, ray), QuadtreeHeightField::Node &node,
+                        const unsigned int left, const unsigned int top, const unsigned int size,
+                        ::std::string nodeName
                     ) const;
 
 
                     // Constructors.
                     explicit QuadtreeHeightField (
                         unsigned int size,
-                        const ::picogen::misc::functional::Function_R2_R1 &fun,
+                        const heightFun_t &fun,
                         const BoundingBox &bbox,
                         bool smooth,
                         real h_min, real h_max
@@ -139,7 +339,7 @@ namespace picogen {
 
 
                     // Helpers.
-                    static inline real smoothedHeightFunc (const Function_R2_R1 &fun, real u, real v, real cellSizeX, real cellSizeY);
+                    static inline real smoothedHeightFunc (const heightFun_t &fun, real u, real v, real cellSizeX, real cellSizeY);
 
                 public:
 
@@ -147,7 +347,7 @@ namespace picogen {
                     virtual ~QuadtreeHeightField();
 
                     virtual bool intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const;
-                    static QuadtreeHeightField * create (unsigned int size, const Function_R2_R1 &fun, param_in (BoundingBox, bbox), real boundsGuessAccuracy = 1.0, bool smooth = true);
+                    static QuadtreeHeightField * create (unsigned int size, const heightFun_t &fun, param_in (BoundingBox, bbox), real boundsGuessAccuracy = 1.0, bool smooth = true);
 
                     //void setBox (param_in (Vector3d, min), param_in (Vector3d, max));
                     void setBRDF (const IBRDF* brdf);
@@ -177,7 +377,7 @@ namespace picogen {
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
 
                 private:
-                    SimpleHeightField * const field;
+                    //SimpleHeightField * const field;
                     const BoundingBox rootBox;
 
                     // Mission 1 is to write a straightforward implementation
