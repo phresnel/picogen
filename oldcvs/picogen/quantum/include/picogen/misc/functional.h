@@ -583,6 +583,20 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     }
             };
 
+            class Function_R1_R1_Refcounted : public Function_R1_R1 {
+                private:
+
+                    mutable size_t refCount;
+                    friend void intrusive_ptr_add_ref (Function_R1_R1_Refcounted* r);
+                    friend void intrusive_ptr_release (Function_R1_R1_Refcounted* r);
+
+                public:
+                    explicit Function_R1_R1_Refcounted (BasicFunction * fun) : Function_R1_R1 (fun), refCount (0)  {
+                    }
+
+                    explicit Function_R1_R1_Refcounted (const ::std::string &str) : Function_R1_R1 (str), refCount (0) {
+                    }
+            };
 
 
             class Function_R2_R1 : public BasicFunction {
@@ -610,6 +624,20 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
             };
 
 
+            class Function_R2_R1_Refcounted : public Function_R2_R1 {
+                private:
+
+                    mutable size_t refCount;
+                    friend void intrusive_ptr_add_ref (Function_R2_R1_Refcounted* r);
+                    friend void intrusive_ptr_release (Function_R2_R1_Refcounted* r);
+
+                public:
+                    explicit Function_R2_R1_Refcounted (BasicFunction * fun) : Function_R2_R1 (fun), refCount (0)  {
+                    }
+
+                    explicit Function_R2_R1_Refcounted (const ::std::string &str) : Function_R2_R1 (str), refCount (0) {
+                    }
+            };
 
             class Function_R3_R1 : public BasicFunction {
                 private:
@@ -635,6 +663,20 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     }
             };
 
+            class Function_R3_R1_Refcounted : public Function_R3_R1 {
+                private:
+
+                    mutable size_t refCount;
+                    friend void intrusive_ptr_add_ref (Function_R3_R1_Refcounted* r);
+                    friend void intrusive_ptr_release (Function_R3_R1_Refcounted* r);
+
+                public:
+                    explicit Function_R3_R1_Refcounted (BasicFunction * fun) : Function_R3_R1 (fun), refCount (0)  {
+                    }
+
+                    explicit Function_R3_R1_Refcounted (const ::std::string &str) : Function_R3_R1 (str), refCount (0) {
+                    }
+            };
 
         } // namespace functional {
     } // namespace misc {
