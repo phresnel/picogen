@@ -37,6 +37,39 @@ namespace picogen {
         namespace functional {
 
 
+            void intrusive_ptr_add_ref (Function_R1_R1_Refcounted* r) {
+                ++r->refCount;
+            }
+
+            void intrusive_ptr_release (Function_R1_R1_Refcounted* r) {
+                --r->refCount;
+                if (r->refCount == 0)
+                    delete r;
+            }
+
+            void intrusive_ptr_add_ref (Function_R2_R1_Refcounted* r) {
+                ::std::cout << "Function_R2_R1_Refcounted++"<< ::std::endl;
+                ++r->refCount;
+            }
+
+            void intrusive_ptr_release (Function_R2_R1_Refcounted* r) {
+                ::std::cout << "Function_R2_R1_Refcounted--"<< ::std::endl;
+                --r->refCount;
+                if (r->refCount == 0)
+                    delete r;
+            }
+
+            void intrusive_ptr_add_ref (Function_R3_R1_Refcounted* r) {
+                ++r->refCount;
+            }
+
+            void intrusive_ptr_release (Function_R3_R1_Refcounted* r) {
+                --r->refCount;
+                if (r->refCount == 0)
+                    delete r;
+            }
+
+
             static inline BasicFunction* heightslang_ (
                 const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
                 BasicFunction *root,                ///< The top node, usually one of Function_R1_R1, Function_R2_R1, or similar. Needed to allow recursion in the inlisp-code.
