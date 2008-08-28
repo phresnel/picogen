@@ -76,7 +76,7 @@
 	<stdio.h>
 	<stdlib.h>
 
-1218977503 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
+1219856556 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
 	<iostream>
 	<sstream>
 	<ctype.h>
@@ -145,7 +145,7 @@
 1217803331 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
 	<picogen/picogen.h>
 
-1219082290 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
+1219856682 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
 	<ctype.h>
 	<string>
 	<iostream>
@@ -163,13 +163,14 @@
 	<sstream>
 	<picogen/misc/functional/LayeredNoise2d.h>
 
-1218977506 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+1219818370 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	<map>
 	<sstream>
+	<boost/intrusive_ptr.hpp>
 	<picogen/picogen.h>
 	<picogen/picossdf/picossdf.h>
 	<picogen/misc/scripting/nano-c.h>
@@ -206,7 +207,7 @@
 	<string>
 	<dlfcn.h>
 
-1219683627 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1219818559 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -292,13 +293,15 @@
 1218977180 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/ImplicitHeightField.cc
 	<picogen/picogen.h>
 
-1218977505 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/QuadtreeHeightField.cc
+1219905933 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/QuadtreeHeightField.cc
 	<iostream>
 	<picogen/picogen.h>
 	<picogen/graphics/objects/QuadtreeHeightField.h>
 
-1218977501 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
+1219905969 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
 	<stdint.h>
+	<cstdio>
+	<boost/intrusive_ptr.hpp>
 	<picogen/graphics/objects.h>
 
 1218977179 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Preview.cc
@@ -394,7 +397,7 @@
 
 1219577251 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/surface/Whitted.h
 
-1219646615 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
+1219686235 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Whitted.h>
 
