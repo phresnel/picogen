@@ -29,6 +29,8 @@
 #include <map>
 #include <sstream>
 
+#include <boost/intrusive_ptr.hpp>
+
 #include <picogen/picogen.h>
 #include <picogen/picossdf/picossdf.h>
 //#include <picogen/experimental/PicoPico.h>
@@ -174,6 +176,7 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
     using ::picogen::real;
     using ::picogen::geometrics::Vector3d;
     using ::picogen::graphics::color::Color;
+    using ::picogen::misc::functional::Function_R2_R1_Refcounted;
     using ::picogen::misc::functional::Function_R2_R1;
 
     // Step 1: Read Parameters.
@@ -323,7 +326,7 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
             }
 
             try {
-                Function_R2_R1 fun (hs);
+                ::boost::intrusive_ptr<Function_R2_R1_Refcounted> fun (new Function_R2_R1_Refcounted (hs));
                 backend->addHeightfield (fun, resolution, center, size);
             } catch (::picogen::misc::functional::functional_general_exeption &e) {
                 errreason = string ("Exception caught while generating heightfield from height-slang code: "
