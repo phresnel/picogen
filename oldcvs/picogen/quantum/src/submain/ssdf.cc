@@ -447,7 +447,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         // Heightmap:
         virtual int addHeightfield (
-            const ::picogen::misc::functional::Function_R2_R1 &fun,
+            const ::boost::intrusive_ptr<picogen::misc::functional::Function_R2_R1_Refcounted> &fun,
             unsigned int resolution,
             const ::picogen::geometrics::Vector3d &center,
             const ::picogen::geometrics::Vector3d &size
@@ -481,7 +481,7 @@ class SSDFScene : public Scene, public SSDFBackend {
                     heightField->setShader (&white);
                     heightField->setBox (center-size*0.5, center+size*0.5);
 
-                    heightField->init (resolution, &fun, 0.1, false);
+                    heightField->init (resolution, &*fun, 0.1, false);
 
                     currentScene.triBih->setBRDF (currentBRDF);
                     currentScene.triBih->setShader (&white);
@@ -920,6 +920,7 @@ int main_ssdf (int argc, char *argv[]) {
     int width = 320;
     int height = 320;
     int aaWidth = 1;
+    surface_integrator_type stype = path_tracing;
     //-- Options.
 
     while (0<argc) {
@@ -967,8 +968,27 @@ int main_ssdf (int argc, char *argv[]) {
             ss << argv [0];
             ss >> aaWidth;
             if (0 >= aaWidth) {
-
                 aaWidth = 1;
+            }
+
+            --argc;
+            ++argv;
+        } else if (primary == string ("-s") || primary == string ("--surface-integrator")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            stringstream ss;
+            ss << argv [0];
+            string tmp;
+            ss >> tmp;
+
+            if ("whitted-style" == tmp || "ws" == tmp) {
+                stype = whitted_style;
+            } else if ("path-tracing" == tmp || "pt" == tmp) {
+                stype = path_tracing;
+            } else {
+                cerr << "Unknown surface integrator: '" << tmp << "'" << endl;
             }
 
             --argc;
@@ -981,7 +1001,7 @@ int main_ssdf (int argc, char *argv[]) {
     Scene *grindScene;
     try {
         grindScene = new SSDFScene (filename);
-        return grind (width, height, aaWidth, grindScene, whitted_style);
+        return grind (width, height, aaWidth, grindScene, stype);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
@@ -997,3 +1017,4 @@ int main_ssdf (int argc, char *argv[]) {
     }
     return 0;
 }
+
