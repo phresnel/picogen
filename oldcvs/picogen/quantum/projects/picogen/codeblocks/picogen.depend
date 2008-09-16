@@ -293,16 +293,18 @@
 1218977180 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/ImplicitHeightField.cc
 	<picogen/picogen.h>
 
-1219905933 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/QuadtreeHeightField.cc
+1221572549 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/QuadtreeHeightField.cc
 	<iostream>
+	<cstring>
 	<picogen/picogen.h>
 	<picogen/graphics/objects/QuadtreeHeightField.h>
 
-1219905969 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
+1221577270 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
 	<stdint.h>
 	<cstdio>
 	<boost/intrusive_ptr.hpp>
 	<picogen/graphics/objects.h>
+	<picogen/memory/hugearray.h>
 
 1218977179 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Preview.cc
 
@@ -358,7 +360,7 @@
 	<picogen/graphics/film.h>
 	<picogen/graphics/film/RayDirVis.h>
 
-1219684483 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Path.cc
+1221573262 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Path.cc
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Path.h>
 
@@ -400,4 +402,15 @@
 1219686235 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Whitted.h>
+
+1221569364 /home/smach/Projects/picogen/quantum/include/picogen/memory/hugearray.h
+	<picogen/compile_info.h>
+	<sys/mman.h>
+	<fcntl.h>
+	<unistd.h>
+	<errno.h>
+	<cstdlib>
+	<iostream>
+	<string>
+	<sstream>
 

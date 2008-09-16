@@ -172,6 +172,37 @@
 					<Add option="`sdl-config --libs`" />
 				</Linker>
 			</Target>
+			<Target title="optimized for march eq native">
+				<Option output="picogen" prefix_auto="0" extension_auto="0" />
+				<Option object_output="objs" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-s -O3 -fexpensive-optimizations \" />
+					<Add option="-combine  -fwhole-program \" />
+					<Add option="-ffast-math \" />
+					<Add option="-ftree-vectorize \" />
+					<Add option="-msse -march=native \" />
+					<Add option="-funroll-loops -fvariable-expansion-in-unroller \" />
+					<Add option="-ftree-loop-im -ftree-loop-ivcanon -fivopts -fvect-cost-model \" />
+					<Add option="-fmodulo-sched -fmodulo-sched-allow-regmoves \" />
+					<Add option="-funsafe-loop-optimizations \" />
+					<Add option="-funswitch-loops \" />
+					<Add option="-ftree-loop-ivcanon -ftree-loop-linear \" />
+					<Add option="-ftracer \" />
+					<Add option="-fprefetch-loop-arrays \" />
+					<Add option="-freorder-blocks-and-partition \" />
+					<Add option="-funsafe-math-optimizations -ffinite-math-only \" />
+					<Add option="-fdata-sections \" />
+					<Add option="`llvm-config --cflags` \" />
+					<Add option="`llvm-config --cppflags`" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="`sdl-config --libs`" />
+					<Add option="`llvm-config --libs core jit native`" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />

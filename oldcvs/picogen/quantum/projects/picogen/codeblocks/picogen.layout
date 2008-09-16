@@ -103,8 +103,8 @@
 	<File name="../../../include/picogen/graphics/objects/Preetham.h" open="0" top="0" tabpos="5">
 		<Cursor position="3504" topLine="59" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/QuadtreeHeightField.h" open="1" top="1" tabpos="1">
-		<Cursor position="10395" topLine="229" />
+	<File name="../../../include/picogen/graphics/objects/QuadtreeHeightField.h" open="1" top="0" tabpos="1">
+		<Cursor position="10326" topLine="229" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="0" top="0" tabpos="6">
 		<Cursor position="3894" topLine="66" />
@@ -223,8 +223,8 @@
 	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="9">
 		<Cursor position="3232" topLine="99" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/QuadtreeHeightField.cc" open="1" top="0" tabpos="2">
-		<Cursor position="23796" topLine="493" />
+	<File name="../../../src/picosrc/graphics/objects/QuadtreeHeightField.cc" open="1" top="1" tabpos="2">
+		<Cursor position="12675" topLine="259" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="0" top="0" tabpos="5">
 		<Cursor position="1209" topLine="16" />
