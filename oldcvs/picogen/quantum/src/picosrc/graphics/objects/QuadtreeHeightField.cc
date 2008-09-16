@@ -25,6 +25,8 @@
 
 #include <iostream>
 
+#include <cstring>
+
 #include <picogen/picogen.h>
 #include <picogen/graphics/objects/QuadtreeHeightField.h>
 
@@ -172,7 +174,7 @@ namespace picogen {
                 real boundsGuessAccuracy, bool smooth
             ) {
                 fprintf (stderr, "preparing QuadtreeHeightField {\n");
-                fprintf (stderr, "  sizeof{Height,HeightChunk,Node}={%u,%u,%u}\n", sizeof (Height), sizeof (Chunk), sizeof (Node));
+                fprintf (stderr, "  sizeof{Height,HeightChunk,Node}={%u,%u,%u}\n", sizeof (Height), sizeof (Chunk), sizeof (Node<uint32_t>));
 
                 unsigned int u, v;
                 const real cellSize = 1.0 / (real) size;
@@ -227,16 +229,21 @@ namespace picogen {
 
 
 
+            template <typename index_t, typename array_t>
             void QuadtreeHeightField::initNode (
-                QuadtreeHeightField::Node *node, QuadtreeHeightField::Node *parent,
+                QuadtreeHeightField::Node<index_t> *node, QuadtreeHeightField::Node<index_t> *parent,
                 unsigned int left, unsigned int top, unsigned int size, const unsigned int minSize, const unsigned int heightFieldSize,
                 bool smooth,
                 const QuadtreeHeightField::heightFun_t &fun, real fun_min, real fun_max,
                 real percentageFinished, real percentageFinishedScale,
-                std::string nodeName
+                index_t &next_free_index,
+                array_t &array
             ) {
                 assert (0 != node);
 
+                //typedef uint32_t index_t;
+
+                Node<index_t>::init (*node);
                 node->chunk.h_min.h = Height::max;
                 node->chunk.h_max.h = Height::min;
                 node->children = 0;
@@ -244,28 +251,32 @@ namespace picogen {
                 const bool isLeaf = size <= 2 || size < minSize;
                 if (!isLeaf) {
                     const unsigned int size05 = size >> 1;
-                    node->children = new Node [4];
-                    node->setHasChildrenFlag (true);
+                    node->children = next_free_index;
+                    next_free_index += 4;
+                    //memset (node->children, 0, sizeof (Node [4]));
+                    Node<index_t>::init (array [node->children + 0]);
+                    Node<index_t>::init (array [node->children + 1]);
+                    Node<index_t>::init (array [node->children + 2]);
+                    Node<index_t>::init (array [node->children + 3]);
+                    Node<index_t>::setHasChildrenFlag (*node, true);
 
-                    initNode (&node->children [0], node, left,        top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"0");
+                    initNode <index_t, array_t> (&array [node->children + 0], node, left,        top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, next_free_index, array);
                     percentageFinished += 0.25 * percentageFinishedScale;
-                    initNode (&node->children [1], node, left+size05, top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"1");
+                    initNode <index_t, array_t> (&array [node->children + 1], node, left+size05, top,        size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, next_free_index, array);
                     percentageFinished += 0.25 * percentageFinishedScale;
-                    initNode (&node->children [2], node, left,        top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"2");
+                    initNode <index_t, array_t> (&array [node->children + 2], node, left,        top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, next_free_index, array);
                     percentageFinished += 0.25 * percentageFinishedScale;
-                    initNode (&node->children [3], node, left+size05, top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, nodeName+"3");
+                    initNode <index_t, array_t> (&array [node->children + 3], node, left+size05, top+size05, size05, minSize, heightFieldSize, smooth, fun, fun_min, fun_max, percentageFinished, percentageFinishedScale*0.25, next_free_index, array);
                     percentageFinished += 0.25 * percentageFinishedScale;
-
-                    node->setChildrenLoadedFlag (true);
 
                     Height childMinHeight, childMaxHeight;
                     childMinHeight.h = Height::max;
                     childMaxHeight.h = Height::min;
                     for (unsigned int u=0; u<4; ++u) {
-                        if (node->children [u].chunk.h_min.h < childMinHeight.h)
-                            childMinHeight = node->children [u].chunk.h_min;
-                        if (node->children [u].chunk.h_max.h > childMaxHeight.h)
-                            childMaxHeight = node->children [u].chunk.h_max;
+                        if (array [node->children + u].chunk.h_min.h < childMinHeight.h)
+                            childMinHeight = array [node->children + u].chunk.h_min;
+                        if (array [node->children + u].chunk.h_max.h > childMaxHeight.h)
+                            childMaxHeight = array [node->children + u].chunk.h_max;
                     }
 
                     if (childMinHeight.h < node->chunk.h_min.h)
@@ -278,8 +289,8 @@ namespace picogen {
                     if (childMaxHeight.h > node->chunk.h_max.h)
                         node->chunk.h_max.h = childMaxHeight.h;
                 } else {
-                    if ((int)(percentageFinished*100000) % 100 == 0) {
-                        fprintf (stderr, "\r   %.1f%%", 100.0f * percentageFinished);
+                    if ((int)(percentageFinished*1000000) % 100 == 0) {
+                        fprintf (stderr, "\r   %.2f%%", 100.0f * percentageFinished);
                         fflush (stderr);
                     }
                 }
@@ -300,7 +311,7 @@ namespace picogen {
                         const real fh_ = smooth ? smoothedHeightFunc (fun, fu, fv, cellSize, cellSize) : (*fun) (fu, fv);
                         const real fh = (fh_-fun_min) / (fun_max-fun_min);
                         Height h;
-                        h.fromReal (fh);
+                        Height::fromReal (h, fh);
 
                         node->chunk.field [local_v*Chunk::size + local_u] = h;
 
@@ -309,21 +320,25 @@ namespace picogen {
                             node->chunk.h_max = h.h > node->chunk.h_max.h ? h : node->chunk.h_max;
                         }
                         if(false)if (0 != parent) {
-                            std::cout << "<<" << parent->chunk.h_min.asReal() << " : " <<  parent->chunk.h_max.asReal() << "  ||  ";
+                            std::cout << "<<" << Height::asReal (parent->chunk.h_min) << " : " <<
+                                Height::asReal (parent->chunk.h_max) << "  ||  ";
                             parent->chunk.h_min = h.h < parent->chunk.h_min.h ? h : parent->chunk.h_min;
                             parent->chunk.h_max = h.h > parent->chunk.h_max.h ? h : parent->chunk.h_max;
-                            std::cout << parent->chunk.h_min.asReal() << " : " <<  parent->chunk.h_max.asReal() << ">>\n";
+                            std::cout << Height::asReal (parent->chunk.h_min) << " : " <<
+                                Height::asReal (parent->chunk.h_max) << ">>\n";
                         }
 
                         if (false)if (0 == parent || isLeaf) {
                             std::cout << (isLeaf ? "leaf " : "root ");
-                            std::cout << "(" << fh << "|" << h.asReal() << ")";
-                            std::cout << "<" << h.asReal() << ":" <<  node->chunk.h_min.asReal() << "|" << node->chunk.h_max.asReal() << ">\n";
+                            std::cout << "(" << fh << "|" << Height::asReal(h) << ")";
+                            std::cout << "<" << Height::asReal(h) << ":"
+                                <<  Height::asReal (node->chunk.h_min)
+                                << "|" << Height::asReal (node->chunk.h_max) << ">\n";
                         }
                     }
                 }
 
-                node->serializeChildren (nodeName.c_str());
+                //node->serializeChildren (nodeName.c_str());
             }
 
 
@@ -339,19 +354,33 @@ namespace picogen {
                 real h_min, real h_max
             ) {
                 std::cout << "\n";
-                std::stringstream ss;
-                std::string rootNodeName ("");
-                ss << "qt-0";
-                ss >> rootNodeName;
 
-                initNode (
-                    &rootNode, 0,  // node, parent-node
+                { // Compute the total number of nodes.
+                    nodeCount = 1;
+                    uint64_t nodeCountInCurrRecDepth = 1;
+                    uint64_t rec = 0;
+                    uint64_t width = size;
+                    while (width > 2) {
+                        width >>= 1;
+                        nodeCountInCurrRecDepth <<= 2;
+                        nodeCount += nodeCountInCurrRecDepth;
+                        ++rec;
+                    }
+                    std::cerr << "  total number of nodes: " << nodeCount << "\n";
+                }
+
+                pure_array = new Node<unsigned int> [nodeCount];
+                uint32_t nfi = 1; // <-- next free index
+
+                initNode <uint32_t, Node <uint32_t>* > (
+                    &pure_array [0], 0,  // node, parent-node
                     0, 0, size, // left, top, size
                     2, size, // min size, max size
                     smooth,
                     fun, h_min, h_max,
                     0.0, 1.0,
-                    rootNodeName
+                    nfi,
+                    pure_array
                 );
 
                 bboxSize [0] = bbox.computeWidth ();
@@ -365,7 +394,8 @@ namespace picogen {
                 std::cerr << "  bboxSize={" << bboxSize[0] << ", " << bboxSize[1] << ", " << bboxSize[2] << ")\n";
                 std::cerr << "  bboxMin={" << bboxMin[0] << ", " << bboxMin[1] << ", " << bboxMin[2] << ")\n";
                 std::cerr << "  h_{min|max}={" << h_min << ", " << h_max  << ")\n";
-                std::cerr << "  rootNode.h_{Min|Max}={" << rootNode.chunk.h_min.asReal() << ", " << rootNode.chunk.h_max.asReal() << "}\n";
+                std::cerr << "  rootNode.h_{Min|Max}={" << Height::asReal (pure_array [0].chunk.h_min)
+                    << ", " << Height::asReal (pure_array [0].chunk.h_max) << "}\n";
 
                 heightFieldSize = size;
             }
@@ -377,11 +407,12 @@ namespace picogen {
 
 
 
+            template <typename index_t, typename array_t>
             bool QuadtreeHeightField::intersectNode (
                 param_out (intersection_t, intersection),
-                param_in (Ray, ray), QuadtreeHeightField::Node &node,
+                param_in (Ray, ray), index_t index,
                 const unsigned int left, const unsigned int top, const unsigned int size,
-                std::string nodeName
+                const array_t &array
             ) const {
                 using namespace constants;
 
@@ -396,8 +427,8 @@ namespace picogen {
                 const real fv1_ = static_cast<real> (size+top) / static_cast<real> (heightFieldSize);
                 const real fv1  = fv1_ * bboxSize [2] + bboxMin [2];
 
-                const real fchunkMin = node.chunk.h_min.asReal() * bboxSize [1] + bboxMin [1];
-                const real fchunkMax = node.chunk.h_max.asReal() * bboxSize [1] + bboxMin [1];
+                const real fchunkMin = Height::asReal (array [index].chunk.h_min) * bboxSize [1] + bboxMin [1];
+                const real fchunkMax = Height::asReal (array [index].chunk.h_max) * bboxSize [1] + bboxMin [1];
 
                 const BoundingBox localBox (
                     Vector3d (fu, fchunkMin, fv),
@@ -411,7 +442,7 @@ namespace picogen {
                 bool sign_x = ray.w()[0] > 0.0; // TODO: precalculate
                 bool sign_z = ray.w()[2] > 0.0; // TODO: precalculate
 
-                if (!node.hasChildren()) {
+                if (!Node<index_t>::hasChildren (array [index])) {
 
                     int step_x = sign_x ? 1 : -1;
                     int step_y = sign_z ? 1 : -1;
@@ -433,15 +464,15 @@ namespace picogen {
                             const real top    = (1-v1)*fv + (v1)*fv1;
                             const real bottom = (1-v2)*fv + (v2)*fv1;
 
-                            const Height ah = node.chunk.field [(y+1)*Chunk::size + x];
-                            const Height bh = node.chunk.field [y*Chunk::size + x];
-                            const Height ch = node.chunk.field [y*Chunk::size + (x+1)];
-                            const Height dh = node.chunk.field [(y+1)*Chunk::size + (x+1)];
+                            const Height ah = array [index].chunk.field [(y+1)*Chunk::size + x];
+                            const Height bh = array [index].chunk.field [y*Chunk::size + x];
+                            const Height ch = array [index].chunk.field [y*Chunk::size + (x+1)];
+                            const Height dh = array [index].chunk.field [(y+1)*Chunk::size + (x+1)];
 
-                            const real a[3] = { left, ah.asReal()*bboxSize[1]+bboxMin[1], bottom };
-                            const real b[3] = { left, bh.asReal()*bboxSize[1]+bboxMin[1], top };
-                            const real c[3] = { right, ch.asReal()*bboxSize[1]+bboxMin[1], top };
-                            const real d[3] = { right, dh.asReal()*bboxSize[1]+bboxMin[1], bottom };
+                            const real a[3] = { left, Height::asReal (ah)*bboxSize[1]+bboxMin[1], bottom };
+                            const real b[3] = { left, Height::asReal (bh)*bboxSize[1]+bboxMin[1], top };
+                            const real c[3] = { right, Height::asReal (ch)*bboxSize[1]+bboxMin[1], top };
+                            const real d[3] = { right, Height::asReal (dh)*bboxSize[1]+bboxMin[1], bottom };
 
                             bool didHit = false;
                             real tmp_t, tmp_u, tmp_v, tmp_n[3];
@@ -503,6 +534,7 @@ namespace picogen {
                     }
 
                     // unserialize ?
+                    /*
                     std::string childName[4] = {
                         nodeName + "0",
                         nodeName + "1",
@@ -512,11 +544,20 @@ namespace picogen {
                     if (!node.areChildrenLoaded()) {
                         node.unserializeChildren (nodeName.c_str());
                     }
+                    */
 
                     intersection_t tmp;
                     for (unsigned int u=0; u<4; ++u) { // ! TODO: really < 4, or < 3?
 
-                        if (intersectNode (tmp, ray, node.children [order [u]], coords [order [u]][0], coords [order [u]][1], size05, childName [order [u]])) {
+                        if (intersectNode <index_t, array_t> (
+                                tmp,
+                                ray,
+                                array [index].children + order [u],
+                                coords [order [u]][0],
+                                coords [order [u]][1],
+                                size05,
+                                array
+                        )) {
                             intersection = tmp;
                             return true;
                         }
@@ -528,12 +569,8 @@ namespace picogen {
 
 
             bool QuadtreeHeightField::intersect (param_out (intersection_t, intersection), param_in (Ray, ray)) const {
-                std::stringstream ss;
-                std::string rootNodeName ("");
-                ss << "qt-0";
-                ss >> rootNodeName;
 
-                if (intersectNode (intersection, ray, rootNode, 0, 0, heightFieldSize, rootNodeName)) {
+                if (intersectNode<uint32_t, Node <uint32_t> *> (intersection, ray, 0, 0, 0, heightFieldSize, pure_array)) {
                     if(false) {
                         if (0 != shader) {
                             shader->shade (

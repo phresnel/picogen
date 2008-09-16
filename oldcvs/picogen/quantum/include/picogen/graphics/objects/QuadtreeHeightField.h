@@ -33,6 +33,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include <picogen/graphics/objects.h>
+#include <picogen/memory/hugearray.h>
 
 
 namespace picogen {
@@ -60,22 +61,22 @@ namespace picogen {
 
                     // Types.
 
-                    struct Height {
+                    struct Height { // intentionally a POD!
                         enum {
                             min = 0,
                             max = 0xFFFF
                         };
                         uint16_t h;
 
-                        real asReal () const {
-                            return static_cast<real> (h) / static_cast<real> (max);
+                        static real asReal (const Height &h) {
+                            return static_cast<real> (h.h) / static_cast<real> (Height::max);
                         }
 
-                        real asReal (real min, real max)  const {
-                            return min + (static_cast<real> (h) / static_cast<real> (Height::max)) * (max-min);
+                        static real asReal (const Height &h, real min, real max) {
+                            return min + (static_cast<real> (h.h) / static_cast<real> (Height::max)) * (max-min);
                         }
 
-                        void fromReal (real h) {
+                        static void fromReal (Height &H, real h) {
                             int32_t tmp = static_cast<int32_t> (h * static_cast<real> (max));
                             if (tmp < static_cast<int32_t>(min)) {
                                 //std::cout << "<u" << tmp << "f" << h;
@@ -85,9 +86,10 @@ namespace picogen {
                                 //std::cout << ">u" << tmp << "f" << h;
                                 tmp=static_cast<int32_t>(max);
                             }
-                            this->h = static_cast<uint16_t>(tmp);
+                            H.h = static_cast<uint16_t>(tmp);
                         }
 
+                        /*
                         void serialize (std::FILE *f) {
                             std::fwrite (&h, sizeof (h), 1, f);
                         }
@@ -95,16 +97,17 @@ namespace picogen {
                         void unserialize (std::FILE *f) {
                             std::fread (&h, sizeof (h), 1, f);
                         }
+                        */
                     };
 
-                    struct Chunk {
+                    struct Chunk { // intentionally a POD!
                         enum {
                             size = 3
                         };
                         Height field [size * size];
                         Height h_min, h_max;
 
-                        void serialize (std::FILE *f) {
+                        /*void serialize (std::FILE *f) {
                             for (int i=0; i<size*size; ++i) {
                                 field [i].serialize (f);
                             }
@@ -118,41 +121,40 @@ namespace picogen {
                             }
                             h_min.unserialize (f);
                             h_max.unserialize (f);
-                        }
+                        }*/
 
 
                     };
 
-                    struct NodeBuildInfo {
+                    /*struct NodeBuildInfo {
                         heightFun_t fun;
-                    };
+                    };*/
 
-                    struct Node {
+                    template <typename index_t> struct Node { // intentionally a POD!
                         Chunk chunk;
 
-                        union {
-                            mutable Node *children;
-                            mutable NodeBuildInfo *buildInfo;
-                        };
-                        /*struct {
-                            uint8_t hasChildren : 1; // either 0==false or >0==true
-                            uint8_t areChildrenLoaded : 1;
-                        }*/
-                        mutable uint8_t flags;
-                        bool hasChildren () const {
-                            return 0 != (flags & 0x1);
-                        }
-                        bool areChildrenLoaded () const {
-                            return 0 != (flags & 0x2);
-                        }
-                        void setHasChildrenFlag (bool hasChildren) {
-                            flags = (flags & 0xFE) | (hasChildren ? 0x1 : 0x0);
-                        }
-                        void setChildrenLoadedFlag (bool areLoaded) {
-                            flags = (flags & 0xFD) | (areLoaded ? 0x2 : 0x0);
-                        }
+                        mutable index_t children;
+                        //mutable NodeBuildInfo *buildInfo;
 
-                        Node () : chunk(), children (0), flags (0) {}
+                        mutable uint8_t flags;
+                        static bool hasChildren (const Node &n) {
+                            return 0 != (n.flags & 0x1);
+                        }
+                        /*bool areChildrenLoaded () const {
+                            return 0 != (flags & 0x2);
+                        }*/
+                        static void setHasChildrenFlag (Node &n, bool hasChildren) {
+                            n.flags = (n.flags & 0xFE) | (hasChildren ? 0x1 : 0x0);
+                        }
+                        /*void setChildrenLoadedFlag (bool areLoaded) {
+                            flags = (flags & 0xFD) | (areLoaded ? 0x2 : 0x0);
+                        }*/
+
+                        static void init (const Node &n) {
+                            n.children = 0;
+                            n.flags = 0;
+                        }
+                        /*
                         ~Node () {
                             if (hasChildren()) {
                                 if (0 != children)
@@ -160,10 +162,10 @@ namespace picogen {
                             } else if (0 != buildInfo) {
                                 delete buildInfo;
                             }
-                        }
+                        }*/
 
                         private:
-                        void serialize (const char *name) {
+                        /*void serialize (const char *name) {
                             // Important Note!
                             //  The standard says nothing about the binary
                             //  representation of '0'-'4', so this function
@@ -197,10 +199,10 @@ namespace picogen {
                             chunk.serialize (f);
                             std::fwrite (&flags, sizeof (flags), 1, f);
                             std::fclose (f);
-                        }
+                        }*/
 
                         public:
-                        void serializeChildren (const char *name) {
+                        /*void serializeChildren (const char *name) {
                             // Important Note!
                             //  The standard says nothing about the binary
                             //  representation of '0'-'4', so this function
@@ -226,10 +228,10 @@ namespace picogen {
                                 children = 0;
                                 setChildrenLoadedFlag (false);
                             }
-                        }
+                        }*/
 
                         private:
-                        void unserialize (const char *name) {
+                        /*void unserialize (const char *name) {
                             std::FILE *f = fopen (name, "rb");
                             if (0 == f) {
                                 std::cerr << "could not read from file '" << name << std::endl;
@@ -238,10 +240,10 @@ namespace picogen {
                             chunk.unserialize (f);
                             std::fread (&flags, sizeof (flags), 1, f);
                             std::fclose (f);
-                        }
+                        }*/
 
                         public:
-                        void unserializeChildren (const char *name) {
+                        /*void unserializeChildren (const char *name) {
                             // Important Note!
                             //  The standard says nothing about the binary
                             //  representation of '0'-'4', so this function
@@ -267,7 +269,7 @@ namespace picogen {
 
                                 setChildrenLoadedFlag (true);
                             }
-                        }
+                        }*/
 
                         /*void unserializeChildren (const char *name) {
                             // Important Note!
@@ -306,25 +308,38 @@ namespace picogen {
                     const IBRDF *brdf;
                     const IShader *shader;
 
-                    mutable Node rootNode;
+                    // huge_array<typename T, typename I, debug_mode D, verbose_mode V, typename statistics_counter_type=uint32_t>
+                    //mem::huge_array <Node, uint64_t, mem::no_debug, mem::be_verbose> nodeArray
+                    /*enum poolmode {
+                        big_array
+                    };
+                    union {
+                        Node
+                    };*/
+                    union {
+                        Node<uint32_t> *pure_array;
+                    };
+                    //mutable Node rootNode;
+                    uint64_t nodeCount;
 
 
             private:
                     // Private Methods.
-                    void initNode (
-                        QuadtreeHeightField::Node *node, QuadtreeHeightField::Node *parent,
+                    template <typename index_t, typename array_t> void initNode (
+                        QuadtreeHeightField::Node<index_t> *node, QuadtreeHeightField::Node<index_t> *parent,
                         unsigned int left, unsigned int top, unsigned int size, const unsigned int minSize, const unsigned int heightFieldSize,
                         bool smooth,
                         const heightFun_t &fun, real fun_min, real fun_max,
                         real percentageFinished, real percentageFinishedScale,
-                        std::string nodeName
+                        index_t &next_free_index,
+                        array_t &array
                     ) ;
 
-                    bool intersectNode (
+                    template <typename index_t, typename array_t> bool intersectNode (
                         param_out (intersection_t, intersection),
-                        param_in (Ray, ray), QuadtreeHeightField::Node &node,
+                        param_in (Ray, ray), index_t index,
                         const unsigned int left, const unsigned int top, const unsigned int size,
-                        ::std::string nodeName
+                        const array_t &array
                     ) const;
 
 
