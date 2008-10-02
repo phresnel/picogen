@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Option parameters=" ssdf -f ~/picogen/ssdf/testfile.ssdf" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="`llvm-config --cflags`" />
 					<Add option="`llvm-config --cppflags`" />
@@ -31,6 +32,7 @@
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-Wall" />
 					<Add option="`llvm-config --cflags`" />
 					<Add option="`llvm-config --cppflags`" />
 					<Add option="-DPICOGEN_RELEASE" />
@@ -50,6 +52,7 @@
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
+					<Add option="-Wall" />
 					<Add option="-DPICOGEN_RELEASE" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
@@ -66,6 +69,7 @@
 				<Compiler>
 					<Add option="-march=athlon-xp" />
 					<Add option="-O3" />
+					<Add option="-Wall" />
 					<Add option="-s -O3 -fexpensive-optimizations \" />
 					<Add option="-combine  \" />
 					<Add option="-ffast-math \" />
@@ -98,6 +102,7 @@
 				<Compiler>
 					<Add option="-march=athlon-xp" />
 					<Add option="-O3" />
+					<Add option="-Wall" />
 					<Add option="-s -O3 -fexpensive-optimizations \" />
 					<Add option="-combine  \" />
 					<Add option="-ffast-math \" />
@@ -129,6 +134,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="`llvm-config --cflags`" />
 					<Add option="`llvm-config --cppflags`" />
 					<Add option="-O0" />
@@ -146,6 +152,7 @@
 				<Option compiler="gcc" />
 				<Option parameters=" ssdf -f ~/picogen/ssdf/testfile.ssdf" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="`llvm-config --cflags`" />
 					<Add option="`llvm-config --cppflags`" />
@@ -165,6 +172,7 @@
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-Wall" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -178,8 +186,8 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="-s -O3 -fexpensive-optimizations \" />
-					<Add option="-combine  -fwhole-program \" />
 					<Add option="-ffast-math \" />
 					<Add option="-ftree-vectorize \" />
 					<Add option="-msse -march=native \" />
@@ -256,6 +264,7 @@
 		<Unit filename="../../../include/picogen/graphics/objects/ZBNCubemap.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/templates/TriBIH.cc.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/templates/TriBIH.h" />
+		<Unit filename="../../../include/picogen/memory/hugearray.h" />
 		<Unit filename="../../../include/picogen/misc/exceptions.h" />
 		<Unit filename="../../../include/picogen/misc/functional.h" />
 		<Unit filename="../../../include/picogen/misc/functional/LayeredNoise2d.h" />
@@ -302,6 +311,7 @@
 		<Unit filename="../../../src/picosrc/misc/scripting/picogen-c.cc" />
 		<Unit filename="../../../src/picossdf/picossdf.cc" />
 		<Unit filename="../../../src/submain/mkheightmap.cc" />
+		<Unit filename="../../../src/submain/mkskymap.cc" />
 		<Unit filename="../../../src/submain/seb.cc" />
 		<Unit filename="../../../src/submain/ssdf.cc" />
 		<Unit filename="../../../src/submain/testscenes.cc" />
