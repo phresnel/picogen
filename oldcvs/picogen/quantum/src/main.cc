@@ -78,6 +78,7 @@ static void conditions() {
 
 int main (int argc, char *argv[]) {
     extern int main_mkheightmap (int argc, char *argv[]);
+    extern int main_mkskymap (int argc, char *argv[]);
     extern int main_testscenes (int argc, char *argv[]);
     extern int main_ssdf (int argc, char *argv[]);
 
@@ -121,7 +122,13 @@ int main (int argc, char *argv[]) {
             return 0;
         }
     } else if (primary == string ("mkheightmap")) {
+        argc++; // <-- quick and dirty patch
+        argv--;
         return main_mkheightmap (argc, argv);
+    } else if (primary == string ("mkskymap")) {
+        argc++; // <-- quick and dirty patch
+        argv--;
+        return main_mkskymap (argc, argv);
     }
 
 
