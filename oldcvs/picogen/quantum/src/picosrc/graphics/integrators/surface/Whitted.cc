@@ -71,6 +71,8 @@ namespace picogen {
                         primaryIntersection = I;
 
                         if (!I.brdf->isSpecular()) {
+                            // Probably a Lambertian surface.
+                            const real R = I.brdf->getReflectance();
                             Vector3d sunDirection;
                             Color sunColor;
                             sample->skyShader->getSunDirection (sunDirection);
@@ -80,7 +82,7 @@ namespace picogen {
                             const real f_ = f__*sample->skyShader->getSunArealFactor ();
                             const real f = f_ < 0.0 ? 0.0 : f_ > 1.0 ? 1.0 : f_;
 
-                            Color retColor = I.color*I.L_e;
+                            Color retColor = I.color*I.L_e*R;
 
                             Ray sunRay;
                             sunRay.setPosition (ray (I.t) + I.normal * epsilon);
@@ -88,9 +90,20 @@ namespace picogen {
 
                             intersection_t tmp_I;
 
+                            // Shoot a Shadow Ray.
+                            bool direct = false;
                             if (0==sample->intersectable || !sample->intersectable->intersect (tmp_I, sunRay)) {
-                                retColor += I.color*sunColor*f;
+                                retColor += I.color*sunColor*f*R;
+                                direct = true;
                             }
+
+                            // Shoot an Ambient Ray.
+                            sunRay.setDirection (I.normal);
+                            Color skyColor;
+                            sample->skyShader->shade (skyColor, sunRay);
+                            retColor += I.color*skyColor*R;
+
+                            sample->skyShader->atmosphereShade (retColor, retColor, ray, I.t);
 
                             return retColor;
                         } else {
