@@ -58,6 +58,8 @@ namespace picogen {
                         // and should return the *overall* values of each.
                         // They should be good enough to be usefull for the
                         // Whitted-surface-integrator.
+                        // They don't have to be good enough for true
+                        // Realistic Images Synthesis.
                         virtual bool isSpecular () const = 0;
                         virtual ::picogen::real getReflectance () const = 0;
                 };
