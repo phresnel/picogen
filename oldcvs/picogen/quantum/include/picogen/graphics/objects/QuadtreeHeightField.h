@@ -32,8 +32,8 @@
 
 #include <boost/intrusive_ptr.hpp>
 
-#include <picogen/graphics/objects.h>
-#include <picogen/memory/hugearray.h>
+#include <picogen/picogen/graphics/objects.h>
+#include <picogen/picogen/memory/hugearray.h>
 
 
 namespace picogen {
@@ -298,7 +298,7 @@ namespace picogen {
                                 setChildrenLoadedFlag (false);
                             }
                         }*/
-                    };
+                    } __attribute__ ((aligned(32)));
 
 
                     // Fields.
@@ -309,15 +309,19 @@ namespace picogen {
                     const IShader *shader;
 
                     // huge_array<typename T, typename I, debug_mode D, verbose_mode V, typename statistics_counter_type=uint32_t>
-                    //mem::huge_array <Node, uint64_t, mem::no_debug, mem::be_verbose> nodeArray
-                    /*enum poolmode {
-                        big_array
+                    //
+                    enum poolmode_t {
+                        pure_array32_mode,
+                        huge_array64_mode
                     };
-                    union {
+                    poolmode_t poolmode;
+                    /*union {
                         Node
                     };*/
+                    typedef mem::huge_array <Node<uint64_t>, uint64_t, mem::no_debug, mem::be_verbose> huge_array64_t;
                     union {
-                        Node<uint32_t> *pure_array;
+                        Node<uint32_t> *pure_array32;
+                        huge_array64_t *huge_array64;
                     };
                     //mutable Node rootNode;
                     uint64_t nodeCount;
@@ -326,7 +330,7 @@ namespace picogen {
             private:
                     // Private Methods.
                     template <typename index_t, typename array_t> void initNode (
-                        QuadtreeHeightField::Node<index_t> *node, QuadtreeHeightField::Node<index_t> *parent,
+                        index_t node,
                         unsigned int left, unsigned int top, unsigned int size, const unsigned int minSize, const unsigned int heightFieldSize,
                         bool smooth,
                         const heightFun_t &fun, real fun_min, real fun_max,
