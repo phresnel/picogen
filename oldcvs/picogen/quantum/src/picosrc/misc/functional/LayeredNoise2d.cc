@@ -28,7 +28,8 @@
 #include <sstream>
 
 
-#include <picogen/misc/functional/LayeredNoise2d.h>
+#include <picogen/picogen.h>
+#include <picogen/picogen/misc/functional/LayeredNoise2d.h>
 
 
 namespace picogen {
@@ -39,7 +40,8 @@ namespace picogen {
 
             LayeredNoise2d::LayeredNoise2d (std::map<std::string,std::string> &parameters, BasicFunction *ufun, BasicFunction *vfun)
                         : ufun(ufun), vfun(vfun), noiseEvalFun(0), persistenceFun(0)
-                        , enableBilinearNoiseMapFilter(true)
+                        //, enableBilinearNoiseMapFilter(true)
+                        , filter (nearest)
                         , noiseDepth(4)
                         , frequency(2)
             {
@@ -67,14 +69,16 @@ namespace picogen {
                         hmmm >> noiseDepth;
                     } else if (name == string("persistence")) {
                         persistenceFun = new Function_R1_R1 (parameters[name]); // Note that this line may throw.
-                    } else if (name == string("noisemapfilter")) {
+                    } else if (name == string("filter")) {
                         istringstream hmmm (parameters[name]);
                         string filterType;
                         hmmm >> filterType;
                         if (filterType == "bilinear") {
-                            enableBilinearNoiseMapFilter = true;
+                            filter = bilinear;
                         } else if (filterType == "nearest") {
-                            enableBilinearNoiseMapFilter = false;
+                            filter = nearest;
+                        } else if (filterType == "cosine") {
+                            filter = cosine;
                         } else {
                             throw functional_general_exeption ("unknown filter type for 'noisemapfilter': '" + filterType + "' (only 'bilinear' and 'nearest' are supported)");
                         }
@@ -108,19 +112,24 @@ namespace picogen {
 
                 ::picogen::generators::rng::MersenneTwister twister (seed);
 
-                unsigned int offsetLutNumBits = 8;
+                const unsigned int offsetLutNumBits = 8;
                 offsetLutMask = 0;
                 for (unsigned int u=0; u<offsetLutNumBits; ++u) {
                     offsetLutMask |= 1 << u;
                 }
-                --offsetLutMask;
-                offsetLutSize = 1+offsetLutMask;
+                offsetLutSize = offsetLutMask+1;
+                if (false) {
+                    std::cout << "{{{{" << offsetLutMask << ":" << offsetLutSize << "}}}}";
+                    for (unsigned int i=0; i<300; ++i) {
+                        std::cout << i << ":" << (i&offsetLutMask) << std::endl;
+                    }
+                }
                 offsetLut = new unsigned int [offsetLutSize];
                 rngLut    = new real [offsetLutSize];
 
                 for (unsigned int u=0; u<offsetLutSize; ++u) {
-                    offsetLut [u] = static_cast<unsigned int> ((twister.randf() ) * static_cast<real> (offsetLutSize));
-                    rngLut    [u] = -0.5 + twister.randf();
+                    offsetLut [u] = static_cast<unsigned int> ((twister.randf()) * static_cast<real> (offsetLutSize));
+                    rngLut    [u] = -0.5 + 1.0 * twister.randf();
                 }
 
             }
@@ -150,9 +159,21 @@ namespace picogen {
 
 
 // const float *vg = lot_vals[ (i+lot_ofs[ (j+lot_ofs[k&0xFE]) &0xFE]) &0xFE ];
-//#define LN2D_RNG( u, v, depth ) rngLut [ ((v) + offsetLut [((u) + offsetLut [(depth) &offsetLutMask]) &offsetLutMask]) &offsetLutMask]
-#define LN2D_LUTINDEX(u, v, depth )  (((v) + offsetLut [((u) + offsetLut [(depth) %offsetLutSize]) %offsetLutSize]) %offsetLutSize)
-#define LN2D_RNG(u, v, depth ) rngLut [ LN2D_LUTINDEX (u, v, depth) ]
+//#define LN2D_LUTINDEX(u, v, depth )  (((v) + offsetLut [((u) + offsetLut [(depth) %offsetLutSize]) %offsetLutSize]) %offsetLutSize)
+//#define LN2D_RNG(u, v, depth ) rngLut [ LN2D_LUTINDEX (u, v, depth) ]
+#define LN2D_RNG( u, v, depth ) rngLut [ ((v) + offsetLut [((u) + offsetLut [(depth) &offsetLutMask]) &offsetLutMask]) &offsetLutMask]
+
+            namespace {
+                template <typename RT, typename T> RT floor (const T &v) {
+                    assert (static_cast<int>(1.75) == 1);
+                    assert (static_cast<int>(1.5) == 1);
+                    assert (static_cast<int>(1.25) == 1);
+                    assert (static_cast<int>(-0.75) == 0);
+                    assert (static_cast<int>(-0.5) == 0);
+                    assert (static_cast<int>(-0.25) == 0);
+                    return (RT)(int)(v<0 ? v-1 : v);
+                }
+            }
 
             real_t LayeredNoise2d::operator () (const real_t * const parameters) const {
 
@@ -160,69 +181,114 @@ namespace picogen {
 
                 const real_t x = (*ufun) (parameters);
                 const real_t y = (*vfun) (parameters);
-                real_t domainScale = static_cast<real> (frequency);
+                real_t domainScale = frequency;
                 real_t rangeScale = 1.0;
 
-                if (enableBilinearNoiseMapFilter) {
-                    real sum = 0;
-                    for (unsigned int depth=0; depth<noiseDepth; ++depth) {
-                        const real         u__  = x - ::floor (x); // > [0..1)
-                        const real         u_   = u__ * (domainScale-1);
-                        const unsigned int u    = static_cast<unsigned int>(u_);
-                        const unsigned int u1   = static_cast<unsigned int>(1 + u_);
+                switch (filter) {
+                    case bilinear: {
+                        real sum = 0;
+                        for (unsigned int depth=0; depth<noiseDepth; ++depth) {
+                            const real u__  = x;
+                            const real u_   = u__ * (domainScale);
+                            const int u     = floor <int> (u_);
+                            const int u1    = floor <int> (1 + u_);
 
-                        const real         v__  = y - ::floor (y); // > [0..1)
-                        const real         v_   = v__ * (domainScale-1);
-                        const unsigned int v    = static_cast<unsigned int>(v_);
-                        const unsigned int v1   = static_cast<unsigned int>(1 + v_);
+                            const real v__  = y;
+                            const real v_   = v__ * (domainScale);
+                            const int  v    = floor <int> (v_);
+                            const int  v1   = floor <int> (1 + v_);
 
-                        // 0...........|1...........|2
-                        // ............|............|
-                        // ............|............|
-                        // ............|............|
-                        const real pu = ( u_ - static_cast<real> (u) );
-                        const real pv = ( v_ - static_cast<real> (v) );
+                            const real pu = ( u_ - static_cast<real> (u) );
+                            const real pv = ( v_ - static_cast<real> (v) );
 
-                        const real A = LN2D_RNG( u  , v  , depth);
-                        const real B = LN2D_RNG( u1 , v  , depth);
-                        const real C = LN2D_RNG( u  , v1 , depth);
-                        const real D = LN2D_RNG( u1 , v1 , depth);
+                            const real A = LN2D_RNG( u  , v  , depth);
+                            const real B = LN2D_RNG( u1 , v  , depth);
+                            const real C = LN2D_RNG( u  , v1 , depth);
+                            const real D = LN2D_RNG( u1 , v1 , depth);
 
-                        const real P = A*(1.0-pu) + B*(pu);
-                        const real Q = C*(1.0-pu) + D*(pu);
+                            const real P = A*(1.0-pu) + B*(pu);
+                            const real Q = C*(1.0-pu) + D*(pu);
 
-                        const real Z = P*(1.0-pv) + Q*(pv);
+                            const real Z = P*(1.0-pv) + Q*(pv);
 
-                        const real H = (*noiseEvalFun) (Z * rangeScale);
+                            const real H = rangeScale * (*noiseEvalFun) (Z);
 
-                        rangeScale   = rangeScale * (*persistenceFun) (H);
-                        domainScale *= 2.0;
+                            rangeScale  *= (*persistenceFun) (H);
+                            domainScale *= 2.0;
 
-                        sum += H;
+                            sum += H;
+                        }
+                        return sum;
                     }
-                    return sum;
-                } else {
-                    real sum = 0;
-                    for (unsigned int depth=0; depth<noiseDepth; ++depth) {
-                        const real         u__  = x - ::floor (x); // > [0..1)
-                        const real         u_   = u__ * (domainScale);
-                        const unsigned int u    = static_cast<unsigned int>(u_);
+                    case cosine: { // from Hugo Elias (http://freespace.virgin.net/hugo.elias/models/m_perlin.htm)
+                        real sum = 0;
+                        for (unsigned int depth=0; depth<noiseDepth; ++depth) {
+                            const real u__  = x;
+                            const real u_   = u__ * (domainScale);
+                            const int u     = floor <int> (u_);
+                            const int u1    = floor <int> (1 + u_);
 
-                        const real         v__  = y - ::floor (y); // > [0..1)
-                        const real         v_   = v__ * (domainScale);
-                        const unsigned int v    = static_cast<unsigned int>(v_);
+                            const real v__  = y;
+                            const real v_   = v__ * (domainScale);
+                            const int  v    = floor <int> (v_);
+                            const int  v1   = floor <int> (1 + v_);
 
-                        const real Z = LN2D_RNG( u, v, depth);
+                            /*
+                                function Cosine_Interpolate(a, b, x)
+                                    ft = x * 3.1415927
+                                    f = (1 - cos(ft)) * .5
 
-                        const real H = (*noiseEvalFun) (Z * rangeScale);
+                                    return  a*(1-f) + b*f
+                                end of function
+                            */
+                            const real pu_ = ::picogen::constants::pi * (u_ - static_cast<real> (u));
+                            const real pu  = (1.0 - cos (pu_)) * 0.5;
+                            const real pv_ = ::picogen::constants::pi * (v_ - static_cast<real> (v));
+                            const real pv  = (1.0 - cos (pv_)) * 0.5;
 
-                        rangeScale   = rangeScale * (*persistenceFun) (H);
-                        domainScale *= 2.0;
+                            const real A = LN2D_RNG( u  , v  , depth);
+                            const real B = LN2D_RNG( u1 , v  , depth);
+                            const real C = LN2D_RNG( u  , v1 , depth);
+                            const real D = LN2D_RNG( u1 , v1 , depth);
 
-                        sum += H;
+                            const real P = A*(1.0-pu) + B*(pu);
+                            const real Q = C*(1.0-pu) + D*(pu);
+
+                            const real Z = P*(1.0-pv) + Q*(pv);
+
+                            const real H = rangeScale * (*noiseEvalFun) (Z);
+
+                            rangeScale  *= (*persistenceFun) (H);
+                            domainScale *= 2.0;
+
+                            sum += H;
+                        }
+                        return sum;
                     }
-                    return sum;
+                    case nearest: {
+                        real sum = 0;
+                        for (unsigned int depth=0; depth<noiseDepth; ++depth) {
+                            const real         u__  = x;// - ::floor (x); // > [0..1)
+                            const real         u_   = u__ * (domainScale);
+                            const unsigned int u    = static_cast<unsigned int>(u_);
+
+                            const real         v__  = y;// - ::floor (y); // > [0..1)
+                            const real         v_   = v__ * (domainScale);
+                            const unsigned int v    = static_cast<unsigned int>(v_);
+
+                            const real Z = LN2D_RNG( u, v, depth);
+
+                            const real H = rangeScale * (*noiseEvalFun) (Z);
+
+                            rangeScale  *= (*persistenceFun) (H);
+                            domainScale *= 2.0;
+
+                            sum += H;
+                        }
+                        return sum;
+                    }
                 }
+                return 0.0;
             }
 
 
