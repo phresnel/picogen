@@ -23,7 +23,7 @@
  */
 
 #include <map>
-#include <picogen.h>
+#include <picogen/picogen.h>
 
 namespace picogen {
     namespace misc {
@@ -38,7 +38,13 @@ namespace picogen {
                     Function_R1_R1 *noiseEvalFun;
                     Function_R1_R1 *persistenceFun;
 
-                    bool enableBilinearNoiseMapFilter;
+                    //bool enableBilinearNoiseMapFilter;
+                    enum filter_t {
+                        nearest,
+                        bilinear,
+                        cosine
+                    };
+                    filter_t filter;
                     //real persistence;
 
                     unsigned int noiseDepth;
@@ -46,7 +52,7 @@ namespace picogen {
                     real *rngLut;
                     unsigned int offsetLutMask;
                     unsigned int offsetLutSize;
-                    unsigned int frequency;
+                    real_t frequency;
 
                     real_t operator () (real_t x, real_t y, real_t domainScale, real_t rangeScale, unsigned int depth ) const;
 
