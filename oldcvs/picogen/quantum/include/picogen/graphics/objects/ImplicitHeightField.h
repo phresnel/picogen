@@ -26,8 +26,8 @@
 #ifndef _IMPLICITHEIGHTFIELD_H
 #define _IMPLICITHEIGHTFIELD_H
 
-#include <picogen/graphics/objects.h>
-#include <picogen/misc/functional.h>
+#include <picogen/picogen/graphics/objects.h>
+#include <picogen/picogen/misc/functional.h>
 
 namespace picogen {
     namespace graphics {

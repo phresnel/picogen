@@ -39,6 +39,6 @@ namespace picogen {
     } // namespace generators
 } // namespace picogen
 
-#include <picogen/generators/rng/MersenneTwister.h>
+#include <picogen/picogen/generators/rng/MersenneTwister.h>
 
 #endif
