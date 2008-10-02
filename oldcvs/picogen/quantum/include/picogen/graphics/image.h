@@ -66,12 +66,12 @@ namespace picogen {
                         g = -1.022*CIE_X +1.978*CIE_Y +0.044*CIE_Z;
                         b =  0.075*CIE_X -0.252*CIE_Y +1.177*CIE_Z;
 
-                        if ( r > 0.0031308 ) r = 1.055 * ( pow(r,(1/2.4) ) ) - 0.055;
+                        /*if ( r > 0.0031308 ) r = 1.055 * ( pow(r,(1/2.4) ) ) - 0.055;
                         else                 r = 12.92 * r;
                         if ( g > 0.0031308 ) g = 1.055 * ( pow(g,(1/2.4) ) ) - 0.055;
                         else                 g = 12.92 * g;
                         if ( b > 0.0031308 ) b = 1.055 * ( pow(b,(1/2.4) ) ) - 0.055;
-                        else                 b = 12.92 * b;
+                        else                 b = 12.92 * b;*/
                     }
                     inline void from_rgb (const real * const rgb) {
                         XRT_CALL_STACK_PUSH ("inline color::from_rgb( real R, real G, real B )");
