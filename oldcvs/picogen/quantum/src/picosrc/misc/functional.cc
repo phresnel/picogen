@@ -30,7 +30,7 @@
 #include <map>
 
 #include <picogen/picogen.h>
-#include <picogen/misc/functional/LayeredNoise2d.h>
+#include <picogen/picogen/misc/functional/LayeredNoise2d.h>
 
 namespace picogen {
     namespace misc {
@@ -386,6 +386,74 @@ case OPERATOR:{                                                  \
                                 return if_else_ (p1, p2, p3);
                             }
 
+
+
+                            // {min,max} {delta}
+
+                            // min, max
+                            case 'm': {
+                                if ('i' == peekNextToken (it,code)) {
+                                    nextToken (it,code);
+                                    if ('n' == peekNextToken (it,code)) {
+                                        nextToken (it,code);
+                                        BasicFunction *a = heightslang_ (setup,root,it,code);
+                                        BasicFunction *b = heightslang_ (setup,root,it,code);
+                                        if (nextToken (it,code) != ')') {
+                                            throw functional_general_exeption ("missing ')'");
+                                        }
+                                        return min_ (a, b);
+                                    } else {
+                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    }
+                                } else if ('a' == peekNextToken (it,code)) {
+                                    nextToken (it,code);
+                                    if ('x' == peekNextToken (it,code)) {
+                                        nextToken (it,code);
+                                        BasicFunction *a = heightslang_ (setup,root,it,code);
+                                        BasicFunction *b = heightslang_ (setup,root,it,code);
+                                        if (nextToken (it,code) != ')') {
+                                            throw functional_general_exeption ("missing ')'");
+                                        }
+                                        return max_ (a, b);
+                                    } else {
+                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    }
+                                } else {
+                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                }
+                            }
+                            break;
+
+                            // delta
+                            case 'd': {
+                                if ('e' == peekNextToken (it,code)) {
+                                    nextToken (it,code);
+                                    if ('l' == peekNextToken (it,code)) {
+                                        nextToken (it,code);
+                                        if ('t' == peekNextToken (it,code)) {
+                                            nextToken (it,code);
+                                            if ('a' == peekNextToken (it,code)) {
+                                                nextToken (it,code);
+                                                BasicFunction *a = heightslang_ (setup,root,it,code);
+                                                BasicFunction *b = heightslang_ (setup,root,it,code);
+                                                if (nextToken (it,code) != ')') {
+                                                    throw functional_general_exeption ("missing ')'");
+                                                }
+                                                return delta_ (a, b);
+                                            } else {
+                                                throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            }
+                                        } else {
+                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        }
+                                    } else {
+                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    }
+                                } else {
+                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                }
+                            }
+                            break;
 
                             // {neg, not} {inv} {sin,sqrt} {cos} {floor} {trunc}
 

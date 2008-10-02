@@ -409,6 +409,44 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2 ){        
                     }
             FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Call, call_);
 
+
+
+            FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (Min, min_)
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const real a = (*p1) (parameters);
+                        const real b = (*p2) (parameters);
+                        const real c = a < b ? a : b;
+                        return  c;
+                    }
+            FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Min, min_);
+
+
+
+            FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (Max, max_)
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const real a = (*p1) (parameters);
+                        const real b = (*p2) (parameters);
+                        const real c = a > b ? a : b;
+                        return  c;
+                    }
+            FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Max, max_);
+
+
+
+            FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN (Delta, delta_)
+                public:
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        const real a = (*p1) (parameters);
+                        const real b = (*p2) (parameters);
+                        const real c = a < b ? 0.0 : 1.0;
+                        return  c;
+                    }
+            FUNCTIONAL_RR_IMPLEMENT_FUN_2_END (Delta, delta_);
+
+
+
 #undef FUNCTIONAL_RR_IMPLEMENT_FUN_2_BEGIN
 #undef FUNCTIONAL_RR_IMPLEMENT_FUN_2_END
 
