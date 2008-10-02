@@ -26,9 +26,9 @@
 #ifndef _SAMPLERS_H
 #define _SAMPLERS_H
 
-#include "samplers/image/XYIterator.h"
-#include "samplers/ray/Simple.h"
-#include "samplers/ray/Preview.h"
+#include <picogen/picogen/samplers/image/XYIterator.h>
+#include <picogen/picogen/samplers/ray/Simple.h>
+#include <picogen/picogen/samplers/ray/Preview.h>
 
 
 namespace picogen {
