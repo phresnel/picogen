@@ -61,13 +61,14 @@ template <typename T> struct Heightmap {
 
         /// \todo hide member variables away into private section
         const real scaling;
+        const real addx, addz;
         const unsigned int width;
         const unsigned int height;
 
         Hexel *map; // this is going to be a little bit low-level (as compared to operator [] overloading stuff)
 
-        Heightmap( real scaling, unsigned int width, unsigned int height )
-        : scaling (scaling),
+        Heightmap (real scaling, unsigned int width, unsigned int height)
+        : scaling (scaling), addx (0), addz (0),
           width (width), height (height), map (new Hexel[width*height])
         { }
 
@@ -104,11 +105,11 @@ template <typename T> struct Heightmap {
             for (unsigned int y=0; y<height*antiAliasFactor; y++) {
 
                 const unsigned int ofs_y = (y/antiAliasFactor)*width;
-                const real v = scaling * (static_cast<real>(y) / static_cast<real>(width*antiAliasFactor));
+                const real v = scaling * (addz+(static_cast<real>(y) / static_cast<real>(width*antiAliasFactor)));
 
                 for (unsigned int x=0; x<width*antiAliasFactor; x++) {
 
-                    const real u = scaling * (static_cast<real>(x) / static_cast<real>(width*antiAliasFactor));
+                    const real u = scaling * (addx+(static_cast<real>(x) / static_cast<real>(width*antiAliasFactor)));
                     map[ (x/antiAliasFactor) + ofs_y ] += static_cast<Hexel>(f(u,v)) / static_cast<Hexel>(antiAliasFactor*antiAliasFactor);
 
                 }
@@ -143,6 +144,27 @@ template <typename T> struct Heightmap {
                     m = ( m - minHeight ) * totalHeight;
                 }
             }
+        }
+
+
+
+        void printInfo () {
+            using namespace std;
+            Hexel minHeight_(map[0]);
+            Hexel maxHeight_(map[0]);
+
+            for (unsigned int y=0; y<height; y++) {
+                const unsigned int ofs_y = y*width;
+                for (unsigned int x=0; x<width; x++) {
+                    const Hexel & m = map[ x + ofs_y ];
+                    if( m<minHeight_ )
+                        minHeight_ = m;
+                    if( m>maxHeight_ )
+                        maxHeight_ = m;
+                }
+            }
+
+            std::cout << "f_min=" << minHeight_ << ", f_max="  << maxHeight_ << std::endl;
         }
 
 };
@@ -348,8 +370,13 @@ static void printUsage() {
 }
 
 
-
+#ifdef MKHEIGHTMAP_STANDALONE
+int main (int argc, char *argv[]) {
+#else
 int main_mkheightmap (int argc, char *argv[]) {
+#endif
+    --argc;
+    ++argv;
 
     using namespace std;
     using namespace picogen::misc::functional;
@@ -374,6 +401,7 @@ int main_mkheightmap (int argc, char *argv[]) {
     unsigned int antiAliasFactor = 1;
     //float heightmapNormalizationAccuracy = -1.0;
     bool doNormalize = false;
+    bool doPrintInfo = false;
     string exportFileNameBase ("mkheightmap-out");
     bool forceOverwriteFiles = false;
 
@@ -590,6 +618,8 @@ int main_mkheightmap (int argc, char *argv[]) {
                     printUsage();
                     return -1;
                 }*/
+            } else if (option == "-i" || option == "--info") {
+                doPrintInfo = true;
             } else if (option == "--help") {
                 printUsage();
                 return 0;
@@ -616,8 +646,11 @@ int main_mkheightmap (int argc, char *argv[]) {
 
         Heightmap<double> heightmap (scaling, width, height);
         heightmap.fill (Function_R2_R1 (code), antiAliasFactor);
-        if( doNormalize )
+        if (doNormalize)
             heightmap.normalize();
+
+        if (doPrintInfo)
+            heightmap.printInfo();
 
         #define MKHEIGHTMAP_EXPORT(FLAG,EXT,FUN)                                    \
         if (exportFlags.FLAG) {                                                     \
