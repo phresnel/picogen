@@ -461,8 +461,9 @@ class SSDFScene : public Scene, public SSDFBackend {
                     if (false) {//(0 == fork()) {
                         //currentScene.linearList->insert (heightField);
                     } else {
+                        real accuracy = 10000.0 / static_cast<real>(resolution*resolution);
                         QuadtreeHeightField *heightField = QuadtreeHeightField::create(
-                            resolution, fun, BoundingBox (center-size*0.5, (center+size*0.5)), 0.2, false
+                            resolution, fun, BoundingBox (center-size*0.5, (center+size*0.5)), accuracy, false
                         );
 
                         heightField->setBRDF (currentBRDF);
@@ -696,7 +697,7 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height, const
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
     // prepare and run loop
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
-    unsigned int pixelsPerContinue = (width*height*4) / 16;
+    unsigned int pixelsPerContinue = (width*height) / 32;
     if (pixelsPerContinue <= 0)
         pixelsPerContinue = width;
 
