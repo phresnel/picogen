@@ -91,6 +91,10 @@ namespace picogen {
                         return Vector3d (-m[0], -m[1], -m[2]);
                     }
 
+                    inline const Vector3d operator + () const {
+                        return *this;
+                    }
+
                     inline const Vector3d computeCross (const Vector3d &v) const {
                         return Vector3d (
                                    m[1]*v.m[2] - m[2]*v.m[1],
@@ -107,6 +111,19 @@ namespace picogen {
 
                     inline const Vector3d computeNormal() const {
                         return *this * (1.0/length());
+                    }
+
+                    void computeCoordinateSystem (Vector3d &v1, Vector3d &v2, Vector3d &v3) const {
+                        v1 = computeNormal();
+                        // from PBRT
+                        if (fabs (v1.m[0]) > fabs (v1.m[1])) {
+                            real ilen = 1.0 / sqrt (v1.m[0]*v1.m[0] + v1.m[2]*v1.m[2]);
+                            v2 = Vector3d (-v1.m[2] * ilen, 0.0, v1.m[0] * ilen);
+                        } else {
+                            real ilen = 1.0 / sqrt (v1.m[1]*v1.m[1] + v1.m[2]*v1.m[2]);
+                            v2 = Vector3d (0.0, v1.m[2] * ilen, -v1.m[1] * ilen);
+                        }
+                        v3 = v1.computeCross (v2);
                     }
 
                     // --- below function are deprecated
