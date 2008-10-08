@@ -94,6 +94,13 @@ namespace picogen {
                         rgb[2] = b;
                         XRT_CALL_STACK_POP();
                     }
+                    inline Color saturate (const Color &min, const Color &max) {
+                        return Color (
+                            r < min.r ? min.r : r > max.r ? max.r : r,
+                            g < min.g ? min.g : g > max.g ? max.g : g,
+                            b < min.b ? min.b : b > max.b ? max.b : b
+                        );
+                    }
                     inline Color operator + (const Color &col) const {
                         return Color (r+col.r, g+col.g, b+col.b);
                     }
