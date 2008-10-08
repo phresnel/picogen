@@ -47,7 +47,10 @@ namespace {
 
     using picogen::real;
     using picogen::geometrics::Vector3d;
-
+    using picogen::geometrics::Transformation;
+    using picogen::geometrics::Ray;
+    using picogen::graphics::objects::Preetham;
+    using picogen::graphics::color::Color;
 
 
     template <typename T> struct Heightmap {
@@ -70,7 +73,7 @@ namespace {
 
             Heightmap (real scaling, unsigned int width, unsigned int height)
             : scaling (scaling), addx (0), addz (0),
-              width (width), height (height), map (new Hexel[width*height])
+              width (width), height (height), map (new Hexel[(1+width)*(1+height)])
             { }
 
 
@@ -88,9 +91,8 @@ namespace {
             }
 
 
-
             void fillZero() {
-                for (unsigned int x=0; x<width*height; x++) {
+                for (unsigned int x=0; x<(1+width)*(1+height); x++) {
                     map[ x ] = static_cast<Hexel>(0.0);
                 }
             }
@@ -103,12 +105,12 @@ namespace {
 
                 fillZero();
 
-                for (unsigned int y=0; y<height*antiAliasFactor; y++) {
+                for (unsigned int y=0; y<1+height*antiAliasFactor; y++) {
 
                     const unsigned int ofs_y = (y/antiAliasFactor)*width;
                     const real v = scaling * (addz+(static_cast<real>(y) / static_cast<real>(width*antiAliasFactor)));
 
-                    for (unsigned int x=0; x<width*antiAliasFactor; x++) {
+                    for (unsigned int x=0; x<1+width*antiAliasFactor; x++) {
 
                         const real u = scaling * (addx+(static_cast<real>(x) / static_cast<real>(width*antiAliasFactor)));
                         map[ (x/antiAliasFactor) + ofs_y ] += static_cast<Hexel>(f(u,v)) / static_cast<Hexel>(antiAliasFactor*antiAliasFactor);
@@ -182,7 +184,7 @@ namespace {
         float scale,
         float exp_tone,
         float saturation,
-        float waterLevel
+        Preetham &preetham
     ) {
         if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
             return;
@@ -191,33 +193,109 @@ namespace {
             /// \todo FIX we are currently assuming a 32bit SDL buffer
             /// \todo get rid of pointer arithmetic
             Uint32 *bufp   = (Uint32*) p_target->pixels + y* (p_target->pitch>>2);
+            const real fy = -1.0 + 2.0 * static_cast <real> (y) / static_cast <real> (p_target->h);
+            const real fy_diff = -1.0 + 2.0 * static_cast <real> (y+1) / static_cast <real> (p_target->h);
             for (x=0; x<p_target->w; x++) {
+                const real fx = -1.0 + 2.0 * static_cast <real> (x) / static_cast <real> (p_target->w);
+                const real fx_diff = -1.0 + 2.0 * static_cast <real> (x+1) / static_cast <real> (p_target->w);
 
-                real accu_r=real (0), accu_g=real (0), accu_b=real (0);
-                const real h_ = surface (x,y);
-                const real h  = h_<0.0 ? 0.0 : h_>1.0 ? 1.0 : h_;
-
-                if (h<waterLevel) {
-                    accu_r = 0.3;
-                    accu_g = 0.3;
-                    accu_b = 0.8;
-                } else {
-                    accu_r = accu_g = accu_b = h;
-
-                    /*
-                    unsigned int tmp = static_cast<unsigned int> (h * 255.0 * 255.0 * 255.0);
-                    accu_r = static_cast<real> ( ( tmp >> 16 ) & 0xFF ) / 255.0;
-                    accu_g = static_cast<real> ( ( tmp >>  8 ) & 0xFF ) / 255.0;
-                    accu_b = static_cast<real> ( ( tmp >>  0 ) & 0xFF ) / 255.0;
-                    */
+                Ray ray;
+                ray.setPosition (Vector3d (0.0, 0.0, 0.0));
+                const real fz_sq = 1 - fx*fx - fy*fy;
+                if (fz_sq < 0.0) {
+                    * (bufp++) = SDL_MapRGB (p_target->format, 0, 0, 0);
+                    continue;
                 }
+                const real fz = sqrt (fz_sq);
+                ray.setDirection (Vector3d (fx, fz, fy));
 
+                const real fz_x_diff = sqrt(1 - fx_diff*fx_diff - fy*fy);
+                const real fz_y_diff = sqrt(1 - fx*fx - fy_diff*fy_diff);
+                Vector3d diff[2];
+                diff [0] = (Vector3d (fx_diff, fz_x_diff, fy) - Vector3d (fx, fz, fy)).computeNormal();
+                diff [1] = (Vector3d (fx, fz_y_diff, fy_diff) - Vector3d (fx, fz, fy)).computeNormal();
+
+
+                const real h_ = surface (x,1+y);
+                const real uh_ = surface (1+x,1+y);
+                const real vh_ = surface (x,0+y);
+                const real h  = h_<0.0 ? 0.0 : h_>1.0 ? 1.0 : h_;
+                // compute cloud color
+                const real fu = 2.0 / static_cast <real> (surface.width);
+                const real fv = 2.0 / static_cast <real> (surface.height);
+                const Vector3d u = Vector3d (fu, uh_-h_, 0).computeNormal();
+                const Vector3d v = Vector3d (0, vh_-h_, fv).computeNormal();
+
+                Vector3d normal = v.computeCross (u).computeNormal();
+
+                normal =
+                    diff[0]*normal[0]
+                    +ray.getDirection()*-normal[1]
+                    +diff[1]*normal[2]
+                ;//*/
+
+                // remember:
+                // * to transform a normal, we multiply a normal with the inverse transpose
+                // * the inverse of a purely rotational matrix is its transpose
+                // * hence, we have to multiply with transpose(transpose(M)), thus, with M
+                /*
+                if (false) {
+                    if (true) {
+                        normal [0] = normal[0] * M[0][0] + normal[1] * M[0][1] + normal[2] * M[0][2];
+                        normal [1] = normal[0] * M[1][0] + normal[1] * M[1][1] + normal[2] * M[1][2];
+                        normal [2] = normal[0] * M[2][0] + normal[1] * M[2][1] + normal[2] * M[2][2];
+                    } else {
+                        normal [0] = normal[0] * M[0][0] + normal[1] * M[1][0] + normal[2] * M[2][0];
+                        normal [1] = normal[0] * M[0][1] + normal[1] * M[1][1] + normal[2] * M[2][1];
+                        normal [2] = normal[0] * M[0][2] + normal[1] * M[1][2] + normal[2] * M[2][2];
+                    }
+                }//*/
+
+                // compute sunsky color
+                Color skyColor, sunColorInRay;
+                preetham.shade (skyColor, ray);
+                preetham.sunShade (sunColorInRay, ray);
+                Color sunSky = sunColorInRay + skyColor;
+
+
+                Vector3d sunDirection; preetham.getSunDirection (sunDirection);
+                real dot = (normal * sunDirection);
+                //dot = dot < 0 ? 0 : dot;
+
+                real diffuse_r=1, diffuse_g=1, diffuse_b=1;
+                Color sunColor; preetham.getSunColor (sunColor);
+                sunColor.to_rgb (diffuse_r, diffuse_g, diffuse_b);
+                const real diffuseFac = 0.003;
+                const real diffuseDot = 0.5 + 0.5*-dot;
+                diffuse_r *= diffuseFac * diffuseDot;
+                diffuse_g *= diffuseFac * diffuseDot;
+                diffuse_b *= diffuseFac * diffuseDot;
+
+
+                real cr, cg, cb;
+                cr = diffuse_r;
+                cg = diffuse_g;
+                cb = diffuse_b;
+
+                real r, g, b;
+                (sunColorInRay+skyColor).to_rgb (r,g,b);
+
+                if (true) {
+                    r = r * (1-h) + cr*h;
+                    g = g * (1-h) + cg*h;
+                    b = b * (1-h) + cb*h;
+                } else {
+                    r = normal[0]*0.5+0.5;
+                    g = normal[1]*0.5+0.5;
+                    b = normal[2]*0.5+0.5;
+                }
+                Color (r, g, b).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
 
                 * (bufp++) =
                     SDL_MapRGB (p_target->format,
-                                (unsigned char) (255.0*accu_r),
-                                (unsigned char) (255.0*accu_g),
-                                (unsigned char) (255.0*accu_b)
+                                (unsigned char) (255.0*r),
+                                (unsigned char) (255.0*g),
+                                (unsigned char) (255.0*b)
                                );
             }
         }
@@ -244,8 +322,18 @@ namespace {
             return -1;
         }
 
+        Preetham preetham;
+        preetham.setTurbidity (7.9);
+        preetham.setSunSolidAngleFactor (1.0);
+        const real L = 0.18;
+        preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
+        preetham.setSunColor (Color (1.0,1.0,1.0) *1000.0*L);
+        preetham.setSunDirection (Vector3d (0.0,0.5,0.0).normal());
+        preetham.enableFogHack (false, 0.0, 99999999.0);
+        preetham.invalidate ();
+
         // dump the heightmap onto the screen
-        draw (screen, heightmap, 1.0, 1.0, 1.0, waterLevel);
+        draw (screen, heightmap, 1.0, 1.0, 1.0, preetham);
 
         bool done = false;
         while (!done) {
@@ -327,7 +415,8 @@ namespace {
             return "Unable to create surface for bitmap export: " + string (SDL_GetError());
         }
 
-        draw (surface, heightmap, 1.0, 1.0, 1.0, -10000000);
+// TODO IMPORTANT
+        //draw (surface, heightmap, 1.0, 1.0, 1.0, -10000000);
         SDL_SaveBMP (surface, outputFilename.c_str());
         SDL_FreeSurface (surface);
         SDL_Quit();
