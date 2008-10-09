@@ -55,14 +55,14 @@
 
 1212003360 /home/smach/Projects/picogen/quantum/include/picogen/misc/exceptions.h
 
-1219082343 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics.h
+1223144665 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics.h
 	"geometrics/Transformation.h"
 
 1218977503 /home/smach/Projects/picogen/quantum/include/picogen/misc/geometrics/Transformation.h
 
 1215426878 /home/smach/Projects/picogen/quantum/include/picogen/misc/templates.h
 
-1222580703 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
+1223024809 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
 
 1221657450 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
 	"brdf/Lambertian.h"
@@ -102,7 +102,8 @@
 
 1219646573 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Preetham.h
 
-1218977502 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
+1223533626 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/SimpleHeightField.h
+	<picogen/picogen.h>
 	<picogen/graphics/objects.h>
 
 1218977502 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/VelocityInstance.h
@@ -145,26 +146,26 @@
 1217803331 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/samplers/ray/Simple.cc
 	<picogen/picogen.h>
 
-1222842711 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
+1223533586 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
 	<ctype.h>
 	<string>
 	<iostream>
 	<sstream>
 	<map>
 	<picogen/picogen.h>
-	<picogen/picogen/misc/functional/LayeredNoise2d.h>
+	<picogen/misc/functional/LayeredNoise2d.h>
 
-1222504062 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/LayeredNoise2d.h
+1222842894 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/LayeredNoise2d.h
 	<map>
-	<picogen.h>
+	<picogen/picogen.h>
 
-1222842768 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/LayeredNoise2d.cc
+1223533630 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/LayeredNoise2d.cc
 	<string>
 	<sstream>
 	<picogen/picogen.h>
-	<picogen/picogen/misc/functional/LayeredNoise2d.h>
+	<picogen/misc/functional/LayeredNoise2d.h>
 
-1219818370 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+1223534636 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
@@ -173,7 +174,7 @@
 	<sstream>
 	<boost/intrusive_ptr.hpp>
 	<picogen/picogen.h>
-	<picogen/picossdf/picossdf.h>
+	<picogen/misc/picossdf.h>
 	<picogen/misc/scripting/nano-c.h>
 
 1215108969 /home/smach/Projects/picogen/quantum/include/picogen/misc/scripting/nano-c.h
@@ -287,7 +288,7 @@
 	<picogen/misc/scripting/AST.h>
 	<picogen/misc/scripting/AST2LLVM.h>
 
-1218977501 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/ImplicitHeightField.h
+1223533619 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/ImplicitHeightField.h
 	<picogen/graphics/objects.h>
 	<picogen/misc/functional.h>
 
@@ -300,12 +301,12 @@
 	<picogen/picogen.h>
 	<picogen/graphics/objects/QuadtreeHeightField.h>
 
-1222842540 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
+1223533621 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/QuadtreeHeightField.h
 	<stdint.h>
 	<cstdio>
 	<boost/intrusive_ptr.hpp>
-	<picogen/picogen/graphics/objects.h>
-	<picogen/picogen/memory/hugearray.h>
+	<picogen/graphics/objects.h>
+	<picogen/memory/hugearray.h>
 
 1218977179 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Preview.cc
 
@@ -327,11 +328,11 @@
 
 1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Preview.h
 
-1222842341 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film.h
-	<picogen/picogen/graphics/film/SimpleColorFilm.h>
-	<picogen/picogen/graphics/film/DistanceVis.h>
-	<picogen/picogen/graphics/film/NormalVis.h>
-	<picogen/picogen/graphics/film/RayDirVis.h>
+1223533614 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film.h
+	<picogen/graphics/film/SimpleColorFilm.h>
+	<picogen/graphics/film/DistanceVis.h>
+	<picogen/graphics/film/NormalVis.h>
+	<picogen/graphics/film/RayDirVis.h>
 
 1218980545 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/SimpleColorFilm.h
 
@@ -388,15 +389,15 @@
 1219342688 /home/smach/Projects/picogen/quantum/include/picogen/foreign/libcoyotl/mtwister.h
 	"prng.h"
 
-1219386539 /home/smach/Projects/picogen/quantum/include/picogen/generators/generators.h
+1223533608 /home/smach/Projects/picogen/quantum/include/picogen/generators/generators.h
 	<picogen/generators/rng/MersenneTwister.h>
 
-1219386548 /home/smach/Projects/picogen/quantum/include/picogen/generators/rng/MersenneTwister.h
+1223533611 /home/smach/Projects/picogen/quantum/include/picogen/generators/rng/MersenneTwister.h
 	<picogen/foreign/libcoyotl/mtwister.h>
 	<picogen/picogen.h>
 
-1222843192 source:/home/smach/Projects/picogen/quantum/src/picosrc/generators/rng/MersenneTwister.cc
-	<picogen/picogen/generators/rng/MersenneTwister.h>
+1223533628 source:/home/smach/Projects/picogen/quantum/src/picosrc/generators/rng/MersenneTwister.cc
+	<picogen/generators/rng/MersenneTwister.h>
 
 1219577251 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/surface/Whitted.h
 
@@ -416,10 +417,42 @@
 	<sstream>
 	<map>
 
-1223029916 source:/home/smach/Projects/picogen/quantum/src/submain/mkskymap.cc
+1223151315 source:/home/smach/Projects/picogen/quantum/src/submain/mkskymap.cc
 	<stdio.h>
 	<ctype.h>
 	<iostream>
 	<SDL/SDL.h>
 	<picogen/picogen.h>
+
+1223533679 /home/smach/Projects/picogen/quantum/include/picogen/picogen.h
+	<math.h>
+	<float.h>
+	<iostream>
+	<string>
+	<sstream>
+	<list>
+	<cassert>
+	<picogen/misc/exceptions.h>
+	<picogen/generators/generators.h>
+	<picogen/misc/geometrics.h>
+	<picogen/misc/templates.h>
+	<picogen/graphics/image.h>
+	<picogen/graphics/material.h>
+	<picogen/misc/functions.h>
+	<picogen/misc/functional.h>
+	<picogen/graphics/cameras.h>
+	<picogen/graphics/film.h>
+	<picogen/graphics/objects.h>
+	<picogen/graphics/integrators.h>
+	<picogen/common.h>
+
+1218977772 /home/smach/Projects/picogen/quantum/include/picogen/common.h
+
+1214302929 /home/smach/Projects/picogen/quantum/include/picogen/compile_info.h
+
+1219818536 /home/smach/Projects/picogen/quantum/include/picogen/misc/picossdf.h
+	<string>
+	<iostream>
+	<vector>
+	<boost/intrusive_ptr.hpp>
 

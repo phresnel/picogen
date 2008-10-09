@@ -132,7 +132,7 @@ namespace picogen {
     } // namespace misc
 } // namespace picogen
 
-#include <picogen/picogen/misc/exceptions.h>
+#include <picogen/misc/exceptions.h>
 
 namespace picogen {
     typedef double real;
@@ -154,13 +154,13 @@ namespace picogen {
 } // namespace picogen {
 
 
-#include <picogen/picogen/generators/generators.h>
+#include <picogen/generators/generators.h>
 
-#include <picogen/picogen/misc/geometrics.h>
-#include <picogen/picogen/misc/templates.h>
+#include <picogen/misc/geometrics.h>
+#include <picogen/misc/templates.h>
 
-#include <picogen/picogen/graphics/image.h>
-#include <picogen/picogen/graphics/material.h>
+#include <picogen/graphics/image.h>
+#include <picogen/graphics/material.h>
 
 
 namespace picogen {
@@ -207,13 +207,13 @@ namespace picogen {
     }
 }
 
-#include <picogen/picogen/misc/functions.h> // << obsolete, take "functional.h"
-#include <picogen/picogen/misc/functional.h>
+#include <picogen/misc/functions.h> // << obsolete, take "functional.h"
+#include <picogen/misc/functional.h>
 
-#include <picogen/picogen/graphics/cameras.h>
-#include <picogen/picogen/graphics/film.h>
-#include <picogen/picogen/graphics/objects.h>
-#include <picogen/picogen/graphics/integrators.h>
+#include <picogen/graphics/cameras.h>
+#include <picogen/graphics/film.h>
+#include <picogen/graphics/objects.h>
+#include <picogen/graphics/integrators.h>
 
 #include <picogen/common.h>
 

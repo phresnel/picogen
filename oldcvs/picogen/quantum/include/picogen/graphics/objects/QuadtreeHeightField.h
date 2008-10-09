@@ -32,8 +32,8 @@
 
 #include <boost/intrusive_ptr.hpp>
 
-#include <picogen/picogen/graphics/objects.h>
-#include <picogen/picogen/memory/hugearray.h>
+#include <picogen/graphics/objects.h>
+#include <picogen/memory/hugearray.h>
 
 
 namespace picogen {

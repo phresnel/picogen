@@ -24,7 +24,7 @@
 
 
 
-#include <picogen/picogen/generators/rng/MersenneTwister.h>
+#include <picogen/generators/rng/MersenneTwister.h>
 
 namespace picogen {
     namespace generators {

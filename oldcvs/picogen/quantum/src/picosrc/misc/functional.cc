@@ -30,7 +30,7 @@
 #include <map>
 
 #include <picogen/picogen.h>
-#include <picogen/picogen/misc/functional/LayeredNoise2d.h>
+#include <picogen/misc/functional/LayeredNoise2d.h>
 
 namespace picogen {
     namespace misc {

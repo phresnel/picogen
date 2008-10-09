@@ -26,7 +26,7 @@
 #ifndef _MERSENNETWISTER_H
 #define _MERSENNETWISTER_H
 
-#include <picogen/picogen/foreign/libcoyotl/mtwister.h>
+#include <picogen/foreign/libcoyotl/mtwister.h>
 #include <picogen/picogen.h>
 
 namespace picogen {

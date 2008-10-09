@@ -30,7 +30,7 @@
 #include <SDL/SDL.h>
 
 #include <picogen/picogen.h>
-#include <picogen/picossdf/picossdf.h>
+#include <picogen/misc/picossdf.h>
 #include <picogen/graphics/objects/Instance.h>
 #include <picogen/graphics/objects/templates/TriBIH.h>
 #include <picogen/graphics/objects/QuadtreeHeightField.h>

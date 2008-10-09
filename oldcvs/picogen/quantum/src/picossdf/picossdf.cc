@@ -32,7 +32,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include <picogen/picogen.h>
-#include <picogen/picossdf/picossdf.h>
+#include <picogen/misc/picossdf.h>
 //#include <picogen/experimental/PicoPico.h>
 #include <picogen/misc/scripting/nano-c.h>
 

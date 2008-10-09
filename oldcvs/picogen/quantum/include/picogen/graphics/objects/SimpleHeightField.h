@@ -27,7 +27,7 @@
 #define _SIMPLEHEIGHTFIELD_H
 
 #include <picogen/picogen.h>
-#include <picogen/picogen/graphics/objects.h>
+#include <picogen/graphics/objects.h>
 
 namespace picogen {
     namespace graphics {
