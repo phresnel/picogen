@@ -947,18 +947,22 @@ namespace picogen { /// \todo find proper namespace for this
         const ExprAST *ast_ = parseTopLevelExpression (curr, tokens.end());
         if (0 != ast_) {
 
-            cout << "\nprogram's AST:{{\n";
-            ast_->print (1);
-            cout << "\n}}" << endl;
-            AST2LLVM llvm;
-            ast_->accept (llvm);
-            llvm.compile();
+            #ifndef NO_LLVM
+                cout << "\nprogram's AST:{{\n";
+                ast_->print (1);
+                cout << "\n}}" << endl;
+                AST2LLVM llvm;
+                ast_->accept (llvm);
+                llvm.compile();
 
-            if ((flags & return_ast) == return_ast && 0 != ast) {
-                *ast = ast_;
-            } else {
+                if ((flags & return_ast) == return_ast && 0 != ast) {
+                    *ast = ast_;
+                } else {
+                    delete ast_;
+                }
+            #else // #ifndef NO_LLVM
                 delete ast_;
-            }
+            #endif
         } else {
             cout << "parse error or no program" << endl;
         }
@@ -970,3 +974,4 @@ namespace picogen { /// \todo find proper namespace for this
 
 
 } /* namespace picogen */
+

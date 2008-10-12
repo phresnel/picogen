@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#ifndef NO_LLVM
 #include <picogen/misc/scripting/AST2LLVM.h>
 
 using namespace llvm;
@@ -828,3 +828,5 @@ void AST2LLVM::visit (const RetAST *ast) {
     }
     end ("void AST2LLVM::visit (const RetAST *ast)");
 }
+
+#endif // #ifndef NO_LLVM
