@@ -390,6 +390,7 @@ namespace picogen {
                             pure_array32
                         );
                     } break;
+                    #ifdef POSIX
                     case huge_array64_mode: {
                         std::cerr << "  runs in huge-array-64 mode\n";
                         bool load_from_file = false;
@@ -411,6 +412,7 @@ namespace picogen {
                         }
                         huge_array64->set_mode (huge_array64_t::mode_read);
                     } break;
+                    #endif
                 };
 
                 bboxSize [0] = bbox.computeWidth ();
@@ -437,9 +439,11 @@ namespace picogen {
                     case pure_array32_mode:
                         delete [] pure_array32;
                         break;
+                    #ifdef POSIX
                     case huge_array64_mode:
                         delete huge_array64;
                         break;
+                    #endif
                 };
             }
 
@@ -612,9 +616,11 @@ namespace picogen {
                     case pure_array32_mode:
                         intersects = intersectNode<uint32_t, Node <uint32_t> *> (intersection, ray, 0, 0, 0, heightFieldSize, pure_array32);
                         break;
+                    #ifdef POSIX
                     case huge_array64_mode:
                         intersects = intersectNode<uint64_t, huge_array64_t> (intersection, ray, 0, 0, 0, heightFieldSize, *huge_array64);
                         break;
+                    #endif
                 };
 
                 if (intersects) {

@@ -312,16 +312,22 @@ namespace picogen {
                     //
                     enum poolmode_t {
                         pure_array32_mode,
+                        #ifdef POSIX
                         huge_array64_mode
+                        #endif
                     };
                     poolmode_t poolmode;
                     /*union {
                         Node
                     };*/
+                    #ifdef POSIX
                     typedef mem::huge_array <Node<uint64_t>, uint64_t, mem::no_debug, mem::be_verbose> huge_array64_t;
+                    #endif
                     union {
                         Node<uint32_t> *pure_array32;
+                        #ifdef POSIX
                         huge_array64_t *huge_array64;
+                        #endif
                     };
                     //mutable Node rootNode;
                     uint64_t nodeCount;

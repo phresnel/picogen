@@ -21,7 +21,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
+#ifndef NO_LLVM
 #ifndef AST2LLVM_H
 #define AST2LLVM_H
 
@@ -121,3 +121,4 @@ class AST2LLVM : public ASTNonRecursingVisitor /*ASTVisitor*/ {
 
 
 #endif // AST2LLVM_H
+#endif // #ifndef NO_LLVM

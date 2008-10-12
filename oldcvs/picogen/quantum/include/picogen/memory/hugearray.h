@@ -23,7 +23,6 @@
 
 #include <picogen/compile_info.h>
 
-
 #ifdef POSIX
 
 #include <sys/mman.h>
@@ -666,5 +665,5 @@ namespace picogen {
 }; // namespace picogen
 
 #else // #ifdef POSIX
-# error "the template 'hugearray' is currently only supported on POSIX architectures"
+# warning "the template 'hugearray' is currently only supported on POSIX architectures"
 #endif // #ifdef POSIX
