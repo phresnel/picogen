@@ -55,10 +55,11 @@ static void usage() {
         << "\n"
         << " mkheightmap :   mkheightmap is a heightmap generation tool.\n"
         << "                 type 'picogen mkheightmap --help' for further help.\n"
-        << "\n"
-        << " testscene :     some hardcoded testscenes.\n"
+        //<< "\n"
+        //<< " testscene :     some hardcoded testscenes.\n"
         << "\n"
         << " ssdf :          for parsing the (not too) static scene definition format.\n"
+        << "                 type 'picogen ssdf --help' for further help.\n"
     << std::endl;
 }
 
@@ -121,27 +122,31 @@ int main (int argc, char *argv[]) {
             conditions();
             return 0;
         }
-    } else if (primary == string ("mkheightmap")) {
-        argc++; // <-- quick and dirty patch
-        argv--;
-        return main_mkheightmap (argc, argv);
-    } else if (primary == string ("mkskymap")) {
-        argc++; // <-- quick and dirty patch
-        argv--;
-        return main_mkskymap (argc, argv);
-    }
-
-
-    else if (primary == string ("testscene")) {
-        return main_testscenes (argc, argv);
     }
 
     else if (primary == string ("ssdf")) {
         return main_ssdf (argc, argv);
     }
 
+    else if (primary == string ("mkheightmap")) {
+        argc++; // <-- quick and dirty patch
+        argv--;
+        return main_mkheightmap (argc, argv);
+    }
+
     #ifndef PICOGEN_RELEASE
+    else if (primary == string ("mkskymap")) {
+        argc++; // <-- quick and dirty patch
+        argv--;
+        return main_mkskymap (argc, argv);
+    }
     #endif
+
+    /*
+    else if (primary == string ("testscene")) {
+        return main_testscenes (argc, argv);
+    }
+    */
 
     else {
         usage();

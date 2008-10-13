@@ -901,7 +901,20 @@ static int grind (int width, int height, int antiAliasingWidth, Scene *scene, su
 
 
 static void printUsage() {
-    ::std::cout << "The lazy author of this program has not yet written any usage information. Kick his ass at seb@greenhybrid.net." << ::std::endl;
+    std::cout
+        << "Invocation: picogen ssdf <options>\n"
+        << "In the version of picogen you have installed, the following options are possible:\n"
+        << "\n"
+        << "-f | --filename <filename> : name of the ssdf file to render\n"
+        << "-w | --width <number> : width of the output in pixels, default 320\n"
+        << "-h | --height <number> : height of the output in pixels, default 320\n"
+        << "-a | --AA-width <n> : set anti-aliasing-size to n*n pixels, default 1\n"
+        << "\n"
+        << "-s | --surface-integrator <si> : set the surface integrator, either \n"
+        << "                                 'whitted-style' or 'ws', or\n"
+        << "                                 'path-tracing' or 'pt',\n"
+        << "                                 default is 'pt'\n"
+    << std::endl;
 }
 
 
@@ -994,6 +1007,9 @@ int main_ssdf (int argc, char *argv[]) {
 
             --argc;
             ++argv;
+        } else if (primary == string ("-?") || primary == string ("?") || primary == string ("--help")) {
+            printUsage ();
+            return 0;
         } else {
             cerr << "Parameter '" << primary << "' unknown." << endl;
             return -1;

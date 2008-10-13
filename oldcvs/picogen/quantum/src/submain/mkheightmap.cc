@@ -365,6 +365,8 @@ static void printUsage() {
         << "-n / --normalize :                          -enable normalization, that is, \n"
         << "                                             scale the height-values linearly \n"
         << "                                             so that all values are in [0..1)\n"
+        << "-i / --info :                               -print some information about the \n"
+        << "                                             function. \n"
         << "--help : show this help and exit"
     << std::endl;
 }
@@ -620,8 +622,8 @@ int main_mkheightmap (int argc, char *argv[]) {
                 }*/
             } else if (option == "-i" || option == "--info") {
                 doPrintInfo = true;
-            } else if (option == "--help") {
-                printUsage();
+            } else if (option == string ("-?") || option == string ("?") || option == string ("--help")) {
+                printUsage ();
                 return 0;
             } else {
                 cerr << "unknown option in argument list: " << option << endl;
