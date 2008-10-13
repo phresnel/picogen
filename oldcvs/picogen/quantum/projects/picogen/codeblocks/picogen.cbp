@@ -52,7 +52,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add option="`sdl-config --libs`" />
+					<Add option="`sdl-config --static-libs`" />
 				</Linker>
 			</Target>
 			<Target title="Release-Win32">
@@ -83,7 +83,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add option="-lmingw32 -lSDLmain -lSDL -lstdc++" />
+					<Add option="-lmingw32 -lSDLmain -lSDL -lpthread -lstdc++" />
 				</Linker>
 			</Target>
 			<Target title="optimized AthlonXP">
