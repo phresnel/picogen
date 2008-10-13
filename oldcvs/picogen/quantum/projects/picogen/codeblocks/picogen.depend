@@ -90,14 +90,12 @@
 	<stdio.h>
 	<stdlib.h>
 
-1218978193 
+1218978191 
 
 1221960476 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
 	<iostream>
 	<sstream>
 	<ctype.h>
-
-1218978191 
 
 1218977499 /home/smach/Projects/picogen/quantum/include/picogen/graphics/cameras.h
 
@@ -1078,7 +1076,7 @@
 
 1218977499 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Snow.h
 
-1222969243 source:/home/smach/Projects/picogen/quantum/src/main.cc
+1223806021 source:/home/smach/Projects/picogen/quantum/src/main.cc
 	<iostream>
 	<picogen/picogen.h>
 	<picogen/compile_info.h>

@@ -33,6 +33,19 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-Wall" />
+					<Add option="-s -O3 -fexpensive-optimizations \" />
+					<Add option="-combine  \" />
+					<Add option="-mtune=generic \" />
+					<Add option="-ffast-math \" />
+					<Add option="-ftree-vectorize \" />
+					<Add option="-funroll-loops -fvariable-expansion-in-unroller \" />
+					<Add option="-funsafe-loop-optimizations \" />
+					<Add option="-ftree-loop-im \" />
+					<Add option="-funswitch-loops \" />
+					<Add option="-ftree-loop-ivcanon \" />
+					<Add option="-ftracer \" />
+					<Add option="-funsafe-math-optimizations -ffinite-math-only \" />
+					<Add option="-fdata-sections" />
 					<Add option="-DPICOGEN_RELEASE" />
 					<Add option="-DNO_LLVM" />
 					<Add option="-DNDEBUG" />
@@ -51,6 +64,19 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-Wall" />
+					<Add option="-s -O3 -fexpensive-optimizations \" />
+					<Add option="-combine  \" />
+					<Add option="-mtune=generic \" />
+					<Add option="-ffast-math \" />
+					<Add option="-ftree-vectorize \" />
+					<Add option="-funroll-loops -fvariable-expansion-in-unroller \" />
+					<Add option="-funsafe-loop-optimizations \" />
+					<Add option="-ftree-loop-im \" />
+					<Add option="-funswitch-loops \" />
+					<Add option="-ftree-loop-ivcanon \" />
+					<Add option="-ftracer \" />
+					<Add option="-funsafe-math-optimizations -ffinite-math-only \" />
+					<Add option="-fdata-sections" />
 					<Add option="-DPICOGEN_RELEASE" />
 					<Add option="-DNO_LLVM" />
 					<Add option="-DNDEBUG" />
