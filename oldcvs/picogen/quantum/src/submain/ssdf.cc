@@ -48,8 +48,16 @@ using ::picogen::geometrics::Transformation;
 using ::picogen::graphics::objects::templates::TriBIH;
 
 using ::picogen::graphics::material::abstract::IBRDF;
+using ::picogen::graphics::material::abstract::IShader;
 using ::picogen::graphics::objects::abstract::IScene;
 using ::picogen::graphics::objects::Sphere;
+
+/*
+using ::picogen::misc::functional::Function_R6_R1_Refcounted;
+using ::picogen::misc::functional::Function_R6_R1;
+using ::boost::intrusive_ptr;
+*/
+
 
 
 struct t_triangle {
@@ -77,7 +85,7 @@ class ConstantShader : public picogen::graphics::material::abstract::IShader {
         picogen::graphics::color::Color color;
     public:
         virtual ~ConstantShader() {};
-        ConstantShader (picogen::graphics::color::Color color) : color (color) {}
+        ConstantShader (const picogen::graphics::color::Color &color) : color (color) {}
         virtual void shade (
             picogen::graphics::color::Color &color,
             const picogen::geometrics::Vector3d &normal,
@@ -90,6 +98,73 @@ static const ConstantShader  red (picogen::graphics::color::Color (1.0, 0.3, 0.3
 static const ConstantShader  green (picogen::graphics::color::Color (0.3, 1.0, 0.3));
 static const ConstantShader  blue (picogen::graphics::color::Color (0.3, 0.3, 1.0));
 static const ConstantShader  white (picogen::graphics::color::Color (1.0, 1.0, 1.0));
+
+
+namespace {
+    template <typename RT, typename T> RT floor (const T &v) {
+        assert (static_cast<int>(1.75) == 1);
+        assert (static_cast<int>(1.5) == 1);
+        assert (static_cast<int>(1.25) == 1);
+        assert (static_cast<int>(-0.75) == 0);
+        assert (static_cast<int>(-0.5) == 0);
+        assert (static_cast<int>(-0.25) == 0);
+        return (RT)(int)(v<0 ? v-1 : v);
+    }
+}
+
+
+/*
+class HeightSlangShader : public picogen::graphics::material::abstract::IShader {
+        intrusive_ptr <Function_R6_R1_Refcounted> hs;
+        std::vector <IShader*> shaders;
+        const real numShaders;
+        real sx, sy, sz;
+
+        real min_h, max_h;
+
+    public:
+        virtual ~HeightSlangShader() {};
+        HeightSlangShader (const intrusive_ptr <Function_R6_R1_Refcounted> hs, const std::vector <IShader*> &shaders)
+        : hs (hs)
+        , shaders (shaders)
+        , numShaders (static_cast <real> (shaders.size()-1))
+        //, size (static_cast <real> (shaders.size()))
+        , sx (1), sy (1), sz (1)
+        {
+
+        }
+        virtual void shade (
+            picogen::graphics::color::Color &color,
+            const picogen::geometrics::Vector3d &normal,
+            const picogen::geometrics::Vector3d &position
+        ) const {
+            if (shaders.size()==0) {
+                color = Color (1.0, 1.0, 1.0);
+                return;
+            }
+            if (shaders.size()==1) {
+                shaders [0]->shade (color, normal, position);
+            }
+            const real f_ = (*hs) (position [0]*sx, position [2]*sz, position [1]*sy, normal [0], normal [2], normal [1]) * numShaders;
+            const int a = floor <int> (f_);
+            if (a<0) {
+                shaders [0]->shade (color, normal, position);
+                return;
+            }
+            if (a>=shaders.size()-1) {
+                shaders [shaders.size()-1]->shade (color, normal, position);
+                return;
+            }
+            const int b = 1+a;
+            const real f = f_ - static_cast <real> (a);
+
+            Color A, B;
+            shaders [a]->shade (A, normal, position);
+            shaders [b]->shade (B, normal, position);
+            color = A * (1-f) + B * f;
+        }
+};*/
+
 
 
 template<class t_surface>
@@ -448,6 +523,9 @@ class SSDFScene : public Scene, public SSDFBackend {
         // Heightmap:
         virtual int addHeightfield (
             const ::boost::intrusive_ptr<picogen::misc::functional::Function_R2_R1_Refcounted> &fun,
+            const IShader *shader, //::boost::intrusive_ptr<picogen::misc::functional::Function_R6_R1_Refcounted> &mat_fun,
+            //const ::std::vector< ::picogen::graphics::material::abstract::IBRDF*> &brdfs,
+            //const ::std::vector< ::picogen::graphics::material::abstract::IShader*> &shaders,
             unsigned int resolution,
             const ::picogen::geometrics::Vector3d &center,
             const ::picogen::geometrics::Vector3d &size
@@ -467,9 +545,11 @@ class SSDFScene : public Scene, public SSDFBackend {
                         );
 
                         heightField->setBRDF (currentBRDF);
-                        heightField->setShader (&white);
-                        //heightField->setBox (center-size*0.5, center+size*0.5);
 
+                        //::boost::intrusive_ptr<Function_R6_R1_Refcounted> fun (new Function_R6_R1_Refcounted ("(^ ([2 LayeredNoise frequency(2) layercount(15) persistence((+0.5(*0.2x))) filter(cosine) levelEvaluationFunction((- 0.5 (abs x))) seed(11)] x y) 4)"));
+                        //HeightSlangShader *hs = new HeightSlangShader (mat_fun, shaders);
+                        heightField->setShader (shader);
+                        //heightField->setBox (center-size*0.5, center+size*0.5);
                         currentScene.linearList->insert (heightField);
                     }
                     // TODO URGENT !!!!one1 --> see LinearList.cc
@@ -479,7 +559,7 @@ class SSDFScene : public Scene, public SSDFBackend {
                     SimpleHeightField *heightField = new SimpleHeightField ();
 
                     heightField->setBRDF (currentBRDF);
-                    heightField->setShader (&white);
+                    heightField->setShader (shader);//&white);
                     heightField->setBox (center-size*0.5, center+size*0.5);
 
                     heightField->init (resolution, &*fun, 0.1, false);
