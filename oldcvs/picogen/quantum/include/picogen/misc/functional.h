@@ -716,6 +716,45 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1, BasicFunction *p2,          
                     }
             };
 
+            class Function_R6_R1 : public BasicFunction {
+                private:
+                    BasicFunction *fun;
+                public:
+                    virtual ~Function_R6_R1() {
+                        if (0 != fun) {
+                            delete fun;
+                        }
+                    }
+                    explicit Function_R6_R1 (BasicFunction * fun) : fun (fun) {
+                    }
+                    explicit Function_R6_R1 (const ::std::string &str) : fun (heightslang_ (Setup (6),this,str)) {
+                    }
+
+                    real_t operator () (real_t x, real_t y, real_t z, real_t u, real_t v, real_t w) const {
+                        const real_t parameters[] = {x,y,z, u,v,w};
+                        return (*fun) (parameters);
+                    }
+
+                    virtual real_t operator () (const real_t * const parameters) const {
+                        return (*fun) (parameters);
+                    }
+            };
+
+            class Function_R6_R1_Refcounted : public Function_R6_R1 {
+                private:
+
+                    mutable size_t refCount;
+                    friend void intrusive_ptr_add_ref (Function_R6_R1_Refcounted* r);
+                    friend void intrusive_ptr_release (Function_R6_R1_Refcounted* r);
+
+                public:
+                    explicit Function_R6_R1_Refcounted (BasicFunction * fun) : Function_R6_R1 (fun), refCount (0)  {
+                    }
+
+                    explicit Function_R6_R1_Refcounted (const ::std::string &str) : Function_R6_R1 (str), refCount (0) {
+                    }
+            };
+
         } // namespace functional {
     } // namespace misc {
 } // namespace picogen
