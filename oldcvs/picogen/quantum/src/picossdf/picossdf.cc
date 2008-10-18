@@ -38,7 +38,109 @@
 
 
 using namespace std;
+using ::picogen::real;
+using ::picogen::geometrics::Vector3d;
+using ::picogen::geometrics::Ray;
 
+using ::picogen::graphics::material::abstract::IBRDF;
+using ::picogen::graphics::objects::abstract::IScene;
+using ::picogen::graphics::material::abstract::IShader;
+using ::picogen::graphics::color::Color;
+
+using ::picogen::misc::functional::Function_R6_R1_Refcounted;
+using ::picogen::misc::functional::Function_R6_R1;
+using ::boost::intrusive_ptr;
+
+
+namespace {
+    namespace base_shaders {
+        class ConstantShader : public picogen::graphics::material::abstract::IShader {
+                picogen::graphics::color::Color color;
+            public:
+                virtual ~ConstantShader() {};
+                ConstantShader (const picogen::graphics::color::Color &color) : color (color) {}
+                virtual void shade (
+                    picogen::graphics::color::Color &color,
+                    const picogen::geometrics::Vector3d &normal,
+                    const picogen::geometrics::Vector3d &position
+                ) const {
+                    color = this->color;
+                }
+        };
+
+
+
+        class HeightSlangShader : public picogen::graphics::material::abstract::IShader {
+                intrusive_ptr <Function_R6_R1_Refcounted> hs;
+                std::vector <IShader*> shaders;
+                const real numShaders;
+                real sx, sy, sz;
+
+                real min_h, max_h;
+
+            public:
+                virtual ~HeightSlangShader() {
+                    for (std::vector <IShader*>::const_iterator it=shaders.begin(); it != shaders.end(); ++it) {
+                        if (0 != *it)
+                            delete *it;
+                    }
+                }
+                HeightSlangShader (const intrusive_ptr <Function_R6_R1_Refcounted> hs, const std::vector <IShader*> &shaders)
+                : hs (hs)
+                , shaders (shaders)
+                , numShaders (static_cast <real> (shaders.size()-1))
+                //, size (static_cast <real> (shaders.size()))
+                , sx (1), sy (1), sz (1)
+                {
+                    /*min_h = picogen::constants::real_max;
+                    max_h = picogen::constants::real_min;
+                    for (int i=0; i<10000; ++i) {
+                        Vector3d p(
+                            static_cast <real> (rand()) / static_cast <real> (RAND_MAX),
+                            static_cast <real> (rand()) / static_cast <real> (RAND_MAX),
+                            static_cast <real> (rand()) / static_cast <real> (RAND_MAX)
+                        );
+                        Vector3d n(
+                            static_cast <real> (rand()) / static_cast <real> (RAND_MAX),
+                            static_cast <real> (rand()) / static_cast <real> (RAND_MAX),
+                            static_cast <real> (rand()) / static_cast <real> (RAND_MAX)
+                        );
+                        const real h = (*hs) (u, v);
+                    }*/
+                }
+                virtual void shade (
+                    picogen::graphics::color::Color &color,
+                    const picogen::geometrics::Vector3d &normal,
+                    const picogen::geometrics::Vector3d &position
+                ) const {
+                    if (shaders.size()==0) {
+                        color = Color (1.0, 1.0, 1.0);
+                        return;
+                    }
+                    if (shaders.size()==1) {
+                        shaders [0]->shade (color, normal, position);
+                    }
+                    const real f_ = (*hs) (position [0]*sx, position [2]*sz, position [1]*sy, normal [0], normal [2], normal [1]) * numShaders;
+                    const int a = floor <int> (f_);
+                    if (a<0) {
+                        shaders [0]->shade (color, normal, position);
+                        return;
+                    }
+                    if (a>=shaders.size()-1) {
+                        shaders [shaders.size()-1]->shade (color, normal, position);
+                        return;
+                    }
+                    const int b = 1+a;
+                    const real f = f_ - static_cast <real> (a);
+
+                    Color A, B;
+                    shaders [a]->shade (A, normal, position);
+                    shaders [b]->shade (B, normal, position);
+                    color = A * (1-f) + B * f;
+                }
+            };
+    };
+};
 
 
 PicoSSDF::PicoSSDF (const string &filename, SSDFBackend *backend) : filename (filename), backend (backend) {
@@ -168,15 +270,179 @@ static const picogen::common::Vector3d scanVector3d (const std::string &str, uns
     return Vector3d (ret [0], ret [1], ret [2]);
 }
 
+// split a string, but don't split between any pair of braces
+template <char splitter, char begin_brace, char end_brace> void splitString (std::vector<string> &dest, const std::string &source) {
+    // TODO: catch error on bias<0
+    // TODO: catch error on bias>0 at end of string
+    using std::string;
+    int bias = 0;
+    string tmp = "";
+    for (string::const_iterator it=source.begin(); bias>=0 && it!=source.end(); ++it) {
+        switch (*it) {
+            case begin_brace:
+                ++bias;
+                goto foo; // i am not going to discuss this
+            case end_brace:
+                --bias;
+                goto foo; // no really
+            case splitter:
+                if (0 == bias) {
+                    dest.push_back (tmp);
+                    tmp = "";
+                    break;
+                }
+                goto foo; // no.
+            foo:
+            default:
+                tmp += *it;
+        };
+    }
+    // final token
+    if (0 >= bias) {
+        dest.push_back (tmp);
+    }
+}
 
+// split a string, but don't split between any pair of braces
+template <char splitter> void splitString (std::vector<string> &dest, const std::string &source) {
+    // TODO: catch error on bias<0
+    // TODO: catch error on bias>0 at end of string
+    using std::string;
+    int bias = 0;
+    string tmp = "";
+    for (string::const_iterator it=source.begin(); bias>=0 && it!=source.end(); ++it) {
+        switch (*it) {
+            case '(':
+            case '{':
+            case '[':
+            case '<':
+                ++bias;
+                goto foo; // i am not going to discuss this
+            case ')':
+            case '}':
+            case ']':
+            case '>':
+                --bias;
+                goto foo; // no really
+            case splitter:
+                if (0 == bias) {
+                    dest.push_back (tmp);
+                    tmp = "";
+                    break;
+                }
+                goto foo; // no.
+            foo:
+            default:
+                tmp += *it;
+        };
+    }
+    // final token
+    if (0 >= bias) {
+        dest.push_back (tmp);
+    }
+}
+
+
+namespace {
+    namespace shader_parser {
+        // TODO: urgent: release stuff if error occurs
+        static IShader *parse_shader (const std::string &code);
+        static IShader *parse_hs_shader (const std::string &code);
+        static IShader *parse_const_rgb_shader (const std::string &params);
+        static void parse_shader_vector (std::vector<IShader*> &ishaders, const std::string &list);
+
+        static IShader *parse_const_rgb_shader (const std::string &params) {
+            using ::picogen::graphics::color::Color;
+            unsigned int numScalars;
+            Vector3d rgb = scanVector3d (params, numScalars);
+            if (numScalars >= 3) {
+                //errreason = string ("too many values for parameter 'const-rgb'");
+                return 0;
+            }
+            if (numScalars < 2) {
+                //errreason = string ("not enough values for parameter 'const-rgb'");
+                return 0;
+            }
+            return new base_shaders::ConstantShader (Color (rgb [0], rgb [1], rgb [2]));
+        }
+
+        static IShader *parse_hs_shader (const std::string &code) {
+            vector <string> params;
+            splitString <','> (params, code);
+            //cout << "code-str:" << code << ";" << endl;
+            if (2 != params.size())
+                return 0;
+            unsigned int tmp = params [0].find_first_not_of (" \n\t");
+            if (tmp >= params [0].size() || '{' != params [0][tmp])
+                return 0;
+            params [0][tmp] = ' '; // replace '{' with ' '
+
+            // having sub-shaders now, so create the shading-object
+            ::boost::intrusive_ptr<Function_R6_R1_Refcounted> fun (new Function_R6_R1_Refcounted (params [1]));
+            std::vector <IShader*> ishaders;
+            parse_shader_vector (ishaders, params [0]);
+            return new base_shaders::HeightSlangShader (fun, ishaders);
+        }
+
+        static void parse_shader_vector (std::vector<IShader*> &ishaders, const std::string &list) {
+            using namespace std;
+            vector <string> shaders;
+            splitString <','> (shaders, list);
+            for (vector <string>::const_iterator it = shaders.begin(); it != shaders.end(); ++it) {
+                cout << "£ " << *it << endl;
+                ishaders.push_back (parse_shader (*it));
+            }
+        }
+
+        static IShader *parse_shader (const std::string &code) {
+            using std::string;
+            string type = "";
+            string::const_iterator it;
+            for (it = code.begin(); (*it == ' ' || *it == '\n' || *it == '\t') && it != code.end(); ++it) {
+            }
+            for (; *it != '(' && *it != ' ' && *it != '\n' && *it != '\t' && it != code.end(); ++it) {
+                type += *it;
+            }
+
+            if (it == code.end()) {
+                return 0;
+            }
+
+            int bias = 0;
+            string shader_params = "";
+            for (++it ; (*it != ')' || bias>0) && it != code.end(); ++it) {
+                if ('(' == *it) {
+                    ++bias;
+                } else if (')' == *it) {
+                    --bias;
+                }
+                shader_params += *it;
+            }
+
+            cout << "code>>" << code << endl;
+            if ("hs" == type) {
+                cout << "!hs-shader found, " << shader_params << endl;
+                return parse_hs_shader (shader_params);
+            } else if ("const-rgb"==type) {
+                cout << "!const-rgb-shader found, " << shader_params  << endl;
+                return parse_const_rgb_shader (shader_params);
+            } else {
+                return 0;
+            }
+            return 0;
+        }
+    };
+};
 
 PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&line) {
     // TODO: Refactor the code in this function with some calls like 'parseVector', 'parseReal' and so forth.
     using namespace ::std;
+    using namespace shader_parser;
     using ::picogen::real;
     using ::picogen::geometrics::Vector3d;
     using ::picogen::graphics::color::Color;
     using ::picogen::misc::functional::Function_R2_R1_Refcounted;
+    using ::picogen::misc::functional::Function_R6_R1_Refcounted;
     using ::picogen::misc::functional::Function_R2_R1;
 
     // Step 1: Read Parameters.
@@ -285,7 +551,9 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
         case TERMINAL_HEIGHTSLANG_HEIGHTFIELD: {
             int resolution = 128;
             Vector3d center (0,0,0), size (1,1,1);
-            ::std::string hs ("0.5");
+            ::std::string hs ("0.5"), mi ("$"), shader ("hs({color-rgb(1,1,1)},1)");
+            ::std::vector < ::picogen::graphics::material::abstract::IBRDF*> brdfs;
+            ::std::vector < ::picogen::graphics::material::abstract::IShader*> shaders;
 
             while( !parameters.empty() ) {
                 if ((*parameters.begin()).first == string ("resolution")) {
@@ -318,6 +586,48 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                     size = tmp;
                 } else if ((*parameters.begin()).first == string ("code")) {
                     hs = (*parameters.begin()).second;
+                } else if ((*parameters.begin()).first == string ("material-interpolator")) {
+                    mi = (*parameters.begin()).second;
+                } else if ((*parameters.begin()).first == string ("color")) {
+                    //!!
+                    vector <string> colorss;
+                    //vector <Color> colors;
+                    splitString <',','(',')'> (colorss, (*parameters.begin()).second);
+                    for (unsigned int i=0; i<colorss.size(); ++i) {
+                        string type = "";
+                        string::const_iterator it;
+                        for (it=colorss [i].begin(); *it != '(' && it!=colorss [i].end(); ++it) {
+                            type += *it;
+                        }
+                        ++it;
+
+                        string params = "";
+                        for (; *it != ')' && it!=colorss [i].end(); ++it) {
+                            params += *it;
+                        }
+
+                        //cout << "type:'" << type << "' = '" << params << "'" << endl;
+                        if ("color-rgb"==type) {
+                            unsigned int numScalars;
+                            Vector3d col_vec = scanVector3d (params, numScalars);
+                            if (numScalars >= 3) {
+                                errreason = string ("too many values for parameter 'color-rgb'");
+                                return SYNTAX_ERROR;
+                            }
+                            if (numScalars < 2) {
+                                errreason = string ("not enough values for parameter 'color-rgb'");
+                                return SYNTAX_ERROR;
+                            }
+                            Color color;
+                            color.from_rgb (col_vec [0], col_vec [1], col_vec [2]);
+                            //colors.push_back (color);
+                            shaders.push_back (new base_shaders::ConstantShader (color));
+                        }
+                    }
+                } else if ((*parameters.begin()).first == string ("material")) {
+                    //cout << "[" << (*parameters.begin()).second << "]" << endl;
+                    shader = (*parameters.begin()).second;
+
                 } else {
                     errreason = string ("unknown parameter to hs-heightfield: '") + string ((*parameters.begin()).first) + string ("'");
                     return SYNTAX_ERROR;
@@ -327,7 +637,9 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
 
             try {
                 ::boost::intrusive_ptr<Function_R2_R1_Refcounted> fun (new Function_R2_R1_Refcounted (hs));
-                backend->addHeightfield (fun, resolution, center, size);
+                //::boost::intrusive_ptr<Function_R6_R1_Refcounted> mat_fun (new Function_R6_R1_Refcounted ("$"==mi?hs:mi)); // <-- if $ is given, than it's the same as hs
+                IShader *ishader = parse_shader (shader);
+                backend->addHeightfield (fun, ishader, /*mat_fun, brdfs, shaders,*/ resolution, center, size);
             } catch (::picogen::misc::functional::functional_general_exeption &e) {
                 errreason = string ("Exception caught while generating heightfield from height-slang code: "
                     + e.getMessage());
@@ -769,7 +1081,18 @@ PicoSSDF::parse_err PicoSSDF::parse() {
             if (curr[length-1] == '\n')
                 curr[length-1] = '\0';
         }
-        // check if we have inline-code
+        /*string curr = "";
+        int bias = -1;
+        bool isBlock = false;
+        while (0 != bias && !feof (fin) && (!isBlock || )) {
+            char tmp = *fgetc (fin);
+            curr += tmp;
+            if (-1==bias && '{' == tmp) {
+                isBlock
+            }
+        }*/
+
+        // check if we have inline-code starting with an {{
         char *c = curr;
         while (*c != '\0' && (*c == ' ' || *c == '\t')) {
             ++c;
