@@ -389,7 +389,7 @@ namespace {
             vector <string> shaders;
             splitString <','> (shaders, list);
             for (vector <string>::const_iterator it = shaders.begin(); it != shaders.end(); ++it) {
-                cout << "£ " << *it << endl;
+                //cout << "£ " << *it << endl;
                 ishaders.push_back (parse_shader (*it));
             }
         }
@@ -419,12 +419,12 @@ namespace {
                 shader_params += *it;
             }
 
-            cout << "code>>" << code << endl;
+            //cout << "code>>" << code << endl;
             if ("hs" == type) {
-                cout << "!hs-shader found, " << shader_params << endl;
+                //cout << "!hs-shader found, " << shader_params << endl;
                 return parse_hs_shader (shader_params);
             } else if ("const-rgb"==type) {
-                cout << "!const-rgb-shader found, " << shader_params  << endl;
+                //cout << "!const-rgb-shader found, " << shader_params  << endl;
                 return parse_const_rgb_shader (shader_params);
             } else {
                 return 0;
@@ -457,7 +457,7 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
         // Check for end of string (it would give better performance if we would check that last).
         if (*line == '\0') {
             errreason = string ("Missing ')'.");
-            return SYNTAX_ERROR;
+            return INCOMPLETE_TERMINAL;
         }
 
         // Check for braces, it could be that we are parsing height-slang.
@@ -501,6 +501,8 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
         }
         ++line;
     }
+
+    //if (0 < brace_bias
 
 
 
@@ -1012,6 +1014,7 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (const char *line) {
             return err;
         line++;
     } else {
+        // UPDATE: below comment deprecated
         // a) this is intended to be a damn fast text file format
         // b) i allow blank lines
         // c) but i do not allow other format freeness
@@ -1025,7 +1028,7 @@ PicoSSDF::parse_err PicoSSDF::interpretLine (const char *line) {
     }
     while (isblank (*line)) ++line;
     if (*line != '\0') {
-        errreason = string ("trailing, non whitespace character(s) forbidden ('") +string (line) +string ("')");
+        errreason = string ("trailing, non whitespace character(s) forbidden ('") +string (line-20) +string ("')");
         return SYNTAX_ERROR;
     }
     return OKAY;
@@ -1070,17 +1073,28 @@ PicoSSDF::parse_err PicoSSDF::parse() {
     push_block (BLOCK_GLOBAL);
     while (1) {
         // get next line
-        char curr[1024];
+        /*char curr[1024];
         if (0 == fgets (curr, sizeof (curr), fin)) {
             break;
+        }*/
+        int num_open_braces = 0;
+        string curr;
+        while (!feof (fin)) {
+            char tmp = fgetc (fin);
+            num_open_braces += '('==tmp?1:')'==tmp?-1:0;
+            if ('\0' != tmp && '\n' != tmp && EOF != tmp) {
+                curr += tmp;
+            } else {
+                break;
+            }
         }
         ++linenumber;
         // remove trailing '\n'
-        {
+        /*{
             unsigned int length = strlen (curr);
             if (curr[length-1] == '\n')
                 curr[length-1] = '\0';
-        }
+        }*/
         /*string curr = "";
         int bias = -1;
         bool isBlock = false;
@@ -1093,7 +1107,7 @@ PicoSSDF::parse_err PicoSSDF::parse() {
         }*/
 
         // check if we have inline-code starting with an {{
-        char *c = curr;
+        const char *c = curr.c_str();
         while (*c != '\0' && (*c == ' ' || *c == '\t')) {
             ++c;
         }
@@ -1114,8 +1128,26 @@ PicoSSDF::parse_err PicoSSDF::parse() {
             interpretCode (code, it);
         } else {
             // interpret current line
-            parse_err err = interpretLine (curr);
-            if (err != OKAY) {
+            const parse_err err = interpretLine (curr.c_str());
+            if (num_open_braces>0 && INCOMPLETE_TERMINAL == err) {
+                // could be that the parameter list of a terminal has multiple lines, so scan until
+                // braces are balanced instead of parsing to line-end, and then retry
+                while (num_open_braces>0 && !feof (fin)) {
+                    char tmp = fgetc (fin);
+                    num_open_braces += '('==tmp?1:')'==tmp?-1:0;
+                    if ('\0' != tmp && EOF != tmp) {
+                        // replace newline characters with a space-char, so the rest of our ssdf-work can remain line-based
+                        curr += '\n' != tmp ? tmp : ' ';
+                    }
+                }
+                //cout << "{{{{{" << curr.c_str() << "}}}}}" << endl;
+                const parse_err err = interpretLine (curr.c_str()); // <-- retry
+                if (OKAY != err) {
+                    retcode = err;
+                    errcurrentline = string (curr);
+                    break;
+                }
+            } else if (OKAY != err) {
                 retcode = err;
                 errcurrentline = string (curr);
                 break;

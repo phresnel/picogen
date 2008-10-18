@@ -103,7 +103,8 @@ class PicoSSDF {
         enum parse_err {
             OKAY,
             FILE_NOT_FOUND,
-            SYNTAX_ERROR
+            SYNTAX_ERROR,
+            INCOMPLETE_TERMINAL // normally, the parser is line based, but there's an exception for the parameter lists of terminals, search for INCOMPLETE_TERMINAL in the source
         };
         unsigned int globalBlockCount;
         // --------------------------------------------------------------
