@@ -52,9 +52,11 @@ namespace picogen {
                     typedef ::picogen::graphics::structs::intersection_t intersection_t;
                     typedef ::picogen::misc::functional::Function_R2_R1 Function_R2_R1;
                     typedef ::picogen::misc::functional::Function_R2_R1_Refcounted Function_R2_R1_Refcounted;
+                    typedef ::picogen::misc::functional::Function_R6_R1_Refcounted Function_R6_R1_Refcounted;
 
                 public:
                     typedef ::boost::intrusive_ptr<Function_R2_R1_Refcounted> heightFun_t;
+                    typedef ::boost::intrusive_ptr<Function_R6_R1_Refcounted> texFun_t;
 
                 private:
 
@@ -332,6 +334,8 @@ namespace picogen {
                     //mutable Node rootNode;
                     uint64_t nodeCount;
 
+                    texFun_t texFun;
+
 
             private:
                     // Private Methods.
@@ -377,6 +381,7 @@ namespace picogen {
                     //void setBox (param_in (Vector3d, min), param_in (Vector3d, max));
                     void setBRDF (const IBRDF* brdf);
                     void setShader (const IShader* shader);
+                    void setTextureFunction (const texFun_t* tex);
 
             };
 
