@@ -624,12 +624,27 @@ namespace picogen {
                 };
 
                 if (intersects) {
-                    if(false) {
+                    if(true) {
                         if (0 != shader) {
+                            Vector3d i = ray.x() + ray.w() * intersection.t;
+                            Vector3d n = intersection.normal;
+
+                            /*real tmp = i [2];
+                            i [1] = i [2];
+                            i [2] = tmp;
+
+                            tmp = n [2];
+                            n [1] = n [2];
+                            n [2] = tmp;*/
+
+                            i [0] = (i [0] - bboxMin [0]) / bboxSize [0];
+                            i [1] = (i [1] - bboxMin [1]) / bboxSize [1];
+                            i [2] = (i [2] - bboxMin [2]) / bboxSize [2];
+
                             shader->shade (
                                 intersection.color,
                                 intersection.normal,
-                                ray.x() + ray.w() * intersection.t
+                                i
                             );
                         } else {
                             intersection.color = color::Color (1.0, 1.0, 1.0);
@@ -659,6 +674,12 @@ namespace picogen {
 
             void QuadtreeHeightField::setShader (const IShader* shader) {
                 this->shader = shader;
+            }
+
+
+
+            void QuadtreeHeightField::setTextureFunction (const texFun_t* tex) {
+                this->texFun = *tex;
             }
 
         }; // namespace objects
