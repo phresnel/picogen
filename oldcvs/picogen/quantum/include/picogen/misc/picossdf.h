@@ -28,6 +28,7 @@
 
 #include <boost/intrusive_ptr.hpp>
 
+
 class SSDFBackend {
 
     public:
@@ -74,6 +75,9 @@ class SSDFBackend {
 
         virtual int addHeightfield (
             const ::boost::intrusive_ptr<picogen::misc::functional::Function_R2_R1_Refcounted> &fun,
+            const ::picogen::graphics::material::abstract::IShader *shader, //::boost::intrusive_ptr<picogen::misc::functional::Function_R6_R1_Refcounted> &mat_fun,
+            //const ::std::vector< ::picogen::graphics::material::abstract::IBRDF*> &brdfs,
+            //const ::std::vector< ::picogen::graphics::material::abstract::IShader*> &shaders,
             unsigned int resolution,
             const ::picogen::geometrics::Vector3d &center,
             const ::picogen::geometrics::Vector3d &size
