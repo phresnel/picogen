@@ -69,6 +69,16 @@ namespace picogen {
                     delete r;
             }
 
+            void intrusive_ptr_add_ref (Function_R6_R1_Refcounted* r) {
+                ++r->refCount;
+            }
+
+            void intrusive_ptr_release (Function_R6_R1_Refcounted* r) {
+                --r->refCount;
+                if (r->refCount == 0)
+                    delete r;
+            }
+
 
             static inline BasicFunction* heightslang_ (
                 const Setup &setup,                 ///< Stores information, for example how many different parameters are allowed to be used in the inlisp-code
@@ -753,6 +763,24 @@ case OPERATOR:{                                                  \
                                     throw functional_general_exeption ("'z' is only declared for functions with at least 3 parameters");
                                 }
                                 return parameter_ (setup, 2);
+                                break;
+                            case 'u':
+                                if (setup.parameterCount <= 3) {
+                                    throw functional_general_exeption ("'u' is only declared for functions with at least 4 parameters");
+                                }
+                                return parameter_ (setup, 3);
+                                break;
+                            case 'v':
+                                if (setup.parameterCount <= 4) {
+                                    throw functional_general_exeption ("'u' is only declared for functions with at least 5 parameters");
+                                }
+                                return parameter_ (setup, 4);
+                                break;
+                            case 'w':
+                                if (setup.parameterCount <= 5) {
+                                    throw functional_general_exeption ("'u' is only declared for functions with at least 6 parameters");
+                                }
+                                return parameter_ (setup, 5);
                                 break;
                             case '0':
                             case '1':
