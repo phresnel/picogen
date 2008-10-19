@@ -259,6 +259,7 @@
 		<Unit filename="../../../include/picogen/generators/rng/MersenneTwister.h" />
 		<Unit filename="../../../include/picogen/graphics/brdf/Lambertian.h" />
 		<Unit filename="../../../include/picogen/graphics/brdf/Specular.h" />
+		<Unit filename="../../../include/picogen/graphics/brdf/Specular_DistortedHeight.h" />
 		<Unit filename="../../../include/picogen/graphics/cameras.h" />
 		<Unit filename="../../../include/picogen/graphics/film.h" />
 		<Unit filename="../../../include/picogen/graphics/film/DistanceVis.h" />
@@ -311,6 +312,7 @@
 		<Unit filename="../../../src/picosrc/generators/rng/MersenneTwister.cc" />
 		<Unit filename="../../../src/picosrc/graphics/brdf/Lambertian.cc" />
 		<Unit filename="../../../src/picosrc/graphics/brdf/Specular.cc" />
+		<Unit filename="../../../src/picosrc/graphics/brdf/Specular_DistortedHeight.cc" />
 		<Unit filename="../../../src/picosrc/graphics/film/DistanceVis.cc" />
 		<Unit filename="../../../src/picosrc/graphics/film/NormalVis.cc" />
 		<Unit filename="../../../src/picosrc/graphics/film/RayDirVis.cc" />

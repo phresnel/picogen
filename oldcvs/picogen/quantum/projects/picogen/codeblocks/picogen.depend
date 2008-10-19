@@ -981,13 +981,14 @@
 
 1223024809 /home/smach/Projects/picogen/quantum/include/picogen/graphics/image.h
 
-1221657450 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
+1224411246 /home/smach/Projects/picogen/quantum/include/picogen/graphics/material.h
 	"brdf/Lambertian.h"
 	"brdf/Specular.h"
+	"brdf/Specular_DistortedHeight.h"
 
-1219645528 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Lambertian.h
+1224320889 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Lambertian.h
 
-1219645513 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular.h
+1224320517 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular.h
 
 1218977653 /home/smach/Projects/picogen/quantum/include/picogen/misc/functions.h
 	<stdio.h>
@@ -1070,11 +1071,11 @@
 
 1218977499 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Rain.h
 
-1219424836 source:/home/smach/Projects/picogen/quantum/src/experimental/Snow.cc
+1224320739 source:/home/smach/Projects/picogen/quantum/src/experimental/Snow.cc
 	<picogen/picogen.h>
 	<picogen/experimental/Snow.h>
 
-1218977499 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Snow.h
+1224320676 /home/smach/Projects/picogen/quantum/include/picogen/experimental/Snow.h
 
 1223806021 source:/home/smach/Projects/picogen/quantum/src/main.cc
 	<iostream>
@@ -1086,10 +1087,10 @@
 1223533628 source:/home/smach/Projects/picogen/quantum/src/picosrc/generators/rng/MersenneTwister.cc
 	<picogen/generators/rng/MersenneTwister.h>
 
-1221657452 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Lambertian.cc
+1224320510 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Lambertian.cc
 	<picogen/picogen.h>
 
-1219645634 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular.cc
+1224321260 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular.cc
 	<picogen/picogen.h>
 
 1219039369 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/film/DistanceVis.cc
@@ -1124,7 +1125,7 @@
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Path.h>
 
-1221658049 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
+1224320050 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Whitted.h>
 
@@ -1236,7 +1237,7 @@
 	<picogen/misc/scripting/AST.h>
 	<picogen/misc/scripting/AST2LLVM.h>
 
-1224308937 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
+1224415869 source:/home/smach/Projects/picogen/quantum/src/picossdf/picossdf.cc
 	<ctype.h>
 	<stdio.h>
 	<stdlib.h>
@@ -1248,7 +1249,7 @@
 	<picogen/misc/picossdf.h>
 	<picogen/misc/scripting/nano-c.h>
 
-1224306567 /home/smach/Projects/picogen/quantum/include/picogen/misc/picossdf.h
+1224412251 /home/smach/Projects/picogen/quantum/include/picogen/misc/picossdf.h
 	<string>
 	<iostream>
 	<vector>
@@ -1288,7 +1289,7 @@
 	<string>
 	<dlfcn.h>
 
-1224224163 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1224412461 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -1319,4 +1320,12 @@
 	<picogen/graphics/objects/CloudsBouthors.h>
 
 1219645273 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/CloudsBouthors.h
+
+1224411536 /home/smach/Projects/picogen/quantum/include/picogen/graphics/brdf/Specular_DistortedHeight.h
+	<boost/intrusive_ptr.hpp>
+	<picogen/misc/functional.h>
+
+1224411613 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular_DistortedHeight.cc
+	<picogen/picogen.h>
+	<boost/intrusive_ptr.hpp>
 
