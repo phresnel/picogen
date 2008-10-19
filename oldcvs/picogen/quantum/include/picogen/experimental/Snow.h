@@ -58,6 +58,7 @@ namespace picogen {
                 public:
                     Snow();
                     virtual ~Snow();
+                    virtual bool enableRussianRoulette (bool) const;
                     virtual bool intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const;
 
                     /*void SetTimeExponent( real t )

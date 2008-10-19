@@ -40,10 +40,13 @@ namespace picogen {
 
                         const real reflectance;
                         ::picogen::generators::rng::IRNG *rng;
+                        mutable bool RR;
 
                     public:
                         Lambertian();
                         Lambertian( real reflectance );
+
+                        bool enableRussianRoulette (bool enable) const;
 
                         void setRNG (::picogen::generators::rng::IRNG *rng);
                         bool randomSample (

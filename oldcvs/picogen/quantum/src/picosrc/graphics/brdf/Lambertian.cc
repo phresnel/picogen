@@ -38,7 +38,7 @@ namespace picogen {
 
 
                 Lambertian::Lambertian (real reflectance)
-                : reflectance (reflectance), rng (0)
+                : reflectance (reflectance), rng (0), RR(true)
                 {
                 }
 
@@ -46,6 +46,14 @@ namespace picogen {
 
                 void Lambertian::setRNG (::picogen::generators::rng::IRNG *rng) {
                     this->rng = rng;
+                }
+
+
+
+                bool Lambertian::enableRussianRoulette (bool enable) const {
+                    bool ret = RR;
+                    RR = enable;
+                    return ret;
                 }
 
 
@@ -63,7 +71,7 @@ namespace picogen {
                     // }
 
                     using ::picogen::constants::pi;
-                    if (rng->randf() > reflectance)
+                    if (RR && rng->randf() > reflectance)
                         return false;
                     r_out.x() = r_in.x();
                     do {
@@ -76,7 +84,7 @@ namespace picogen {
 
                     r_out.w() = r_out.w().normal();
                     p = 1.0 / (2.0*pi);
-                    brdf = 1.0/pi;
+                    brdf = (RR ? 1.0 : reflectance) * (1.0/pi);
                     specular = false;
                     return true;
                 }

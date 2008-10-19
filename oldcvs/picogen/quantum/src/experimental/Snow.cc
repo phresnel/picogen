@@ -88,6 +88,10 @@ namespace picogen {
                 numSnowSpheres = 0;
             }
 
+            bool Snow::enableRussianRoulette (bool) const {
+                return true;
+            }
+
             bool Snow::intersect (param_out (intersection_t,intersection), param_in (Ray,ray)) const {
 
                 //Vector3d v = velocity * ( powf( real(rand())/real(RAND_MAX), timeexp ) );

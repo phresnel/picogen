@@ -38,7 +38,7 @@ namespace picogen {
 
 
                 Specular::Specular (real reflectance)
-                : reflectance (reflectance), rng (0)
+                : reflectance (reflectance), RR (true), rng (0)
                 {
                 }
 
@@ -46,6 +46,14 @@ namespace picogen {
 
                 void Specular::setRNG (::picogen::generators::rng::IRNG *rng) {
                     this->rng = rng;
+                }
+
+
+
+                bool Specular::enableRussianRoulette (bool enable) const {
+                    bool ret = RR;
+                    RR = enable;
+                    return ret;
                 }
 
 
@@ -63,13 +71,13 @@ namespace picogen {
                     // }
 
                     using picogen::constants::pi;
-                    if (rng->randf() > reflectance)
+                    if (RR && rng->randf() > reflectance)
                         return false;
                     r_out.x() = r_in.x();
                     r_out.w() = r_in.w() - N.normal() *2* (r_in.w() *N.normal());
 
                     p = fabs (N.normal() *r_out.w().normal());
-                    brdf = 1.0;
+                    brdf = RR ? 1.0 : reflectance;
                     specular = true;
                     return true;
                 }

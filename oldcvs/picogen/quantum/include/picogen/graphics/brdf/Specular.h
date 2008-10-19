@@ -39,12 +39,14 @@ namespace picogen {
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
 
                         const real reflectance;
+                        mutable bool RR;
                         ::picogen::generators::rng::IRNG *rng;
 
                     public:
                         Specular();
                         Specular( real reflectance );
 
+                        bool enableRussianRoulette (bool enable) const;
                         void setRNG (::picogen::generators::rng::IRNG *rng);
 
                         bool randomSample (
