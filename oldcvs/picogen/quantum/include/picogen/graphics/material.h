@@ -45,6 +45,7 @@ namespace picogen {
                         // the out-params are undefined.
 
                         virtual void setRNG (::picogen::generators::rng::IRNG *rng) = 0;
+                        virtual bool enableRussianRoulette (bool enable) const = 0;
                         virtual bool randomSample (
                             param_out (::picogen::real,brdf),
                             param_out (::picogen::real,p),
@@ -93,5 +94,6 @@ namespace picogen {
 // BRDFs
 #include "brdf/Lambertian.h"
 #include "brdf/Specular.h"
+#include "brdf/Specular_DistortedHeight.h"
 
 #endif /* _MATERIAL_H */
