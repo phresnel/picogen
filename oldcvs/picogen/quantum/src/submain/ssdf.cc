@@ -452,6 +452,28 @@ class SSDFScene : public Scene, public SSDFBackend {
             }
             return 0;
         }
+        virtual int setBRDFToSpecular_DistortedHeight (::picogen::real reflectance, const std::string &code) {
+            using namespace std;
+            string brdfId;
+            stringstream ss;
+            ss.precision (numeric_limits<real>::digits10);
+            ss << string ("specular_distorted-height:") << reflectance;
+            ss << string (":") << code; // TODO: normalise code before using it as a key-part
+            ss >> brdfId;
+
+            // Effectively like gcc's -fmerge-all-constants.
+            if (brdfMap.end() == brdfMap.find (brdfId)) {
+                ::boost::intrusive_ptr< ::picogen::misc::functional::Function_R2_R1_Refcounted> fun =
+                    new ::picogen::misc::functional::Function_R2_R1_Refcounted (code);
+
+                currentBRDF = new ::picogen::graphics::material::brdf::Specular_DistortedHeight(reflectance, fun);
+                currentBRDF->setRNG (&twister);
+                brdfMap [brdfId] = currentBRDF;
+            } else {
+                currentBRDF = brdfMap [brdfId];
+            }
+            return 0;
+        }
 
 
         // Preetham:
