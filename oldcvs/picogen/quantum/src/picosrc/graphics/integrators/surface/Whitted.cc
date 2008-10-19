@@ -110,7 +110,11 @@ namespace picogen {
                             Ray  r_out,  r_in (ray (I.t), ray.w());
                             real BRDF, pdf;
                             bool specular;
-                            if (I.brdf->randomSample (BRDF, pdf, specular, r_out, r_in, I.normal)) {
+
+                            bool prev = I.brdf->enableRussianRoulette (false);
+                            bool success = I.brdf->randomSample (BRDF, pdf, specular, r_out, r_in, I.normal);
+                            I.brdf->enableRussianRoulette (prev);
+                            if (success) {
                                 if (specular == false)
                                     specularOrFirst = false;
 
