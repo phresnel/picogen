@@ -553,9 +553,9 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
         case TERMINAL_HEIGHTSLANG_HEIGHTFIELD: {
             int resolution = 128;
             Vector3d center (0,0,0), size (1,1,1);
-            ::std::string hs ("0.5"), mi ("$"), shader ("hs({color-rgb(1,1,1)},1)");
-            ::std::vector < ::picogen::graphics::material::abstract::IBRDF*> brdfs;
-            ::std::vector < ::picogen::graphics::material::abstract::IShader*> shaders;
+            ::std::string hs ("0.5"), /*mi ("$"),*/ shader ("const-rgb(1,1,1)");
+            /*::std::vector < ::picogen::graphics::material::abstract::IBRDF*> brdfs;
+            ::std::vector < ::picogen::graphics::material::abstract::IShader*> shaders;*/
 
             while( !parameters.empty() ) {
                 if ((*parameters.begin()).first == string ("resolution")) {
@@ -566,11 +566,11 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                     unsigned int numScalars;
                     const Vector3d tmp = scanVector3d ((*parameters.begin()).second, numScalars);
                     if (numScalars >= 3) {
-                        errreason = string ("too many values for parameter 'direction'");
+                        errreason = string ("too many values for parameter 'center'");
                         return SYNTAX_ERROR;
                     }
                     if (numScalars < 2) {
-                        errreason = string ("not enough values for parameter 'direction'");
+                        errreason = string ("not enough values for parameter 'center'");
                         return SYNTAX_ERROR;
                     }
                     center = tmp;
@@ -578,19 +578,19 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                     unsigned int numScalars;
                     const Vector3d tmp = scanVector3d ((*parameters.begin()).second, numScalars);
                     if (numScalars >= 3) {
-                        errreason = string ("too many values for parameter 'direction'");
+                        errreason = string ("too many values for parameter 'size'");
                         return SYNTAX_ERROR;
                     }
                     if (numScalars < 2) {
-                        errreason = string ("not enough values for parameter 'direction'");
+                        errreason = string ("not enough values for parameter 'size'");
                         return SYNTAX_ERROR;
                     }
                     size = tmp;
                 } else if ((*parameters.begin()).first == string ("code")) {
                     hs = (*parameters.begin()).second;
-                } else if ((*parameters.begin()).first == string ("material-interpolator")) {
+                } /*else if ((*parameters.begin()).first == string ("material-interpolator")) {
                     mi = (*parameters.begin()).second;
-                } else if ((*parameters.begin()).first == string ("color")) {
+                }*/ /*else if ((*parameters.begin()).first == string ("color")) {
                     //!!
                     vector <string> colorss;
                     //vector <Color> colors;
@@ -626,7 +626,7 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                             shaders.push_back (new base_shaders::ConstantShader (color));
                         }
                     }
-                } else if ((*parameters.begin()).first == string ("material")) {
+                }*/ else if ((*parameters.begin()).first == string ("material")) {
                     //cout << "[" << (*parameters.begin()).second << "]" << endl;
                     shader = (*parameters.begin()).second;
 
@@ -843,36 +843,61 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, const char *&lin
     string name;
     string value;
     bool scanName = true;
+    int brace_bias = 0;
     if (*line == '(') { // Parameters are optional.
         ++line; // Eat '('.
         while (true) {
-            if (*line == ':') {
-                if (!scanName) {
-                    errreason = string ("Expected either ')' or ';'.");
-                    return SYNTAX_ERROR;
+
+            if (0<brace_bias) {
+                // klutch to allow for nested bracing-groups (e.g. to allow height-slang-parameters)
+                if ('(' == *line) {
+                    ++brace_bias;
+                } else if (')' == *line) {
+                    --brace_bias;
                 }
-                scanName = false;
-                ++line;
-                continue;
-            } else if (*line == ';' || *line == ')') {
-                scanName = true;
-                if (parameters.end() != parameters.find (name)) {
-                    errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
-                    return SYNTAX_ERROR;
+
+                if (*line == '\0') {
+                    errreason = string ("Missing ')'.");
+                    return INCOMPLETE_TERMINAL;;
                 }
-                parameters [name] = value;
-                name = value = "";
-                if (*line == ')') {
-                    break;
+            } else {
+                // klutch to allow for nested bracing-groups (e.g. to allow height-slang-parameters)
+                if ('(' == *line) {
+                    ++brace_bias;
+                    cout << "[" << *line << ":" << brace_bias << "]" << flush;
+                } else if (')' == *line) {
+                    --brace_bias;
+                    cout << "[" << *line << ":" << brace_bias << "]" << flush;
                 }
-                ++line;
-                continue;
-            } else if (*line == '\0') {
-                errreason = string ("Missing ')'.");
-                return SYNTAX_ERROR;
-            } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
-                line++;
-                continue;
+
+                if (*line == ':') {
+                    if (!scanName) {
+                        errreason = string ("Expected either ')' or ';'.");
+                        return SYNTAX_ERROR;
+                    }
+                    scanName = false;
+                    ++line;
+                    continue;
+                } else if (*line == ';' || *line == ')') {
+                    scanName = true;
+                    if (parameters.end() != parameters.find (name)) {
+                        errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
+                        return SYNTAX_ERROR;
+                    }
+                    parameters [name] = value;
+                    name = value = "";
+                    if (*line == ')') {
+                        break;
+                    }
+                    ++line;
+                    continue;
+                } else if (*line == '\0') {
+                    errreason = string ("Missing ')'.");
+                    return INCOMPLETE_TERMINAL;;
+                } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
+                    line++;
+                    continue;
+                }
             }
 
             switch (scanName) {
@@ -886,13 +911,16 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, const char *&lin
     // Set State.
     switch (stateType) {
         case STATE_MATERIAL:{
-            if ("lambertian" == type || "specular" == type) {
+            if ("lambertian" == type || "specular" == type || "specular_distorted-height"==type  ) {
                 real reflectance = 1.0;
+                string code = "1"; // <-- for distorting brdfs
                 while( !parameters.empty() ) {
                     if ((*parameters.begin()).first == string ("reflectance")) {
                         stringstream ss;
                         ss << (*parameters.begin()).second;
                         ss >> reflectance;
+                    } else if ("specular_distorted-height"==type && (*parameters.begin()).first == string ("code")) {
+                        code = (*parameters.begin()).second;
                     } else {
                         errreason = string ("unknown parameter to ") + type + string ("-material: '") + string ((*parameters.begin()).first) + string ("'");
                         return SYNTAX_ERROR;
@@ -901,8 +929,11 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, const char *&lin
                 }
                 if ("lambertian" == type) {
                     backend->setBRDFToLambertian (reflectance);
-                } else {
+                } else if ("specular" == type) {
                     backend->setBRDFToSpecular (reflectance);
+                } else if ("specular_distorted-height" == type) {
+                    cout << "{{{" << code << "}}}" << endl;
+                    backend->setBRDFToSpecular_DistortedHeight (reflectance, code);
                 }
             } else {
                 errreason = string ("material '") + type + string ("' unknown");
