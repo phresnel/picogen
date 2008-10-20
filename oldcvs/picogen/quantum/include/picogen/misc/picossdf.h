@@ -48,6 +48,7 @@ class SSDFBackend {
         // State setters.
         virtual int setBRDFToLambertian (::picogen::real reflectance) = 0;
         virtual int setBRDFToSpecular (::picogen::real reflectance) = 0;
+        virtual int setBRDFToSpecular_DistortedHeight (::picogen::real reflectance, const ::std::string &code) = 0;
 
         virtual int preethamEnable (bool enable) = 0;
         virtual int preethamSetTurbidity (::picogen::real T) = 0;
