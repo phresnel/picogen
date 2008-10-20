@@ -14,7 +14,7 @@
 		<Cursor position="1328" topLine="34" />
 	</File>
 	<File name="../../../include/picogen/experimental/Snow.h" open="0" top="0" tabpos="11">
-		<Cursor position="1474" topLine="23" />
+		<Cursor position="2486" topLine="23" />
 	</File>
 	<File name="../../../include/picogen/foreign/libcoyotl/mtwister.h" open="0" top="0" tabpos="0">
 		<Cursor position="3271" topLine="72" />
@@ -29,10 +29,13 @@
 		<Cursor position="1081" topLine="20" />
 	</File>
 	<File name="../../../include/picogen/graphics/brdf/Lambertian.h" open="0" top="0" tabpos="10">
-		<Cursor position="1234" topLine="30" />
+		<Cursor position="0" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/graphics/brdf/Specular.h" open="0" top="0" tabpos="0">
-		<Cursor position="2343" topLine="32" />
+		<Cursor position="1619" topLine="0" />
+	</File>
+	<File name="../../../include/picogen/graphics/brdf/Specular_DistortedHeight.h" open="0" top="0" tabpos="0">
+		<Cursor position="2155" topLine="6" />
 	</File>
 	<File name="../../../include/picogen/graphics/cameras.h" open="0" top="0" tabpos="11">
 		<Cursor position="5826" topLine="102" />
@@ -74,7 +77,7 @@
 		<Cursor position="125" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/graphics/material.h" open="0" top="0" tabpos="12">
-		<Cursor position="2922" topLine="65" />
+		<Cursor position="4379" topLine="33" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="6">
 		<Cursor position="3950" topLine="57" />
@@ -97,8 +100,8 @@
 	<File name="../../../include/picogen/graphics/objects/Preetham.h" open="0" top="0" tabpos="5">
 		<Cursor position="3504" topLine="59" />
 	</File>
-	<File name="../../../include/picogen/graphics/objects/QuadtreeHeightField.h" open="1" top="0" tabpos="5">
-		<Cursor position="13660" topLine="269" />
+	<File name="../../../include/picogen/graphics/objects/QuadtreeHeightField.h" open="0" top="0" tabpos="5">
+		<Cursor position="16903" topLine="358" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/SimpleHeightField.h" open="0" top="0" tabpos="6">
 		<Cursor position="1116" topLine="29" />
@@ -127,10 +130,10 @@
 	<File name="../../../include/picogen/misc/exceptions.h" open="0" top="0" tabpos="18">
 		<Cursor position="5386" topLine="82" />
 	</File>
-	<File name="../../../include/picogen/misc/functional.h" open="1" top="0" tabpos="1">
+	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="1">
 		<Cursor position="20525" topLine="417" />
 	</File>
-	<File name="../../../include/picogen/misc/functional/LayeredNoise2d.h" open="1" top="0" tabpos="3">
+	<File name="../../../include/picogen/misc/functional/LayeredNoise2d.h" open="0" top="0" tabpos="3">
 		<Cursor position="1939" topLine="28" />
 	</File>
 	<File name="../../../include/picogen/misc/functions.h" open="0" top="0" tabpos="5">
@@ -142,8 +145,8 @@
 	<File name="../../../include/picogen/misc/geometrics/Transformation.h" open="0" top="0" tabpos="16">
 		<Cursor position="9941" topLine="138" />
 	</File>
-	<File name="../../../include/picogen/misc/picossdf.h" open="1" top="0" tabpos="8">
-		<Cursor position="9379" topLine="192" />
+	<File name="../../../include/picogen/misc/picossdf.h" open="0" top="0" tabpos="8">
+		<Cursor position="1639" topLine="20" />
 	</File>
 	<File name="../../../include/picogen/misc/rng/MersenneTwister.h" open="0" top="0" tabpos="0">
 		<Cursor position="1061" topLine="0" />
@@ -167,7 +170,7 @@
 		<Cursor position="1667" topLine="24" />
 	</File>
 	<File name="../../../src/experimental/Snow.cc" open="0" top="0" tabpos="0">
-		<Cursor position="1120" topLine="20" />
+		<Cursor position="1066" topLine="7" />
 	</File>
 	<File name="../../../src/main.cc" open="0" top="0" tabpos="1">
 		<Cursor position="1617" topLine="27" />
@@ -179,10 +182,13 @@
 		<Cursor position="1028" topLine="26" />
 	</File>
 	<File name="../../../src/picosrc/graphics/brdf/Lambertian.cc" open="0" top="0" tabpos="5">
-		<Cursor position="1168" topLine="28" />
+		<Cursor position="1371" topLine="16" />
 	</File>
 	<File name="../../../src/picosrc/graphics/brdf/Specular.cc" open="0" top="0" tabpos="3">
-		<Cursor position="2527" topLine="60" />
+		<Cursor position="0" topLine="19" />
+	</File>
+	<File name="../../../src/picosrc/graphics/brdf/Specular_DistortedHeight.cc" open="0" top="0" tabpos="0">
+		<Cursor position="2294" topLine="28" />
 	</File>
 	<File name="../../../src/picosrc/graphics/film/DistanceVis.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1912" topLine="36" />
@@ -209,7 +215,7 @@
 		<Cursor position="3880" topLine="67" />
 	</File>
 	<File name="../../../src/picosrc/graphics/integrators/surface/Whitted.cc" open="0" top="0" tabpos="7">
-		<Cursor position="4532" topLine="87" />
+		<Cursor position="4780" topLine="92" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/AABox.cc" open="0" top="0" tabpos="7">
 		<Cursor position="5171" topLine="130" />
@@ -221,10 +227,10 @@
 		<Cursor position="1405" topLine="31" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="8">
-		<Cursor position="1014" topLine="0" />
+		<Cursor position="10982" topLine="283" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/QuadtreeHeightField.cc" open="1" top="0" tabpos="4">
-		<Cursor position="1313" topLine="18" />
+	<File name="../../../src/picosrc/graphics/objects/QuadtreeHeightField.cc" open="0" top="0" tabpos="4">
+		<Cursor position="30100" topLine="612" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/SimpleHeightField.cc" open="0" top="0" tabpos="5">
 		<Cursor position="1209" topLine="16" />
@@ -241,8 +247,8 @@
 	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="7">
 		<Cursor position="23220" topLine="425" />
 	</File>
-	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="1" top="0" tabpos="2">
-		<Cursor position="1095" topLine="31" />
+	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="2">
+		<Cursor position="7604" topLine="146" />
 	</File>
 	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="0" top="0" tabpos="5">
 		<Cursor position="29912" topLine="800" />
@@ -253,8 +259,8 @@
 	<File name="../../../src/picosrc/misc/scripting/picogen-c.cc" open="0" top="0" tabpos="6">
 		<Cursor position="32231" topLine="945" />
 	</File>
-	<File name="../../../src/picossdf/picossdf.cc" open="1" top="1" tabpos="7">
-		<Cursor position="13198" topLine="329" />
+	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="7">
+		<Cursor position="27302" topLine="703" />
 	</File>
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="4">
 		<Cursor position="23215" topLine="607" />
@@ -265,8 +271,8 @@
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../../src/submain/ssdf.cc" open="1" top="0" tabpos="6">
-		<Cursor position="15889" topLine="453" />
+	<File name="../../../src/submain/ssdf.cc" open="0" top="0" tabpos="6">
+		<Cursor position="11286" topLine="314" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="1">
 		<Cursor position="15210" topLine="374" />
