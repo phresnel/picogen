@@ -51,140 +51,192 @@ namespace {
     using picogen::geometrics::Ray;
     using picogen::graphics::objects::Preetham;
     using picogen::graphics::color::Color;
+    using picogen::misc::functional::Function_R2_R1;
+    using picogen::misc::functional::Function_R2_R1;
 
 
-    template <typename T> struct Heightmap {
+    real f2_to_hemisphere (real fx, real fy) {
+        const real fz_sq = 1 - fx*fx - fy*fy;
+        if (fz_sq < 0.0) {
+            return -1;
+        }
+        return sqrt (fz_sq);
+    }
 
-        public:
-
-            typedef T Hexel; // yes, hexel, as in pixel :P
-
+    class CloudAdapter {
         private:
+            const Preetham &preetham;
+            Function_R2_R1 &fun;
+            static real sat01 (real f);
 
         public:
-
-            /// \todo hide member variables away into private section
-            const real scaling;
-            const real addx, addz;
-            const unsigned int width;
-            const unsigned int height;
-
-            Hexel *map; // this is going to be a little bit low-level (as compared to operator [] overloading stuff)
-
-            Heightmap (real scaling, unsigned int width, unsigned int height)
-            : scaling (scaling), addx (0), addz (0),
-              width (width), height (height), map (new Hexel[(1+width)*(1+height)])
-            { }
-
-
-
-            ~Heightmap() {
-                delete [] map;
-            }
-
-
-
-            // okay, we provide an operator (), but just for screen dumping (hence i const it)
-            const Hexel operator () ( unsigned int x, unsigned int y ) const {
-                const Hexel tmp = map[ ((width-1)-y)*width + x ];
-                return tmp < 0.0 ? 0.0 : tmp > 1.0 ? 1.0 : tmp;
-            }
-
-
-            void fillZero() {
-                for (unsigned int x=0; x<(1+width)*(1+height); x++) {
-                    map[ x ] = static_cast<Hexel>(0.0);
-                }
-            }
-
-
-
-            void fill (const picogen::misc::functional::Function_R2_R1 &f, unsigned int antiAliasFactor) {
-
-                using namespace std;
-
-                fillZero();
-
-                for (unsigned int y=0; y<1+height*antiAliasFactor; y++) {
-
-                    const unsigned int ofs_y = (y/antiAliasFactor)*width;
-                    const real v = scaling * (addz+(static_cast<real>(y) / static_cast<real>(width*antiAliasFactor)));
-
-                    for (unsigned int x=0; x<1+width*antiAliasFactor; x++) {
-
-                        const real u = scaling * (addx+(static_cast<real>(x) / static_cast<real>(width*antiAliasFactor)));
-                        map[ (x/antiAliasFactor) + ofs_y ] += static_cast<Hexel>(f(u,v)) / static_cast<Hexel>(antiAliasFactor*antiAliasFactor);
-
-                    }
-                }
-            }
-
-
-
-            void normalize () {
-                /// \todo Rewrite to 1d as in fillZero()
-                using namespace std;
-                Hexel minHeight_(map[0]);
-                Hexel maxHeight_(map[0]);
-
-                for (unsigned int y=0; y<height; y++) {
-                    const unsigned int ofs_y = y*width;
-                    for (unsigned int x=0; x<width; x++) {
-                        const Hexel & m = map[ x + ofs_y ];
-                        if( m<minHeight_ )
-                            minHeight_ = m;
-                        if( m>maxHeight_ )
-                            maxHeight_ = m;
-                    }
-                }
-
-                const Hexel minHeight(minHeight_);
-                const Hexel totalHeight   (1.0 / (maxHeight_ - minHeight_));
-                for (unsigned int y=0; y<height; y++) {
-                    const unsigned int ofs_y = y*width;
-                    for (unsigned int x=0; x<width; x++) {
-                        Hexel &m = map[ x + ofs_y ];
-                        m = ( m - minHeight ) * totalHeight;
-                    }
-                }
-            }
-
-
-
-            void printInfo () {
-                using namespace std;
-                Hexel minHeight_(map[0]);
-                Hexel maxHeight_(map[0]);
-
-                for (unsigned int y=0; y<height; y++) {
-                    const unsigned int ofs_y = y*width;
-                    for (unsigned int x=0; x<width; x++) {
-                        const Hexel & m = map[ x + ofs_y ];
-                        if( m<minHeight_ )
-                            minHeight_ = m;
-                        if( m>maxHeight_ )
-                            maxHeight_ = m;
-                    }
-                }
-
-                std::cout << "f_min=" << minHeight_ << ", f_max="  << maxHeight_ << std::endl;
-            }
-
+            CloudAdapter (const Preetham &preetham, Function_R2_R1 &fun);
+            Color operator () (const Ray &ray) const;
     };
 
+    CloudAdapter::CloudAdapter (const Preetham &preetham, Function_R2_R1 &fun)
+    : preetham (preetham), fun (fun) {
+    }
 
 
+    real CloudAdapter::sat01 (real f) {
+        return f < 0 ? 0 : f > 1 ? 1 : f;
+    }
 
-    /// \todo strip down function draw
-    template<class t_surface>
+    Color CloudAdapter::operator () (const Ray &ray) const {
+        #if 0
+            const real v = (real)y / (real)p_target->h;
+            const real u = (real)x / (real)p_target->w;
+            const real rs = 1;
+        #else
+            const real cloudPlaneHeight = 0.25;
+            const real rs = (cloudPlaneHeight - ray.getPosition() [1]) / ray.getDirection() [1];
+            const real u = ray (rs) [0];
+            const real v = ray (rs) [2];
+        #endif
+
+        const real fx = u;
+        const real fy = v;
+
+
+        //++
+        const real si = 0.05 * rs * rs;
+        Vector3d U1 (fx-si, 0 , fy);
+        U1 = U1 + Vector3d (0, f2_to_hemisphere (U1[0], U1[2]), 0);
+        Vector3d U2 (fx+si, 0 , fy);
+        U2 = U2 + Vector3d (0, f2_to_hemisphere (U2[0], U2[2]), 0);
+
+        Vector3d V1 (fx, 0 , fy-si);   V1 = V1 + Vector3d (0, f2_to_hemisphere (V1[0], V1[2]), 0);
+
+        Vector3d V2 (fx, 0 , fy+si);   V2 = V2 + Vector3d (0, f2_to_hemisphere (V2[0], V2[2]), 0);
+
+        const Vector3d diff [2] = {
+            (U2 - U1).computeNormal (),
+            (V2 - V1).computeNormal ()
+        };
+
+        const real h = sat01 (fun (u, v));
+        const real hu1 = sat01 (fun (u-si, v));
+        const real hu2 = sat01 (fun (u+si, v));
+        const real hv1 = sat01 (fun (u, v-si));
+        const real hv2 = sat01 (fun (u, v+si));
+
+        // compute tangent vectors
+        const real H = 0.025;
+        const Vector3d U = /*Vector3d (si,0,0).computeNormal(); //*/ Vector3d (si, H*(hu2-hu1), 0).computeNormal();
+        const Vector3d V = /*Vector3d (0,0,si).computeNormal(); //*/ Vector3d (0, H*(hv2-hv1), si).computeNormal();
+        //--
+
+
+        // cloud's surface normal
+        const Vector3d normal_ = U.computeCross (V).computeNormal();
+
+        // transform normal
+        const Vector3d normal =
+            diff[0]*normal_[0]
+            +ray.getDirection()*-normal_[1]
+            +diff[1]*normal_[2]
+        ;//*/
+
+
+        // compute sunsky color
+        Color skyColor, sunColorInRay;
+        preetham.shade (skyColor, ray);
+        preetham.sunShade (sunColorInRay, ray);
+        const Color sunSky = sunColorInRay + skyColor;
+
+        Color sunColor; preetham.getSunColor (sunColor);
+
+        Vector3d sunDirection; preetham.getSunDirection (sunDirection);
+        const real dot = (normal * sunDirection);
+        const real dot_ray_sun = (ray.w() * sunDirection);
+
+        // compute diffuse light
+        real diffuse_r=0, diffuse_g=0, diffuse_b=0;
+        real diffuseDot;
+        {
+            const real diffuseFac = 0.05;
+            diffuseDot = -dot;
+            diffuseDot = (diffuseDot*0.5 + 0.5); // [0..1]
+            //diffuseDot = diffuseDot*0.75 + 0.25;   // [0.25..1]
+            diffuseDot = diffuseDot<0?0:diffuseDot>1?1:diffuseDot;
+            diffuseDot = pow (diffuseDot, 1.0);
+            (sunColor * diffuseDot * diffuseFac).to_rgb (diffuse_r, diffuse_g, diffuse_b);
+        }
+
+        // compute 1-scatter light
+        real s1_light_r=0, s1_light_g=0, s1_light_b=0;
+        if (true) {
+            real s = dot_ray_sun;
+            s = s<0?0:s>1?1:s;
+            s = pow (s, 64); // reduce sun hemispherical area, hmm.
+            s = s / (1+pow(h*30,4));
+            s *= 4.0;
+            Color s1 = sunColor * s;
+            s1.to_rgb (s1_light_r, s1_light_g, s1_light_b);
+        }
+
+        // ambient
+        real ambient_r = 0.5;
+        real ambient_g = 0.5;
+        real ambient_b = 0.5;
+
+        real r, g, b;
+        (sunSky).to_rgb (r,g,b);
+
+        switch (0) {
+            case 0: {
+                const real h_ = h;
+
+                r = r * (1-h_)/**/ + (diffuse_r + s1_light_r + ambient_r)*h_;
+                g = g * (1-h_)/**/ + (diffuse_g + s1_light_g + ambient_g)*h_;
+                b = b * (1-h_)/**/ + (diffuse_b + s1_light_b + ambient_b)*h_;
+            } break;
+            case 21:
+                r = normal[0]*0.5+0.5;
+                g = normal[1]*0.5+0.5;
+                b = normal[2]*0.5+0.5;
+                break;
+            case 22:
+                r = normal_[0]*0.5+0.5;
+                g = normal_[1]*0.5+0.5;
+                b = normal_[2]*0.5+0.5;
+                break;
+            case 231:
+                r = diff[0][0]*0.5+0.5;
+                g = diff[0][1]*0.5+0.5;
+                b = diff[0][2]*0.5+0.5;
+                break;
+            case 232:
+                r = diff[1][0]*0.5+0.5;
+                g = diff[1][1]*0.5+0.5;
+                b = diff[1][2]*0.5+0.5;
+                break;
+            case 3:
+                r = g = b = dot;
+                break;
+            case 4:
+                r = g = b = h;
+                break;
+            case 5:
+                r = g = b = rs;
+                break;
+            case 6:
+                r = g = b = diffuseDot;
+                break;
+        };
+        return Color (r, g, b);
+    }
+
+
     void
     draw (
         SDL_Surface *p_target,
-        const t_surface &surface,
+        Function_R2_R1 &fun,
         float scale,
         float exp_tone,
         float saturation,
-        Preetham &preetham
+        const Preetham &preetham
     ) {
         if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
             return;
@@ -194,102 +246,24 @@ namespace {
             /// \todo get rid of pointer arithmetic
             Uint32 *bufp   = (Uint32*) p_target->pixels + y* (p_target->pitch>>2);
             const real fy = -1.0 + 2.0 * static_cast <real> (y) / static_cast <real> (p_target->h);
-            const real fy_diff = -1.0 + 2.0 * static_cast <real> (y+1) / static_cast <real> (p_target->h);
+
+
             for (x=0; x<p_target->w; x++) {
+
                 const real fx = -1.0 + 2.0 * static_cast <real> (x) / static_cast <real> (p_target->w);
-                const real fx_diff = -1.0 + 2.0 * static_cast <real> (x+1) / static_cast <real> (p_target->w);
 
                 Ray ray;
                 ray.setPosition (Vector3d (0.0, 0.0, 0.0));
-                const real fz_sq = 1 - fx*fx - fy*fy;
-                if (fz_sq < 0.0) {
+                const real fz = f2_to_hemisphere (fx, fy);
+                if (fz < 0.0) {
                     * (bufp++) = SDL_MapRGB (p_target->format, 0, 0, 0);
                     continue;
                 }
-                const real fz = sqrt (fz_sq);
+
                 ray.setDirection (Vector3d (fx, fz, fy));
 
-                const real fz_x_diff = sqrt(1 - fx_diff*fx_diff - fy*fy);
-                const real fz_y_diff = sqrt(1 - fx*fx - fy_diff*fy_diff);
-                Vector3d diff[2];
-                diff [0] = (Vector3d (fx_diff, fz_x_diff, fy) - Vector3d (fx, fz, fy)).computeNormal();
-                diff [1] = (Vector3d (fx, fz_y_diff, fy_diff) - Vector3d (fx, fz, fy)).computeNormal();
-
-
-                const real h_ = surface (x,1+y);
-                const real uh_ = surface (1+x,1+y);
-                const real vh_ = surface (x,0+y);
-                const real h  = h_<0.0 ? 0.0 : h_>1.0 ? 1.0 : h_;
-                // compute cloud color
-                const real fu = 2.0 / static_cast <real> (surface.width);
-                const real fv = 2.0 / static_cast <real> (surface.height);
-                const Vector3d u = Vector3d (fu, uh_-h_, 0).computeNormal();
-                const Vector3d v = Vector3d (0, vh_-h_, fv).computeNormal();
-
-                Vector3d normal = v.computeCross (u).computeNormal();
-
-                normal =
-                    diff[0]*normal[0]
-                    +ray.getDirection()*-normal[1]
-                    +diff[1]*normal[2]
-                ;//*/
-
-                // remember:
-                // * to transform a normal, we multiply a normal with the inverse transpose
-                // * the inverse of a purely rotational matrix is its transpose
-                // * hence, we have to multiply with transpose(transpose(M)), thus, with M
-                /*
-                if (false) {
-                    if (true) {
-                        normal [0] = normal[0] * M[0][0] + normal[1] * M[0][1] + normal[2] * M[0][2];
-                        normal [1] = normal[0] * M[1][0] + normal[1] * M[1][1] + normal[2] * M[1][2];
-                        normal [2] = normal[0] * M[2][0] + normal[1] * M[2][1] + normal[2] * M[2][2];
-                    } else {
-                        normal [0] = normal[0] * M[0][0] + normal[1] * M[1][0] + normal[2] * M[2][0];
-                        normal [1] = normal[0] * M[0][1] + normal[1] * M[1][1] + normal[2] * M[2][1];
-                        normal [2] = normal[0] * M[0][2] + normal[1] * M[1][2] + normal[2] * M[2][2];
-                    }
-                }//*/
-
-                // compute sunsky color
-                Color skyColor, sunColorInRay;
-                preetham.shade (skyColor, ray);
-                preetham.sunShade (sunColorInRay, ray);
-                Color sunSky = sunColorInRay + skyColor;
-
-
-                Vector3d sunDirection; preetham.getSunDirection (sunDirection);
-                real dot = (normal * sunDirection);
-                //dot = dot < 0 ? 0 : dot;
-
-                real diffuse_r=1, diffuse_g=1, diffuse_b=1;
-                Color sunColor; preetham.getSunColor (sunColor);
-                sunColor.to_rgb (diffuse_r, diffuse_g, diffuse_b);
-                const real diffuseFac = 0.003;
-                const real diffuseDot = 0.5 + 0.5*-dot;
-                diffuse_r *= diffuseFac * diffuseDot;
-                diffuse_g *= diffuseFac * diffuseDot;
-                diffuse_b *= diffuseFac * diffuseDot;
-
-
-                real cr, cg, cb;
-                cr = diffuse_r;
-                cg = diffuse_g;
-                cb = diffuse_b;
-
                 real r, g, b;
-                (sunColorInRay+skyColor).to_rgb (r,g,b);
-
-                if (true) {
-                    r = r * (1-h) + cr*h;
-                    g = g * (1-h) + cg*h;
-                    b = b * (1-h) + cb*h;
-                } else {
-                    r = normal[0]*0.5+0.5;
-                    g = normal[1]*0.5+0.5;
-                    b = normal[2]*0.5+0.5;
-                }
-                Color (r, g, b).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
+                CloudAdapter (preetham, fun) (ray).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
 
                 * (bufp++) =
                     SDL_MapRGB (p_target->format,
@@ -308,7 +282,7 @@ namespace {
 
 
 
-    template <typename T> int showPreviewWindow (T &heightmap, real waterLevel) {
+    int showPreviewWindow (Function_R2_R1 &function, int width, int height) {
         using namespace std;
 
         if (SDL_Init (SDL_INIT_VIDEO) < 0) {
@@ -316,24 +290,25 @@ namespace {
             return -1;
         }
         atexit (SDL_Quit);
-        SDL_Surface *screen = SDL_SetVideoMode (heightmap.width, heightmap.height, 32, SDL_HWSURFACE);
+        SDL_Surface *screen = SDL_SetVideoMode (width, height, 32, SDL_HWSURFACE);
         if (0 == screen) {
             cerr << "Unable to set video-mode for preview: " << SDL_GetError() << endl;
             return -1;
         }
 
         Preetham preetham;
-        preetham.setTurbidity (7.9);
+        preetham.setTurbidity (2.4);
         preetham.setSunSolidAngleFactor (1.0);
-        const real L = 0.18;
-        preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
-        preetham.setSunColor (Color (1.0,1.0,1.0) *1000.0*L);
-        preetham.setSunDirection (Vector3d (0.0,0.5,0.0).normal());
+        const real L = 0.035;
+        Color filter = Color (1.0,1.0,1.0);
+        preetham.setColorFilter (filter *1.0*L);
+        preetham.setSunColor (filter *1000.0*L);
+        preetham.setSunDirection (Vector3d (1.0,1.0,0.0).normal());
         preetham.enableFogHack (false, 0.0, 99999999.0);
         preetham.invalidate ();
 
         // dump the heightmap onto the screen
-        draw (screen, heightmap, 1.0, 1.0, 1.0, preetham);
+        draw (screen, function, 1.0, 1.0, 1.0, preetham);
 
         bool done = false;
         while (!done) {
@@ -440,20 +415,20 @@ namespace {
             << "                                             the format is self-explanatory.\n"
             << "-Ebmp / --Ebitmap:                          -export as standard bmp file.\n"
             << "-p / --preview:                             -show a window with the heightmap.\n"
-            << "-l / --preview-water-level <L : floating point>:-set a water level for preview\n"
-            << "                                             (only useful together with \n"
-            << "                                              --preview)\n"
+            //<< "-l / --preview-water-level <L : floating point>:-set a water level for preview\n"
+            //<< "                                             (only useful together with \n"
+            //<< "                                              --preview)\n"
             << "-f / --force-overwrite:                     -force overwrite of existing files.\n"
             << "-w / --width <positive integer>:            -set target width, in pixels. \n"
             << "                                             standard is 512.\n"
             << "-h / --height <positive integer>:           -set target height, in pixels. \n"
             << "                                             standard is 512.\n"
-            << "-a / --anti-aliasing <X : positive integer>:-enable X*X antialiasing.\n"
+            //<< "-a / --anti-aliasing <X : positive integer>:-enable X*X antialiasing.\n"
             << "                                             standard is 1.\n"
             << "-W / --domain-width <S : floating point>:   -scales the input coordinates from \n"
             << "                                             [0..1)x[0..1) to [0..S)x[0..S)\n"
-            << "-n / --normalize :                          -enable normalization, that is, \n"
-            << "                                             scale the height-values linearly \n"
+            //<< "-n / --normalize :                          -enable normalization, that is, \n"
+            //<< "                                             scale the height-values linearly \n"
             << "                                             so that all values are in [0..1)\n"
             << "--help : show this help and exit"
         << std::endl;
@@ -487,11 +462,11 @@ int main_mkskymap (int argc, char *argv[]) {
     bool showPreview = false;
     unsigned int width=512, height=512;
     float scaling = 1.0;
-    float waterLevel = -10000000.0;
+    //float waterLevel = -10000000.0;
     unsigned int antiAliasFactor = 1;
     //float heightmapNormalizationAccuracy = -1.0;
-    bool doNormalize = false;
-    bool doPrintInfo = false;
+    //bool doNormalize = false;
+    //bool doPrintInfo = false;
     string exportFileNameBase ("mkskymap-out");
     bool forceOverwriteFiles = false;
 
@@ -643,73 +618,6 @@ int main_mkskymap (int argc, char *argv[]) {
                 /// \todo get rid of below sscanf
                 sscanf (intStr.c_str(), "%f", &scaling);
 
-            } else if (option == "-l"  || option == "--preview-water-level") {
-                if (argc<=0) {
-                    cerr << "error: no argument given to option: " << option << endl;
-                    printUsage();
-                    return -1;
-                }
-                const string intStr = string (argv[0]);
-                argc--;
-                argv++;
-
-                // Check for correct format.
-                bool hasDot = false;
-                string::const_iterator it = intStr.begin();
-                if (*it == '-' ) {
-                    ++it;
-                }
-                for ( ; it!=intStr.end(); ++it) {
-                    if (*it == '.') {
-                        if (hasDot) {
-                            cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
-                            printUsage();
-                            return -1;
-                        }
-                        hasDot = true;
-                    } else if (!isdigit (*it)) {
-                        cerr << "error: only floating point numbers are allowed for option " << option << endl;
-                        printUsage();
-                        return -1;
-                    }
-                }
-                /// \todo get rid of below sscanf
-                sscanf (intStr.c_str(), "%f", &waterLevel);
-            } else if (option == "-n"  || option == "--normalize") {
-                doNormalize = true;
-                /*if (argc<=0) {
-                    cerr << "error: no argument given to option: " << option << endl;
-                    printUsage();
-                    return -1;
-                }
-                const string intStr = string (argv[0]);
-                argc--;
-                argv++;
-                // check for unsigned-integer'ness
-                bool hasDot = false;
-                for (string::const_iterator it = intStr.begin(); it!=intStr.end(); ++it) {
-                    if (*it == '.') {
-                        if (hasDot) {
-                            cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
-                            printUsage();
-                            return -1;
-                        }
-                        hasDot = true;
-                    }else if (!isdigit (*it)) {
-                        cerr << "error: only floating point numbers are allowed for option " << option << endl;
-                        printUsage();
-                        return -1;
-                    }
-                }
-                /// \todo get rid of below sscanf
-                sscanf (intStr.c_str(), "%f", &heightmapNormalizationAccuracy);
-                if (heightmapNormalizationAccuracy < 0.0 || heightmapNormalizationAccuracy > 1.0) {
-                    cerr << "error: the argument for option " << option << " must be >= 0.0 and <= 1.0 (where 0.0 being 0%, 1.0 being 100%)" << endl;
-                    printUsage();
-                    return -1;
-                }*/
-            } else if (option == "-i" || option == "--info") {
-                doPrintInfo = true;
             } else if (option == "--help") {
                 printUsage();
                 return 0;
@@ -734,14 +642,15 @@ int main_mkskymap (int argc, char *argv[]) {
             functional_general_exeption ("you gave me no code");
         }
 
-        Heightmap<double> heightmap (scaling, width, height);
-        heightmap.fill (Function_R2_R1 (code), antiAliasFactor);
+        //Heightmap<double> heightmap (scaling, width, height);
+        Function_R2_R1 *fun = new Function_R2_R1 (code);
+        /*heightmap.fill (fun, antiAliasFactor);
         if (doNormalize)
             heightmap.normalize();
 
         if (doPrintInfo)
-            heightmap.printInfo();
-
+            heightmap.printInfo();*/
+/*
         #define MKSKYMAP_EXPORT(FLAG,EXT,FUN)                                    \
         if (exportFlags.FLAG) {                                                     \
             const string outputFilename = exportFileNameBase + string(EXT);         \
@@ -756,11 +665,12 @@ int main_mkskymap (int argc, char *argv[]) {
 
         MKSKYMAP_EXPORT (text, ".txt", exportText );
         MKSKYMAP_EXPORT (winBMP, ".bmp", exportWinBMP );
-
+*/
 
         if (showPreview) {
-            return showPreviewWindow (heightmap, waterLevel);
+            return showPreviewWindow (*fun, width, height);
         }
+        delete fun;
 
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
