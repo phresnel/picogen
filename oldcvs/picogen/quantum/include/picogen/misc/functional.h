@@ -250,7 +250,7 @@ inline BasicFunction* ALLOCNAME( BasicFunction *p1 ){                           
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_BEGIN (Cos, cos_)
                 public:
                     virtual real_t operator () (const real_t * const parameters) const {
-                        return sin ( (*p1) (parameters));
+                        return cos ( (*p1) (parameters));
                     }
             FUNCTIONAL_RR_IMPLEMENT_FUN_1_END (Cos, cos_);
 
