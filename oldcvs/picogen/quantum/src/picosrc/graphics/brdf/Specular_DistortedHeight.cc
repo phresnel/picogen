@@ -72,6 +72,7 @@ namespace picogen {
                     r_out.x() = r_in.x();
                     r_out.w() = r_in.w() - N.normal() *2* (r_in.w() * N.normal());
                     r_out.w()[1] *= (*fun) (r_in.x()[0], r_in.x()[2]);
+                    r_out.w() = r_out.w().computeNormal();
 
                     p = fabs (N.normal() *r_out.w().normal());
                     brdf = RR ? 1.0 : reflectance;
