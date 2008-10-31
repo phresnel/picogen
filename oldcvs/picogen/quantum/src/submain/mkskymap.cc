@@ -42,6 +42,7 @@
 #include <SDL/SDL.h>
 
 #include <picogen/picogen.h>
+#include <picogen/graphics/objects/CloudAdapter.h>
 
 namespace {
 
@@ -50,9 +51,12 @@ namespace {
     using picogen::geometrics::Transformation;
     using picogen::geometrics::Ray;
     using picogen::graphics::objects::Preetham;
+    using picogen::graphics::objects::CloudAdapter;
+    using picogen::graphics::objects::abstract::ISky;
     using picogen::graphics::color::Color;
     using picogen::misc::functional::Function_R2_R1;
-    using picogen::misc::functional::Function_R2_R1;
+    using picogen::misc::functional::Function_R2_R1_Refcounted;
+    using boost::intrusive_ptr;
 
 
     real f2_to_hemisphere (real fx, real fy) {
@@ -63,180 +67,14 @@ namespace {
         return sqrt (fz_sq);
     }
 
-    class CloudAdapter {
-        private:
-            const Preetham &preetham;
-            Function_R2_R1 &fun;
-            static real sat01 (real f);
-
-        public:
-            CloudAdapter (const Preetham &preetham, Function_R2_R1 &fun);
-            Color operator () (const Ray &ray) const;
-    };
-
-    CloudAdapter::CloudAdapter (const Preetham &preetham, Function_R2_R1 &fun)
-    : preetham (preetham), fun (fun) {
-    }
-
-
-    real CloudAdapter::sat01 (real f) {
-        return f < 0 ? 0 : f > 1 ? 1 : f;
-    }
-
-    Color CloudAdapter::operator () (const Ray &ray) const {
-        #if 0
-            const real v = (real)y / (real)p_target->h;
-            const real u = (real)x / (real)p_target->w;
-            const real rs = 1;
-        #else
-            const real cloudPlaneHeight = 0.25;
-            const real rs = (cloudPlaneHeight - ray.getPosition() [1]) / ray.getDirection() [1];
-            const real u = ray (rs) [0];
-            const real v = ray (rs) [2];
-        #endif
-
-        const real fx = u;
-        const real fy = v;
-
-
-        //++
-        const real si = 0.05 * rs * rs;
-        Vector3d U1 (fx-si, 0 , fy);
-        U1 = U1 + Vector3d (0, f2_to_hemisphere (U1[0], U1[2]), 0);
-        Vector3d U2 (fx+si, 0 , fy);
-        U2 = U2 + Vector3d (0, f2_to_hemisphere (U2[0], U2[2]), 0);
-
-        Vector3d V1 (fx, 0 , fy-si);   V1 = V1 + Vector3d (0, f2_to_hemisphere (V1[0], V1[2]), 0);
-
-        Vector3d V2 (fx, 0 , fy+si);   V2 = V2 + Vector3d (0, f2_to_hemisphere (V2[0], V2[2]), 0);
-
-        const Vector3d diff [2] = {
-            (U2 - U1).computeNormal (),
-            (V2 - V1).computeNormal ()
-        };
-
-        const real h = sat01 (fun (u, v));
-        const real hu1 = sat01 (fun (u-si, v));
-        const real hu2 = sat01 (fun (u+si, v));
-        const real hv1 = sat01 (fun (u, v-si));
-        const real hv2 = sat01 (fun (u, v+si));
-
-        // compute tangent vectors
-        const real H = 0.025;
-        const Vector3d U = /*Vector3d (si,0,0).computeNormal(); //*/ Vector3d (si, H*(hu2-hu1), 0).computeNormal();
-        const Vector3d V = /*Vector3d (0,0,si).computeNormal(); //*/ Vector3d (0, H*(hv2-hv1), si).computeNormal();
-        //--
-
-
-        // cloud's surface normal
-        const Vector3d normal_ = U.computeCross (V).computeNormal();
-
-        // transform normal
-        const Vector3d normal =
-            diff[0]*normal_[0]
-            +ray.getDirection()*-normal_[1]
-            +diff[1]*normal_[2]
-        ;//*/
-
-
-        // compute sunsky color
-        Color skyColor, sunColorInRay;
-        preetham.shade (skyColor, ray);
-        preetham.sunShade (sunColorInRay, ray);
-        const Color sunSky = sunColorInRay + skyColor;
-
-        Color sunColor; preetham.getSunColor (sunColor);
-
-        Vector3d sunDirection; preetham.getSunDirection (sunDirection);
-        const real dot = (normal * sunDirection);
-        const real dot_ray_sun = (ray.w() * sunDirection);
-
-        // compute diffuse light
-        real diffuse_r=0, diffuse_g=0, diffuse_b=0;
-        real diffuseDot;
-        {
-            const real diffuseFac = 0.05;
-            diffuseDot = -dot;
-            diffuseDot = (diffuseDot*0.5 + 0.5); // [0..1]
-            //diffuseDot = diffuseDot*0.75 + 0.25;   // [0.25..1]
-            diffuseDot = diffuseDot<0?0:diffuseDot>1?1:diffuseDot;
-            diffuseDot = pow (diffuseDot, 1.0);
-            (sunColor * diffuseDot * diffuseFac).to_rgb (diffuse_r, diffuse_g, diffuse_b);
-        }
-
-        // compute 1-scatter light
-        real s1_light_r=0, s1_light_g=0, s1_light_b=0;
-        if (true) {
-            real s = dot_ray_sun;
-            s = s<0?0:s>1?1:s;
-            s = pow (s, 64); // reduce sun hemispherical area, hmm.
-            s = s / (1+pow(h*30,4));
-            s *= 4.0;
-            Color s1 = sunColor * s;
-            s1.to_rgb (s1_light_r, s1_light_g, s1_light_b);
-        }
-
-        // ambient
-        real ambient_r = 0.5;
-        real ambient_g = 0.5;
-        real ambient_b = 0.5;
-
-        real r, g, b;
-        (sunSky).to_rgb (r,g,b);
-
-        switch (0) {
-            case 0: {
-                const real h_ = h;
-
-                r = r * (1-h_)/**/ + (diffuse_r + s1_light_r + ambient_r)*h_;
-                g = g * (1-h_)/**/ + (diffuse_g + s1_light_g + ambient_g)*h_;
-                b = b * (1-h_)/**/ + (diffuse_b + s1_light_b + ambient_b)*h_;
-            } break;
-            case 21:
-                r = normal[0]*0.5+0.5;
-                g = normal[1]*0.5+0.5;
-                b = normal[2]*0.5+0.5;
-                break;
-            case 22:
-                r = normal_[0]*0.5+0.5;
-                g = normal_[1]*0.5+0.5;
-                b = normal_[2]*0.5+0.5;
-                break;
-            case 231:
-                r = diff[0][0]*0.5+0.5;
-                g = diff[0][1]*0.5+0.5;
-                b = diff[0][2]*0.5+0.5;
-                break;
-            case 232:
-                r = diff[1][0]*0.5+0.5;
-                g = diff[1][1]*0.5+0.5;
-                b = diff[1][2]*0.5+0.5;
-                break;
-            case 3:
-                r = g = b = dot;
-                break;
-            case 4:
-                r = g = b = h;
-                break;
-            case 5:
-                r = g = b = rs;
-                break;
-            case 6:
-                r = g = b = diffuseDot;
-                break;
-        };
-        return Color (r, g, b);
-    }
-
 
     void
     draw (
         SDL_Surface *p_target,
-        Function_R2_R1 &fun,
+        ISky &sky,
         float scale,
         float exp_tone,
-        float saturation,
-        const Preetham &preetham
+        float saturation
     ) {
         if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
             return;
@@ -263,7 +101,12 @@ namespace {
                 ray.setDirection (Vector3d (fx, fz, fy));
 
                 real r, g, b;
-                CloudAdapter (preetham, fun) (ray).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
+                //CloudAdapter (preetham, fun) (ray).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
+                Color skyCol (0,0,0), sunCol (0,0,0);
+                sky.shade (skyCol, ray);
+                //sky.shade (sunCol, ray);
+                #warning activate sunCol
+                (skyCol+sunCol).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
 
                 * (bufp++) =
                     SDL_MapRGB (p_target->format,
@@ -282,7 +125,7 @@ namespace {
 
 
 
-    int showPreviewWindow (Function_R2_R1 &function, int width, int height) {
+    int showPreviewWindow (intrusive_ptr<Function_R2_R1_Refcounted> function, int width, int height) {
         using namespace std;
 
         if (SDL_Init (SDL_INIT_VIDEO) < 0) {
@@ -298,17 +141,19 @@ namespace {
 
         Preetham preetham;
         preetham.setTurbidity (2.4);
-        preetham.setSunSolidAngleFactor (1.0);
-        const real L = 0.035;
-        Color filter = Color (1.0,1.0,1.0);
-        preetham.setColorFilter (filter *1.0*L);
-        preetham.setSunColor (filter *1000.0*L);
-        preetham.setSunDirection (Vector3d (1.0,1.0,0.0).normal());
-        preetham.enableFogHack (false, 0.0, 99999999.0);
+        preetham.setSunSolidAngleFactor (0.5);
+        const real L = 1.0;
+        //Color filter = Color (0.5,0.5,0.5);
+        preetham.setColorFilter (Color(0.04,0.02,0.01)*L);
+        preetham.setSunColor (Color(1500,1000,500)*L);
+        preetham.setSunDirection (Vector3d (0.5,1.0,0.0).normal());
+        preetham.enableFogHack (true, 0.001, 99999999.0);
         preetham.invalidate ();
 
+        CloudAdapter ca (preetham, function);
+
         // dump the heightmap onto the screen
-        draw (screen, function, 1.0, 1.0, 1.0, preetham);
+        draw (screen, ca, 1.0, 1.0, 1.0);
 
         bool done = false;
         while (!done) {
@@ -643,7 +488,9 @@ int main_mkskymap (int argc, char *argv[]) {
         }
 
         //Heightmap<double> heightmap (scaling, width, height);
-        Function_R2_R1 *fun = new Function_R2_R1 (code);
+
+        intrusive_ptr<Function_R2_R1_Refcounted> fun (new Function_R2_R1_Refcounted (code));
+
         /*heightmap.fill (fun, antiAliasFactor);
         if (doNormalize)
             heightmap.normalize();
@@ -668,9 +515,8 @@ int main_mkskymap (int argc, char *argv[]) {
 */
 
         if (showPreview) {
-            return showPreviewWindow (*fun, width, height);
+            return showPreviewWindow (fun, width, height);
         }
-        delete fun;
 
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
