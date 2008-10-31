@@ -103,6 +103,7 @@ namespace picogen {
 #include "objects/ZBNCubemap.h"
 #include "objects/AABox.h"
 #include "objects/ImplicitHeightField.h"
+#include "objects/CloudAdapter.h"
 
 
 #endif /* _OBJECTS_H */
