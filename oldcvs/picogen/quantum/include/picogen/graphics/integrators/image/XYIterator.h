@@ -40,6 +40,7 @@ namespace picogen {
                         typedef ::picogen::graphics::material::abstract::IBRDF IBRDF;
                         typedef ::picogen::graphics::structs::intersection_t intersection_t;
                         typedef ::picogen::graphics::objects::abstract::IIntersectable IIntersectable;
+                        typedef ::picogen::graphics::objects::CloudAdapter CloudAdapter;
                         typedef ::picogen::graphics::color::Color Color;
                         typedef ::picogen::graphics::cameras::abstract::ICamera ICamera;
                         typedef ::picogen::graphics::film::abstract::IFilm IFilm;
@@ -52,6 +53,7 @@ namespace picogen {
                         ICamera *m_camera;
                         IFilm *m_film;
                         ISky *m_sky;
+                        const CloudAdapter *m_cloudAdapter;
                         ISurfaceIntegrator *m_surfaceIntegrator;
                         IIntersectable *m_intersectable;
                         bool m_done;
@@ -88,6 +90,10 @@ namespace picogen {
                         }
                         void setSky (ISky *sky) {
                             m_sky = sky;
+                        }
+
+                        void setCloudAdapter (const CloudAdapter *cloudAdapter) {
+                            m_cloudAdapter = cloudAdapter;
                         }
 
                         IIntersectable *getIntersectable () const {
