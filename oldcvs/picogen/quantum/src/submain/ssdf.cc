@@ -34,6 +34,8 @@
 #include <picogen/graphics/objects/Instance.h>
 #include <picogen/graphics/objects/templates/TriBIH.h>
 #include <picogen/graphics/objects/QuadtreeHeightField.h>
+#include <picogen/graphics/objects/CloudAdapter.h>
+
 
 
 
@@ -51,6 +53,13 @@ using ::picogen::graphics::material::abstract::IBRDF;
 using ::picogen::graphics::material::abstract::IShader;
 using ::picogen::graphics::objects::abstract::IScene;
 using ::picogen::graphics::objects::Sphere;
+
+using ::picogen::graphics::objects::Preetham;
+using ::picogen::graphics::objects::CloudAdapter;
+using ::picogen::misc::functional::Function_R2_R1;
+using ::picogen::misc::functional::Function_R2_R1_Refcounted;
+
+
 
 /*
 using ::picogen::misc::functional::Function_R6_R1_Refcounted;
@@ -273,9 +282,12 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
         LinearList list;
-        ::picogen::common::Preetham   preetham;
+        ::picogen::graphics::objects::Preetham preetham;
         bool enablePreethamSky;
         real fogMaxDist, fogExp;
+
+        ::picogen::graphics::objects::CloudAdapter cloudAdapter;
+        bool enableCloudAdapter;
         //::picogen::common::AABox      box;
 
         ::picogen::generators::rng::MersenneTwister twister;
@@ -341,7 +353,7 @@ class SSDFScene : public Scene, public SSDFBackend {
         // Init:
         virtual int initialize () {
             preetham.setTurbidity (1.9);
-            preetham.setSunSolidAngleFactor (1.0);
+            preetham.setSunSolidAngleFactor (0.125);
             const real L = 0.25;
             preetham.setColorFilter (Color (1.0,1.0,1.0) *1.0*L);
             preetham.setSunColor (Color (1.0,0.9,0.8) *1600.0*L);
@@ -350,6 +362,19 @@ class SSDFScene : public Scene, public SSDFBackend {
             fogMaxDist = 100000000.0;
             preetham.enableFogHack (false, fogExp, fogMaxDist);
             enablePreethamSky = true;
+
+            //std::cout << "initialising cloudAdapter..." << std::endl;
+            boost::intrusive_ptr <Function_R2_R1_Refcounted> f (
+                //new Function_R2_R1_Refcounted ("(+ ([2 LayeredNoise frequency(0.00085) layercount(20) filter(cosine) persistence(0.4) seed(123)] xy) 0.3)"));
+                new Function_R2_R1_Refcounted (
+                    "(* 3 (+ "
+                      " 0 "//*/"(*2([2 LayeredNoise filter(cosine) frequency(0.0003)]xy))"
+                      "(- 1 (^ 0.3 (max 0 (+ 1.0 ([2 LayeredNoise filter(cosine) frequency(0.0013) persistence(0.5) layercount(18)]xy)))))))"
+                )
+            );
+            cloudAdapter.setCloudFunction (f);
+            //std::cout << "cloudAdapter initialized" << std::endl;
+            enableCloudAdapter = true;
             return 0;
         }
 
@@ -663,7 +688,12 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
         explicit SSDFScene(const std::string &filename)
-        : sceneRoot(0), currentBRDF(0), ssdf(filename, this) {
+        : sceneRoot(0), currentBRDF(0), ssdf(filename, this), preetham (),
+            cloudAdapter (
+                preetham
+                //, boost::intrusive_ptr <Function_R2_R1_Refcounted> (new Function_R2_R1_Refcounted ("([2 LayeredNoise frequency(11.0) layercount(12) filter(cosine) persistence(0.5) seed(104)] (+x0.3)y)"))
+            )
+        {
             // Setup default camera transform.
             //renderer.transformation() = Transformation().setToTranslation (Vector3d (0.5,2.0,-5.0));
                 /*Transformation().setToRotationX (3.14159*0.0) *
@@ -728,7 +758,9 @@ class SSDFScene : public Scene, public SSDFBackend {
             // setup and recognize sky
             preetham.enableFogHack (true, fogExp, fogMaxDist);
             preetham.invalidate();
-            if (enablePreethamSky) {
+            if (enableCloudAdapter) {
+                renderer.setSky (&cloudAdapter);
+            } else if (enablePreethamSky) {
                 renderer.setSky (&preetham);
             } else {
                 renderer.setSky (0);
