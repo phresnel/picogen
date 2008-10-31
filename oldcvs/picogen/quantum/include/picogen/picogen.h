@@ -165,6 +165,9 @@ namespace picogen {
 
 namespace picogen {
     namespace graphics {
+        namespace objects {
+            class CloudAdapter;
+        }
         namespace structs {
             class intersection_t {
                 private:
@@ -183,6 +186,7 @@ namespace picogen {
                 const geometrics::Ray cameraRay;
                 const ::picogen::graphics::objects::abstract::IIntersectable * const intersectable;
                 const ::picogen::graphics::objects::abstract::ISky * const skyShader; /* for a phase of transition only! to dissappear! */
+                //const ::picogen::graphics::objects::CloudAdapter * const cloudAdapter; /* for a phase of transition only! to dissappear! */
 
                 intersection_t *primaryIntersection;
                 color::Color color;
@@ -199,6 +203,7 @@ namespace picogen {
                     cameraRay (cameraRay),
                     intersectable (intersectable),
                     skyShader (skyShader),
+                    //cloudAdapter (cloudAdapter),
                     primaryIntersection (0),
                     color()
                 {}
