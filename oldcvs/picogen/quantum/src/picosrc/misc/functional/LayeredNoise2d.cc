@@ -41,8 +41,8 @@ namespace picogen {
             LayeredNoise2d::LayeredNoise2d (std::map<std::string,std::string> &parameters, BasicFunction *ufun, BasicFunction *vfun)
                         : ufun(ufun), vfun(vfun), noiseEvalFun(0), persistenceFun(0)
                         //, enableBilinearNoiseMapFilter(true)
-                        , filter (nearest)
-                        , noiseDepth(4)
+                        , filter (cosine)
+                        , noiseDepth(6)
                         , frequency(2)
             {
                 using namespace std;
@@ -201,10 +201,10 @@ namespace picogen {
                             const real pu = ( u_ - static_cast<real> (u) );
                             const real pv = ( v_ - static_cast<real> (v) );
 
-                            const real A = LN2D_RNG( u  , v  , depth);
-                            const real B = LN2D_RNG( u1 , v  , depth);
-                            const real C = LN2D_RNG( u  , v1 , depth);
-                            const real D = LN2D_RNG( u1 , v1 , depth);
+                            const real A = LN2D_RNG( u  , v  , 0);
+                            const real B = LN2D_RNG( u1 , v  , 0);
+                            const real C = LN2D_RNG( u  , v1 , 0);
+                            const real D = LN2D_RNG( u1 , v1 , 0);
 
                             const real P = A*(1.0-pu) + B*(pu);
                             const real Q = C*(1.0-pu) + D*(pu);
@@ -246,10 +246,10 @@ namespace picogen {
                             const real pv_ = ::picogen::constants::pi * (v_ - static_cast<real> (v));
                             const real pv  = (1.0 - cos (pv_)) * 0.5;
 
-                            const real A = LN2D_RNG( u  , v  , depth);
-                            const real B = LN2D_RNG( u1 , v  , depth);
-                            const real C = LN2D_RNG( u  , v1 , depth);
-                            const real D = LN2D_RNG( u1 , v1 , depth);
+                            const real A = LN2D_RNG( u  , v  , 0);
+                            const real B = LN2D_RNG( u1 , v  , 0);
+                            const real C = LN2D_RNG( u  , v1 , 0);
+                            const real D = LN2D_RNG( u1 , v1 , 0);
 
                             const real P = A*(1.0-pu) + B*(pu);
                             const real Q = C*(1.0-pu) + D*(pu);
@@ -276,7 +276,7 @@ namespace picogen {
                             const real         v_   = v__ * (domainScale);
                             const unsigned int v    = static_cast<unsigned int>(v_);
 
-                            const real Z = LN2D_RNG( u, v, depth);
+                            const real Z = LN2D_RNG( u, v, 0);
 
                             const real H = rangeScale * (*noiseEvalFun) (Z);
 
