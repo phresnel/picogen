@@ -941,7 +941,7 @@
 	<picogen/picogen.h>
 	<picogen/experimental/Rain.h>
 
-1223805586 /home/smach/Projects/picogen/quantum/include/picogen/picogen.h
+1224920996 /home/smach/Projects/picogen/quantum/include/picogen/picogen.h
 	<math.h>
 	<float.h>
 	<iostream>
@@ -994,7 +994,7 @@
 	<stdio.h>
 	<stdlib.h>
 
-1224698027 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
+1225476160 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional.h
 	<iostream>
 	<sstream>
 	<ctype.h>
@@ -1015,7 +1015,7 @@
 
 1219081743 /home/smach/Projects/picogen/quantum/include/picogen/graphics/film/RayDirVis.h
 
-1219646540 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
+1224879523 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects.h
 	"objects/Snow.h"
 	"objects/Rain.h"
 	"objects/LinearList.h"
@@ -1027,6 +1027,7 @@
 	"objects/ZBNCubemap.h"
 	"objects/AABox.h"
 	"objects/ImplicitHeightField.h"
+	"objects/CloudAdapter.h"
 
 1218977501 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/LinearList.h
 
@@ -1061,7 +1062,7 @@
 
 1219577251 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/surface/Whitted.h
 
-1219167088 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.h
+1224879656 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/image/XYIterator.h
 
 1218977500 /home/smach/Projects/picogen/quantum/include/picogen/graphics/integrators/ray/Simple.h
 
@@ -1113,7 +1114,7 @@
 	<picogen/graphics/film.h>
 	<picogen/graphics/film/SimpleColorFilm.h>
 
-1219167774 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/image/XYIterator.cc
+1224921352 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/image/XYIterator.cc
 	<picogen/picogen.h>
 
 1218977179 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/ray/Preview.cc
@@ -1125,7 +1126,7 @@
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Path.h>
 
-1224320050 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
+1224920968 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/integrators/surface/Whitted.cc
 	<picogen/picogen.h>
 	<picogen/graphics/integrators/surface/Whitted.h>
 
@@ -1179,7 +1180,7 @@
 	<string>
 	<picogen/picogen.h>
 
-1223965735 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
+1225438898 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional.cc
 	<ctype.h>
 	<string>
 	<iostream>
@@ -1187,12 +1188,14 @@
 	<map>
 	<picogen/picogen.h>
 	<picogen/misc/functional/LayeredNoise2d.h>
+	<picogen/misc/functional/Noise2d.h>
+	<picogen/misc/functional/Layers.h>
 
 1222842894 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/LayeredNoise2d.h
 	<map>
 	<picogen/picogen.h>
 
-1223533630 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/LayeredNoise2d.cc
+1225485302 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/LayeredNoise2d.cc
 	<string>
 	<sstream>
 	<picogen/picogen.h>
@@ -1262,12 +1265,13 @@
 	<SDL/SDL.h>
 	<picogen/picogen.h>
 
-1224822215 source:/home/smach/Projects/picogen/quantum/src/submain/mkskymap.cc
+1225305941 source:/home/smach/Projects/picogen/quantum/src/submain/mkskymap.cc
 	<stdio.h>
 	<ctype.h>
 	<iostream>
 	<SDL/SDL.h>
 	<picogen/picogen.h>
+	<picogen/graphics/objects/CloudAdapter.h>
 
 1219124922 source:/home/smach/Projects/picogen/quantum/src/submain/seb.cc
 	<iostream>
@@ -1289,7 +1293,7 @@
 	<string>
 	<dlfcn.h>
 
-1224423325 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
+1225434849 source:/home/smach/Projects/picogen/quantum/src/submain/ssdf.cc
 	<iostream>
 	<limits>
 	<vector>
@@ -1301,6 +1305,7 @@
 	<picogen/graphics/objects/Instance.h>
 	<picogen/graphics/objects/templates/TriBIH.h>
 	<picogen/graphics/objects/QuadtreeHeightField.h>
+	<picogen/graphics/objects/CloudAdapter.h>
 
 1218977501 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/Instance.h
 
@@ -1325,7 +1330,33 @@
 	<boost/intrusive_ptr.hpp>
 	<picogen/misc/functional.h>
 
-1224411613 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular_DistortedHeight.cc
+1224925430 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/brdf/Specular_DistortedHeight.cc
 	<picogen/picogen.h>
 	<boost/intrusive_ptr.hpp>
+
+1225434821 source:/home/smach/Projects/picogen/quantum/src/picosrc/graphics/objects/CloudAdapter.cc
+	<picogen/picogen.h>
+	<picogen/graphics/objects/CloudAdapter.h>
+
+1225177697 /home/smach/Projects/picogen/quantum/include/picogen/graphics/objects/CloudAdapter.h
+
+1225484447 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/Noise2d.h
+	<map>
+	<picogen/picogen.h>
+
+1225485393 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/Noise2d.cc
+	<string>
+	<sstream>
+	<picogen/picogen.h>
+	<picogen/misc/functional/Noise2d.h>
+
+1225438801 /home/smach/Projects/picogen/quantum/include/picogen/misc/functional/Layers.h
+	<map>
+	<picogen/picogen.h>
+
+1225484574 source:/home/smach/Projects/picogen/quantum/src/picosrc/misc/functional/Layers.cc
+	<string>
+	<sstream>
+	<picogen/picogen.h>
+	<picogen/misc/functional/Layers.h>
 

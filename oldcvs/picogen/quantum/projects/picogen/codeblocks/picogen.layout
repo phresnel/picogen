@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Release-POSIX" />
+	<ActiveTarget name="fast compilation" />
 	<File name="../../../include/picogen/compile_info.h" open="0" top="0" tabpos="0">
 		<Cursor position="958" topLine="43" />
 	</File>
@@ -35,7 +35,7 @@
 		<Cursor position="1619" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/graphics/brdf/Specular_DistortedHeight.h" open="0" top="0" tabpos="0">
-		<Cursor position="2155" topLine="6" />
+		<Cursor position="1916" topLine="9" />
 	</File>
 	<File name="../../../include/picogen/graphics/cameras.h" open="0" top="0" tabpos="11">
 		<Cursor position="5826" topLine="102" />
@@ -62,7 +62,7 @@
 		<Cursor position="1497" topLine="24" />
 	</File>
 	<File name="../../../include/picogen/graphics/integrators/image/XYIterator.h" open="0" top="0" tabpos="6">
-		<Cursor position="1579" topLine="24" />
+		<Cursor position="1948" topLine="22" />
 	</File>
 	<File name="../../../include/picogen/graphics/integrators/ray/Preview.h" open="0" top="0" tabpos="0">
 		<Cursor position="1575" topLine="24" />
@@ -80,10 +80,13 @@
 		<Cursor position="4379" topLine="33" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects.h" open="0" top="0" tabpos="6">
-		<Cursor position="3950" topLine="57" />
+		<Cursor position="3986" topLine="39" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/AABox.h" open="0" top="0" tabpos="6">
 		<Cursor position="1582" topLine="37" />
+	</File>
+	<File name="../../../include/picogen/graphics/objects/CloudAdapter.h" open="1" top="0" tabpos="4">
+		<Cursor position="2172" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/CloudsBouthors.h" open="0" top="0" tabpos="6">
 		<Cursor position="16709" topLine="371" />
@@ -92,13 +95,13 @@
 		<Cursor position="1122" topLine="27" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Instance.h" open="0" top="0" tabpos="4">
-		<Cursor position="1343" topLine="34" />
+		<Cursor position="1343" topLine="15" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/LinearList.h" open="0" top="0" tabpos="0">
 		<Cursor position="1283" topLine="21" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Preetham.h" open="0" top="0" tabpos="5">
-		<Cursor position="3504" topLine="59" />
+		<Cursor position="77" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/QuadtreeHeightField.h" open="0" top="0" tabpos="5">
 		<Cursor position="16903" topLine="358" />
@@ -107,7 +110,7 @@
 		<Cursor position="1116" topLine="29" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/Sphere.h" open="0" top="0" tabpos="3">
-		<Cursor position="1272" topLine="28" />
+		<Cursor position="0" topLine="9" />
 	</File>
 	<File name="../../../include/picogen/graphics/objects/TriBIH.h" open="0" top="0" tabpos="4">
 		<Cursor position="1373" topLine="40" />
@@ -130,11 +133,17 @@
 	<File name="../../../include/picogen/misc/exceptions.h" open="0" top="0" tabpos="18">
 		<Cursor position="5386" topLine="82" />
 	</File>
-	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="1">
-		<Cursor position="20525" topLine="417" />
+	<File name="../../../include/picogen/misc/functional.h" open="0" top="0" tabpos="9">
+		<Cursor position="34391" topLine="704" />
 	</File>
 	<File name="../../../include/picogen/misc/functional/LayeredNoise2d.h" open="0" top="0" tabpos="3">
-		<Cursor position="1939" topLine="28" />
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="../../../include/picogen/misc/functional/Layers.h" open="0" top="0" tabpos="0">
+		<Cursor position="1423" topLine="0" />
+	</File>
+	<File name="../../../include/picogen/misc/functional/Noise2d.h" open="0" top="0" tabpos="6">
+		<Cursor position="456" topLine="0" />
 	</File>
 	<File name="../../../include/picogen/misc/functions.h" open="0" top="0" tabpos="5">
 		<Cursor position="5933" topLine="140" />
@@ -146,7 +155,7 @@
 		<Cursor position="9941" topLine="138" />
 	</File>
 	<File name="../../../include/picogen/misc/picossdf.h" open="0" top="0" tabpos="8">
-		<Cursor position="1639" topLine="20" />
+		<Cursor position="1639" topLine="26" />
 	</File>
 	<File name="../../../include/picogen/misc/rng/MersenneTwister.h" open="0" top="0" tabpos="0">
 		<Cursor position="1061" topLine="0" />
@@ -164,7 +173,7 @@
 		<Cursor position="9208" topLine="7" />
 	</File>
 	<File name="../../../include/picogen/picogen.h" open="0" top="0" tabpos="1">
-		<Cursor position="1037" topLine="15" />
+		<Cursor position="6323" topLine="162" />
 	</File>
 	<File name="../../../src/experimental/Rain.cc" open="0" top="0" tabpos="9">
 		<Cursor position="1667" topLine="24" />
@@ -188,7 +197,7 @@
 		<Cursor position="0" topLine="19" />
 	</File>
 	<File name="../../../src/picosrc/graphics/brdf/Specular_DistortedHeight.cc" open="0" top="0" tabpos="0">
-		<Cursor position="2294" topLine="28" />
+		<Cursor position="2705" topLine="35" />
 	</File>
 	<File name="../../../src/picosrc/graphics/film/DistanceVis.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1912" topLine="36" />
@@ -203,7 +212,7 @@
 		<Cursor position="1591" topLine="30" />
 	</File>
 	<File name="../../../src/picosrc/graphics/integrators/image/XYIterator.cc" open="0" top="0" tabpos="7">
-		<Cursor position="8359" topLine="125" />
+		<Cursor position="8027" topLine="132" />
 	</File>
 	<File name="../../../src/picosrc/graphics/integrators/ray/Preview.cc" open="0" top="0" tabpos="0">
 		<Cursor position="2394" topLine="31" />
@@ -215,10 +224,13 @@
 		<Cursor position="3880" topLine="67" />
 	</File>
 	<File name="../../../src/picosrc/graphics/integrators/surface/Whitted.cc" open="0" top="0" tabpos="7">
-		<Cursor position="4780" topLine="92" />
+		<Cursor position="4390" topLine="57" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/AABox.cc" open="0" top="0" tabpos="7">
 		<Cursor position="5171" topLine="130" />
+	</File>
+	<File name="../../../src/picosrc/graphics/objects/CloudAdapter.cc" open="1" top="0" tabpos="2">
+		<Cursor position="9738" topLine="213" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" open="0" top="0" tabpos="6">
 		<Cursor position="1611" topLine="36" />
@@ -226,8 +238,8 @@
 	<File name="../../../src/picosrc/graphics/objects/LinearList.cc" open="0" top="0" tabpos="9">
 		<Cursor position="1405" topLine="31" />
 	</File>
-	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="8">
-		<Cursor position="10982" topLine="283" />
+	<File name="../../../src/picosrc/graphics/objects/Preetham.cc" open="0" top="0" tabpos="2">
+		<Cursor position="11634" topLine="265" />
 	</File>
 	<File name="../../../src/picosrc/graphics/objects/QuadtreeHeightField.cc" open="0" top="0" tabpos="4">
 		<Cursor position="30100" topLine="612" />
@@ -245,10 +257,16 @@
 		<Cursor position="8590" topLine="263" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional.cc" open="0" top="0" tabpos="7">
-		<Cursor position="23220" topLine="425" />
+		<Cursor position="9599" topLine="186" />
 	</File>
-	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="0" top="0" tabpos="2">
-		<Cursor position="7604" topLine="146" />
+	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="1" top="0" tabpos="6">
+		<Cursor position="1567" topLine="25" />
+	</File>
+	<File name="../../../src/picosrc/misc/functional/Layers.cc" open="1" top="1" tabpos="7">
+		<Cursor position="3058" topLine="37" />
+	</File>
+	<File name="../../../src/picosrc/misc/functional/Noise2d.cc" open="1" top="0" tabpos="5">
+		<Cursor position="1383" topLine="30" />
 	</File>
 	<File name="../../../src/picosrc/misc/scripting/AST2LLVM.cc" open="0" top="0" tabpos="5">
 		<Cursor position="29912" topLine="800" />
@@ -260,19 +278,19 @@
 		<Cursor position="32231" topLine="945" />
 	</File>
 	<File name="../../../src/picossdf/picossdf.cc" open="0" top="0" tabpos="7">
-		<Cursor position="27302" topLine="703" />
+		<Cursor position="5000" topLine="50" />
 	</File>
 	<File name="../../../src/submain/mkheightmap.cc" open="0" top="0" tabpos="4">
 		<Cursor position="23215" topLine="607" />
 	</File>
-	<File name="../../../src/submain/mkskymap.cc" open="0" top="0" tabpos="12">
-		<Cursor position="12654" topLine="187" />
+	<File name="../../../src/submain/mkskymap.cc" open="1" top="0" tabpos="1">
+		<Cursor position="3959" topLine="49" />
 	</File>
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../../src/submain/ssdf.cc" open="0" top="0" tabpos="6">
-		<Cursor position="11286" topLine="314" />
+	<File name="../../../src/submain/ssdf.cc" open="1" top="0" tabpos="3">
+		<Cursor position="12494" topLine="337" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="1">
 		<Cursor position="15210" topLine="374" />

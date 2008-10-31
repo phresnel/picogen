@@ -164,6 +164,7 @@
 					<Add option="`llvm-config --cppflags`" />
 					<Add option="-O0" />
 					<Add option="-DNDEBUG" />
+					<Add option="-DNO_LLVM" />
 				</Compiler>
 				<Linker>
 					<Add option="`sdl-config --libs`" />
@@ -276,6 +277,7 @@
 		<Unit filename="../../../include/picogen/graphics/material.h" />
 		<Unit filename="../../../include/picogen/graphics/objects.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/AABox.h" />
+		<Unit filename="../../../include/picogen/graphics/objects/CloudAdapter.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/CloudsBouthors.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/ImplicitHeightField.h" />
 		<Unit filename="../../../include/picogen/graphics/objects/Instance.h" />
@@ -293,6 +295,8 @@
 		<Unit filename="../../../include/picogen/misc/exceptions.h" />
 		<Unit filename="../../../include/picogen/misc/functional.h" />
 		<Unit filename="../../../include/picogen/misc/functional/LayeredNoise2d.h" />
+		<Unit filename="../../../include/picogen/misc/functional/Layers.h" />
+		<Unit filename="../../../include/picogen/misc/functional/Noise2d.h" />
 		<Unit filename="../../../include/picogen/misc/functions.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics/Transformation.h" />
@@ -323,6 +327,7 @@
 		<Unit filename="../../../src/picosrc/graphics/integrators/surface/Path.cc" />
 		<Unit filename="../../../src/picosrc/graphics/integrators/surface/Whitted.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/AABox.cc" />
+		<Unit filename="../../../src/picosrc/graphics/objects/CloudAdapter.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/ImplicitHeightField.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/LinearList.cc" />
 		<Unit filename="../../../src/picosrc/graphics/objects/Preetham.cc" />
@@ -333,6 +338,8 @@
 		<Unit filename="../../../src/picosrc/graphics/objects/ZBNCubemap.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional.cc" />
 		<Unit filename="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" />
+		<Unit filename="../../../src/picosrc/misc/functional/Layers.cc" />
+		<Unit filename="../../../src/picosrc/misc/functional/Noise2d.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/AST2LLVM.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/nano-c.cc" />
 		<Unit filename="../../../src/picosrc/misc/scripting/picogen-c.cc" />
