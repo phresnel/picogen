@@ -31,6 +31,8 @@
 
 #include <picogen/picogen.h>
 #include <picogen/misc/functional/LayeredNoise2d.h>
+#include <picogen/misc/functional/Noise2d.h>
+#include <picogen/misc/functional/Layers.h>
 
 namespace picogen {
     namespace misc {
@@ -48,15 +50,17 @@ namespace picogen {
             }
 
             void intrusive_ptr_add_ref (Function_R2_R1_Refcounted* r) {
-                ::std::cout << "Function_R2_R1_Refcounted++"<< ::std::endl;
+                //::std::cout << "Function_R2_R1_Refcounted++"<< ::std::endl;
                 ++r->refCount;
             }
 
             void intrusive_ptr_release (Function_R2_R1_Refcounted* r) {
-                ::std::cout << "Function_R2_R1_Refcounted--"<< ::std::endl;
+                //::std::cout << "Function_R2_R1_Refcounted--"<< ::std::endl;
                 --r->refCount;
-                if (r->refCount == 0)
+                if (r->refCount == 0) {
+                    //std::cout << "OOOOOOOOKAY" << std::endl;
                     delete r;
+                }
             }
 
             void intrusive_ptr_add_ref (Function_R3_R1_Refcounted* r) {
@@ -214,6 +218,10 @@ namespace picogen {
 
                         if ("LayeredNoise" == hookName) {
                             return new LayeredNoise2d (parameters, p1, p2);
+                        } else if ("Noise" == hookName) {
+                            return new Noise2d (parameters, p1, p2);
+                        } else if ("Layers" == hookName) {
+                            return new Layers (parameters, p1, p2);
                         } else {
                             throw functional_general_exeption ("unknown configurable function: '" + hookName + "'");
                         }
