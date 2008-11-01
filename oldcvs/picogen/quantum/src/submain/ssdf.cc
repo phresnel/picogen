@@ -362,7 +362,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             fogMaxDist = 100000000.0;
             preetham.enableFogHack (false, fogExp, fogMaxDist);
             enablePreethamSky = true;
-
+#ifndef PICOGEN_RELEASE
             //std::cout << "initialising cloudAdapter..." << std::endl;
             boost::intrusive_ptr <Function_R2_R1_Refcounted> f (
                 //new Function_R2_R1_Refcounted ("(+ ([2 LayeredNoise frequency(0.00085) layercount(20) filter(cosine) persistence(0.4) seed(123)] xy) 0.3)"));
@@ -373,8 +373,9 @@ class SSDFScene : public Scene, public SSDFBackend {
                 )
             );
             cloudAdapter.setCloudFunction (f);
+#endif // PICOGEN_RELEASE
             //std::cout << "cloudAdapter initialized" << std::endl;
-            enableCloudAdapter = true;
+            enableCloudAdapter = false;
             return 0;
         }
 
