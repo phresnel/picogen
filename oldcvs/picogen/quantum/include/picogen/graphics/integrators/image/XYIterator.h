@@ -92,10 +92,6 @@ namespace picogen {
                             m_sky = sky;
                         }
 
-                        void setCloudAdapter (const CloudAdapter *cloudAdapter) {
-                            m_cloudAdapter = cloudAdapter;
-                        }
-
                         IIntersectable *getIntersectable () const {
                             return m_intersectable;
                         }
