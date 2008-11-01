@@ -157,9 +157,6 @@
 	<File name="../../../include/picogen/misc/picossdf.h" open="0" top="0" tabpos="8">
 		<Cursor position="1639" topLine="26" />
 	</File>
-	<File name="../../../include/picogen/misc/rng/MersenneTwister.h" open="0" top="0" tabpos="0">
-		<Cursor position="1061" topLine="0" />
-	</File>
 	<File name="../../../include/picogen/misc/scripting/AST.h" open="0" top="0" tabpos="3">
 		<Cursor position="10077" topLine="266" />
 	</File>
@@ -263,7 +260,7 @@
 		<Cursor position="1567" topLine="25" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional/Layers.cc" open="1" top="1" tabpos="7">
-		<Cursor position="3058" topLine="37" />
+		<Cursor position="3074" topLine="37" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional/Noise2d.cc" open="1" top="0" tabpos="5">
 		<Cursor position="1383" topLine="30" />

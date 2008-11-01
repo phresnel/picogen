@@ -301,7 +301,6 @@
 		<Unit filename="../../../include/picogen/misc/geometrics.h" />
 		<Unit filename="../../../include/picogen/misc/geometrics/Transformation.h" />
 		<Unit filename="../../../include/picogen/misc/picossdf.h" />
-		<Unit filename="../../../include/picogen/misc/rng/MersenneTwister.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/AST.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/AST2LLVM.h" />
 		<Unit filename="../../../include/picogen/misc/scripting/nano-c.h" />
