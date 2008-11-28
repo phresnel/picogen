@@ -21,18 +21,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/// \todo add an [optional] alpha channell to the heightmap, so it becomes usefull for creating 2d clouds
-/// \todo include IEEE-floating-point binary-export option
-/// \todo include RAW-export option
-/// \todo include PNG-export option
-/// \todo include more visualisation modes than only greyscale
-/// \todo include an option to only display a subset of the map
-/// \todo include an option to zoom in/out
-/// \todo include ram-less heightmap creation (will be slower when using normalization)
-/// \todo include an option to sequentially save the heightmap, one chunk by another
-/// \todo include options to set the x/y-center on the height-function
-/// \todo This actually a project global todo: get rid of stuff like FLT_MAX, we want our project be portable.
-
 
 #include <stdio.h>
 #include <ctype.h>
@@ -57,6 +45,37 @@ namespace {
     using picogen::misc::functional::Function_R2_R1;
     using picogen::misc::functional::Function_R2_R1_Refcounted;
     using boost::intrusive_ptr;
+    
+    struct PreethamParams {
+        Vector3d sunDirection;
+        real turbidity;
+        real solidAngleFactor;
+        
+        Color atmosphereColorFilter, sunColor;
+        
+        bool fogHackEnable;
+        real fogHackDensity;
+        real fogHackMaxDist;
+        
+        bool falloffHackEnable;
+        real falloffHackMaxAngleFactor;
+        real falloffHackExponent;
+        
+        PreethamParams () 
+        : sunDirection (1.0, 1.0, 0.0)
+        , turbidity (2.1)        
+        , solidAngleFactor (1.0)
+        , atmosphereColorFilter (0.05,0.05,0.05)
+        , sunColor (1500.0,1500.0,1500.0)
+        , fogHackEnable (false)
+        , fogHackDensity (0.001)
+        , fogHackMaxDist (1000000.0)
+        , falloffHackEnable (false)
+        , falloffHackMaxAngleFactor (1.5)
+        , falloffHackExponent (1.5)
+        {
+        }
+    };
 
 
     real f2_to_hemisphere (real fx, real fy) {
@@ -74,7 +93,8 @@ namespace {
         ISky &sky,
         float scale,
         float exp_tone,
-        float saturation
+        float saturation,
+        bool disableSunColor
     ) {
         if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
             return;
@@ -104,8 +124,9 @@ namespace {
                 //CloudAdapter (preetham, fun) (ray).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
                 Color skyCol (0,0,0), sunCol (0,0,0);
                 sky.shade (skyCol, ray);
-                //sky.shade (sunCol, ray);
-                #warning activate sunCol
+                if (!disableSunColor) {
+                    sky.sunShade (sunCol, ray);
+                }
                 (skyCol+sunCol).saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
 
                 * (bufp++) =
@@ -125,7 +146,7 @@ namespace {
 
 
 
-    int showPreviewWindow (intrusive_ptr<Function_R2_R1_Refcounted> function, int width, int height) {
+    int showPreviewWindow (intrusive_ptr<Function_R2_R1_Refcounted> function, const PreethamParams &preethamParams, int width, int height) {
         using namespace std;
 
         if (SDL_Init (SDL_INIT_VIDEO) < 0) {
@@ -140,20 +161,26 @@ namespace {
         }
 
         Preetham preetham;
-        preetham.setTurbidity (2.4);
-        preetham.setSunSolidAngleFactor (0.5);
-        const real L = 1.0;
-        //Color filter = Color (0.5,0.5,0.5);
-        preetham.setColorFilter (Color(0.04,0.02,0.01)*L);
-        preetham.setSunColor (Color(1500,1000,500)*L);
-        preetham.setSunDirection (Vector3d (0.5,1.0,0.0).normal());
-        preetham.enableFogHack (true, 0.001, 99999999.0);
+        preetham.setTurbidity (preethamParams.turbidity);
+        preetham.setSunSolidAngleFactor (preethamParams.solidAngleFactor);
+        preetham.setColorFilter (preethamParams.atmosphereColorFilter);
+        preetham.setSunColor (preethamParams.sunColor);
+        preetham.setSunDirection (preethamParams.sunDirection.computeNormal());
+        
+        preetham.enableFogHack (preethamParams.fogHackEnable, preethamParams.fogHackDensity, preethamParams.fogHackMaxDist);
+        
+        preetham.enableSunFalloffHack (preethamParams.falloffHackEnable);
+        preetham.setSunFalloffMaxSolidAngleFactor (preethamParams.solidAngleFactor * preethamParams.falloffHackMaxAngleFactor);
+        preetham.setSunFalloffExponent (preethamParams.falloffHackExponent);
+        
         preetham.invalidate ();
 
-        CloudAdapter ca (preetham, function);
-
-        // dump the heightmap onto the screen
-        draw (screen, ca, 1.0, 1.0, 1.0);
+        if (0 != function.get()) {
+            CloudAdapter ca (preetham, function);
+            draw (screen, ca, 1.0, 1.0, 1.0, true);
+        } else {
+            draw (screen, preetham, 1.0, 1.0, 1.0, false);
+        }
 
         bool done = false;
         while (!done) {
@@ -280,6 +307,27 @@ namespace {
     }
 };
 
+
+#ifdef mkskymap_err_missing_arg
+#error mkskymap_err_missing_arg already defined
+#endif
+#define mkskymap_err_missing_arg() \
+    if (argc<=0) { \
+        cerr << "error: no argument given to option: " << option << '\n'; \
+        cerr << "type 'picogen mkskymap --help'" << endl; \
+        return -1; \
+    }
+
+#ifdef mkskymap_err_not_enough_args
+#error mkskymap_err_not_enough_args already defined
+#endif
+#define mkskymap_err_not_enough_args() \
+    if (argc<=0) { \
+        cerr << "error: not enough arguments given to option: " << option << '\n'; \
+        cerr << "type 'picogen mkskymap --help'" << endl; \
+        return -1; \
+    }
+
 #ifdef MKSKYMAP_STANDALONE
 int main (int argc, char *argv[]) {
 #else
@@ -304,6 +352,9 @@ int main_mkskymap (int argc, char *argv[]) {
     } Lingua;
     std::string code("");
     Lingua lingua = Lingua_unknown;
+    
+    PreethamParams preethamParams;
+    
     bool showPreview = false;
     unsigned int width=512, height=512;
     float scaling = 1.0;
@@ -341,11 +392,7 @@ int main_mkskymap (int argc, char *argv[]) {
             }
             if (option == "-Lhs" || option == "--Lheight-slang") {
                 lingua = Lingua_inlisp;
-                if (argc<=0) {
-                    cerr << "error: no argument given to option: " << option << endl;
-                    printUsage();
-                    return -1;
-                }
+                mkskymap_err_missing_arg();
                 code = string (argv[0]);
                 argc--;
                 argv++;
@@ -368,11 +415,7 @@ int main_mkskymap (int argc, char *argv[]) {
                 forceOverwriteFiles = true;
             } else if (option == "-w"  || option == "--width") {
 
-                if (argc<=0) {
-                    cerr << "error: no argument given to option: " << option << endl;
-                    printUsage();
-                    return -1;
-                }
+                mkskymap_err_missing_arg();
                 const string intStr = string (argv[0]);
                 argc--;
                 argv++;
@@ -388,11 +431,7 @@ int main_mkskymap (int argc, char *argv[]) {
                 sscanf (intStr.c_str(), "%u", &width);
 
             } else if (option == "-h"  || option == "--height") {
-                if (argc<=0) {
-                    cerr << "error: no argument given to option: " << option << endl;
-                    printUsage();
-                    return -1;
-                }
+                mkskymap_err_missing_arg();
                 const string intStr = string (argv[0]);
                 argc--;
                 argv++;
@@ -407,11 +446,7 @@ int main_mkskymap (int argc, char *argv[]) {
                 /// \todo get rid of below sscanf
                 sscanf (intStr.c_str(), "%u", &height);
             } else if (option == "-a"  || option == "--anti-aliasing") {
-                if (argc<=0) {
-                    cerr << "error: no argument given to option: " << option << endl;
-                    printUsage();
-                    return -1;
-                }
+                mkskymap_err_missing_arg();
                 const string intStr = string (argv[0]);
                 argc--;
                 argv++;
@@ -431,11 +466,7 @@ int main_mkskymap (int argc, char *argv[]) {
                     return -1;
                 }
             } else if (option == "-W"  || option == "--domain-width") {
-                if (argc<=0) {
-                    cerr << "error: no argument given to option: " << option << endl;
-                    printUsage();
-                    return -1;
-                }
+                mkskymap_err_missing_arg();
                 const string intStr = string (argv[0]);
                 argc--;
                 argv++;
@@ -463,6 +494,167 @@ int main_mkskymap (int argc, char *argv[]) {
                 /// \todo get rid of below sscanf
                 sscanf (intStr.c_str(), "%f", &scaling);
 
+            } else if (option == "-d" || option == "--direction") {
+                
+                real x, y, z;
+                // Read x-direction.
+                {
+                    mkskymap_err_missing_arg();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> x;
+                    argc--; argv++;
+                }
+                
+                // Read y-direction.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> y;
+                    argc--; argv++;
+                }
+                
+                // Read z-direction.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> z;
+                    argc--; argv++;
+                }        
+                
+                preethamParams.sunDirection = Vector3d (x, y, z);
+
+            } else if (option == "-C" || option == "--sun-color") {
+                
+                real r, g, b;
+                // Read Red.
+                {
+                    mkskymap_err_missing_arg();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> r;
+                    argc--; argv++;
+                }
+                
+                // Read Green.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> g;
+                    argc--; argv++;
+                }
+                
+                // Read Blue.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> b;
+                    argc--; argv++;
+                }        
+                
+                preethamParams.sunColor.from_rgb (r, g, b);
+
+            } else if (option == "-F" || option == "--color-filter") {
+                
+                real r, g, b;
+                // Read Red.
+                {
+                    mkskymap_err_missing_arg();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> r;
+                    argc--; argv++;
+                }
+                
+                // Read Green.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> g;
+                    argc--; argv++;
+                }
+                
+                // Read Blue.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> b;
+                    argc--; argv++;
+                }
+                
+                preethamParams.atmosphereColorFilter.from_rgb (r, g, b);
+
+            } else if (option == "-O" || option == "--fog-hack") {
+                
+                real density, maxRange;
+                // Read Density.
+                {
+                    mkskymap_err_missing_arg();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> density;
+                    argc--; argv++;
+                }
+                
+                // Read Max-Range.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> maxRange;
+                    argc--; argv++;
+                }
+                
+                preethamParams.fogHackEnable = true;
+                preethamParams.fogHackDensity = density;
+                preethamParams.fogHackMaxDist = maxRange;
+
+            } else if (option == "-t" || option == "--turbidity") {                
+                mkskymap_err_missing_arg();
+                stringstream ss; 
+                ss << string (argv[0]);
+                ss >> preethamParams.turbidity;
+                argc--; argv++;                
+            } else if (option == "-A" || option == "--solid-angle") {                
+                mkskymap_err_missing_arg();
+                stringstream ss; 
+                ss << string (argv[0]);
+                ss >> preethamParams.solidAngleFactor;
+                argc--; argv++;                
+                
+                /*
+                preetham.enableSunFalloffHack (preethamParams.falloffHackEnable);
+                preetham.setSunFalloffMaxSolidAngleFactor (preethamParams.solidAngleFactor * preethamParams.falloffHackMaxAngleFactor);
+                */
+            } else if (option == "-o" || option == "--falloff") {
+                real maxAngleFac, exponent;
+                // Read Density.
+                {
+                    mkskymap_err_missing_arg();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> maxAngleFac;
+                    argc--; argv++;
+                }
+                
+                // Read Max-Range.
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> exponent;
+                    argc--; argv++;
+                }
+                
+                preethamParams.falloffHackEnable = true;
+                preethamParams.falloffHackMaxAngleFactor = maxAngleFac;
+                preethamParams.falloffHackExponent = exponent;
             } else if (option == "--help") {
                 printUsage();
                 return 0;
@@ -473,23 +665,14 @@ int main_mkskymap (int argc, char *argv[]) {
             }
         }
 
-        if (lingua == Lingua_unknown) {
+        if (0 != code.size() && lingua == Lingua_unknown) {
             cerr << "error: unkown language or wrong option used" << endl;
             printUsage();
             return -1;
         }
 
 
-
-
-
-        if (code.size() == 0) {
-            functional_general_exeption ("you gave me no code");
-        }
-
-        //Heightmap<double> heightmap (scaling, width, height);
-
-        intrusive_ptr<Function_R2_R1_Refcounted> fun (new Function_R2_R1_Refcounted (code));
+        intrusive_ptr<Function_R2_R1_Refcounted> fun (0 != code.size() ? new Function_R2_R1_Refcounted (code) : 0);
 
         /*heightmap.fill (fun, antiAliasFactor);
         if (doNormalize)
@@ -515,7 +698,7 @@ int main_mkskymap (int argc, char *argv[]) {
 */
 
         if (showPreview) {
-            return showPreviewWindow (fun, width, height);
+            return showPreviewWindow (fun, preethamParams, width, height);
         }
 
     } catch (const functional_general_exeption &e) {
@@ -526,3 +709,6 @@ int main_mkskymap (int argc, char *argv[]) {
     }
     return 0;
 }
+
+#undef mkskymap_err_missing_arg
+#undef mkskymap_err_not_enough_args
