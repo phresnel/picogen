@@ -79,7 +79,7 @@ namespace picogen {
                 }
                 // Any parameters set that we don't know?
                 if (nonExistantParameterNames != "") {
-                    throw functional_general_exeption ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                    throw functional_general_exeption ("the following parameters do not exist for 'Noise': "+nonExistantParameterNames);
                 }
 
                 //====---- - - -  -   -    -      -
