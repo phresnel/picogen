@@ -54,11 +54,15 @@ endif (MSVC)
 
 #########################################################################################
 ## boost ################################################################################
-include (FindBoost.cmake)
-if (NOT BOOST_REGEX_FOUND)
-    message (FATAL_ERROR "boost-regex not found!")
-endif (NOT BOOST_REGEX_FOUND)
-link_libraries (${BOOST_REGEX_LIBRARY})
+#include (FindBoost.cmake)
+#if (NOT BOOST_REGEX_FOUND)
+    #message (FATAL_ERROR "boost-regex not found!")
+#endif (NOT BOOST_REGEX_FOUND)
+#message ("boost-regex-lib: ${BOOST_REGEX_LIBRARY}")
+#link_libraries (${BOOST_REGEX_LIBRARY})
+
+find_library (boost_regex_lib libboost_regex.a ../lib/)
+link_libraries(${boost_regex_lib})
 #########################################################################################
 
 
