@@ -1,0 +1,5 @@
+To build picogen-wx, unpack additional-includes.tar here. 
+I have tarballed it because I don't wanted to have the sourcefiles
+themselves in the picogen-cvs.
+
+/seb/phresnel 2008-11-28
