@@ -1,0 +1,2 @@
+./quantum -> contains the the kernel 'picogen'
+./atom -> contains the minimalistic frontend 'picogen-wx'
