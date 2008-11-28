@@ -55,8 +55,9 @@ static void usage() {
         << "\n"
         << " mkheightmap :   mkheightmap is a heightmap generation tool.\n"
         << "                 type 'picogen mkheightmap --help' for further help.\n"
-        //<< "\n"
-        //<< " testscene :     some hardcoded testscenes.\n"
+        << "\n"
+        << " mkskymap :      mkskymap is a sky/cloud (w.i.p.) generation tool.\n"
+        << "                 type 'picogen mkskymap --help' for further help.\n"
         << "\n"
         << " ssdf :          for parsing the (not too) static scene definition format.\n"
         << "                 type 'picogen ssdf --help' for further help.\n"
@@ -134,13 +135,11 @@ int main (int argc, char *argv[]) {
         return main_mkheightmap (argc, argv);
     }
 
-    #ifndef PICOGEN_RELEASE
     else if (primary == string ("mkskymap")) {
         argc++; // <-- quick and dirty patch
         argv--;
         return main_mkskymap (argc, argv);
     }
-    #endif
 
     /*
     else if (primary == string ("testscene")) {
