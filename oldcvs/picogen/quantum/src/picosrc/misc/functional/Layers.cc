@@ -78,7 +78,7 @@ namespace picogen {
                 }
                 // Any parameters set that we don't know?
                 if (nonExistantParameterNames != "") {
-                    throw functional_general_exeption ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                    throw functional_general_exeption ("the following parameters do not exist for 'Layers': "+nonExistantParameterNames);
                 }
 
                 // Do we already have a noise evaluation function?
