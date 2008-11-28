@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="fast compilation" />
+	<ActiveTarget name="Release-POSIX" />
 	<File name="../../../include/picogen/compile_info.h" open="0" top="0" tabpos="0">
 		<Cursor position="958" topLine="43" />
 	</File>
@@ -62,7 +62,7 @@
 		<Cursor position="1497" topLine="24" />
 	</File>
 	<File name="../../../include/picogen/graphics/integrators/image/XYIterator.h" open="0" top="0" tabpos="6">
-		<Cursor position="1948" topLine="22" />
+		<Cursor position="3003" topLine="44" />
 	</File>
 	<File name="../../../include/picogen/graphics/integrators/ray/Preview.h" open="0" top="0" tabpos="0">
 		<Cursor position="1575" topLine="24" />
@@ -178,8 +178,8 @@
 	<File name="../../../src/experimental/Snow.cc" open="0" top="0" tabpos="0">
 		<Cursor position="1066" topLine="7" />
 	</File>
-	<File name="../../../src/main.cc" open="0" top="0" tabpos="1">
-		<Cursor position="1617" topLine="27" />
+	<File name="../../../src/main.cc" open="1" top="0" tabpos="8">
+		<Cursor position="4108" topLine="91" />
 	</File>
 	<File name="../../../src/picosrc/frontend/app-main.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="90" topLine="0" />
@@ -209,7 +209,7 @@
 		<Cursor position="1591" topLine="30" />
 	</File>
 	<File name="../../../src/picosrc/graphics/integrators/image/XYIterator.cc" open="0" top="0" tabpos="7">
-		<Cursor position="8027" topLine="132" />
+		<Cursor position="7360" topLine="132" />
 	</File>
 	<File name="../../../src/picosrc/graphics/integrators/ray/Preview.cc" open="0" top="0" tabpos="0">
 		<Cursor position="2394" topLine="31" />
@@ -259,8 +259,8 @@
 	<File name="../../../src/picosrc/misc/functional/LayeredNoise2d.cc" open="1" top="0" tabpos="6">
 		<Cursor position="1567" topLine="25" />
 	</File>
-	<File name="../../../src/picosrc/misc/functional/Layers.cc" open="1" top="1" tabpos="7">
-		<Cursor position="3074" topLine="37" />
+	<File name="../../../src/picosrc/misc/functional/Layers.cc" open="1" top="0" tabpos="7">
+		<Cursor position="2437" topLine="37" />
 	</File>
 	<File name="../../../src/picosrc/misc/functional/Noise2d.cc" open="1" top="0" tabpos="5">
 		<Cursor position="1383" topLine="30" />
@@ -286,8 +286,8 @@
 	<File name="../../../src/submain/seb.cc" open="0" top="0" tabpos="8">
 		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="../../../src/submain/ssdf.cc" open="1" top="0" tabpos="3">
-		<Cursor position="12494" topLine="337" />
+	<File name="../../../src/submain/ssdf.cc" open="1" top="1" tabpos="3">
+		<Cursor position="11984" topLine="337" />
 	</File>
 	<File name="../../../src/submain/testscenes.cc" open="0" top="0" tabpos="1">
 		<Cursor position="15210" topLine="374" />
