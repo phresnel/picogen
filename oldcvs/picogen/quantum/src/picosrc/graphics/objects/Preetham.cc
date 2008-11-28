@@ -107,7 +107,7 @@ namespace picogen {
 
             Preetham::Preetham() :
                     m_T (1.8), m_sunSolidAngleFactor (1), m_sunColor (100,100,100), m_colorFilter (1,1,1),
-                    m_enableFogHack (false) {
+                    m_enableSunFalloffHack (false), m_enableFogHack (false) {
             }
 
 
@@ -119,12 +119,6 @@ namespace picogen {
                 m_sunTheta = acos (m_sunDirection[1]);
                 m_sunPhi   = atan2 (m_sunDirection[0],m_sunDirection[2]);
             }
-
-
-
-            /*Vector3d Preetham::getSunDirection() const {
-                return m_sunDirection;
-            }*/
 
 
 
@@ -186,12 +180,6 @@ namespace picogen {
 
 
 
-            /*Color Preetham::getSunColor() const {
-                return m_sunColor;
-            }*/
-
-
-
             void Preetham::setColorFilter (Color color) {
                 m_colorFilter = color;
             }
@@ -206,6 +194,24 @@ namespace picogen {
 
             void Preetham::setSunSolidAngleFactor (real f) {
                 m_sunSolidAngleFactor = f;
+            }
+            
+            
+            
+            void Preetham::setSunFalloffMaxSolidAngleFactor (real f) {
+                m_sunFalloffHackMaxSolidAngleFactor = f;
+            }
+            
+            
+            
+            void Preetham::setSunFalloffExponent (real e) {
+                m_falloffHackExponent = e;
+            }
+            
+            
+            
+            void Preetham::enableSunFalloffHack (bool enable) {
+                m_enableSunFalloffHack = enable;
             }
 
 
@@ -249,6 +255,7 @@ namespace picogen {
 
 
                 m_sunSolidAngle =  360.0* (6.7443e-05) *m_sunSolidAngleFactor;//0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
+                m_sunFalloffHackMaxSolidAngle = 360.0* (6.7443e-05) * m_sunFalloffHackMaxSolidAngleFactor;//0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
                 //m_beta = 0.04608365822050 * m_T - 0.04586025928522;
             }
 
@@ -292,15 +299,19 @@ namespace picogen {
             void Preetham::sunShade (param_out (Color,color), param_in (Ray,ray)) const {
                 color = Color (0.0,0.0,0.0);
                 const real gamma = acos (ray.w() * m_sunDirection);//*/getAngleBetween( theta, phi, m_theta, m_phi );
-                real alpha = (m_sunSolidAngle);
-                if (gamma < alpha) {
+                
+                if (gamma < m_sunSolidAngle) {
                     color += m_sunColor;
-                } else {
+                } else if (m_enableSunFalloffHack) {
                     /// \todo: disabled temporarily to implement direct lighting
-                    real f = 1.0 - (gamma-alpha) / ( (alpha+0.5)-alpha);
+                    
+                    real f = 1.0 - (gamma-m_sunSolidAngle) / (m_sunFalloffHackMaxSolidAngle - m_sunSolidAngle);
+                    
+                    /*real f = 1.0 - (gamma-m_sunSolidAngle) / ( (m_sunSolidAngle+0.5)-m_sunSolidAngle);
                     //real f = 1.0 - ( gamma-alpha );// / (180.0*constants::pi);
+                    */
                     if (f > 0.0 && f < 1.0) {
-                        color += m_sunColor * pow (f,150+10*ray.w() [1]);
+                        color += m_sunColor * pow (f, m_falloffHackExponent);//+10*ray.w() [1]);
                     }
                 }
             }

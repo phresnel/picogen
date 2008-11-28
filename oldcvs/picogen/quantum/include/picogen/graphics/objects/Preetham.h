@@ -47,6 +47,11 @@ namespace picogen {
                     real m_sunSolidAngle, m_sunSolidAngleFactor;
                     Color m_sunColor, m_colorFilter;
                     real m_beta;
+                
+                    bool m_enableSunFalloffHack;
+                    real m_sunFalloffHackMaxSolidAngleFactor;
+                    real m_sunFalloffHackMaxSolidAngle;
+                    real m_falloffHackExponent;
 
                     bool m_enableFogHack;
                     real m_fogHackFactor, m_fogHackSatDist;
@@ -75,7 +80,7 @@ namespace picogen {
                     // -- sun direction / solid angle -------------------------
                     void setSunDirection (param_in (Vector3d,ray));
                     void setSunDirection (real lat, real longi, int sm, int jd, real tOfDay);
-                    void setSunSolidAngleFactor (real f);
+                    void setSunSolidAngleFactor (real f);                    
                     //Vector3d getSunDirection() const;
                     void getSunDirection (param_out (Vector3d,direction)) const;
                     real getSunArealFactor () const;
@@ -83,6 +88,14 @@ namespace picogen {
 
 
 
+                    // -- falloff hack ----------------------------------------
+                    void setSunFalloffMaxSolidAngleFactor (real f);
+                    void setSunFalloffExponent (real e);
+                    void enableSunFalloffHack (bool enable);
+                    // --------------------------------------------------------
+                    
+                    
+                    
                     // -- sun color -------------------------------------------
                     void setSunColor (Color col);
                     void setColorFilter (Color col);
