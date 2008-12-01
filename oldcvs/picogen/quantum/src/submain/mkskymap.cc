@@ -634,7 +634,7 @@ int main_mkskymap (int argc, char *argv[]) {
                 */
             } else if (option == "-o" || option == "--falloff") {
                 real maxAngleFac, exponent;
-                // Read Density.
+                // Read Factor.
                 {
                     mkskymap_err_missing_arg();
                     stringstream ss; 
@@ -643,7 +643,7 @@ int main_mkskymap (int argc, char *argv[]) {
                     argc--; argv++;
                 }
                 
-                // Read Max-Range.
+                // Read Exponent.
                 {
                     mkskymap_err_not_enough_args();
                     stringstream ss; 
