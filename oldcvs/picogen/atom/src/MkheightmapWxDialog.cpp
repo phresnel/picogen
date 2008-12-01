@@ -468,7 +468,7 @@ void MkheightmapWxDialog::OnExecute( wxCommandEvent& event )
         + wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing
         + (normalise->IsChecked() ? wxString(_(" -n ")) : wxString(_(""))) // normalise?
     ;
-    wxMessageDialog (this, x_usrbin);
+    //wxMessageDialog (this, x_usrbin);
     wxString x_currentfolder = wxString (_("./") + x_usrbin);
     
     // try picogen in current folder
@@ -496,6 +496,99 @@ void MkheightmapWxDialog::OnExecute( wxCommandEvent& event )
     } else {        
     }
     scintilla->SetFocus();
+}
+
+void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) 
+{
+    // TODO: Assimilate PreethamParams from picogen-kernel.
+    
+    // ATMOSPHERE
+    
+    // Atmosphere Color Filter.
+    const float atmoIntensity = static_cast <float> (atmosphereIntensity->GetValue ()) * 0.001f;
+    const float atmoRGB [3] = {
+        static_cast <float> (atmosphereR->GetValue ()) * atmoIntensity * 0.01f,
+        static_cast <float> (atmosphereG->GetValue ()) * atmoIntensity * 0.01f,
+        static_cast <float> (atmosphereB->GetValue ()) * atmoIntensity * 0.01f
+    };
+    
+    // Fog.
+    const float fogDensity  = static_cast <float> (this->fogDensity->GetValue ()) * 0.0001; // / 10k
+    const float fogMaxRange = static_cast <float> (this->fogMaxRange->GetValue ());
+    
+    // Turbidity.
+    const float turbidity = static_cast <float> (turbidityA->GetValue ()) + 0.01 * static_cast <float> (turbidityB->GetValue ());
+    
+    // SUN    
+    // Disk Size.
+    const float sunDiskSize = static_cast <float> (this->diskSize->GetValue ()) * 0.01;
+    
+    // Falloff.
+    const float falloffFactor   = 1.0 + static_cast <float> (this->falloffFactor->GetValue ()) * 0.01;
+    const float falloffExponent = static_cast <float> (this->falloffExponent->GetValue ());
+    
+    // Sun Color.
+    const float sunIntensity = static_cast <float> (this->sunIntensity->GetValue ());
+    const float sunRGB [3] = {
+        static_cast <float> (sunR->GetValue ()) * sunIntensity * 0.01f,
+        static_cast <float> (sunG->GetValue ()) * sunIntensity * 0.01f,
+        static_cast <float> (sunB->GetValue ()) * sunIntensity * 0.01f
+    };
+    
+    // Sun Direction (mkskymap will normalise it for us).
+    const float sunDir [3] = {
+        static_cast <float> (sunX->GetValue ()),
+        static_cast <float> (sunY->GetValue ()),
+        static_cast <float> (sunZ->GetValue ())
+    };
+    
+    
+    
+    // COMMANDLINE
+    
+    
+    
+    // Command Line (using std::string, as wxString would compile e.g. a "2,1" e.g. on a german box, where instead a "2.1" is needed.
+    using namespace std;
+    stringstream commandline;
+    commandline << "picogen mkskymap -p ";
+    commandline << " -F " << atmoRGB [0] << ' ' << atmoRGB [1] << ' ' << atmoRGB [2] << ' ';
+    if (fogEnable->IsChecked()) {
+        commandline << " -O " << fogDensity << ' ' << fogMaxRange << ' ';
+    }
+    commandline << " -C " << sunRGB [0] << ' ' << sunRGB [1] << ' ' << sunRGB [2] << ' ';    
+    commandline << " -d " << sunDir [0] << ' ' << sunDir [1] << ' ' << sunDir [2] << ' ';
+    commandline << " -t " << turbidity << ' ';
+    if (falloffEnable->IsChecked()) {
+        commandline << " -o " << falloffFactor << ' ' << falloffExponent << ' ';
+    }
+    commandline << " -A " << sunDiskSize << ' ';
+    
+    const wxString x_usrbin (commandline.str().c_str(), wxConvUTF8);
+    const wxString x_currentfolder = wxString (_("./") + wxString (x_usrbin));
+    {
+        wxString statusText = x_currentfolder;
+        statusText.Replace (_("\n"), _(" "));    
+        SetStatusText(statusText);
+    }
+    
+    int i;
+    if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
+        // retry picogen in /usr/bin        
+        {
+            wxString statusText = x_usrbin;
+            statusText.Replace (_("\n"), _(" "));    
+            SetStatusText(statusText);
+        }
+        
+        if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
+            wxMessageDialog msg (this, 
+                wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
+            );
+        } else {            
+        }
+    } else {        
+    }
 }
 
 
