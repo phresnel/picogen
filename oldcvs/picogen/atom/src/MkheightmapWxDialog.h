@@ -47,6 +47,7 @@ protected:
 	void OnClose( wxCommandEvent& event );
 	void OnAutoformat( wxCommandEvent& event );
 	void OnQuickPreview( wxCommandEvent& event );
+	void OnShowHemisphere( wxCommandEvent& event );
 	void OnFast1MakeChoice ( wxCommandEvent& event );
 	void OnFast2MakeChoice ( wxCommandEvent& event );
 	void OnFast3MakeChoice ( wxCommandEvent& event );
