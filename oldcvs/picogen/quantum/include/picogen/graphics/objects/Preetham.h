@@ -49,9 +49,10 @@ namespace picogen {
                     real m_beta;
                 
                     bool m_enableSunFalloffHack;
-                    real m_sunFalloffHackMaxSolidAngleFactor;
-                    real m_sunFalloffHackMaxSolidAngle;
-                    real m_falloffHackExponent;
+                    //real m_sunFalloffHackMaxSolidAngleFactor;
+                    //real m_falloffHackExponent;
+                    real m_falloffHackFactor [3];
+                    
 
                     bool m_enableFogHack;
                     real m_fogHackFactor, m_fogHackSatDist;
@@ -89,8 +90,9 @@ namespace picogen {
 
 
                     // -- falloff hack ----------------------------------------
-                    void setSunFalloffMaxSolidAngleFactor (real f);
-                    void setSunFalloffExponent (real e);
+                    //void setSunFalloffMaxSolidAngleFactor (real f);
+                    //void setSunFalloffExponent (real e);
+                    void setSunFalloffHackParameters (real a, real b, real c);
                     void enableSunFalloffHack (bool enable);
                     // --------------------------------------------------------
                     
