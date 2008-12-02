@@ -150,6 +150,7 @@ namespace picogen {
         static const real real_max = FLT_MAX;
         static const real real_min = FLT_MIN;
         static const real pi = 3.14159265f;
+        static const real e = 2.71828182845904523536;
     };
 } // namespace picogen {
 
