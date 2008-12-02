@@ -498,49 +498,74 @@ void MkheightmapWxDialog::OnExecute( wxCommandEvent& event )
     scintilla->SetFocus();
 }
 
-void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) 
-{
-    // TODO: Assimilate PreethamParams from picogen-kernel.
-    
+
+void MkheightmapWxDialog::ObtainSunSkyParams (
+    float atmoRGB [3], 
+    float &fogDensity, float &fogMaxRange,
+    float &turbidity,
+    float &sunDiskSize,
+    bool &falloffEnable, float falloffParameters [3], 
+    float sunRGB [3], float sunDir [3]
+) const {
     // ATMOSPHERE
     
     // Atmosphere Color Filter.
     const float atmoIntensity = static_cast <float> (atmosphereIntensity->GetValue ()) * 0.001f;
-    const float atmoRGB [3] = {
-        static_cast <float> (atmosphereR->GetValue ()) * atmoIntensity * 0.01f,
-        static_cast <float> (atmosphereG->GetValue ()) * atmoIntensity * 0.01f,
-        static_cast <float> (atmosphereB->GetValue ()) * atmoIntensity * 0.01f
-    };
+    atmoRGB [0] = static_cast <float> (atmosphereR->GetValue ()) * atmoIntensity * 0.01f;
+    atmoRGB [1] = static_cast <float> (atmosphereG->GetValue ()) * atmoIntensity * 0.01f;
+    atmoRGB [2] = static_cast <float> (atmosphereB->GetValue ()) * atmoIntensity * 0.01f;
     
     // Fog.
-    const float fogDensity  = static_cast <float> (this->fogDensity->GetValue ()) * 0.0001; // / 10k
-    const float fogMaxRange = static_cast <float> (this->fogMaxRange->GetValue ());
+    fogDensity  = static_cast <float> (this->fogDensity->GetValue ()) * 0.00001; // / 10k
+    fogMaxRange = static_cast <float> (this->fogMaxRange->GetValue ());
     
     // Turbidity.
-    const float turbidity = static_cast <float> (turbidityA->GetValue ()) + 0.01 * static_cast <float> (turbidityB->GetValue ());
+    turbidity = static_cast <float> (turbidityA->GetValue ()) + 0.01 * static_cast <float> (turbidityB->GetValue ());
     
     // SUN    
     // Disk Size.
-    const float sunDiskSize = static_cast <float> (this->diskSize->GetValue ()) * 0.01;
+    sunDiskSize = static_cast <float> (this->diskSize->GetValue ()) * 0.01;
     
     // Falloff.
-    const float falloffFactor   = 1.0 + static_cast <float> (this->falloffFactor->GetValue ()) * 0.01;
-    const float falloffExponent = static_cast <float> (this->falloffExponent->GetValue ());
+    falloffParameters [0]   = static_cast <float> (this->falloffParameterA->GetValue ()) * 0.1;
+    falloffParameters [1]   = static_cast <float> (this->falloffParameterB->GetValue ()) * 0.00001;
+    falloffParameters [2]   = static_cast <float> (this->falloffParameterC->GetValue ()) * 0.1;
+    falloffEnable = this->falloffEnable->IsChecked ();
+    //falloffExponent = static_cast <float> (this->falloffExponent->GetValue ());
     
     // Sun Color.
     const float sunIntensity = static_cast <float> (this->sunIntensity->GetValue ());
-    const float sunRGB [3] = {
-        static_cast <float> (sunR->GetValue ()) * sunIntensity * 0.01f,
-        static_cast <float> (sunG->GetValue ()) * sunIntensity * 0.01f,
-        static_cast <float> (sunB->GetValue ()) * sunIntensity * 0.01f
-    };
+    sunRGB [0] = static_cast <float> (sunR->GetValue ()) * sunIntensity * 0.01f;
+    sunRGB [1] = static_cast <float> (sunG->GetValue ()) * sunIntensity * 0.01f;
+    sunRGB [2] = static_cast <float> (sunB->GetValue ()) * sunIntensity * 0.01f;
     
     // Sun Direction (mkskymap will normalise it for us).
-    const float sunDir [3] = {
-        static_cast <float> (sunX->GetValue ()),
-        static_cast <float> (sunY->GetValue ()),
-        static_cast <float> (sunZ->GetValue ())
-    };
+    const float to_radian = 0.0174532925f;
+    const float pi = 3.14159265;
+    const float sunPhi   = to_radian * static_cast <float> (this->sunPhi->GetValue()) + 0.5*pi;
+    const float sunTheta = to_radian * static_cast <float> (this->sunTheta->GetValue());
+    sunDir [0] = sin (sunTheta) * cos (sunPhi);
+    sunDir [1] = cos (sunTheta);
+    sunDir [2] = sin (sunTheta) * sin (sunPhi);
+}
+
+
+void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) 
+{
+    float atmoRGB [3]; 
+    float fogDensity; float fogMaxRange;
+    float turbidity;
+    float sunDiskSize;
+    bool falloffEnable; float falloffParameters [3]; 
+    float sunRGB [3]; float sunDir [3];
+    ObtainSunSkyParams (
+        atmoRGB,
+        fogDensity, fogMaxRange,
+        turbidity,
+        sunDiskSize,
+        falloffEnable, falloffParameters, 
+        sunRGB, sunDir
+    );
     
     
     
@@ -559,8 +584,8 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event )
     commandline << " -C " << sunRGB [0] << ' ' << sunRGB [1] << ' ' << sunRGB [2] << ' ';    
     commandline << " -d " << sunDir [0] << ' ' << sunDir [1] << ' ' << sunDir [2] << ' ';
     commandline << " -t " << turbidity << ' ';
-    if (falloffEnable->IsChecked()) {
-        commandline << " -o " << falloffFactor << ' ' << falloffExponent << ' ';
+    if (falloffEnable) {
+        commandline << " -o " << falloffParameters [0] << ' ' << falloffParameters [1] << ' ' << falloffParameters [2] << ' ';
     }
     commandline << " -A " << sunDiskSize << ' ';
     
@@ -636,26 +661,56 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event )
             
         tmpfile << "}\n";
         
+        // Camera.
         switch (cameraType->GetSelection ()) {
             case 0: {
                 float yaw, pitch, roll, x, y, z;                
                 GetYprOrientation (yaw, pitch, roll);
                 GetYprPosition (x, y, z);
                 tmpfile << "camera-yaw-pitch-roll("
-                    << "position: " << x << "," << y << "," << z << ";"
+                    << "position: " << x << ',' << y << ',' << z << ";"
                     << "yaw:" << yaw << "; "
                     << "pitch:" << pitch << "; "
                     << "roll:" << roll << ")\n "
                 ;
                 break;
             }
-        };        
-        
-        tmpfile << "sunsky (turbidity:2.1)\n";
-        tmpfile << "sunsky (direction: 1.0,0.125,0.5)\n";
-        tmpfile << "sunsky (color-filter-rgb: 0.05, 0.05, 0.05)\n";
-        tmpfile << "sunsky (sun-color-rgb: 1800, 1600, 1300)\n";
-        tmpfile << "sunsky (fog-exponent: 0.00005; fog-max-distance:10000000)\n";
+        };  
+
+
+        // Sunsky.
+        {
+            float atmoRGB [3]; 
+            float fogDensity; float fogMaxRange;
+            float turbidity;
+            float sunDiskSize;
+            bool falloffEnable; float falloffParameters [3]; 
+            float sunRGB [3]; float sunDir [3];
+            ObtainSunSkyParams (
+                atmoRGB,
+                fogDensity, fogMaxRange,
+                turbidity,
+                sunDiskSize,
+                falloffEnable, falloffParameters, 
+                sunRGB, sunDir
+            );
+            tmpfile << "sunsky (turbidity:" << turbidity << ")\n";
+            tmpfile << "sunsky (direction: " << sunDir [0] << ',' << sunDir [1] << ',' << sunDir [2] << ")\n";
+            tmpfile << "sunsky (color-filter-rgb: " << atmoRGB [0] << ", " << atmoRGB [1] << ", " << atmoRGB [2] << ")\n";
+            tmpfile << "sunsky (sun-color-rgb: " << sunRGB [0] << ", " << sunRGB [1] << ", " << sunRGB [2] << ")\n";
+            if (fogEnable) {
+                //tmpfile << "sunsky (fog-exponent: 0.00005; fog-max-distance:10000000)\n";
+                tmpfile << "sunsky (fog-exponent: " << fogDensity << "; fog-max-distance:" << fogMaxRange << ")\n";
+            } else {
+                tmpfile << "sunsky (fog-exponent: " << 0.0 << "; fog-max-distance:" << 0.0 << ")\n";
+            }
+            
+            if (falloffEnable) {
+                tmpfile << "sunsky (sun-falloff-parameters: " << falloffParameters [0] << ',' << falloffParameters [1] << ',' << falloffParameters [2] << ")\n";
+            }
+            
+            tmpfile << "sunsky (sun-solid-angle-factor: " << sunDiskSize << ")\n";
+        }
         
         tmpfile.close();
     }
@@ -698,7 +753,7 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event )
 }
 
 
-void MkheightmapWxDialog::GetYprPosition (float &x, float &y, float &z) 
+void MkheightmapWxDialog::GetYprPosition (float &x, float &y, float &z) const
 {
     using namespace std;
 
@@ -721,16 +776,16 @@ void MkheightmapWxDialog::GetYprPosition (float &x, float &y, float &z)
     }
 }
 
-void MkheightmapWxDialog::GetYprOrientation (float &yaw, float &pitch, float &roll) 
+void MkheightmapWxDialog::GetYprOrientation (float &yaw, float &pitch, float &roll) const
 {
     float deg_yaw   = static_cast<float>(ypr_yaw->GetValue ()) + 0.01f * static_cast<float>(ypr_yaw_fine->GetValue ());
     float deg_pitch = -static_cast<float>(ypr_pitch->GetValue ())  + 0.01f * static_cast<float>(ypr_pitch_fine->GetValue ());
     float deg_roll  = -static_cast<float>(ypr_roll->GetValue ()) + 0.01f * static_cast<float>(ypr_roll_fine->GetValue ());
     
-    const float to_degree = 0.0174532925f;
-    yaw   = deg_yaw * to_degree;
-    pitch = deg_pitch * to_degree;
-    roll  = deg_roll * to_degree;
+    const float to_radian = 0.0174532925f;
+    yaw   = deg_yaw * to_radian;
+    pitch = deg_pitch * to_radian;
+    roll  = deg_roll * to_radian;
 }
 
 
