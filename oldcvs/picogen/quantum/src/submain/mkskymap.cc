@@ -58,8 +58,9 @@ namespace {
         real fogHackMaxDist;
         
         bool falloffHackEnable;
-        real falloffHackMaxAngleFactor;
-        real falloffHackExponent;
+        real falloffHackParameters [3];
+        //real falloffHackMaxAngleFactor;
+        //real falloffHackExponent;
         
         PreethamParams () 
         : sunDirection (1.0, 1.0, 0.0)
@@ -71,8 +72,8 @@ namespace {
         , fogHackDensity (0.001)
         , fogHackMaxDist (1000000.0)
         , falloffHackEnable (false)
-        , falloffHackMaxAngleFactor (1.5)
-        , falloffHackExponent (1.5)
+        //, falloffHackMaxAngleFactor (1.5)
+        //, falloffHackExponent (1.5)
         {
         }
     };
@@ -103,7 +104,7 @@ namespace {
             /// \todo FIX we are currently assuming a 32bit SDL buffer
             /// \todo get rid of pointer arithmetic
             Uint32 *bufp   = (Uint32*) p_target->pixels + y* (p_target->pitch>>2);
-            const real fy = -1.0 + 2.0 * static_cast <real> (y) / static_cast <real> (p_target->h);
+            const real fy = 1.0 - 2.0 * static_cast <real> (y) / static_cast <real> (p_target->h);
 
 
             for (x=0; x<p_target->w; x++) {
@@ -170,8 +171,9 @@ namespace {
         preetham.enableFogHack (preethamParams.fogHackEnable, preethamParams.fogHackDensity, preethamParams.fogHackMaxDist);
         
         preetham.enableSunFalloffHack (preethamParams.falloffHackEnable);
-        preetham.setSunFalloffMaxSolidAngleFactor (preethamParams.solidAngleFactor * preethamParams.falloffHackMaxAngleFactor);
-        preetham.setSunFalloffExponent (preethamParams.falloffHackExponent);
+        //preetham.setSunFalloffMaxSolidAngleFactor (preethamParams.solidAngleFactor * preethamParams.falloffHackMaxAngleFactor);
+        //preetham.setSunFalloffExponent (preethamParams.falloffHackExponent);
+        preetham.setSunFalloffHackParameters (preethamParams.falloffHackParameters [0], preethamParams.falloffHackParameters [1], preethamParams.falloffHackParameters [2]);
         
         preetham.invalidate ();
 
@@ -633,28 +635,32 @@ int main_mkskymap (int argc, char *argv[]) {
                 preetham.setSunFalloffMaxSolidAngleFactor (preethamParams.solidAngleFactor * preethamParams.falloffHackMaxAngleFactor);
                 */
             } else if (option == "-o" || option == "--falloff") {
-                real maxAngleFac, exponent;
-                // Read Factor.
+                // Read Parameters.
                 {
                     mkskymap_err_missing_arg();
                     stringstream ss; 
                     ss << string (argv[0]);
-                    ss >> maxAngleFac;
+                    ss >> preethamParams.falloffHackParameters [0];
                     argc--; argv++;
                 }
                 
-                // Read Exponent.
                 {
                     mkskymap_err_not_enough_args();
                     stringstream ss; 
                     ss << string (argv[0]);
-                    ss >> exponent;
+                    ss >> preethamParams.falloffHackParameters [1];
+                    argc--; argv++;
+                }
+                
+                {
+                    mkskymap_err_not_enough_args();
+                    stringstream ss; 
+                    ss << string (argv[0]);
+                    ss >> preethamParams.falloffHackParameters [2];
                     argc--; argv++;
                 }
                 
                 preethamParams.falloffHackEnable = true;
-                preethamParams.falloffHackMaxAngleFactor = maxAngleFac;
-                preethamParams.falloffHackExponent = exponent;
             } else if (option == "--help") {
                 printUsage();
                 return 0;
