@@ -39,8 +39,17 @@ class MkheightmapWxDialog : public MkheightmapWxDialogGui
 private:
     void UpdateTextWithTemplate (const wxString &tpl);
 
-    void GetYprOrientation (float &yaw, float &pitch, float &roll);
-    void GetYprPosition (float &x, float &y, float &z);
+    void GetYprOrientation (float &yaw, float &pitch, float &roll) const;
+    void GetYprPosition (float &x, float &y, float &z) const;
+    void ObtainSunSkyParams (
+        float atmoRGB [3], 
+        float &fogDensity, float &fogRange,
+        float &turbidity,
+        float &sunDiskSize,
+        bool &falloffEnable, float falloffParameters [3],
+        float sunRGB [3], float sunDir [3]
+    ) const ;
+
 protected:
 	// Handlers for MkheightmapWxDialogGui events.
 	void OnExecute( wxCommandEvent& event );
