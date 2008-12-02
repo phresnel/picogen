@@ -29,7 +29,6 @@
 
 
 using namespace picogen;
-using namespace picogen::constants;
 using geometrics::Vector3d;
 using graphics::color::Color;
 
@@ -45,30 +44,30 @@ static inline void orthnormalbasis_from_normal (
         // look for any vector that is not parallel to n
         const Vector3d tmp ( (real) rand() / (real) RAND_MAX, (real) rand() / (real) RAND_MAX, (real) rand() / (real) RAND_MAX);
         u = n.cross (tmp);
-    } while (fabs (u*n) > epsilon);
+    } while (fabs (u*n) > picogen::constants::epsilon);
     u = u.normal();
     v = n.cross (u);
 }
 
 static inline real to_radian (real a) {
-    return a* (pi/180.0);
+    return a* (picogen::constants::pi/180.0);
 }
 static inline real to_degree (real a) {
-    return a* (180.0/pi);
+    return a* (180.0/picogen::constants::pi);
 }
 
 static inline real angle2d (real x, real z) {
     if (z<0) {
         return acos (-x);
     }
-    return (2*pi)-acos (-x);
+    return (2*picogen::constants::pi)-acos (-x);
 }
 
 
 static inline real getAngleBetween (real thetav, real phiv, real theta, real phi) {
     real cospsi = sin (thetav) * sin (theta) * cos (phi-phiv) + cos (thetav) * cos (theta);
     if (cospsi > 1) return 0;
-    if (cospsi < -1) return pi;
+    if (cospsi < -1) return picogen::constants::pi;
     return  acos (cospsi);
 }
 
@@ -140,25 +139,25 @@ namespace picogen {
                 real standardMeridian = (real) _standardMeridian*15.0;
 
                 real solarTime = timeOfDay +
-                                 (0.170*sin (4.0*pi* (julianDay - 80.0) /373.0) - 0.129*sin (2.0*pi* (julianDay - 8.0) /355.0)) +
+                                 (0.170*sin (4.0*picogen::constants::pi* (julianDay - 80.0) /373.0) - 0.129*sin (2.0*picogen::constants::pi* (julianDay - 8.0) /355.0)) +
                                  (standardMeridian - longitude) /15.0;
 
-                real solarDeclination = (0.4093*sin (2*pi* (julianDay - 81.0) /368.0));
+                real solarDeclination = (0.4093*sin (2*picogen::constants::pi* (julianDay - 81.0) /368.0));
 
                 real solarAltitude =
                     asin (sin (to_radian (latitude)) * sin (solarDeclination)
-                          - cos (to_radian (latitude)) * cos (solarDeclination) * cos (pi*solarTime/12.0))
+                          - cos (to_radian (latitude)) * cos (solarDeclination) * cos (picogen::constants::pi*solarTime/12.0))
                     ;
 
                 real opp, adj;
-                opp = -cos (solarDeclination) * sin (pi*solarTime/12.0);
+                opp = -cos (solarDeclination) * sin (picogen::constants::pi*solarTime/12.0);
                 adj = - (cos (to_radian (latitude)) * sin (solarDeclination) +
-                         sin (to_radian (latitude)) * cos (solarDeclination) * cos (pi*solarTime/12.0)
+                         sin (to_radian (latitude)) * cos (solarDeclination) * cos (picogen::constants::pi*solarTime/12.0)
                         );
                 real solarAzimuth=atan2 (opp,adj);
 
                 m_sunPhi   = (solarAzimuth); // the original implementation takes the negative, but then below polar2cartesian triade is not correct
-                m_sunTheta = pi / 2.0 - solarAltitude;
+                m_sunTheta = picogen::constants::pi / 2.0 - solarAltitude;
 
                 m_sunDirection[0] = sin (m_sunPhi) * cos (m_sunTheta);
                 m_sunDirection[2] = sin (m_sunPhi) * sin (m_sunTheta);
@@ -198,14 +197,22 @@ namespace picogen {
             
             
             
-            void Preetham::setSunFalloffMaxSolidAngleFactor (real f) {
+            /*void Preetham::setSunFalloffMaxSolidAngleFactor (real f) {
                 m_sunFalloffHackMaxSolidAngleFactor = f;
-            }
+            }*/
             
             
             
-            void Preetham::setSunFalloffExponent (real e) {
+            /*void Preetham::setSunFalloffExponent (real e) {
                 m_falloffHackExponent = e;
+            }*/            
+            
+            
+            
+            void Preetham::setSunFalloffHackParameters (real a, real b, real c) {
+                m_falloffHackFactor [0] = a;
+                m_falloffHackFactor [1] = b;
+                m_falloffHackFactor [2] = c;
             }
             
             
@@ -231,7 +238,7 @@ namespace picogen {
                     (-0.04214*theta3 + 0.08970*theta2 - 0.04153*m_sunTheta  + 0.00515) * m_T +
                     (+0.15346*theta3 - 0.26756*theta2 + 0.06669*m_sunTheta  + 0.26688);
 
-                const real X = (4.0/9.0-m_T/120.0) * (pi-2*m_sunTheta);
+                const real X = (4.0/9.0-m_T/120.0) * (picogen::constants::pi-2*m_sunTheta);
                 m_zenith_Y = (4.0453*m_T-4.9710) * tan (X) - 0.2155*m_T+2.4192;
                 //m_zenith_Y *= 1000;  // convert kcd/m^2 to cd/m^2
 
@@ -255,7 +262,7 @@ namespace picogen {
 
 
                 m_sunSolidAngle =  360.0* (6.7443e-05) *m_sunSolidAngleFactor;//0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
-                m_sunFalloffHackMaxSolidAngle = 360.0* (6.7443e-05) * m_sunFalloffHackMaxSolidAngleFactor;//0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
+                //m_sunFalloffHackMaxSolidAngle = 360.0* (6.7443e-05) * m_sunFalloffHackMaxSolidAngleFactor;//0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
                 //m_beta = 0.04608365822050 * m_T - 0.04586025928522;
             }
 
@@ -303,16 +310,30 @@ namespace picogen {
                 if (gamma < m_sunSolidAngle) {
                     color += m_sunColor;
                 } else if (m_enableSunFalloffHack) {
-                    /// \todo: disabled temporarily to implement direct lighting
                     
+                    /*
                     real f = 1.0 - (gamma-m_sunSolidAngle) / (m_sunFalloffHackMaxSolidAngle - m_sunSolidAngle);
+                    if (f > 0.0 && f < 1.0) {
+                        const real i = f * picogen::constants::pi * 0.5;//1.0 / exp (pow (m_sunFalloffHackMaxSolidAngle * (gamma-m_sunSolidAngle), 2.0));
+                        color += m_sunColor * i;
+                    }
+                    */
+                    
+                    real f = gamma-m_sunSolidAngle;
+                    const real i_ = (1/exp(m_falloffHackFactor [0] * f))+m_falloffHackFactor [1]*(1/exp(m_falloffHackFactor [2]*f));
+                    const real i = i_ < 0.0 ? 0.0 : i_ > 1.0 ? 1.0 : i_;
+                    color += m_sunColor * i;
                     
                     /*real f = 1.0 - (gamma-m_sunSolidAngle) / ( (m_sunSolidAngle+0.5)-m_sunSolidAngle);
                     //real f = 1.0 - ( gamma-alpha );// / (180.0*constants::pi);
                     */
-                    if (f > 0.0 && f < 1.0) {
-                        color += m_sunColor * pow (f, m_falloffHackExponent);//+10*ray.w() [1]);
-                    }
+                    /*if (f > 0.0 && f < 1.0) {
+                        //color += m_sunColor * pow (f, m_falloffHackExponent);//+10*ray.w() [1]);
+                        const real i = 1.0 / exp ( pow (f*0.33, 2.0));
+                        color += m_sunColor * i;
+                    }*/
+                    //const real i = 1.0 / exp (pow (m_sunFalloffHackMaxSolidAngle * (gamma-m_sunSolidAngle), 2.0));
+                    //color += m_sunColor * i;
                 }
             }
 
@@ -335,8 +356,8 @@ namespace picogen {
                 Vector3d u,v;
                 orthnormalbasis_from_normal (u,v,n);
                 const Vector3d R (
-                    r*sqrt (e1) *cos (2.0*pi*e2),
-                    r*sqrt (e1) *sin (2.0*pi*e2),
+                    r*sqrt (e1) *cos (2.0*picogen::constants::pi*e2),
+                    r*sqrt (e1) *sin (2.0*picogen::constants::pi*e2),
                     0.0
                 );
                 ray.w() = Vector3d (
@@ -347,10 +368,10 @@ namespace picogen {
                 ray.x() = position;
                 p = 1.0;
 
-                color = m_sunColor * (m_sunSolidAngle/ (4.0*pi));
+                color = m_sunColor * (m_sunSolidAngle/ (4.0*picogen::constants::pi));
                 /*
                 //> simple, directional sampler
-                color = m_sunColor * (m_sunSolidAngle/(4.0*pi));
+                color = m_sunColor * (m_sunSolidAngle/(4.0*picogen::constants::pi));
                 ray.w() = m_sunDirection;
                 ray.x() = position;
                 p = 1.0;
@@ -360,7 +381,7 @@ namespace picogen {
 
 
             real Preetham::getSunArealFactor () const {
-                return (m_sunSolidAngle/ (4.0*pi));
+                return (m_sunSolidAngle/ (4.0*picogen::constants::pi));
             }
 
 
@@ -370,7 +391,8 @@ namespace picogen {
                     Color sky_color;
                     shade (sky_color, ray);
                     const real distance_ = distance>m_fogHackSatDist?m_fogHackSatDist:distance;
-                    const real d = 1.0 / (1+m_fogHackFactor*distance_); // 0.00082 was a cool value for '2097'
+                    //const real d = 1.0 / (1+m_fogHackFactor*distance_); // 0.00082 was a cool value for '2097'
+                    const real d = 1.0 / exp (pow (m_fogHackFactor*distance_, 2));
                     color = src_color*d + sky_color* (1-d);
                 } else {
                     color = src_color;
