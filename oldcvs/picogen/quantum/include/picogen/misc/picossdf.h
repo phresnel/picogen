@@ -59,6 +59,7 @@ class SSDFBackend {
         //virtual int preethamEnableFogHack (::picogen::real exponent, ::picogen::real maxDist) = 0;
         virtual int preethamSetFogExp (::picogen::real exp) = 0;
         virtual int preethamSetFogMaxDist (::picogen::real dist) = 0;
+        virtual int preethamSetSunFalloffParameters (bool enable, ::picogen::real a, ::picogen::real b, ::picogen::real c) = 0;
 
         virtual int cameraSetPositionYawPitchRoll (
             const ::picogen::geometrics::Vector3d &position,
