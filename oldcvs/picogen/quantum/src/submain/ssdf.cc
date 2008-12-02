@@ -361,6 +361,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             fogExp = 0.0;
             fogMaxDist = 100000000.0;
             preetham.enableFogHack (false, fogExp, fogMaxDist);
+            preetham.enableSunFalloffHack (false);
             enablePreethamSky = true;
 #ifndef PICOGEN_RELEASE
             //std::cout << "initialising cloudAdapter..." << std::endl;
@@ -540,6 +541,14 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         virtual int preethamSetFogMaxDist (real dist) {
             fogMaxDist = dist;
+            return 0;
+        }
+        
+        virtual int preethamSetSunFalloffParameters (bool enable, ::picogen::real a, ::picogen::real b, ::picogen::real c) {
+            preetham.enableSunFalloffHack (enable);
+            if (enable) {
+                preetham.setSunFalloffHackParameters (a, b, c);
+            }
             return 0;
         }
 
