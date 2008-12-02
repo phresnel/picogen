@@ -121,12 +121,13 @@ namespace {
                         shaders [0]->shade (color, normal, position);
                     }
                     const real f_ = (*hs) (position [0]*sx, position [2]*sz, position [1]*sy, normal [0], normal [2], normal [1]) * numShaders;
+                    #warning something is wrong with the following line (lookup definition of floor)
                     const int a = floor <int> (f_);
                     if (a<0) {
                         shaders [0]->shade (color, normal, position);
                         return;
                     }
-                    if (a>=shaders.size()-1) {
+                    if (a>=static_cast<int> (shaders.size())-1) {
                         shaders [shaders.size()-1]->shade (color, normal, position);
                         return;
                     }
@@ -765,6 +766,18 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                     Color color;
                     color.from_rgb (col_vec [0], col_vec [1], col_vec [2] );
                     backend->preethamSetSunColor (color);
+                } else if ((*parameters.begin()).first == string ("sun-falloff-parameters")) {
+                    unsigned int numScalars;
+                    Vector3d col_vec = scanVector3d ((*parameters.begin()).second, numScalars);
+                    if (numScalars >= 3) {
+                        errreason = string ("too many values for parameter 'sun-falloff-parameters'");
+                        return SYNTAX_ERROR;
+                    }
+                    if (numScalars < 2) {
+                        errreason = string ("not enough values for parameter 'sun-falloff-parameters'");
+                        return SYNTAX_ERROR;
+                    }                    
+                    backend->preethamSetSunFalloffParameters (true, col_vec [0], col_vec [1], col_vec [2]);
                 } else {
                     errreason = string ("unknown parameter to sunsky: '") + string ((*parameters.begin()).first) + string ("'");
                     return SYNTAX_ERROR;
