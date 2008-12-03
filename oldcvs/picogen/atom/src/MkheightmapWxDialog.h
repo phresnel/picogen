@@ -50,11 +50,15 @@ private:
         float sunRGB [3], float sunDir [3]
     ) const ;
 
+    std::string generateSceneTempFile (bool withPreviewSettings) const;
+
 protected:
 	// Handlers for MkheightmapWxDialogGui events.
 	void OnExecute( wxCommandEvent& event );
 	void OnClose( wxCommandEvent& event );
+	void OnRender ( wxCommandEvent& event );
 	void OnAutoformat( wxCommandEvent& event );
+	void OnOpenSaveFile( wxCommandEvent& event );
 	void OnQuickPreview( wxCommandEvent& event );
 	void OnShowHemisphere( wxCommandEvent& event );
 	void OnFast1MakeChoice ( wxCommandEvent& event );
