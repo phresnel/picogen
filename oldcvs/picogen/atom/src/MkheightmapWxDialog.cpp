@@ -516,7 +516,7 @@ void MkheightmapWxDialog::ObtainSunSkyParams (
     atmoRGB [2] = static_cast <float> (atmosphereB->GetValue ()) * atmoIntensity * 0.01f;
     
     // Fog.
-    fogDensity  = static_cast <float> (this->fogDensity->GetValue ()) * 0.00001; // / 10k
+    fogDensity  = static_cast <float> (this->fogDensity->GetValue ()) * 0.0000001; // / 10k
     fogMaxRange = static_cast <float> (this->fogMaxRange->GetValue ());
     
     // Turbidity.
@@ -616,111 +616,177 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event )
     }
 }
 
+std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings) const 
+{
+    #ifdef __LINUX__ 
+    const std::string tmpfilename = "/tmp/picogen-tempfile.ssdf";
+    #else
+    #error Meh.    
+    #endif
+
+    using namespace std;
+    ofstream tmpfile;    
+    tmpfile.open (tmpfilename.c_str());
+    tmpfile << "// auto generated picogen scene file for quick-preview\n";
+    
+    // brdf for the water
+    tmpfile << "list {\n";
+        
+    tmpfile << "    brdf = specular_distorted-height(\n";
+    tmpfile << "        reflectance:0.8; \n";
+    tmpfile << "        code:  ( + 1 ( * 1.0 ( * (  [2 LayeredNoise frequency(0.05) persistence(0.55) levelEvaluationFunction(x) layercount(6) filter(cosine) seed(321) ] x (*y 5.0) ) ( * 1.0 (  [2 LayeredNoise frequency(0.005) persistence(0.55) levelEvaluationFunction(x) layercount(6) filter(cosine) seed(132) ] x y ) ) ) ) ) ) \n";
+    
+    tmpfile << "    // the water\n";
+    tmpfile << "    hs-heightfield (\n";
+    tmpfile << "        code: 1;\n";
+    tmpfile << "        size:130000,0.5,130000;\n";
+    tmpfile << "        material: hs( {const-rgb(1.0,1.0,1.0)},( * 0.0 (abs(   [2 LayeredNoise frequency(64) layercount(6) persistence(0.5) filter(cosine)] xy ) ) ) ) ;\n";
+    tmpfile << "        center:0,-1600,0;\n";
+    tmpfile << "        resolution:8\n";
+    tmpfile << "    )\n";
+    
+    
+    tmpfile << "    // the actual height-field\n";
+    tmpfile << "    brdf = lambertian(reflectance:0.9)   \n";
+    tmpfile << "    hs-heightfield (        \n";
+    tmpfile << "        material: hs( { const-rgb(0.3,0.8,0.2), const-rgb(1.0,1.0,1.0) }, ( + 0  ( * 1.0 (abs(   [2 LayeredNoise  frequency(40) layercount(12) persistence(0.7)  filter(cosine)]xy) ) ) ) ) ;                \n";
+    tmpfile << "        code:  ";
+    //tmpfile << "            ( ^ (   [2 LayeredNoise frequency(4) persistence(0.55) levelEvaluationFunction(x) layercount(12) filter(cosine) seed(55) ] x y ) 1 )\n";
+    //tmpfile << "            ;\n";
+    tmpfile << scintilla->GetText().mb_str();
+    tmpfile << ";\n";
+    //tmpfile << "        resolution: 256; \n";
+    tmpfile << "        resolution: " << (1<<(1+heightmapSize->GetSelection())) << "; \n";
+    tmpfile << "        center:     0, -1400, 0; \n";
+    tmpfile << "        size:       20000, 1500, 20000 \n";
+    tmpfile << "    )\n";
+        
+    tmpfile << "}\n";
+    
+    // Camera.
+    switch (cameraType->GetSelection ()) {
+        case 0: {
+            float yaw, pitch, roll, x, y, z;                
+            GetYprOrientation (yaw, pitch, roll);
+            GetYprPosition (x, y, z);
+            tmpfile << "camera-yaw-pitch-roll("
+                << "position: " << x << ',' << y << ',' << z << ";"
+                << "yaw:" << yaw << "; "
+                << "pitch:" << pitch << "; "
+                << "roll:" << roll << ")\n "
+            ;
+            break;
+        }
+    };  
+
+
+    // Sunsky.
+    {
+        float atmoRGB [3]; 
+        float fogDensity; float fogMaxRange;
+        float turbidity;
+        float sunDiskSize;
+        bool falloffEnable; float falloffParameters [3]; 
+        float sunRGB [3]; float sunDir [3];
+        ObtainSunSkyParams (
+            atmoRGB,
+            fogDensity, fogMaxRange,
+            turbidity,
+            sunDiskSize,
+            falloffEnable, falloffParameters, 
+            sunRGB, sunDir
+        );
+        tmpfile << "sunsky (turbidity:" << turbidity << ")\n";
+        tmpfile << "sunsky (direction: " << sunDir [0] << ',' << sunDir [1] << ',' << sunDir [2] << ")\n";
+        tmpfile << "sunsky (color-filter-rgb: " << atmoRGB [0] << ", " << atmoRGB [1] << ", " << atmoRGB [2] << ")\n";
+        tmpfile << "sunsky (sun-color-rgb: " << sunRGB [0] << ", " << sunRGB [1] << ", " << sunRGB [2] << ")\n";
+        if (fogEnable) {
+            //tmpfile << "sunsky (fog-exponent: 0.00005; fog-max-distance:10000000)\n";
+            tmpfile << "sunsky (fog-exponent: " << fogDensity << "; fog-max-distance:" << fogMaxRange << ")\n";
+        } else {
+            tmpfile << "sunsky (fog-exponent: " << 0.0 << "; fog-max-distance:" << 0.0 << ")\n";
+        }
+        
+        if (falloffEnable) {
+            tmpfile << "sunsky (sun-falloff-parameters: " << falloffParameters [0] << ',' << falloffParameters [1] << ',' << falloffParameters [2] << ")\n";
+        }
+        
+        tmpfile << "sunsky (sun-solid-angle-factor: " << sunDiskSize << ")\n";
+    }
+    
+    tmpfile.close();
+    
+    return tmpfilename;
+}
 
 void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event )
 {
     //const wxString tmpfilename (_("/tmp/picogen-quick-preview.ssdf"));
     
+    const std::string tmpfilename = generateSceneTempFile (true);
     {
-        using namespace std;
-        ofstream tmpfile;    
-        tmpfile.open ("/tmp/picogen-quick-preview.ssdf");
-        tmpfile << "// auto generated picogen scene file for quick-preview\n";
-        
-        // brdf for the water
-        tmpfile << "list {\n";
-            
-        tmpfile << "    brdf = specular_distorted-height(\n";
-        tmpfile << "        reflectance:0.8; \n";
-        tmpfile << "        code:  ( + 1 ( * 1.0 ( * (  [2 LayeredNoise frequency(0.05) persistence(0.55) levelEvaluationFunction(x) layercount(6) filter(cosine) seed(321) ] x (*y 5.0) ) ( * 1.0 (  [2 LayeredNoise frequency(0.005) persistence(0.55) levelEvaluationFunction(x) layercount(6) filter(cosine) seed(132) ] x y ) ) ) ) ) ) \n";
-        
-        tmpfile << "    // the water\n";
-        tmpfile << "    hs-heightfield (\n";
-        tmpfile << "        code: 1;\n";
-        tmpfile << "        size:130000,0.5,130000;\n";
-        tmpfile << "        material: hs( {const-rgb(1.0,1.0,1.0)},( * 0.0 (abs(   [2 LayeredNoise frequency(64) layercount(6) persistence(0.5) filter(cosine)] xy ) ) ) ) ;\n";
-        tmpfile << "        center:0,-1600,0;\n";
-        tmpfile << "        resolution:8\n";
-        tmpfile << "    )\n";
-        
-        
-        tmpfile << "    // the actual height-field\n";
-        tmpfile << "    brdf = lambertian(reflectance:0.9)   \n";
-        tmpfile << "    hs-heightfield (        \n";
-        tmpfile << "        material: hs( { const-rgb(0.3,0.8,0.2), const-rgb(1.0,1.0,1.0) }, ( + 0  ( * 1.0 (abs(   [2 LayeredNoise  frequency(40) layercount(12) persistence(0.7)  filter(cosine)]xy) ) ) ) ) ;                \n";
-        tmpfile << "        code:  ";
-        //tmpfile << "            ( ^ (   [2 LayeredNoise frequency(4) persistence(0.55) levelEvaluationFunction(x) layercount(12) filter(cosine) seed(55) ] x y ) 1 )\n";
-        //tmpfile << "            ;\n";
-        tmpfile << scintilla->GetText().mb_str();
-        tmpfile << ";\n";
-        //tmpfile << "        resolution: 256; \n";
-        tmpfile << "        resolution: " << (1<<(1+heightmapSize->GetSelection())) << "; \n";
-        tmpfile << "        center:     0, -1400, 0; \n";
-        tmpfile << "        size:       20000, 1500, 20000 \n";
-        tmpfile << "    )\n";
-            
-        tmpfile << "}\n";
-        
-        // Camera.
-        switch (cameraType->GetSelection ()) {
-            case 0: {
-                float yaw, pitch, roll, x, y, z;                
-                GetYprOrientation (yaw, pitch, roll);
-                GetYprPosition (x, y, z);
-                tmpfile << "camera-yaw-pitch-roll("
-                    << "position: " << x << ',' << y << ',' << z << ";"
-                    << "yaw:" << yaw << "; "
-                    << "pitch:" << pitch << "; "
-                    << "roll:" << roll << ")\n "
-                ;
-                break;
-            }
-        };  
 
-
-        // Sunsky.
+        wxString x_usrbin = wxString (_("picogen ssdf -f ")) + wxString (tmpfilename.c_str(), wxConvUTF8) + wxString(_(" ")) 
+            + wxString(_(" -s ws "))
+            + wxString(_(" -w 640 "))
+            + wxString(_(" -h 480 "))
+            //+ wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing            
+        ;
+        wxMessageDialog (this, x_usrbin);
+        wxString x_currentfolder = wxString (_("./") + x_usrbin);
+        
+        // try picogen in current folder
         {
-            float atmoRGB [3]; 
-            float fogDensity; float fogMaxRange;
-            float turbidity;
-            float sunDiskSize;
-            bool falloffEnable; float falloffParameters [3]; 
-            float sunRGB [3]; float sunDir [3];
-            ObtainSunSkyParams (
-                atmoRGB,
-                fogDensity, fogMaxRange,
-                turbidity,
-                sunDiskSize,
-                falloffEnable, falloffParameters, 
-                sunRGB, sunDir
-            );
-            tmpfile << "sunsky (turbidity:" << turbidity << ")\n";
-            tmpfile << "sunsky (direction: " << sunDir [0] << ',' << sunDir [1] << ',' << sunDir [2] << ")\n";
-            tmpfile << "sunsky (color-filter-rgb: " << atmoRGB [0] << ", " << atmoRGB [1] << ", " << atmoRGB [2] << ")\n";
-            tmpfile << "sunsky (sun-color-rgb: " << sunRGB [0] << ", " << sunRGB [1] << ", " << sunRGB [2] << ")\n";
-            if (fogEnable) {
-                //tmpfile << "sunsky (fog-exponent: 0.00005; fog-max-distance:10000000)\n";
-                tmpfile << "sunsky (fog-exponent: " << fogDensity << "; fog-max-distance:" << fogMaxRange << ")\n";
-            } else {
-                tmpfile << "sunsky (fog-exponent: " << 0.0 << "; fog-max-distance:" << 0.0 << ")\n";
-            }
-            
-            if (falloffEnable) {
-                tmpfile << "sunsky (sun-falloff-parameters: " << falloffParameters [0] << ',' << falloffParameters [1] << ',' << falloffParameters [2] << ")\n";
-            }
-            
-            tmpfile << "sunsky (sun-solid-angle-factor: " << sunDiskSize << ")\n";
+            wxString statusText = x_currentfolder;
+            statusText.Replace (_("\n"), _(" "));    
+            SetStatusText(statusText);
         }
         
-        tmpfile.close();
+        int i;
+        if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
+            // retry picogen in /usr/bin        
+            {
+                wxString statusText = x_usrbin;
+                statusText.Replace (_("\n"), _(" "));    
+                SetStatusText(statusText);
+            }
+            
+            if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
+                wxMessageDialog msg (this, 
+                    wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
+                );
+            } else {            
+            }
+        } else {        
+        }
     }
-    {
+}
 
-        wxString x_usrbin = wxString (_("picogen ssdf -f /tmp/picogen-quick-preview.ssdf ")) 
-            + wxString(_(" -s ws ")) // surface integrator
-            + wxString(_(" -w 640 ")) // surface integrator
-            + wxString(_(" -h 480 ")) // surface integrator
-            //+ wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing            
+
+void MkheightmapWxDialog::OnRender( wxCommandEvent& event )
+{
+    const std::string tmpfilename = generateSceneTempFile (false);
+    {
+        int width=-1, height=-1, aa=2;
+        {
+            std::stringstream ss;
+            ss << renderWidth->GetValue().mb_str() << std::flush;
+            ss >> width;
+        }
+        {
+            std::stringstream ss;
+            ss << renderHeight->GetValue().mb_str() << std::flush;
+            ss >> height;
+        }
+        {
+            std::stringstream ss;
+            ss << renderAA->GetValue() << std::flush;
+            ss >> aa;
+        }
+
+        wxString x_usrbin = wxString (_("picogen ssdf -f ")) + wxString (tmpfilename.c_str(), wxConvUTF8) + wxString(_(" ")) 
+            + ((renderSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
+            + wxString::Format (_(" -w %d -h %d -a %d "), width, height, aa)
         ;
         wxMessageDialog (this, x_usrbin);
         wxString x_currentfolder = wxString (_("./") + x_usrbin);
@@ -792,6 +858,22 @@ void MkheightmapWxDialog::GetYprOrientation (float &yaw, float &pitch, float &ro
 void MkheightmapWxDialog::OnClose( wxCommandEvent& event )
 {
     wxTheApp->Exit();
+}
+
+void MkheightmapWxDialog::OnOpenSaveFile( wxCommandEvent& event )
+{
+    wxFileDialog openFileDialog (
+        this, _("Open file"), _(""), _(""), _("All Files|*.*|BMP files (*.bmp)|*.bmp"),
+    #if wxCHECK_VERSION(2, 8, 0)
+        wxFD_OVERWRITE_PROMPT | wxFD_SAVE | wxFD_CHANGE_DIR,
+    #else
+		wxOVERWRITE_PROMPT | wxSAVE | wxCHANGE_DIR,
+    #endif
+        wxDefaultPosition
+    );
+    if (openFileDialog.ShowModal() == wxID_OK) {
+        renditionFilename->SetValue (openFileDialog.GetPath());
+    }
 }
 
 void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event )
