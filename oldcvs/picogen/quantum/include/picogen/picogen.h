@@ -37,16 +37,21 @@
 
 
 
-
-#include <math.h>
-#include <float.h>
+// Std.
+#include <cmath>
+#include <cfloat>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <list>
+#include <vector>
 
 // #define NDEBUG
 #include <cassert>
+
+
+// Boost.
+#include <boost/intrusive_ptr.hpp>
 
 
 
@@ -151,7 +156,19 @@ namespace picogen {
         static const real real_min = FLT_MIN;
         static const real pi = 3.14159265f;
         static const real e = 2.71828182845904523536;
-    };
+    }
+    
+    namespace math {
+        template <typename RT, typename T> RT floor (const T &v) {
+            assert (static_cast<int>(1.75) == 1);
+            assert (static_cast<int>(1.5) == 1);
+            assert (static_cast<int>(1.25) == 1);
+            assert (static_cast<int>(-0.75) == 0);
+            assert (static_cast<int>(-0.5) == 0);
+            assert (static_cast<int>(-0.25) == 0);
+            return static_cast <RT> (static_cast <int> (v<0 ? v-1 : v));
+        }
+    }
 } // namespace picogen {
 
 
@@ -216,10 +233,14 @@ namespace picogen {
 #include <picogen/misc/functions.h> // << obsolete, take "functional.h"
 #include <picogen/misc/functional.h>
 
+// TODO : inline the following header files (like with shaders/* below)
 #include <picogen/graphics/cameras.h>
 #include <picogen/graphics/film.h>
 #include <picogen/graphics/objects.h>
 #include <picogen/graphics/integrators.h>
+
+#include <picogen/graphics/shaders/ConstantShader.h>
+#include <picogen/graphics/shaders/HSShader.h>
 
 #include <picogen/common.h>
 
