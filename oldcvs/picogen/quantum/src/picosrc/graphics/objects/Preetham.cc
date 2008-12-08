@@ -392,7 +392,7 @@ namespace picogen {
                     shade (sky_color, ray);
                     const real distance_ = distance>m_fogHackSatDist?m_fogHackSatDist:distance;
                     //const real d = 1.0 / (1+m_fogHackFactor*distance_); // 0.00082 was a cool value for '2097'
-                    const real d = 1.0 / exp (pow (m_fogHackFactor*distance_, 2));
+                    const real d = 1.0 / exp (pow (m_fogHackFactor*distance_, 1));
                     color = src_color*d + sky_color* (1-d);
                 } else {
                     color = src_color;
