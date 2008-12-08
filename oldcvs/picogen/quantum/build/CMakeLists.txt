@@ -21,8 +21,10 @@ add_definitions (-DPICOGEN_RELEASE -DNDEBUG)
 set (OPTIMIZER_FLAGS )
 macro (add_oflag flag)
     add_definitions (${flag})
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
 endmacro (add_oflag)
 
+message ("old CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 if (MSVC)
     #message ("using msvc for compilation")
 else (MSVC)
@@ -46,6 +48,7 @@ else (MSVC)
     add_oflag   ( -ffinite-math-only )
     add_oflag   ( -fdata-sections )    
 endif (MSVC)
+message ("new CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 #########################################################################################
 
 
@@ -61,7 +64,8 @@ endif (MSVC)
 #message ("boost-regex-lib: ${BOOST_REGEX_LIBRARY}")
 #link_libraries (${BOOST_REGEX_LIBRARY})
 
-find_library (boost_regex_lib libboost_regex.a ../lib/)
+find_library (boost_regex_lib libboost_regex ../lib/)
+message ("boost-regex_lib: ${boost_regex_lib}")
 link_libraries(${boost_regex_lib})
 #########################################################################################
 
@@ -92,6 +96,11 @@ set (FILES )
 macro (add_cxx_file filename)
     set (FILES ${FILES} ${CXX_SOURCEFILE_FOLDER}/${filename})
 endmacro (add_cxx_file)
+
+
+include_directories (BEFORE 
+        /usr/include/boost.static/boost-1_37/
+)
 
 add_cxx_file (main.cc)
 add_cxx_file (experimental/Rain.cc)
@@ -126,6 +135,9 @@ add_cxx_file (picosrc/graphics/objects/SimpleHeightField.cc)
 add_cxx_file (picosrc/graphics/objects/Sphere.cc)
 add_cxx_file (picosrc/graphics/objects/TriBIH.cc)
 add_cxx_file (picosrc/graphics/objects/ZBNCubemap.cc)
+
+add_cxx_file (picosrc/graphics/shaders/HSShader.cc)
+add_cxx_file (picosrc/graphics/shaders/ConstantShader.cc)
 
 add_cxx_file (picosrc/misc/functional.cc)
 add_cxx_file (picosrc/misc/functional/LayeredNoise2d.cc)
