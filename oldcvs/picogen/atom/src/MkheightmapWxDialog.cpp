@@ -24,19 +24,6 @@
  
 #include "MkheightmapWxDialog.h"
 
-#include <iostream>
-
-#define wxUSE_ABOUTDLG 1
-//#include <wx/aboutdlg.h>
-//#include <wx/generic/aboutdlgg.h>
-
-#include <foreign/SciLexer.h>
-
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
-
 namespace {
     const wxString hsKeywords [] = {
         wxString(_("<"))
@@ -111,6 +98,13 @@ MkheightmapWxDialogGui( parent )
                     persistence((* 0.4 (-1 (abs x))))\n\
                  ] x y))) \n\
             3))")));
+}
+
+void MkheightmapWxDialog::OnSave (wxCommandEvent& event)
+{
+    std::ofstream ofs("raboof");
+    boost::archive::xml_oarchive oa(ofs);
+    oa << boost::serialization::make_nvp ("picogen-wx-scene-def", *this);
 }
 
 void MkheightmapWxDialog::UpdateTextWithTemplate (const wxString &tpl)
@@ -636,20 +630,20 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     tmpfile << "        reflectance:0.8; \n";
     tmpfile << "        code:  ( + 1 ( * 1.0 ( * (  [2 LayeredNoise frequency(0.05) persistence(0.55) levelEvaluationFunction(x) layercount(6) filter(cosine) seed(321) ] x (*y 5.0) ) ( * 1.0 (  [2 LayeredNoise frequency(0.005) persistence(0.55) levelEvaluationFunction(x) layercount(6) filter(cosine) seed(132) ] x y ) ) ) ) ) ) \n";
     
-    tmpfile << "    // the water\n";
+    /*tmpfile << "    // the water\n";
     tmpfile << "    hs-heightfield (\n";
     tmpfile << "        code: 1;\n";
     tmpfile << "        size:130000,0.5,130000;\n";
     tmpfile << "        material: hs( {const-rgb(1.0,1.0,1.0)},( * 0.0 (abs(   [2 LayeredNoise frequency(64) layercount(6) persistence(0.5) filter(cosine)] xy ) ) ) ) ;\n";
     tmpfile << "        center:0,-1600,0;\n";
     tmpfile << "        resolution:8\n";
-    tmpfile << "    )\n";
-    
+    tmpfile << "    )\n";*/    
     
     tmpfile << "    // the actual height-field\n";
     tmpfile << "    brdf = lambertian(reflectance:0.9)   \n";
     tmpfile << "    hs-heightfield (        \n";
-    tmpfile << "        material: hs( { const-rgb(0.3,0.8,0.2), const-rgb(1.0,1.0,1.0) }, ( + 0  ( * 1.0 (abs(   [2 LayeredNoise  frequency(40) layercount(12) persistence(0.7)  filter(cosine)]xy) ) ) ) ) ;                \n";
+    //tmpfile << "        material: hs( { const-rgb(0.3,0.8,0.2), const-rgb(1.0,1.0,1.0) }, ( + 0  ( * 1.0 (abs(   [2 LayeredNoise  frequency(40) layercount(12) persistence(0.7)  filter(cosine)]xy) ) ) ) ) ;                \n";
+    tmpfile << "        material: const-rgb (1,1,1);\n";
     tmpfile << "        code:  ";
     //tmpfile << "            ( ^ (   [2 LayeredNoise frequency(4) persistence(0.55) levelEvaluationFunction(x) layercount(12) filter(cosine) seed(55) ] x y ) 1 )\n";
     //tmpfile << "            ;\n";
@@ -658,7 +652,19 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     //tmpfile << "        resolution: 256; \n";
     tmpfile << "        resolution: " << (1<<(1+heightmapSize->GetSelection())) << "; \n";
     tmpfile << "        center:     0, -1400, 0; \n";
-    tmpfile << "        size:       20000, 1500, 20000 \n";
+    
+    float width, height;
+    {
+            std::stringstream ss;
+            ss << terrainDimWidth->GetValue().mb_str() << std::flush;
+            ss >> width;
+    }
+    {
+        std::stringstream ss;
+        ss << terrainDimHeight->GetValue().mb_str() << std::flush;
+        ss >> height;
+    }
+    tmpfile << "        size: " << width << ',' << height << ',' << width << "\n";
     tmpfile << "    )\n";
         
     tmpfile << "}\n";
@@ -857,6 +863,7 @@ void MkheightmapWxDialog::GetYprOrientation (float &yaw, float &pitch, float &ro
 
 void MkheightmapWxDialog::OnClose( wxCommandEvent& event )
 {
+    
     wxTheApp->Exit();
 }
 
@@ -898,4 +905,84 @@ void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event )
     wxGenericAboutBox (info);*/
     MyAboutDlg about (this);
     about.ShowModal();
+}
+
+
+void MkheightmapWxDialog::save (boost::archive::xml_oarchive & ar, const unsigned int /* file_version */) const {
+    using namespace boost::serialization;
+    
+    // Terrain.
+    {
+        std::string terrain_code = std::string (scintilla->GetText().mb_str());
+        float terrain_width, terrain_height;
+        {
+                std::stringstream ss;
+                ss << terrainDimWidth->GetValue().mb_str() << std::flush;
+                ss >> terrain_width;
+        }
+        {
+            std::stringstream ss;
+            ss << terrainDimHeight->GetValue().mb_str() << std::flush;
+            ss >> terrain_height;
+        }
+        
+        ar  & make_nvp("terrain", terrain_code);
+        ar  & make_nvp("terrain-width", terrain_width);
+        ar  & make_nvp("terrain-height", terrain_height);
+        //ar  & make_nvp("terrain-resolution", heightmapSize->GetSelection()); // TODO: shalt be saved as integer
+    }
+    
+    // Sun-/Sky
+    {
+        float atmoRGB [3]; 
+        float fogDensity; float fogMaxRange;
+        float turbidity;
+        float sunDiskSize;
+        bool falloffEnable; float falloffParameters [3]; 
+        float sunRGB [3]; float sunDir [3];
+        ObtainSunSkyParams (
+            atmoRGB,
+            fogDensity, fogMaxRange,
+            turbidity,
+            sunDiskSize,
+            falloffEnable, falloffParameters, 
+            sunRGB, sunDir
+        );
+        
+        ar  & make_nvp("sunsky-atmosphere-color-filter-r", atmoRGB [0]);
+        ar  & make_nvp("sunsky-atmosphere-color-filter-g", atmoRGB [1]);
+        ar  & make_nvp("sunsky-atmosphere-color-filter-b", atmoRGB [2]);
+        ar  & make_nvp("sunsky-fog-density", fogDensity);
+        ar  & make_nvp("sunsky-fog-max-range", fogMaxRange);
+        ar  & make_nvp("sunsky-turbidity", turbidity);
+        ar  & make_nvp("sunsky-sundisk-size", sunDiskSize);
+        ar  & make_nvp("sunsky-falloff-enable", falloffEnable);
+        ar  & make_nvp("sunsky-falloff-parameters-0", falloffParameters [0]);
+        ar  & make_nvp("sunsky-falloff-parameters-1", falloffParameters [1]);
+        ar  & make_nvp("sunsky-falloff-parameters-2", falloffParameters [2]);
+        ar  & make_nvp("sunsky-sun-color-r", sunRGB [0]);
+        ar  & make_nvp("sunsky-sun-color-g", sunRGB [1]);
+        ar  & make_nvp("sunsky-sun-color-b", sunRGB [2]);
+        ar  & make_nvp("sunsky-sun-direction-x", sunDir [0]);
+        ar  & make_nvp("sunsky-sun-direction-y", sunDir [1]);
+        ar  & make_nvp("sunsky-sun-direction-z", sunDir [2]);
+    }
+    
+    // Camera.
+    {
+        float yaw, pitch, roll, x, y, z;
+        GetYprOrientation (yaw, pitch, roll);
+        GetYprPosition (x, y, z);
+        
+        ar  & make_nvp("camera-ypr-x", x);
+        ar  & make_nvp("camera-ypr-y", y);
+        ar  & make_nvp("camera-ypr-z", z);
+        ar  & make_nvp("camera-ypr-yaw", yaw);
+        ar  & make_nvp("camera-ypr-pitch", pitch);
+        ar  & make_nvp("camera-ypr-roll", roll);
+    }
+}
+    
+void MkheightmapWxDialog::load (boost::archive::xml_iarchive & ar, const unsigned int file_version){
+    using namespace boost::serialization;
 }
