@@ -171,7 +171,7 @@ namespace picogen {
                     assert (static_cast<int>(-0.75) == 0);
                     assert (static_cast<int>(-0.5) == 0);
                     assert (static_cast<int>(-0.25) == 0);
-                    return (RT)(int)(v<0 ? v-1 : v);
+                    return static_cast <RT> (static_cast <int> (v<0 ? v-1 : v));
                 }
             }
 
