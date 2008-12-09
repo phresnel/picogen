@@ -267,6 +267,98 @@ template <typename T> int showPreviewWindow (T &heightmap, real waterLevel) {
 
 
 
+void drawShader (
+    SDL_Surface *p_target, 
+    const ::picogen::graphics::material::abstract::IShader & shader, 
+    const picogen::misc::functional::Function_R2_R1 & h
+) {
+    
+    using picogen::graphics::color::Color;
+    using picogen::geometrics::Vector3d;
+    
+    if (SDL_MUSTLOCK (p_target) && SDL_LockSurface (p_target) <0)
+            return;
+
+    int x,y;
+    for (y=0; y<p_target->h; y++) {
+        
+        /// \todo FIX we are currently assuming a 32bit SDL buffer
+        /// \todo get rid of pointer arithmetic
+
+        Uint32 *bufp   = (Uint32*) p_target->pixels + y* (p_target->pitch>>2);
+        const real fy = 1.0 - static_cast <real> (y) / static_cast <real> (p_target->h);
+
+        for (x=0; x<p_target->w; x++) {
+
+            const real fx = static_cast <real> (x) / static_cast <real> (p_target->w);
+
+            real r, g, b;            
+            Color color;
+            Vector3d normal (0.0, 1.0, 0.0); // Not like that!
+            Vector3d position (fx, h (fx, fy), fy);
+            shader.shade (color, normal, position);
+            
+            color.saturate (Color(0,0,0), Color(1,1,1)).to_rgb (r,g,b);
+
+            * (bufp++) =
+                SDL_MapRGB (p_target->format,
+                            (unsigned char) (255.0*r),
+                            (unsigned char) (255.0*g),
+                            (unsigned char) (255.0*b)
+                           );
+        }
+    }
+
+
+    if (SDL_MUSTLOCK (p_target))
+        SDL_UnlockSurface (p_target);
+    SDL_Flip (p_target);
+}
+
+
+
+int showShaderPreviewWindow (
+    const ::picogen::graphics::material::abstract::IShader & shader, 
+    const picogen::misc::functional::Function_R2_R1 & h, 
+    const int width, const int height
+) {
+    using namespace std;
+
+    if (SDL_Init (SDL_INIT_VIDEO) < 0) {
+        cerr << "Unable to init SDL for preview: " << SDL_GetError() << endl;
+        return -1;
+    }
+    atexit (SDL_Quit);
+    SDL_Surface *screen = SDL_SetVideoMode (width, height, 32, SDL_HWSURFACE);
+    if (0 == screen) {
+        cerr << "Unable to set video-mode for preview: " << SDL_GetError() << endl;
+        return -1;
+    }
+
+    // dump the heightmap onto the screen
+    drawShader (screen, shader, h);
+
+    bool done = false;
+    while (!done) {
+        SDL_Event event;
+        while (SDL_PollEvent (&event)) {
+            if (event.type == SDL_QUIT) {
+                done = true;
+            } else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    done = true;
+                }
+            }
+        }
+    }
+
+    SDL_FreeSurface (screen);
+    SDL_Quit();
+    return 0;
+}
+
+
+
 template <typename T> std::string exportText (T &heightmap, const std::string &outputFilename, bool forceOverwrite) {
     using namespace std;
 
@@ -377,6 +469,11 @@ int main (int argc, char *argv[]) {
 #else
 int main_mkheightmap (int argc, char *argv[]) {
 #endif
+    using ::picogen::real;
+    using ::picogen::geometrics::Vector3d;
+    using ::picogen::geometrics::Ray;
+    using ::picogen::geometrics::BoundingBox;
+    
     --argc;
     ++argv;
 
@@ -394,7 +491,7 @@ int main_mkheightmap (int argc, char *argv[]) {
         Lingua_inlisp,
         Lingua_unknown
     } Lingua;
-    std::string code("");
+    std::string code(""), shader_code ("");
     Lingua lingua = Lingua_unknown;
     bool showPreview = false;
     unsigned int width=512, height=512;
@@ -439,6 +536,15 @@ int main_mkheightmap (int argc, char *argv[]) {
                     return -1;
                 }
                 code = string (argv[0]);
+                argc--;
+                argv++;
+            } else if (option == "-s" || option == "--shader") {
+                if (argc<=0) {
+                    cerr << "error: no argument given to option: " << option << endl;
+                    printUsage();
+                    return -1;
+                }
+                shader_code = string (argv[0]);
                 argc--;
                 argv++;
             } else if (option == "-En" || option == "--ExportName") {
@@ -632,47 +738,97 @@ int main_mkheightmap (int argc, char *argv[]) {
             }
         }
 
-        if (lingua == Lingua_unknown) {
+
+       
+        // TODO: hmm, not oo
+        using ::picogen::graphics::material::abstract::IShader;
+        extern IShader *parse_shader (const std::string &code);
+        
+        if (lingua == Lingua_unknown && 0 == shader_code.size()) {
             cerr << "error: unkown language or wrong option used" << endl;
             printUsage();
             return -1;
         }
+        
+        if (0 == shader_code.size()) {
+            if (code.size() == 0) {
+                functional_general_exeption ("you gave me no code");
+            }
+
+            Heightmap<double> heightmap (scaling, width, height);
+            heightmap.fill (Function_R2_R1 (code), antiAliasFactor);
+            if (doNormalize)
+                heightmap.normalize();
+
+            if (doPrintInfo)
+                heightmap.printInfo();
+
+            #define MKHEIGHTMAP_EXPORT(FLAG,EXT,FUN)                                    \
+            if (exportFlags.FLAG) {                                                     \
+                const string outputFilename = exportFileNameBase + string(EXT);         \
+                cerr << "Exporting as text to file '" + outputFilename + "' ...";       \
+                std::string s = FUN (heightmap, outputFilename, forceOverwriteFiles);   \
+                if (s != string("")) {                                                  \
+                    cerr << "\nerror: " << s << endl;                                   \
+                } else {                                                                \
+                    cerr << "okay." << endl;                                            \
+                }                                                                       \
+            }
+
+            MKHEIGHTMAP_EXPORT (text, ".txt", exportText );
+            MKHEIGHTMAP_EXPORT (winBMP, ".bmp", exportWinBMP );
 
 
+            if (showPreview) {
+                return showPreviewWindow (heightmap, waterLevel);
+            }
+        
+        } else {
+                
+            if (code.size() == 0) {
+                code = "0.0";
+            }           
+            
+            /*
+            real accuracy = 10000.0 / static_cast<real>(resolution*resolution);
+            QuadtreeHeightField *heightField = QuadtreeHeightField::create(
+                width, Function_R2_R1 (code), 
+                ::picogen::misc::BoundingBox (
+                    ::picogen::misc::Vecto3d, 
+                    (center+size*0.5)), 
+                    accuracy, 
+                    false
+            );
+            
+            IShader *shader = parse_shader (code);
 
-
-
-        if (code.size() == 0) {
-            functional_general_exeption ("you gave me no code");
-        }
-
-        Heightmap<double> heightmap (scaling, width, height);
-        heightmap.fill (Function_R2_R1 (code), antiAliasFactor);
-        if (doNormalize)
-            heightmap.normalize();
-
-        if (doPrintInfo)
-            heightmap.printInfo();
-
-        #define MKHEIGHTMAP_EXPORT(FLAG,EXT,FUN)                                    \
-        if (exportFlags.FLAG) {                                                     \
-            const string outputFilename = exportFileNameBase + string(EXT);         \
-            cerr << "Exporting as text to file '" + outputFilename + "' ...";       \
-            std::string s = FUN (heightmap, outputFilename, forceOverwriteFiles);   \
-            if (s != string("")) {                                                  \
-                cerr << "\nerror: " << s << endl;                                   \
-            } else {                                                                \
-                cerr << "okay." << endl;                                            \
-            }                                                                       \
-        }
-
-        MKHEIGHTMAP_EXPORT (text, ".txt", exportText );
-        MKHEIGHTMAP_EXPORT (winBMP, ".bmp", exportWinBMP );
-
-
-        if (showPreview) {
-            return showPreviewWindow (heightmap, waterLevel);
-        }
+            if (0 != shader && 0 != heightField) {
+                heightField->setBRDF (currentBRDF);                
+                heightField->setShader (shader);
+            
+                if (showPreview) {
+                    ;//return showShaderPreviewWindow (*shader, width, height);
+                }
+            }
+            
+            if (0 != shader) {
+                delete shader;
+            }
+            if (0 != heightField) {
+                delete heightField;
+            }
+            */
+            
+            IShader *shader = parse_shader (shader_code);
+            int ret = 0;
+            if (0 != shader) {
+                if (showPreview) {
+                    ret = showShaderPreviewWindow (*shader, Function_R2_R1 (code), width, height);
+                }
+            }            
+            delete shader;
+            return ret;
+        }             
 
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
