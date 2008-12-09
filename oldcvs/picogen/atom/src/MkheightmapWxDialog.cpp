@@ -59,45 +59,91 @@ namespace {
         , wxString(_("Layers "))
     };
     const int numHsKeywords = sizeof (hsKeywords) / sizeof (hsKeywords [0]);
+    
+    
+    const wxString shKeywords [] = {
+        wxString(_("const-rgb"))
+        , wxString(_("hs"))
+    };
+    const int numShKeywords = sizeof (shKeywords) / sizeof (shKeywords [0]);
 }
 
 MkheightmapWxDialog::MkheightmapWxDialog( wxWindow* parent )
 :
 MkheightmapWxDialogGui( parent )
 {
-    scintilla->SetFocus();
-    wxFont f ( 9, 76, 90, 90, false, wxT("Monospace") );
-    scintilla->StyleSetFont( wxSCI_STYLE_DEFAULT, f );
+    terrainHeightmap->SetFocus();
     
-    scintilla->SetLexer (wxSCI_LEX_LISP);
-  
-    wxString hskwCat;
-    for (int i=0; i<numHsKeywords; ++i) {
-        hskwCat += hsKeywords [i] + wxString (_(" "));
+    {
+        wxFont f ( 9, 76, 90, 90, false, wxT("Monospace") );
+        terrainHeightmap->StyleSetFont( wxSCI_STYLE_DEFAULT, f );    
+        terrainHeightmap->SetLexer (wxSCI_LEX_LISP);
+      
+        wxString hskwCat;
+        for (int i=0; i<numHsKeywords; ++i) {
+            hskwCat += hsKeywords [i] + wxString (_(" "));
+        }
+        terrainHeightmap->SetKeyWords (0, hskwCat);
+        
+        terrainHeightmap->StyleSetForeground (SCE_LISP_KEYWORD, wxColour (_T("BLUE")));
+        terrainHeightmap->StyleSetForeground (SCE_LISP_OPERATOR, wxColour (255,128,64));
+        terrainHeightmap->StyleSetForeground (SCE_LISP_NUMBER, wxColour (0,128,0));
+        
+        terrainHeightmap->StyleSetForeground (wxSCI_STYLE_BRACELIGHT, wxColour (_T("GREEN")));
+        terrainHeightmap->StyleSetForeground (wxSCI_STYLE_BRACEBAD, wxColour (_T("RED")));
+        
+        terrainHeightmap->StyleSetForeground (wxSCI_STYLE_INDENTGUIDE, wxColour (64,64,64));
+        
+        terrainHeightmap->SetViewWhiteSpace (false);
+        terrainHeightmap->SetTabIndents (false);
+        terrainHeightmap->SetUseTabs (false);
+        
+        terrainHeightmap->SetText(wxString (_("    (-  1 \n\
+            (^  (-  1\n\
+                    (abs ([2 LayeredNoise \n\
+                        frequency(5) \n\
+                        layercount(8) \n\
+                        persistence((* 0.4 (-1 (abs x))))\n\
+                     ] x y))) \n\
+                3))")));            
     }
-    scintilla->SetKeyWords (0, hskwCat);
     
-    scintilla->StyleSetForeground (SCE_LISP_KEYWORD, wxColour (_T("BLUE")));
-    scintilla->StyleSetForeground (SCE_LISP_OPERATOR, wxColour (255,128,64));
-    scintilla->StyleSetForeground (SCE_LISP_NUMBER, wxColour (0,128,0));
-    
-    scintilla->StyleSetForeground (wxSCI_STYLE_BRACELIGHT, wxColour (_T("GREEN")));
-    scintilla->StyleSetForeground (wxSCI_STYLE_BRACEBAD, wxColour (_T("RED")));
-    
-    scintilla->StyleSetForeground (wxSCI_STYLE_INDENTGUIDE, wxColour (64,64,64));
-    
-    scintilla->SetViewWhiteSpace (false);
-    scintilla->SetTabIndents (false);
-    scintilla->SetUseTabs (false);
-    
-    scintilla->SetText(wxString (_("    (-  1 \n\
-        (^  (-  1\n\
-                (abs ([2 LayeredNoise \n\
-                    frequency(5) \n\
-                    layercount(8) \n\
-                    persistence((* 0.4 (-1 (abs x))))\n\
-                 ] x y))) \n\
-            3))")));
+    {
+        wxFont f ( 9, 76, 90, 90, false, wxT("Monospace") );
+        terrainShader->StyleSetFont( wxSCI_STYLE_DEFAULT, f );    
+        terrainShader->SetLexer (wxSCI_LEX_LISP);
+      
+        wxString hskwCat;
+        for (int i=0; i<numHsKeywords; ++i) {
+            hskwCat += hsKeywords [i] + wxString (_(" "));
+        }
+        for (int i=0; i<numShKeywords; ++i) {
+            hskwCat += shKeywords [i] + wxString (_(" "));
+        }
+        terrainShader->SetKeyWords (0, hskwCat);
+        
+        terrainShader->StyleSetForeground (SCE_LISP_KEYWORD, wxColour (_T("BLUE")));
+        terrainShader->StyleSetForeground (SCE_LISP_OPERATOR, wxColour (255,128,64));
+        terrainShader->StyleSetForeground (SCE_LISP_NUMBER, wxColour (0,128,0));
+        
+        terrainShader->StyleSetForeground (wxSCI_STYLE_BRACELIGHT, wxColour (_T("GREEN")));
+        terrainShader->StyleSetForeground (wxSCI_STYLE_BRACEBAD, wxColour (_T("RED")));
+        
+        terrainShader->StyleSetForeground (wxSCI_STYLE_INDENTGUIDE, wxColour (64,64,64));
+        
+        terrainShader->SetViewWhiteSpace (false);
+        terrainShader->SetTabIndents (false);
+        terrainShader->SetUseTabs (false);
+        
+        terrainShader->SetText(wxString (_("    (-  1 \n\
+            (^  (-  1\n\
+                    (abs ([2 LayeredNoise \n\
+                        frequency(5) \n\
+                        layercount(8) \n\
+                        persistence((* 0.4 (-1 (abs x))))\n\
+                     ] x y))) \n\
+                3))")));            
+    }
 }
 
 void MkheightmapWxDialog::OnSave (wxCommandEvent& event)
@@ -109,12 +155,15 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event)
 
 void MkheightmapWxDialog::UpdateTextWithTemplate (const wxString &tpl)
 {
-    scintilla->ReplaceSelection (tpl);
+    switch (masterNotebook->GetSelection ()) {
+        case 0: terrainHeightmap->ReplaceSelection (tpl); break;
+        case 1: terrainShader->ReplaceSelection (tpl); break;
+    };
 }
 
 void MkheightmapWxDialog::OnMenu_Execute( wxCommandEvent& event )
 {
-    OnExecute (event);
+    OnShowHeightmap (event);
 }
 
 void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event )
@@ -123,7 +172,7 @@ void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event )
     const int tablen = 4;
     int indent=0;
     /*    
-    wxString code = scintilla->GetText();
+    wxString code = terrainHeightmap->GetText();
     wxString formatted;
 
     bool hasDoneLineBreak = false;
@@ -171,10 +220,10 @@ void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event )
             };
         }
     }
-    scintilla->SetText(formatted);    
+    terrainHeightmap->SetText(formatted);    
     */
     
-    wxString code = scintilla->GetText();
+    wxString code = terrainHeightmap->GetText();
     wxString formatted;
     
     int c = 0;
@@ -199,7 +248,7 @@ void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event )
     }
     std::cout << std::endl;
     
-    scintilla->SetText(formatted);
+    terrainHeightmap->SetText(formatted);
     #undef doIndent
 }
 
@@ -448,9 +497,9 @@ void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event )
     } 
 }
 
-void MkheightmapWxDialog::OnExecute( wxCommandEvent& event )
+void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event )
 {
-	wxString x = scintilla->GetText();
+	wxString x = terrainHeightmap->GetText();
     // TODO: find better de-weaponing
     x.Replace (_("\""), _(" "));
     x.Replace (_("\\"), _(" "));
@@ -489,7 +538,57 @@ void MkheightmapWxDialog::OnExecute( wxCommandEvent& event )
         }
     } else {        
     }
-    scintilla->SetFocus();
+    terrainHeightmap->SetFocus();
+}
+
+
+void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event )
+{
+	wxString heightmap = terrainHeightmap->GetText();
+    heightmap.Replace (_("\""), _(" "));
+    heightmap.Replace (_("\\"), _(" "));
+    heightmap.Replace (_("`"), _(" "));
+    
+    wxString shader = terrainShader->GetText();
+    shader.Replace (_("\""), _(" "));
+    shader.Replace (_("\\"), _(" "));
+    shader.Replace (_("`"), _(" "));
+    
+    wxString x_usrbin = wxString (_("picogen mkheightmap -Lhs \"")) 
+        + heightmap
+        + wxString(_("\" -p ")) // preview
+        + wxString (_(" -s \"")) + shader + wxString(_("\" ")) // shader
+        + wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing
+        + (normalise->IsChecked() ? wxString(_(" -n ")) : wxString(_(""))) // normalise?
+    ;
+    //wxMessageDialog (this, x_usrbin);
+    wxString x_currentfolder = wxString (_("./") + x_usrbin);
+    
+    // try picogen in current folder
+    {
+        wxString statusText = x_currentfolder;
+        statusText.Replace (_("\n"), _(" "));    
+        SetStatusText(statusText);
+    }
+    
+    int i;
+    if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
+        // retry picogen in /usr/bin        
+        {
+            wxString statusText = x_usrbin;
+            statusText.Replace (_("\n"), _(" "));    
+            SetStatusText(statusText);
+        }
+        
+        if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
+            wxMessageDialog msg (this, 
+                wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
+            );
+        } else {            
+        }
+    } else {        
+    }
+    terrainShader->SetFocus();
 }
 
 
@@ -647,7 +746,7 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     tmpfile << "        code:  ";
     //tmpfile << "            ( ^ (   [2 LayeredNoise frequency(4) persistence(0.55) levelEvaluationFunction(x) layercount(12) filter(cosine) seed(55) ] x y ) 1 )\n";
     //tmpfile << "            ;\n";
-    tmpfile << scintilla->GetText().mb_str();
+    tmpfile << terrainHeightmap->GetText().mb_str();
     tmpfile << ";\n";
     //tmpfile << "        resolution: 256; \n";
     tmpfile << "        resolution: " << (1<<(1+heightmapSize->GetSelection())) << "; \n";
@@ -913,7 +1012,7 @@ void MkheightmapWxDialog::save (boost::archive::xml_oarchive & ar, const unsigne
     
     // Terrain.
     {
-        std::string terrain_code = std::string (scintilla->GetText().mb_str());
+        std::string terrain_code = std::string (terrainHeightmap->GetText().mb_str());
         float terrain_width, terrain_height;
         {
                 std::stringstream ss;
