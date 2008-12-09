@@ -97,7 +97,8 @@ private:
 protected:
 	// Handlers for MkheightmapWxDialogGui events.
 	void OnSave ( wxCommandEvent& event );
-	void OnExecute( wxCommandEvent& event );
+	void OnShowHeightmap( wxCommandEvent& event );
+	void OnShowShadedHeightmap( wxCommandEvent& event );
 	void OnClose( wxCommandEvent& event );
 	void OnRender ( wxCommandEvent& event );
 	void OnAutoformat( wxCommandEvent& event );
