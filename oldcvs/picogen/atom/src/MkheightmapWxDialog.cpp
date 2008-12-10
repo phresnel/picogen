@@ -135,14 +135,15 @@ MkheightmapWxDialogGui( parent )
         terrainShader->SetTabIndents (false);
         terrainShader->SetUseTabs (false);
         
-        terrainShader->SetText(wxString (_("    (-  1 \n\
-            (^  (-  1\n\
-                    (abs ([2 LayeredNoise \n\
-                        frequency(5) \n\
-                        layercount(8) \n\
-                        persistence((* 0.4 (-1 (abs x))))\n\
-                     ] x y))) \n\
-                3))")));            
+        terrainShader->SetText(wxString (_(
+            "hs(\n"
+            "   {\n"
+            "       const-rgb(0.0, 1.0, 0.0),\n"
+            "       const-rgb(0.0, 1.0, 0.0)\n" // TODO: there's a bug when there's a space between 'const-rgb' and '('
+            "   },\n"
+            "   z\n"
+            ")\n"
+        )));            
     }
 }
 
@@ -870,6 +871,10 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event )
 
 void MkheightmapWxDialog::OnRender( wxCommandEvent& event )
 {
+    if (!ShowSaveFileDlg()) {
+        return;
+    }
+
     const std::string tmpfilename = generateSceneTempFile (false);
     {
         int width=-1, height=-1, aa=2;
@@ -889,9 +894,10 @@ void MkheightmapWxDialog::OnRender( wxCommandEvent& event )
             ss >> aa;
         }
 
-        wxString x_usrbin = wxString (_("picogen ssdf -f ")) + wxString (tmpfilename.c_str(), wxConvUTF8) + wxString(_(" ")) 
+        wxString x_usrbin = wxString (_("picogen ssdf -f \"")) + wxString (tmpfilename.c_str(), wxConvUTF8) + wxString(_("\" ")) 
+            + wxString::Format (_(" -o \"")) + wxString (renditionFilename->GetValue().c_str(), wxConvUTF8) + wxString (_("\""))
             + ((renderSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
-            + wxString::Format (_(" -w %d -h %d -a %d "), width, height, aa)
+            + wxString::Format (_(" -w %d -h %d -a %d "), width, height, aa)            
         ;
         wxMessageDialog (this, x_usrbin);
         wxString x_currentfolder = wxString (_("./") + x_usrbin);
@@ -961,13 +967,32 @@ void MkheightmapWxDialog::GetYprOrientation (float &yaw, float &pitch, float &ro
 
 
 void MkheightmapWxDialog::OnClose( wxCommandEvent& event )
-{
-    
+{    
     wxTheApp->Exit();
 }
 
-void MkheightmapWxDialog::OnOpenSaveFile( wxCommandEvent& event )
-{
+
+bool MkheightmapWxDialog::ShowSaveFileDlg () {
+    // Strip filename.
+    wxString filename = renditionFilename->GetValue().Strip (wxString::both);
+    renditionFilename->SetValue(filename);
+    
+    // Suppress file dialog if a filename does not exist yet.
+    if (!filename.IsEmpty ()) {
+        if (!wxFile::Exists (renditionFilename->GetValue())) {
+            return true;
+        } else {
+            wxMessageDialog msg (this, 
+                wxString (_("The output file \"")) +  renditionFilename->GetValue() + wxString(_("\" already exists. Overwrite?")),
+                wxString (_("")),
+                wxYES_NO | wxNO_DEFAULT
+            );
+            if (msg.ShowModal() == wxID_YES) {
+                return true;
+            }
+        }
+    }
+
     wxFileDialog openFileDialog (
         this, _("Open file"), _(""), _(""), _("All Files|*.*|BMP files (*.bmp)|*.bmp"),
     #if wxCHECK_VERSION(2, 8, 0)
@@ -977,9 +1002,18 @@ void MkheightmapWxDialog::OnOpenSaveFile( wxCommandEvent& event )
     #endif
         wxDefaultPosition
     );
+    
+    openFileDialog.SetFilename (filename);
     if (openFileDialog.ShowModal() == wxID_OK) {
         renditionFilename->SetValue (openFileDialog.GetPath());
+        return true;
     }
+    return false;
+}
+
+void MkheightmapWxDialog::OnOpenSaveFile( wxCommandEvent& event )
+{
+    ShowSaveFileDlg();
 }
 
 void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event )

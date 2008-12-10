@@ -413,7 +413,7 @@
                         <object class="notebookpage" expanded="1">
                             <property name="bitmap"></property>
                             <property name="label">Terrain</property>
-                            <property name="select">1</property>
+                            <property name="select">0</property>
                             <object class="wxPanel" expanded="1">
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
@@ -4154,7 +4154,7 @@
                                                                                     <property name="style">wxSL_INVERSE|wxSL_LABELS|wxSL_VERTICAL</property>
                                                                                     <property name="subclass"></property>
                                                                                     <property name="tooltip"></property>
-                                                                                    <property name="value">50</property>
+                                                                                    <property name="value">14</property>
                                                                                     <property name="window_extra_style"></property>
                                                                                     <property name="window_name"></property>
                                                                                     <property name="window_style"></property>
@@ -5453,7 +5453,7 @@
                                                                             <property name="style">wxSL_HORIZONTAL|wxSL_INVERSE|wxSL_LABELS</property>
                                                                             <property name="subclass"></property>
                                                                             <property name="tooltip"></property>
-                                                                            <property name="value">45</property>
+                                                                            <property name="value">70</property>
                                                                             <property name="window_extra_style"></property>
                                                                             <property name="window_name"></property>
                                                                             <property name="window_style"></property>
@@ -7468,7 +7468,7 @@
                         <object class="notebookpage" expanded="1">
                             <property name="bitmap"></property>
                             <property name="label">Render</property>
-                            <property name="select">0</property>
+                            <property name="select">1</property>
                             <object class="wxPanel" expanded="0">
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
@@ -7969,7 +7969,7 @@
                                                             <property name="font"></property>
                                                             <property name="hidden">0</property>
                                                             <property name="id">wxID_ANY</property>
-                                                            <property name="label">Search ...</property>
+                                                            <property name="label">Save To ...</property>
                                                             <property name="maximum_size"></property>
                                                             <property name="minimum_size"></property>
                                                             <property name="name">m_button5</property>
