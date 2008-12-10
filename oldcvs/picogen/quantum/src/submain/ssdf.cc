@@ -259,6 +259,7 @@ typedef enum surface_integrator_type_t {
 
 class Scene {
     public:
+        virtual ~Scene () {}
         virtual std::string getName() const = 0;
         virtual void initRenderer (int width, int height, int antiAliasingWidth, surface_integrator_type stype) = 0;
         virtual void flip (SDL_Surface *screen, float scale, float saturation) = 0;
@@ -320,6 +321,9 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         PicoSSDF ssdf;
 
+        ::std::string outputFilename;
+        int writeOutputEveryNthLoop;
+        int writeOutputEveryNthLoop_loopsLeft; // D'oh.
 
 
         // TODO: Still a hack, make Scene more OOPish
@@ -697,12 +701,18 @@ class SSDFScene : public Scene, public SSDFBackend {
         // --------------------------------------------------------------
 
 
-        explicit SSDFScene(const std::string &filename)
-        : sceneRoot(0), currentBRDF(0), ssdf(filename, this), preetham (),
-            cloudAdapter (
+        explicit SSDFScene(const std::string &filename, const std::string &outputFilename, int outputEveryNthLoop)
+        : preetham ()
+        , cloudAdapter (
                 preetham
                 //, boost::intrusive_ptr <Function_R2_R1_Refcounted> (new Function_R2_R1_Refcounted ("([2 LayeredNoise frequency(11.0) layercount(12) filter(cosine) persistence(0.5) seed(104)] (+x0.3)y)"))
             )
+        , sceneRoot(0)
+        , currentBRDF(0)
+        , ssdf(filename, this)
+        , outputFilename (outputFilename)
+        , writeOutputEveryNthLoop (outputEveryNthLoop)
+        , writeOutputEveryNthLoop_loopsLeft (outputEveryNthLoop)
         {
             // Setup default camera transform.
             //renderer.transformation() = Transformation().setToTranslation (Vector3d (0.5,2.0,-5.0));
@@ -812,9 +822,9 @@ class SSDFScene : public Scene, public SSDFBackend {
             renderer.setSurfaceIntegrator (surfaceIntegrator);
         }
 
-        virtual void flip (SDL_Surface *screen, float scale, float saturation) {
-            ::SDL_Flip (screen);
+        virtual void flip (SDL_Surface *screen, float scale, float saturation) {            
             ::draw (screen,*renderer.getFilm(), scale, 1.0, saturation, antiAliasingWidth);//scale, exp_tone, saturation);
+            ::SDL_Flip (screen);
         }
 
         virtual void begin() {
@@ -825,6 +835,15 @@ class SSDFScene : public Scene, public SSDFBackend {
             renderer.setNumPixelsPerContinue (numPixels);
             bool c = renderer.renderMore();
             if (c) {
+                if (--writeOutputEveryNthLoop_loopsLeft <= 0) {
+                    writeOutputEveryNthLoop_loopsLeft = writeOutputEveryNthLoop;
+                    SDL_Surface *surface = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32, 0,0,0,0);
+                    if (0 != surface) {
+                        ::draw (surface, *renderer.getFilm(), 1.0, 1.0, 1.0, antiAliasingWidth);
+                        SDL_SaveBMP (surface, outputFilename.c_str());
+                        SDL_FreeSurface (surface);
+                    }
+                }
                 renderer.oneMoreRun();
             }
             return c;
@@ -1015,7 +1034,7 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height, const
 static int grind (int width, int height, int antiAliasingWidth, Scene *scene, surface_integrator_type stype) {
     using namespace std;
 
-    int loopCount;
+    int loopCount = 1;
     switch (stype) {
         case whitted_style:
             loopCount = 1;
@@ -1050,6 +1069,7 @@ static void printUsage() {
         << "In the version of picogen you have installed, the following options are possible:\n"
         << "\n"
         << "-f | --filename <filename> : name of the ssdf file to render\n"
+        << "-o | --output <filename> : name of the bmp file to render to\n"
         << "-w | --width <number> : width of the output in pixels, default 320\n"
         << "-h | --height <number> : height of the output in pixels, default 320\n"
         << "-a | --AA-width <n> : set anti-aliasing-size to n*n pixels, default 1\n"
@@ -1079,6 +1099,7 @@ int main_ssdf (int argc, char *argv[]) {
     int height = 320;
     int aaWidth = 1;
     surface_integrator_type stype = path_tracing;
+    string outputFilename = "";
     //-- Options.
 
     while (0<argc) {
@@ -1104,6 +1125,16 @@ int main_ssdf (int argc, char *argv[]) {
             ss << argv [0];
             ss >> width;
 
+            --argc;
+            ++argv;
+        } else if (primary == string ("-o") || primary == string ("--output")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            stringstream ss;
+            ss << argv [0];
+            outputFilename = ss.str();
             --argc;
             ++argv;
         } else if (primary == string ("-h") || primary == string ("--height")) {
@@ -1159,9 +1190,10 @@ int main_ssdf (int argc, char *argv[]) {
             return -1;
         }
     }
+
     Scene *grindScene;
     try {
-        grindScene = new SSDFScene (filename);
+        grindScene = new SSDFScene (filename, outputFilename, 1);
         return grind (width, height, aaWidth, grindScene, stype);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
