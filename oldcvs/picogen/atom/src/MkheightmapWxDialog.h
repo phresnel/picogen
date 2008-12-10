@@ -31,6 +31,7 @@
 //#include <wx/generic/aboutdlgg.h>
 
 #include <wx/stdpaths.h>
+#include <wx/file.h>
 
 #include <picogen/picogen.h>
 #include <picogen/misc/picossdf.h>
@@ -84,6 +85,8 @@ private:
         bool &falloffEnable, float falloffParameters [3],
         float sunRGB [3], float sunDir [3]
     ) const ;
+
+    bool ShowSaveFileDlg();
 
     std::string generateSceneTempFile (bool withPreviewSettings) const;
 
