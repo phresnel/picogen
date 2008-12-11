@@ -75,27 +75,98 @@ class MkheightmapWxDialog : public MkheightmapWxDialogGui
 private:
     void UpdateTextWithTemplate (const wxString &tpl);
 
-    void GetYprOrientation (float &yaw, float &pitch, float &roll) const;
-    void GetYprPosition (float &x, float &y, float &z) const;
-    void ObtainSunSkyParams (
-        float atmoRGB [3], 
-        float &fogDensity, float &fogRange,
-        float &turbidity,
-        float &sunDiskSize,
-        bool &falloffEnable, float falloffParameters [3],
-        float sunRGB [3], float sunDir [3]
-    ) const ;
+    
+
+    template <typename T> void GetYprOrientation (T &yaw, T &pitch, T &roll) const {        
+        T deg_yaw   = +static_cast<T>(ypr_yaw->GetValue ()) + 0.01f * static_cast<float>(ypr_yaw_fine->GetValue ());
+        T deg_pitch = -static_cast<T>(ypr_pitch->GetValue ())  + 0.01f * static_cast<float>(ypr_pitch_fine->GetValue ());
+        T deg_roll  = -static_cast<T>(ypr_roll->GetValue ()) + 0.01f * static_cast<float>(ypr_roll_fine->GetValue ());
+        
+        const T to_radian = 0.0174532925;
+        yaw   = deg_yaw * to_radian;
+        pitch = deg_pitch * to_radian;
+        roll  = deg_roll * to_radian;
+    }
+    
+    
+    
+    template <typename T> void GetYprPosition (T &x, T &y, T &z) const {
+        using namespace std;
+        {
+            stringstream ss;
+            ss << ypr_x->GetValue().mb_str() << flush;
+            ss >> x;
+        }        
+        {
+            stringstream ss;
+            ss << ypr_y->GetValue().mb_str() << flush;
+            ss >> y;
+        }        
+        {
+            stringstream ss;
+            ss << ypr_z->GetValue().mb_str() << flush;
+            ss >> z;    
+        }
+    }
+    
+    
+    
+    template <typename T> void ObtainSunSkyParams (
+        T atmoRGB [3], 
+        bool &fogEnable, T &fogDensity, T &fogMaxRange,
+        T &turbidity,
+        T &sunDiskSize,
+        bool &falloffEnable, T falloffParameters [3],
+        T sunRGB [3], T sunDir [3]
+    ) const {
+        // ATMOSPHERE
+        
+        // Atmosphere Color Filter.
+        const T atmoIntensity = static_cast <T> (atmosphereIntensity->GetValue ()) * 0.001f;
+        atmoRGB [0] = static_cast <T> (atmosphereR->GetValue ()) * atmoIntensity * 0.01f;
+        atmoRGB [1] = static_cast <T> (atmosphereG->GetValue ()) * atmoIntensity * 0.01f;
+        atmoRGB [2] = static_cast <T> (atmosphereB->GetValue ()) * atmoIntensity * 0.01f;
+        
+        // Fog.
+        fogEnable = this->fogEnable->IsChecked ();
+        fogDensity  = static_cast <T> (this->fogDensity->GetValue ()) * 0.0000001; // / 10k
+        fogMaxRange = static_cast <T> (this->fogMaxRange->GetValue ());
+        
+        // Turbidity.
+        turbidity = static_cast <T> (turbidityA->GetValue ()) + 0.01 * static_cast <T> (turbidityB->GetValue ());
+        
+        // SUN    
+        // Disk Size.
+        sunDiskSize = static_cast <T> (this->diskSize->GetValue ()) * 0.01;
+        
+        // Falloff.
+        falloffParameters [0]   = static_cast <T> (this->falloffParameterA->GetValue ()) * 0.1;
+        falloffParameters [1]   = static_cast <T> (this->falloffParameterB->GetValue ()) * 0.00001;
+        falloffParameters [2]   = static_cast <T> (this->falloffParameterC->GetValue ()) * 0.1;
+        falloffEnable = this->falloffEnable->IsChecked ();
+        //falloffExponent = static_cast <T> (this->falloffExponent->GetValue ());
+        
+        // Sun Color.
+        const T sunIntensity = static_cast <T> (this->sunIntensity->GetValue ());
+        sunRGB [0] = static_cast <T> (sunR->GetValue ()) * sunIntensity * 0.01f;
+        sunRGB [1] = static_cast <T> (sunG->GetValue ()) * sunIntensity * 0.01f;
+        sunRGB [2] = static_cast <T> (sunB->GetValue ()) * sunIntensity * 0.01f;
+        
+        // Sun Direction (mkskymap will normalise it for us).
+        const T to_radian = 0.0174532925f;
+        const T pi = 3.14159265;
+        const T sunPhi   = to_radian * static_cast <T> (this->sunPhi->GetValue()) + 0.5*pi;
+        const T sunTheta = to_radian * static_cast <T> (this->sunTheta->GetValue());
+        sunDir [0] = sin (sunTheta) * cos (sunPhi);
+        sunDir [1] = cos (sunTheta);
+        sunDir [2] = sin (sunTheta) * sin (sunPhi);
+    }
+    
+    
 
     bool ShowSaveFileDlg();
 
-    std::string generateSceneTempFile (bool withPreviewSettings) const;
-
-
-    friend class boost::serialization::access;
-    void save (boost::archive::xml_oarchive & ar, const unsigned int /* file_version */) const;
-    void load (boost::archive::xml_iarchive & ar, const unsigned int file_version);
-    
-    BOOST_SERIALIZATION_SPLIT_MEMBER()
+    std::string generateSceneTempFile (bool withPreviewSettings) const;    
 
 protected:
 	// Handlers for MkheightmapWxDialogGui events.
@@ -130,7 +201,5 @@ public:
 	MkheightmapWxDialog( wxWindow* parent );
 };
 
-// todo: in the resulting xml file the root-name is "boost-serialization"
-BOOST_CLASS_VERSION(MkheightmapWxDialog, 1)
 
 #endif // __MkheightmapWxDialog__
