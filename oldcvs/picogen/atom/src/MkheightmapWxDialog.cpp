@@ -147,13 +147,6 @@ MkheightmapWxDialogGui( parent )
     }
 }
 
-void MkheightmapWxDialog::OnSave (wxCommandEvent& event)
-{
-    std::ofstream ofs("raboof");
-    boost::archive::xml_oarchive oa(ofs);
-    oa << boost::serialization::make_nvp ("picogen-wx-scene-def", *this);
-}
-
 void MkheightmapWxDialog::UpdateTextWithTemplate (const wxString &tpl)
 {
     switch (masterNotebook->GetSelection ()) {
@@ -348,8 +341,7 @@ void MkheightmapWxDialog::OnFast6MakeChoice ( wxCommandEvent& event )
     }     
 }
 
-void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event ) {
     // Presets from http://picogen.org/wiki/index.php?title=Examples_and_Interesting_Programs_for_mkheightmap
     if (wxString(_("Edges")) == presets1->GetStringSelection()) {
         UpdateTextWithTemplate (
@@ -535,8 +527,7 @@ void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event )
     } 
 }
 
-void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event ) {
 	wxString x = terrainHeightmap->GetText();
     // TODO: find better de-weaponing
     x.Replace (_("\""), _(" "));
@@ -580,8 +571,7 @@ void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event )
 }
 
 
-void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event ) {
 	wxString heightmap = terrainHeightmap->GetText();
     heightmap.Replace (_("\""), _(" "));
     heightmap.Replace (_("\\"), _(" "));
@@ -630,68 +620,17 @@ void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event )
 }
 
 
-void MkheightmapWxDialog::ObtainSunSkyParams (
-    float atmoRGB [3], 
-    float &fogDensity, float &fogMaxRange,
-    float &turbidity,
-    float &sunDiskSize,
-    bool &falloffEnable, float falloffParameters [3], 
-    float sunRGB [3], float sunDir [3]
-) const {
-    // ATMOSPHERE
-    
-    // Atmosphere Color Filter.
-    const float atmoIntensity = static_cast <float> (atmosphereIntensity->GetValue ()) * 0.001f;
-    atmoRGB [0] = static_cast <float> (atmosphereR->GetValue ()) * atmoIntensity * 0.01f;
-    atmoRGB [1] = static_cast <float> (atmosphereG->GetValue ()) * atmoIntensity * 0.01f;
-    atmoRGB [2] = static_cast <float> (atmosphereB->GetValue ()) * atmoIntensity * 0.01f;
-    
-    // Fog.
-    fogDensity  = static_cast <float> (this->fogDensity->GetValue ()) * 0.0000001; // / 10k
-    fogMaxRange = static_cast <float> (this->fogMaxRange->GetValue ());
-    
-    // Turbidity.
-    turbidity = static_cast <float> (turbidityA->GetValue ()) + 0.01 * static_cast <float> (turbidityB->GetValue ());
-    
-    // SUN    
-    // Disk Size.
-    sunDiskSize = static_cast <float> (this->diskSize->GetValue ()) * 0.01;
-    
-    // Falloff.
-    falloffParameters [0]   = static_cast <float> (this->falloffParameterA->GetValue ()) * 0.1;
-    falloffParameters [1]   = static_cast <float> (this->falloffParameterB->GetValue ()) * 0.00001;
-    falloffParameters [2]   = static_cast <float> (this->falloffParameterC->GetValue ()) * 0.1;
-    falloffEnable = this->falloffEnable->IsChecked ();
-    //falloffExponent = static_cast <float> (this->falloffExponent->GetValue ());
-    
-    // Sun Color.
-    const float sunIntensity = static_cast <float> (this->sunIntensity->GetValue ());
-    sunRGB [0] = static_cast <float> (sunR->GetValue ()) * sunIntensity * 0.01f;
-    sunRGB [1] = static_cast <float> (sunG->GetValue ()) * sunIntensity * 0.01f;
-    sunRGB [2] = static_cast <float> (sunB->GetValue ()) * sunIntensity * 0.01f;
-    
-    // Sun Direction (mkskymap will normalise it for us).
-    const float to_radian = 0.0174532925f;
-    const float pi = 3.14159265;
-    const float sunPhi   = to_radian * static_cast <float> (this->sunPhi->GetValue()) + 0.5*pi;
-    const float sunTheta = to_radian * static_cast <float> (this->sunTheta->GetValue());
-    sunDir [0] = sin (sunTheta) * cos (sunPhi);
-    sunDir [1] = cos (sunTheta);
-    sunDir [2] = sin (sunTheta) * sin (sunPhi);
-}
 
-
-void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) 
-{
+void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) {
     float atmoRGB [3]; 
-    float fogDensity; float fogMaxRange;
+    bool fogEnable; float fogDensity; float fogMaxRange;
     float turbidity;
     float sunDiskSize;
     bool falloffEnable; float falloffParameters [3]; 
     float sunRGB [3]; float sunDir [3];
     ObtainSunSkyParams (
         atmoRGB,
-        fogDensity, fogMaxRange,
+        fogEnable, fogDensity, fogMaxRange,
         turbidity,
         sunDiskSize,
         falloffEnable, falloffParameters, 
@@ -709,7 +648,7 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event )
     stringstream commandline;
     commandline << "picogen mkskymap -p ";
     commandline << " -F " << atmoRGB [0] << ' ' << atmoRGB [1] << ' ' << atmoRGB [2] << ' ';
-    if (fogEnable->IsChecked()) {
+    if (this->fogEnable->IsChecked()) {
         commandline << " -O " << fogDensity << ' ' << fogMaxRange << ' ';
     }
     commandline << " -C " << sunRGB [0] << ' ' << sunRGB [1] << ' ' << sunRGB [2] << ' ';    
@@ -747,8 +686,7 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event )
     }
 }
 
-std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings) const 
-{
+std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings) const {
     #ifdef __LINUX__ 
     const std::string tmpfilename = "/tmp/picogen-tempfile.ssdf";
     #else
@@ -828,14 +766,14 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     // Sunsky.
     {
         float atmoRGB [3]; 
-        float fogDensity; float fogMaxRange;
+        bool fogEnable; float fogDensity; float fogMaxRange;
         float turbidity;
         float sunDiskSize;
         bool falloffEnable; float falloffParameters [3]; 
         float sunRGB [3]; float sunDir [3];
         ObtainSunSkyParams (
             atmoRGB,
-            fogDensity, fogMaxRange,
+            fogEnable, fogDensity, fogMaxRange,
             turbidity,
             sunDiskSize,
             falloffEnable, falloffParameters, 
@@ -864,8 +802,7 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     return tmpfilename;
 }
 
-void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
     //const wxString tmpfilename (_("/tmp/picogen-quick-preview.ssdf"));
     
     const std::string tmpfilename = generateSceneTempFile (true);
@@ -908,8 +845,7 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event )
 }
 
 
-void MkheightmapWxDialog::OnRender( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnRender( wxCommandEvent& event ) {
     if (!ShowSaveFileDlg()) {
         return;
     }
@@ -976,44 +912,8 @@ void MkheightmapWxDialog::OnRender( wxCommandEvent& event )
 }
 
 
-void MkheightmapWxDialog::GetYprPosition (float &x, float &y, float &z) const
-{
-    using namespace std;
 
-    {
-        stringstream ss;
-        ss << ypr_x->GetValue().mb_str() << flush;
-        ss >> x;
-    }
-    
-    {
-        stringstream ss;
-        ss << ypr_y->GetValue().mb_str() << flush;
-        ss >> y;
-    }
-    
-    {
-        stringstream ss;
-        ss << ypr_z->GetValue().mb_str() << flush;
-        ss >> z;    
-    }
-}
-
-void MkheightmapWxDialog::GetYprOrientation (float &yaw, float &pitch, float &roll) const
-{
-    float deg_yaw   = static_cast<float>(ypr_yaw->GetValue ()) + 0.01f * static_cast<float>(ypr_yaw_fine->GetValue ());
-    float deg_pitch = -static_cast<float>(ypr_pitch->GetValue ())  + 0.01f * static_cast<float>(ypr_pitch_fine->GetValue ());
-    float deg_roll  = -static_cast<float>(ypr_roll->GetValue ()) + 0.01f * static_cast<float>(ypr_roll_fine->GetValue ());
-    
-    const float to_radian = 0.0174532925f;
-    yaw   = deg_yaw * to_radian;
-    pitch = deg_pitch * to_radian;
-    roll  = deg_roll * to_radian;
-}
-
-
-void MkheightmapWxDialog::OnClose( wxCommandEvent& event )
-{    
+void MkheightmapWxDialog::OnClose( wxCommandEvent& event ) {    
     wxTheApp->Exit();
 }
 
@@ -1057,13 +957,11 @@ bool MkheightmapWxDialog::ShowSaveFileDlg () {
     return false;
 }
 
-void MkheightmapWxDialog::OnOpenSaveFile( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnOpenSaveFile( wxCommandEvent& event ) {
     ShowSaveFileDlg();
 }
 
-void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event ) {
     /*wxAboutDialogInfo info;
     info.SetName(_("picogen-minwx (experimental title)"));
     info.SetWebSite(_("http://picogen.org"));
@@ -1087,29 +985,215 @@ void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event )
 }
 
 
-void MkheightmapWxDialog::save (boost::archive::xml_oarchive & ar, const unsigned int /* file_version */) const {
-    using namespace boost::serialization;
+namespace serialization {
     
+    template <typename T> struct Rgb {
+        T rgb [3];
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;
+            ar  & make_nvp("r", rgb [0]);
+            ar  & make_nvp("g", rgb [1]);
+            ar  & make_nvp("b", rgb [2]);
+        }        
+    };
+    
+    
+    
+    template <typename T> struct Xyz {
+        T xyz [3];
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;
+            ar  & make_nvp("x", xyz [0]);
+            ar  & make_nvp("y", xyz [1]);
+            ar  & make_nvp("z", xyz [2]);
+        }        
+    };    
+    
+    
+    
+    template <typename T> struct Terrain {
+        T width, height;
+        int resolution;
+        std::string code;
+        std::string shader;
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;
+            ar  & make_nvp("code", code);
+            ar  & make_nvp("shader", shader);
+            ar  & make_nvp("width", width);
+            ar  & make_nvp("height", height);
+            ar  & make_nvp("resolution", resolution);
+        }        
+    };
+    
+    
+    
+    template <typename T> struct Sun {
+        struct FalloffHack {
+            bool enable;
+            T params [3];
+            
+            friend class boost::serialization::access;
+            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                using namespace boost::serialization;
+                int enable = this->enable ? 1 : 0;
+                T a = params [0];
+                T b = params [1];
+                T c = params [2];
+                ar  & make_nvp("enable", enable);
+                ar  & make_nvp("a", a);
+                ar  & make_nvp("b", b);
+                ar  & make_nvp("c", c);
+            }
+        };
+        
+        
+        Rgb<T> color; 
+        Xyz<T> direction;
+        T diskSize;
+        FalloffHack falloffHack;
+       
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;
+            ar  & make_nvp("color", color);
+            ar  & make_nvp("direction", direction);            
+            ar  & make_nvp("disk-size", diskSize);
+            ar  & make_nvp("falloff-hack", falloffHack);
+        }
+    };
+    
+    
+    
+    template <typename T> struct Atmosphere {
+        struct Fog {
+            bool enable;
+            T density;
+            T maxRange;
+            
+            friend class boost::serialization::access;
+            
+            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                using namespace boost::serialization;
+                int enable = this->enable ? 1 : 0;
+                ar  & make_nvp("enable", enable);
+                ar  & make_nvp("density", density);            
+                ar  & make_nvp("max-range", maxRange);
+            }
+        };
+        
+        Rgb<T> colorFilter;
+        Fog fog;
+        T turbidity;
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;
+            ar  & make_nvp("fog", fog);
+            ar  & make_nvp("turbidity", turbidity);
+            ar  & make_nvp("color-filter", colorFilter);
+        }
+    };
+    
+    
+    
+    template <typename T> struct SunSky {        
+        Sun<T> sun;
+        Atmosphere<T> atmosphere;
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;            
+            ar  & make_nvp("atmosphere", atmosphere);
+            ar  & make_nvp("sun", sun);
+        }        
+    };
+    
+    
+    
+    template <typename T> struct Scene {
+        Terrain<T> terrain;
+        SunSky<T> sunsky;
+        
+        Scene (const Terrain<T> &terrain, const SunSky<T> &sunsky) : terrain (terrain), sunsky (sunsky) {   }
+        
+        friend class boost::serialization::access;
+        void save (boost::archive::xml_oarchive & ar, const unsigned int /* file_version */) const {
+            using namespace boost::serialization;
+            ar  & make_nvp("terrain", terrain);
+            ar  & make_nvp("sunsky", sunsky);
+        }
+        void load (boost::archive::xml_iarchive & ar, const unsigned int file_version) {
+            using namespace boost::serialization;
+            ar  & make_nvp("terrain", terrain);
+            ar  & make_nvp("sunsky", sunsky);
+        }
+    
+        BOOST_SERIALIZATION_SPLIT_MEMBER()
+    };    
+}
+
+BOOST_CLASS_VERSION(::serialization::Scene<double>, 0)
+
+
+void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
+    using namespace ::serialization;
+    
+    typedef double ft;    
     // Terrain.
+    Terrain<ft> terrain;
     {
-        std::string terrain_code = std::string (terrainHeightmap->GetText().mb_str());
-        float terrain_width, terrain_height;
+        terrain.code = std::string (terrainHeightmap->GetText().mb_str());
+        terrain.shader = std::string (terrainShader->GetText().mb_str());
+        terrain.resolution = (1<<(1+heightmapSize->GetSelection()));
         {
-                std::stringstream ss;
-                ss << terrainDimWidth->GetValue().mb_str() << std::flush;
-                ss >> terrain_width;
+            std::stringstream ss;
+            ss << terrainDimWidth->GetValue().mb_str() << std::flush;
+            ss >> terrain.width;
         }
         {
             std::stringstream ss;
             ss << terrainDimHeight->GetValue().mb_str() << std::flush;
-            ss >> terrain_height;
+            ss >> terrain.height;
         }
-        
-        ar  & make_nvp("terrain", terrain_code);
-        ar  & make_nvp("terrain-width", terrain_width);
-        ar  & make_nvp("terrain-height", terrain_height);
-        //ar  & make_nvp("terrain-resolution", heightmapSize->GetSelection()); // TODO: shalt be saved as integer
     }
+        
+    // SunSky.
+    SunSky<ft> sunsky;
+    {
+        // I won't accept nitpicks about software-design-laws!
+        ObtainSunSkyParams (
+            sunsky.atmosphere.colorFilter.rgb,
+            sunsky.atmosphere.fog.enable, sunsky.atmosphere.fog.density, sunsky.atmosphere.fog.maxRange,
+            sunsky.atmosphere.turbidity,
+            sunsky.sun.diskSize,
+            sunsky.sun.falloffHack.enable, sunsky.sun.falloffHack.params, 
+            sunsky.sun.color.rgb, sunsky.sun.direction.xyz
+        );
+    }
+    
+    Scene<ft> scene (
+        terrain, 
+        sunsky
+    );    
+    
+    std::ofstream ofs("raboof");
+    boost::archive::xml_oarchive oa(ofs);
+    oa << boost::serialization::make_nvp ("picogen-wx-scene", scene);
+}
+
+/*
+void MkheightmapWxDialog::save (boost::archive::xml_oarchive & ar, const unsigned int file_version ) const {
+    using namespace boost::serialization;
+    
+    
     
     // Sun-/Sky
     {
@@ -1164,4 +1248,4 @@ void MkheightmapWxDialog::save (boost::archive::xml_oarchive & ar, const unsigne
     
 void MkheightmapWxDialog::load (boost::archive::xml_iarchive & ar, const unsigned int file_version){
     using namespace boost::serialization;
-}
+}*/
