@@ -108,11 +108,18 @@ protected:
 	void OnOpenSaveFile( wxCommandEvent& event );
 	void OnQuickPreview( wxCommandEvent& event );
 	void OnShowHemisphere( wxCommandEvent& event );
+    void OnFastHsMakeChoice ( wxCommandEvent& event );
+    void OnFastColorMakeChoice ( wxCommandEvent& event );
 	void OnFast1MakeChoice ( wxCommandEvent& event );
+	void OnFast11MakeChoice ( wxCommandEvent& event );
 	void OnFast2MakeChoice ( wxCommandEvent& event );
+	void OnFast21MakeChoice ( wxCommandEvent& event );
 	void OnFast3MakeChoice ( wxCommandEvent& event );
+	void OnFast31MakeChoice ( wxCommandEvent& event );
 	void OnFast4MakeChoice ( wxCommandEvent& event );
+	void OnFast41MakeChoice ( wxCommandEvent& event );
 	void OnFast5MakeChoice ( wxCommandEvent& event );
+	void OnFast51MakeChoice ( wxCommandEvent& event );
 	void OnFast6MakeChoice ( wxCommandEvent& event );
 	void OnPresets1 ( wxCommandEvent& event );
     void OnMenu_Execute (wxCommandEvent& event);
