@@ -139,7 +139,7 @@ MkheightmapWxDialogGui( parent )
             "hs(\n"
             "   {\n"
             "       const-rgb(0.0, 1.0, 0.0),\n"
-            "       const-rgb(0.0, 1.0, 0.0)\n" // TODO: there's a bug when there's a space between 'const-rgb' and '('
+            "       const-rgb(0.0, 0.0, 1.0)\n" // TODO: there's a bug when there's a space between 'const-rgb' and '('
             "   },\n"
             "   z\n"
             ")\n"
@@ -253,29 +253,66 @@ void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event )
     #undef doIndent
 }
 
-void MkheightmapWxDialog::OnFast1MakeChoice ( wxCommandEvent& event )
+void MkheightmapWxDialog::OnFastHsMakeChoice ( wxCommandEvent& event )
 {
+    UpdateTextWithTemplate (fast111->GetStringSelection());
+}
+
+
+void MkheightmapWxDialog::OnFast1MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast1->GetStringSelection());
 }
 
-void MkheightmapWxDialog::OnFast2MakeChoice ( wxCommandEvent& event )
-{
-    UpdateTextWithTemplate (fast2->GetStringSelection());
+void MkheightmapWxDialog::OnFast11MakeChoice ( wxCommandEvent& event ) {
+    UpdateTextWithTemplate (fast11->GetStringSelection());
 }
 
-void MkheightmapWxDialog::OnFast3MakeChoice ( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnFast2MakeChoice ( wxCommandEvent& event ) {
+    UpdateTextWithTemplate (fast21->GetStringSelection());
+}
+
+void MkheightmapWxDialog::OnFast21MakeChoice ( wxCommandEvent& event ) {
+    UpdateTextWithTemplate (fast21->GetStringSelection());
+}
+
+void MkheightmapWxDialog::OnFast3MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast3->GetStringSelection());
 }
 
-void MkheightmapWxDialog::OnFast4MakeChoice ( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnFast31MakeChoice ( wxCommandEvent& event ) {
+    UpdateTextWithTemplate (fast31->GetStringSelection());
+}
+
+void MkheightmapWxDialog::OnFast4MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast4->GetStringSelection());
 }
 
-void MkheightmapWxDialog::OnFast5MakeChoice ( wxCommandEvent& event )
-{
+void MkheightmapWxDialog::OnFast41MakeChoice ( wxCommandEvent& event ) {
+    UpdateTextWithTemplate (fast41->GetStringSelection());
+}
+
+void MkheightmapWxDialog::OnFast5MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast5->GetStringSelection());
+}
+
+void MkheightmapWxDialog::OnFast51MakeChoice ( wxCommandEvent& event ) {
+    UpdateTextWithTemplate (fast51->GetStringSelection());
+}
+
+void MkheightmapWxDialog::OnFastColorMakeChoice ( wxCommandEvent& event ) {
+    if (wxString(_("red")) == fastConstRGB->GetStringSelection()) {
+        UpdateTextWithTemplate (
+            wxString (_("const-rgb(1.0, 0.0, 0.0)"))
+        );
+    } else if (wxString(_("green")) == fastConstRGB->GetStringSelection()) {
+        UpdateTextWithTemplate (
+            wxString (_("const-rgb(0.0, 1.0, 0.0)"))
+        );
+    } else if (wxString(_("blue")) == fastConstRGB->GetStringSelection()) {
+        UpdateTextWithTemplate (
+            wxString (_("const-rgb(0.0, 0.0, 1.0)"))
+        );
+    }
 }
 
 void MkheightmapWxDialog::OnFast6MakeChoice ( wxCommandEvent& event )
@@ -743,12 +780,14 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     tmpfile << "    brdf = lambertian(reflectance:0.9)   \n";
     tmpfile << "    hs-heightfield (        \n";
     //tmpfile << "        material: hs( { const-rgb(0.3,0.8,0.2), const-rgb(1.0,1.0,1.0) }, ( + 0  ( * 1.0 (abs(   [2 LayeredNoise  frequency(40) layercount(12) persistence(0.7)  filter(cosine)]xy) ) ) ) ) ;                \n";
-    tmpfile << "        material: const-rgb (1,1,1);\n";
+    tmpfile << "        material: ";// << const-rgb (1,1,1);\n";
+    tmpfile << terrainShader->GetText().mb_str();
+    tmpfile << "\n      ;\n";
     tmpfile << "        code:  ";
     //tmpfile << "            ( ^ (   [2 LayeredNoise frequency(4) persistence(0.55) levelEvaluationFunction(x) layercount(12) filter(cosine) seed(55) ] x y ) 1 )\n";
     //tmpfile << "            ;\n";
     tmpfile << terrainHeightmap->GetText().mb_str();
-    tmpfile << ";\n";
+    tmpfile << "\n      ;\n";
     //tmpfile << "        resolution: 256; \n";
     tmpfile << "        resolution: " << (1<<(1+heightmapSize->GetSelection())) << "; \n";
     tmpfile << "        center:     0, -1400, 0; \n";
@@ -877,7 +916,7 @@ void MkheightmapWxDialog::OnRender( wxCommandEvent& event )
 
     const std::string tmpfilename = generateSceneTempFile (false);
     {
-        int width=-1, height=-1, aa=2;
+        int width=-1, height=-1, aa=2, totalLoops = 0;
         {
             std::stringstream ss;
             ss << renderWidth->GetValue().mb_str() << std::flush;
@@ -893,13 +932,20 @@ void MkheightmapWxDialog::OnRender( wxCommandEvent& event )
             ss << renderAA->GetValue() << std::flush;
             ss >> aa;
         }
+        /*if (!this->totalLoops->GetValue().Strip().IsEmpty())*/ {
+            std::stringstream ss;
+            ss << this->totalLoops->GetValue().mb_str() << std::flush;
+            ss >> totalLoops;
+            if (totalLoops < 0)
+                totalLoops = 0;
+        }
 
         wxString x_usrbin = wxString (_("picogen ssdf -f \"")) + wxString (tmpfilename.c_str(), wxConvUTF8) + wxString(_("\" ")) 
             + wxString::Format (_(" -o \"")) + wxString (renditionFilename->GetValue().c_str(), wxConvUTF8) + wxString (_("\""))
             + ((renderSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
-            + wxString::Format (_(" -w %d -h %d -a %d "), width, height, aa)            
+            + wxString::Format (_(" -w %d -h %d -a %d -n %d -l %d "), width, height, aa, saveAfterEveryNth->GetValue(), totalLoops)
         ;
-        wxMessageDialog (this, x_usrbin);
+        //wxMessageDialog (this, x_usrbin);
         wxString x_currentfolder = wxString (_("./") + x_usrbin);
         
         // try picogen in current folder
