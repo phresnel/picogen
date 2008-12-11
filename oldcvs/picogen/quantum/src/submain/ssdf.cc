@@ -26,6 +26,7 @@
 #include <vector>
 #include <stack>
 #include <map>
+#include <iostream>
 
 #include <SDL/SDL.h>
 
@@ -60,15 +61,7 @@ using ::picogen::misc::functional::Function_R2_R1;
 using ::picogen::misc::functional::Function_R2_R1_Refcounted;
 
 
-
 /*
-using ::picogen::misc::functional::Function_R6_R1_Refcounted;
-using ::picogen::misc::functional::Function_R6_R1;
-using ::boost::intrusive_ptr;
-*/
-
-
-
 struct t_triangle {
     private:
         Vector3d t[3];
@@ -87,92 +80,15 @@ struct t_triangle {
 };
 typedef TriBIH<t_triangle> genBIH;
 static genBIH myGenBIH;
-
-
-
-class ConstantShader : public picogen::graphics::material::abstract::IShader {
-        picogen::graphics::color::Color color;
-    public:
-        virtual ~ConstantShader() {};
-        ConstantShader (const picogen::graphics::color::Color &color) : color (color) {}
-        virtual void shade (
-            picogen::graphics::color::Color &color,
-            const picogen::geometrics::Vector3d &normal,
-            const picogen::geometrics::Vector3d &position
-        ) const {
-            color = this->color;
-        }
-};
-static const ConstantShader  red (picogen::graphics::color::Color (1.0, 0.3, 0.3));
-static const ConstantShader  green (picogen::graphics::color::Color (0.3, 1.0, 0.3));
-static const ConstantShader  blue (picogen::graphics::color::Color (0.3, 0.3, 1.0));
-static const ConstantShader  white (picogen::graphics::color::Color (1.0, 1.0, 1.0));
+*/
 
 
 namespace {
-    template <typename RT, typename T> RT floor (const T &v) {
-        assert (static_cast<int>(1.75) == 1);
-        assert (static_cast<int>(1.5) == 1);
-        assert (static_cast<int>(1.25) == 1);
-        assert (static_cast<int>(-0.75) == 0);
-        assert (static_cast<int>(-0.5) == 0);
-        assert (static_cast<int>(-0.25) == 0);
-        return (RT)(int)(v<0 ? v-1 : v);
-    }
+    const ::picogen::graphics::shaders::ConstantShader  red (picogen::graphics::color::Color (1.0, 0.3, 0.3));
+    const ::picogen::graphics::shaders::ConstantShader  green (picogen::graphics::color::Color (0.3, 1.0, 0.3));
+    const ::picogen::graphics::shaders::ConstantShader  blue (picogen::graphics::color::Color (0.3, 0.3, 1.0));
+    const ::picogen::graphics::shaders::ConstantShader  white (picogen::graphics::color::Color (1.0, 1.0, 1.0));
 }
-
-
-/*
-class HeightSlangShader : public picogen::graphics::material::abstract::IShader {
-        intrusive_ptr <Function_R6_R1_Refcounted> hs;
-        std::vector <IShader*> shaders;
-        const real numShaders;
-        real sx, sy, sz;
-
-        real min_h, max_h;
-
-    public:
-        virtual ~HeightSlangShader() {};
-        HeightSlangShader (const intrusive_ptr <Function_R6_R1_Refcounted> hs, const std::vector <IShader*> &shaders)
-        : hs (hs)
-        , shaders (shaders)
-        , numShaders (static_cast <real> (shaders.size()-1))
-        //, size (static_cast <real> (shaders.size()))
-        , sx (1), sy (1), sz (1)
-        {
-
-        }
-        virtual void shade (
-            picogen::graphics::color::Color &color,
-            const picogen::geometrics::Vector3d &normal,
-            const picogen::geometrics::Vector3d &position
-        ) const {
-            if (shaders.size()==0) {
-                color = Color (1.0, 1.0, 1.0);
-                return;
-            }
-            if (shaders.size()==1) {
-                shaders [0]->shade (color, normal, position);
-            }
-            const real f_ = (*hs) (position [0]*sx, position [2]*sz, position [1]*sy, normal [0], normal [2], normal [1]) * numShaders;
-            const int a = floor <int> (f_);
-            if (a<0) {
-                shaders [0]->shade (color, normal, position);
-                return;
-            }
-            if (a>=shaders.size()-1) {
-                shaders [shaders.size()-1]->shade (color, normal, position);
-                return;
-            }
-            const int b = 1+a;
-            const real f = f_ - static_cast <real> (a);
-
-            Color A, B;
-            shaders [a]->shade (A, normal, position);
-            shaders [b]->shade (B, normal, position);
-            color = A * (1-f) + B * f;
-        }
-};*/
 
 
 
@@ -324,7 +240,6 @@ class SSDFScene : public Scene, public SSDFBackend {
         ::std::string outputFilename;
         int writeOutputEveryNthLoop;
         int writeOutputEveryNthLoop_loopsLeft; // D'oh.
-
 
         // TODO: Still a hack, make Scene more OOPish
         void mergeStackTops () {
@@ -837,12 +752,7 @@ class SSDFScene : public Scene, public SSDFBackend {
             if (c) {
                 if (--writeOutputEveryNthLoop_loopsLeft <= 0) {
                     writeOutputEveryNthLoop_loopsLeft = writeOutputEveryNthLoop;
-                    SDL_Surface *surface = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32, 0,0,0,0);
-                    if (0 != surface) {
-                        ::draw (surface, *renderer.getFilm(), 1.0, 1.0, 1.0, antiAliasingWidth);
-                        SDL_SaveBMP (surface, outputFilename.c_str());
-                        SDL_FreeSurface (surface);
-                    }
+                    saveOutput();
                 }
                 renderer.oneMoreRun();
             }
@@ -851,11 +761,20 @@ class SSDFScene : public Scene, public SSDFBackend {
 
         virtual void end() {
         }
+        
+        void saveOutput() {
+            SDL_Surface *surface = SDL_CreateRGBSurface (SDL_SWSURFACE, width, height, 32, 0,0,0,0);
+            if (0 != surface) {
+                ::draw (surface, *renderer.getFilm(), 1.0, 1.0, 1.0, antiAliasingWidth);
+                SDL_SaveBMP (surface, outputFilename.c_str());
+                SDL_FreeSurface (surface);
+            }
+        }
 };
 
 
 
-static int loop (SDL_Surface *screen, Scene *scene, int width, int height, const int loopCount) {
+static int loop (SDL_Surface *screen, SSDFScene *scene, const int width, const int height, const int aa, const int loopCount) {
     //scene->flip( screen );
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
     // prepare and run loop
@@ -867,6 +786,7 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height, const
     int runCount = 0;
     //clock_t startTime = clock();
     bool done = false;
+    bool renderFinished = false;
     bool queryingForReallyQuit = false;
     unsigned int numManDumbs = 0;
     float scale = 1;
@@ -895,7 +815,11 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height, const
                         queryingForReallyQuit = false;
                     }
                 } else if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    queryingForReallyQuit = 1;
+                    if (renderFinished) {
+                        done = true;
+                    } else {
+                        queryingForReallyQuit = 1;
+                    }
                 }
                 if (event.key.keysym.sym == SDLK_d) {
                     char s[256];
@@ -996,51 +920,45 @@ static int loop (SDL_Surface *screen, Scene *scene, int width, int height, const
             }
         }
 
-        bool cont = (loopCount==-1 || runCount<loopCount) && scene->renderMore (pixelsPerContinue);
-        if (cont) {
-            runCount++;
-            //
-            //renderer.OneMoreRun();
-            //if( 0 == (runCount%3) )
-            //    renderer.surface().saveBinaryToFile( checkpointFile );
-        } else if (queryingForReallyQuit) {
-            SDL_WM_SetCaption ("Really Quit? (Y/N) ", "Really Quit? (Y/N) ");
-        } else {
-            char s[256];
-            //float t = (static_cast<float>(clock()-startTime))/static_cast<float>(CLOCKS_PER_SEC);
-            //sprintf( s, "%uspp:%ux%u/%.2fsec/color{scale%.2f", runCount, WIDTH, HEIGHT , t, scale );
-            sprintf (s, "%uspp;color.{*%.2f,t%.2f,s%.2f};refresh{%.2fl}", runCount, scale, exp_tone, saturation, (float) pixelsPerContinue/ (float) width);
-            fprintf (stderr, "\rrendering pass %u (%s)", 1+runCount, s);
-            SDL_WM_SetCaption (s, "...");
+        if (!renderFinished) {
+            // Argh, clean this up!
+            bool cont = (loopCount==-1 || runCount<loopCount) && scene->renderMore (pixelsPerContinue);
+            if (loopCount!=-1 && runCount == loopCount) {
+                std::stringstream s;
+                s << "Finished (press Escape)! Samples per pixel: " << (runCount*aa*aa) << " (including antialiasing)" << std::flush;
+                SDL_WM_SetCaption (s.str().c_str(), "rendered!");
+                renderFinished = true;
+            } else if (cont) {
+                runCount++;
+                //if( 0 == (runCount%3) )
+                //    renderer.surface().saveBinaryToFile( checkpointFile );
+            } else if (queryingForReallyQuit) {
+                SDL_WM_SetCaption ("Really Quit? (Y/N) ", "Really Quit? (Y/N) ");
+            } else {
+                char s[256];
+                sprintf (s, "%uspp;color.{*%.2f,t%.2f,s%.2f};refresh{%.2fl}", runCount, scale, exp_tone, saturation, (float) pixelsPerContinue/ (float) width);
+                fprintf (stderr, "\rrendering pass %u (%s)", 1+runCount, s);
+                SDL_WM_SetCaption (s, "rendering ...");
+            }
         }
-
-        //scene->flip( screen );
-        scene->flip (screen, scale, saturation);
-        //draw(screen,renderer.surface(),scale, exp_tone, saturation);
-        /*unsigned int numSamples;
-        for( numSamples=0; numSamples<10000; numSamples ++ ){
-            unsigned int u = rand() % surf.width();
-            unsigned int v = rand() % surf.height();
-            if( (rand()%500000) > u*u+v*v )
-                surf(u,v) += base_types::color(1,1,1);
-        }*/
+        
+        scene->flip (screen, scale, saturation);        
     }
+    scene->saveOutput();
     scene->end();
     return 0;
 }
 
 
 
-static int grind (int width, int height, int antiAliasingWidth, Scene *scene, surface_integrator_type stype) {
+static int grind (int width, int height, int antiAliasingWidth, int loopCount, SSDFScene *scene, surface_integrator_type stype) {
     using namespace std;
 
-    int loopCount = 1;
     switch (stype) {
         case whitted_style:
             loopCount = 1;
             break;
         case path_tracing:
-            loopCount = -1;
             break;
     };
 
@@ -1058,7 +976,7 @@ static int grind (int width, int height, int antiAliasingWidth, Scene *scene, su
     }
 
     //scene->flip();
-    return loop (screen, scene, width, height, loopCount);  /// \todo check if SDL cleans up surface resource
+    return loop (screen, scene, width, height, antiAliasingWidth, loopCount);  /// \todo check if SDL cleans up surface resource
 }
 
 
@@ -1098,6 +1016,8 @@ int main_ssdf (int argc, char *argv[]) {
     int width = 320;
     int height = 320;
     int aaWidth = 1;
+    int writeOutputEveryNthLoop = 1;
+    int totalLoops = 0;
     surface_integrator_type stype = path_tracing;
     string outputFilename = "";
     //-- Options.
@@ -1162,6 +1082,34 @@ int main_ssdf (int argc, char *argv[]) {
 
             --argc;
             ++argv;
+        } else if (primary == string ("-n") || primary == string ("--write-output-each-n-loops")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            stringstream ss;
+            ss << argv [0];
+            ss >> writeOutputEveryNthLoop;
+            if (0 >= writeOutputEveryNthLoop) {
+                writeOutputEveryNthLoop = 1;
+            }
+
+            --argc;
+            ++argv;
+        } else if (primary == string ("-l") || primary == string ("--total-loops")) {
+            if (argc == 0) {   // check if any argument is given, we need at least one remaining
+                printUsage();
+                return -1;
+            }
+            stringstream ss;
+            ss << argv [0];
+            ss >> totalLoops;
+            if (0 >= totalLoops) {
+                totalLoops = -1;
+            }
+
+            --argc;
+            ++argv;
         } else if (primary == string ("-s") || primary == string ("--surface-integrator")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
@@ -1191,10 +1139,10 @@ int main_ssdf (int argc, char *argv[]) {
         }
     }
 
-    Scene *grindScene;
+    SSDFScene *grindScene;
     try {
-        grindScene = new SSDFScene (filename, outputFilename, 1);
-        return grind (width, height, aaWidth, grindScene, stype);
+        grindScene = new SSDFScene (filename, outputFilename, writeOutputEveryNthLoop);
+        return grind (width, height, aaWidth, totalLoops, grindScene, stype);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
     } catch (PicoSSDF::exception_unknown e) {
