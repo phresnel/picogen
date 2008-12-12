@@ -167,6 +167,7 @@ private:
     bool ShowSaveFileDlg();
 
     std::string generateSceneTempFile (bool withPreviewSettings) const;    
+    wxString pwsFilename;
 
 protected:
 	// Handlers for MkheightmapWxDialogGui events.
