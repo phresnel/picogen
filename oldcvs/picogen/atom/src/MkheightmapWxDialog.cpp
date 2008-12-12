@@ -1032,81 +1032,77 @@ namespace serialization {
         }        
     };
     
-    
-    
-    template <typename T> struct Sun {
-        struct FalloffHack {
-            bool enable;
-            T params [3];
-            
-            friend class boost::serialization::access;
-            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-                using namespace boost::serialization;
-                int enable = this->enable ? 1 : 0;
-                T a = params [0];
-                T b = params [1];
-                T c = params [2];
-                ar  & make_nvp("enable", enable);
-                ar  & make_nvp("a", a);
-                ar  & make_nvp("b", b);
-                ar  & make_nvp("c", c);
-            }
-        };
         
         
-        Rgb<T> color; 
-        Xyz<T> direction;
-        T diskSize;
-        FalloffHack falloffHack;
-       
-        
-        friend class boost::serialization::access;
-        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-            using namespace boost::serialization;
-            ar  & make_nvp("color", color);
-            ar  & make_nvp("direction", direction);            
-            ar  & make_nvp("disk-size", diskSize);
-            ar  & make_nvp("falloff-hack", falloffHack);
-        }
-    };
-    
-    
-    
-    template <typename T> struct Atmosphere {
-        struct Fog {
-            bool enable;
-            T density;
-            T maxRange;
-            
-            friend class boost::serialization::access;
-            
-            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-                using namespace boost::serialization;
-                int enable = this->enable ? 1 : 0;
-                ar  & make_nvp("enable", enable);
-                ar  & make_nvp("density", density);            
-                ar  & make_nvp("max-range", maxRange);
-            }
-        };
-        
-        Rgb<T> colorFilter;
-        Fog fog;
-        T turbidity;
-        
-        friend class boost::serialization::access;
-        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-            using namespace boost::serialization;
-            ar  & make_nvp("fog", fog);
-            ar  & make_nvp("turbidity", turbidity);
-            ar  & make_nvp("color-filter", colorFilter);
-        }
-    };
-    
-    
-    
     template <typename T> struct SunSky {        
-        Sun<T> sun;
-        Atmosphere<T> atmosphere;
+        struct Sun {
+            struct FalloffHack {
+                bool enable;
+                T params [3];
+                
+                friend class boost::serialization::access;
+                template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                    using namespace boost::serialization;
+                    int enable = this->enable ? 1 : 0;
+                    T a = params [0];
+                    T b = params [1];
+                    T c = params [2];
+                    ar  & make_nvp("enable", enable);
+                    ar  & make_nvp("a", a);
+                    ar  & make_nvp("b", b);
+                    ar  & make_nvp("c", c);
+                }
+            };
+            
+            
+            Rgb<T> color; 
+            Xyz<T> direction;
+            T diskSize;
+            FalloffHack falloffHack;
+           
+            
+            friend class boost::serialization::access;
+            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                using namespace boost::serialization;
+                ar  & make_nvp("color", color);
+                ar  & make_nvp("direction", direction);            
+                ar  & make_nvp("disk-size", diskSize);
+                ar  & make_nvp("falloff-hack", falloffHack);
+            }
+        };
+        
+        struct Atmosphere {
+            struct Fog {
+                bool enable;
+                T density;
+                T maxRange;
+                
+                friend class boost::serialization::access;
+                
+                template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                    using namespace boost::serialization;
+                    int enable = this->enable ? 1 : 0;
+                    ar  & make_nvp("enable", enable);
+                    ar  & make_nvp("density", density);            
+                    ar  & make_nvp("max-range", maxRange);
+                }
+            };
+            
+            Rgb<T> colorFilter;
+            Fog fog;
+            T turbidity;
+            
+            friend class boost::serialization::access;
+            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                using namespace boost::serialization;
+                ar  & make_nvp("fog", fog);
+                ar  & make_nvp("turbidity", turbidity);
+                ar  & make_nvp("color-filter", colorFilter);
+            }
+        };
+    
+        Sun sun;
+        Atmosphere atmosphere;
         
         friend class boost::serialization::access;
         template<class Archive> void serialize(Archive & ar, const unsigned int version) {
@@ -1118,22 +1114,102 @@ namespace serialization {
     
     
     
+    template <typename T> struct CameraYawPitchRoll {
+        
+        struct YawPitchRoll {
+            T yaw, pitch, roll;
+            friend class boost::serialization::access;
+            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                using namespace boost::serialization;            
+                ar  & make_nvp("yaw", yaw);
+                ar  & make_nvp("pitch", pitch);
+                ar  & make_nvp("roll", roll);
+            }        
+        };
+        
+        YawPitchRoll orientation;
+        Xyz<T> position;
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;            
+            ar  & make_nvp("orientation", orientation);
+            ar  & make_nvp("position", position);
+        }
+    };
+    
+    
+    
+    typedef enum SurfaceIntegrator {
+        Whitted, PathTracing
+    };
+    
+    
+    template <typename T> struct RenderSettings {        
+        
+        struct Screen {
+            int width, height, antialiasing;
+            friend class boost::serialization::access;
+            template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+                using namespace boost::serialization;            
+                ar  & make_nvp("width", width);
+                ar  & make_nvp("height", height);
+                ar  & make_nvp("antialiasing", antialiasing);
+            }
+        };
+        
+        SurfaceIntegrator surfaceIntegrator;
+        Screen screen;
+        
+        
+        friend class boost::serialization::access;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;            
+            std::string integrator = "";
+            switch (surfaceIntegrator) {
+                case Whitted: integrator = "whitted"; break;
+                case PathTracing: integrator = "path-tracing"; break;
+            };
+            ar  & make_nvp("surface-integrator", integrator);
+            ar  & make_nvp("screen", screen);
+        }
+    };
+    
+    
+   
     template <typename T> struct Scene {
+        
         Terrain<T> terrain;
         SunSky<T> sunsky;
+        CameraYawPitchRoll<T> cameraYawPitchRoll;
+        RenderSettings<T> renderSettings;
         
-        Scene (const Terrain<T> &terrain, const SunSky<T> &sunsky) : terrain (terrain), sunsky (sunsky) {   }
+        Scene (
+            const Terrain<T> &terrain, 
+            const SunSky<T> &sunsky,
+            const CameraYawPitchRoll<T> &cameraYawPitchRoll,
+            const RenderSettings<T> &renderSettings
+        )
+            : terrain (terrain)
+            , sunsky (sunsky)
+            , cameraYawPitchRoll (cameraYawPitchRoll)
+            , renderSettings (renderSettings)
+        {
+        }
         
         friend class boost::serialization::access;
         void save (boost::archive::xml_oarchive & ar, const unsigned int /* file_version */) const {
             using namespace boost::serialization;
             ar  & make_nvp("terrain", terrain);
             ar  & make_nvp("sunsky", sunsky);
+            ar  & make_nvp("camera-yaw-pitch-roll", cameraYawPitchRoll);
+            ar  & make_nvp("render-settings", renderSettings);
         }
         void load (boost::archive::xml_iarchive & ar, const unsigned int file_version) {
             using namespace boost::serialization;
             ar  & make_nvp("terrain", terrain);
             ar  & make_nvp("sunsky", sunsky);
+            ar  & make_nvp("camera-yaw-pitch-roll", cameraYawPitchRoll);
         }
     
         BOOST_SERIALIZATION_SPLIT_MEMBER()
@@ -1144,108 +1220,101 @@ BOOST_CLASS_VERSION(::serialization::Scene<double>, 0)
 
 
 void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
-    using namespace ::serialization;
     
-    typedef double ft;    
-    // Terrain.
-    Terrain<ft> terrain;
-    {
-        terrain.code = std::string (terrainHeightmap->GetText().mb_str());
-        terrain.shader = std::string (terrainShader->GetText().mb_str());
-        terrain.resolution = (1<<(1+heightmapSize->GetSelection()));
+    
+    wxFileDialog openFileDialog (
+        this, _("Open file"), _(""), _(""), _("All Files|*.*|Picogen-Wx Scene Files (*.pws)|*.pws"),
+    #if wxCHECK_VERSION(2, 8, 0)
+        wxFD_OVERWRITE_PROMPT | wxFD_SAVE | wxFD_CHANGE_DIR,
+    #else
+		wxOVERWRITE_PROMPT | wxSAVE | wxCHANGE_DIR,
+    #endif
+        wxDefaultPosition
+    );
+    
+    openFileDialog.SetFilename (pwsFilename);
+    if (openFileDialog.ShowModal() == wxID_OK) {
+        using namespace ::serialization;
+    
+        typedef double ft;    
+        // Terrain.
+        Terrain<ft> terrain;
         {
-            std::stringstream ss;
-            ss << terrainDimWidth->GetValue().mb_str() << std::flush;
-            ss >> terrain.width;
+            terrain.code = std::string (terrainHeightmap->GetText().mb_str());
+            terrain.shader = std::string (terrainShader->GetText().mb_str());
+            terrain.resolution = (1<<(1+heightmapSize->GetSelection()));
+            {
+                std::stringstream ss;
+                ss << terrainDimWidth->GetValue().mb_str() << std::flush;
+                ss >> terrain.width;
+            }
+            {
+                std::stringstream ss;
+                ss << terrainDimHeight->GetValue().mb_str() << std::flush;
+                ss >> terrain.height;
+            }
         }
+            
+        // SunSky.
+        SunSky<ft> sunsky;
         {
-            std::stringstream ss;
-            ss << terrainDimHeight->GetValue().mb_str() << std::flush;
-            ss >> terrain.height;
+            // I won't accept insults about software-design!
+            ObtainSunSkyParams (
+                sunsky.atmosphere.colorFilter.rgb,
+                sunsky.atmosphere.fog.enable, 
+                sunsky.atmosphere.fog.density, 
+                sunsky.atmosphere.fog.maxRange,
+                sunsky.atmosphere.turbidity,
+                sunsky.sun.diskSize,
+                sunsky.sun.falloffHack.enable, 
+                sunsky.sun.falloffHack.params, 
+                sunsky.sun.color.rgb, 
+                sunsky.sun.direction.xyz
+            );
         }
-    }
         
-    // SunSky.
-    SunSky<ft> sunsky;
-    {
-        // I won't accept nitpicks about software-design-laws!
-        ObtainSunSkyParams (
-            sunsky.atmosphere.colorFilter.rgb,
-            sunsky.atmosphere.fog.enable, sunsky.atmosphere.fog.density, sunsky.atmosphere.fog.maxRange,
-            sunsky.atmosphere.turbidity,
-            sunsky.sun.diskSize,
-            sunsky.sun.falloffHack.enable, sunsky.sun.falloffHack.params, 
-            sunsky.sun.color.rgb, sunsky.sun.direction.xyz
-        );
-    }
-    
-    Scene<ft> scene (
-        terrain, 
-        sunsky
-    );    
-    
-    std::ofstream ofs("raboof");
-    boost::archive::xml_oarchive oa(ofs);
-    oa << boost::serialization::make_nvp ("picogen-wx-scene", scene);
+        // Camera.
+        CameraYawPitchRoll<ft> camera;
+        GetYprOrientation (camera.orientation.yaw, camera.orientation.pitch, camera.orientation.roll);
+        GetYprPosition (camera.position.xyz [0], camera.position.xyz [1], camera.position.xyz [2]);
+        
+        // RenderSettings.
+        int width=-1, height=-1, aa=2;
+        {
+            {
+                std::stringstream ss;
+                ss << renderWidth->GetValue().mb_str() << std::flush;
+                ss >> width;
+            }
+            {
+                std::stringstream ss;
+                ss << renderHeight->GetValue().mb_str() << std::flush;
+                ss >> height;
+            }
+            {
+                std::stringstream ss;
+                ss << renderAA->GetValue() << std::flush;
+                ss >> aa;
+            }
+        }
+        
+        RenderSettings<ft> settings;
+        settings.surfaceIntegrator = renderSurfaceIntegrator->GetSelection () == 0 ? Whitted : PathTracing;    
+        settings.screen.width = width;
+        settings.screen.height = height;
+        settings.screen.antialiasing = aa;
+        
+        Scene<ft> scene (
+            terrain, 
+            sunsky,
+            camera,
+            settings
+        );    
+        
+        pwsFilename = openFileDialog.GetPath();
+        std::ofstream ofs(pwsFilename.mb_str());
+        boost::archive::xml_oarchive oa(ofs);
+        oa << boost::serialization::make_nvp ("picogen-wx-scene", scene);
+        
+    }   
 }
-
-/*
-void MkheightmapWxDialog::save (boost::archive::xml_oarchive & ar, const unsigned int file_version ) const {
-    using namespace boost::serialization;
-    
-    
-    
-    // Sun-/Sky
-    {
-        float atmoRGB [3]; 
-        float fogDensity; float fogMaxRange;
-        float turbidity;
-        float sunDiskSize;
-        bool falloffEnable; float falloffParameters [3]; 
-        float sunRGB [3]; float sunDir [3];
-        ObtainSunSkyParams (
-            atmoRGB,
-            fogDensity, fogMaxRange,
-            turbidity,
-            sunDiskSize,
-            falloffEnable, falloffParameters, 
-            sunRGB, sunDir
-        );
-        
-        ar  & make_nvp("sunsky-atmosphere-color-filter-r", atmoRGB [0]);
-        ar  & make_nvp("sunsky-atmosphere-color-filter-g", atmoRGB [1]);
-        ar  & make_nvp("sunsky-atmosphere-color-filter-b", atmoRGB [2]);
-        ar  & make_nvp("sunsky-fog-density", fogDensity);
-        ar  & make_nvp("sunsky-fog-max-range", fogMaxRange);
-        ar  & make_nvp("sunsky-turbidity", turbidity);
-        ar  & make_nvp("sunsky-sundisk-size", sunDiskSize);
-        ar  & make_nvp("sunsky-falloff-enable", falloffEnable);
-        ar  & make_nvp("sunsky-falloff-parameters-0", falloffParameters [0]);
-        ar  & make_nvp("sunsky-falloff-parameters-1", falloffParameters [1]);
-        ar  & make_nvp("sunsky-falloff-parameters-2", falloffParameters [2]);
-        ar  & make_nvp("sunsky-sun-color-r", sunRGB [0]);
-        ar  & make_nvp("sunsky-sun-color-g", sunRGB [1]);
-        ar  & make_nvp("sunsky-sun-color-b", sunRGB [2]);
-        ar  & make_nvp("sunsky-sun-direction-x", sunDir [0]);
-        ar  & make_nvp("sunsky-sun-direction-y", sunDir [1]);
-        ar  & make_nvp("sunsky-sun-direction-z", sunDir [2]);
-    }
-    
-    // Camera.
-    {
-        float yaw, pitch, roll, x, y, z;
-        GetYprOrientation (yaw, pitch, roll);
-        GetYprPosition (x, y, z);
-        
-        ar  & make_nvp("camera-ypr-x", x);
-        ar  & make_nvp("camera-ypr-y", y);
-        ar  & make_nvp("camera-ypr-z", z);
-        ar  & make_nvp("camera-ypr-yaw", yaw);
-        ar  & make_nvp("camera-ypr-pitch", pitch);
-        ar  & make_nvp("camera-ypr-roll", roll);
-    }
-}
-    
-void MkheightmapWxDialog::load (boost::archive::xml_iarchive & ar, const unsigned int file_version){
-    using namespace boost::serialization;
-}*/
