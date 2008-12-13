@@ -563,6 +563,7 @@ void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event ) {
             wxMessageDialog msg (this, 
                 wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
             );
+            msg.ShowModal ();
         } else {            
         }
     } else {        
@@ -612,6 +613,7 @@ void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event ) {
             wxMessageDialog msg (this, 
                 wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
             );
+            msg.ShowModal();
         } else {            
         }
     } else {        
@@ -680,6 +682,7 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) {
             wxMessageDialog msg (this, 
                 wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
             );
+            msg.ShowModal();
         } else {            
         }
     } else {        
@@ -814,7 +817,7 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
             + wxString(_(" -h 480 "))
             //+ wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing            
         ;
-        wxMessageDialog (this, x_usrbin);
+        //wxMessageDialog (this, x_usrbin);
         wxString x_currentfolder = wxString (_("./") + x_usrbin);
         
         // try picogen in current folder
@@ -837,6 +840,7 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
                 wxMessageDialog msg (this, 
                     wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
                 );
+                msg.ShowModal();
             } else {            
             }
         } else {        
@@ -904,6 +908,7 @@ void MkheightmapWxDialog::OnRender( wxCommandEvent& event ) {
                 wxMessageDialog msg (this, 
                     wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
                 );
+                msg.ShowModal();
             } else {            
             }
         } else {        
@@ -1196,24 +1201,36 @@ namespace serialization {
             , renderSettings (renderSettings)
         {
         }
+
+        Scene () {}
         
         friend class boost::serialization::access;
-        void save (boost::archive::xml_oarchive & ar, const unsigned int /* file_version */) const {
-            using namespace boost::serialization;
+        template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            using namespace boost::serialization;            
             ar  & make_nvp("terrain", terrain);
             ar  & make_nvp("sunsky", sunsky);
             ar  & make_nvp("camera-yaw-pitch-roll", cameraYawPitchRoll);
             ar  & make_nvp("render-settings", renderSettings);
-        }
-        void load (boost::archive::xml_iarchive & ar, const unsigned int file_version) {
-            using namespace boost::serialization;
-            ar  & make_nvp("terrain", terrain);
-            ar  & make_nvp("sunsky", sunsky);
-            ar  & make_nvp("camera-yaw-pitch-roll", cameraYawPitchRoll);
-        }
-    
-        BOOST_SERIALIZATION_SPLIT_MEMBER()
+        }        
     };    
+    
+    // Once we need versioning, we can split up serialize() into the following:
+    //
+    // class X {
+    //    friend class boost::serialization::access;
+    //    void save (boost::archive::xml_oarchive & ar, const unsigned int /* file_version */) const {
+    //        using namespace boost::serialization;
+    //        ar  & make_nvp("member", member);            
+    //    }
+    //    void load (boost::archive::xml_iarchive & ar, const unsigned int file_version) {
+    //        using namespace boost::serialization;
+    //        if (file_version == BAZ) {
+    //            ar  & make_nvp("member", member);            
+    //        }
+    //    }    
+    //    BOOST_SERIALIZATION_SPLIT_MEMBER()
+    //};
+    //BOOST_CLASS_VERSION(x, 0)
 }
 
 BOOST_CLASS_VERSION(::serialization::Scene<double>, 0)
@@ -1223,7 +1240,7 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
     
     
     wxFileDialog openFileDialog (
-        this, _("Open file"), _(""), _(""), _("All Files|*.*|Picogen-Wx Scene Files (*.pws)|*.pws"),
+        this, _("Open file"), _(""), _(""), _("All Files|*|Picogen-Wx Scene Files (*.pws)|*.pws"),
     #if wxCHECK_VERSION(2, 8, 0)
         wxFD_OVERWRITE_PROMPT | wxFD_SAVE | wxFD_CHANGE_DIR,
     #else
@@ -1309,12 +1326,171 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
             sunsky,
             camera,
             settings
-        );    
+        );
         
         pwsFilename = openFileDialog.GetPath();
         std::ofstream ofs(pwsFilename.mb_str());
+        assert (ofs.good());
         boost::archive::xml_oarchive oa(ofs);
         oa << boost::serialization::make_nvp ("picogen-wx-scene", scene);
         
     }   
+}
+
+
+void MkheightmapWxDialog::OnLoad (wxCommandEvent& event) {
+    
+redo_from_start:
+
+    wxFileDialog openFileDialog (
+        this, _("Open file"), _(""), _(""), _("All Files|*|Picogen-Wx Scene Files (*.pws)|*.pws"),
+    #if wxCHECK_VERSION(2, 8, 0)
+        wxFD_OVERWRITE_PROMPT | wxFD_OPEN | wxFD_CHANGE_DIR | wxFD_FILE_MUST_EXIST,
+    #else
+		wxOVERWRITE_PROMPT | wxOPEN | wxCHANGE_DIR | wxFILE_MUST_EXIST,
+    #endif
+        wxDefaultPosition
+    );
+
+    int res = openFileDialog.ShowModal();
+    pwsFilename = openFileDialog.GetPath();
+    
+    if (!pwsFilename.Strip().IsEmpty() && !wxFile::Exists (pwsFilename)) {
+        wxMessageDialog msg (this, 
+            wxString (_("File \"")) + pwsFilename + wxString(_("\" does not exist. Please select an existing file."))
+        );
+        msg.ShowModal();
+        goto redo_from_start; // No Insults accepted.
+    }
+    
+    if (!pwsFilename.Strip().IsEmpty() && wxID_OK == res) {
+        using namespace ::serialization;
+        
+        std::ifstream ifs(pwsFilename.mb_str());
+        assert (ifs.good());
+        boost::archive::xml_iarchive ia (ifs);
+        
+        typedef double ft;
+        Scene<ft> scene;
+        
+        try {
+            ia >> boost::serialization::make_nvp ("picogen-wx-scene", scene);
+        } catch (boost::archive::xml_archive_exception &e) {
+            using namespace boost::archive;
+            switch (e.code) {                
+                case xml_archive_exception:: xml_archive_parsing_error:
+                    wxMessageDialog (this, wxString(_("Caught xml_archive_parsing_error-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case xml_archive_exception:: xml_archive_tag_mismatch:
+                    wxMessageDialog (this, wxString(_("Caught xml_archive_tag_mismatch-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case xml_archive_exception:: xml_archive_tag_name_error:
+                    wxMessageDialog (this, wxString(_("Caught xml_archive_tag_name_error-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+            };
+        } catch (boost::archive::archive_exception &e) {
+            using namespace boost::archive;
+            switch (e.code) {                
+                case archive_exception:: unregistered_class: 
+                    wxMessageDialog (this, wxString(_("Caught unregistered_class-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case archive_exception:: invalid_signature:
+                    wxMessageDialog (this, wxString(_("Caught invalid_signature-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case archive_exception:: unsupported_version:
+                    wxMessageDialog (this, wxString(_("Caught unsupported_version-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case archive_exception:: pointer_conflict:
+                    wxMessageDialog (this, wxString(_("Caught pointer_conflict-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case archive_exception:: incompatible_native_format:
+                    wxMessageDialog (this, wxString(_("Caught incompatible_native_format-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case archive_exception:: array_size_too_short:
+                    wxMessageDialog (this, wxString(_("Caught array_size_too_short-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case archive_exception:: stream_error:
+                    wxMessageDialog (this, wxString(_("Caught stream_error-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                case archive_exception:: invalid_class_name:
+                    wxMessageDialog (this, wxString(_("Caught invalid_class_name-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;                                
+            };
+        }
+    
+        terrainHeightmap->SetText (wxString(scene.terrain.code.c_str(), wxConvUTF8));
+        terrainShader->SetText (wxString(scene.terrain.shader.c_str(), wxConvUTF8));        
+        int i = heightmapSize->FindString (wxString::Format(wxString(_("%i")), scene.terrain.resolution));
+        heightmapSize->SetSelection (wxNOT_FOUND == i ? 8 : i);
+        {
+            std::stringstream ss;
+            ss << scene.terrain.width << std::flush;//terrainDimWidth->GetValue().mb_str() << std::flush;
+            terrainDimWidth->SetValue (wxString (ss.str().c_str(),wxConvUTF8));
+        }
+        {
+            std::stringstream ss;
+            ss << scene.terrain.height << std::flush;//terrainDimWidth->GetValue().mb_str() << std::flush;
+            terrainDimHeight->SetValue (wxString (ss.str().c_str(),wxConvUTF8));
+        }
+        
+       
+        /*
+        // SunSky.
+        SunSky<ft> sunsky;
+        {
+            // I won't accept insults about software-design!
+            ObtainSunSkyParams (
+                sunsky.atmosphere.colorFilter.rgb,
+                sunsky.atmosphere.fog.enable, 
+                sunsky.atmosphere.fog.density, 
+                sunsky.atmosphere.fog.maxRange,
+                sunsky.atmosphere.turbidity,
+                sunsky.sun.diskSize,
+                sunsky.sun.falloffHack.enable, 
+                sunsky.sun.falloffHack.params, 
+                sunsky.sun.color.rgb, 
+                sunsky.sun.direction.xyz
+            );
+        }
+        */
+        
+        // Camera.
+        SetYprOrientation (scene.cameraYawPitchRoll.orientation.yaw, scene.cameraYawPitchRoll.orientation.pitch, scene.cameraYawPitchRoll.orientation.roll);
+        SetYprPosition (scene.cameraYawPitchRoll.position.xyz [0], scene.cameraYawPitchRoll.position.xyz [1], scene.cameraYawPitchRoll.position.xyz [2]);
+        
+        /*
+        // RenderSettings.
+        int width=-1, height=-1, aa=2;
+        {
+            {
+                std::stringstream ss;
+                ss << renderWidth->GetValue().mb_str() << std::flush;
+                ss >> width;
+            }
+            {
+                std::stringstream ss;
+                ss << renderHeight->GetValue().mb_str() << std::flush;
+                ss >> height;
+            }
+            {
+                std::stringstream ss;
+                ss << renderAA->GetValue() << std::flush;
+                ss >> aa;
+            }
+        }
+        
+        RenderSettings<ft> settings;
+        settings.surfaceIntegrator = renderSurfaceIntegrator->GetSelection () == 0 ? Whitted : PathTracing;    
+        settings.screen.width = width;
+        settings.screen.height = height;
+        settings.screen.antialiasing = aa;
+        
+        Scene<ft> scene (
+            terrain, 
+            sunsky,
+            camera,
+            settings
+        );
+        */
+    }
 }
