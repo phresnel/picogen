@@ -1009,7 +1009,7 @@ bool MkheightmapWxDialog::ShowSaveFileDlg () {
     }
 
     wxFileDialog openFileDialog (
-        this, _("Open file"), _(""), _(""), _("All Files|*.*|BMP files (*.bmp)|*.bmp"),
+        this, _("Open file"), _(""), _(""), _("BMP files (*.bmp)|*.bmp|All Files|*"),
     #if wxCHECK_VERSION(2, 8, 0)
         wxFD_OVERWRITE_PROMPT | wxFD_SAVE | wxFD_CHANGE_DIR,
     #else
@@ -1340,7 +1340,7 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
     
     
     wxFileDialog openFileDialog (
-        this, _("Open file"), _(""), _(""), _("All Files|*|Picogen-Wx Scene Files (*.pws)|*.pws"),
+        this, _("Open file"), _(""), _(""), _("Picogen-Wx Scene Files (*.pws)|*.pws|All Files|*"),
     #if wxCHECK_VERSION(2, 8, 0)
         wxFD_OVERWRITE_PROMPT | wxFD_SAVE | wxFD_CHANGE_DIR,
     #else
@@ -1475,7 +1475,7 @@ void MkheightmapWxDialog::OnLoad (wxCommandEvent& event) {
 redo_from_start:
 
     wxFileDialog openFileDialog (
-        this, _("Open file"), _(""), _(""), _("All Files|*|Picogen-Wx Scene Files (*.pws)|*.pws"),
+        this, _("Open file"), _(""), _(""), _("Picogen-Wx Scene Files (*.pws)|*.pws|All Files|*"),
     #if wxCHECK_VERSION(2, 8, 0)
         wxFD_OVERWRITE_PROMPT | wxFD_OPEN | wxFD_CHANGE_DIR | wxFD_FILE_MUST_EXIST,
     #else
