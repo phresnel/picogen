@@ -68,9 +68,10 @@ namespace {
     const int numShKeywords = sizeof (shKeywords) / sizeof (shKeywords [0]);
 }
 
-MkheightmapWxDialog::MkheightmapWxDialog( wxWindow* parent )
-:
-MkheightmapWxDialogGui( parent )
+
+
+MkheightmapWxDialog::MkheightmapWxDialog( wxWindow* parent ) :
+    MkheightmapWxDialogGui( parent )
 {
     terrainHeightmap->SetFocus();
     
@@ -147,21 +148,24 @@ MkheightmapWxDialogGui( parent )
     }
 }
 
-void MkheightmapWxDialog::UpdateTextWithTemplate (const wxString &tpl)
-{
+
+
+void MkheightmapWxDialog::UpdateTextWithTemplate (const wxString &tpl) {
     switch (masterNotebook->GetSelection ()) {
         case 0: terrainHeightmap->ReplaceSelection (tpl); break;
         case 1: terrainShader->ReplaceSelection (tpl); break;
     };
 }
 
-void MkheightmapWxDialog::OnMenu_Execute( wxCommandEvent& event )
-{
+
+
+void MkheightmapWxDialog::OnMenu_Execute( wxCommandEvent& event ) {
     OnShowHeightmap (event);
 }
 
-void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event )
-{
+
+
+void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event ) {
     #define doIndent() do { for (int i=0; i<indent*tablen; ++i) { formatted+=' '; } } while(0)
     const int tablen = 4;
     int indent=0;
@@ -246,51 +250,73 @@ void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event )
     #undef doIndent
 }
 
-void MkheightmapWxDialog::OnFastHsMakeChoice ( wxCommandEvent& event )
-{
+
+
+void MkheightmapWxDialog::OnFastHsMakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast111->GetStringSelection());
 }
+
 
 
 void MkheightmapWxDialog::OnFast1MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast1->GetStringSelection());
 }
 
+
+
 void MkheightmapWxDialog::OnFast11MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast11->GetStringSelection());
 }
+
+
 
 void MkheightmapWxDialog::OnFast2MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast21->GetStringSelection());
 }
 
+
+
 void MkheightmapWxDialog::OnFast21MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast21->GetStringSelection());
 }
+
+
 
 void MkheightmapWxDialog::OnFast3MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast3->GetStringSelection());
 }
 
+
+
 void MkheightmapWxDialog::OnFast31MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast31->GetStringSelection());
 }
+
+
 
 void MkheightmapWxDialog::OnFast4MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast4->GetStringSelection());
 }
 
+
+
 void MkheightmapWxDialog::OnFast41MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast41->GetStringSelection());
 }
+
+
 
 void MkheightmapWxDialog::OnFast5MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast5->GetStringSelection());
 }
 
+
+
 void MkheightmapWxDialog::OnFast51MakeChoice ( wxCommandEvent& event ) {
     UpdateTextWithTemplate (fast51->GetStringSelection());
 }
+
+
 
 void MkheightmapWxDialog::OnFastColorMakeChoice ( wxCommandEvent& event ) {
     if (wxString(_("red")) == fastConstRGB->GetStringSelection()) {
@@ -308,8 +334,9 @@ void MkheightmapWxDialog::OnFastColorMakeChoice ( wxCommandEvent& event ) {
     }
 }
 
-void MkheightmapWxDialog::OnFast6MakeChoice ( wxCommandEvent& event )
-{
+
+
+void MkheightmapWxDialog::OnFast6MakeChoice ( wxCommandEvent& event ) {
     if (wxString(_("\"Noise (cosine-filter)\"")) == fast6->GetStringSelection()) {
         UpdateTextWithTemplate (
             wxString (_("([2 Noise seed(42) frequency(16) filter(cosine)] x y)"))
@@ -340,6 +367,8 @@ void MkheightmapWxDialog::OnFast6MakeChoice ( wxCommandEvent& event )
         );
     }     
 }
+
+
 
 void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event ) {
     // Presets from http://picogen.org/wiki/index.php?title=Examples_and_Interesting_Programs_for_mkheightmap
@@ -527,6 +556,8 @@ void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event ) {
     } 
 }
 
+
+
 void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event ) {
 	wxString x = terrainHeightmap->GetText();
     // TODO: find better de-weaponing
@@ -570,6 +601,7 @@ void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event ) {
     }
     terrainHeightmap->SetFocus();
 }
+
 
 
 void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event ) {
@@ -625,18 +657,22 @@ void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event ) {
 
 void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) {
     float atmoRGB [3]; 
+    float atmosphereBrightness;
     bool fogEnable; float fogDensity; float fogMaxRange;
     float turbidity;
     float sunDiskSize;
     bool falloffEnable; float falloffParameters [3]; 
-    float sunRGB [3]; float sunDir [3];
+    float sunRGB [3]; float sunBrightness;
+    float sunDir [3];
     ObtainSunSkyParams (
         atmoRGB,
+        atmosphereBrightness,
         fogEnable, fogDensity, fogMaxRange,
         turbidity,
         sunDiskSize,
         falloffEnable, falloffParameters, 
-        sunRGB, sunDir
+        sunRGB, sunBrightness,
+        sunDir
     );
     
     
@@ -649,11 +685,11 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) {
     using namespace std;
     stringstream commandline;
     commandline << "picogen mkskymap -p ";
-    commandline << " -F " << atmoRGB [0] << ' ' << atmoRGB [1] << ' ' << atmoRGB [2] << ' ';
+    commandline << " -F " << (atmosphereBrightness*atmoRGB [0]) << ' ' << (atmosphereBrightness*atmoRGB [1]) << ' ' << (atmosphereBrightness*atmoRGB [2]) << ' ';
     if (this->fogEnable->IsChecked()) {
         commandline << " -O " << fogDensity << ' ' << fogMaxRange << ' ';
     }
-    commandline << " -C " << sunRGB [0] << ' ' << sunRGB [1] << ' ' << sunRGB [2] << ' ';    
+    commandline << " -C " << (sunBrightness*sunRGB [0]) << ' ' << (sunBrightness*sunRGB [1]) << ' ' << (sunBrightness*sunRGB [2]) << ' ';
     commandline << " -d " << sunDir [0] << ' ' << sunDir [1] << ' ' << sunDir [2] << ' ';
     commandline << " -t " << turbidity << ' ';
     if (falloffEnable) {
@@ -688,6 +724,8 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) {
     } else {        
     }
 }
+
+
 
 std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings) const {
     #ifdef __LINUX__ 
@@ -768,24 +806,27 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
 
     // Sunsky.
     {
-        float atmoRGB [3]; 
+        float atmoRGB [3]; float atmosphereBrightness;
         bool fogEnable; float fogDensity; float fogMaxRange;
         float turbidity;
         float sunDiskSize;
         bool falloffEnable; float falloffParameters [3]; 
-        float sunRGB [3]; float sunDir [3];
+        float sunRGB [3]; 
+        float sunBrightness;
+        float sunDir [3];
         ObtainSunSkyParams (
-            atmoRGB,
+            atmoRGB, atmosphereBrightness,
             fogEnable, fogDensity, fogMaxRange,
             turbidity,
             sunDiskSize,
             falloffEnable, falloffParameters, 
-            sunRGB, sunDir
+            sunRGB, sunBrightness,
+            sunDir
         );
         tmpfile << "sunsky (turbidity:" << turbidity << ")\n";
         tmpfile << "sunsky (direction: " << sunDir [0] << ',' << sunDir [1] << ',' << sunDir [2] << ")\n";
-        tmpfile << "sunsky (color-filter-rgb: " << atmoRGB [0] << ", " << atmoRGB [1] << ", " << atmoRGB [2] << ")\n";
-        tmpfile << "sunsky (sun-color-rgb: " << sunRGB [0] << ", " << sunRGB [1] << ", " << sunRGB [2] << ")\n";
+        tmpfile << "sunsky (color-filter-rgb: " << (atmosphereBrightness*atmoRGB [0]) << ", " << (atmosphereBrightness*atmoRGB [1]) << ", " << (atmosphereBrightness*atmoRGB [2]) << ")\n";
+        tmpfile << "sunsky (sun-color-rgb: " << (sunBrightness*sunRGB [0]) << ", " << (sunBrightness*sunRGB [1]) << ", " << (sunBrightness*sunRGB [2]) << ")\n";
         if (fogEnable) {
             //tmpfile << "sunsky (fog-exponent: 0.00005; fog-max-distance:10000000)\n";
             tmpfile << "sunsky (fog-exponent: " << fogDensity << "; fog-max-distance:" << fogMaxRange << ")\n";
@@ -805,19 +846,40 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     return tmpfilename;
 }
 
-void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
-    //const wxString tmpfilename (_("/tmp/picogen-quick-preview.ssdf"));
-    
-    const std::string tmpfilename = generateSceneTempFile (true);
-    {
 
-        wxString x_usrbin = wxString (_("picogen ssdf -f ")) + wxString (tmpfilename.c_str(), wxConvUTF8) + wxString(_(" ")) 
-            + wxString(_(" -s ws "))
-            + wxString(_(" -w 640 "))
-            + wxString(_(" -h 480 "))
-            //+ wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing            
+
+void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
+
+    const std::string tmpfilename = generateSceneTempFile (false);
+    {
+        int width=-1, height=-1, aa=2, totalLoops = 0;
+        {
+            std::stringstream ss;
+            ss << previewWidth->GetValue().mb_str() << std::flush;
+            ss >> width;
+        }
+        {
+            std::stringstream ss;
+            ss << previewHeight->GetValue().mb_str() << std::flush;
+            ss >> height;
+        }
+        {
+            std::stringstream ss;
+            ss << previewAA->GetValue() << std::flush;
+            ss >> aa;
+        }
+        /*if (!this->totalLoops->GetValue().Strip().IsEmpty())*/ {
+            std::stringstream ss;
+            ss << this->previewTotalLoops->GetValue().mb_str() << std::flush;
+            ss >> totalLoops;
+            if (totalLoops < 0)
+                totalLoops = 0;
+        }
+
+        wxString x_usrbin = wxString (_("picogen ssdf -f \"")) + wxString (tmpfilename.c_str(), wxConvUTF8) + wxString(_("\" ")) 
+            + ((previewSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
+            + wxString::Format (_(" -w %d -h %d -a %d -l %d "), width, height, aa, totalLoops)
         ;
-        //wxMessageDialog (this, x_usrbin);
         wxString x_currentfolder = wxString (_("./") + x_usrbin);
         
         // try picogen in current folder
@@ -847,6 +909,7 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
         }
     }
 }
+
 
 
 void MkheightmapWxDialog::OnRender( wxCommandEvent& event ) {
@@ -923,6 +986,7 @@ void MkheightmapWxDialog::OnClose( wxCommandEvent& event ) {
 }
 
 
+
 bool MkheightmapWxDialog::ShowSaveFileDlg () {
     // Strip filename.
     wxString filename = renditionFilename->GetValue().Strip (wxString::both);
@@ -962,9 +1026,13 @@ bool MkheightmapWxDialog::ShowSaveFileDlg () {
     return false;
 }
 
+
+
 void MkheightmapWxDialog::OnOpenSaveFile( wxCommandEvent& event ) {
     ShowSaveFileDlg();
 }
+
+
 
 void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event ) {
     /*wxAboutDialogInfo info;
@@ -990,6 +1058,7 @@ void MkheightmapWxDialog::OnMenu_Copyright( wxCommandEvent& event ) {
 }
 
 
+
 namespace serialization {
     
     template <typename T> struct Rgb {
@@ -1003,7 +1072,6 @@ namespace serialization {
             ar  & make_nvp("b", rgb [2]);
         }        
     };
-    
     
     
     template <typename T> struct Xyz {
@@ -1048,19 +1116,28 @@ namespace serialization {
                 friend class boost::serialization::access;
                 template<class Archive> void serialize(Archive & ar, const unsigned int version) {
                     using namespace boost::serialization;
-                    int enable = this->enable ? 1 : 0;
+                    // Needed for serialisation.
+                    int enable = this->enable ? 1 : 0; 
                     T a = params [0];
                     T b = params [1];
                     T c = params [2];
+                    
                     ar  & make_nvp("enable", enable);
                     ar  & make_nvp("a", a);
                     ar  & make_nvp("b", b);
                     ar  & make_nvp("c", c);
+                    
+                    // Needed for deserialisation.
+                    params [0] = a;
+                    params [1] = b;
+                    params [2] = c;
+                    this->enable = 0 != enable;
                 }
             };
             
             
             Rgb<T> color; 
+            T brightness;
             Xyz<T> direction;
             T diskSize;
             FalloffHack falloffHack;
@@ -1070,6 +1147,7 @@ namespace serialization {
             template<class Archive> void serialize(Archive & ar, const unsigned int version) {
                 using namespace boost::serialization;
                 ar  & make_nvp("color", color);
+                ar  & make_nvp("brightness", brightness);
                 ar  & make_nvp("direction", direction);            
                 ar  & make_nvp("disk-size", diskSize);
                 ar  & make_nvp("falloff-hack", falloffHack);
@@ -1086,14 +1164,16 @@ namespace serialization {
                 
                 template<class Archive> void serialize(Archive & ar, const unsigned int version) {
                     using namespace boost::serialization;
-                    int enable = this->enable ? 1 : 0;
+                    int enable = this->enable ? 1 : 0; // Needed for serialisation.
                     ar  & make_nvp("enable", enable);
                     ar  & make_nvp("density", density);            
-                    ar  & make_nvp("max-range", maxRange);
+                    ar  & make_nvp("max-range", maxRange);                    
+                    this->enable = 0 != enable; // Needed for deserialisation.
                 }
             };
             
             Rgb<T> colorFilter;
+            T brightness;
             Fog fog;
             T turbidity;
             
@@ -1103,6 +1183,7 @@ namespace serialization {
                 ar  & make_nvp("fog", fog);
                 ar  & make_nvp("turbidity", turbidity);
                 ar  & make_nvp("color-filter", colorFilter);
+                ar  & make_nvp("brightness", brightness);
             }
         };
     
@@ -1169,14 +1250,28 @@ namespace serialization {
         
         friend class boost::serialization::access;
         template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-            using namespace boost::serialization;            
+            using namespace boost::serialization;
             std::string integrator = "";
+            
+            // Serialisation.
             switch (surfaceIntegrator) {
                 case Whitted: integrator = "whitted"; break;
                 case PathTracing: integrator = "path-tracing"; break;
+                default: integrator = "whitted"; break;
             };
+            
+            // ...
             ar  & make_nvp("surface-integrator", integrator);
             ar  & make_nvp("screen", screen);
+            
+            // Deserialisation.
+            if ("whitted" == integrator) {
+                surfaceIntegrator = Whitted;
+            } else if ("path-tracing" == integrator) {
+                surfaceIntegrator = PathTracing;
+            } else {
+                surfaceIntegrator = Whitted;
+            }
         }
     };
     
@@ -1187,18 +1282,21 @@ namespace serialization {
         Terrain<T> terrain;
         SunSky<T> sunsky;
         CameraYawPitchRoll<T> cameraYawPitchRoll;
-        RenderSettings<T> renderSettings;
+        RenderSettings<T> qualitySettings;
+        RenderSettings<T> previewSettings;
         
         Scene (
             const Terrain<T> &terrain, 
             const SunSky<T> &sunsky,
             const CameraYawPitchRoll<T> &cameraYawPitchRoll,
-            const RenderSettings<T> &renderSettings
+            const RenderSettings<T> &renderSettings,
+            const RenderSettings<T> &previewSettings
         )
             : terrain (terrain)
             , sunsky (sunsky)
             , cameraYawPitchRoll (cameraYawPitchRoll)
-            , renderSettings (renderSettings)
+            , qualitySettings (renderSettings)
+            , previewSettings (previewSettings)
         {
         }
 
@@ -1210,7 +1308,8 @@ namespace serialization {
             ar  & make_nvp("terrain", terrain);
             ar  & make_nvp("sunsky", sunsky);
             ar  & make_nvp("camera-yaw-pitch-roll", cameraYawPitchRoll);
-            ar  & make_nvp("render-settings", renderSettings);
+            ar  & make_nvp("quality-settings", qualitySettings);
+            ar  & make_nvp("preview-settings", previewSettings);
         }        
     };    
     
@@ -1234,6 +1333,7 @@ namespace serialization {
 }
 
 BOOST_CLASS_VERSION(::serialization::Scene<double>, 0)
+
 
 
 void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
@@ -1277,7 +1377,8 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
         {
             // I won't accept insults about software-design!
             ObtainSunSkyParams (
-                sunsky.atmosphere.colorFilter.rgb,
+                sunsky.atmosphere.colorFilter.rgb, 
+                sunsky.atmosphere.brightness,
                 sunsky.atmosphere.fog.enable, 
                 sunsky.atmosphere.fog.density, 
                 sunsky.atmosphere.fog.maxRange,
@@ -1286,8 +1387,9 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
                 sunsky.sun.falloffHack.enable, 
                 sunsky.sun.falloffHack.params, 
                 sunsky.sun.color.rgb, 
+                sunsky.sun.brightness, 
                 sunsky.sun.direction.xyz
-            );
+            );            
         }
         
         // Camera.
@@ -1295,37 +1397,66 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
         GetYprOrientation (camera.orientation.yaw, camera.orientation.pitch, camera.orientation.roll);
         GetYprPosition (camera.position.xyz [0], camera.position.xyz [1], camera.position.xyz [2]);
         
-        // RenderSettings.
-        int width=-1, height=-1, aa=2;
+        // Quality Render Settings.
+        RenderSettings<ft> qualitySettings;
         {
+            int width=-1, height=-1, aa=2;
             {
-                std::stringstream ss;
-                ss << renderWidth->GetValue().mb_str() << std::flush;
-                ss >> width;
-            }
-            {
-                std::stringstream ss;
-                ss << renderHeight->GetValue().mb_str() << std::flush;
-                ss >> height;
-            }
-            {
-                std::stringstream ss;
-                ss << renderAA->GetValue() << std::flush;
-                ss >> aa;
-            }
+                {
+                    std::stringstream ss;
+                    ss << renderWidth->GetValue().mb_str() << std::flush;
+                    ss >> width;
+                }
+                {
+                    std::stringstream ss;
+                    ss << renderHeight->GetValue().mb_str() << std::flush;
+                    ss >> height;
+                }
+                {
+                    std::stringstream ss;
+                    ss << renderAA->GetValue() << std::flush;
+                    ss >> aa;
+                }
+            }            
+            qualitySettings.surfaceIntegrator = renderSurfaceIntegrator->GetSelection () == 0 ? Whitted : PathTracing;    
+            qualitySettings.screen.width = width;
+            qualitySettings.screen.height = height;
+            qualitySettings.screen.antialiasing = aa;
         }
         
-        RenderSettings<ft> settings;
-        settings.surfaceIntegrator = renderSurfaceIntegrator->GetSelection () == 0 ? Whitted : PathTracing;    
-        settings.screen.width = width;
-        settings.screen.height = height;
-        settings.screen.antialiasing = aa;
+        // Preview Render Settings.
+        RenderSettings<ft> previewSettings;
+        {
+            int width=-1, height=-1, aa=2;
+            {
+                {
+                    std::stringstream ss;
+                    ss << previewWidth->GetValue().mb_str() << std::flush;
+                    ss >> width;
+                }
+                {
+                    std::stringstream ss;
+                    ss << previewHeight->GetValue().mb_str() << std::flush;
+                    ss >> height;
+                }
+                {
+                    std::stringstream ss;
+                    ss << previewAA->GetValue() << std::flush;
+                    ss >> aa;
+                }
+            }            
+            previewSettings.surfaceIntegrator = previewSurfaceIntegrator->GetSelection () == 0 ? Whitted : PathTracing;    
+            previewSettings.screen.width = width;
+            previewSettings.screen.height = height;
+            previewSettings.screen.antialiasing = aa;
+        }
         
         Scene<ft> scene (
             terrain, 
             sunsky,
             camera,
-            settings
+            qualitySettings,
+            previewSettings
         );
         
         pwsFilename = openFileDialog.GetPath();
@@ -1336,6 +1467,7 @@ void MkheightmapWxDialog::OnSave (wxCommandEvent& event) {
         
     }   
 }
+
 
 
 void MkheightmapWxDialog::OnLoad (wxCommandEvent& event) {
@@ -1365,16 +1497,74 @@ redo_from_start:
     
     if (!pwsFilename.Strip().IsEmpty() && wxID_OK == res) {
         using namespace ::serialization;
-        
-        std::ifstream ifs(pwsFilename.mb_str());
-        assert (ifs.good());
-        boost::archive::xml_iarchive ia (ifs);
-        
         typedef double ft;
         Scene<ft> scene;
         
         try {
+            std::ifstream ifs(pwsFilename.mb_str());
+            assert (ifs.good());
+            boost::archive::xml_iarchive ia (ifs);
             ia >> boost::serialization::make_nvp ("picogen-wx-scene", scene);
+            
+            
+            terrainHeightmap->SetText (wxString(scene.terrain.code.c_str(), wxConvUTF8));
+            terrainShader->SetText (wxString(scene.terrain.shader.c_str(), wxConvUTF8));        
+            int i = heightmapSize->FindString (wxString::Format(wxString(_("%i")), scene.terrain.resolution));
+            heightmapSize->SetSelection (wxNOT_FOUND == i ? 8 : i);
+            {
+                std::stringstream ss;
+                ss << scene.terrain.width << std::flush;//terrainDimWidth->GetValue().mb_str() << std::flush;
+                terrainDimWidth->SetValue (wxString (ss.str().c_str(),wxConvUTF8));
+            }
+            {
+                std::stringstream ss;
+                ss << scene.terrain.height << std::flush;//terrainDimWidth->GetValue().mb_str() << std::flush;
+                terrainDimHeight->SetValue (wxString (ss.str().c_str(),wxConvUTF8));
+            }
+            
+            // SunSky.
+            {
+                // I won't accept insults about software-design!
+                SetSunSkyParams (
+                    scene.sunsky.atmosphere.colorFilter.rgb,
+                    scene.sunsky.atmosphere.brightness,
+                    scene.sunsky.atmosphere.fog.enable, 
+                    scene.sunsky.atmosphere.fog.density, 
+                    scene.sunsky.atmosphere.fog.maxRange,
+                    scene.sunsky.atmosphere.turbidity,
+                    scene.sunsky.sun.diskSize,
+                    scene.sunsky.sun.falloffHack.enable, 
+                    scene.sunsky.sun.falloffHack.params, 
+                    scene.sunsky.sun.color.rgb, 
+                    scene.sunsky.sun.brightness, 
+                    scene.sunsky.sun.direction.xyz
+                );
+            }
+            
+            // Camera.
+            SetYprOrientation (scene.cameraYawPitchRoll.orientation.yaw, scene.cameraYawPitchRoll.orientation.pitch, scene.cameraYawPitchRoll.orientation.roll);
+            SetYprPosition (scene.cameraYawPitchRoll.position.xyz [0], scene.cameraYawPitchRoll.position.xyz [1], scene.cameraYawPitchRoll.position.xyz [2]);
+            
+            // Quality Render Settings.
+            renderWidth->SetValue (wxString::Format(_("%i"), scene.qualitySettings.screen.width));
+            renderHeight->SetValue (wxString::Format(_("%i"), scene.qualitySettings.screen.height));
+            renderAA->SetValue (wxString::Format(_("%i"), scene.qualitySettings.screen.antialiasing));
+            renderSurfaceIntegrator->SetSelection (
+                Whitted == scene.qualitySettings.surfaceIntegrator
+                ? 0
+                : 1
+            );
+            
+            // Preview Render Settings.
+            previewWidth->SetValue (wxString::Format(_("%i"), scene.previewSettings.screen.width));
+            previewHeight->SetValue (wxString::Format(_("%i"), scene.previewSettings.screen.height));
+            previewAA->SetValue (wxString::Format(_("%i"), scene.previewSettings.screen.antialiasing));
+            previewSurfaceIntegrator->SetSelection (
+                Whitted == scene.previewSettings.surfaceIntegrator
+                ? 0
+                : 1
+            );
+            
         } catch (boost::archive::xml_archive_exception &e) {
             using namespace boost::archive;
             switch (e.code) {                
@@ -1386,6 +1576,10 @@ redo_from_start:
                     break;
                 case xml_archive_exception:: xml_archive_tag_name_error:
                     wxMessageDialog (this, wxString(_("Caught xml_archive_tag_name_error-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    break;
+                default:
+                    //wxMessageDialog (this, wxString(_("Caught an exception:\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    wxMessageDialog (this, wxString(_("Caught exception. Please ensure that \""))+pwsFilename+wxString(_("\" is a valid picogen-wx-file."))).ShowModal(); 
                     break;
             };
         } catch (boost::archive::archive_exception &e) {
@@ -1414,83 +1608,16 @@ redo_from_start:
                     break;
                 case archive_exception:: invalid_class_name:
                     wxMessageDialog (this, wxString(_("Caught invalid_class_name-Exception.\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
-                    break;                                
+                    break; 
+                default:
+                    //wxMessageDialog (this, wxString(_("Caught an exception:\n"))+wxString(e.what(), wxConvUTF8)).ShowModal(); 
+                    wxMessageDialog (this, wxString(_("Caught exception. Please ensure that \""))+pwsFilename+wxString(_("\" is a valid picogen-wx-file."))).ShowModal(); 
+                    break;
             };
+        } catch (...) {
+            wxMessageDialog (this, wxString(_("Caught exception. Please ensure that \""))+pwsFilename+wxString(_("\" is a valid picogen-wx-file."))).ShowModal(); 
         }
     
-        terrainHeightmap->SetText (wxString(scene.terrain.code.c_str(), wxConvUTF8));
-        terrainShader->SetText (wxString(scene.terrain.shader.c_str(), wxConvUTF8));        
-        int i = heightmapSize->FindString (wxString::Format(wxString(_("%i")), scene.terrain.resolution));
-        heightmapSize->SetSelection (wxNOT_FOUND == i ? 8 : i);
-        {
-            std::stringstream ss;
-            ss << scene.terrain.width << std::flush;//terrainDimWidth->GetValue().mb_str() << std::flush;
-            terrainDimWidth->SetValue (wxString (ss.str().c_str(),wxConvUTF8));
-        }
-        {
-            std::stringstream ss;
-            ss << scene.terrain.height << std::flush;//terrainDimWidth->GetValue().mb_str() << std::flush;
-            terrainDimHeight->SetValue (wxString (ss.str().c_str(),wxConvUTF8));
-        }
         
-       
-        /*
-        // SunSky.
-        SunSky<ft> sunsky;
-        {
-            // I won't accept insults about software-design!
-            ObtainSunSkyParams (
-                sunsky.atmosphere.colorFilter.rgb,
-                sunsky.atmosphere.fog.enable, 
-                sunsky.atmosphere.fog.density, 
-                sunsky.atmosphere.fog.maxRange,
-                sunsky.atmosphere.turbidity,
-                sunsky.sun.diskSize,
-                sunsky.sun.falloffHack.enable, 
-                sunsky.sun.falloffHack.params, 
-                sunsky.sun.color.rgb, 
-                sunsky.sun.direction.xyz
-            );
-        }
-        */
-        
-        // Camera.
-        SetYprOrientation (scene.cameraYawPitchRoll.orientation.yaw, scene.cameraYawPitchRoll.orientation.pitch, scene.cameraYawPitchRoll.orientation.roll);
-        SetYprPosition (scene.cameraYawPitchRoll.position.xyz [0], scene.cameraYawPitchRoll.position.xyz [1], scene.cameraYawPitchRoll.position.xyz [2]);
-        
-        /*
-        // RenderSettings.
-        int width=-1, height=-1, aa=2;
-        {
-            {
-                std::stringstream ss;
-                ss << renderWidth->GetValue().mb_str() << std::flush;
-                ss >> width;
-            }
-            {
-                std::stringstream ss;
-                ss << renderHeight->GetValue().mb_str() << std::flush;
-                ss >> height;
-            }
-            {
-                std::stringstream ss;
-                ss << renderAA->GetValue() << std::flush;
-                ss >> aa;
-            }
-        }
-        
-        RenderSettings<ft> settings;
-        settings.surfaceIntegrator = renderSurfaceIntegrator->GetSelection () == 0 ? Whitted : PathTracing;    
-        settings.screen.width = width;
-        settings.screen.height = height;
-        settings.screen.antialiasing = aa;
-        
-        Scene<ft> scene (
-            terrain, 
-            sunsky,
-            camera,
-            settings
-        );
-        */
     }
 }
