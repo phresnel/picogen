@@ -36,7 +36,7 @@
 #include <picogen/picogen.h>
 #include <picogen/misc/picossdf.h>
 
-#include <foreign/SciLexer.h>
+#include <SciLexer.h>
 
 #include <iostream>
 #include <sstream>

@@ -731,7 +731,8 @@ std::string MkheightmapWxDialog::generateSceneTempFile (bool withPreviewSettings
     #ifdef __LINUX__ 
     const std::string tmpfilename = "/tmp/picogen-tempfile.ssdf";
     #else
-    #error Meh.    
+    //#error Meh.    
+	const std::string tmpfilename = "~(tmp)picogen-tempfile.ssdf";
     #endif
 
     using namespace std;
