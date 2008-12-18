@@ -24,12 +24,13 @@ macro (add_oflag flag)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
 endmacro (add_oflag)
 
-message ("old CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+#message ("old CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 if (MSVC)
     #message ("using msvc for compilation")
 else (MSVC)
     #message ("using g++ for compilation")
-    add_oflag   ( -Wall )
+    if (asd)
+	add_oflag   ( -Wall )
     add_oflag   ( -s )
     add_oflag   ( -O3 )
     add_oflag   ( -fexpensive-optimizations )
@@ -47,8 +48,9 @@ else (MSVC)
     add_oflag   ( -funsafe-math-optimizations )
     add_oflag   ( -ffinite-math-only )
     add_oflag   ( -fdata-sections )    
+	endif (asd)
 endif (MSVC)
-message ("new CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+#message ("new CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 #########################################################################################
 
 
@@ -64,8 +66,10 @@ message ("new CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 #message ("boost-regex-lib: ${BOOST_REGEX_LIBRARY}")
 #link_libraries (${BOOST_REGEX_LIBRARY})
 
-find_library (boost_regex_lib libboost_regex ../lib/)
-message ("boost-regex_lib: ${boost_regex_lib}")
+find_library (boost_regex_lib libboost_regex ../lib/ c:/mingw/lib)
+if (NOT boost_regex_lib)
+	message (FATAL_ERROR "boost-regex_lib: ${boost_regex_lib}")
+endif (NOT boost_regex_lib)
 link_libraries(${boost_regex_lib})
 #########################################################################################
 
@@ -77,7 +81,11 @@ link_libraries(${boost_regex_lib})
 ## SDL ##################################################################################
 Find_Package(SDL REQUIRED)
 if (NOT SDL_FOUND)
- message(FATAL_ERROR "SDL not found!")
+	# Plan Bravo.
+	find_library (SDL_LIBRARY SDL ../lib/ c:/mingw/lib)
+	if (NOT SDL_LIBRARY)
+		message(FATAL_ERROR "SDL not found!")
+	endif (NOT SDL_LIBRARY)
 endif (NOT SDL_FOUND)
 
 link_libraries (
@@ -99,7 +107,12 @@ endmacro (add_cxx_file)
 
 
 include_directories (BEFORE 
-        /usr/include/boost.static/boost-1_37/
+	/c/boost/boost_1_37_0/
+    /usr/include/boost.static/boost-1_37/    
+)
+
+include_directories (BEFORE
+	../include/
 )
 
 add_cxx_file (main.cc)
