@@ -75,8 +75,8 @@ MkheightmapWxDialog::MkheightmapWxDialog( wxWindow* parent ) :
 {
     terrainHeightmap->SetFocus();
     
-    {
-        wxFont f ( 9, 76, 90, 90, false, wxT("Monospace") );
+    wxFont f ( 9, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Monospace") );
+    {        
         terrainHeightmap->StyleSetFont( wxSCI_STYLE_DEFAULT, f );    
         terrainHeightmap->SetLexer (wxSCI_LEX_LISP);
       
@@ -110,7 +110,6 @@ MkheightmapWxDialog::MkheightmapWxDialog( wxWindow* parent ) :
     }
     
     {
-        wxFont f ( 9, 76, 90, 90, false, wxT("Monospace") );
         terrainShader->StyleSetFont( wxSCI_STYLE_DEFAULT, f );    
         terrainShader->SetLexer (wxSCI_LEX_LISP);
       
@@ -883,15 +882,22 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
         ;
         wxString x_currentfolder = wxString (_("./") + x_usrbin);
         
-        // try picogen in current folder
+        // Try picogen in current folder.
         {
             wxString statusText = x_currentfolder;
             statusText.Replace (_("\n"), _(" "));    
             SetStatusText(statusText);
         }
         
-        int i;
-        if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
+        
+        #if 1
+            wxArrayString output;
+            wxArrayString errors;
+            const int i = wxExecute (x_currentfolder, output, errors);        
+        #else
+            const int i = wxExecute (x_currentfolder, wxEXEC_SYNC);
+        #endif
+        if (0 != i) {        
             // retry picogen in /usr/bin        
             {
                 wxString statusText = x_usrbin;
@@ -899,7 +905,14 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
                 SetStatusText(statusText);
             }
             
-            if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
+            #if 1
+                wxArrayString output;
+                wxArrayString errors;
+                const int i = wxExecute (x_usrbin, output, errors);        
+            #else
+                const int i = wxExecute (x_usrbin, wxEXEC_SYNC);
+            #endif            
+            if (0 != i) {
                 wxMessageDialog msg (this, 
                     wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
                 );
