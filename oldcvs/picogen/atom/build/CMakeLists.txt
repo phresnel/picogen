@@ -179,17 +179,14 @@ add_definitions ()
         #"../wx/wxGTK-2.6.4/contrib/include"
     #)       
     
-    #!!GTK?? set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGTK_NO_CHECK_CASTS -D__WXGTK__ -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -DNO_GCC_PRAGMA")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMSW_NO_CHECK_CASTS -D__WXMSW__ -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -DNO_GCC_PRAGMA")
-
-    # link libraries to picogen-wx
-    # d'oh
-    #
 	
-	#wx-config --libs
     if (${UNIX})
+        # wx-config --xxx
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGTK_NO_CHECK_CASTS -D__WXGTK__ -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -DNO_GCC_PRAGMA")
         target_link_libraries(${project_name} "-pthread   ../upstream/lib/libwx_gtk2u-2.6.a -pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lgthread-2.0 -lrt -lglib-2.0 -lXinerama -lpng -lz -ljpeg -ltiff -lz -ldl -lm")
     elseif (${WIN32})
+        # wx-config --xxx
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMSW_NO_CHECK_CASTS -D__WXMSW__ -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -DNO_GCC_PRAGMA")        
         target_link_libraries(${project_name} "-L/c/wxWidgets-2.6.3/lib   -Wl,--subsystem,windows -mwindows /c/wxWidgets-2.6.3/lib/libwx_msw-2.6.a -lwxregex-2.6 -lwxexpat-2.6 -lwxtiff-2.6 -lwxjpeg-2.6 -lwxpng-2.6 -lwxzlib-2.6 -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lwinmm -lshell32 -lcomctl32 -lcomdlg32 -lctl3d32 -ladvapi32 -lwsock32 -lgdi32")
     else (${UNIX})
         message ("unknown target")
