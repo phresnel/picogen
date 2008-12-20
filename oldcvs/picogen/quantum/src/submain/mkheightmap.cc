@@ -42,6 +42,7 @@
 #include <SDL/SDL.h>
 
 #include <picogen/picogen.h>
+#include <picogen/errors.h>
 
 
 using picogen::real;
@@ -229,18 +230,19 @@ draw (
 
 
 
-template <typename T> int showPreviewWindow (T &heightmap, real waterLevel) {
+template <typename T> picogen::error_codes::code_t showPreviewWindow (T &heightmap, real waterLevel) {
     using namespace std;
+    using namespace picogen::error_codes;
 
     if (SDL_Init (SDL_INIT_VIDEO) < 0) {
         cerr << "Unable to init SDL for preview: " << SDL_GetError() << endl;
-        return -1;
+        return mkheightmap_sdl_not_initialised;
     }
     atexit (SDL_Quit);
     SDL_Surface *screen = SDL_SetVideoMode (heightmap.width, heightmap.height, 32, SDL_HWSURFACE);
     if (0 == screen) {
         cerr << "Unable to set video-mode for preview: " << SDL_GetError() << endl;
-        return -1;
+        return mkheightmap_set_video_mode_failed;
     }
 
     // dump the heightmap onto the screen
@@ -262,7 +264,7 @@ template <typename T> int showPreviewWindow (T &heightmap, real waterLevel) {
 
     SDL_FreeSurface (screen);
     SDL_Quit();
-    return 0;
+    return mkheightmap_okay;
 }
 
 
@@ -317,22 +319,23 @@ void drawShader (
 
 
 
-int showShaderPreviewWindow (
+picogen::error_codes::code_t showShaderPreviewWindow (
     const ::picogen::graphics::material::abstract::IShader & shader, 
     const picogen::misc::functional::Function_R2_R1 & h, 
     const int width, const int height
 ) {
     using namespace std;
+    using namespace picogen::error_codes;
 
     if (SDL_Init (SDL_INIT_VIDEO) < 0) {
         cerr << "Unable to init SDL for preview: " << SDL_GetError() << endl;
-        return -1;
+        return mkheightmap_sdl_not_initialised;
     }
     atexit (SDL_Quit);
     SDL_Surface *screen = SDL_SetVideoMode (width, height, 32, SDL_HWSURFACE);
     if (0 == screen) {
         cerr << "Unable to set video-mode for preview: " << SDL_GetError() << endl;
-        return -1;
+        return mkheightmap_set_video_mode_failed;
     }
 
     // dump the heightmap onto the screen
@@ -354,7 +357,7 @@ int showShaderPreviewWindow (
 
     SDL_FreeSurface (screen);
     SDL_Quit();
-    return 0;
+    return mkheightmap_okay;
 }
 
 
@@ -479,11 +482,12 @@ int main_mkheightmap (int argc, char *argv[]) {
 
     using namespace std;
     using namespace picogen::misc::functional;
+    using namespace picogen::error_codes;
 
     if (argc<=0) {
         cerr << "error: no arguments given to `picogen mkheightmap`" << endl;
         printUsage();
-        return -1;
+        return mkheightmap_no_options_given;
     }
 
     /// \todo MINOR Someone please cleanup the following line.
@@ -526,14 +530,14 @@ int main_mkheightmap (int argc, char *argv[]) {
                 // We already have read some code, more is not allowed.
                 cerr << "error: only one formula or program allowed" << endl;
                 printUsage();
-                return -1;
+                return picogen::error_codes::mkheightmap_bad_option_syntax;
             }
             if (option == "-Lhs" || option == "--Lheight-slang") {
                 lingua = Lingua_inlisp;
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 code = string (argv[0]);
                 argc--;
@@ -542,7 +546,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 shader_code = string (argv[0]);
                 argc--;
@@ -551,7 +555,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 exportFileNameBase = string (argv[0]);
                 argc--;
@@ -569,7 +573,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 const string intStr = string (argv[0]);
                 argc--;
@@ -579,7 +583,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                     if (!isdigit (*it)) {
                         cerr << "error: only positive integer numbers are allowed for option " << option << endl;
                         printUsage();
-                        return -1;
+                        return picogen::error_codes::mkheightmap_bad_option_syntax;
                     }
                 }
                 /// \todo get rid of below sscanf
@@ -589,7 +593,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 const string intStr = string (argv[0]);
                 argc--;
@@ -599,7 +603,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                     if (!isdigit (*it)) {
                         cerr << "error: only positive integer numbers are allowed for option " << option << endl;
                         printUsage();
-                        return -1;
+                        return picogen::error_codes::mkheightmap_bad_option_syntax;
                     }
                 }
                 /// \todo get rid of below sscanf
@@ -608,7 +612,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 const string intStr = string (argv[0]);
                 argc--;
@@ -618,7 +622,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                     if (!isdigit (*it)) {
                         cerr << "error: only positive integer numbers >= 1 are allowed for option " << option << endl;
                         printUsage();
-                        return -1;
+                        return picogen::error_codes::mkheightmap_bad_option_syntax;
                     }
                 }
                 /// \todo get rid of below sscanf
@@ -626,13 +630,13 @@ int main_mkheightmap (int argc, char *argv[]) {
                 if (antiAliasFactor<1) {
                     cerr << "error: only positive integer numbers >= 1 are allowed for option " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
             } else if (option == "-W"  || option == "--domain-width") {
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 const string intStr = string (argv[0]);
                 argc--;
@@ -649,13 +653,13 @@ int main_mkheightmap (int argc, char *argv[]) {
                         if (hasDot) {
                             cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
                             printUsage();
-                            return -1;
+                            return picogen::error_codes::mkheightmap_bad_option_syntax;
                         }
                         hasDot = true;
                     } else if (!isdigit (*it)) {
                         cerr << "error: only floating point numbers are allowed for option " << option << endl;
                         printUsage();
-                        return -1;
+                        return picogen::error_codes::mkheightmap_bad_option_syntax;
                     }
                 }
                 /// \todo get rid of below sscanf
@@ -665,7 +669,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 if (argc<=0) {
                     cerr << "error: no argument given to option: " << option << endl;
                     printUsage();
-                    return -1;
+                    return picogen::error_codes::mkheightmap_bad_option_syntax;
                 }
                 const string intStr = string (argv[0]);
                 argc--;
@@ -682,13 +686,13 @@ int main_mkheightmap (int argc, char *argv[]) {
                         if (hasDot) {
                             cerr << "error: wrong format for option " << option << " (too many dots)" << endl;
                             printUsage();
-                            return -1;
+                            return picogen::error_codes::mkheightmap_bad_option_syntax;
                         }
                         hasDot = true;
                     } else if (!isdigit (*it)) {
                         cerr << "error: only floating point numbers are allowed for option " << option << endl;
                         printUsage();
-                        return -1;
+                        return picogen::error_codes::mkheightmap_bad_option_syntax;
                     }
                 }
                 /// \todo get rid of below sscanf
@@ -734,7 +738,7 @@ int main_mkheightmap (int argc, char *argv[]) {
             } else {
                 cerr << "unknown option in argument list: " << option << endl;
                 printUsage();
-                return -1;
+                return picogen::error_codes::mkheightmap_unknown_commandline_option;
             }
         }
 
@@ -747,12 +751,12 @@ int main_mkheightmap (int argc, char *argv[]) {
         if (lingua == Lingua_unknown && 0 == shader_code.size()) {
             cerr << "error: unkown language or wrong option used" << endl;
             printUsage();
-            return -1;
+            return picogen::error_codes::mkheightmap_unknown_language;
         }
         
         if (0 == shader_code.size()) {
             if (code.size() == 0) {
-                functional_general_exeption ("you gave me no code");
+                throw functional_general_exeption ("you gave me no code");
             }
 
             Heightmap<double> heightmap (scaling, width, height);
@@ -780,7 +784,8 @@ int main_mkheightmap (int argc, char *argv[]) {
 
 
             if (showPreview) {
-                return showPreviewWindow (heightmap, waterLevel);
+                picogen::error_codes::code_t c = showPreviewWindow (heightmap, waterLevel);
+                return c;
             }
         
         } else {
@@ -820,7 +825,7 @@ int main_mkheightmap (int argc, char *argv[]) {
             */
             
             IShader *shader = parse_shader (shader_code);
-            int ret = 0;
+            picogen::error_codes::code_t ret = mkheightmap_okay;
             if (0 != shader) {
                 if (showPreview) {
                     ret = showShaderPreviewWindow (*shader, Function_R2_R1 (code), width, height);
@@ -832,9 +837,10 @@ int main_mkheightmap (int argc, char *argv[]) {
 
     } catch (const functional_general_exeption &e) {
         cerr << "error: " << e.getMessage() << endl;
-        return -1;
+        return picogen::error_codes::mkheightmap_syntax_error;
     } catch (...) {
         cerr << "unknown exception." << endl;
+        return picogen::error_codes::mkheightmap_unknown_error;
     }
-    return 0;
+    return picogen::error_codes::mkheightmap_okay;
 }
