@@ -26,18 +26,6 @@
 #ifndef __MkheightmapWxDialog__
 #define __MkheightmapWxDialog__
 
-#define wxUSE_ABOUTDLG 1
-//#include <wx/aboutdlg.h>
-//#include <wx/generic/aboutdlgg.h>
-
-#include <wx/stdpaths.h>
-#include <wx/file.h>
-
-#include <picogen/picogen.h>
-#include <picogen/misc/picossdf.h>
-
-#include <SciLexer.h>
-
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -63,6 +51,23 @@ namespace std{
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
 #include <boost/archive/basic_xml_archive.hpp>
+
+
+#define wxUSE_ABOUTDLG 1
+//#include <wx/aboutdlg.h>
+//#include <wx/generic/aboutdlgg.h>
+
+#include <wx/stdpaths.h>
+#include <wx/file.h>
+
+#include <picogen/picogen.h>
+#include <picogen/misc/picossdf.h>
+
+#include <SciLexer.h>
+
+
+#include "../../quantum/include/picogen/errors.h"
+
 
 
 /**
@@ -308,6 +313,9 @@ private:
 
     std::string generateSceneTempFile (bool withPreviewSettings) const;    
     wxString pwsFilename;
+    
+    void run (wxString x_usrbin);
+    void showRunError (const picogen::error_codes::code_t code, const wxArrayString &output, const wxArrayString &errors);
 
 protected:
 	// Handlers for MkheightmapWxDialogGui events.
