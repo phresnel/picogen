@@ -31,6 +31,7 @@
 #include <SDL/SDL.h>
 
 #include <picogen/picogen.h>
+#include <picogen/errors.h>
 #include <picogen/misc/picossdf.h>
 #include <picogen/graphics/objects/Instance.h>
 #include <picogen/graphics/objects/templates/TriBIH.h>
@@ -774,7 +775,7 @@ class SSDFScene : public Scene, public SSDFBackend {
 
 
 
-static int loop (SDL_Surface *screen, SSDFScene *scene, const int width, const int height, const int aa, const int loopCount) {
+static ::picogen::error_codes::code_t loop (SDL_Surface *screen, SSDFScene *scene, const int width, const int height, const int aa, const int loopCount) {
     //scene->flip( screen );
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
     // prepare and run loop
@@ -946,12 +947,12 @@ static int loop (SDL_Surface *screen, SSDFScene *scene, const int width, const i
     }
     scene->saveOutput();
     scene->end();
-    return 0;
+    return picogen::error_codes::ssdf_okay;
 }
 
 
 
-static int grind (int width, int height, int antiAliasingWidth, int loopCount, SSDFScene *scene, surface_integrator_type stype) {
+static ::picogen::error_codes::code_t grind (int width, int height, int antiAliasingWidth, int loopCount, SSDFScene *scene, surface_integrator_type stype) {
     using namespace std;
 
     switch (stype) {
@@ -966,13 +967,13 @@ static int grind (int width, int height, int antiAliasingWidth, int loopCount, S
 
     if (SDL_Init (SDL_INIT_VIDEO) < 0) {
         cerr << "Unable to init SDL: " << SDL_GetError() << endl;
-        return 1;
+        return picogen::error_codes::ssdf_sdl_not_initialised;
     }
     atexit (SDL_Quit);
     SDL_Surface *screen = SDL_SetVideoMode (width,height,32,SDL_HWSURFACE|SDL_DOUBLEBUF);
     if (0 == screen) {
         cerr << "Unable to set video-mode: " << SDL_GetError() << endl;
-        return 1;
+        return picogen::error_codes::ssdf_set_video_mode_failed;
     }
 
     //scene->flip();
@@ -1145,17 +1146,20 @@ int main_ssdf (int argc, char *argv[]) {
         return grind (width, height, aaWidth, totalLoops, grindScene, stype);
     } catch (PicoSSDF::exception_file_not_found e) {
         cerr << "doh, exception_file_not_found." << endl;
+        return picogen::error_codes::ssdf_file_not_found;
     } catch (PicoSSDF::exception_unknown e) {
         cerr << "doh, exception_unknown." << endl;
+        return picogen::error_codes::ssdf_unknown_error;
     } catch (PicoSSDF::exception_syntax_error e) {
         cerr << "" << e.file << ""
              << ":" << e.line
              << ":error:" << e.reason << ""
              //<< " (near \"" << e.curr << "\")"
              << endl;
+        return picogen::error_codes::ssdf_syntax_error;
     } catch (...) {
         cerr << "doh, ..." << endl;
     }
-    return 0;
+    return picogen::error_codes::ssdf_okay;
 }
 
