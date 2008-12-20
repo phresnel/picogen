@@ -100,7 +100,7 @@
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">wxID_ANY</property>
-                                <property name="label">Heightmap</property>
+                                <property name="label">&amp;Terrain</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_button3</property>
@@ -152,7 +152,7 @@
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">wxID_ANY</property>
-                                <property name="label">Terrain Texture</property>
+                                <property name="label">T&amp;errain Texture</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_button32</property>
@@ -204,7 +204,7 @@
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">wxID_ANY</property>
-                                <property name="label">Hemisphere/Sky</property>
+                                <property name="label">Sun and &amp;Sky</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_button31</property>
@@ -319,7 +319,7 @@
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">wxID_ANY</property>
-                                <property name="label">Quality-Render</property>
+                                <property name="label">&amp;Quality Render</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_button7</property>
@@ -8627,7 +8627,7 @@
                         <property name="label">Quality Render</property>
                         <property name="name">m_menuItem1212</property>
                         <property name="permission">none</property>
-                        <property name="shortcut">F10</property>
+                        <property name="shortcut">CTRL+F9</property>
                         <property name="unchecked_bitmap"></property>
                         <event name="OnMenuSelection">OnRender</event>
                         <event name="OnUpdateUI"></event>
