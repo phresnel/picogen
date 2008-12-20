@@ -168,58 +168,7 @@ void MkheightmapWxDialog::OnAutoformat( wxCommandEvent& event ) {
     #define doIndent() do { for (int i=0; i<indent*tablen; ++i) { formatted+=' '; } } while(0)
     const int tablen = 4;
     int indent=0;
-    /*    
-    wxString code = terrainHeightmap->GetText();
-    wxString formatted;
 
-    bool hasDoneLineBreak = false;
-    for (size_t i=0; i<code.Length(); ++i) {        
-        // Eat whitespace.
-        int numSpace = 0;
-        while ((code [i] == ' ' || code [i] == '\t' || code [i] == '\n' || code [i] == '\r') && (i < code.Length())) {
-            ++i;
-            ++numSpace;
-        }
-        if (0<numSpace) {
-            if (!hasDoneLineBreak) {
-                hasDoneLineBreak = true;
-                formatted += '\n';
-                doIndent ();
-            }
-        } else {
-            hasDoneLineBreak = false;
-        }
-
-        // Format?
-        if (i < code.Length()) {
-            switch (code [i]) {
-                case '(':
-                    ++indent;
-                    if (!hasDoneLineBreak)
-                        formatted += '\n';
-                    formatted += '(';
-                    formatted += '\n';
-                    doIndent ();
-                    hasDoneLineBreak = true;
-                    break;
-                case ')':                    
-                    indent -= indent>0 ? 1 : 0;
-                    formatted += '\n';
-                    doIndent ();
-                    formatted += ')';
-                    formatted += '\n';
-                    doIndent ();
-                    hasDoneLineBreak = true;
-                    break;                
-                default:
-                    formatted += code [i];                
-                    break;
-            };
-        }
-    }
-    terrainHeightmap->SetText(formatted);    
-    */
-    
     wxString code = terrainHeightmap->GetText();
     wxString formatted;
     
@@ -556,10 +505,81 @@ void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event ) {
 }
 
 
+void MkheightmapWxDialog::showRunError (const picogen::error_codes::code_t code, const wxArrayString &output, const wxArrayString &errors) {
+    wxString errorMsg;
+    for (int i=0; i<errors.Count(); ++i) {
+        errorMsg += errors [i];
+    }
+    wxMessageDialog (
+        this  // parent
+        , wxString (_("An error occured while running the renderer:\n\""))
+            + (errors.Count()>0?errorMsg:wxString(_("<no error message>")))
+            + wxString(_("\".")) // message
+        , wxString (_("Renderer Error")) // caption
+        , wxICON_ERROR
+    ).ShowModal();
+}
+
+
+
+void MkheightmapWxDialog::run (wxString x_usrbin) {
+    
+    wxString x_currentfolder = wxString (_("./") + x_usrbin);
+    
+    // try picogen in current folder
+    {
+        wxString statusText = x_currentfolder;
+        statusText.Replace (_("\n"), _(" "));    
+        SetStatusText(statusText);
+    }
+    
+    wxArrayString output;
+    wxArrayString errors;
+    #if 1
+        const int i = wxExecute (x_currentfolder, output, errors);
+    #else
+        const int i = wxExecute (x_currentfolder, wxEXEC_SYNC);
+    #endif
+    
+    // The second term is a workaround. According to documentation, -1 shalt be returned
+    // on execution error, but actually, 2 gets returned, so have to explicitly check if this
+    // was a picogen-error or an excution error.
+    if (0 != i && picogen::error_codes::generic_min>i) {
+        // retry picogen in /usr/bin        
+        {
+            wxString statusText = x_usrbin;
+            statusText.Replace (_("\n"), _(" "));    
+            SetStatusText(statusText);
+        }
+
+        wxArrayString output;
+        wxArrayString errors;
+        #if 0
+            const int i = (wxExecute (x_usrbin, output, errors));
+        #else
+            const int i = (wxExecute (x_usrbin, wxEXEC_SYNC));
+        #endif
+        if (0 != i && picogen::error_codes::generic_min>i) {
+            wxMessageDialog msg (this, 
+                wxString (_("An execution error occured while running the command \"")) 
+                + x_usrbin 
+                + wxString(_("\". Is the picogen-binary present?"))
+                + wxString::Format(_("(error-code:%i)"), i)
+            );
+            msg.ShowModal ();
+        } else if (0 != i && picogen::error_codes::generic_min<=i) {
+            showRunError (static_cast <picogen::error_codes::code_t> (i), output, errors);
+        }
+    } else if (0 != i && picogen::error_codes::generic_min<=i) {
+        showRunError (static_cast <picogen::error_codes::code_t> (i), output, errors);
+    }
+}
+
+
 
 void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event ) {
 	wxString x = terrainHeightmap->GetText();
-    // TODO: find better de-weaponing
+    // TODO: find better sanitisation
     x.Replace (_("\""), _(" "));
     x.Replace (_("\\"), _(" "));
     x.Replace (_("`"), _(" "));
@@ -570,34 +590,7 @@ void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event ) {
         + wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing
         + (normalise->IsChecked() ? wxString(_(" -n ")) : wxString(_(""))) // normalise?
     ;
-    //wxMessageDialog (this, x_usrbin);
-    wxString x_currentfolder = wxString (_("./") + x_usrbin);
-    
-    // try picogen in current folder
-    {
-        wxString statusText = x_currentfolder;
-        statusText.Replace (_("\n"), _(" "));    
-        SetStatusText(statusText);
-    }
-    
-    int i;
-    if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
-        // retry picogen in /usr/bin        
-        {
-            wxString statusText = x_usrbin;
-            statusText.Replace (_("\n"), _(" "));    
-            SetStatusText(statusText);
-        }
-        
-        if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
-            wxMessageDialog msg (this, 
-                wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
-            );
-            msg.ShowModal ();
-        } else {            
-        }
-    } else {        
-    }
+    run (x_usrbin);
     terrainHeightmap->SetFocus();
 }
 
@@ -621,34 +614,7 @@ void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event ) {
         + wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing
         + (normalise->IsChecked() ? wxString(_(" -n ")) : wxString(_(""))) // normalise?
     ;
-    //wxMessageDialog (this, x_usrbin);
-    wxString x_currentfolder = wxString (_("./") + x_usrbin);
-    
-    // try picogen in current folder
-    {
-        wxString statusText = x_currentfolder;
-        statusText.Replace (_("\n"), _(" "));    
-        SetStatusText(statusText);
-    }
-    
-    int i;
-    if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
-        // retry picogen in /usr/bin        
-        {
-            wxString statusText = x_usrbin;
-            statusText.Replace (_("\n"), _(" "));    
-            SetStatusText(statusText);
-        }
-        
-        if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
-            wxMessageDialog msg (this, 
-                wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
-            );
-            msg.ShowModal();
-        } else {            
-        }
-    } else {        
-    }
+    run (x_usrbin);    
     terrainShader->SetFocus();
 }
 
@@ -697,31 +663,7 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) {
     commandline << " -A " << sunDiskSize << ' ';
     
     const wxString x_usrbin (commandline.str().c_str(), wxConvUTF8);
-    const wxString x_currentfolder = wxString (_("./") + wxString (x_usrbin));
-    {
-        wxString statusText = x_currentfolder;
-        statusText.Replace (_("\n"), _(" "));    
-        SetStatusText(statusText);
-    }
-    
-    int i;
-    if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
-        // retry picogen in /usr/bin        
-        {
-            wxString statusText = x_usrbin;
-            statusText.Replace (_("\n"), _(" "));    
-            SetStatusText(statusText);
-        }
-        
-        if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
-            wxMessageDialog msg (this, 
-                wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
-            );
-            msg.ShowModal();
-        } else {            
-        }
-    } else {        
-    }
+    run (x_usrbin);    
 }
 
 
@@ -880,47 +822,7 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
             + ((previewSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
             + wxString::Format (_(" -w %d -h %d -a %d -l %d "), width, height, aa, totalLoops)
         ;
-        wxString x_currentfolder = wxString (_("./") + x_usrbin);
-        
-        // Try picogen in current folder.
-        {
-            wxString statusText = x_currentfolder;
-            statusText.Replace (_("\n"), _(" "));    
-            SetStatusText(statusText);
-        }
-        
-        
-        #if 1
-            wxArrayString output;
-            wxArrayString errors;
-            const int i = wxExecute (x_currentfolder, output, errors);        
-        #else
-            const int i = wxExecute (x_currentfolder, wxEXEC_SYNC);
-        #endif
-        if (0 != i) {        
-            // retry picogen in /usr/bin        
-            {
-                wxString statusText = x_usrbin;
-                statusText.Replace (_("\n"), _(" "));    
-                SetStatusText(statusText);
-            }
-            
-            #if 1
-                wxArrayString output;
-                wxArrayString errors;
-                const int i = wxExecute (x_usrbin, output, errors);        
-            #else
-                const int i = wxExecute (x_usrbin, wxEXEC_SYNC);
-            #endif            
-            if (0 != i) {
-                wxMessageDialog msg (this, 
-                    wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
-                );
-                msg.ShowModal();
-            } else {            
-            }
-        } else {        
-        }
+        run (x_usrbin);        
     }
 }
 
@@ -962,34 +864,7 @@ void MkheightmapWxDialog::OnRender( wxCommandEvent& event ) {
             + ((renderSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
             + wxString::Format (_(" -w %d -h %d -a %d -n %d -l %d "), width, height, aa, saveAfterEveryNth->GetValue(), totalLoops)
         ;
-        //wxMessageDialog (this, x_usrbin);
-        wxString x_currentfolder = wxString (_("./") + x_usrbin);
-        
-        // try picogen in current folder
-        {
-            wxString statusText = x_currentfolder;
-            statusText.Replace (_("\n"), _(" "));    
-            SetStatusText(statusText);
-        }
-        
-        int i;
-        if (0 != (i=wxExecute (x_currentfolder, wxEXEC_SYNC))) {        
-            // retry picogen in /usr/bin        
-            {
-                wxString statusText = x_usrbin;
-                statusText.Replace (_("\n"), _(" "));    
-                SetStatusText(statusText);
-            }
-            
-            if (0 != (i=wxExecute (x_usrbin, wxEXEC_SYNC))) {
-                wxMessageDialog msg (this, 
-                    wxString (_("An error occured while running the command \"")) + x_usrbin + wxString(_("\"."))
-                );
-                msg.ShowModal();
-            } else {            
-            }
-        } else {        
-        }
+        run (x_usrbin);        
     }
 }
 
@@ -1631,7 +1506,5 @@ redo_from_start:
         } catch (...) {
             wxMessageDialog (this, wxString(_("Caught exception. Please ensure that \""))+pwsFilename+wxString(_("\" is a valid picogen-wx-file."))).ShowModal(); 
         }
-    
-        
     }
 }
