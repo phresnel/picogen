@@ -1002,13 +1002,12 @@ static void printUsage() {
 
 
 
-int main_ssdf (int argc, char *argv[]) {
+picogen::error_codes::code_t main_ssdf (int argc, char *argv[]) {
     using namespace std;
 
     if (argc == 0) {
-        cerr << "hmpf no filename" << endl;
         printUsage();
-        return -1;
+        return picogen::error_codes::ssdf_okay;
     }
 
 
@@ -1031,7 +1030,7 @@ int main_ssdf (int argc, char *argv[]) {
         if (primary == string ("-f") || primary == string ("--filename")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_source_file_name;
             }
             const std::string secondary = argv [0];
             filename = argv [0];
@@ -1040,7 +1039,7 @@ int main_ssdf (int argc, char *argv[]) {
         } else if (primary == string ("-w") || primary == string ("--width")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_argument_to_option_width;
             }
             stringstream ss;
             ss << argv [0];
@@ -1051,7 +1050,7 @@ int main_ssdf (int argc, char *argv[]) {
         } else if (primary == string ("-o") || primary == string ("--output")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_argument_to_option_output;
             }
             stringstream ss;
             ss << argv [0];
@@ -1061,7 +1060,7 @@ int main_ssdf (int argc, char *argv[]) {
         } else if (primary == string ("-h") || primary == string ("--height")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_argument_to_option_height;
             }
             stringstream ss;
             ss << argv [0];
@@ -1072,7 +1071,7 @@ int main_ssdf (int argc, char *argv[]) {
         } else if (primary == string ("-a") || primary == string ("--AA-width")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_argument_to_option_aa;
             }
             stringstream ss;
             ss << argv [0];
@@ -1086,7 +1085,7 @@ int main_ssdf (int argc, char *argv[]) {
         } else if (primary == string ("-n") || primary == string ("--write-output-each-n-loops")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_argument_to_option_n;
             }
             stringstream ss;
             ss << argv [0];
@@ -1100,7 +1099,7 @@ int main_ssdf (int argc, char *argv[]) {
         } else if (primary == string ("-l") || primary == string ("--total-loops")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_argument_to_option_l;
             }
             stringstream ss;
             ss << argv [0];
@@ -1114,7 +1113,7 @@ int main_ssdf (int argc, char *argv[]) {
         } else if (primary == string ("-s") || primary == string ("--surface-integrator")) {
             if (argc == 0) {   // check if any argument is given, we need at least one remaining
                 printUsage();
-                return -1;
+                return picogen::error_codes::ssdf_missing_argument_to_option_surface_integrator;
             }
             stringstream ss;
             ss << argv [0];
@@ -1133,10 +1132,10 @@ int main_ssdf (int argc, char *argv[]) {
             ++argv;
         } else if (primary == string ("-?") || primary == string ("?") || primary == string ("--help")) {
             printUsage ();
-            return 0;
+            return picogen::error_codes::ssdf_okay;
         } else {
             cerr << "Parameter '" << primary << "' unknown." << endl;
-            return -1;
+            return picogen::error_codes::ssdf_unknown_option;
         }
     }
 
@@ -1159,6 +1158,7 @@ int main_ssdf (int argc, char *argv[]) {
         return picogen::error_codes::ssdf_syntax_error;
     } catch (...) {
         cerr << "doh, ..." << endl;
+        return picogen::error_codes::ssdf_unknown_error;
     }
     return picogen::error_codes::ssdf_okay;
 }
