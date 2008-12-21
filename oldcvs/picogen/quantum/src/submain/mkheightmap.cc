@@ -165,7 +165,7 @@ template <typename T> struct Heightmap {
                 }
             }
 
-            std::cout << "f_min=" << minHeight_ << ", f_max="  << maxHeight_ << std::endl;
+            std::cout << "info:min..max:" << minHeight_ << ".."  << maxHeight_ << std::endl;
         }
 
 };
@@ -467,11 +467,8 @@ static void printUsage() {
 }
 
 
-#ifdef MKHEIGHTMAP_STANDALONE
-int main (int argc, char *argv[]) {
-#else
-int main_mkheightmap (int argc, char *argv[]) {
-#endif
+
+picogen::error_codes::code_t main_mkheightmap (int argc, char *argv[]) {
     using ::picogen::real;
     using ::picogen::geometrics::Vector3d;
     using ::picogen::geometrics::Ray;
@@ -734,7 +731,7 @@ int main_mkheightmap (int argc, char *argv[]) {
                 doPrintInfo = true;
             } else if (option == string ("-?") || option == string ("?") || option == string ("--help")) {
                 printUsage ();
-                return 0;
+                return picogen::error_codes::mkheightmap_okay;
             } else {
                 cerr << "unknown option in argument list: " << option << endl;
                 printUsage();
