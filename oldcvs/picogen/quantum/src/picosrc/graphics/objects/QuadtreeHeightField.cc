@@ -173,19 +173,19 @@ namespace picogen {
                 param_in (BoundingBox, bbox),
                 real boundsGuessAccuracy, bool smooth
             ) {
-                fprintf (stderr, "preparing QuadtreeHeightField {\n");
-                fprintf (stderr, "  sizeof{Height,HeightChunk,Node<32>,Node<64>}={%u,%u,%u,%u}\n", sizeof (Height), sizeof (Chunk), sizeof (Node<uint32_t>), sizeof (Node<uint64_t>));
+                fprintf (stdout, "preparing QuadtreeHeightField {\n");
+                fprintf (stdout, "  sizeof{Height,HeightChunk,Node<32>,Node<64>}={%u,%u,%u,%u}\n", sizeof (Height), sizeof (Chunk), sizeof (Node<uint32_t>), sizeof (Node<uint64_t>));
 
                 unsigned int u, v;
                 const real cellSize = 1.0 / (real) size;
 
                 // get min and max value of function
                 int updateDisplay = 32768;
-                fprintf (stderr, "  determining bounds of height function %xP\n", reinterpret_cast<unsigned int> (&fun) );
+                fprintf (stdout, "  determining bounds of height function %xP\n", reinterpret_cast<unsigned int> (&fun) );
                 real h_min = constants::real_max;
                 real h_max = -constants::real_max;
                 if (boundsGuessAccuracy>0.9f) {
-                    fprintf (stderr, "   doing this at full accuracy (requested was %.1f%%)\n", boundsGuessAccuracy*100.0f);
+                    fprintf (stdout, "   doing this at full accuracy (requested was %.1f%%)\n", boundsGuessAccuracy*100.0f);
                     for (v = 0; v < size; v++) {
                         const real fv = v / (real) size;
                         for (u = 0; u < size; u++) {
@@ -197,14 +197,14 @@ namespace picogen {
                         }
                         if( ++updateDisplay > 1000 ) {
                             updateDisplay = 0;
-                            fprintf (stderr, "\r   %.4f%% [%u/%u]", 100.0f * static_cast<float> (u + v*size) / static_cast<float> (size*size), v, size);
-                            fflush (stderr);
+                            fprintf (stdout, "\r   %.4f%% [%u/%u]", 100.0f * static_cast<float> (u + v*size) / static_cast<float> (size*size), v, size);
+                            fflush (stdout);
                         }
                         /*if( v%(size/10)==0 )
-                         fprintf( stderr, "." );*/
+                         fprintf( stdout, "." );*/
                     }
                 } else {
-                    fprintf (stderr, "   using random sampling (requested %.1f%% of accuracy)\n", boundsGuessAccuracy*100.0f);
+                    fprintf (stdout, "   using random sampling (requested %.1f%% of accuracy)\n", boundsGuessAccuracy*100.0f);
                     int numSamples = static_cast<int> (boundsGuessAccuracy*static_cast<float> (size*size));
                     if (numSamples < 32)
                         numSamples = 32;
@@ -216,16 +216,16 @@ namespace picogen {
                         h_max = t > h_max ? t : h_max;
                         if (++updateDisplay > 1000) {
                             updateDisplay = 0;
-                            fprintf (stderr, "\r   %.4f%% [%u/%u]", 100.0f * static_cast<float> (i) / static_cast<float> (numSamples), i, numSamples);
-                            fflush (stderr);
+                            fprintf (stdout, "\r   %.4f%% [%u/%u]", 100.0f * static_cast<float> (i) / static_cast<float> (numSamples), i, numSamples);
+                            fflush (stdout);
                         }
                     }
                 }
-                fprintf (stderr, "  \ndone: f(u,v)_{min=%.2f,max=%.2f}\n", static_cast<float> (h_min), static_cast<float> (h_max));
-                fprintf (stderr, "  initializing QuadtreeHeightField ... ");
+                fprintf (stdout, "  \ndone: f(u,v)_{min=%.2f,max=%.2f}\n", static_cast<float> (h_min), static_cast<float> (h_max));
+                fprintf (stdout, "  initializing QuadtreeHeightField ... ");
                 QuadtreeHeightField * ret = new QuadtreeHeightField (size, fun, bbox, smooth, h_min, h_max);
-                fprintf (stderr, "done\n");
-                fprintf (stderr, "}\n");
+                fprintf (stdout, "done\n");
+                fprintf (stdout, "}\n");
                 return ret;
             }
 
@@ -293,8 +293,8 @@ namespace picogen {
                         array [curr_node_index].chunk.h_max.h = childMaxHeight.h;
                 } else {
                     if ((int)(percentageFinished*1000000) % 100 == 0) {
-                        fprintf (stderr, "\r   %.2f%%", 100.0f * percentageFinished);
-                        fflush (stderr);
+                        fprintf (stdout, "init:quadtree:%.2f%%\n", 100.0f * percentageFinished);
+                        fflush (stdout);
                     }
                 }
 
@@ -369,13 +369,19 @@ namespace picogen {
                         nodeCount += nodeCountInCurrRecDepth;
                         ++rec;
                     }
-                    std::cerr << "  total number of nodes: " << nodeCount << "\n";
+                    std::cout << "  total number of nodes: " << nodeCount << "\n";
                 }
 
+                #ifdef POSIX
+                poolmode = nodeCount*sizeof (Node<uint32_t>) >= 2147483648
+                         ? huge_array64_mode
+                         : pure_array32_mode;
+                #else
                 poolmode = pure_array32_mode;//*/huge_array64_mode;
+                #endif
                 switch (poolmode) {
                     case pure_array32_mode: {
-                        std::cerr << "  runs in native-array-32 mode\n";
+                        std::cout << "  runs in native-array-32 mode\n";
                         pure_array32 = new Node<uint32_t> [nodeCount];
                         uint32_t nfi = 1; // <-- next free index
 
@@ -392,7 +398,7 @@ namespace picogen {
                     } break;
                     #ifdef POSIX
                     case huge_array64_mode: {
-                        std::cerr << "  runs in huge-array-64 mode\n";
+                        std::cout << "  runs in huge-array-64 mode\n";
                         bool load_from_file = false;
                         huge_array64 = new huge_array64_t (nodeCount, "qttmpfile-", 1073741824UL/sizeof (Node<uint64_t>), 512, !load_from_file);
                         if (!load_from_file) {
@@ -423,10 +429,10 @@ namespace picogen {
                 bboxMin [1] = bbox.getMin() [1];
                 bboxMin [2] = bbox.getMin() [2];
 
-                std::cerr << "  bboxSize={" << bboxSize[0] << ", " << bboxSize[1] << ", " << bboxSize[2] << ")\n";
-                std::cerr << "  bboxMin={" << bboxMin[0] << ", " << bboxMin[1] << ", " << bboxMin[2] << ")\n";
-                std::cerr << "  h_{min|max}={" << h_min << ", " << h_max  << ")\n";
-                std::cerr << "  rootNode.h_{Min|Max}={" << Height::asReal (pure_array32 [0].chunk.h_min)
+                std::cout << "  bboxSize={" << bboxSize[0] << ", " << bboxSize[1] << ", " << bboxSize[2] << ")\n";
+                std::cout << "  bboxMin={" << bboxMin[0] << ", " << bboxMin[1] << ", " << bboxMin[2] << ")\n";
+                std::cout << "  h_{min|max}={" << h_min << ", " << h_max  << ")\n";
+                std::cout << "  rootNode.h_{Min|Max}={" << Height::asReal (pure_array32 [0].chunk.h_min)
                     << ", " << Height::asReal (pure_array32 [0].chunk.h_max) << "}\n";
 
                 heightFieldSize = size;
