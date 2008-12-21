@@ -385,6 +385,7 @@ namespace picogen {
                         pure_array32 = new Node<uint32_t> [nodeCount];
                         uint32_t nfi = 1; // <-- next free index
 
+                        fprintf (stdout, "init:quadtree:begin");
                         initNode <uint32_t, Node <uint32_t>* > (
                             0, // node
                             0, 0, size, // left, top, size
@@ -395,6 +396,7 @@ namespace picogen {
                             nfi,
                             pure_array32
                         );
+                        fprintf (stdout, "init:quadtree:end");
                     } break;
                     #ifdef POSIX
                     case huge_array64_mode: {
@@ -405,6 +407,7 @@ namespace picogen {
                             huge_array64->set_mode (huge_array64_t::mode_random);
                             uint64_t nfi = 1; // <-- next free index
 
+                            fprintf (stdout, "init:quadtree:begin");
                             initNode <uint64_t, huge_array64_t> (
                                 0, // node
                                 0, 0, size, // left, top, size
@@ -415,6 +418,7 @@ namespace picogen {
                                 nfi,
                                 *huge_array64
                             );
+                            fprintf (stdout, "init:quadtree:end");
                         }
                         huge_array64->set_mode (huge_array64_t::mode_read);
                     } break;
