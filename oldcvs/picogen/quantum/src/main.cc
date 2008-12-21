@@ -24,6 +24,7 @@
 #include <iostream>
 #include <picogen/picogen.h>
 #include <picogen/compile_info.h>
+#include <picogen/errors.h>
 
 
 #ifdef NDEBUG
@@ -79,10 +80,10 @@ static void conditions() {
 
 
 int main (int argc, char *argv[]) {
-    extern int main_mkheightmap (int argc, char *argv[]);
+    extern picogen::error_codes::code_t main_mkheightmap (int argc, char *argv[]);
     extern int main_mkskymap (int argc, char *argv[]);
     extern int main_testscenes (int argc, char *argv[]);
-    extern int main_ssdf (int argc, char *argv[]);
+    extern picogen::error_codes::code_t main_ssdf (int argc, char *argv[]);
 
     using namespace std;
 
@@ -109,6 +110,8 @@ int main (int argc, char *argv[]) {
     const std::string primary = argv[0];
     argc--;
     argv++;
+    
+    picogen::error_codes::code_t err = picogen::error_codes::generic_okay;
 
     if (primary == string ("show")) {
         if (argc == 0) {   // check if any argument is given, we need at least one remaining
@@ -126,13 +129,13 @@ int main (int argc, char *argv[]) {
     }
 
     else if (primary == string ("ssdf")) {
-        return main_ssdf (argc, argv);
+        err = main_ssdf (argc, argv);
     }
 
     else if (primary == string ("mkheightmap")) {
         argc++; // <-- quick and dirty patch
         argv--;
-        return main_mkheightmap (argc, argv);
+        err = main_mkheightmap (argc, argv);
     }
 
     else if (primary == string ("mkskymap")) {
@@ -150,6 +153,10 @@ int main (int argc, char *argv[]) {
     else {
         usage();
     }
-
+    
+    if (picogen::error_codes::generic_okay != err) {
+        cerr << "error:err" << static_cast <int> (err) << endl;
+        return 1;
+    }
     return 0;
 }
