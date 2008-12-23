@@ -62,6 +62,10 @@ PicoSSDF::PicoSSDF (const string &filename, SSDFBackend *backend) : filename (fi
             throw exception_syntax_error (
                 filename, errcurrentline, errreason, linenumber
             );
+        case INCOMPLETE_TERMINAL:
+            throw exception_syntax_error (
+                filename, errcurrentline, errreason, linenumber
+            );
         default:
             throw exception_unknown (filename);
     }
@@ -375,33 +379,40 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                 ++braceBias;
             } else if (')' == *line) {
                 --braceBias;
-            }
-        } else {
-            if (*line == ':') {
-                if (!scanName) {
-                    errreason = string ("Expected either ')' or ';'.");
-                    return SYNTAX_ERROR;
-                }
-                scanName = false;
+            } else if (';' == *line) {
+                errreason = string ("Missing ')' after \"") + value + string ("\"");
+                return INCOMPLETE_TERMINAL;
+            } else if ('\\' == *line) {
                 ++line;
-                continue;
-            } else if (*line == ';' || *line == ')') {
-                scanName = true;
-                if (parameters.end() != parameters.find (name)) {
-                    errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
-                    return SYNTAX_ERROR;
+                if (*line != ';' && *line != '\\') {
+                    errreason = string ("Unknown escape sequence: '\"") + *line + string ("'.");
+                    return INCOMPLETE_TERMINAL;
                 }
-                parameters [name] = value;
-                name = value = "";
-                if (*line == ')') {
-                    break;
-                }
-                ++line;
-                continue;
-            } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
-                line++;
-                continue;
             }
+        } else if (*line == ':') {
+            if (!scanName) {
+                errreason = string ("Expected either ')' or ';'.");
+                return SYNTAX_ERROR;
+            }
+            scanName = false;
+            ++line;
+            continue;
+        } else if (*line == ';' || *line == ')') {
+            scanName = true;
+            if (parameters.end() != parameters.find (name)) {
+                errreason = string ("Parameter '") + name + string ("' has been set multiple times.");
+                return SYNTAX_ERROR;
+            }
+            parameters [name] = value;
+            name = value = "";
+            if (*line == ')') {
+                break;
+            }
+            ++line;
+            continue;
+        } else if (*line == ' ' || *line == '\t') { // always (ALWAYS) eat up whitespace
+            line++;
+            continue;
         }
 
         switch (scanName) {
@@ -552,8 +563,11 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                 IShader *ishader = parse_shader (shader);
                 backend->addHeightfield (fun, ishader, /*mat_fun, brdfs, shaders,*/ resolution, center, size);
             } catch (::picogen::misc::functional::functional_general_exeption &e) {
-                errreason = string ("Exception caught while generating heightfield from height-slang code: "
-                    + e.getMessage());
+                errreason = string ("Exception caught while generating heightfield from height-slang code:\n")
+                    + e.getMessage() + string ("\n")
+                    + string ("Corresponding Code:\n")
+                    + e.getCode () +  string ("\n")
+                ;
                 return SYNTAX_ERROR;
             }
 
@@ -601,8 +615,11 @@ PicoSSDF::parse_err PicoSSDF::read_terminal (TERMINAL_TYPE type, const char *&li
                 Function_R2_R1 *fun = new Function_R2_R1 (hs);
                 backend->addImplicitHeightfield (&fun, center, size);
             } catch (::picogen::misc::functional::functional_general_exeption &e) {
-                errreason = string ("Exception caught while generating heightfield from height-slang code: "
-                    + e.getMessage());
+                errreason = string ("Exception caught while generating heightfield from height-slang code:\n")
+                    + e.getMessage() + string ("\n")
+                    + string ("Corresponding Code:\n")
+                    + e.getCode () +  string ("\n")
+                ;
                 return SYNTAX_ERROR;
             }
 
@@ -785,10 +802,10 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, const char *&lin
                 // klutch to allow for nested bracing-groups (e.g. to allow height-slang-parameters)
                 if ('(' == *line) {
                     ++brace_bias;
-                    cout << "[" << *line << ":" << brace_bias << "]" << flush;
+                    //cout << "[" << *line << ":" << brace_bias << "]" << flush;
                 } else if (')' == *line) {
                     --brace_bias;
-                    cout << "[" << *line << ":" << brace_bias << "]" << flush;
+                    //cout << "[" << *line << ":" << brace_bias << "]" << flush;
                 }
 
                 if (*line == ':') {
@@ -853,7 +870,7 @@ PicoSSDF::parse_err PicoSSDF::read_state (STATE_TYPE stateType, const char *&lin
                 } else if ("specular" == type) {
                     backend->setBRDFToSpecular (reflectance);
                 } else if ("specular_distorted-height" == type) {
-                    cout << "{{{" << code << "}}}" << endl;
+                    //cout << "{{{" << code << "}}}" << endl;
                     backend->setBRDFToSpecular_DistortedHeight (reflectance, code);
                 }
             } else {
@@ -1007,7 +1024,6 @@ PicoSSDF::parse_err PicoSSDF::interpretCode (const std::string &code, string::co
 
 
 PicoSSDF::parse_err PicoSSDF::parse() {
-
     // open file, check if okay
     FILE *fin = fopen (filename.c_str(), "r");
     if (0 == fin) {
@@ -1022,13 +1038,9 @@ PicoSSDF::parse_err PicoSSDF::parse() {
     linenumber = 0;
     globalBlockCount = 0; // The number of blocks in the implicit global-block
     backend->initialize();
-    push_block (BLOCK_GLOBAL);
+    push_block (BLOCK_GLOBAL);    
     while (1) {
         // get next line
-        /*char curr[1024];
-        if (0 == fgets (curr, sizeof (curr), fin)) {
-            break;
-        }*/
         int num_open_braces = 0;
         string curr;
         while (!feof (fin)) {
@@ -1041,22 +1053,6 @@ PicoSSDF::parse_err PicoSSDF::parse() {
             }
         }
         ++linenumber;
-        // remove trailing '\n'
-        /*{
-            unsigned int length = strlen (curr);
-            if (curr[length-1] == '\n')
-                curr[length-1] = '\0';
-        }*/
-        /*string curr = "";
-        int bias = -1;
-        bool isBlock = false;
-        while (0 != bias && !feof (fin) && (!isBlock || )) {
-            char tmp = *fgetc (fin);
-            curr += tmp;
-            if (-1==bias && '{' == tmp) {
-                isBlock
-            }
-        }*/
 
         // check if we have inline-code starting with an {{
         const char *c = curr.c_str();
