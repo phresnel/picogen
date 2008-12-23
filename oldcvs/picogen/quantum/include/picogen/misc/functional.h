@@ -54,11 +54,21 @@ namespace picogen {
 
         namespace functional {
             class functional_general_exeption {
+                    const ::std::string code;
                     const ::std::string message;
                 public:
-                    explicit functional_general_exeption (const ::std::string &message) : message (message) {};
+                    explicit functional_general_exeption (const ::std::string &message)
+                    : code ("<code unavailable>"), message (message) { }
+                    
+                    explicit functional_general_exeption (const ::std::string &code, const ::std::string &message)
+                    : code (code), message (message) { }
+                    
                     const ::std::string &getMessage() const {
                         return message;
+                    }
+                    
+                    const ::std::string &getCode() const {
+                        return code;
                     }
             };
             typedef ::picogen::real real_t;
