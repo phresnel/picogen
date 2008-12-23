@@ -194,10 +194,11 @@ class PicoSSDF {
         class Block {
             public:
                 const BLOCK_TYPE type;
-                explicit Block (BLOCK_TYPE type) : type (type) {};
+                explicit Block (BLOCK_TYPE type) : type (type) {};                    
                 explicit Block (const Block &block) : type (block.type) {
                     //const_cast<BLOCK_TYPE&>(type) = block.type;
                 }
+                virtual ~Block () {}
                 const Block &operator = (const Block &block) {
                     const_cast<BLOCK_TYPE&> (type) = block.type;
                     return *this;
@@ -213,6 +214,7 @@ class PicoSSDF {
         class GlobalBlock : public Block {
             public:
                 explicit GlobalBlock() : Block (BLOCK_GLOBAL) {}
+                virtual ~GlobalBlock () {}
                 virtual bool isBlockAllowed (BLOCK_TYPE) {
                     return true;
                 }
@@ -230,6 +232,7 @@ class PicoSSDF {
         class ListBlock : public Block {
             public:
                 explicit ListBlock() : Block (BLOCK_LIST) {}
+                virtual ~ListBlock () {}
                 virtual bool isBlockAllowed (BLOCK_TYPE) {
                     return true;
                 }
@@ -249,6 +252,7 @@ class PicoSSDF {
         class TriBIHBlock : public Block {
             public:
                 explicit TriBIHBlock() : Block (BLOCK_TRI_BIH) {}
+                virtual ~TriBIHBlock () {}
                 virtual bool isBlockAllowed (BLOCK_TYPE) {
                     return false;
                 }
