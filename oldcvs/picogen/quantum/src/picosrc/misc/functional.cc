@@ -160,11 +160,11 @@ namespace picogen {
                             // Scan parameter name.
                             skipWhitespace (it, code);
                             if (')' == *it || it == code.end()) {
-                                throw functional_general_exeption ("missing ']'");
+                                throw functional_general_exeption (code, "missing ']'");
                             }
 
                             if (!isalnum (*it)) {
-                                throw functional_general_exeption ("expected alphanumeric parameter name");
+                                throw functional_general_exeption (code, "expected alphanumeric parameter name");
                             }
                             string parameterName = "";
                             while (isalnum (*it) && it!=code.end()) {
@@ -175,7 +175,7 @@ namespace picogen {
                             // Scan parameter value.
                             skipWhitespace (it, code);
                             if (it == code.end() || '(' != *it) {
-                                throw functional_general_exeption ("missing value for parameter " + parameterName);
+                                throw functional_general_exeption (code, "missing value for parameter " + parameterName);
                             }
 
                             ++it; // eat '('
@@ -196,7 +196,7 @@ namespace picogen {
                             }
 
                             if (*it != ')' || it == code.end()) {
-                                throw functional_general_exeption ("missing ')' for parameter " + parameterName);
+                                throw functional_general_exeption (code, "missing ')' for parameter " + parameterName);
                             }
 
                             ++it; // eat ')'
@@ -213,7 +213,7 @@ namespace picogen {
                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                         BasicFunction *p2 = heightslang_ (setup,root,it,code);
                         if (nextToken (it,code) != ')') {
-                            throw functional_general_exeption ("missing ')'");
+                            throw functional_general_exeption (code, "missing ')'");
                         }
 
                         if ("LayeredNoise" == hookName) {
@@ -223,12 +223,12 @@ namespace picogen {
                         } else if ("Layers" == hookName) {
                             return new Layers (parameters, p1, p2);
                         } else {
-                            throw functional_general_exeption ("unknown configurable function: '" + hookName + "'");
+                            throw functional_general_exeption (code, "unknown configurable function: '" + hookName + "'");
                         }
 
                     }break;
                     default:
-                        throw functional_general_exeption ("configurable functions are currently only supported with 2 parameters");
+                        throw functional_general_exeption (code, "configurable functions are currently only supported with 2 parameters");
                 }
                 return 0;
             }
@@ -261,7 +261,7 @@ case OPERATOR:{                                                  \
     BasicFunction *p1 = heightslang_(setup,root,it,code);             \
     BasicFunction *p2 = heightslang_(setup,root,it,code);             \
     if( nextToken(it,code) != ')' ) {                            \
-        throw functional_general_exeption( "missing ')'" );      \
+        throw functional_general_exeption(code, "missing ')'" );      \
     }                                                            \
     return ALLOCATOR( p1, p2 );                                  \
 } break;
@@ -283,7 +283,7 @@ case OPERATOR:{                                                  \
                                     BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                     BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
-                                        throw functional_general_exeption ("missing ')'");
+                                        throw functional_general_exeption (code, "missing ')'");
                                     }
                                     return less_equal_ (p1, p2);
                                 } else if ('>' == peekNextToken (it,code)) {
@@ -291,14 +291,14 @@ case OPERATOR:{                                                  \
                                     BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                     BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
-                                        throw functional_general_exeption ("missing ')'");
+                                        throw functional_general_exeption (code, "missing ')'");
                                     }
                                     return not_equal_ (p1, p2);
                                 } else {
                                     BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                     BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
-                                        throw functional_general_exeption ("missing ')'");
+                                        throw functional_general_exeption (code, "missing ')'");
                                     }
                                     return less_ (p1, p2);
                                 }
@@ -311,14 +311,14 @@ case OPERATOR:{                                                  \
                                     BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                     BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
-                                        throw functional_general_exeption ("missing ')'");
+                                        throw functional_general_exeption (code, "missing ')'");
                                     }
                                     return greater_equal_ (p1, p2);
                                 } else {
                                     BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                     BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
-                                        throw functional_general_exeption ("missing ')'");
+                                        throw functional_general_exeption (code, "missing ')'");
                                     }
                                     return greater_ (p1, p2);
                                 }
@@ -334,14 +334,14 @@ case OPERATOR:{                                                  \
                                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return xor_ (p1, p2);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -358,7 +358,7 @@ case OPERATOR:{                                                  \
                                         }
                                         return and_ (p1, p2);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else if ('b' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -366,14 +366,14 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return abs_ (p1);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -384,11 +384,11 @@ case OPERATOR:{                                                  \
                                     BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                     BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                     if (nextToken (it,code) != ')') {
-                                        throw functional_general_exeption ("missing ')'");
+                                        throw functional_general_exeption (code, "missing ')'");
                                     }
                                     return and_ (p1, p2);
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -399,7 +399,7 @@ case OPERATOR:{                                                  \
                                 BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                 BasicFunction *p3 = heightslang_ (setup,root,it,code);
                                 if (nextToken (it,code) != ')') {
-                                    throw functional_general_exeption ("missing ')'");
+                                    throw functional_general_exeption (code, "missing ')'");
                                 }
                                 return if_else_ (p1, p2, p3);
                             }
@@ -417,11 +417,11 @@ case OPERATOR:{                                                  \
                                         BasicFunction *a = heightslang_ (setup,root,it,code);
                                         BasicFunction *b = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return min_ (a, b);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else if ('a' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -430,14 +430,14 @@ case OPERATOR:{                                                  \
                                         BasicFunction *a = heightslang_ (setup,root,it,code);
                                         BasicFunction *b = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return max_ (a, b);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -455,20 +455,20 @@ case OPERATOR:{                                                  \
                                                 BasicFunction *a = heightslang_ (setup,root,it,code);
                                                 BasicFunction *b = heightslang_ (setup,root,it,code);
                                                 if (nextToken (it,code) != ')') {
-                                                    throw functional_general_exeption ("missing ')'");
+                                                    throw functional_general_exeption (code, "missing ')'");
                                                 }
                                                 return delta_ (a, b);
                                             } else {
-                                                throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                                throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                             }
                                         } else {
-                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                         }
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -484,11 +484,11 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return neg_ (p1);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else if ('o' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -496,19 +496,19 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return not_ (p1);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
 
-                            // inv
+                            // inv, if
                             case 'i': {
                                 if ('n' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -516,14 +516,23 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return inv_ (p1);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
+                                } else if ('f' == peekNextToken (it, code)) {
+                                    nextToken (it,code);
+                                    BasicFunction *p1 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p2 = heightslang_ (setup,root,it,code);
+                                    BasicFunction *p3 = heightslang_ (setup,root,it,code);
+                                    if (nextToken (it,code) != ')') {
+                                        throw functional_general_exeption (code, "missing ')'");
+                                    }
+                                    return if_else_ (p1, p2, p3);
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -536,11 +545,11 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return sin_ (p1);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else if ('q' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -550,14 +559,14 @@ case OPERATOR:{                                                  \
                                             nextToken (it,code);
                                             BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                             if (nextToken (it,code) != ')') {
-                                                throw functional_general_exeption ("missing ')'");
+                                                throw functional_general_exeption (code, "missing ')'");
                                             }
                                             return sqrt_ (p1);
                                         } else {
-                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                         }
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else if ('e' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -567,28 +576,28 @@ case OPERATOR:{                                                  \
                                             nextToken (it,code);
                                             BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                             if (0 == p1) {
-                                                throw functional_general_exeption ("missing argument for 'self'-operation");
+                                                throw functional_general_exeption (code, "missing argument for 'self'-operation");
                                             }
                                             if (setup.parameterCount < 1) {
-                                                throw functional_general_exeption ("it looks like the 'self'-operation is called with 1 argument (or more), but the surrounding function accepts only 0");
+                                                throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 1 argument (or more), but the surrounding function accepts only 0");
                                             }
                                             if (peekNextToken (it,code) == ')') {
                                                 if (setup.parameterCount > 1) {
-                                                    throw functional_general_exeption ("it looks like the 'self'-operation is called with 1 argument, but the surrounding function requires 2 or more");
+                                                    throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 1 argument, but the surrounding function requires 2 or more");
                                                 }
                                                 nextToken (it,code);
                                                 return call_ (root, p1);
                                             }
                                             BasicFunction *p2 = heightslang_ (setup,root,it,code);
                                             if (0 == p2) {
-                                                throw functional_general_exeption ("it looks like the 'self'-operation is called with 2 arguments, but the 2nd argument is missing");
+                                                throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 2 arguments, but the 2nd argument is missing");
                                             }
                                             if (setup.parameterCount < 2) {
-                                                throw functional_general_exeption ("it looks like the 'self'-operation is called with 2 arguments (or more), but the surrounding function accepts only 1");
+                                                throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 2 arguments (or more), but the surrounding function accepts only 1");
                                             }
                                             if (peekNextToken (it,code) == ')') {
                                                 if (setup.parameterCount > 2) {
-                                                    throw functional_general_exeption ("it looks like the 'self'-operation is called with 2 arguments, but the surrounding function requires 3 or more");
+                                                    throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 2 arguments, but the surrounding function requires 3 or more");
                                                 }
                                                 nextToken (it,code);
                                                 return call2_ (root, p1, p2);
@@ -597,27 +606,27 @@ case OPERATOR:{                                                  \
 
                                             BasicFunction *p3 = heightslang_ (setup,root,it,code);
                                             if (0 == p3) {
-                                                throw functional_general_exeption ("it looks like the 'self'-operation is called with 3 arguments, but the 3rd argument is missing");
+                                                throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 3 arguments, but the 3rd argument is missing");
                                             }
                                             if (setup.parameterCount < 3) {
-                                                throw functional_general_exeption ("it looks like the 'self'-operation is called with 3 arguments (or more), but the surrounding function accepts only 2");
+                                                throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 3 arguments (or more), but the surrounding function accepts only 2");
                                             }
                                             if (peekNextToken (it,code) == ')') {
                                                 if (setup.parameterCount > 3) {
-                                                    throw functional_general_exeption ("it looks like the 'self'-operation is called with 3 argument, but the surrounding function requires 4 or more");
+                                                    throw functional_general_exeption (code, "it looks like the 'self'-operation is called with 3 argument, but the surrounding function requires 4 or more");
                                                 }
                                                 nextToken (it,code);
                                                 return call3_ (root, p1, p2, p3);
                                             }
-                                            throw functional_general_exeption ("unsupported parameter count for operation 'self'");
+                                            throw functional_general_exeption (code, "unsupported parameter count for operation 'self'");
                                         } else {
-                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                         }
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -630,14 +639,14 @@ case OPERATOR:{                                                  \
                                         nextToken (it,code);
                                         BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                         if (nextToken (it,code) != ')') {
-                                            throw functional_general_exeption ("missing ')'");
+                                            throw functional_general_exeption (code, "missing ')'");
                                         }
                                         return cos_ (p1);
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -653,14 +662,14 @@ case OPERATOR:{                                                  \
                                             nextToken (it,code);
                                             BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                             if (nextToken (it,code) != ')') {
-                                                throw functional_general_exeption ("missing ')'");
+                                                throw functional_general_exeption (code, "missing ')'");
                                             }
                                             return frac_ (p1);
                                         } else {
-                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                         }
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else if ('l' == peekNextToken (it,code)) {
                                     nextToken (it,code);
@@ -672,20 +681,20 @@ case OPERATOR:{                                                  \
                                                 nextToken (it,code);
                                                 BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                                 if (nextToken (it,code) != ')') {
-                                                    throw functional_general_exeption ("missing ')'");
+                                                    throw functional_general_exeption (code, "missing ')'");
                                                 }
                                                 return floor_ (p1);
                                             } else {
-                                                throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                                throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                             }
                                         } else {
-                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                         }
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -703,17 +712,17 @@ case OPERATOR:{                                                  \
                                             BasicFunction *b = heightslang_ (setup,root,it,code);
                                             BasicFunction *f = heightslang_ (setup,root,it,code);
                                             if (nextToken (it,code) != ')') {
-                                                throw functional_general_exeption ("missing ')'");
+                                                throw functional_general_exeption (code, "missing ')'");
                                             }
                                             return lerp_ (a, b, f);
                                         } else {
-                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                         }
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
@@ -730,63 +739,63 @@ case OPERATOR:{                                                  \
                                                 nextToken (it,code);
                                                 BasicFunction *p1 = heightslang_ (setup,root,it,code);
                                                 if (nextToken (it,code) != ')') {
-                                                    throw functional_general_exeption ("missing ')'");
+                                                    throw functional_general_exeption (code, "missing ')'");
                                                 }
                                                 return trunc_ (p1);
                                             } else {
-                                                throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                                throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                             }
                                         } else {
-                                            throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                            throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                         }
                                     } else {
-                                        throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                        throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                     }
                                 } else {
-                                    throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                    throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                                 }
                             }
                             break;
 
 
                             default: {
-                                throw functional_general_exeption (std::string ("unknown operation: ") + tok + peekNextToken (it,code));
+                                throw functional_general_exeption (code, std::string ("unknown operation: ") + tok + peekNextToken (it,code));
                             }
                         }
                     } else switch (tok) {
                             case 'x':
                                 if (setup.parameterCount == 0) {
-                                    throw functional_general_exeption ("'x' is only declared for functions with at least 1 parameter");
+                                    throw functional_general_exeption (code, "'x' is only declared for functions with at least 1 parameter");
                                 }
                                 return parameter_ (setup, 0);
                                 break;
                             case 'y':
                                 if (setup.parameterCount <= 1) {
-                                    throw functional_general_exeption ("'y' is only declared for functions with at least 2 parameters");
+                                    throw functional_general_exeption (code, "'y' is only declared for functions with at least 2 parameters");
                                 }
                                 return parameter_ (setup, 1);
                                 break;
                             case 'z':
                                 if (setup.parameterCount <= 2) {
-                                    throw functional_general_exeption ("'z' is only declared for functions with at least 3 parameters");
+                                    throw functional_general_exeption (code, "'z' is only declared for functions with at least 3 parameters");
                                 }
                                 return parameter_ (setup, 2);
                                 break;
                             case 'u':
                                 if (setup.parameterCount <= 3) {
-                                    throw functional_general_exeption ("'u' is only declared for functions with at least 4 parameters");
+                                    throw functional_general_exeption (code, "'u' is only declared for functions with at least 4 parameters");
                                 }
                                 return parameter_ (setup, 3);
                                 break;
                             case 'v':
                                 if (setup.parameterCount <= 4) {
-                                    throw functional_general_exeption ("'u' is only declared for functions with at least 5 parameters");
+                                    throw functional_general_exeption (code, "'u' is only declared for functions with at least 5 parameters");
                                 }
                                 return parameter_ (setup, 4);
                                 break;
                             case 'w':
                                 if (setup.parameterCount <= 5) {
-                                    throw functional_general_exeption ("'u' is only declared for functions with at least 6 parameters");
+                                    throw functional_general_exeption (code, "'u' is only declared for functions with at least 6 parameters");
                                 }
                                 return parameter_ (setup, 5);
                                 break;
@@ -820,10 +829,10 @@ case OPERATOR:{                                                  \
                                 }
                                 --it; // This should fix the bug where the next character after the constant is ignored.
                                 if (dotCount > 1) {
-                                    throw functional_general_exeption (std::string ("too many dots in float-number: ") + number);
+                                    throw functional_general_exeption (code, std::string ("too many dots in float-number: ") + number);
                                 }
                                 if (number.size()<=0) {
-                                    throw functional_general_exeption (std::string ("invalid number (maybe you only wrote a prefix like '-' without the actual number?): '") + number + std::string ("'"));
+                                    throw functional_general_exeption (code, std::string ("invalid number (maybe you only wrote a prefix like '-' without the actual number?): '") + number + std::string ("'"));
                                 }
                                 real_t f;
                                 stringstream ss;
@@ -833,7 +842,7 @@ case OPERATOR:{                                                  \
                             }
                             break;
                             default: {
-                                throw functional_general_exeption (std::string ("token unknown: ") + tok);
+                                throw functional_general_exeption (code, std::string ("token unknown: ") + tok);
                             }
                             break;
                         }
