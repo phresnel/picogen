@@ -508,13 +508,13 @@ void MkheightmapWxDialog::OnPresets1 ( wxCommandEvent& event ) {
 void MkheightmapWxDialog::showRunError (const picogen::error_codes::code_t code, const wxArrayString &output, const wxArrayString &errors) {
     wxString errorMsg;
     for (int i=0; i<errors.Count(); ++i) {
-        errorMsg += errors [i];
+        errorMsg += errors [i] + wxString(_("\n"));
     }
     wxMessageDialog (
         this  // parent
-        , wxString (_("An error occured while running the renderer:\n\""))
+        , wxString (_("An error occured while running the renderer:\n\n"))
             + (errors.Count()>0?errorMsg:wxString(_("<no error message>")))
-            + wxString(_("\".")) // message
+            + wxString(_("")) // message
         , wxString (_("Renderer Error")) // caption
         , wxICON_ERROR
     ).ShowModal();
@@ -522,57 +522,33 @@ void MkheightmapWxDialog::showRunError (const picogen::error_codes::code_t code,
 
 
 
-void MkheightmapWxDialog::run (wxString x_usrbin) {
+void MkheightmapWxDialog::run (wxString program, wxString parameters) {
+
+    wxString exec = parameters; // Includes program name as argv[0].
     
-    wxString x_currentfolder = wxString (_("./") + x_usrbin);
+    // Check if there is a local picogen binary, if yes, prefer that one.
+    if (wxFile::Exists (program)) {
+        exec = wxString (_("./")) + exec;
+    }
     
     // try picogen in current folder
     {
-        wxString statusText = x_currentfolder;
-        statusText.Replace (_("\n"), _(" "));    
+        wxString statusText = exec;
+        statusText.Replace (_("\n"), _(" "));
         SetStatusText(statusText);
     }
     
     wxArrayString output;
     wxArrayString errors;
     #if 1
-        const int i = wxExecute (x_currentfolder, output, errors);
+        const int i = wxExecute (exec, output, errors);
     #else
-        const int i = wxExecute (x_currentfolder, wxEXEC_SYNC);
+        const int i = wxExecute (exec, wxEXEC_SYNC);
     #endif
     
-    // The second term is a workaround. According to documentation, -1 shalt be returned
-    // on execution error, but actually, 2 gets returned, so have to explicitly check if this
-    // was a picogen-error or an excution error.
-    if (0 != i && picogen::error_codes::generic_min>i) {
-        // retry picogen in /usr/bin        
-        {
-            wxString statusText = x_usrbin;
-            statusText.Replace (_("\n"), _(" "));    
-            SetStatusText(statusText);
-        }
-
-        wxArrayString output;
-        wxArrayString errors;
-        #if 0
-            const int i = (wxExecute (x_usrbin, output, errors));
-        #else
-            const int i = (wxExecute (x_usrbin, wxEXEC_SYNC));
-        #endif
-        if (0 != i && picogen::error_codes::generic_min>i) {
-            wxMessageDialog msg (this, 
-                wxString (_("An execution error occured while running the command \"")) 
-                + x_usrbin 
-                + wxString(_("\". Is the picogen-binary present?"))
-                + wxString::Format(_("(error-code:%i)"), i)
-            );
-            msg.ShowModal ();
-        } else if (0 != i && picogen::error_codes::generic_min<=i) {
-            showRunError (static_cast <picogen::error_codes::code_t> (i), output, errors);
-        }
-    } else if (0 != i && picogen::error_codes::generic_min<=i) {
-        showRunError (static_cast <picogen::error_codes::code_t> (i), output, errors);
-    }
+    if (0 != i) {
+        showRunError (picogen::error_codes::generic_unspecified_error, output, errors);
+    } 
 }
 
 
@@ -590,7 +566,7 @@ void MkheightmapWxDialog::OnShowHeightmap( wxCommandEvent& event ) {
         + wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing
         + (normalise->IsChecked() ? wxString(_(" -n ")) : wxString(_(""))) // normalise?
     ;
-    run (x_usrbin);
+    run (wxString (_("picogen")), x_usrbin);
     terrainHeightmap->SetFocus();
 }
 
@@ -614,7 +590,7 @@ void MkheightmapWxDialog::OnShowShadedHeightmap( wxCommandEvent& event ) {
         + wxString::Format (wxString(_(" -a %i ")), antialiasing->GetValue ()) // antialiasing
         + (normalise->IsChecked() ? wxString(_(" -n ")) : wxString(_(""))) // normalise?
     ;
-    run (x_usrbin);    
+    run (wxString (_("picogen")),x_usrbin);    
     terrainShader->SetFocus();
 }
 
@@ -663,7 +639,7 @@ void MkheightmapWxDialog::OnShowHemisphere( wxCommandEvent& event ) {
     commandline << " -A " << sunDiskSize << ' ';
     
     const wxString x_usrbin (commandline.str().c_str(), wxConvUTF8);
-    run (x_usrbin);    
+    run (wxString (_("picogen")), x_usrbin);    
 }
 
 
@@ -822,7 +798,7 @@ void MkheightmapWxDialog::OnQuickPreview( wxCommandEvent& event ) {
             + ((previewSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
             + wxString::Format (_(" -w %d -h %d -a %d -l %d "), width, height, aa, totalLoops)
         ;
-        run (x_usrbin);        
+        run (wxString (_("picogen")), x_usrbin);        
     }
 }
 
@@ -864,7 +840,7 @@ void MkheightmapWxDialog::OnRender( wxCommandEvent& event ) {
             + ((renderSurfaceIntegrator->GetSelection () == 0) ? wxString(_(" -s ws ")) : wxString(_(" -s pt ")))
             + wxString::Format (_(" -w %d -h %d -a %d -n %d -l %d "), width, height, aa, saveAfterEveryNth->GetValue(), totalLoops)
         ;
-        run (x_usrbin);        
+        run (wxString (_("picogen")), x_usrbin);        
     }
 }
 
