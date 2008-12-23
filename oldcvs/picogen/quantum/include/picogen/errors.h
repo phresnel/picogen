@@ -34,6 +34,7 @@ namespace picogen {
             // generic {{
             generic_okay                  = 0,
             generic_min                   = 1*rangescale__,
+            generic_unspecified_error     = 1 + generic_okay,
             generic_max                   = 2*rangescale__,
             // }} generic
             
