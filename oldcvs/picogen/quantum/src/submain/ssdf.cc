@@ -491,7 +491,7 @@ class SSDFScene : public Scene, public SSDFBackend {
                 Transformation().setToRotationX (pitch) *
                 Transformation().setToRotationY (yaw) *
                 Transformation().setToTranslation (position);
-            std::cout << "camera position={" << position[0] << ", " << position[1] << ", " << position[2] << "} ypr{" << yaw << ", " << pitch << ", " << roll << "}" << std::endl;
+            //std::cout << "camera position={" << position[0] << ", " << position[1] << ", " << position[2] << "} ypr{" << yaw << ", " << pitch << ", " << roll << "}" << std::endl;
             return 0;
         }
 
@@ -1143,18 +1143,21 @@ picogen::error_codes::code_t main_ssdf (int argc, char *argv[]) {
     try {
         grindScene = new SSDFScene (filename, outputFilename, writeOutputEveryNthLoop);
         return grind (width, height, aaWidth, totalLoops, grindScene, stype);
-    } catch (PicoSSDF::exception_file_not_found e) {
+    } catch (const PicoSSDF::exception_file_not_found &e) {
         cerr << "doh, exception_file_not_found." << endl;
         return picogen::error_codes::ssdf_file_not_found;
-    } catch (PicoSSDF::exception_unknown e) {
+    } catch (const PicoSSDF::exception_unknown &e) {
         cerr << "doh, exception_unknown." << endl;
         return picogen::error_codes::ssdf_unknown_error;
-    } catch (PicoSSDF::exception_syntax_error e) {
+    } catch (const PicoSSDF::exception_syntax_error &e) {
         cerr << "" << e.file << ""
              << ":" << e.line
              << ":error:" << e.reason << ""
              //<< " (near \"" << e.curr << "\")"
              << endl;
+        return picogen::error_codes::ssdf_syntax_error;
+    } catch (const picogen::misc::functional::functional_general_exeption &e) {
+        cerr << "error:" << e.getMessage() << endl;
         return picogen::error_codes::ssdf_syntax_error;
     } catch (...) {
         cerr << "doh, ..." << endl;
