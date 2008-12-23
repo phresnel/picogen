@@ -314,7 +314,7 @@ private:
     std::string generateSceneTempFile (bool withPreviewSettings) const;    
     wxString pwsFilename;
     
-    void run (wxString x_usrbin);
+    void run (wxString program, wxString x_usrbin);
     void showRunError (const picogen::error_codes::code_t code, const wxArrayString &output, const wxArrayString &errors);
 
 protected:
