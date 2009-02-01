@@ -103,7 +103,16 @@ namespace quatsch {  namespace backend {  namespace est {
             // operators: To which operator the operands at this->operands.back() belong. 
             // Do not confuse with functions, in which user defined functions are stored!    
             ::std::vector < ::std::string> operators; 
-            ::std::vector < ::boost::shared_ptr <ICreateConfigurableFunction> > configurableFunctionCreators;
+            //::std::vector < ::boost::shared_ptr <ICreateConfigurableFunction> > configurableFunctionCreators;
+            struct ConfigurableCallDescriptor {
+                ::boost::shared_ptr <ICreateConfigurableFunction> creator;
+                ::std::map <std::string, std::string> static_arguments;
+
+                ConfigurableCallDescriptor (::boost::shared_ptr <ICreateConfigurableFunction> &creator, ::std::map <std::string, std::string> &static_arguments)
+                : creator (creator), static_arguments (static_arguments)
+                {}
+            };
+            ::std::vector <ConfigurableCallDescriptor> configurableCallDescriptors;
             ::std::vector < ::std::vector <FunctionPtr> > operands;
 
             // In this stack of SymbolTables, each table is distinct, and no table is derived from any other,
