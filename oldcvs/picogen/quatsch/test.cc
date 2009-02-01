@@ -30,7 +30,8 @@
 #include "quatsch.h"
 #include "frontend/jux.h"
 #include "backend/est/backend.h"
-#include "backend/est/backenddef.h"
+
+//#include "backend/est/backenddef.h"
 
 #include "configurable-functions/noise2ddef.h"
 //template class quatsch::backend::est::Backend <double, const double *> ;
@@ -44,22 +45,25 @@
 
 
 
-int main () {
-    typedef double scalar_t;
-    typedef const scalar_t* parameters_t;
-    typedef quatsch::Function <scalar_t, parameters_t> function_t;
-    typedef quatsch::backend::est::Backend <scalar_t, parameters_t> backend_t;
-    typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
-    typedef backend_t::FunctionPtr FunctionPtr;
+int main () {   
     
-    //::std::vector <::boost::shared_ptr <ICreateAdditionFunction <function_t> > > configurableFunctions;
+    typedef quatsch::backend::est::Backend <double, const double *> backend_t;
+    
+    typedef backend_t::Function Function;
+    typedef backend_t::FunctionPtr FunctionPtr;
+    typedef backend_t::scalar_t scalar_t;
+    typedef backend_t::parameters_t parameters_t;
+    
+    typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;    
+    
+    //::std::vector <::boost::shared_ptr <ICreateAdditionFunction <Function> > > configurableFunctions;
     //configurableFunctions.push_back 
     
     
-    quatsch::ICreateConfigurableFunction<function_t>::ConfigurableFunctionDescriptionPtr noiseDesc (
+    quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
         new quatsch::CreateConfigurableFunction <
-            quatsch :: configurable_functions :: Noise2d <function_t>,  
-            function_t
+            quatsch :: configurable_functions :: Noise2d <Function, Compiler>,  
+            Function
         >
     );
     
@@ -67,26 +71,29 @@ int main () {
     ::std::string parameters = "alpha";
     ::std::string code = //"/* faculty function. */\n"
         //"// functions \n"
-        "//(defun pi () (pi))\n"
-        "(defun fac (x) (if (< x 2) 1 (* x (fac (- x 1)))))\n"
-        "(defun lerp (x) (if (< x 2) 1 (* x (lerp (- x 1)))))\n"
+        //"//(defun pi () (pi))\n"
+        //"(defun fac (x) (if (< x 2) 1 (* x (fac (- x 1)))))\n"
+        //"(defun lerp (x) (if (< x 2) 1 (* x (lerp (- x 1)))))\n"
         //"(defun $ (x) (if (< x 2) 1 (* x (fac (- x 1))))) /* should throw */\n" // << TODO: implement functors for error messaging
         //"(defun something-awful x y z (+ x y z)) \n"
         //"// program\n"
-        "(lerp alpha)"
+"([Noise2d outer{outer}] ([Noise2d inner{inner}] alpha alpha) alpha)"
+//"([Noise2d foo() boofar(0.5) ] alpha alpha)"
+//"([Noise2d foo() boofar((+ 0.5 0.1)) ] alpha alpha)"
     ;
     //::std::string code = "(def x a (+ a a)) (+ (x 5) 1)";
 
     Compiler::ConfigurableFunctionsMap addfuns;
     addfuns.addSymbol ("Noise2d", noiseDesc);
-    Compiler::FunctionPtr fun (Compiler::compile (parameters, code, addfuns));
     
+    Compiler::FunctionPtr fun (Compiler::compile (parameters, code, addfuns));
+    //exit(41);
     /*::std::vector <scalar_t> params;
     params.push_back (6.0);*/
     scalar_t params [] = { 6.0 };
     ::std::cout << "r:" << (*fun) (params) << ::std::endl;
     
-    /*while (true) {
+    while (true) {
         char s [1024];
         gets (s);
         
@@ -95,6 +102,6 @@ int main () {
         scalar_t r = (*fun) (params);
         ::std::cout << "r:" << r << ::std::endl;
         //compiler ("alpha;beta;gamma").compile (s);
-    };*/
+    };
     
 }

@@ -1,2 +1,4 @@
-./quantum -> contains the the kernel 'picogen'
-./atom -> contains the minimalistic frontend 'picogen-wx'
+./quantum   -> rendering kernel 'picogen'
+./atom      -> minimalistic frontend 'picogen-wx'
+./quatsch   -> micro compiler framework for strict functional languages
+./redshift  -> the new rendering kernel
