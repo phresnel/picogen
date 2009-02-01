@@ -21,6 +21,7 @@
 //    You should have received a copy  of  the  GNU General Public License
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+// TODO: work through this file to take into account the rule of three correctly
 #ifndef ACTCODEDEFINITION__20090123
 #define ACTCODEDEFINITION__20090123
 namespace quatsch {  namespace backend {  namespace est {  namespace parser_actions {
@@ -98,21 +99,66 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                             FunctionName (ConfigurableFunctionCall &parent) : parent (parent), backend (parent.backend) {}
                             template <typename code_iterator_t> void operator () (const code_iterator_t& from, const code_iterator_t&to) const {
                                 parent.name = ::std::string (from, to);
-                                backend.operators.push_back (""); // Will say parent.pop() that it was a configurable call.
+                                backend.operators.push_back (""); // Will tell parent.pop() that it was a configurable call.
+                                backend.codeDefinition.operatorNamePositions.push_back (SourcecodePosition (from.get_position().line, from.get_position().column, from.get_position().file));
                             }
+                    };
+                    
+                    class Parameter {
+                            BACKEND &backend;
+                            ::std::string name_;
+                            ::std::string value_;
+                        public:
+                            class Name {
+                                    Parameter &parent;
+                                public:
+                                    Name (Parameter &parent) : parent (parent) {}
+                                    template <typename code_iterator_t> void operator () (const code_iterator_t& from, const code_iterator_t&to) const {
+                                        ::std::cout << "name:" << ::std::string (from, to) << ::std::endl;                                        
+                                        parent.name_ = ::std::string (from, to);
+                                    }
+                            };
+                            
+                            class Value {
+                                    Parameter &parent;
+                                public:
+                                    Value (Parameter &parent) : parent (parent) {}
+                                    template <typename code_iterator_t> void operator () (const code_iterator_t& from, const code_iterator_t&to) const {
+                                        ::std::cout << "value:" << ::std::string (from, to) << ::std::endl;                                        
+                                        parent.value_ = ::std::string (from, to);
+                                    }
+                            };
+                            
+                            class Commit {
+                                    Parameter &parent;
+                                public:
+                                    Commit (Parameter &parent) : parent (parent) {}
+                                    template <typename code_iterator_t> void operator () (const code_iterator_t& from, const code_iterator_t&to) const {
+                                        ::std::cout << "commit:" << ::std::string (from, to) << ::std::endl;                                        
+                                        parent.backend.codeDefinition.configurableFunctionCall.static_arguments [parent.name_] = parent.value_;
+                                        parent.name_ = parent.value_ = "";
+                                    }
+                            };
+                            
+                            friend class Name   ;  Name   name;
+                            friend class Value  ;  Value  value;
+                            friend class Commit ;  Commit commit;
+
+                            Parameter (ConfigurableFunctionCall &parent) : backend (parent.backend), name (*this), value (*this), commit (*this) {}
                     };
                     
                     class End {
                             End();
-                            ConfigurableFunctionCall &parent;
+                            ConfigurableFunctionCall &parent;                            
                             BACKEND &backend;
                         public:
                             End (ConfigurableFunctionCall &parent) : parent (parent), backend (parent.backend) {}
                             template <typename code_iterator_t> void operator () (const code_iterator_t& /*from*/, const code_iterator_t& /*to*/) const {                                                
                                 // If the function is not defined, next line will throw 'quatsch::SymbolTable<>::undefined_symbol_exception'.
-                                ::boost::shared_ptr <typename BACKEND::ICreateConfigurableFunction> i (parent.configurableFunctions [parent.name]);
+                                // TODO: error message, substitute null-function
+                                ::boost::shared_ptr <typename BACKEND::ICreateConfigurableFunction> creator (parent.configurableFunctions [parent.name]);
 
-                                backend.configurableFunctionCreators.push_back (i);
+                                backend.configurableCallDescriptors.push_back (typename BACKEND::ConfigurableCallDescriptor (creator, parent.static_arguments));
                                 // Create function from description.
                                 //FunctionPtr p (i->create(parent.static_arguments, parent.runtime_arguments));
                             }
@@ -120,12 +166,14 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                     
                     friend class Begin        ;  Begin        begin;
                     friend class FunctionName ;  FunctionName functionName;
+                    friend class Parameter    ;  Parameter    parameter;
                     friend class End          ;  End          end;
                     
                     ConfigurableFunctionCall (CodeDefinition &parent) 
                     : backend (parent.backend), configurableFunctions (backend.configurableFunctions)
                     , begin (*this)
                     , functionName (*this)
+                    , parameter (*this)
                     , end (*this)
                     {}
             };
@@ -186,7 +234,7 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                         if (debug) {
                             for (int i=0; i<parent.nestingDepth; ++i) 
                                 ::std::cout << "\t";
-                            //::std::cout << "pop:\"" << ::std::string (from, to) << "\"." << ::std::endl;                            
+                            ::std::cout << "pop." << ::std::endl;//:\"" << ::std::string (from, to) << "\"." << ::std::endl;                            
                         }
                         
                         const ::std::string operator_ = parent.operators.back();
@@ -201,10 +249,14 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                         // TODO: check param count of builtins
                         // TODO: check param count for zero-arg functions
                         // TODO: correct singular/plural
+                        // TODO: instead of parent.operatorNamePosition, maybe use the error-frame?
                         
                         // TODO: ScopeGuard
+                        if (debug) ::std::cout << "parent.operands.pop_back ();" << ::std::endl;
                         parent.operands.pop_back ();
+                        if (debug) ::std::cout << "const SourcecodePosition pos = parent.operatorNamePositions.back();" << ::std::endl;
                         const SourcecodePosition pos = parent.operatorNamePositions.back();
+                        if (debug) ::std::cout << "parent.operatorNamePositions.pop_back ();" << ::std::endl;
                         parent.operatorNamePositions.pop_back ();
 
                         if (functions.hasSymbol (operator_)) {
@@ -235,13 +287,15 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                             }
                         } else if ("" == operator_) {
                             // This is a call to a configurable function.
-                            if (debug) {::std::cout << "Creating call to configurable function '" << backend.configurableFunctionCreators.back()->name() << "'" << ::std::endl;}
+                            
+                            typename BACKEND::ConfigurableCallDescriptor &desc = backend.configurableCallDescriptors.back();
+                            if (debug) {::std::cout << "Creating call to configurable function '" << desc.creator->name() << "'" << ::std::endl;}
 
                             // Record whether the correct number of arguments is passed.
-                            if (backend.configurableFunctionCreators.back()->parameterCount() != operands.size()) {                                                
+                            if (desc.creator->parameterCount() != operands.size()) {                                                
                                 stringstream ss;
-                                ss << "passed " << operands.size() << " arguments to function \"[" << backend.configurableFunctionCreators.back()->name() << "]\","
-                                   << " but exactly " << backend.configurableFunctionCreators.back()->parameterCount() << " are required" 
+                                ss << "passed " << operands.size() << " arguments to function \"[" << desc.creator->name() << "]\","
+                                   << " but exactly " << desc.creator->parameterCount() << " are required" 
                                    << flush;
                                 backend.errorMessages.push_back (ErrorMessage (ErrorMessage::error, ss.str(), pos));
                             }
@@ -249,15 +303,15 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                             // If not enough arguments are passed, we fill them up with Null()'s. This avoids more code mess.
                             // TODO: It could be that it should actually be a value-function, for example the configurable-func. may pre-sample over some parameters.
                             //       * Maybe the configurable-func should just catch null-calls?
-                            for (unsigned int i=operands.size(); i<backend.configurableFunctionCreators.back()->parameterCount(); ++i) {                                                
+                            for (unsigned int i=operands.size(); i<desc.creator->parameterCount(); ++i) {                                                
                                 operands.push_back (node_types<BACKEND>::Null::create());
                             }
                             
-                            static ::std::map<std::string, std::string> static_arguments; // TODO: not here
-                            typename BACKEND::FunctionPtr p (backend.configurableFunctionCreators.back()->create(static_arguments, operands));
+                            //static ::std::map<std::string, std::string> static_arguments; // TODO: not here
+                            typename BACKEND::FunctionPtr p (desc.creator->create(desc.static_arguments, operands));
                             parent.operands.back().push_back (p);
                             
-                            backend.configurableFunctionCreators.pop_back();
+                            backend.configurableCallDescriptors.pop_back();
                         } else {
                             try {
                                 parent.operands.back().push_back (node_types<BACKEND>::create (operator_, operands.size(), operands));
