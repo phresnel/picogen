@@ -34,70 +34,69 @@
 
 #include "../quatsch.h"
 
-namespace quatsch {    
-    namespace frontend {
-        namespace jux {
+namespace quatsch {  namespace frontend {  namespace jux {
             
-            template <typename BACKEND> class Compiler 
-            : public boost::spirit::grammar <Compiler <BACKEND> > {
-                
-                public:
-                    typedef typename BACKEND::scalar_t scalar_t;
-                    typedef typename BACKEND::parameters_t parameters_t;
-                    typedef typename BACKEND::Function Function;
-                    typedef typename BACKEND::FunctionPtr FunctionPtr;
-                    typedef typename quatsch::ICreateConfigurableFunction <Function> ICreateConfigurableFunction;
-                    typedef typename ICreateConfigurableFunction::ConfigurableFunctionsMap ConfigurableFunctionsMap;
-                
-                    typedef ::boost::spirit::position_iterator<char const*> code_iterator_t;
-                
-                private:
-                    const ConfigurableFunctionsMap &configurableFunctions;
-                    BACKEND backend;
+    template <typename BACKEND> class Compiler 
+    : public boost::spirit::grammar <Compiler <BACKEND> > {
+        
+        public:
+            typedef typename BACKEND::scalar_t scalar_t;
+            typedef typename BACKEND::parameters_t parameters_t;
+            typedef typename BACKEND::Function Function;
+            typedef typename BACKEND::FunctionPtr FunctionPtr;
+            typedef typename quatsch::ICreateConfigurableFunction <Function> ICreateConfigurableFunction;
+            typedef typename ICreateConfigurableFunction::ConfigurableFunctionsMap ConfigurableFunctionsMap;
+        
+            typedef ::boost::spirit::position_iterator<char const*> code_iterator_t;
+        
+        private:
+            const ConfigurableFunctionsMap &configurableFunctions;
+            BACKEND backend;
 
-                    // Not that those can't be implemented, but paranoism first :D
-                    Compiler ();
-                    Compiler (const Compiler &);
-                    Compiler (const code_iterator_t &begin, const code_iterator_t &end, const ::std::string & parameterNames, const ConfigurableFunctionsMap &configurableFunctions);
-                    Compiler& operator = (const Compiler&) ;
-                    
-                    void setParameterNames (const ::std::string & parameterNames);
+            // Not that those can't be implemented, but paranoism first :D
+            Compiler ();
+            Compiler (const Compiler &);
+            Compiler (const code_iterator_t &begin, const code_iterator_t &end, const ::std::string & parameterNames, const ConfigurableFunctionsMap &configurableFunctions);
+            Compiler& operator = (const Compiler&) ;
+            
+            void setParameterNames (const ::std::string & parameterNames);
+        
+            void dumpErrorMessages () const;
+        
+        public:
+            
+            typename BACKEND::Program &program;
+            typename BACKEND::FunctionDefinition &fundef;
+            typename BACKEND::CodeDefinition &codedef;
+            typename BACKEND::SyntaxError &syntaxError;
+        
+            // Definition.
+            template <typename ScannerT>
+            struct definition {                    
+                // Those variable names might be confusing. Better look at the actual grammar in juxdef.h.
+                ::boost::spirit::rule <ScannerT> symbol;                    
+                ::boost::spirit::symbols <> operators;
+                ::boost::spirit::rule <ScannerT> function_definition;
+                ::boost::spirit::rule <ScannerT> function_name;
+                ::boost::spirit::rule <ScannerT> configurable_call;
+                ::boost::spirit::rule <ScannerT> configurable_call_argument;
+                ::boost::spirit::rule <ScannerT> configurable_call_argument_helper;
+                ::boost::spirit::rule <ScannerT> operand;
+                ::boost::spirit::rule <ScannerT> call;
+                ::boost::spirit::rule <ScannerT> program_definition;
+                ::boost::spirit::rule <ScannerT> program_definition_no_action;
+                ::boost::spirit::rule <ScannerT> start_rule;
                 
-                    void dumpErrorMessages () const;
-                
-                public:
-                    
-                    typename BACKEND::Program &program;
-                    typename BACKEND::FunctionDefinition &fundef;
-                    typename BACKEND::CodeDefinition &codedef;
-                    typename BACKEND::SyntaxError &syntaxError;
-                
-                    // Definition.
-                    template <typename ScannerT>
-                    struct definition {                    
-                        // Those variable names might be confusing. Better look at the actual grammar in juxdef.h.
-                        ::boost::spirit::rule <ScannerT> symbol;                    
-                        ::boost::spirit::symbols <> operators;
-                        ::boost::spirit::rule <ScannerT> function_definition;
-                        ::boost::spirit::rule <ScannerT> function_name;
-                        ::boost::spirit::rule <ScannerT> configurable_call;
-                        ::boost::spirit::rule <ScannerT> operand;
-                        ::boost::spirit::rule <ScannerT> call;
-                        ::boost::spirit::rule <ScannerT> program_definition;
-                        ::boost::spirit::rule <ScannerT> program_definition_no_action;
-                        ::boost::spirit::rule <ScannerT> start_rule;
-                        
-                        definition(Compiler const& self);
-                        ::boost::spirit::rule<ScannerT> const& start() const;
-                    };
-                
-                    static typename ::quatsch::Function <scalar_t, parameters_t>::FunctionPtr compile (
-                        const ::std::string &parameterNames,
-                        const ::std::string &code,
-                        const ConfigurableFunctionsMap &addfuns
-                    );
+                definition(Compiler const& self);
+                ::boost::spirit::rule<ScannerT> const& start() const;
             };
-        }
-    }
-}
+        
+            static typename ::quatsch::Function <scalar_t, parameters_t>::FunctionPtr compile (
+                const ::std::string &parameterNames,
+                const ::std::string &code,
+                const ConfigurableFunctionsMap &addfuns
+            );
+    };
+
+} } }
 #endif // JUX_H__INCLUDED__20090107

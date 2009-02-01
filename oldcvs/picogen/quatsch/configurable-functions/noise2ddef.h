@@ -28,101 +28,100 @@
 #include "noise2d.h"
 
 
-namespace quatsch {
-    namespace configurable_functions {
+namespace quatsch {  namespace configurable_functions {
 
-        template <typename FUNCTION> 
-        Noise2d <FUNCTION> :: Noise2d (std::map<std::string,std::string> &parameters, FunctionPtr ufun, FunctionPtr vfun)
-                    : ufun(ufun), vfun(vfun)
-                    , filter (cosine)
-                    , frequency (8.0)
-        {
-            using namespace std;
-            typedef map<string,string> Map;
+    template <typename FUNCTION, typename COMPILER> 
+    Noise2d <FUNCTION, COMPILER> :: Noise2d (std::map<std::string,std::string> &parameters, FunctionPtr ufun, FunctionPtr vfun)
+                : ufun(ufun), vfun(vfun)
+                , filter (cosine)
+                , frequency (8.0)
+    {
+        using namespace std;
+        typedef map<string,string> Map;
 
-            unsigned int seed=42;
+        unsigned int seed=42;
 
-            //====---- - - -  -   -    -      -
-            // Scan Parameters.
-            //====---- - - -  -   -    -      -
-            string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
+        //====---- - - -  -   -    -      -
+        // Scan Parameters.
+        //====---- - - -  -   -    -      -
+        string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
 
-            for ( Map::const_iterator it=parameters.begin(); it!=parameters.end(); ++it ) {
-                const string name = it->first;
-                /// \todo Add some shorter Mnenomics.
-                if (name == string("seed")) {
-                    istringstream hmmm (parameters[name]);
-                    hmmm >> seed;
-                } else if (name == string("frequency") ) {
-                    istringstream hmmm (parameters[name]);
-                    hmmm >> frequency;
-                } else if (name == string("filter")) {
-                    istringstream hmmm (parameters[name]);
-                    string filterType;
-                    hmmm >> filterType;
-                    if (filterType == "bilinear") {
-                        filter = bilinear;
-                    } else if (filterType == "nearest") {
-                        filter = nearest;
-                    } else if (filterType == "cosine") {
-                        filter = cosine;
-                    } else {
-                        throw general_exeption ("unknown filter type for 'noisemapfilter': '" + filterType + "' (only 'bilinear' and 'nearest' are supported)");
-                    }
+        for ( Map::const_iterator it=parameters.begin(); it!=parameters.end(); ++it ) {
+            const string name = it->first;
+            /// \todo Add some shorter Mnenomics.
+            if (name == string("seed")) {
+                istringstream hmmm (parameters[name]);
+                hmmm >> seed;
+            } else if (name == string("frequency") ) {
+                istringstream hmmm (parameters[name]);
+                hmmm >> frequency;
+            } else if (name == string("filter")) {
+                istringstream hmmm (parameters[name]);
+                string filterType;
+                hmmm >> filterType;
+                if (filterType == "bilinear") {
+                    filter = bilinear;
+                } else if (filterType == "nearest") {
+                    filter = nearest;
+                } else if (filterType == "cosine") {
+                    filter = cosine;
                 } else {
-                    nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
+                    throw general_exeption ("unknown filter type for 'noisemapfilter': '" + filterType + "' (only 'bilinear' and 'nearest' are supported)");
                 }
+            } else {
+                nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
             }
-            // Any parameters set that we don't know?
-            if (nonExistantParameterNames != "") {
-                throw general_exeption ("the following parameters do not exist for 'Noise': "+nonExistantParameterNames);
-            }
-
-            //====---- - - -  -   -    -      -
-            // Initialise Noise.
-            //====---- - - -  -   -    -      -
-            /*
-            ::picogen::generators::rng::MersenneTwister twister (seed);
-
-            const unsigned int offsetLutNumBits = 8;
-            offsetLutMask = 0;
-            for (unsigned int u=0; u<offsetLutNumBits; ++u) {
-                offsetLutMask |= 1 << u;
-            }
-            offsetLutSize = offsetLutMask+1;
-            if (false) {
-                for (unsigned int i=0; i<300; ++i) {
-                    std::cout << i << ":" << (i&offsetLutMask) << std::endl;
-                }
-            }
-            offsetLut = boost::shared_array <unsigned int> (new unsigned int [offsetLutSize]);
-            rngLut    = boost::shared_array <scalar_t>     (new scalar_t [offsetLutSize]);
-
-            for (unsigned int u=0; u<offsetLutSize; ++u) {
-                offsetLut [u] = static_cast<unsigned int> ((twister.randf()) * static_cast<scalar_t> (offsetLutSize));
-                rngLut    [u] = -0.5 + 1.0 * twister.randf();
-            }
-            */
-            #warning "implement twister!"
-
+        }
+        // Any parameters set that we don't know?
+        if (nonExistantParameterNames != "") {
+            throw general_exeption ("the following parameters do not exist for 'Noise': "+nonExistantParameterNames);
         }
 
+        //====---- - - -  -   -    -      -
+        // Initialise Noise.
+        //====---- - - -  -   -    -      -
+        /*
+        ::picogen::generators::rng::MersenneTwister twister (seed);
 
-
-        template <typename FUNCTION> Noise2d <FUNCTION> :: ~Noise2d() {
-            /*if (0 != offsetLut) {
-                delete [] offsetLut;
-            }
-            if (0 != rngLut) {
-                delete [] rngLut;
-            }
-            if (0 != vfun) {
-                delete vfun;
-            }
-            if (0 != ufun) {
-                delete ufun;
-            }*/
+        const unsigned int offsetLutNumBits = 8;
+        offsetLutMask = 0;
+        for (unsigned int u=0; u<offsetLutNumBits; ++u) {
+            offsetLutMask |= 1 << u;
         }
+        offsetLutSize = offsetLutMask+1;
+        if (false) {
+            for (unsigned int i=0; i<300; ++i) {
+                std::cout << i << ":" << (i&offsetLutMask) << std::endl;
+            }
+        }
+        offsetLut = boost::shared_array <unsigned int> (new unsigned int [offsetLutSize]);
+        rngLut    = boost::shared_array <scalar_t>     (new scalar_t [offsetLutSize]);
+
+        for (unsigned int u=0; u<offsetLutSize; ++u) {
+            offsetLut [u] = static_cast<unsigned int> ((twister.randf()) * static_cast<scalar_t> (offsetLutSize));
+            rngLut    [u] = -0.5 + 1.0 * twister.randf();
+        }
+        */
+        #warning "implement twister!"
+
+    }
+
+
+
+    template <typename FUNCTION, typename COMPILER> Noise2d <FUNCTION, COMPILER> :: ~Noise2d() {
+        /*if (0 != offsetLut) {
+            delete [] offsetLut;
+        }
+        if (0 != rngLut) {
+            delete [] rngLut;
+        }
+        if (0 != vfun) {
+            delete vfun;
+        }
+        if (0 != ufun) {
+            delete ufun;
+        }*/
+    }
 
 
 // const float *vg = lot_vals[ (i+lot_ofs[ (j+lot_ofs[k&0xFE]) &0xFE]) &0xFE ];
@@ -130,109 +129,108 @@ namespace quatsch {
 //#define LN2D_RNG(u, v, depth ) rngLut [ LN2D_LUTINDEX (u, v, depth) ]
 #define LN2D_RNG( u, v, depth ) rngLut [ ((v) + offsetLut [((u) + offsetLut [(depth) &offsetLutMask]) &offsetLutMask]) &offsetLutMask]
 
-        namespace {
-            template <typename RT, typename T> RT floor (const T &v) {
-                assert (static_cast<int>(1.75) == 1);
-                assert (static_cast<int>(1.5) == 1);
-                assert (static_cast<int>(1.25) == 1);
-                assert (static_cast<int>(-0.75) == 0);
-                assert (static_cast<int>(-0.5) == 0);
-                assert (static_cast<int>(-0.25) == 0);
-                return (RT)(int)(v<0 ? v-1 : v);
-            }
-        }
-
-        template <typename FUNCTION>
-        typename Noise2d <FUNCTION>::scalar_t 
-        Noise2d <FUNCTION>::operator () (
-            const Noise2d <FUNCTION>::parameters_t& parameters
-        ) const {
-
-            using namespace std;
-::std::cout << "Noise2d::operator () called" << ::std::endl;
-            return 0.42;
-            
-            const scalar_t x = 0.5;//(*ufun) (parameters);
-            const scalar_t y = 0.5;//(*vfun) (parameters);
-            const int depth = 0;
-
-            switch (filter) {
-                case bilinear: {
-                    const scalar_t u__  = x;
-                    const scalar_t u_   = u__ * frequency;
-                    const int u     = floor <int> (u_);
-                    const int u1    = floor <int> (1 + u_);
-
-                    const scalar_t v__  = y;
-                    const scalar_t v_   = v__ * frequency;
-                    const int  v    = floor <int> (v_);
-                    const int  v1   = floor <int> (1 + v_);
-
-                    const scalar_t pu = ( u_ - static_cast<scalar_t> (u) );
-                    const scalar_t pv = ( v_ - static_cast<scalar_t> (v) );
-
-                    const scalar_t A = LN2D_RNG( u  , v  , 0);
-                    const scalar_t B = LN2D_RNG( u1 , v  , 0);
-                    const scalar_t C = LN2D_RNG( u  , v1 , 0);
-                    const scalar_t D = LN2D_RNG( u1 , v1 , 0);
-
-                    const scalar_t P = A*(1.0-pu) + B*(pu);
-                    const scalar_t Q = C*(1.0-pu) + D*(pu);
-
-                    const scalar_t Z = P*(1.0-pv) + Q*(pv);
-                    return Z;
-                }
-                case cosine: {
-                    const scalar_t u__  = x;
-                    const scalar_t u_   = u__ * frequency;
-                    const int u     = floor <int> (u_);
-                    const int u1    = floor <int> (1 + u_);
-
-                    const scalar_t v__  = y;
-                    const scalar_t v_   = v__ * frequency;
-                    const int  v    = floor <int> (v_);
-                    const int  v1   = floor <int> (1 + v_);
-
-                    /*
-                        :from Hugo Elias (http://freespace.virgin.net/hugo.elias/models/m_perlin.htm)
-
-                        function Cosine_Interpolate(a, b, x)
-                            ft = x * 3.1415927
-                            f = (1 - cos(ft)) * .5
-
-                            return  a*(1-f) + b*f
-                        end of function
-                    */
-                    const scalar_t pu_ = constants::pi * (u_ - static_cast<scalar_t> (u));
-                    const scalar_t pu  = (1.0 - cos (pu_)) * 0.5;
-                    const scalar_t pv_ = constants::pi * (v_ - static_cast<scalar_t> (v));
-                    const scalar_t pv  = (1.0 - cos (pv_)) * 0.5;
-
-                    const scalar_t A = LN2D_RNG( u  , v  , 0);
-                    const scalar_t B = LN2D_RNG( u1 , v  , 0);
-                    const scalar_t C = LN2D_RNG( u  , v1 , 0);
-                    const scalar_t D = LN2D_RNG( u1 , v1 , 0);
-
-                    const scalar_t P = A*(1.0-pu) + B*(pu);
-                    const scalar_t Q = C*(1.0-pu) + D*(pu);
-
-                    const scalar_t Z = P*(1.0-pv) + Q*(pv);
-                    return Z;
-                }
-                case nearest: {
-                    const scalar_t         u__  = x;// - ::floor (x); // > [0..1)
-                    const scalar_t         u_   = u__ * frequency;
-                    const unsigned int u    = static_cast<unsigned int>(u_);
-
-                    const scalar_t         v__  = y;// - ::floor (y); // > [0..1)
-                    const scalar_t         v_   = v__ * frequency;
-                    const unsigned int v    = static_cast<unsigned int>(v_);
-
-                    const scalar_t Z = LN2D_RNG( u, v, depth);
-                    return Z;
-                }
-            }
-            return 0.0;
+    namespace {
+        template <typename RT, typename T> RT floor (const T &v) {
+            assert (static_cast<int>(1.75) == 1);
+            assert (static_cast<int>(1.5) == 1);
+            assert (static_cast<int>(1.25) == 1);
+            assert (static_cast<int>(-0.75) == 0);
+            assert (static_cast<int>(-0.5) == 0);
+            assert (static_cast<int>(-0.25) == 0);
+            return (RT)(int)(v<0 ? v-1 : v);
         }
     }
-}
+
+    template <typename FUNCTION, typename COMPILER>
+    typename Noise2d <FUNCTION, COMPILER>::scalar_t 
+    Noise2d <FUNCTION, COMPILER>::operator () (
+        const Noise2d <FUNCTION, COMPILER>::parameters_t& parameters
+    ) const {
+
+        using namespace std;
+::std::cout << "Noise2d::operator () called" << ::std::endl;
+        return 0.42;
+        
+        const scalar_t x = 0.5;//(*ufun) (parameters);
+        const scalar_t y = 0.5;//(*vfun) (parameters);
+        const int depth = 0;
+
+        switch (filter) {
+            case bilinear: {
+                const scalar_t u__  = x;
+                const scalar_t u_   = u__ * frequency;
+                const int u     = floor <int> (u_);
+                const int u1    = floor <int> (1 + u_);
+
+                const scalar_t v__  = y;
+                const scalar_t v_   = v__ * frequency;
+                const int  v    = floor <int> (v_);
+                const int  v1   = floor <int> (1 + v_);
+
+                const scalar_t pu = ( u_ - static_cast<scalar_t> (u) );
+                const scalar_t pv = ( v_ - static_cast<scalar_t> (v) );
+
+                const scalar_t A = LN2D_RNG( u  , v  , 0);
+                const scalar_t B = LN2D_RNG( u1 , v  , 0);
+                const scalar_t C = LN2D_RNG( u  , v1 , 0);
+                const scalar_t D = LN2D_RNG( u1 , v1 , 0);
+
+                const scalar_t P = A*(1.0-pu) + B*(pu);
+                const scalar_t Q = C*(1.0-pu) + D*(pu);
+
+                const scalar_t Z = P*(1.0-pv) + Q*(pv);
+                return Z;
+            }
+            case cosine: {
+                const scalar_t u__  = x;
+                const scalar_t u_   = u__ * frequency;
+                const int u     = floor <int> (u_);
+                const int u1    = floor <int> (1 + u_);
+
+                const scalar_t v__  = y;
+                const scalar_t v_   = v__ * frequency;
+                const int  v    = floor <int> (v_);
+                const int  v1   = floor <int> (1 + v_);
+
+                /*
+                    :from Hugo Elias (http://freespace.virgin.net/hugo.elias/models/m_perlin.htm)
+
+                    function Cosine_Interpolate(a, b, x)
+                        ft = x * 3.1415927
+                        f = (1 - cos(ft)) * .5
+
+                        return  a*(1-f) + b*f
+                    end of function
+                */
+                const scalar_t pu_ = constants::pi * (u_ - static_cast<scalar_t> (u));
+                const scalar_t pu  = (1.0 - cos (pu_)) * 0.5;
+                const scalar_t pv_ = constants::pi * (v_ - static_cast<scalar_t> (v));
+                const scalar_t pv  = (1.0 - cos (pv_)) * 0.5;
+
+                const scalar_t A = LN2D_RNG( u  , v  , 0);
+                const scalar_t B = LN2D_RNG( u1 , v  , 0);
+                const scalar_t C = LN2D_RNG( u  , v1 , 0);
+                const scalar_t D = LN2D_RNG( u1 , v1 , 0);
+
+                const scalar_t P = A*(1.0-pu) + B*(pu);
+                const scalar_t Q = C*(1.0-pu) + D*(pu);
+
+                const scalar_t Z = P*(1.0-pv) + Q*(pv);
+                return Z;
+            }
+            case nearest: {
+                const scalar_t         u__  = x;// - ::floor (x); // > [0..1)
+                const scalar_t         u_   = u__ * frequency;
+                const unsigned int u    = static_cast<unsigned int>(u_);
+
+                const scalar_t         v__  = y;// - ::floor (y); // > [0..1)
+                const scalar_t         v_   = v__ * frequency;
+                const unsigned int v    = static_cast<unsigned int>(v_);
+
+                const scalar_t Z = LN2D_RNG( u, v, depth);
+                return Z;
+            }
+        }
+        return 0.0;
+    }
+} }

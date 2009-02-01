@@ -28,54 +28,61 @@
 #include <boost/shared_array.hpp>
 //#include <picogen/picogen.h>
 
-namespace quatsch {
-    namespace configurable_functions {
+namespace quatsch {  namespace configurable_functions {
             
-        template <typename FUNCTION> class Noise2d : public FUNCTION {
-            private:
-                typedef FUNCTION function_t;
-                typedef typename function_t::FunctionPtr  FunctionPtr;
-                typedef typename function_t::scalar_t     scalar_t;
-                typedef typename function_t::parameters_t parameters_t;
+    template <typename FUNCTION, typename COMPILER> class Noise2d : public FUNCTION {
+        private:
+            typedef FUNCTION function_t;            
+            typedef typename function_t::FunctionPtr  FunctionPtr;
+            typedef typename function_t::scalar_t     scalar_t;
+            typedef typename function_t::parameters_t parameters_t;
+        
+            typedef COMPILER compiler_t;
 
-                FunctionPtr ufun;
-                FunctionPtr vfun;
+            FunctionPtr ufun;
+            FunctionPtr vfun;
 
-                enum filter_t {
-                    nearest,
-                    bilinear,
-                    cosine
-                };
-                filter_t filter;
+            enum filter_t {
+                nearest,
+                bilinear,
+                cosine
+            };
+            filter_t filter;
 
-                //unsigned int noiseDepth;
-                boost::shared_array <unsigned int> offsetLut;
-                boost::shared_array <scalar_t>     rngLut;
-                unsigned int offsetLutMask;
-                unsigned int offsetLutSize;
-                scalar_t frequency;
+            //unsigned int noiseDepth;
+            boost::shared_array <unsigned int> offsetLut;
+            boost::shared_array <scalar_t>     rngLut;
+            unsigned int offsetLutMask;
+            unsigned int offsetLutSize;
+            scalar_t frequency;
 
-                scalar_t operator () (scalar_t x, scalar_t y, scalar_t domainScale, scalar_t rangeScale, unsigned int depth ) const;
+            scalar_t operator () (scalar_t x, scalar_t y, scalar_t domainScale, scalar_t rangeScale, unsigned int depth ) const;
 
-            public:
-                
-                static ::std::string const & name () {
-                    static const ::std::string name ("Noise2d"); 
-                    return name;
-                }
-                
-                static unsigned int parameterCount () {
-                    return 2;
-                }
-                
-                Noise2d (::std::map<std::string,std::string> &parameters, FunctionPtr ufun, FunctionPtr vfun);
+        public:
             
-                Noise2d (::std::map<std::string,std::string> &/*static_parameters*/, ::std::vector <FunctionPtr> /*runtime_parameters*/) { 
-                    //::std::cout << Noise2d::name () << " created with " << runtime_parameters.size() << " arguments." << std::endl;
-                }
-                
-                virtual ~Noise2d();
-                virtual scalar_t operator () (const parameters_t &) const;
-        };
-    }
-}
+            static ::std::string const & name () {
+                static const ::std::string name ("Noise2d"); 
+                return name;
+            }
+            
+            static unsigned int parameterCount () {
+                return 2;
+            }
+
+            Noise2d (::std::map<std::string,std::string> &parameters, FunctionPtr ufun, FunctionPtr vfun);
+
+            Noise2d (::std::map<std::string,std::string> &static_parameters, ::std::vector <FunctionPtr> runtime_parameters) { 
+                ::std::cout << Noise2d::name () << " created with " << runtime_parameters.size() << " arguments." << std::endl;
+                typename compiler_t::ConfigurableFunctionsMap addfuns;
+                if (static_parameters ["inner"] == "inner")
+                    ::std::cout << "!!inner" << ::std::endl;
+                if (static_parameters ["outer"] == "outer")
+                    ::std::cout << "!!outer" << ::std::endl;
+                //FunctionPtr fun = compiler_t :: compile ("levels", static_parameters ["code"], addfuns);
+            }
+            
+            virtual ~Noise2d();
+            virtual scalar_t operator () (const parameters_t &) const;
+    };
+
+} }
