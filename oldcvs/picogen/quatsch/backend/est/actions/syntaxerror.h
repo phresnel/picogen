@@ -96,7 +96,7 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                     };
                     
                     // TODO: should we store this in a std::map?
-                    expected_t operator [] (const ::std::string &what) const {
+                    expected_t operator () (const ::std::string &what) const {
                         return expected_t (backend, what);
                     }
 
