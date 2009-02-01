@@ -123,7 +123,7 @@ namespace quatsch {  namespace backend {  namespace est {
         }
         
         // Output errors and warnings.
-        sort (errorMessages.begin(), errorMessages.end());
+        //sort (errorMessages.begin(), errorMessages.end());
         for (typename ::std::vector<ErrorMessage>::const_iterator it=errorMessages.begin(); it != errorMessages.end(); ++it) {
             if (it->isWarning()) {
                 cerr << it->getFilename() << ':' << it->getLineNumber() << "(";
