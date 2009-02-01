@@ -26,203 +26,264 @@
 
 #include "jux.h"
 
-namespace quatsch {    
-    namespace frontend {
-        namespace jux {
-            
-            template <class BACKEND> 
-                template <typename ScannerT> 
-                    Compiler <BACKEND> :: definition <ScannerT> :: definition (Compiler <BACKEND> const& self)
-            {
-                using namespace ::boost::spirit;
-                using ::std::string;
-                
-                typename BACKEND::FunctionDefinition &fundef = self.fundef;
-                typename BACKEND::CodeDefinition &codedef = self.codedef;
-                typename BACKEND::Program &program = self.program;
-                typename BACKEND::SyntaxError &syntaxError = self.syntaxError;
-                
-                symbol
-                    =   lexeme_d
-                            [
-                                ( range_p ('a','z')
-                                | range_p ('A','Z')
-                                )
-                            >>
-                            *   ( range_p ('a','z')
-                                | range_p ('A','Z')
-                                | range_p ('0','9')
-                                | "-" 
-                                | "_"
-                                )
-                            ]
-                    ;
-                
-                operators
-                    =   "+"  , "-"  , "*"  ,  "/" , "^"  ,
-                        "<"  , ">"  , "<=" , ">=" , "<>" ,
-                        "!=" , "="  ,
-                        "[]" , "[[" , "]]" , "]["
-                    ;
+namespace quatsch {  namespace frontend {  namespace jux {
 
-                function_name
-                        = operators 
-                        | symbol
-                    ;
+    template <class BACKEND> 
+        template <typename ScannerT> 
+            Compiler <BACKEND> :: definition <ScannerT> :: definition (Compiler <BACKEND> const& self)
+    {
+        using namespace ::boost::spirit;
+        using ::std::string;
+        
+        typename BACKEND::FunctionDefinition &fundef = self.fundef;
+        typename BACKEND::CodeDefinition &codedef = self.codedef;
+        typename BACKEND::Program &program = self.program;
+        typename BACKEND::SyntaxError &syntaxError = self.syntaxError;
+        
+        symbol
+            =   lexeme_d
+                    [
+                        ( range_p ('a','z')
+                        | range_p ('A','Z')
+                        )
+                    >>
+                    *   ( range_p ('a','z')
+                        | range_p ('A','Z')
+                        | range_p ('0','9')
+                        | "-" 
+                        | "_"
+                        )
+                    ]
+            ;
+        
+        operators
+            =   "+"  , "-"  , "*"  ,  "/" , "^"  ,
+                "<"  , ">"  , "<=" , ">=" , "<>" ,
+                "!=" , "="  ,
+                "[]" , "[[" , "]]" , "]["
+            ;
 
-                function_definition
-                    = 
-                        (       ch_p('(')
-                            >>  eps_p [syntaxError.beginFrame]
-                            >>  str_p("defun")
-                            >>  ( function_name [fundef.beginDefinition] [fundef.setName] 
-                                    >>  '('
-                                    >>   *(symbol [fundef.addParameter])
-                                    >>  ')'
-                                ) [fundef.finishPrototype]
-                            >>  operand [fundef.setCode]
-                            >>  ( ')'
+        function_name
+                = operators 
+                | symbol
+            ;
+
+        function_definition
+            = 
+                (       ch_p('(')
+                    >>  eps_p [syntaxError.beginFrame]
+                    >>  str_p("defun")
+                    >>  ( function_name [fundef.beginDefinition] [fundef.setName] 
+                            >>  '(' >> eps_p[syntaxError.beginFrame]
+                            >>   *(symbol [fundef.addParameter])
+                            >>  (')'
                                 | eps_p [syntaxError.missingClosing("(",")")]
                                 )
-                        ) [fundef.endDefinition] >> eps_p [syntaxError.endFrame]
-                    ;
-                
-                configurable_call
-                    =   (ch_p ('[')
-                            >> eps_p         [codedef.configurableFunctionCall. begin       ] 
-                            >> function_name [codedef.configurableFunctionCall. functionName] 
-                            >> ']'
-                            >> eps_p         [codedef.configurableFunctionCall. end         ]
+                            >>  eps_p [syntaxError.endFrame]
+                        ) [fundef.finishPrototype]
+                    >>  operand [fundef.setCode]
+                    >>  ( ')'
+                        | eps_p [syntaxError.missingClosing("(",")")]
                         )
-                    ;
-                
-                operand = call
-                        | real_p [codedef.scalarOperand]
-                        | symbol [codedef.symbolOperand]
-                        ;// | eps_p [syntaxError.unexpected];
-
-                call
-                    = 
-                        (ch_p('(') >> eps_p [codedef.push] >> eps_p [syntaxError.beginFrame]
-                            // either an ordinary function, or a "configurable" one
-                            >>
-                                ( function_name [codedef.operatorName]
-                                | configurable_call
-                                )
-                            >>
-                            *operand
-                            >>  
-                                ( ')'
-                                | eps_p [syntaxError.missingClosing("(",")")]
-                                )
-                        )
-                        >> eps_p [codedef.pop] >> eps_p [syntaxError.endFrame]
-                    ;
-
-                program_definition
-                    =   eps_p [program.begin]
-                        >>
-                        (*function_definition >> operand)
-                        /*(   (*function_definition >> operand)
-                        >>  eps_p [syntaxError.expected["end of file"]]
-                        )*/
-                        >> 
-                        eps_p [program.end]
-                    ;
-
-                start_rule = program_definition;// >> (anychar_p >> eps_p [syntaxError.unexpected]); // expected end of file
-            }
-
-
-
-            template <typename BACKEND> 
-                template <typename ScannerT>::boost::spirit::rule<ScannerT> 
-                const& Compiler <BACKEND>::definition <ScannerT> :: start()
-            const {
-                return start_rule;
-            }
-                           
-            
-            
-            template <typename BACKEND> Compiler<BACKEND> :: Compiler 
-                ( const code_iterator_t &begin
-                , const code_iterator_t &end 
-                , const ::std::string & parameterNames
-                , const ConfigurableFunctionsMap &configurableFunctions
+                ) [fundef.endDefinition] >> eps_p [syntaxError.endFrame]
+            ;
+        
+        // Either a single char except ')', or 
+        configurable_call_argument_helper
+            =   (    '{'
+                  >> eps_p[syntaxError.beginFrame]
+                  >> *configurable_call_argument_helper
+                  >> '}' // ( ')'
+                          //| eps_p [syntaxError.missingClosing("(",")")]
+                         // )
+                  >> eps_p[syntaxError.endFrame]
                 )
-                : configurableFunctions (configurableFunctions)
-                , backend(configurableFunctions)
-                , program (backend.program)
-                , fundef (backend.functionDefinition) 
-                , codedef (backend.codeDefinition)
-                , syntaxError (backend.syntaxError)
-            {
-                setParameterNames (parameterNames);
-            }
+            |   lexeme_d[anychar_p - '}']
+            ;
+            
+        configurable_call_argument
+            =   *configurable_call_argument_helper
+            ;
+
+        configurable_call
+                =      (ch_p ('[')                            
+                        >>  eps_p          [syntaxError.beginFrame                        ]
+                        >>  eps_p          [codedef.configurableFunctionCall. begin       ] 
+                        >>  function_name  [codedef.configurableFunctionCall. functionName] 
+                        
+                        >>  *( symbol      [codedef.configurableFunctionCall.parameter.name] 
+                               
+                               >>  ('{'
+                                   | eps_p [syntaxError.expected ("{")]
+                                   )
+                               >>  eps_p[syntaxError.beginFrame]
+                               >>  configurable_call_argument [codedef.configurableFunctionCall.parameter.value]
+                               >>  ('}'
+                                   | eps_p [syntaxError.missingClosing("{","}")]
+                                   )
+
+                               >> eps_p    [codedef.configurableFunctionCall.parameter.commit] 
+                               >> eps_p    [syntaxError.endFrame                          ]
+                             )
+
+                        >>  ( ']'
+                            | eps_p        [syntaxError.missingClosing("[","]")           ]
+                            )
+                        )                            
+                    /*|
+                        ( ch_p ('{')                            
+                        >>  eps_p          [syntaxError.beginFrame                        ]
+                        >>  eps_p          [codedef.configurableFunctionCall. begin       ] 
+                        >>  function_name  [codedef.configurableFunctionCall. functionName] 
+                        
+                        >>  *( symbol      [codedef.configurableFunctionCall.parameter.name] 
+                               
+                               >>  '(' >> eps_p[syntaxError.beginFrame                    ]
+                               >>  configurable_call_argument [codedef.configurableFunctionCall.parameter.value]
+                               >>  (')'
+                                   | eps_p [syntaxError.missingClosing("(",")")           ]
+                                   )
+
+                               >> eps_p    [codedef.configurableFunctionCall.parameter.commit] 
+                               >> eps_p    [syntaxError.endFrame                          ]
+                             )
+
+                        >>  ( '}'
+                            | eps_p        [syntaxError.missingClosing("{","}")           ]
+                            )
+                        )
+                    )*/
                     
-            
-            
-            template <typename BACKEND>
-                void Compiler <BACKEND> :: setParameterNames (const ::std::string & parameterNames)
-            {
-                using ::std::string;
-                ::std::string tmp;
-                for (::std::string::const_iterator it=parameterNames.begin(); it != parameterNames.end(); ++it) {
-                    if (*it == ';' && tmp.size()>0) {
-                        backend.addParameter (tmp);
-                        tmp = "";
-                    } else {
-                        tmp += *it;
-                    }
-                }
-                if (tmp.size()>0) {
-                    backend.addParameter (tmp);
-                } 
-            }
-
-
-
-            template <typename BACKEND>
-            void Compiler <BACKEND> :: dumpErrorMessages () const {
-                backend.dumpErrorMessages ();
-            }
-
-
-
-            template <typename BACKEND>
-                typename ::quatsch::Function <
-                    typename Compiler <BACKEND> :: scalar_t, 
-                    typename Compiler <BACKEND> :: parameters_t
-                > :: FunctionPtr
-                Compiler <BACKEND> :: compile (
-                    const ::std::string &parameterNames, 
-                    const ::std::string &code,
-                    const ConfigurableFunctionsMap &addfuns
+                    >> eps_p           [codedef.configurableFunctionCall. end         ]
+                    >> eps_p           [syntaxError.endFrame                          ]                        
+            ;
+        
+        call
+            = 
+                (ch_p('(') >> eps_p [codedef.push] >> eps_p [syntaxError.beginFrame]
+                    // either an ordinary function, or a "configurable" one
+                    >>
+                        ( function_name [codedef.operatorName]
+                        | configurable_call
+                        )
+                    >>
+                    *operand
+                    >>  
+                        ( ')'
+                        | eps_p [syntaxError.missingClosing("(",")")]
+                        )
                 )
-            {
-                using namespace ::boost::spirit;
-                //::std::cout << "Compiling:\"" << code << "\"" << ::std::endl;
-                
-                code_iterator_t begin (code.c_str(), code.c_str() + strlen (code.c_str()), "");
-                code_iterator_t end;
-                begin.set_tabchars (1);
-                /*char const* begin = code.c_str();
-                char const* end = code.c_str() + strlen (code.c_str());*/
-                
-                Compiler compiler (begin, end, parameterNames, addfuns);
+                >> eps_p [codedef.pop] >> eps_p [syntaxError.endFrame]
+            ;
 
-                parse_info<code_iterator_t> info = parse (begin, end, compiler, space_p | comment_p("/*", "*/") | comment_p("//"));
-                if (!info.full) {
-                    //::std::cerr << "The program \"" << code << "\" is not valid." << ::std::endl;
-                    compiler.syntaxError.invalidProgram (begin, info.stop);
-                    //throw;
-                }
-                compiler.dumpErrorMessages ();
-                //throw;
-                return compiler.backend.getFunction ();
+        operand = call
+                | real_p [codedef.scalarOperand]
+                | symbol [codedef.symbolOperand]
+                ;// | eps_p [syntaxError.unexpected];
+
+        program_definition
+            =   eps_p [program.begin]
+                >>
+                (*function_definition >> operand)
+                /*(   (*function_definition >> operand)
+                >>  eps_p [syntaxError.expected["end of file"]]
+                )*/
+                >> 
+                eps_p [program.end]
+            ;
+
+        start_rule = program_definition;// >> (anychar_p >> eps_p [syntaxError.unexpected]); // expected end of file
+    }
+
+
+
+    template <typename BACKEND> 
+        template <typename ScannerT>::boost::spirit::rule<ScannerT> 
+        const& Compiler <BACKEND>::definition <ScannerT> :: start()
+    const {
+        return start_rule;
+    }
+                   
+    
+    
+    template <typename BACKEND> Compiler<BACKEND> :: Compiler 
+        ( const code_iterator_t &begin
+        , const code_iterator_t &end 
+        , const ::std::string & parameterNames
+        , const ConfigurableFunctionsMap &configurableFunctions
+        )
+        : configurableFunctions (configurableFunctions)
+        , backend(configurableFunctions)
+        , program (backend.program)
+        , fundef (backend.functionDefinition) 
+        , codedef (backend.codeDefinition)
+        , syntaxError (backend.syntaxError)
+    {
+        setParameterNames (parameterNames);
+    }
+            
+    
+    
+    template <typename BACKEND>
+        void Compiler <BACKEND> :: setParameterNames (const ::std::string & parameterNames)
+    {
+        using ::std::string;
+        ::std::string tmp;
+        for (::std::string::const_iterator it=parameterNames.begin(); it != parameterNames.end(); ++it) {
+            if (*it == ';' && tmp.size()>0) {
+                backend.addParameter (tmp);
+                tmp = "";
+            } else {
+                tmp += *it;
             }
         }
+        if (tmp.size()>0) {
+            backend.addParameter (tmp);
+        } 
     }
-}
+
+
+
+    template <typename BACKEND>
+    void Compiler <BACKEND> :: dumpErrorMessages () const {
+        backend.dumpErrorMessages ();
+    }
+
+
+
+    template <typename BACKEND>
+        typename ::quatsch::Function <
+            typename Compiler <BACKEND> :: scalar_t, 
+            typename Compiler <BACKEND> :: parameters_t
+        > :: FunctionPtr
+        Compiler <BACKEND> :: compile (
+            const ::std::string &parameterNames, 
+            const ::std::string &code,
+            const ConfigurableFunctionsMap &addfuns
+        )
+    {
+        using namespace ::boost::spirit;
+        //::std::cout << "Compiling:\"" << code << "\"" << ::std::endl;
+        
+        code_iterator_t begin (code.c_str(), code.c_str() + strlen (code.c_str()), "");
+        code_iterator_t end;
+        begin.set_tabchars (1);
+        /*char const* begin = code.c_str();
+        char const* end = code.c_str() + strlen (code.c_str());*/
+        
+        Compiler compiler (begin, end, parameterNames, addfuns);
+
+        parse_info<code_iterator_t> info = parse (begin, end, compiler, space_p | comment_p("/*", "*/") | comment_p("//"));
+        if (!info.full) {
+            //::std::cerr << "The program \"" << code << "\" is not valid." << ::std::endl;
+            compiler.syntaxError.invalidProgram (begin, info.stop);
+            //throw;
+        }
+        compiler.dumpErrorMessages ();
+        //throw;
+        return compiler.backend.getFunction ();
+    }
+
+} } }
 
 #endif // JUXDEF_H__INCLUDED__20090107
