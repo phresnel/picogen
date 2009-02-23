@@ -32,16 +32,36 @@
 #include "testing/static_assert.hh"
 #include "testing/unit_test.hh"
 
+
 #include "kallisto.hh"
 
 #include "metamath/bitwise.hh"
 
-#include "types/fixed_point.hh"
-#include "types/vector.hh"
-#include "types/point.hh"
-#include "types/normal.hh"
 
 #include "traits/traits.hh"
+
+#include "traits/float_traits.hh"
+
+#include "types/fixed_point.hh"
+#include "traits/fixed_point_traits.hh"
+
+#include "types/vector.hh"
+#include "traits/vector_traits.hh"
+
+#include "types/point.hh"
+#include "traits/point_traits.hh"
+
+#include "types/normal.hh"
+#include "traits/normal_traits.hh"
+
+#include "types/ray.hh"
+#include "traits/ray_traits.hh"
+
+#include "types/sphere.hh"
+#include "traits/sphere_traits.hh"
+
+#include "types/orthonormal_basis.hh"
+#include "traits/orthonormal_basis_traits.hh"
 
 #include "types/scalar_cast.hh"
 #include "types/vector_cast.hh"
