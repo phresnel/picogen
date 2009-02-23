@@ -44,16 +44,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT(!(types_equal<int32_t,int64_t>::value));
         STATIC_ASSERT(!(types_equal<uint64_t,int64_t>::value));
         STATIC_ASSERT((types_equal<float,float>::value));
-        STATIC_ASSERT((types_equal<
-                fixed_point_t<int,4>,
-                fixed_point_t<int,4> >::value));
 } }
-
-#include "float_traits.hh"
-#include "fixed_point_traits.hh"
-#include "vector_traits.hh"
-#include "point_traits.hh"
-#include "normal_traits.hh"
 
 namespace kallisto { namespace unit_test {
         class test_traits {
