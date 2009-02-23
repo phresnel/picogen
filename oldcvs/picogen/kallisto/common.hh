@@ -1,0 +1,49 @@
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Copyright (C) 2009  Sebastian Mach (*1983)
+// * mail: phresnel/at/gmail/dot/com
+// * http://phresnel.org
+// * http://picogen.org
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#ifndef COMMON_H__INCLUDED_20090215
+#define COMMON_H__INCLUDED_20090215
+
+#include <cstdlib>
+#include <iostream>
+#include <ctime>
+#include <cmath>
+#include <typeinfo>
+
+#include <vector>
+
+#include "testing/static_assert.hh"
+#include "testing/unit_test.hh"
+
+#include "kallisto.hh"
+
+#include "metamath/bitwise.hh"
+
+#include "types/fixed_point.hh"
+#include "types/vector.hh"
+#include "types/point.hh"
+#include "types/normal.hh"
+
+#include "traits/traits.hh"
+
+#include "types/scalar_cast.hh"
+#include "types/vector_cast.hh"
+
+#endif // COMMON_H__INCLUDED_20090215
