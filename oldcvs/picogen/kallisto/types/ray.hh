@@ -23,26 +23,16 @@
 
 namespace kallisto {
         template <typename point_t, typename direction_t> struct ray_t {
-                point_t position;
-                direction_t direction;
+                proto_ray_t<point_t, direction_t> proto_ray;
         };
 }
 
 
 
 namespace kallisto {
-        template <typename point_t, typename direction_t> class Ray {
+        template <typename point_t, typename direction_t> class Ray
+        : public ProtoRay<point_t, direction_t> {
         public:
-                point_t position;
-                direction_t direction;
-
-                /*template <typename T>
-                position_t
-                operator () (
-                   T const &s
-                ) const {
-                        return position + direction * s;
-                }*/
         };
 }
 
