@@ -48,31 +48,17 @@ namespace redshift {
 }
 
 
-namespace redshift {
-        struct Rgb {
-                real_t r, g, b;
-        };
+// Rules: Every Color class must implement a method 'toRgb(real,real,real)'
+#include "color/rgb.hh"
+#include "traits/color_traits.hh"
 
+namespace redshift {
         typedef Rgb Color;
-
-        template <typename T> struct is_rgb
-        : public kallisto::traits::false_value {};
-        template <> struct is_rgb<Rgb>
-        : public kallisto::traits::true_value {};
 }
 
-namespace redshift {
-        class IncomingRay {
-                Ray const ray;
-        };
-
-        struct OutgoingRay {
-                Ray const ray;
-                Color const color;
-                real_t intensity;
-                real_t probability;
-        };
-}
+// Special ray types.
+#include "raytypes/incomingray.hh"
+#include "raytypes/outgoingray.hh"
 
 #include "material.hh"
 
