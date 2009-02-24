@@ -99,6 +99,16 @@ namespace kallisto {
                 }
 
                 friend inline
+                T dot (Vector const & lhs, Vector const & rhs) {
+                        return lhs * rhs;
+                }
+
+                friend inline
+                T absDot (Vector const & lhs, Vector const & rhs) {
+                        return abs (lhs * rhs);
+                }
+
+                friend inline
                 Vector operator* (Vector const & lhs, T const & rhs) {
                         return Vector (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
                 }
