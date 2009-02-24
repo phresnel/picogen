@@ -22,7 +22,7 @@
 #define RAY_TRAITS_H_20090223
 
 ///////////////////////////////////////////////////////////////////////////////
-// ray_t and Ray traits
+// _ray_t and Ray traits
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace kallisto { namespace traits {
@@ -33,9 +33,9 @@ namespace kallisto { namespace traits {
         template <typename T> struct get_position_type;
 
 
-        // ray_t
+        // _ray_t
         template <typename point_t, typename direction_t>
-        struct get_position_type <ray_t<point_t, direction_t> >
+        struct get_position_type <_ray_t<point_t, direction_t> >
         : public get_type<point_t> {};
 
         // Ray
@@ -48,7 +48,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT((types_equal<
                 vector_t<CARTESIAN,int>,
                 get_position_type<
-                        ray_t<
+                        _ray_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -58,7 +58,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT(!(types_equal<
                 vector_t<CARTESIAN,float>,
                 get_position_type<
-                        ray_t<
+                        _ray_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -67,7 +67,7 @@ namespace kallisto { namespace traits {
 
         STATIC_ASSERT((types_equal<
                 get_position_type<
-                        ray_t<
+                        _ray_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -87,9 +87,9 @@ namespace kallisto { namespace traits {
         template <typename T> struct get_direction_type;
 
 
-        // ray_t
+        // _ray_t
         template <typename point_t, typename direction_t>
-        struct get_direction_type <ray_t<point_t, direction_t> >
+        struct get_direction_type <_ray_t<point_t, direction_t> >
         : public get_type<direction_t> {};
 
 
@@ -103,7 +103,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT((types_equal<
                 vector_t<CARTESIAN,float>,
                 get_direction_type<
-                        ray_t<
+                        _ray_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -113,7 +113,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT((types_equal<
                 vector_t<CARTESIAN,long double>,
                 get_direction_type<
-                        ray_t<
+                        _ray_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,long double>
                         >
@@ -122,7 +122,7 @@ namespace kallisto { namespace traits {
 
         STATIC_ASSERT((types_equal<
                 get_direction_type<
-                        ray_t<
+                        _ray_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
