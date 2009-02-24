@@ -30,18 +30,18 @@ namespace kallisto {
         };
 
 
-        // Template friendly sqrt.
+        // Template friendly sqrt().
         inline float       sqrt (float const &rhs)       {return sqrtf (rhs);}
         inline double      sqrt (double const &rhs)      {return sqrt (rhs); }
         inline long double sqrt (long double const &rhs) {return sqrtl (rhs);}
 
-
-        /*template <typename T> T sqrt (T const &v) {
-                return static_cast<T> (sqrt (static_cast<double>(v)));
-        }
-        template <> float sqrt<float> (float const &v) {
-                return sqrt (v);
-        }*/
+        // Template friendly abs().
+        inline int           abs (int const &rhs)          {return abs (rhs); }
+        inline long int      abs (long int const &rhs)     {return labs(rhs); }
+        inline long long int abs (long long int const &rhs){return llabs(rhs);}
+        inline float         abs (float const &rhs)        {return fabsf(rhs);}
+        inline double        abs (double const &rhs)       {return fabs(rhs); }
+        inline long double   abs (long double const &rhs)  {return fabsl(rhs);}
 }
 
 #endif // KALLISTO_HH_INCLUDED_20090218
