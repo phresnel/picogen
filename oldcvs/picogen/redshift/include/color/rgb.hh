@@ -27,6 +27,7 @@ namespace redshift {
                 real_t r, g, b;
 
                 Rgb () : r(0), g(0), b(0) {}
+
                 Rgb (real_t r, real_t g, real_t b)
                 : r(r) , g(g), b(b)
                 {}
@@ -34,6 +35,12 @@ namespace redshift {
                 Rgb (Rgb const &rgb)
                 : r(rgb.r) , g(rgb.g), b(rgb.b)
                 {}
+
+                void toRgb (real_t &r, real_t &g, real_t &b) {
+                        r = this->r;
+                        g = this->g;
+                        b = this->b;
+                }
         };
 }
 
