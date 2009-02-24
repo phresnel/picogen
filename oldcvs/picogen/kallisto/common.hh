@@ -54,6 +54,9 @@
 #include "types/normal.hh"
 #include "traits/normal_traits.hh"
 
+#include "types/proto_ray.hh"
+#include "traits/proto_ray_traits.hh"
+
 #include "types/ray.hh"
 #include "traits/ray_traits.hh"
 
