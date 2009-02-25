@@ -33,6 +33,10 @@ namespace kallisto {
         template <typename point_t, typename direction_t> class Ray
         : public ProtoRay<point_t, direction_t> {
         public:
+
+                Ray (point_t const &pos, direction_t const &dir)
+                : ProtoRay<point_t, direction_t> (pos, dir)
+                {}
         };
 }
 
