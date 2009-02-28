@@ -53,6 +53,7 @@ namespace picogen {
                         if (0 != sample->skyShader) {
                             Color skyColor, sunColor;
                             sample->skyShader->shade (skyColor, ray);
+
                             if (specularOrFirst) {
                                 sample->skyShader->sunShade (sunColor, ray);
                                 return skyColor + sunColor;
