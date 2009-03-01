@@ -22,7 +22,7 @@ CXX  := g++-4.3 -c $(CXXFLAGS)
 ###############################################################################
 # main
 ###############################################################################
-redshift: $(OBJDIR)/main.o accelerators
+redshift: $(OBJDIR)/main.o accelerators shapes
 	$(LINK) -o $(BINDIR)/$@ $<
 
 $(OBJDIR)/main.o: ./src/main.cc
@@ -30,8 +30,23 @@ $(OBJDIR)/main.o: ./src/main.cc
 
 
 ###############################################################################
+# shapes
+###############################################################################
+
+# TODO: make accelerators a non-phony, compile together an obj
+.PHONY: shapes
+accelerators: $(OBJDIR)/closedsphere.o
+
+
+$(OBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
+	$(CXX) -o $@ $<
+
+
+###############################################################################
 # accelerators
 ###############################################################################
+
+# TODO: make shapes a non-phony, compile together an obj
 .PHONY: accelerators
 accelerators: $(OBJDIR)/accelerators-bvh.o
 

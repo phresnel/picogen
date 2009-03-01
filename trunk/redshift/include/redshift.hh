@@ -45,6 +45,16 @@ namespace redshift {
         typedef kallisto::OrthonormalBasis<Vector>   OrthonormalBasis;
 
         struct IScene {};
+
+
+#define DefineFinalizer(x) \
+        class x##Finalize { \
+        private: \
+                friend class x ; \
+                x##Finalize() {} \
+                x##Finalize(x##Finalize const &) {} \
+        }
+#define DoFinalize(x) virtual x##Finalize
 }
 
 namespace redshift {
@@ -70,12 +80,19 @@ namespace redshift {
 }
 
 // Special ray types.
-#include "raytypes/incomingray.hh"
-#include "raytypes/outgoingray.hh"
+#include "basictypes/incomingray.hh"
+#include "basictypes/outgoingray.hh"
 
-#include "material.hh"
-#include "shape.hh"
-#include "primitive.hh"
+#include "basictypes/differentialgeometry.hh"
+#include "basictypes/material.hh"
+#include "basictypes/intersection.hh"
+
+#include "basictypes/shape.hh"
+#include "basictypes/primitive.hh"
+
+
+// Shapes.
+#include "shapes/closedsphere.hh"
 
 //
 
