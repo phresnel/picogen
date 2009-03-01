@@ -19,4 +19,4 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "bvhdef.hh"
+#include "../../include/accelerators/bvhdef.hh"
