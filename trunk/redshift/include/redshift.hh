@@ -74,5 +74,24 @@ namespace redshift {
 #include "raytypes/outgoingray.hh"
 
 #include "material.hh"
+#include "shape.hh"
+#include "primitive.hh"
+
+//
+
+// Scene
+// -> Primitive primary
+// -> Primitive secondary
+//
+// Example
+//   Scene
+//   -> primary: planet earth
+//   -> secondary: solar system
+//
+//
+//
+//
+//
+
 
 #endif // REDSHIFT_H_INCLUDED_20090223

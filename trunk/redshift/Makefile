@@ -8,13 +8,13 @@ INCLUDEDIRS  := $(KALLISTOBASE)
 SDLLIB := -lSDL
 LIBS   := $(SDLLIB)
 
-CXXFLAGS += -Wall -pedantic 
-# CXXFLAGS += -Wextra -Wshadow -pedantic 
+CXXFLAGS += -Wall -pedantic
+# CXXFLAGS += -Wextra -Wshadow -pedantic
 # CXXFLAGS += -fwhole-program -funit-at-a-time
 CXXFLAGS += -O3 -march=native
 CXXFLAGS += -freciprocal-math  -fno-signed-zeros
 CXXFLAGS += -ffast-math -march=native -fassociative-math
-CXXFLAGS += $(INCLUDEDIRS) 
+CXXFLAGS += $(INCLUDEDIRS)
 
 LINK := g++-4.3 $(LIBS)
 CXX  := g++-4.3 -c $(CXXFLAGS)
@@ -33,17 +33,17 @@ $(OBJDIR)/main.o: ./src/main.cc
 # accelerators
 ###############################################################################
 .PHONY: accelerators
-accelerators: $(OBJDIR)/accelerators-bvh.o 
+accelerators: $(OBJDIR)/accelerators-bvh.o
 
 
 $(OBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 	$(CXX) -o $@ $<
-        
+
 ###############################################################################
 # cleanup
 ###############################################################################
 
-.PHONY: clean 
+.PHONY: clean
 clean:
 	rm -f bin/redshift obj/*.o
 
