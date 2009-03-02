@@ -72,7 +72,7 @@ namespace redshift {
 
 // Rules: Every Color class must implement a method 'toRgb(real,real,real)'
 #include "contracts/color_contract.hh"
-#include "color/rgb.hh"
+#include "basictypes/rgb.hh"
 #include "traits/color_traits.hh"
 
 namespace redshift {
