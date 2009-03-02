@@ -19,4 +19,8 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+#ifdef AMALGAM
+#include "../include/accelerators/bvhdef.hh"
+#else
 #include "../../include/accelerators/bvhdef.hh"
+#endif
