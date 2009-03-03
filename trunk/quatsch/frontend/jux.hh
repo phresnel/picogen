@@ -32,7 +32,7 @@
 #include <boost/spirit/iterator/position_iterator.hpp>
 #include <boost/spirit/symbols/symbols.hpp>
 
-#include "../quatsch.h"
+#include "../quatsch.hh"
 
 namespace quatsch {  namespace frontend {  namespace jux {
             

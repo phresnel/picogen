@@ -27,13 +27,13 @@
 #include <string>
 #include <map>
 
-#include "quatsch.h"
-#include "frontend/jux.h"
-#include "backend/est/backend.h"
+#include "quatsch.hh"
+#include "frontend/jux.hh"
+#include "backend/est/backend.hh"
 
-//#include "backend/est/backenddef.h"
+//#include "backend/est/backenddef.hh"
 
-#include "configurable-functions/noise2ddef.h"
+#include "configurable-functions/noise2ddef.hh"
 //template class quatsch::backend::est::Backend <double, const double *> ;
 
 // names: Quatsch, Witz, Jux

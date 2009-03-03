@@ -24,7 +24,7 @@
 #ifndef EST_BACKENDDEF__20090123
 #define EST_BACKENDDEF__20090123
 
-#include "backend.h"
+#include "backend.hh"
 
 namespace quatsch {  namespace backend {  namespace est {
 

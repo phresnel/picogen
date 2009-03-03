@@ -25,7 +25,7 @@
 #define ERRORMESSAGE__20090123
 
 #include <string>
-#include "sourcecodeposition.h"
+#include "sourcecodeposition.hh"
 
 namespace quatsch {
     class ErrorMessage {

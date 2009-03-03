@@ -24,7 +24,7 @@
 #ifndef JUXDEF_H__INCLUDED__20090107
 #define JUXDEF_H__INCLUDED__20090107
 
-#include "jux.h"
+#include "jux.hh"
 
 namespace quatsch {  namespace frontend {  namespace jux {
 
@@ -265,7 +265,7 @@ namespace quatsch {  namespace frontend {  namespace jux {
         using namespace ::boost::spirit;
         //::std::cout << "Compiling:\"" << code << "\"" << ::std::endl;
         
-        code_iterator_t begin (code.c_str(), code.c_str() + strlen (code.c_str()), "");
+        code_iterator_t begin (code.c_str(), code.c_str() + code.length(), "");
         code_iterator_t end;
         begin.set_tabchars (1);
         /*char const* begin = code.c_str();

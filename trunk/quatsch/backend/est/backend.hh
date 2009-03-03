@@ -30,18 +30,18 @@
 
 #include <boost/spirit/iterator/position_iterator.hpp>
 
-#include "../../utility/symboltable.h"
-#include "../../utility/sourcecodeposition.h"
-#include "../../utility/errormessage.h"
+#include "../../utility/symboltable.hh"
+#include "../../utility/sourcecodeposition.hh"
+#include "../../utility/errormessage.hh"
 
-#include "exceptions.h"
-#include "node_types.h"
-#include "functiondescriptor.h"
+#include "exceptions.hh"
+#include "node_types.hh"
+#include "functiondescriptor.hh"
 
-#include "actions/program.h"
-#include "actions/syntaxerror.h"
-#include "actions/functiondefinition.h"
-#include "actions/codedefinition.h"
+#include "actions/program.hh"
+#include "actions/syntaxerror.hh"
+#include "actions/functiondefinition.hh"
+#include "actions/codedefinition.hh"
 
 namespace quatsch {  namespace backend {  namespace est {
 

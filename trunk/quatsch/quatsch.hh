@@ -30,7 +30,7 @@
 #include <map>
 #include <string>
 
-#include "utility/symboltable.h"
+#include "utility/symboltable.hh"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/shared_array.hpp>

@@ -23,4 +23,4 @@
 
 
 // This file cleary does evil things,like including dot-c files.
-#include "juxinst_double_doubleptr.cc"
+#include "juxinst-double-doubleptr.cc"

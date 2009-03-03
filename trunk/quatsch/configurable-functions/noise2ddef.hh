@@ -25,7 +25,7 @@
 #include <sstream>
 
 
-#include "noise2d.h"
+#include "noise2d.hh"
 
 
 namespace quatsch {  namespace configurable_functions {

@@ -24,7 +24,7 @@
 #ifndef NODETYPES_H__INCLUDED__20090104
 #define NODETYPES_H__INCLUDED__20090104
 
-#include "../../quatsch.h"
+#include "../../quatsch.hh"
 #include <cmath>
 
 
@@ -44,14 +44,14 @@ namespace {
     }
 }
 
-#include "nodes/rootfunction.h"
-#include "nodes/null.h"
-#include "nodes/constant.h"
-#include "nodes/parameter.h"
-#include "nodes/call.h"
-#include "nodes/accumulatingop.h"
-#include "nodes/boolaccu.h"
-#include "nodes/rangeop.h"
+#include "nodes/rootfunction.hh"
+#include "nodes/null.hh"
+#include "nodes/constant.hh"
+#include "nodes/parameter.hh"
+#include "nodes/call.hh"
+#include "nodes/accumulatingop.hh"
+#include "nodes/boolaccu.hh"
+#include "nodes/rangeop.hh"
 
 namespace quatsch {
     namespace backend {

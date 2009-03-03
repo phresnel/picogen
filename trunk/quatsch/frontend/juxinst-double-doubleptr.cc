@@ -22,9 +22,9 @@
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "../backend/est/backend.h"
-#include "../backend/est/backenddef.h"
-#include "juxdef.h"
+#include "../backend/est/backend.hh"
+#include "../backend/est/backenddef.hh"
+#include "juxdef.hh"
 
 template class quatsch::backend::est::Backend <double, const double *> ;
 template class quatsch::frontend::jux::Compiler <
