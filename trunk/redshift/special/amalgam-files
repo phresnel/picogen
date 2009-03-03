@@ -2,5 +2,7 @@ src/main.cc
 src/accelerators/bvh.cc
 src/basictypes/material.cc
 src/basictypes/primitive.cc
+src/basictypes/redshift-render.cc
+src/basictypes/scene.cc
 src/basictypes/shape.cc
 src/shapes/closedsphere.cc

@@ -1,11 +1,8 @@
-
-
-
-
 # TODO: add missing target "basictypes"
 
 # obj directories
 OBJDIR := ./obj
+BASICTYPESOBJDIR := $(OBJDIR)/basictypes
 SHAPEOBJDIR := $(OBJDIR)/shapes
 ACCELERATORSOBJDIR := $(OBJDIR)/accelerators
 
@@ -22,12 +19,17 @@ LIBS   := $(SDLLIB)
 
 
 # compiler flags
+COMPILE := "FAST_COMPILE"
+ifeq ($(OPTIMISE), "FAST_COMPILE")
+else
+	# CXXFLAGS += -fwhole-program -funit-at-a-time
+	CXXFLAGS += -O3 -march=native
+	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
+	CXXFLAGS += -ffast-math -march=native -fassociative-math
+endif
+
 CXXFLAGS += -Wall -pedantic
 # CXXFLAGS += -Wextra -Wshadow -pedantic
-# CXXFLAGS += -fwhole-program -funit-at-a-time
-CXXFLAGS += -O3 -march=native
-CXXFLAGS += -freciprocal-math  -fno-signed-zeros
-CXXFLAGS += -ffast-math -march=native -fassociative-math
 CXXFLAGS += $(INCLUDEDIRS)
 
 LINK := g++-4.3 $(LIBS)
@@ -49,7 +51,8 @@ AMALGAM := g++-4.3 $(CXXFLAGS) \
 .PHONY: redshift
 redshift: init-dir-tree redshift_ 
 
-redshift_: $(OBJDIR)/main.o $(OBJDIR)/shapes.a $(OBJDIR)/accelerators.a
+redshift_: $(OBJDIR)/main.o $(OBJDIR)/shapes.a $(OBJDIR)/accelerators.a \
+                $(OBJDIR)/basictypes.a
 	$(LINK) -o $(BINDIR)/redshift $^
 
 $(OBJDIR)/main.o: ./src/main.cc
@@ -59,15 +62,48 @@ $(OBJDIR)/main.o: ./src/main.cc
 # amalgam
 ###############################################################################
 
-amalgam: init-dir-tree
-	cat special/amalgam-files | xargs cat > tmp/amalgam.cc
+amalgam: init-dir-tree obtain-amalgam	
 	$(AMALGAM) -o ./bin/redshift-amalgam tmp/amalgam.cc
+	
+obtain-amalgam: init-dir-tree
+	cat special/amalgam-files | xargs cat > tmp/amalgam.cc
 
 ###############################################################################
 # all
 ###############################################################################
 .PHONY: all
 all: redshift amalgam
+
+
+
+###############################################################################
+# basictypes
+###############################################################################
+.PHONY: basictypes
+basictypes: init-dir-tree $(OBJDIR)/basictypes.a
+
+$(OBJDIR)/basictypes.a: $(BASICTYPESOBJDIR)/material.o \
+                        $(BASICTYPESOBJDIR)/primitive.o \
+                        $(BASICTYPESOBJDIR)/redshift-render.o \
+                        $(BASICTYPESOBJDIR)/scene.o \
+                        $(BASICTYPESOBJDIR)/shape.o
+	$(AR) -o $@ $^
+
+$(BASICTYPESOBJDIR)/material.o: ./src/basictypes/material.cc
+	$(CXX) -o $@ $<
+	
+$(BASICTYPESOBJDIR)/primitive.o: ./src/basictypes/primitive.cc
+	$(CXX) -o $@ $<
+	
+$(BASICTYPESOBJDIR)/redshift-render.o: ./src/basictypes/redshift-render.cc
+	$(CXX) -o $@ $<
+	
+$(BASICTYPESOBJDIR)/scene.o: ./src/basictypes/scene.cc
+	$(CXX) -o $@ $<
+	
+$(BASICTYPESOBJDIR)/shape.o: ./src/basictypes/shape.cc
+	$(CXX) -o $@ $<
+
 
 
 ###############################################################################
@@ -99,10 +135,6 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 ###############################################################################
 # initialize
 ###############################################################################
-# not really used
-#.PHONY: IIII_
-#IIII_: init-dir-tree
-
 
 .PHONY: init-dir-tree
 init-dir-tree:

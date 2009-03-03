@@ -18,34 +18,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef REDSHIFT_H_INCLUDED_20090223
-#define REDSHIFT_H_INCLUDED_20090223
+#ifndef REDSHIFTRENDER_H_INCLUDED_20090303
+#define REDSHIFTRENDER_H_INCLUDED_20090303
 
-#include "setup.hh"
+namespace redshift {
+        class Redshift {
+        public:        
+                Redshift ();        
+                ~Redshift ();
+        private:
+                Scene scene;
+        };
+}
 
-// Color types.
-#include "contracts/color_contract.hh"
-#include "basictypes/rgb.hh"
-#include "traits/color_traits.hh"
-
-// Special ray types.
-#include "basictypes/incomingray.hh"
-#include "basictypes/outgoingray.hh"
-
-#include "basictypes/differentialgeometry.hh"
-#include "basictypes/material.hh"
-#include "basictypes/intersection.hh"
-
-#include "basictypes/shape.hh"
-#include "basictypes/primitive.hh"
-
-
-// Shapes.
-#include "shapes/closedsphere.hh"
-
-
-// basictypes/
-#include "basictypes/scene.hh"
-#include "basictypes/redshift-render.hh"
-
-#endif // REDSHIFT_H_INCLUDED_20090223
+#endif // REDSHIFTRENDER_H_INCLUDED_20090303
