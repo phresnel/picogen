@@ -1,5 +1,6 @@
-./quantum   -> [deprecated] rendering kernel 'picogen'
 ./atom      -> minimalistic frontend 'picogen-wx'
 ./quatsch   -> micro compiler framework for strict functional languages
 ./redshift  -> the new rendering kernel
 ./kallisto  -> the 3d math lib for picogen
+./Doxyfile, ./doxygen -> doxygen documentation
+[./quantum   -> [deprecated] rendering kernel 'picogen']
