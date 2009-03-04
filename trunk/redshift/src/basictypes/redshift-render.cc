@@ -18,9 +18,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifdef AMALGAM
+#include "../include/setup.hh"
+#include "../include/basictypes/scene.hh"
+#include "../include/basictypes/redshift-render.hh"
+#else
 #include "../../include/setup.hh"
 #include "../../include/basictypes/scene.hh"
 #include "../../include/basictypes/redshift-render.hh"
+#endif
 
 namespace redshift {
 
