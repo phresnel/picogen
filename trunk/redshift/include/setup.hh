@@ -32,6 +32,10 @@
         }
 #define DoFinalize(x) virtual x##Finalize
 
+
+///////////////////////////////////////////////////////////////////////////////
+// Assimilate kallisto-types and define some convenience types.
+///////////////////////////////////////////////////////////////////////////////
 namespace redshift {
 
         enum {
@@ -59,9 +63,11 @@ namespace redshift {
 
         class Rgb;
         typedef Rgb Color;
-        struct IScene {};
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Some constants.
+///////////////////////////////////////////////////////////////////////////////
 namespace redshift {
         namespace constants {
                 template<typename T> inline T km2m (T const &v) {
@@ -73,5 +79,7 @@ namespace redshift {
                 //static float const sun_radius_km 1,3914
         }
 }
+
+#include "smart_ptr.hh"
 
 #endif // SETUP_HH_INCLUDED_20090303
