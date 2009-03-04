@@ -138,11 +138,9 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 .PHONY: init-dir-tree
 init-dir-tree:
-	mkdir -p obj/accelerators
-	mkdir -p obj/basictypes
-	mkdir -p obj/shapes
-	mkdir -p bin
-	mkdir -p tmp
+	mkdir -p $(SHAPEOBJDIR)
+	mkdir -p $(ACCELERATORSOBJDIR)
+	mkdir -p $(BASICTYPESOBJDIR)	
 
 # do not apply when on svn!
 .PHONY: disintegrate
@@ -164,4 +162,5 @@ clean:
 	rm -f $(OBJDIR)/*.a
 	rm -f $(SHAPEOBJDIR)/*.o
 	rm -f $(ACCELERATORSOBJDIR)/*.o
+	rm -f $(BASICTYPESOBJDIR)/*.o
 
