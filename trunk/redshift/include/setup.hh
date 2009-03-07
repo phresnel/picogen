@@ -60,8 +60,11 @@ namespace redshift {
         typedef kallisto::Sphere<Point,long double>  Sphere;
         typedef kallisto::Ray<Point,Vector>          Ray;
         typedef kallisto::OrthonormalBasis<Vector>   OrthonormalBasis;
+}
 
-        class Rgb;
+#include "basictypes/rgb.hh"
+namespace redshift {
+        //class Rgb;
         typedef Rgb Color;
 }
 

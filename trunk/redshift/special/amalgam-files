@@ -1,4 +1,5 @@
 src/main.cc
+src/app/sdlrendertarget.cc
 src/accelerators/bvh.cc
 src/basictypes/material.cc
 src/basictypes/primitive.cc

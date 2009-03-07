@@ -26,6 +26,9 @@ namespace redshift {
         public:
                 Scene ();
                 ~Scene ();
+                
+        private:
+                //Primitive aggregate;
         };
 }
 

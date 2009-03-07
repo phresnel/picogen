@@ -18,37 +18,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef REDSHIFT_H_INCLUDED_20090223
-#define REDSHIFT_H_INCLUDED_20090223
+#ifndef RENDERTARGET_HH_INCLUDED_20090306
+#define RENDERTARGET_HH_INCLUDED_20090306
 
-#include "setup.hh"
+namespace redshift {
+        class RenderTarget {
+        public:
+                virtual int getWidth () const = 0;
+                virtual int getHeight () const = 0;
+                virtual void lock (shared_ptr<RenderTargetLock> & lock) = 0;
+                virtual void flip () = 0;
+                virtual ~RenderTarget() {}
+        };
+}
 
-// Color types.
-#include "contracts/color_contract.hh"
-#include "basictypes/rgb.hh"
-#include "traits/color_traits.hh"
-
-// Special ray types.
-#include "basictypes/incomingray.hh"
-#include "basictypes/outgoingray.hh"
-
-#include "basictypes/differentialgeometry.hh"
-#include "basictypes/material.hh"
-#include "basictypes/intersection.hh"
-
-#include "basictypes/shape.hh"
-#include "basictypes/primitive.hh"
-
-#include "basictypes/rendertargetlock.hh"
-#include "basictypes/rendertarget.hh"
-
-
-// Shapes.
-#include "shapes/closedsphere.hh"
-
-
-// basictypes/
-#include "basictypes/scene.hh"
-#include "basictypes/redshift-render.hh"
-
-#endif // REDSHIFT_H_INCLUDED_20090223
+#endif // RENDERTARGET_HH_INCLUDED_20090306

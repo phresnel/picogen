@@ -22,12 +22,14 @@
 #define REDSHIFTRENDER_H_INCLUDED_20090303
 
 namespace redshift {
-        class Redshift {
+        class Renderer {
         public:        
-                Redshift ();        
-                ~Redshift ();
+                Renderer (shared_ptr<RenderTarget> renderTarget);
+                void render() const ;
+                ~Renderer ();
         private:
                 Scene scene;
+                shared_ptr<RenderTarget> renderTarget;
         };
 }
 

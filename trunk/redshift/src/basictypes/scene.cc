@@ -18,13 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifdef AMALGAM
-#include "../include/setup.hh"
-#include "../include/basictypes/scene.hh"
-#else
 #include "../../include/setup.hh"
 #include "../../include/basictypes/scene.hh"
-#endif
 
 #include <iostream>
 

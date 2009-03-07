@@ -19,10 +19,53 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <iostream>
+#include <SDL.h>
 
+#ifdef AMALGAM
+#include "../../include/redshift.hh"
+#include "../../include/app/sdlrendertarget.hh"
+#else
 #include "../include/redshift.hh"
+#include "../include/app/sdlrendertarget.hh"
+#endif
+
+#include <cstdlib>
+#include <stdexcept>
+#include <sstream>
+#include <iostream>
+
+
+
+void run() {
+        using namespace redshift;
+        shared_ptr<RenderTarget> renderTarget (new SDLRenderTarget(4,1));
+        Renderer renderer (renderTarget);
+        renderer.render();
+}
+
+
 
 int main () {
         using namespace redshift;
-        Redshift redshift;         
+        
+        try {
+                // Initialize SDL video.
+                if (SDL_Init (SDL_INIT_VIDEO) < 0) {
+                        std::stringstream ss;
+                        ss <<  "Unable to init SDL:\n" << SDL_GetError();
+                        throw std::runtime_error (ss.str());
+                }
+                atexit(SDL_Quit);
+        
+                run();
+
+        } catch (std::runtime_error &ex) {
+                std::cerr << "Caught runtime error: " 
+                          << ex.what()
+                          << std::endl;
+        } catch (std::exception &ex) {
+                std::cerr << "Caught general exception: " 
+                          << ex.what()
+                          << std::endl;
+        } 
 }

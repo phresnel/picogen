@@ -41,6 +41,12 @@ namespace redshift {
                         g = this->g;
                         b = this->b;
                 }
+                
+                void fromRgb (real_t r, real_t g, real_t b) {
+                        this->r = r;
+                        this->g = g;
+                        this->b = b;
+                }
         };
 }
 

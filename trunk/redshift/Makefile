@@ -1,40 +1,57 @@
-# TODO: add missing target "basictypes"
-
+#------------------------------------------------------------------------------
 # obj directories
+#------------------------------------------------------------------------------
 OBJDIR := ./obj
 BASICTYPESOBJDIR := $(OBJDIR)/basictypes
+APPOBJDIR := $(OBJDIR)/app
 SHAPEOBJDIR := $(OBJDIR)/shapes
 ACCELERATORSOBJDIR := $(OBJDIR)/accelerators
 
+#------------------------------------------------------------------------------
 # bin directories
+#------------------------------------------------------------------------------
 BINDIR := ./bin
 
+#------------------------------------------------------------------------------
 # include directories
+#------------------------------------------------------------------------------
 KALLISTOBASE := -I../
-INCLUDEDIRS  := $(KALLISTOBASE)
+SFMLINCLUDE := -I../externs/SFML/include
+INCLUDEDIRS  := $(KALLISTOBASE) $(SFMLINCLUDE)
 
+#------------------------------------------------------------------------------
 # libs
-SDLLIB := -lSDL
-LIBS   := $(SDLLIB)
+#------------------------------------------------------------------------------
+SDLLIBS := `sdl-config --static-libs`
+# looks like i am to dumb to properly bind to sfml
+#SFMLLIBS := -L../externs/SFML/lib/
+#SFMLLIBS += ../externs/SFML/lib/libsfml-graphics-s.a
+#SFMLLIBS += ../externs/SFML/lib/libsfml-window-s.a
+#SFMLLIBS += ../externs/SFML/lib/libsfml-system-s.a
+#SFMLLIBS := -lsfml-graphics
+#SFMLLIBS += -lsfml-window
+#SFMLLIBS += -lsfml-system
+LIBS   := $(SDLLIBS)
 
-
+#------------------------------------------------------------------------------
 # compiler flags
+#------------------------------------------------------------------------------
 COMPILE := "FAST_COMPILE"
 ifeq ($(OPTIMISE), "FAST_COMPILE")
 else
-	# CXXFLAGS += -fwhole-program -funit-at-a-time
 	CXXFLAGS += -O3 -march=native
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
 	CXXFLAGS += -ffast-math -march=native -fassociative-math
 endif
 
-CXXFLAGS += -Wall -pedantic
+CXXFLAGS += -Wall -Wno-unused -pedantic
 # CXXFLAGS += -Wextra -Wshadow -pedantic
 CXXFLAGS += $(INCLUDEDIRS)
+CXXFLAGS += `sdl-config --cflags`
 
 LINK := g++-4.3 $(LIBS)
 AR   := ar -r
-CXX  := g++-4.3 -c $(CXXFLAGS)
+CXX  := g++-4.3 -c $(CXXFLAGS) $(LIBS)
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
 AMALGAM := g++-4.3 $(CXXFLAGS) \
 	-combine -fwhole-program -funit-at-a-time -DAMALGAM \
@@ -51,7 +68,10 @@ AMALGAM := g++-4.3 $(CXXFLAGS) \
 .PHONY: redshift
 redshift: init-dir-tree redshift_ 
 
-redshift_: $(OBJDIR)/main.o $(OBJDIR)/shapes.a $(OBJDIR)/accelerators.a \
+redshift_: $(OBJDIR)/main.o \
+                $(OBJDIR)/app.a \
+                $(OBJDIR)/shapes.a \
+                $(OBJDIR)/accelerators.a \
                 $(OBJDIR)/basictypes.a
 	$(LINK) -o $(BINDIR)/redshift $^
 
@@ -63,10 +83,10 @@ $(OBJDIR)/main.o: ./src/main.cc
 ###############################################################################
 
 amalgam: init-dir-tree obtain-amalgam	
-	$(AMALGAM) -o ./bin/redshift-amalgam tmp/amalgam.cc
+	$(AMALGAM) -o ./bin/redshift-amalgam tmp/amalgam/amalgam.cc
 	
 obtain-amalgam: init-dir-tree
-	cat special/amalgam-files | xargs cat > tmp/amalgam.cc
+	cat special/amalgam-files | xargs cat > tmp/amalgam/amalgam.cc
 
 ###############################################################################
 # all
@@ -107,6 +127,21 @@ $(BASICTYPESOBJDIR)/shape.o: ./src/basictypes/shape.cc
 
 
 ###############################################################################
+# app
+###############################################################################
+.PHONY: app
+shapes: init-dir-tree $(APPOBJDIR)/app.a
+
+$(OBJDIR)/app.a: $(APPOBJDIR)/sdlrendertarget.o
+	$(AR) -o $@ $^
+
+$(APPOBJDIR)/sdlrendertarget.o: ./src/app/sdlrendertarget.cc
+	$(CXX) -o $@ $<
+
+
+
+
+###############################################################################
 # shapes
 ###############################################################################
 .PHONY: shapes
@@ -138,9 +173,12 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 .PHONY: init-dir-tree
 init-dir-tree:
+	mkdir -p $(OBJDIR)
+	mkdir -p $(APPOBJDIR)
 	mkdir -p $(SHAPEOBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
 	mkdir -p $(BASICTYPESOBJDIR)	
+	mkdir -p ./tmp/amalgam
 
 # do not apply when on svn!
 .PHONY: disintegrate
@@ -155,11 +193,12 @@ disintegrate: clean
 
 .PHONY: clean
 clean:
-	rm -f ./tmp/amalgam.cc
+	rm -f ./tmp/amalgam/amalgam.cc
 	rm -f ./bin/redshift 
 	rm -f ./bin/redshift-amalgam
 	rm -f $(OBJDIR)/*.o	
 	rm -f $(OBJDIR)/*.a
+	rm -f $(APPOBJDIR)/*.o
 	rm -f $(SHAPEOBJDIR)/*.o
 	rm -f $(ACCELERATORSOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
