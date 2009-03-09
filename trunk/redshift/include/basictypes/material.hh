@@ -23,6 +23,7 @@
 
 namespace redshift {
         struct Material {
+                // stub
                 /*virtual bool sample (
                         IncomingRay const &incomingRay,
                         OutgoingRay &outgoingRay) = 0;*/

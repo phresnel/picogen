@@ -28,7 +28,8 @@ namespace redshift {
                 ~Scene ();
                 
         private:
-                //Primitive aggregate;
+                shared_ptr<Primitive> aggregate;
+                shared_ptr<Background> background;
         };
 }
 

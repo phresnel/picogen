@@ -25,6 +25,7 @@
 namespace redshift {
         class IncomingRay {
                 Ray const ray;
+                // stub
         };
 }
 

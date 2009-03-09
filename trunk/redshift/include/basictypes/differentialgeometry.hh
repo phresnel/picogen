@@ -24,6 +24,7 @@
 namespace redshift {
         class DifferentialGeometry {
         public:
+                // stub
         };
 }
 

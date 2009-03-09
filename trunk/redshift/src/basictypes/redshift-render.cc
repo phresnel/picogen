@@ -19,6 +19,9 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/setup.hh"
+#include "../../include/basictypes/background.hh"
+#include "../../include/basictypes/intersection.hh"
+#include "../../include/basictypes/primitive.hh"
 #include "../../include/basictypes/scene.hh"
 #include "../../include/basictypes/rendertargetlock.hh"
 #include "../../include/basictypes/rendertarget.hh"

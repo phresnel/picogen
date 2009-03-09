@@ -1,0 +1,3 @@
+redshift:
+        - create policy classes
+                - NonCopyable

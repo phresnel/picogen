@@ -23,6 +23,7 @@
 
 namespace redshift {
         struct OutgoingRay {
+                // stub
                 Ray const ray;
                 Color const color;
                 real_t intensity;

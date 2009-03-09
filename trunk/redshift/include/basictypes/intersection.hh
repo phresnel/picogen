@@ -20,4 +20,12 @@
 
 #ifndef INTERSECTION_H_INCLUDED_20090301
 #define INTERSECTION_H_INCLUDED_20090301
+
+namespace redshift {
+        class Intersection {
+        public:
+                // stub
+        };
+}
+
 #endif // INTERSECTION_H_INCLUDED_20090301
