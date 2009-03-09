@@ -72,6 +72,10 @@ namespace redshift {
 // Some constants.
 ///////////////////////////////////////////////////////////////////////////////
 namespace redshift {
+        namespace static_config {
+                enum { debug = 0 }; // should be set by #define macro
+        }
+        
         namespace constants {
                 template<typename T> inline T km2m (T const &v) {
                         return T(1000) * v;

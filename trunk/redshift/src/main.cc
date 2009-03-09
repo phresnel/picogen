@@ -23,10 +23,10 @@
 
 #ifdef AMALGAM
 #include "../../include/redshift.hh"
-#include "../../include/app/sdlrendertarget.hh"
+#include "../../include/rendertargets/sdlrendertarget.hh"
 #else
 #include "../include/redshift.hh"
-#include "../include/app/sdlrendertarget.hh"
+#include "../include/rendertargets/sdlrendertarget.hh"
 #endif
 
 #include <cstdlib>
@@ -38,9 +38,10 @@
 
 void run() {
         using namespace redshift;
-        shared_ptr<RenderTarget> renderTarget (new SDLRenderTarget(4,1));
+        shared_ptr<RenderTarget> renderTarget (new SdlRenderTarget(512,512));
         Renderer renderer (renderTarget);
         renderer.render();
+        renderTarget->flip();
 }
 
 

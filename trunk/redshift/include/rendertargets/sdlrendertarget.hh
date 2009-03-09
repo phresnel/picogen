@@ -23,27 +23,28 @@
 
 namespace redshift {
 
-DefineFinalizer(SDLRenderTarget);
-class SDLRenderTarget
-        : public redshift::RenderTarget
-        , DoFinalize(SDLRenderTarget) {
-public:
-        SDLRenderTarget (int width_, int height_);
-        ~SDLRenderTarget();
-        void lock (shared_ptr<RenderTargetLock> & lock);
-        void flip();        
-        int getWidth() const;        
-        int getHeight() const;
+        DefineFinalizer(SdlRenderTarget);
+        class SdlRenderTarget
+                : public redshift::RenderTarget
+                , DoFinalize(SdlRenderTarget) {
+        public:
+                SdlRenderTarget (int width_, int height_);
+                ~SdlRenderTarget();
+                void lock (shared_ptr<RenderTargetLock> & lock);
+                void flip();        
+                int getWidth() const;        
+                int getHeight() const;
 
-private:         
-        int width, height;
-        SDL_Surface *display;
+        private:         
+                int width, height;
+                SDL_Surface *display;
 
-        SDLRenderTarget();
-        SDLRenderTarget(SDLRenderTarget const&);
-        SDLRenderTarget & operator = (SDLRenderTarget const &);
-        friend class SDLRenderTargetLock;
-};
+                SdlRenderTarget();
+                SdlRenderTarget(SdlRenderTarget const&);
+                SdlRenderTarget & operator = (SdlRenderTarget const &);
+                class SdlRenderTargetLock;
+                friend class SdlRenderTargetLock;
+        };
 
 } // namespace redshift
 

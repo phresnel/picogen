@@ -4,6 +4,7 @@
 OBJDIR := ./obj
 BASICTYPESOBJDIR := $(OBJDIR)/basictypes
 APPOBJDIR := $(OBJDIR)/app
+RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR := $(OBJDIR)/shapes
 ACCELERATORSOBJDIR := $(OBJDIR)/accelerators
 
@@ -70,6 +71,7 @@ redshift: init-dir-tree redshift_
 
 redshift_: $(OBJDIR)/main.o \
                 $(OBJDIR)/app.a \
+                $(OBJDIR)/rendertargets.a \
                 $(OBJDIR)/shapes.a \
                 $(OBJDIR)/accelerators.a \
                 $(OBJDIR)/basictypes.a
@@ -130,14 +132,34 @@ $(BASICTYPESOBJDIR)/shape.o: ./src/basictypes/shape.cc
 # app
 ###############################################################################
 .PHONY: app
-shapes: init-dir-tree $(APPOBJDIR)/app.a
+app: init-dir-tree $(APPOBJDIR)/app.a
 
-$(OBJDIR)/app.a: $(APPOBJDIR)/sdlrendertarget.o
+$(OBJDIR)/app.a: 
+#$(APPOBJDIR)/sdlrendertarget.o
 	$(AR) -o $@ $^
 
 $(APPOBJDIR)/sdlrendertarget.o: ./src/app/sdlrendertarget.cc
 	$(CXX) -o $@ $<
 
+
+###############################################################################
+# render targets
+###############################################################################
+.PHONY: rendertargets
+rendertargets: init-dir-tree $(APPOBJDIR)/rendertargets.a
+
+$(OBJDIR)/rendertargets.a: \
+                     $(RENDERTARGETSOBJDIR)/sdlrendertarget.o \
+                     $(RENDERTARGETSOBJDIR)/colorrendertarget.o
+	$(AR) -o $@ $^
+
+$(RENDERTARGETSOBJDIR)/sdlrendertarget.o: \
+                     ./src/rendertargets/sdlrendertarget.cc
+	$(CXX) -o $@ $<
+
+$(RENDERTARGETSOBJDIR)/colorrendertarget.o: \
+                     ./src/rendertargets/colorrendertarget.cc
+	$(CXX) -o $@ $<
 
 
 
@@ -175,6 +197,7 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 init-dir-tree:
 	mkdir -p $(OBJDIR)
 	mkdir -p $(APPOBJDIR)
+	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SHAPEOBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
 	mkdir -p $(BASICTYPESOBJDIR)	
@@ -198,6 +221,7 @@ clean:
 	rm -f ./bin/redshift-amalgam
 	rm -f $(OBJDIR)/*.o	
 	rm -f $(OBJDIR)/*.a
+	rm -f $(RENDERTARGETSOBJDIR)/*.o
 	rm -f $(APPOBJDIR)/*.o
 	rm -f $(SHAPEOBJDIR)/*.o
 	rm -f $(ACCELERATORSOBJDIR)/*.o
