@@ -19,19 +19,29 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/setup.hh"
+
 #include "../../include/basictypes/background.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/basictypes/primitive.hh"
 #include "../../include/basictypes/scene.hh"
+#include "../../include/basictypes/uvcoordinates.hh"
+#include "../../include/basictypes/sample.hh"
+
 #include "../../include/rendertargets/rendertargetlock.hh"
 #include "../../include/rendertargets/rendertarget.hh"
+
+#include "../../include/cameras/camera.hh"
+
 #include "../../include/basictypes/redshift-render.hh"
 
 namespace redshift {
 
-        Renderer::Renderer (shared_ptr<RenderTarget> rt)
-        : scene ()
-        , renderTarget(rt) {
+        Renderer::Renderer (
+                shared_ptr<RenderTarget> rt,
+                shared_ptr<Camera> cam)
+        : renderTarget(rt)
+        , camera(cam)
+        {
         }
         
         Renderer::~Renderer () {                
@@ -41,6 +51,11 @@ namespace redshift {
                 shared_ptr<RenderTargetLock> lock (renderTarget->lock());
                 for (int y=0; y<renderTarget->getHeight(); ++y) {
                         for (int x=0; x<renderTarget->getWidth(); ++x) {
+                                Sample sample (
+                                        UVCoordinates(static_cast<real_t>(x),
+                                             static_cast<real_t>(y)));
+                                Ray ray;
+                                camera->generateRay (sample, ray);
                                 Color tmp;
                                 tmp.fromRgb (0.5, 0.5, 0.5);
                                 lock->setPixel (x,y,tmp);

@@ -40,8 +40,10 @@
 
 void run() {
         using namespace redshift;
-        shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));
-        Renderer renderer (renderTarget);
+        shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));        
+        
+        Renderer renderer (renderTarget, 
+                shared_ptr<Camera> (reinterpret_cast<Camera*>(0)));
         renderer.render();
         shared_ptr<RenderTarget> sdl (convert<SdlRenderTarget> (renderTarget));
         sdl->flip();

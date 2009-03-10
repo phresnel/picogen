@@ -18,48 +18,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef REDSHIFT_H_INCLUDED_20090223
-#define REDSHIFT_H_INCLUDED_20090223
+#ifndef SAMPLE_HH_INCLUDED_20090310
+#define SAMPLE_HH_INCLUDED_20090310
 
-#include "setup.hh"
+namespace redshift {
+        // TODO: make more typesafe
+        // class ScreenCoordinates ;
+        // class LensCoordinates ;
+        class Sample {
+        public:
+                UVCoordinates imageCoordinates;
+                
+                Sample (UVCoordinates const & imageCoordinates_)
+                : imageCoordinates(imageCoordinates_)
+                {}
 
-// Color types.
-#include "contracts/color_contract.hh"
-#include "basictypes/rgb.hh"
-#include "traits/color_traits.hh"
+        };        
+}
 
-// Special ray types.
-#include "basictypes/incomingray.hh"
-#include "basictypes/outgoingray.hh"
-
-// TODO reorder
-// basictypes/
-#include "basictypes/uvcoordinates.hh"
-#include "basictypes/sample.hh"
-
-#include "basictypes/differentialgeometry.hh"
-#include "basictypes/material.hh"
-#include "basictypes/intersection.hh"
-
-#include "basictypes/shape.hh"
-#include "basictypes/primitive.hh"
-
-#include "basictypes/background.hh"
-
-// Render Targets
-#include "rendertargets/rendertargetlock.hh"
-#include "rendertargets/rendertarget.hh"
-
-
-// Shapes.
-#include "shapes/closedsphere.hh"
-
-// Cameras.
-#include "cameras/camera.hh"
-
-
-// basictypes/
-#include "basictypes/scene.hh"
-#include "basictypes/redshift-render.hh"
-
-#endif // REDSHIFT_H_INCLUDED_20090223
+#endif // SAMPLE_HH_INCLUDED_20090310

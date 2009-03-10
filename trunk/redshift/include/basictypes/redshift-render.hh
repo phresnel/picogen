@@ -22,14 +22,20 @@
 #define REDSHIFTRENDER_H_INCLUDED_20090303
 
 namespace redshift {
-        class Renderer {
+        DefineFinalizer(Renderer);
+        class Renderer : DoFinalize(Renderer) {
         public:        
-                Renderer (shared_ptr<RenderTarget> renderTarget);
+                Renderer (shared_ptr<RenderTarget>, shared_ptr<Camera>);
                 void render() const ;
                 ~Renderer ();
         private:
-                Scene scene;
+                Renderer (Renderer const &);
+                Renderer & operator= (Renderer const &);
+                Renderer();
+
+                //Scene scene;
                 shared_ptr<RenderTarget> renderTarget;
+                shared_ptr<Camera> camera;
         };
 }
 
