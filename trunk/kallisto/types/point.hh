@@ -49,7 +49,7 @@ namespace kallisto {
                 T x, y, z;
 
                 Point ()
-                : x(0.0), y(0.0), z(0.0) {
+                : x(T()), y(T()), z(T()) {
                 }
 
                 Point (Point const &rhs)

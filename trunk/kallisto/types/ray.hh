@@ -34,6 +34,10 @@ namespace kallisto {
         : public ProtoRay<point_t, direction_t> {
         public:
 
+                Ray ()
+                : ProtoRay<point_t, direction_t> ()
+                {}
+                
                 Ray (point_t const &pos, direction_t const &dir)
                 : ProtoRay<point_t, direction_t> (pos, dir)
                 {}
