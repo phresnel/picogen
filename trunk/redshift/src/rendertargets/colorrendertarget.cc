@@ -23,8 +23,8 @@
 #include <sstream>
 
 #include "../../include/setup.hh"
-#include "../../include/basictypes/rendertargetlock.hh"
-#include "../../include/basictypes/rendertarget.hh"
+#include "../../include/rendertargets/rendertargetlock.hh"
+#include "../../include/rendertargets/rendertarget.hh"
 #include "../../include/rendertargets/colorrendertarget.hh"
 #include "../../include/smart_ptr.hh"
 
@@ -94,8 +94,8 @@ ColorRenderTarget::~ColorRenderTarget() {
 
 
 
-void ColorRenderTarget::lock (shared_ptr<RenderTargetLock>& lock) {
-        lock = shared_ptr<RenderTargetLock> (new ColorRenderTargetLock (*this));
+shared_ptr<RenderTargetLock> ColorRenderTarget::lock () {
+        return shared_ptr<RenderTargetLock> (new ColorRenderTargetLock (*this));
 }
 
 

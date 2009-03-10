@@ -30,7 +30,7 @@ namespace redshift {
         public:
                 ColorRenderTarget (int width_, int height_);
                 ~ColorRenderTarget();
-                void lock (shared_ptr<RenderTargetLock> & lock);
+                shared_ptr<RenderTargetLock> lock ();
                 void flip();        
                 int getWidth() const;        
                 int getHeight() const;

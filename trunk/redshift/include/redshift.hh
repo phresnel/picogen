@@ -32,7 +32,8 @@
 #include "basictypes/incomingray.hh"
 #include "basictypes/outgoingray.hh"
 
-
+// TODO reorder
+// basictypes/
 #include "basictypes/differentialgeometry.hh"
 #include "basictypes/material.hh"
 #include "basictypes/intersection.hh"
@@ -41,8 +42,10 @@
 #include "basictypes/primitive.hh"
 
 #include "basictypes/background.hh"
-#include "basictypes/rendertargetlock.hh"
-#include "basictypes/rendertarget.hh"
+
+// Render Targets
+#include "rendertargets/rendertargetlock.hh"
+#include "rendertargets/rendertarget.hh"
 
 
 // Shapes.

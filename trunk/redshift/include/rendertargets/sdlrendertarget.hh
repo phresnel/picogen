@@ -30,7 +30,7 @@ namespace redshift {
         public:
                 SdlRenderTarget (int width_, int height_);
                 ~SdlRenderTarget();
-                void lock (shared_ptr<RenderTargetLock> & lock);
+                shared_ptr<RenderTargetLock> lock ();
                 void flip();        
                 int getWidth() const;        
                 int getHeight() const;

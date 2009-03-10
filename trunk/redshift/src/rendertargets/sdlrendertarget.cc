@@ -23,8 +23,8 @@
 #include <sstream>
 
 #include "../../include/setup.hh"
-#include "../../include/basictypes/rendertargetlock.hh"
-#include "../../include/basictypes/rendertarget.hh"
+#include "../../include/rendertargets/rendertargetlock.hh"
+#include "../../include/rendertargets/rendertarget.hh"
 #include "../../include/rendertargets/sdlrendertarget.hh"
 #include "../../include/smart_ptr.hh"
 
@@ -68,7 +68,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                         }
                 }
         
-                /*Uint32 &bufp = static_cast<Uint32*>(display.display->pixels)
+                Uint32 &bufp = static_cast<Uint32*>(display.display->pixels)
                                           [y * (display.display->pitch/4) + x];
                 real_t r, g, b;
                 color.toRgb (r, g, b);
@@ -78,7 +78,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                 bufp = SDL_MapRGB(display.display->format,
                                 (unsigned char)(255.0*r),
                                 (unsigned char)(255.0*g),
-                                (unsigned char)(255.0*b));*/
+                                (unsigned char)(255.0*b));
         }
 
         void getPixel (int x, int y, redshift::Color &color) const {
@@ -125,8 +125,8 @@ SdlRenderTarget::~SdlRenderTarget() {
 
 
 
-void SdlRenderTarget::lock (shared_ptr<RenderTargetLock>& lock) {
-        lock = shared_ptr<RenderTargetLock> (new SdlRenderTargetLock (*this));
+shared_ptr<RenderTargetLock> SdlRenderTarget::lock () {
+        return shared_ptr<RenderTargetLock> (new SdlRenderTargetLock (*this));
 }
 
 

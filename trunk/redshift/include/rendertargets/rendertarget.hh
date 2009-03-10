@@ -24,12 +24,28 @@
 namespace redshift {
         class RenderTarget {
         public:
+                // TODO add a getFaceCount(), add parameter to lock()<-int face
                 virtual int getWidth () const = 0;
                 virtual int getHeight () const = 0;
-                virtual void lock (shared_ptr<RenderTargetLock> & lock) = 0;
+                virtual shared_ptr<RenderTargetLock> lock () = 0;
                 virtual void flip () = 0;
                 virtual ~RenderTarget() {}
         };
+        
+        template <typename lhs_t>
+        inline shared_ptr<RenderTarget> convert (shared_ptr<RenderTarget> rhs) {
+                shared_ptr<RenderTarget> lhs (
+                        new lhs_t (rhs->getWidth(), rhs->getHeight()));
+                shared_ptr<RenderTargetLock> lockr (rhs->lock());
+                shared_ptr<RenderTargetLock> lockl (lhs->lock());
+                for (int y=0; y<lhs->getHeight(); ++y)
+                 for (int x=0; x<lhs->getWidth(); ++x) {
+                        Color tmp;
+                        lockr->getPixel (x, y, tmp);
+                        lockl->setPixel (x, y, tmp);
+                }
+                return lhs;
+        }
 }
 
 #endif // RENDERTARGET_HH_INCLUDED_20090306

@@ -24,9 +24,11 @@
 #ifdef AMALGAM
 #include "../../include/redshift.hh"
 #include "../../include/rendertargets/sdlrendertarget.hh"
+#include "../../include/rendertargets/colorrendertarget.hh"
 #else
 #include "../include/redshift.hh"
 #include "../include/rendertargets/sdlrendertarget.hh"
+#include "../include/rendertargets/colorrendertarget.hh"
 #endif
 
 #include <cstdlib>
@@ -38,10 +40,32 @@
 
 void run() {
         using namespace redshift;
-        shared_ptr<RenderTarget> renderTarget (new SdlRenderTarget(512,512));
+        shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));
         Renderer renderer (renderTarget);
         renderer.render();
-        renderTarget->flip();
+        shared_ptr<RenderTarget> sdl (convert<SdlRenderTarget> (renderTarget));
+        sdl->flip();
+        
+        SDL_WM_SetCaption ("redshift-sdl.", "redshift-sdl.");
+        bool done = false;
+        while (!done) {
+                // message processing loop
+                SDL_Event event;
+                while (SDL_PollEvent(&event)) {
+                        // check for messages
+                        switch (event.type) {
+                        case SDL_KEYDOWN:
+                        case SDL_KEYUP:
+                                if (SDLK_ESCAPE != event.key.keysym.sym)
+                                        break;
+                                // Fall through
+                        case SDL_QUIT:
+                                done = true;
+                                break;
+                                                
+                        }
+                }                       
+        }
 }
 
 

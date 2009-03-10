@@ -23,8 +23,8 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/basictypes/primitive.hh"
 #include "../../include/basictypes/scene.hh"
-#include "../../include/basictypes/rendertargetlock.hh"
-#include "../../include/basictypes/rendertarget.hh"
+#include "../../include/rendertargets/rendertargetlock.hh"
+#include "../../include/rendertargets/rendertarget.hh"
 #include "../../include/basictypes/redshift-render.hh"
 
 namespace redshift {
@@ -38,8 +38,7 @@ namespace redshift {
         }       
 
         void Renderer::render() const {
-                shared_ptr<RenderTargetLock> lock;
-                renderTarget->lock (lock);
+                shared_ptr<RenderTargetLock> lock (renderTarget->lock());
                 for (int y=0; y<renderTarget->getHeight(); ++y) {
                         for (int x=0; x<renderTarget->getWidth(); ++x) {
                                 Color tmp;
