@@ -22,13 +22,13 @@
 #define CLOSEDSPHERE_H_INCLUDED_20090301
 
 namespace redshift {
-        DefineFinalizer(ClosedSphere);
+        /*DefineFinalizer(ClosedSphere);
         class ClosedSphere : public Shape, DoFinalize(ClosedSphere) {
         public:
                 bool Intersect (Ray const &ray) const;
                 bool Intersect (Ray const &ray, real_t &d) const;
                 bool Intersect (Ray const &ray, DifferentialGeometry &i) const;
-        };
+        };*/
 }
 
 #endif // CLOSEDSPHERE_H_INCLUDED_20090301

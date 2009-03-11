@@ -42,6 +42,7 @@ namespace redshift {
                 ColorRenderTarget();
                 ColorRenderTarget(ColorRenderTarget const&);
                 ColorRenderTarget & operator = (ColorRenderTarget const &);
+                
                 class ColorRenderTargetLock;
                 friend class ColorRenderTargetLock;
         };

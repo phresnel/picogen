@@ -52,7 +52,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                         SDL_UnlockSurface (display.display);                        
         }
 
-        void setPixel (int x, int y, redshift::Color &color) {
+        void setPixel (int x, int y, redshift::Color const &color) {
                 if (static_config::debug) {
                         if (x<0 || x>=display.getWidth()
                              || y<0 || y>=display.getHeight()
@@ -70,18 +70,15 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
         
                 Uint32 &bufp = static_cast<Uint32*>(display.display->pixels)
                                           [y * (display.display->pitch/4) + x];
-                real_t r, g, b;
-                color.toRgb (r, g, b);
-                r = r<0?0:r>1?1:r;
-                g = g<0?0:g>1?1:g;
-                b = b<0?0:b>1?1:b;
+                
+                Rgb const  rgb = saturate (color.toRgb(), 0.0, 1.0);
                 bufp = SDL_MapRGB(display.display->format,
-                                (unsigned char)(255.0*r),
-                                (unsigned char)(255.0*g),
-                                (unsigned char)(255.0*b));
+                                (unsigned char)(255.0*rgb.r),
+                                (unsigned char)(255.0*rgb.g),
+                                (unsigned char)(255.0*rgb.b));
         }
 
-        void getPixel (int x, int y, redshift::Color &color) const {
+        Color getPixel (int x, int y) const {
                 // TODO STUB
                 if (static_config::debug) {
                         if (x<0 || x>=display.getWidth()
@@ -97,6 +94,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                                 throw std::out_of_range (ss.str());
                         }
                 }
+                return Color();
         }
 };
 

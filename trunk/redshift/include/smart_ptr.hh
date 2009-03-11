@@ -28,68 +28,12 @@
 #include <boost/scoped_array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/shared_array.hpp>
-namespace redshift {
-        
-        /*
-       
-        // scoped_ptr
-        template <typename T>
-        struct scoped_ptr : boost::scoped_ptr<T> {
-                // Assimilate constructors.
-                explicit scoped_ptr (T * v) : boost::scoped_ptr<T> (v) {}
-        private:
-                // noncopyable
-                scoped_ptr();
-                scoped_ptr (scoped_ptr const &);
-                scoped_ptr & operator = (scoped_ptr const &); 
-        };
-        
-        // scoped_array
-        template <typename T>
-        struct scoped_array : boost::scoped_array<T> {
-                // Assimilate constructors.
-                explicit scoped_array (T * v) : boost::scoped_array<T> (v) {}
-        private:
-                // noncopyable
-                scoped_array();
-                scoped_array (scoped_array const &);
-                scoped_array & operator = (scoped_array const &); 
-        };
-        
-        // shared_ptr
-        template <typename T>
-        struct shared_ptr : boost::shared_ptr<T> {
-                // Assimilate constructors.
-                shared_ptr ()
-                        : boost::shared_ptr<T> () {}
-                
-                explicit shared_ptr (T * v)
-                        : boost::shared_ptr<T> (v) {}
-                
-                shared_ptr (shared_ptr const & v)
-                        : boost::shared_ptr<T> (v) {}
-                // The rest is okay via derivation.
-        };
-        
-        // shared_ptr
-        template <typename T>
-        struct shared_array : boost::shared_array<T> {
-                // Assimilate constructors.
-                shared_array () : boost::shared_array<T> () {}
-                
-                explicit shared_array (T * v)
-                        : boost::shared_array<T> (v) {}
 
-                shared_array (shared_array const & v)
-                        : boost::shared_array<T> (v) {}
-                // The rest is okay via derivation.
-        };*/
-        
+namespace redshift {
         using boost::scoped_ptr;
         using boost::scoped_array;
         using boost::shared_ptr;
-        using boost::shared_array;
-        
+        using boost::shared_array;        
 }
 
 #endif // SMART_PTR_HH_INCLUDED_20090304

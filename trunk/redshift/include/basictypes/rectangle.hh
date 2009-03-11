@@ -58,21 +58,19 @@ namespace redshift {
                 int area () const {
                         return width() * height();
                 }
-                
-                // Non-Members.
-                
-                friend inline int width (Rectangle const &r) {
-                        return r.width();
-                }
-                
-                friend inline int height (Rectangle const &r) {
-                        return r.height();
-                }
-                
-                friend inline int area (Rectangle const &r) {
-                        return r.area();
-                }
         };
+        
+        inline int width (Rectangle const &r) {
+                return r.width();
+        }
+        
+        inline int height (Rectangle const &r) {
+                return r.height();
+        }
+        
+        inline int area (Rectangle const &r) {
+                return r.area();
+        }
 }
 
 #endif // RECTANGLE_H_INCLUDED_20090311

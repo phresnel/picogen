@@ -33,16 +33,14 @@ namespace redshift {
         };
         
         template <typename lhs_t>
-        inline shared_ptr<RenderTarget> convert (shared_ptr<RenderTarget> rhs) {
+        inline shared_ptr<RenderTarget> convert (shared_ptr<RenderTarget> rhs){
                 shared_ptr<RenderTarget> lhs (
                         new lhs_t (rhs->getWidth(), rhs->getHeight()));
                 shared_ptr<RenderTargetLock> lockr (rhs->lock());
                 shared_ptr<RenderTargetLock> lockl (lhs->lock());
                 for (int y=0; y<lhs->getHeight(); ++y)
                  for (int x=0; x<lhs->getWidth(); ++x) {
-                        Color tmp;
-                        lockr->getPixel (x, y, tmp);
-                        lockl->setPixel (x, y, tmp);
+                        lockl->setPixel (x, y, lockr->getPixel (x, y));
                 }
                 return lhs;
         }

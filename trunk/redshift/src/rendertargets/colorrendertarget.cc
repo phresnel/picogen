@@ -43,7 +43,7 @@ struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
         ~ColorRenderTargetLock () {                                       
         }
 
-        void setPixel (int x, int y, redshift::Color &color) {
+        void setPixel (int x, int y, redshift::Color const &color) {
                 if (static_config::debug) {
                         if (x<0 || x>=display.getWidth()
                              || y<0 || y>=display.getHeight()
@@ -61,7 +61,7 @@ struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
                 display.display [y*display.getWidth() + x] = color;
         }
 
-        void getPixel (int x, int y, redshift::Color &color) const {
+        Color getPixel (int x, int y) const {
                 if (static_config::debug) {
                         if (x<0 || x>=display.getWidth()
                              || y<0 || y>=display.getHeight()
@@ -76,7 +76,7 @@ struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
                                 throw std::out_of_range (ss.str());
                         }
                 }
-                color = display.display [y*display.getWidth() + x];
+                return display.display [y*display.getWidth() + x];
         }
 };
 

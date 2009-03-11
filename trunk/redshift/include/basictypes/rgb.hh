@@ -36,18 +36,24 @@ namespace redshift {
                 : r(rgb.r) , g(rgb.g), b(rgb.b)
                 {}
 
-                void toRgb (real_t &r, real_t &g, real_t &b) {
-                        r = this->r;
-                        g = this->g;
-                        b = this->b;
+                Rgb toRgb () const {
+                        return Rgb (r, g, b);
                 }
                 
-                void fromRgb (real_t r, real_t g, real_t b) {
-                        this->r = r;
-                        this->g = g;
-                        this->b = b;
+                void fromRgb (Rgb const & v) {
+                        this->r = v.r;
+                        this->g = v.g;
+                        this->b = v.b;
                 }
         };
+        
+        inline Rgb saturate (Rgb const &v, real_t min, real_t max) {
+                return Rgb (
+                        v.r<min ? min:v.r>max ? max:v.r,
+                        v.g<min ? min:v.g>max ? max:v.g,
+                        v.b<min ? min:v.b>max ? max:v.b
+                );
+        }
 }
 
 #endif // RGB_H_INCLUDED_20090224
