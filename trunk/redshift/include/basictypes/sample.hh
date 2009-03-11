@@ -22,15 +22,16 @@
 #define SAMPLE_HH_INCLUDED_20090310
 
 namespace redshift {
-        // TODO: make more typesafe
-        // class ScreenCoordinates ;
-        // class LensCoordinates ;
+        
         class Sample {
         public:
                 ImageCoordinates imageCoordinates;
-                
-                Sample (ImageCoordinates const & imageCoordinates_)
-                : imageCoordinates(imageCoordinates_)
+                LensCoordinates lensCoordinates;
+
+                Sample (in<ImageCoordinates> imageCoordinates_,
+                        in<LensCoordinates> lensCoordinates_)
+                : imageCoordinates(imageCoordinates_.value)
+                , lensCoordinates(lensCoordinates_.value)
                 {}
 
         };        

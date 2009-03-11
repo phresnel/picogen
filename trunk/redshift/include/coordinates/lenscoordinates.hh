@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef LENSCOORDINATES_HH_INCLUDED_20090310
-#define LENSCOORDINATES_HH_INCLUDED_20090310
+#ifndef LENSCOORDINATES_HH_INCLUDED_20090311
+#define LENSCOORDINATES_HH_INCLUDED_20090311
 
 namespace redshift {
         class LensCoordinates : public UVCoordinates {
@@ -33,4 +33,4 @@ namespace redshift {
         };
 }
 
-#endif // LENSCOORDINATES_HH_INCLUDED_20090310
+#endif // LENSCOORDINATES_HH_INCLUDED_20090311

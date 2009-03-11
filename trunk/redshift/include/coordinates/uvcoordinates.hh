@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef UVCOORDINATES_HH_INCLUDED_20090310
-#define UVCOORDINATES_HH_INCLUDED_20090310
+#ifndef UVCOORDINATES_HH_INCLUDED_20090311
+#define UVCOORDINATES_HH_INCLUDED_20090311
 
 namespace redshift {
         class UVCoordinates {
@@ -35,4 +35,4 @@ namespace redshift {
         };
 }
 
-#endif // UVCOORDINATES_HH_INCLUDED_20090310
+#endif // UVCOORDINATES_HH_INCLUDED_20090311

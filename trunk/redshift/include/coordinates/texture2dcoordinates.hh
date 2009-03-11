@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef TEXTURE2DCOORDINATES_HH_INCLUDED_20090310
-#define TEXTURE2DCOORDINATES_HH_INCLUDED_20090310
+#ifndef TEXTURE2DCOORDINATES_HH_INCLUDED_20090311
+#define TEXTURE2DCOORDINATES_HH_INCLUDED_20090311
 
 namespace redshift {
         class Texture2dCoordinates : public UVCoordinates {
@@ -33,4 +33,4 @@ namespace redshift {
         };
 }
 
-#endif // TEXTURE2DCOORDINATES_HH_INCLUDED_20090310
+#endif // TEXTURE2DCOORDINATES_HH_INCLUDED_20090311
