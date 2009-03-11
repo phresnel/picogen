@@ -18,11 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef RAY_TRAITS_H_20090223
-#define RAY_TRAITS_H_20090223
+#ifndef RAYDIFFERENTIAL_TRAITS_H_20090311
+#define RAYDIFFERENTIAL_TRAITS_H_20090311
 
 ///////////////////////////////////////////////////////////////////////////////
-//ray_t and Ray traits
+// ray_differential_t and RayDifferential traits
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace kallisto { namespace traits {
@@ -33,14 +33,14 @@ namespace kallisto { namespace traits {
         template <typename T> struct get_position_type;
 
 
-        //ray_t
+        // ray_differential_t
         template <typename point_t, typename direction_t>
-        struct get_position_type <ray_t<point_t, direction_t> >
+        struct get_position_type <ray_differential_t<point_t, direction_t> >
         : public get_type<point_t> {};
 
-        // Ray
+        // RayDifferential
         template <typename point_t, typename direction_t>
-        struct get_position_type <Ray<point_t, direction_t> >
+        struct get_position_type <RayDifferential<point_t, direction_t> >
         : public get_type<point_t> {};
 
 
@@ -48,7 +48,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT((types_equal<
                 vector_t<CARTESIAN,int>,
                 get_position_type<
-                        ray_t<
+                        ray_differential_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -58,7 +58,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT(!(types_equal<
                 vector_t<CARTESIAN,float>,
                 get_position_type<
-                        ray_t<
+                        ray_differential_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -67,13 +67,13 @@ namespace kallisto { namespace traits {
 
         STATIC_ASSERT((types_equal<
                 get_position_type<
-                        ray_t<
+                        ray_differential_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
                 >::type,
                 get_position_type<
-                        Ray<
+                        RayDifferential<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -87,15 +87,15 @@ namespace kallisto { namespace traits {
         template <typename T> struct get_direction_type;
 
 
-        // ray_t
+        // ray_differential_t
         template <typename point_t, typename direction_t>
-        struct get_direction_type <ray_t<point_t, direction_t> >
+        struct get_direction_type <ray_differential_t<point_t, direction_t> >
         : public get_type<direction_t> {};
 
 
-        // Ray
+        // RayDifferential
         template <typename point_t, typename direction_t>
-        struct get_direction_type <Ray<point_t, direction_t> >
+        struct get_direction_type <RayDifferential<point_t, direction_t> >
         : public get_type<direction_t> {};
 
 
@@ -103,7 +103,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT((types_equal<
                 vector_t<CARTESIAN,float>,
                 get_direction_type<
-                        ray_t<
+                        ray_differential_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -113,7 +113,7 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT((types_equal<
                 vector_t<CARTESIAN,long double>,
                 get_direction_type<
-                        ray_t<
+                        ray_differential_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,long double>
                         >
@@ -122,13 +122,13 @@ namespace kallisto { namespace traits {
 
         STATIC_ASSERT((types_equal<
                 get_direction_type<
-                        ray_t<
+                        ray_differential_t<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
                 >::type,
                 get_direction_type<
-                        Ray<
+                        RayDifferential<
                                 vector_t<CARTESIAN,int>,
                                 vector_t<CARTESIAN,float>
                         >
@@ -137,4 +137,4 @@ namespace kallisto { namespace traits {
 
 } }
 
-#endif // #define RAY_TRAITS_H_20090223
+#endif // RAYDIFFERENTIAL_TRAITS_H_20090311

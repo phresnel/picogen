@@ -38,7 +38,7 @@ namespace kallisto {
         // Template friendly abs().
         inline int           abs (int const &rhs)          {return abs (rhs); }
         inline long int      abs (long int const &rhs)     {return labs(rhs); }
-#if __STDC_VERSION__ == 199901L
+#if __STDC_VERSION__ >= 199901L
         inline long long int abs (long long int const &rhs){return llabs(rhs);}
 #endif
         inline float         abs (float const &rhs)        {return fabsf(rhs);}

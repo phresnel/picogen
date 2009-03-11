@@ -28,6 +28,7 @@ namespace kallisto { namespace unit_test {
 
 	test_vector_t const test_ray_t::test;
 	test_vector_t const test_proto_ray_t::test;
+	test_vector_t const test_proto_ray_differential_t::test;
         test_vector_t const test_sphere_t::test;
         test_vector_t const test_orthonormal_basis_t::test;
 

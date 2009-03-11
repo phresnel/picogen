@@ -60,6 +60,9 @@
 #include "types/ray.hh"
 #include "traits/ray_traits.hh"
 
+#include "types/ray_differential.hh"
+#include "traits/ray_differential_traits.hh"
+
 #include "types/sphere.hh"
 #include "traits/sphere_traits.hh"
 
