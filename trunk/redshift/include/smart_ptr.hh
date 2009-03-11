@@ -30,6 +30,8 @@
 #include <boost/shared_array.hpp>
 namespace redshift {
         
+        /*
+       
         // scoped_ptr
         template <typename T>
         struct scoped_ptr : boost::scoped_ptr<T> {
@@ -81,7 +83,13 @@ namespace redshift {
                 shared_array (shared_array const & v)
                         : boost::shared_array<T> (v) {}
                 // The rest is okay via derivation.
-        };
+        };*/
+        
+        using boost::scoped_ptr;
+        using boost::scoped_array;
+        using boost::shared_ptr;
+        using boost::shared_array;
+        
 }
 
 #endif // SMART_PTR_HH_INCLUDED_20090304

@@ -28,10 +28,10 @@ namespace redshift {
                 ImageCoordinates imageCoordinates;
                 LensCoordinates lensCoordinates;
 
-                Sample (in<ImageCoordinates> imageCoordinates_,
-                        in<LensCoordinates> lensCoordinates_)
-                : imageCoordinates(imageCoordinates_.value)
-                , lensCoordinates(lensCoordinates_.value)
+                Sample (ImageCoordinates const & imageCoordinates_,
+                        LensCoordinates const & lensCoordinates_)
+                : imageCoordinates(imageCoordinates_)
+                , lensCoordinates(lensCoordinates_)
                 {}
 
         };        

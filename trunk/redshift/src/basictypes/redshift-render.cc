@@ -58,8 +58,7 @@ namespace redshift {
                                                     static_cast<real_t>(y)),
                                    LensCoordinates()
                                 );
-                                Ray ray;
-                                camera->generateRay (sample, out_(ray));
+                                Ray ray (camera->generateRay (sample));
                                 Color tmp;
                                 tmp.fromRgb (0.5, 0.5, 0.5);
                                 lock->setPixel (x,y,tmp);

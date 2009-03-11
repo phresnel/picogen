@@ -18,21 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SAMPLER_H_INCLUDED_20090311
-#define SAMPLER_H_INCLUDED_20090311
+#ifndef TUPLE_HH_INCLUDED_20090311
+#define TUPLE_HH_INCLUDED_20090311
+
+#include <boost/tuple/tuple.hpp>
 
 namespace redshift {
-        class Sampler {
-        public:                
-                Rectangle region;
-                int samplesPerPixel;
-                
-                Sampler (Rectangle const &region_, int samplesPerPixel_) ;
-                
-                inline int computeTotalSampleCount () const ;
-                
-                virtual tuple<bool,Sample> getNextSample (Sample const &) = 0;
-        };
+        using boost::tuple;
 }
 
-#endif // SAMPLER_H_INCLUDED_20090311
+#endif // TUPLE_HH_INCLUDED_20090311

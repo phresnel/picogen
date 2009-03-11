@@ -67,6 +67,14 @@ namespace redshift {
         // Makes function calls more save.
         // Pretty much like using the out-keyword in some other languages.
         // Note that 'out' is always explicit, while 'in' can be implicit.
+        // Okay: After re-thinking the idea, it is not possible for non pointer
+        //       types to be really initialized inside the callee, hence
+        //       I think that out<> is basically bogus. Anyways a nice
+        //       show :/
+        //       This is only kept this time to potentially back-refer
+        //       and will vanish in the next revision.
+        
+        /*
         template <typename T> struct in {
                 
                 T const &value;
@@ -129,6 +137,7 @@ namespace redshift {
         template <typename T> inline out<T> out_ (T &value) {
                 return out<T> (value);
         }
+        */
 }
 
 #include "basictypes/rgb.hh"
@@ -157,5 +166,6 @@ namespace redshift {
 }
 
 #include "smart_ptr.hh"
+#include "tuple.hh"
 
 #endif // SETUP_HH_INCLUDED_20090303

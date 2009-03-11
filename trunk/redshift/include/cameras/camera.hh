@@ -24,7 +24,7 @@
 namespace redshift {
         class Camera {
         public:                
-                virtual void generateRay (in<Sample>, out<Ray>) = 0;
+                virtual Ray generateRay (Sample const &) = 0;
                 virtual ~Camera () {}
         };
 }
