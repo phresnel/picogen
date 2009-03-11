@@ -1,12 +1,16 @@
+
 #------------------------------------------------------------------------------
 # obj directories
 #------------------------------------------------------------------------------
 OBJDIR := ./obj
-BASICTYPESOBJDIR := $(OBJDIR)/basictypes
-APPOBJDIR := $(OBJDIR)/app
+
+ACCELERATORSOBJDIR  := $(OBJDIR)/accelerators
+APPOBJDIR           := $(OBJDIR)/app
+BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
-SHAPEOBJDIR := $(OBJDIR)/shapes
-ACCELERATORSOBJDIR := $(OBJDIR)/accelerators
+SHAPEOBJDIR         := $(OBJDIR)/shapes
+SAMPLERSOBJDIR      := $(OBJDIR)/samplers
+
 
 #------------------------------------------------------------------------------
 # bin directories
@@ -74,6 +78,7 @@ redshift_: $(OBJDIR)/main.o \
                 $(OBJDIR)/rendertargets.a \
                 $(OBJDIR)/shapes.a \
                 $(OBJDIR)/accelerators.a \
+                $(OBJDIR)/samplers.a \
                 $(OBJDIR)/basictypes.a
 	$(LINK) -o $(BINDIR)/redshift $^
 
@@ -138,7 +143,23 @@ $(OBJDIR)/app.a:
 #$(APPOBJDIR)/sdlrendertarget.o
 	$(AR) -o $@ $^
 
-$(APPOBJDIR)/sdlrendertarget.o: ./src/app/sdlrendertarget.cc
+#$(APPOBJDIR)/sdlrendertarget.o: ./src/app/sdlrendertarget.cc
+#	$(CXX) -o $@ $<
+
+
+
+###############################################################################
+# samplers
+###############################################################################
+.PHONY: samplers
+samplers: init-dir-tree $(APPOBJDIR)/samplers.a
+
+$(OBJDIR)/samplers.a: \
+                     $(SAMPLERSOBJDIR)/sampler.o 
+	$(AR) -o $@ $^
+
+$(SAMPLERSOBJDIR)/sampler.o: \
+                     ./src/samplers/sampler.cc
 	$(CXX) -o $@ $<
 
 
@@ -146,7 +167,7 @@ $(APPOBJDIR)/sdlrendertarget.o: ./src/app/sdlrendertarget.cc
 # render targets
 ###############################################################################
 .PHONY: rendertargets
-rendertargets: init-dir-tree $(APPOBJDIR)/rendertargets.a
+rendertargets: init-dir-tree $(OBJDIR)/rendertargets.a
 
 $(OBJDIR)/rendertargets.a: \
                      $(RENDERTARGETSOBJDIR)/sdlrendertarget.o \
@@ -195,12 +216,13 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 .PHONY: init-dir-tree
 init-dir-tree:
-	mkdir -p $(OBJDIR)
-	mkdir -p $(APPOBJDIR)
-	mkdir -p $(RENDERTARGETSOBJDIR)
-	mkdir -p $(SHAPEOBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
-	mkdir -p $(BASICTYPESOBJDIR)	
+	mkdir -p $(APPOBJDIR)
+	mkdir -p $(BASICTYPESOBJDIR)
+	mkdir -p $(OBJDIR)
+	mkdir -p $(RENDERTARGETSOBJDIR)
+	mkdir -p $(SAMPLERSOBJDIR)
+	mkdir -p $(SHAPEOBJDIR)		
 	mkdir -p ./tmp/amalgam
 
 # do not apply when on svn!
@@ -219,11 +241,13 @@ clean:
 	rm -f ./tmp/amalgam/amalgam.cc
 	rm -f ./bin/redshift 
 	rm -f ./bin/redshift-amalgam
-	rm -f $(OBJDIR)/*.o	
+	rm -f $(ACCELERATORSOBJDIR)/*.o
+	rm -f $(APPOBJDIR)/*.o
+	rm -f $(BASICTYPESOBJDIR)/*.o
+	rm -f $(OBJDIR)/*.o
 	rm -f $(OBJDIR)/*.a
 	rm -f $(RENDERTARGETSOBJDIR)/*.o
-	rm -f $(APPOBJDIR)/*.o
-	rm -f $(SHAPEOBJDIR)/*.o
-	rm -f $(ACCELERATORSOBJDIR)/*.o
-	rm -f $(BASICTYPESOBJDIR)/*.o
+	rm -f $(SAMPLERSOBJDIR)/*.o
+	rm -f $(SHAPEOBJDIR)/*.o		
+
 

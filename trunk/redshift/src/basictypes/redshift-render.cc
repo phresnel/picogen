@@ -55,9 +55,11 @@ namespace redshift {
                         for (int x=0; x<renderTarget->getWidth(); ++x) {
                                 Sample sample (
                                    ImageCoordinates(static_cast<real_t>(x),
-                                                    static_cast<real_t>(y)));
+                                                    static_cast<real_t>(y)),
+                                   LensCoordinates()
+                                );
                                 Ray ray;
-                                camera->generateRay (sample, ray);
+                                camera->generateRay (sample, out_(ray));
                                 Color tmp;
                                 tmp.fromRgb (0.5, 0.5, 0.5);
                                 lock->setPixel (x,y,tmp);

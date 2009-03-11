@@ -41,8 +41,13 @@
 #include "coordinates/texture2dcoordinates.hh"
 
 // basictypes/
+#include "basictypes/rectangle.hh"
 #include "basictypes/sample.hh"
 
+// samplers/
+#include "samplers/sampler.hh"
+
+// basictypes/
 #include "basictypes/differentialgeometry.hh"
 #include "basictypes/material.hh"
 #include "basictypes/intersection.hh"
@@ -63,9 +68,9 @@
 // Cameras.
 #include "cameras/camera.hh"
 
-
 // basictypes/
 #include "basictypes/scene.hh"
 #include "basictypes/redshift-render.hh"
+
 
 #endif // REDSHIFT_H_INCLUDED_20090223
