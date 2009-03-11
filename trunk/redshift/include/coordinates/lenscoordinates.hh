@@ -18,22 +18,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SAMPLE_HH_INCLUDED_20090310
-#define SAMPLE_HH_INCLUDED_20090310
+#ifndef LENSCOORDINATES_HH_INCLUDED_20090310
+#define LENSCOORDINATES_HH_INCLUDED_20090310
 
 namespace redshift {
-        // TODO: make more typesafe
-        // class ScreenCoordinates ;
-        // class LensCoordinates ;
-        class Sample {
+        class LensCoordinates : public UVCoordinates {
         public:
-                ImageCoordinates imageCoordinates;
-                
-                Sample (ImageCoordinates const & imageCoordinates_)
-                : imageCoordinates(imageCoordinates_)
-                {}
+        
+                LensCoordinates() : UVCoordinates () {}
 
-        };        
+                LensCoordinates (real_t u_, real_t v_)
+                : UVCoordinates(u_,v_)
+                {}
+        };
 }
 
-#endif // SAMPLE_HH_INCLUDED_20090310
+#endif // LENSCOORDINATES_HH_INCLUDED_20090310

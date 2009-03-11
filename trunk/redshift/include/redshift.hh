@@ -33,8 +33,14 @@
 #include "basictypes/outgoingray.hh"
 
 // TODO reorder
+
+// coordinates/
+#include "coordinates/uvcoordinates.hh"
+#include "coordinates/imagecoordinates.hh"
+#include "coordinates/lenscoordinates.hh"
+#include "coordinates/texture2dcoordinates.hh"
+
 // basictypes/
-#include "basictypes/uvcoordinates.hh"
 #include "basictypes/sample.hh"
 
 #include "basictypes/differentialgeometry.hh"

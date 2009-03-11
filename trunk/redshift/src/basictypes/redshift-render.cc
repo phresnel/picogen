@@ -24,7 +24,9 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/basictypes/primitive.hh"
 #include "../../include/basictypes/scene.hh"
-#include "../../include/basictypes/uvcoordinates.hh"
+#include "../../include/coordinates/uvcoordinates.hh"
+#include "../../include/coordinates/lenscoordinates.hh"
+#include "../../include/coordinates/imagecoordinates.hh"
 #include "../../include/basictypes/sample.hh"
 
 #include "../../include/rendertargets/rendertargetlock.hh"
@@ -52,8 +54,8 @@ namespace redshift {
                 for (int y=0; y<renderTarget->getHeight(); ++y) {
                         for (int x=0; x<renderTarget->getWidth(); ++x) {
                                 Sample sample (
-                                        UVCoordinates(static_cast<real_t>(x),
-                                             static_cast<real_t>(y)));
+                                   ImageCoordinates(static_cast<real_t>(x),
+                                                    static_cast<real_t>(y)));
                                 Ray ray;
                                 camera->generateRay (sample, ray);
                                 Color tmp;
