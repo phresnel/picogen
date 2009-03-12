@@ -39,7 +39,7 @@ namespace kallisto {
         public:
                 
                 bool hasDifferentials;
-                ray_t<point_t, direction_t> rx, ry;
+                Ray<point_t, direction_t> rx, ry;
 
                 RayDifferential ()
                 : Ray<point_t, direction_t> ()
