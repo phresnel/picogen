@@ -18,21 +18,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef UVCOORDINATES_HH_INCLUDED_20090311
-#define UVCOORDINATES_HH_INCLUDED_20090311
+#include "../../include/setup.hh"
+#include "../../include/tuple.hh"
 
-namespace redshift {
-        class UVCoordinates {
-        public:
-                real_t u;
-                real_t v;
-                
-                UVCoordinates() : u(), v() {}
+#include "../../include/coordinates/uvcoordinates.hh"
+#include "../../include/coordinates/lenscoordinates.hh"
+#include "../../include/coordinates/imagecoordinates.hh"
 
-                UVCoordinates (real_t u_, real_t v_)
-                : u(u_), v(v_)
-                {}
-        };
+#include "../../include/basictypes/intersection.hh"
+#include "../../include/basictypes/primitive.hh"
+#include "../../include/basictypes/background.hh"
+
+#include "../../include/basictypes/scene.hh"
+#include "../../include/basictypes/sample.hh"
+
+#include "../../include/cameras/camera.hh"
+#include "../../include/cameras/pinhole.hh"
+
+namespace redshift { namespace camera {
+
+
+
+tuple<float,RayDifferential> Pinhole::generateRay (Sample const &) const {
+        RayDifferential ray;
+        ray.direction.z = 1.0;
+        return make_tuple (1.0, ray);
 }
 
-#endif // UVCOORDINATES_HH_INCLUDED_20090311
+
+
+Pinhole::~Pinhole() {
+}
+
+
+
+} } // namespace redshift::pinhole 

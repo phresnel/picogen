@@ -25,9 +25,12 @@ namespace redshift {
         DefineFinalizer(Renderer);
         class Renderer : DoFinalize(Renderer) {
         public:        
-                Renderer (shared_ptr<RenderTarget>, shared_ptr<Camera>);
+                Renderer(shared_ptr<RenderTarget>, shared_ptr<camera::Camera>);
                 void render() const ;
                 ~Renderer ();
+                
+                inline tuple<real_t,Color> computeRadiance(
+                        RayDifferential const&, Sample const&) const;
         private:
                 Renderer (Renderer const &);
                 Renderer & operator= (Renderer const &);
@@ -35,7 +38,7 @@ namespace redshift {
 
                 //Scene scene;
                 shared_ptr<RenderTarget> renderTarget;
-                shared_ptr<Camera> camera;
+                shared_ptr<camera::Camera> camera;
         };
 }
 

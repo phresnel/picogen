@@ -28,8 +28,8 @@ namespace redshift {
 
                 Rgb () : r(0), g(0), b(0) {}
 
-                Rgb (real_t r, real_t g, real_t b)
-                : r(r) , g(g), b(b)
+                Rgb (real_t r_, real_t g_, real_t b_)
+                : r(r_) , g(g_), b(b_)
                 {}
 
                 Rgb (Rgb const &rgb)
@@ -52,6 +52,22 @@ namespace redshift {
                         v.r<min ? min:v.r>max ? max:v.r,
                         v.g<min ? min:v.g>max ? max:v.g,
                         v.b<min ? min:v.b>max ? max:v.b
+                );
+        }
+        
+        inline Rgb operator * (Rgb const &lhs, real_t rhs) {
+                return Rgb (
+                        lhs.r * rhs,
+                        lhs.g * rhs,
+                        lhs.b * rhs
+                );
+        }
+        
+        inline Rgb operator * (real_t lhs, Rgb const &rhs) {
+                return Rgb (
+                        lhs * rhs.r,
+                        lhs * rhs.g,
+                        lhs * rhs.b
                 );
         }
 }

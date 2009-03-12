@@ -47,6 +47,9 @@
 // samplers/
 #include "samplers/sampler.hh"
 
+// cameras/
+#include "cameras/camera.hh"
+
 // basictypes/
 #include "basictypes/differentialgeometry.hh"
 #include "basictypes/material.hh"

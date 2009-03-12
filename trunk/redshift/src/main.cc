@@ -25,10 +25,12 @@
 #include "../../include/redshift.hh"
 #include "../../include/rendertargets/sdlrendertarget.hh"
 #include "../../include/rendertargets/colorrendertarget.hh"
+#include "../../include/cameras/pinhole.hh"
 #else
 #include "../include/redshift.hh"
 #include "../include/rendertargets/sdlrendertarget.hh"
 #include "../include/rendertargets/colorrendertarget.hh"
+#include "../include/cameras/pinhole.hh"
 #endif
 
 #include <cstdlib>
@@ -40,10 +42,12 @@
 
 void run() {
         using namespace redshift;
+        using namespace redshift::camera;
+
         shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));        
         
-        Renderer renderer (renderTarget, 
-                shared_ptr<Camera> (reinterpret_cast<Camera*>(0)));
+        Renderer renderer (renderTarget, shared_ptr<Camera>(new Pinhole())); 
+                //shared_ptr<Camera> (reinterpret_cast<Camera*>(0)));
         renderer.render();
         shared_ptr<RenderTarget> sdl (convert<SdlRenderTarget> (renderTarget));
         sdl->flip();

@@ -59,6 +59,7 @@ namespace redshift {
 
         typedef kallisto::Sphere<Point,long double>  Sphere;
         typedef kallisto::Ray<Point,Vector>          Ray;
+        typedef kallisto::RayDifferential<Point,Vector> RayDifferential;
         typedef kallisto::OrthonormalBasis<Vector>   OrthonormalBasis;
         
 }

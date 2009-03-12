@@ -21,12 +21,14 @@
 #ifndef CAMERA_HH_INCLUDED_20090310
 #define CAMERA_HH_INCLUDED_20090310
 
-namespace redshift {
+namespace redshift { namespace camera {
         class Camera {
-        public:                
-                virtual Ray generateRay (Sample const &) = 0;
+        public:
+                virtual 
+                  tuple<float,RayDifferential> generateRay (Sample const &) 
+                    const  = 0;
                 virtual ~Camera () {}
         };
-}
+} }
 
 #endif // CAMERA_HH_INCLUDED_20090310

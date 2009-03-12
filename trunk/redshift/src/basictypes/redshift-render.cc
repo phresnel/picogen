@@ -38,29 +38,71 @@
 
 namespace redshift {
 
-        Renderer::Renderer (
-                shared_ptr<RenderTarget> rt,
-                shared_ptr<Camera> cam)
-        : renderTarget(rt)
-        , camera(cam)
-        {
-        }
-        
-        Renderer::~Renderer () {                
-        }       
 
-        void Renderer::render() const {
-                shared_ptr<RenderTargetLock> lock (renderTarget->lock());
-                for (int y=0; y<renderTarget->getHeight(); ++y) {
-                        for (int x=0; x<renderTarget->getWidth(); ++x) {
-                                Sample sample (
-                                   ImageCoordinates(static_cast<real_t>(x),
-                                                    static_cast<real_t>(y)),
-                                   LensCoordinates()
-                                );
-                                Ray ray (camera->generateRay (sample));
-                                lock->setPixel (x,y,Rgb (0.5, 0.5, 0.5));
-                        }
-                }
-        }        
+
+Renderer::Renderer (
+        shared_ptr<RenderTarget> rt,
+        shared_ptr<camera::Camera> cam)
+: renderTarget(rt)
+, camera(cam)
+{
 }
+
+
+
+Renderer::~Renderer () {                
+}       
+
+
+
+inline tuple<real_t,Color> 
+ Renderer::computeRadiance(RayDifferential const & ray, Sample const&) const {
+        Color col (ray.direction.x,ray.direction.y,ray.direction.z);
+        return tuple<real_t,Color> (1.0, col); 
+}
+
+
+
+void Renderer::render() const {
+        shared_ptr<RenderTargetLock> lock (renderTarget->lock());
+        for (int y=0; y<renderTarget->getHeight(); ++y)
+         for (int x=0; x<renderTarget->getWidth(); ++x) {
+                Sample sample (
+                        ImageCoordinates(static_cast<real_t>(x),
+                                            static_cast<real_t>(y)),
+                        LensCoordinates()
+                );
+
+                const tuple<real_t,RayDifferential>
+                                          primo = camera->generateRay (sample);
+                const real_t rayWeight (get<0>(primo));
+                RayDifferential ray (get<1>(primo));
+
+                sample.imageCoordinates.u++;
+                ray.rx = get<1>(camera->generateRay (sample));
+                sample.imageCoordinates.u--;
+                
+                ++sample.imageCoordinates.v;
+                ray.ry = get<1>(camera->generateRay (sample));
+                --sample.imageCoordinates.v;
+                ray.hasDifferentials= true;
+                
+                const tuple<real_t,Color> Ls_ (computeRadiance(ray,sample));
+                const real_t Ls_alpha (get<0>(Ls_));
+                const Color Ls_color  (get<1>(Ls_));
+                const Color finalColor = rayWeight * Ls_color;
+                
+                //<issue warning if unexpected radiance value returned>
+
+                //<add sample contribution to image> 28                
+                lock->setPixel (x,y,finalColor);
+                        /*Rgb (
+                                (float)x/(float)renderTarget->getWidth(),
+                                (float)y/(float)renderTarget->getHeight(), 
+                                0.5));*/
+        }
+}
+
+
+
+} // namespace redshift

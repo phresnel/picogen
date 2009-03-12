@@ -7,6 +7,7 @@ OBJDIR := ./obj
 ACCELERATORSOBJDIR  := $(OBJDIR)/accelerators
 APPOBJDIR           := $(OBJDIR)/app
 BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
+CAMERASOBJDIR       := $(OBJDIR)/cameras
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
 SAMPLERSOBJDIR      := $(OBJDIR)/samplers
@@ -75,6 +76,7 @@ redshift: init-dir-tree redshift_
 
 redshift_: $(OBJDIR)/main.o \
                 $(OBJDIR)/app.a \
+                $(OBJDIR)/cameras.a \
                 $(OBJDIR)/rendertargets.a \
                 $(OBJDIR)/shapes.a \
                 $(OBJDIR)/accelerators.a \
@@ -163,6 +165,23 @@ $(SAMPLERSOBJDIR)/sampler.o: \
 	$(CXX) -o $@ $<
 
 
+
+###############################################################################
+# cameras
+###############################################################################
+.PHONY: cameras
+samplers: init-dir-tree $(APPOBJDIR)/cameras.a
+
+$(OBJDIR)/cameras.a: \
+                     $(CAMERASOBJDIR)/pinhole.o 
+	$(AR) -o $@ $^
+
+$(CAMERASOBJDIR)/pinhole.o: \
+                     ./src/cameras/pinhole.cc
+	$(CXX) -o $@ $<
+
+
+
 ###############################################################################
 # render targets
 ###############################################################################
@@ -216,10 +235,11 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 .PHONY: init-dir-tree
 init-dir-tree:
+	mkdir -p $(OBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
 	mkdir -p $(APPOBJDIR)
 	mkdir -p $(BASICTYPESOBJDIR)
-	mkdir -p $(OBJDIR)
+	mkdir -p $(CAMERASOBJDIR)	
 	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SAMPLERSOBJDIR)
 	mkdir -p $(SHAPEOBJDIR)		
@@ -244,6 +264,7 @@ clean:
 	rm -f $(ACCELERATORSOBJDIR)/*.o
 	rm -f $(APPOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
+	rm -f $(CAMERASOBJDIR)/*.o
 	rm -f $(OBJDIR)/*.o
 	rm -f $(OBJDIR)/*.a
 	rm -f $(RENDERTARGETSOBJDIR)/*.o

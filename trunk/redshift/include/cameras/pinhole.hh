@@ -18,21 +18,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef UVCOORDINATES_HH_INCLUDED_20090311
-#define UVCOORDINATES_HH_INCLUDED_20090311
+#ifndef PINHOLE_HH_INCLUDED_20090312
+#define PINHOLE_HH_INCLUDED_20090312
 
-namespace redshift {
-        class UVCoordinates {
+namespace redshift { namespace camera {        
+        
+        DefineFinalizer(Pinhole);
+
+        class Pinhole : public Camera, DoFinalize(Pinhole) {
         public:
-                real_t u;
-                real_t v;
                 
-                UVCoordinates() : u(), v() {}
-
-                UVCoordinates (real_t u_, real_t v_)
-                : u(u_), v(v_)
-                {}
+                inline tuple<float,RayDifferential>
+                           generateRay(Sample const &) const;
+                           
+                virtual ~Pinhole () ;
         };
-}
+} }
 
-#endif // UVCOORDINATES_HH_INCLUDED_20090311
+#endif // PINHOLE_HH_INCLUDED_20090312
