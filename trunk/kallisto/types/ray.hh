@@ -22,8 +22,10 @@
 #define RAY_H_INCLUDED_20090223
 
 namespace kallisto {
-        template <typename point_t, typename direction_t> struct ray_t {
+        template <typename point_t, typename direction_t> struct ray_t {                
                 proto_ray_t<point_t, direction_t> proto_ray;
+                typename traits::get_scalar_type<direction_t>::type min_t;
+                typename traits::get_scalar_type<direction_t>::type max_t;
         };
 }
 
@@ -33,13 +35,16 @@ namespace kallisto {
         template <typename point_t, typename direction_t> class Ray
         : public ProtoRay<point_t, direction_t> {
         public:
+        
+                typename traits::get_scalar_type<direction_t>::type min_t;
+                typename traits::get_scalar_type<direction_t>::type max_t;
 
                 Ray ()
-                : ProtoRay<point_t, direction_t> ()
+                : ProtoRay<point_t, direction_t>(), min_t(), max_t()                
                 {}
                 
                 Ray (point_t const &pos, direction_t const &dir)
-                : ProtoRay<point_t, direction_t> (pos, dir)
+                : ProtoRay<point_t, direction_t>(pos, dir), min_t(), max_t()
                 {}
         };
 }

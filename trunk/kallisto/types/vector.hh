@@ -70,9 +70,23 @@ namespace kallisto {
                         const vector_t<CARTESIAN, T> ret = { x, y, z };
                         return ret;
                 }
+                
+                /*inline
+                T operator* (Vector const & rhs) {
+                        return this->x*rhs.x + this->y*rhs.y + this->z*rhs.z;
+                }
+
+                inline T lengthSq () {
+                        return *this * *this;
+                }
+                
+                inline T length () {
+                        return kallisto::sqrt (this->lengthSq ());
+                }*/
 
         public: // Friend injections.
 
+                /*
                 friend inline
                 Vector operator- (Vector const & rhs) {
                         return Vector (-rhs.x, -rhs.y, -rhs.z);
@@ -133,9 +147,86 @@ namespace kallisto {
                 }
 
                 friend inline Vector normalize (Vector const & v) {
-                        return v / length (v);
+                        return v / v.length ();
                 }
+                */
         };
+        
+        
+        template <typename T> inline
+        Vector <CARTESIAN,T> operator- (Vector <CARTESIAN,T> const & rhs) {
+                return Vector <CARTESIAN,T> (-rhs.x, -rhs.y, -rhs.z);
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        Vector <SPACE,T> operator+ (Vector <SPACE,T> const & rhs) {
+                return rhs;
+        }
+
+        template <typename T> inline
+        Vector <CARTESIAN,T> operator+ (Vector <CARTESIAN,T> const & lhs, 
+                                            Vector <CARTESIAN,T> const & rhs) {
+                return Vector<CARTESIAN,T>(lhs.x+rhs.x, lhs.y+rhs.y,
+                                                                  lhs.z+rhs.z);
+        }
+
+        template <typename T> inline
+        Vector <CARTESIAN,T> operator- (Vector <CARTESIAN,T> const & lhs,
+                                            Vector <CARTESIAN,T> const & rhs) {
+                return Vector <CARTESIAN,T> (lhs.x-rhs.x, lhs.y-rhs.y,
+                                                                  lhs.z-rhs.z);
+        }
+
+        template <typename T> inline
+        T operator* (Vector <CARTESIAN,T> const & lhs, 
+                                            Vector <CARTESIAN,T> const & rhs) {
+                return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T dot (Vector <SPACE,T> const & lhs, Vector <SPACE,T> const & rhs) {
+                return lhs * rhs;
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T absDot (Vector <SPACE,T> const & lhs, Vector <SPACE,T> const & rhs) {
+                return abs (lhs * rhs);
+        }
+
+        template <typename T> inline
+        Vector <CARTESIAN,T> operator* (Vector <CARTESIAN,T> const & lhs, 
+                                                               T const & rhs) {
+                return Vector <CARTESIAN,T> (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
+        }
+
+        template <typename T> inline
+        Vector <CARTESIAN,T> operator* (T const & lhs,
+                                            Vector <CARTESIAN,T> const & rhs) {
+                return Vector <CARTESIAN,T> (lhs*rhs.x, lhs*rhs.y, lhs*rhs.z);
+        }
+
+        template <typename T> inline
+        Vector <CARTESIAN,T> operator/ (Vector <CARTESIAN,T> const & lhs,
+                                                               T const & rhs) {
+                T const inv = 1.0 / rhs;
+                return Vector <CARTESIAN,T> (lhs.x*inv, lhs.y*inv, lhs.z*inv);
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T lengthSq (Vector<SPACE,T> const & v) {
+                return v * v;
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T length (Vector<SPACE,T> const & v) {
+                return kallisto::sqrt (lengthSq (v));
+        }
+
+        //template <typename T> inline T normalize (T const & v);        
+        template <coordinate_space_t SPACE, typename T> inline
+        Vector <SPACE,T> normalize (Vector <SPACE,T> const & v) {
+                return v / length (v);
+        }
 }
 
 namespace kallisto {
