@@ -1,3 +1,7 @@
 redshift:
-        - create policy classes
-                - NonCopyable
+        * create policy classes
+                * NonCopyable
+        * make final what can be made final
+        * implement sphere-shape
+        * implement sphere-primitive
+        * implement some surface-integrator
