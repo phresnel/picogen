@@ -22,7 +22,6 @@
 
 #include "../../include/basictypes/background.hh"
 #include "../../include/basictypes/intersection.hh"
-#include "../../include/basictypes/primitive.hh"
 #include "../../include/coordinates/uvcoordinates.hh"
 #include "../../include/coordinates/lenscoordinates.hh"
 #include "../../include/coordinates/imagecoordinates.hh"
@@ -33,8 +32,7 @@
 
 #include "../../include/cameras/camera.hh"
 
-#include "../../include/basictypes/scene.hh"
-
+#include "../../include/primitives/primitive.hh"
 #include "../../include/basictypes/scene.hh"
 
 
@@ -45,7 +43,7 @@ namespace redshift {
 Scene::Scene (
         shared_ptr<RenderTarget> rt,
         shared_ptr<camera::Camera> cam,
-        shared_ptr<Primitive> prim_
+        shared_ptr<primitive::Primitive> prim_
 )
 : renderTarget(rt)
 , camera(cam)

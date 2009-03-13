@@ -29,7 +29,7 @@ namespace redshift {
         public:        
                 
                 Scene(shared_ptr<RenderTarget>, shared_ptr<camera::Camera>,
-                                                        shared_ptr<Primitive>);
+                                             shared_ptr<primitive::Primitive>);
                 ~Scene ();
                 
                 void render() const ;                
@@ -52,9 +52,9 @@ namespace redshift {
                 
 
                 //Scene scene;
-                shared_ptr<RenderTarget>   renderTarget;
-                shared_ptr<camera::Camera> camera;
-                shared_ptr<Primitive>      aggregate;
+                shared_ptr<RenderTarget>         renderTarget;
+                shared_ptr<camera::Camera>       camera;
+                shared_ptr<primitive::Primitive> aggregate;
         };
 }
 

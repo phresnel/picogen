@@ -55,9 +55,6 @@
 #include "basictypes/material.hh"
 #include "basictypes/intersection.hh"
 
-#include "basictypes/shape.hh"
-#include "basictypes/primitive.hh"
-
 #include "basictypes/background.hh"
 
 // Render Targets
@@ -65,8 +62,13 @@
 #include "rendertargets/rendertarget.hh"
 
 
-// Shapes.
+// shapes/
+#include "shapes/shape.hh"
 #include "shapes/closedsphere.hh"
+
+// primitive/
+#include "primitives/primitive.hh"
+#include "primitives/closedsphere.hh"
 
 // Cameras.
 #include "cameras/camera.hh"

@@ -47,7 +47,7 @@ void run() {
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so        
         shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));
         shared_ptr<Camera> camera (new Pinhole(renderTarget));
-        shared_ptr<Primitive> agg (reinterpret_cast<Primitive*>(0));// new Scene());
+        shared_ptr<primitive::Primitive> agg (reinterpret_cast<primitive::Primitive*>(0));// new Scene());
         
         Scene Scene (renderTarget, camera, agg);
 

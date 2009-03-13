@@ -8,6 +8,7 @@ ACCELERATORSOBJDIR  := $(OBJDIR)/accelerators
 APPOBJDIR           := $(OBJDIR)/app
 BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 CAMERASOBJDIR       := $(OBJDIR)/cameras
+PRIMITIVESOBJDIR    := $(OBJDIR)/primitives
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
 SAMPLERSOBJDIR      := $(OBJDIR)/samplers
@@ -77,12 +78,13 @@ redshift: init-dir-tree redshift_
 redshift_: $(OBJDIR)/main.o \
                 $(OBJDIR)/constants.o \
                 $(OBJDIR)/app.a \
+                $(OBJDIR)/accelerators.a \
+                $(OBJDIR)/basictypes.a \
                 $(OBJDIR)/cameras.a \
+                $(OBJDIR)/primitives.a \
                 $(OBJDIR)/rendertargets.a \
                 $(OBJDIR)/shapes.a \
-                $(OBJDIR)/accelerators.a \
-                $(OBJDIR)/samplers.a \
-                $(OBJDIR)/basictypes.a
+                $(OBJDIR)/samplers.a                
 	$(LINK) -o $(BINDIR)/redshift $^
 
 $(OBJDIR)/main.o: ./src/main.cc
@@ -116,45 +118,31 @@ all: redshift amalgam
 basictypes: init-dir-tree $(OBJDIR)/basictypes.a
 
 $(OBJDIR)/basictypes.a: $(BASICTYPESOBJDIR)/material.o \
-                        $(BASICTYPESOBJDIR)/primitive.o \
-                        $(BASICTYPESOBJDIR)/scene.o \
-                        $(BASICTYPESOBJDIR)/shape.o
+                        $(BASICTYPESOBJDIR)/scene.o
 	$(AR) -o $@ $^
 
 $(BASICTYPESOBJDIR)/material.o: ./src/basictypes/material.cc
 	$(CXX) -o $@ $<
-	
-$(BASICTYPESOBJDIR)/primitive.o: ./src/basictypes/primitive.cc
-	$(CXX) -o $@ $<
-	
+
 $(BASICTYPESOBJDIR)/scene.o: ./src/basictypes/scene.cc
 	$(CXX) -o $@ $<
-	
-$(BASICTYPESOBJDIR)/shape.o: ./src/basictypes/shape.cc
-	$(CXX) -o $@ $<
-
 
 
 ###############################################################################
 # app
 ###############################################################################
 .PHONY: app
-app: init-dir-tree $(APPOBJDIR)/app.a
+app: init-dir-tree $(OBJDIR)/app.a
 
 $(OBJDIR)/app.a: 
-#$(APPOBJDIR)/sdlrendertarget.o
 	$(AR) -o $@ $^
-
-#$(APPOBJDIR)/sdlrendertarget.o: ./src/app/sdlrendertarget.cc
-#	$(CXX) -o $@ $<
-
 
 
 ###############################################################################
 # samplers
 ###############################################################################
 .PHONY: samplers
-samplers: init-dir-tree $(APPOBJDIR)/samplers.a
+samplers: init-dir-tree $(OBJDIR)/samplers.a
 
 $(OBJDIR)/samplers.a: \
                      $(SAMPLERSOBJDIR)/sampler.o 
@@ -165,12 +153,26 @@ $(SAMPLERSOBJDIR)/sampler.o: \
 	$(CXX) -o $@ $<
 
 
+###############################################################################
+# primitives
+###############################################################################
+.PHONY: primitives
+primitives: init-dir-tree $(OBJDIR)/primitives.a
+
+$(OBJDIR)/primitives.a: \
+                     $(PRIMITIVESOBJDIR)/closedsphere.o 
+	$(AR) -o $@ $^
+
+$(PRIMITIVESOBJDIR)/closedsphere.o: \
+                     ./src/primitives/closedsphere.cc
+	$(CXX) -o $@ $<
+
 
 ###############################################################################
 # cameras
 ###############################################################################
 .PHONY: cameras
-samplers: init-dir-tree $(APPOBJDIR)/cameras.a
+cameras: init-dir-tree $(OBJDIR)/cameras.a
 
 $(OBJDIR)/cameras.a: \
                      $(CAMERASOBJDIR)/pinhole.o 
@@ -239,7 +241,8 @@ init-dir-tree:
 	mkdir -p $(ACCELERATORSOBJDIR)
 	mkdir -p $(APPOBJDIR)
 	mkdir -p $(BASICTYPESOBJDIR)
-	mkdir -p $(CAMERASOBJDIR)	
+	mkdir -p $(CAMERASOBJDIR)
+	mkdir -p $(PRIMITIVESOBJDIR)
 	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SAMPLERSOBJDIR)
 	mkdir -p $(SHAPEOBJDIR)		
@@ -261,12 +264,13 @@ clean:
 	rm -f ./tmp/amalgam/amalgam.cc
 	rm -f ./bin/redshift 
 	rm -f ./bin/redshift-amalgam
+	rm -f $(OBJDIR)/*.a
 	rm -f $(ACCELERATORSOBJDIR)/*.o
 	rm -f $(APPOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
 	rm -f $(CAMERASOBJDIR)/*.o
-	rm -f $(OBJDIR)/*.o
-	rm -f $(OBJDIR)/*.a
+	rm -f $(OBJDIR)/*.o	
+	rm -f $(PRIMITIVESOBJDIR)/*.o
 	rm -f $(RENDERTARGETSOBJDIR)/*.o
 	rm -f $(SAMPLERSOBJDIR)/*.o
 	rm -f $(SHAPEOBJDIR)/*.o		

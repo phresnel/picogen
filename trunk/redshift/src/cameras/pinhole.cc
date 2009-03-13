@@ -26,7 +26,6 @@
 #include "../../include/coordinates/imagecoordinates.hh"
 
 #include "../../include/basictypes/intersection.hh"
-#include "../../include/basictypes/primitive.hh"
 #include "../../include/basictypes/background.hh"
 #include "../../include/basictypes/sample.hh"
 
@@ -34,6 +33,7 @@
 #include "../../include/rendertargets/rendertarget.hh"
 
 #include "../../include/cameras/camera.hh"
+#include "../../include/primitives/primitive.hh"
 
 #include "../../include/basictypes/scene.hh"
 

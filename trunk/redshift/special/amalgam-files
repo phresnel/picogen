@@ -5,7 +5,6 @@ src/rendertargets/colorrendertarget.cc
 src/accelerators/bvh.cc
 src/cameras/pinhole.cc
 src/basictypes/material.cc
-src/basictypes/primitive.cc
 src/basictypes/scene.cc
-src/basictypes/shape.cc
 src/shapes/closedsphere.cc
+src/primitives/closedsphere.cc
