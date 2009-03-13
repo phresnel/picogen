@@ -24,9 +24,8 @@
 namespace redshift { namespace camera {
         class Camera {
         public:
-                virtual 
-                  tuple<float,RayDifferential> generateRay (Sample const &) 
-                    const  = 0;
+                virtual tuple<float,RayDifferential>
+                                generateRay (Sample const &) const = 0;
                 virtual ~Camera () {}
         };
 } }

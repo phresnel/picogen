@@ -28,26 +28,45 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/basictypes/primitive.hh"
 #include "../../include/basictypes/background.hh"
-
-#include "../../include/basictypes/scene.hh"
 #include "../../include/basictypes/sample.hh"
 
+#include "../../include/rendertargets/rendertargetlock.hh"
+#include "../../include/rendertargets/rendertarget.hh"
+
 #include "../../include/cameras/camera.hh"
+
+#include "../../include/basictypes/scene.hh"
+
 #include "../../include/cameras/pinhole.hh"
 
 namespace redshift { namespace camera {
 
 
 
-tuple<float,RayDifferential> Pinhole::generateRay (Sample const &) const {
-        RayDifferential ray;
-        ray.direction.z = 1.0;
-        return make_tuple (1.0, ray);
+Pinhole::Pinhole (shared_ptr<RenderTarget> film_)
+: film(film_)
+, invFilmWidth(constants::one/static_cast<real_t>(film->getWidth()))
+, invFilmHeight(constants::one/static_cast<real_t>(film->getHeight()))
+{
 }
 
 
 
 Pinhole::~Pinhole() {
+}
+
+
+#include <iostream>
+tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{        
+        RayDifferential ray;        
+        ray.direction.x = -0.5 + sample.imageCoordinates.u * invFilmWidth;
+        ray.direction.y =  0.5 - sample.imageCoordinates.v * invFilmHeight;
+        ray.direction.z = 1.0;
+        ray.direction = normalize (ray.direction);
+        ray.position = Point ();
+        ray.min_t = constants::epsilon;
+        ray.max_t = constants::infinity;
+        return make_tuple (1.0, ray);
 }
 
 

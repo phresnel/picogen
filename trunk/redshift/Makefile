@@ -75,6 +75,7 @@ AMALGAM := g++-4.3 $(CXXFLAGS) \
 redshift: init-dir-tree redshift_ 
 
 redshift_: $(OBJDIR)/main.o \
+                $(OBJDIR)/constants.o \
                 $(OBJDIR)/app.a \
                 $(OBJDIR)/cameras.a \
                 $(OBJDIR)/rendertargets.a \
@@ -85,6 +86,9 @@ redshift_: $(OBJDIR)/main.o \
 	$(LINK) -o $(BINDIR)/redshift $^
 
 $(OBJDIR)/main.o: ./src/main.cc
+	$(CXX) -o $@ $<
+	
+$(OBJDIR)/constants.o: ./src/constants.cc
 	$(CXX) -o $@ $<
 
 ###############################################################################
@@ -113,7 +117,6 @@ basictypes: init-dir-tree $(OBJDIR)/basictypes.a
 
 $(OBJDIR)/basictypes.a: $(BASICTYPESOBJDIR)/material.o \
                         $(BASICTYPESOBJDIR)/primitive.o \
-                        $(BASICTYPESOBJDIR)/redshift-render.o \
                         $(BASICTYPESOBJDIR)/scene.o \
                         $(BASICTYPESOBJDIR)/shape.o
 	$(AR) -o $@ $^
@@ -122,9 +125,6 @@ $(BASICTYPESOBJDIR)/material.o: ./src/basictypes/material.cc
 	$(CXX) -o $@ $<
 	
 $(BASICTYPESOBJDIR)/primitive.o: ./src/basictypes/primitive.cc
-	$(CXX) -o $@ $<
-	
-$(BASICTYPESOBJDIR)/redshift-render.o: ./src/basictypes/redshift-render.cc
 	$(CXX) -o $@ $<
 	
 $(BASICTYPESOBJDIR)/scene.o: ./src/basictypes/scene.cc

@@ -20,16 +20,41 @@
 
 #ifndef SCENE_HH_INCLUDED_20090303
 #define SCENE_HH_INCLUDED_20090303
-
+        
 namespace redshift {
-        class Scene {
-        public:
-                Scene ();
+        
+        DefineFinalizer(Scene);
+        
+        class Scene : DoFinalize(Scene) {
+        public:        
+                
+                Scene(shared_ptr<RenderTarget>, shared_ptr<camera::Camera>,
+                                                        shared_ptr<Primitive>);
                 ~Scene ();
                 
+                void render() const ;                
         private:
-                shared_ptr<Primitive> aggregate;
-                shared_ptr<Background> background;
+                // non copyable
+                // TODO use NonCopyable base class instead
+                Scene (Scene const &);
+                Scene & operator= (Scene const &);
+                Scene();
+                
+                
+                inline tuple<real_t,Color> Li(
+                                  RayDifferential const&, Sample const&) const;
+                        
+                inline bool doesIntersect (RayDifferential const &ray);
+                
+                inline tuple<bool,Intersection> intersect(
+                                                   RayDifferential const &ray);
+                        
+                
+
+                //Scene scene;
+                shared_ptr<RenderTarget>   renderTarget;
+                shared_ptr<camera::Camera> camera;
+                shared_ptr<Primitive>      aggregate;
         };
 }
 

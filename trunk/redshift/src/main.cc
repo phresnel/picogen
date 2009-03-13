@@ -21,6 +21,11 @@
 #include <iostream>
 #include <SDL.h>
 
+#include <cstdlib>
+#include <stdexcept>
+#include <sstream>
+#include <iostream>
+
 #ifdef AMALGAM
 #include "../../include/redshift.hh"
 #include "../../include/rendertargets/sdlrendertarget.hh"
@@ -33,22 +38,20 @@
 #include "../include/cameras/pinhole.hh"
 #endif
 
-#include <cstdlib>
-#include <stdexcept>
-#include <sstream>
-#include <iostream>
-
-
 
 void run() {
         using namespace redshift;
         using namespace redshift::camera;
 
-        shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));        
+        // TODO replace RenderTarget with Film?
+        //    i mean, a "RenderTarget" might be flipable, but a Film not, or so        
+        shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));
+        shared_ptr<Camera> camera (new Pinhole(renderTarget));
+        shared_ptr<Primitive> agg (reinterpret_cast<Primitive*>(0));// new Scene());
         
-        Renderer renderer (renderTarget, shared_ptr<Camera>(new Pinhole())); 
-                //shared_ptr<Camera> (reinterpret_cast<Camera*>(0)));
-        renderer.render();
+        Scene Scene (renderTarget, camera, agg);
+
+        Scene.render();
         shared_ptr<RenderTarget> sdl (convert<SdlRenderTarget> (renderTarget));
         sdl->flip();
         

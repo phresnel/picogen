@@ -79,13 +79,46 @@ namespace redshift {
         }
         
         namespace constants {
+        
+                // TODO clean up epsilon value
+                template <typename> struct epsilon_value;
+                template <> struct epsilon_value<float> {
+                        static float const value; 
+                };
+                template <> struct epsilon_value<double> {
+                        static double const value; 
+                };
+                template <> struct epsilon_value<long double> {
+                        static long double const value; 
+                };
+                
+                
+                // TODO clean up infinity value
+                template <typename> struct infinity_value;
+                template <> struct infinity_value<float> {
+                        static float const value; 
+                };
+                template <> struct infinity_value<double> {
+                        static double const value; 
+                };
+                template <> struct infinity_value<long double> {
+                        static long double const value; 
+                };                
+                
+                extern real_t const epsilon;
+                extern real_t const infinity;                
+ 
                 template<typename T> inline T km2m (T const &v) {
                         return T(1000) * v;
                 }
-                static double const earth_radius_m     = km2m (12756.0);
-                static double const sun_radius_m       = km2m (1.392 * 10.0e9);
-                static double const jupiter_radius_m   = km2m (133708.0);
-                //static float const sun_radius_km 1,3914
+                
+                extern real_t const earth_radius_m;
+                extern real_t const sun_radius_m;
+                extern real_t const jupiter_radius_m;
+                
+                extern real_t const zero;
+                extern real_t const one;
+                extern real_t const two;                
         }
 }
 

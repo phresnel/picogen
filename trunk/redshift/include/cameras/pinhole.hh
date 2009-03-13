@@ -27,11 +27,18 @@ namespace redshift { namespace camera {
 
         class Pinhole : public Camera, DoFinalize(Pinhole) {
         public:
+
+                Pinhole (shared_ptr<RenderTarget> film);
+                virtual ~Pinhole () ;
                 
                 inline tuple<float,RayDifferential>
-                           generateRay(Sample const &) const;
-                           
-                virtual ~Pinhole () ;
+                           generateRay(Sample const &) const;                           
+                
+                
+        private:                
+                shared_ptr<RenderTarget> film;
+                real_t invFilmWidth;
+                real_t invFilmHeight;
         };
 } }
 

@@ -25,10 +25,13 @@ namespace redshift {
         class Primitive {
         public:
                 // If only the information is need whether the ray hits or not.
-                virtual bool doesIntersect (Ray const &ray) = 0;
+                virtual bool doesIntersect (RayDifferential const &ray) = 0;
 
                 // Full fledged information including Normal, U/V, etc.
-                virtual tuple<bool,Intersection> intersect(Ray const &ray) = 0;
+                virtual tuple<bool,Intersection> intersect(
+                                               RayDifferential const &ray) = 0;
+                
+                virtual ~Primitive () {}
         };
 }
 

@@ -73,7 +73,6 @@
 
 // basictypes/
 #include "basictypes/scene.hh"
-#include "basictypes/redshift-render.hh"
 
 
 #endif // REDSHIFT_H_INCLUDED_20090223
