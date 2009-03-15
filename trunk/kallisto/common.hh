@@ -63,13 +63,13 @@
 #include "types/ray_differential.hh"
 #include "traits/ray_differential_traits.hh"
 
-#include "types/sphere.hh"
-#include "traits/sphere_traits.hh"
-
 #include "types/orthonormal_basis.hh"
 #include "traits/orthonormal_basis_traits.hh"
 
 #include "types/scalar_cast.hh"
 #include "types/vector_cast.hh"
+
+#include "types/sphere.hh"
+#include "traits/sphere_traits.hh"
 
 #endif // COMMON_H__INCLUDED_20090215
