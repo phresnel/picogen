@@ -27,14 +27,20 @@ namespace redshift { namespace primitive {
         
         class ClosedSphere : public Primitive, DoFinalize(ClosedSphere) {
         public:
-                ClosedSphere();
+                ClosedSphere(Point const & center, real_t radius);
                 ~ClosedSphere ();
                 
-                // If only the information is need whether the ray hits or not.
-                bool doesIntersect (RayDifferential const &ray);
+                bool doesIntersect (RayDifferential const &ray) const;
 
-                // Full fledged information including Normal, U/V, etc.
-                tuple<bool,Intersection> intersect(RayDifferential const &ray);                
+                tuple<bool,Intersection>
+                        intersect(RayDifferential const &ray) const;
+                
+        private:
+                shape::ClosedSphere sphereData;
+                
+                ClosedSphere();
+                ClosedSphere(ClosedSphere const&);
+                ClosedSphere &operator = (ClosedSphere const&);
         };
 } }
 

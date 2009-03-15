@@ -20,50 +20,11 @@
 
 #include "../../include/setup.hh"
 #include "../../include/basictypes/differentialgeometry.hh"
-#include "../../include/basictypes/intersection.hh"
-#include "../../include/shapes/shape.hh"
-#include "../../include/shapes/closedsphere.hh"
-#include "../../include/primitives/primitive.hh"
-#include "../../include/primitives/closedsphere.hh"
 
-namespace redshift { namespace primitive {
+namespace redshift {
 
-
-
-ClosedSphere::ClosedSphere (Point const & center, real_t radius) 
-: sphereData (center, radius) {
+DifferentialGeometry::DifferentialGeometry (real_t distance_) 
+: distance (distance_) {
 }
-
-
-
-ClosedSphere::~ClosedSphere () {
+ 
 }
-
-
-
-bool ClosedSphere::doesIntersect (RayDifferential const &ray) const {
-        return sphereData.doesIntersect (ray);
-}
-
-
-
-tuple<bool,Intersection>
-  ClosedSphere::intersect(RayDifferential const &ray) const {
-  
-        tuple<bool const,DifferentialGeometry const> 
-                       i(sphereData.intersect(ray));
-
-        const bool                 & does (get<0>(i));
-        const DifferentialGeometry & dg   (get<1>(i));
-        
-        return make_tuple (
-                does,
-                Intersection(
-                        dg.distance,
-                        shared_ptr<Primitive const>(this)
-        ));
-}
-
-
-
-} }

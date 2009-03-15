@@ -58,13 +58,17 @@ Scene::~Scene () {
 
 
 
-inline bool Scene::doesIntersect (RayDifferential const &ray) {
+inline
+bool Scene::doesIntersect (RayDifferential const &ray)
+const {
         return aggregate->doesIntersect (ray);
 }
 
 
 
-inline tuple<bool,Intersection> Scene::intersect (RayDifferential const &ray) {
+inline
+tuple<bool,Intersection> Scene::intersect (RayDifferential const &ray)
+const {
         return aggregate->intersect (ray);
 }
                                                 
@@ -80,6 +84,9 @@ inline tuple<real_t,Color> Scene::Li (
            Spectrum Lv = volumeIntegrator->Li (this,ray,sample,alpha)
            return T * Lo + Lv
         */
+        if (doesIntersect (ray)) {
+                return tuple<real_t,Color> (1.0, Color(1.0,0.7,0.5));
+        }
         Color col (0.5+ray.direction.x,0.5+ray.direction.y,
                 ray.direction.z);
         return tuple<real_t,Color> (1.0, col); 

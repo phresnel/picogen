@@ -18,52 +18,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+namespace redshift { namespace primitive { class Primitive; } }
+
 #include "../../include/setup.hh"
 #include "../../include/basictypes/differentialgeometry.hh"
-#include "../../include/basictypes/intersection.hh"
 #include "../../include/shapes/shape.hh"
-#include "../../include/shapes/closedsphere.hh"
+#include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/primitive.hh"
-#include "../../include/primitives/closedsphere.hh"
-
-namespace redshift { namespace primitive {
 
 
 
-ClosedSphere::ClosedSphere (Point const & center, real_t radius) 
-: sphereData (center, radius) {
+namespace redshift {
+
+Intersection::Intersection (
+        real_t dist,
+        shared_ptr<redshift::primitive::Primitive const> prim
+)
+: distance(dist)
+, primitive(prim) {
 }
 
-
-
-ClosedSphere::~ClosedSphere () {
 }
-
-
-
-bool ClosedSphere::doesIntersect (RayDifferential const &ray) const {
-        return sphereData.doesIntersect (ray);
-}
-
-
-
-tuple<bool,Intersection>
-  ClosedSphere::intersect(RayDifferential const &ray) const {
-  
-        tuple<bool const,DifferentialGeometry const> 
-                       i(sphereData.intersect(ray));
-
-        const bool                 & does (get<0>(i));
-        const DifferentialGeometry & dg   (get<1>(i));
-        
-        return make_tuple (
-                does,
-                Intersection(
-                        dg.distance,
-                        shared_ptr<Primitive const>(this)
-        ));
-}
-
-
-
-} }

@@ -21,10 +21,19 @@
 #ifndef INTERSECTION_H_INCLUDED_20090301
 #define INTERSECTION_H_INCLUDED_20090301
 
+namespace redshift { namespace primitive { class Primitive; } }
+
 namespace redshift {
-        class Intersection {
+        DefineFinalizer(Intersection);
+        
+        class Intersection : DoFinalize(Intersection) {
         public:
-                // stub
+                Intersection (
+                        real_t distance,
+                        shared_ptr<redshift::primitive::Primitive const>);
+                
+                real_t distance;
+                shared_ptr<primitive::Primitive const> primitive;
         };
 }
 

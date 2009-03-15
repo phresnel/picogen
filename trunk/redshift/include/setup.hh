@@ -57,10 +57,14 @@ namespace redshift {
         typedef CartesianNormal Normal;
         typedef CartesianVector Vector;
 
-        typedef kallisto::Sphere<Point,long double>  Sphere;
-        typedef kallisto::Ray<Point,Vector>          Ray;
+        typedef kallisto::Sphere<Point,real_t>          Sphere;
+        typedef kallisto::Ray   <Point,Vector>          Ray;
         typedef kallisto::RayDifferential<Point,Vector> RayDifferential;
-        typedef kallisto::OrthonormalBasis<Vector>   OrthonormalBasis;
+        typedef kallisto::OrthonormalBasis<Vector>      OrthonormalBasis;
+        
+        using kallisto::intersect;
+        using kallisto::vector_cast;
+        using kallisto::scalar_cast;
         
 }
 

@@ -18,16 +18,36 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/*
-namespace redshift {
-        DefineFinalizer(ClosedSphere);
-        class ClosedSphere : public Shape, DoFinalize(ClosedSphere) {
-        public:
-                bool Intersect (Ray const &ray) const;
-                bool Intersect (Ray const &ray, real_t &d) const;
-                bool Intersect (Ray const &ray, DifferentialGeometry &i) const;
-        };
+
+#include "../../include/setup.hh"
+#include "../../include/basictypes/differentialgeometry.hh"
+#include "../../include/shapes/shape.hh"
+#include "../../include/shapes/closedsphere.hh"
+
+
+namespace redshift { namespace shape {
+
+
+
+ClosedSphere::ClosedSphere (Point const & center, real_t radius) 
+: sphereData(center, radius) {
 }
-*/
 
 
+
+bool ClosedSphere::doesIntersect (Ray const &ray) const {
+        return kallisto::intersect<true> (ray, sphereData) >= constants::zero;
+}
+
+
+
+
+tuple<bool,DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const{
+        real_t const d = kallisto::intersect<true> (ray, sphereData);
+        DifferentialGeometry dg (d);
+        return make_tuple(d>=0, dg);
+}
+
+
+
+} }

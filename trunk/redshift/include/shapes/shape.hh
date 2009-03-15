@@ -25,7 +25,7 @@ namespace redshift { namespace shape {
         class Shape {
         public:
                 // If only the information is need whether the ray hits or not.
-                virtual bool doesIntersect (Ray const &ray) = 0;
+                virtual bool doesIntersect (Ray const &ray) const = 0;
 
                 // If only the intersection distance is needed.
                 // TODO: is below thing really needed?
@@ -33,7 +33,8 @@ namespace redshift { namespace shape {
 
                 // Full fledged information including Normal, U/V, etc.
                 virtual
-                tuple<bool,DifferentialGeometry> intersect(Ray const &ray) = 0;
+                tuple<bool,DifferentialGeometry> intersect(Ray const &ray)
+                const = 0;
         };
 } }
 

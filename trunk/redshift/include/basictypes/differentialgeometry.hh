@@ -22,9 +22,14 @@
 #define DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
 
 namespace redshift {
-        class DifferentialGeometry {
+
+        DefineFinalizer(DifferentialGeometry);
+
+        class DifferentialGeometry : DoFinalize(DifferentialGeometry) {
         public:
-                // stub
+                DifferentialGeometry (real_t distance);
+
+                real_t const distance;
         };
 }
 

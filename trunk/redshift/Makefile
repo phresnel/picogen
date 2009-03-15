@@ -75,16 +75,18 @@ AMALGAM := g++-4.3 $(CXXFLAGS) \
 .PHONY: redshift
 redshift: init-dir-tree redshift_ 
 
-redshift_: $(OBJDIR)/main.o \
+redshift_:      $(OBJDIR)/main.o      \
                 $(OBJDIR)/constants.o \
                 $(OBJDIR)/app.a \
                 $(OBJDIR)/accelerators.a \
-                $(OBJDIR)/basictypes.a \
+                \
                 $(OBJDIR)/cameras.a \
                 $(OBJDIR)/primitives.a \
                 $(OBJDIR)/rendertargets.a \
                 $(OBJDIR)/shapes.a \
-                $(OBJDIR)/samplers.a                
+                $(OBJDIR)/samplers.a \
+                \
+                $(OBJDIR)/basictypes.a
 	$(LINK) -o $(BINDIR)/redshift $^
 
 $(OBJDIR)/main.o: ./src/main.cc
@@ -118,13 +120,21 @@ all: redshift amalgam
 basictypes: init-dir-tree $(OBJDIR)/basictypes.a
 
 $(OBJDIR)/basictypes.a: $(BASICTYPESOBJDIR)/material.o \
-                        $(BASICTYPESOBJDIR)/scene.o
+                        $(BASICTYPESOBJDIR)/scene.o \
+                        $(BASICTYPESOBJDIR)/differentialgeometry.o \
+                        $(BASICTYPESOBJDIR)/intersection.o
 	$(AR) -o $@ $^
 
 $(BASICTYPESOBJDIR)/material.o: ./src/basictypes/material.cc
 	$(CXX) -o $@ $<
 
 $(BASICTYPESOBJDIR)/scene.o: ./src/basictypes/scene.cc
+	$(CXX) -o $@ $<
+	
+$(BASICTYPESOBJDIR)/differentialgeometry.o:  ./src/basictypes/differentialgeometry.cc
+	$(CXX) -o $@ $<
+	
+$(BASICTYPESOBJDIR)/intersection.o: ./src/basictypes/intersection.cc
 	$(CXX) -o $@ $<
 
 

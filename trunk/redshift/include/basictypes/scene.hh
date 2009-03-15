@@ -44,10 +44,10 @@ namespace redshift {
                 inline tuple<real_t,Color> Li(
                                   RayDifferential const&, Sample const&) const;
                         
-                inline bool doesIntersect (RayDifferential const &ray);
+                inline bool doesIntersect (RayDifferential const &ray) const;
                 
                 inline tuple<bool,Intersection> intersect(
-                                                   RayDifferential const &ray);
+                                             RayDifferential const &ray) const;
                         
                 
 
