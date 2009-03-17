@@ -22,7 +22,7 @@
 #define PRIMITIVE_H_INCLUDED_20090301
 
 namespace redshift { namespace primitive {
-        class Primitive {
+        class Primitive : public enable_shared_from_this<Primitive> {
         public:
                 // If only the information is need whether the ray hits or not.
                 virtual bool doesIntersect (RayDifferential const &ray) 

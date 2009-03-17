@@ -27,15 +27,58 @@ namespace redshift { namespace primitive { class Primitive; } }
 #include "../../include/primitives/primitive.hh"
 
 
-
 namespace redshift {
 
+
+
 Intersection::Intersection (
-        real_t dist,
-        shared_ptr<redshift::primitive::Primitive const> prim
+        shared_ptr<redshift::primitive::Primitive const> prim,
+        DifferentialGeometry const &geom
 )
-: distance(dist)
-, primitive(prim) {
+: primitive(prim)
+, differentialGeometry(geom)
+{
 }
+
+
+
+Intersection::Intersection (Intersection const &i) 
+: primitive(i.primitive)
+, differentialGeometry(i.differentialGeometry) {
+}
+
+
+
+Intersection & Intersection::operator = (Intersection const &i) {
+        primitive = i.primitive;
+        differentialGeometry = i.differentialGeometry;
+        return *this;
+}
+
+
+
+real_t Intersection::getDistance() const {
+        return differentialGeometry.getDistance();
+}
+
+
+
+Vector Intersection::getNormal() const {
+        return differentialGeometry.getNormal();
+}
+
+
+
+DifferentialGeometry Intersection::getDifferentialGeometry() const {
+        return differentialGeometry;
+}
+
+
+
+shared_ptr<primitive::Primitive const> Intersection::getPrimitive () const {
+        return primitive;
+}
+
+
 
 }

@@ -48,20 +48,21 @@ bool ClosedSphere::doesIntersect (RayDifferential const &ray) const {
 
 
 tuple<bool,Intersection>
-  ClosedSphere::intersect(RayDifferential const &ray) const {
-  
+ ClosedSphere::intersect(RayDifferential const &ray) const {
+
         tuple<bool const,DifferentialGeometry const> 
                        i(sphereData.intersect(ray));
 
-        const bool                 & does (get<0>(i));
-        const DifferentialGeometry & dg   (get<1>(i));
+
+        const bool                  & does (get<0>(i));
+        const DifferentialGeometry  & dg   (get<1>(i));
         
-        return make_tuple (
-                does,
-                Intersection(
-                        dg.distance,
-                        shared_ptr<Primitive const>(this)
-        ));
+
+        Intersection iret = Intersection(
+                shared_from_this(),
+                dg);
+
+        return make_tuple (does, iret);
 }
 
 

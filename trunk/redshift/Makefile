@@ -23,8 +23,8 @@ BINDIR := ./bin
 # include directories
 #------------------------------------------------------------------------------
 KALLISTOBASE := -I../
-SFMLINCLUDE := -I../externs/SFML/include
-INCLUDEDIRS  := $(KALLISTOBASE) $(SFMLINCLUDE)
+#SFMLINCLUDE := -I../externs/SFML/include
+INCLUDEDIRS  := $(KALLISTOBASE) 
 
 #------------------------------------------------------------------------------
 # libs
@@ -43,8 +43,10 @@ LIBS   := $(SDLLIBS)
 #------------------------------------------------------------------------------
 # compiler flags
 #------------------------------------------------------------------------------
-COMPILE := "FAST_COMPILE"
-ifeq ($(OPTIMISE), "FAST_COMPILE")
+COMPILE := ""
+ifeq ($(COMPILE), "FAST_COMPILE")
+else ifeq ($(COMPILE), "PROFILE")
+        CXXFLAGS += -O0 -g
 else
 	CXXFLAGS += -O3 -march=native
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
@@ -120,9 +122,10 @@ all: redshift amalgam
 basictypes: init-dir-tree $(OBJDIR)/basictypes.a
 
 $(OBJDIR)/basictypes.a: $(BASICTYPESOBJDIR)/material.o \
-                        $(BASICTYPESOBJDIR)/scene.o \
+                         \
+                        $(BASICTYPESOBJDIR)/intersection.o \
                         $(BASICTYPESOBJDIR)/differentialgeometry.o \
-                        $(BASICTYPESOBJDIR)/intersection.o
+                        $(BASICTYPESOBJDIR)/scene.o
 	$(AR) -o $@ $^
 
 $(BASICTYPESOBJDIR)/material.o: ./src/basictypes/material.cc

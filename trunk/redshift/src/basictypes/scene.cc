@@ -21,6 +21,7 @@
 #include "../../include/setup.hh"
 
 #include "../../include/basictypes/background.hh"
+#include "../../include/basictypes/differentialgeometry.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/coordinates/uvcoordinates.hh"
 #include "../../include/coordinates/lenscoordinates.hh"
@@ -84,12 +85,24 @@ inline tuple<real_t,Color> Scene::Li (
            Spectrum Lv = volumeIntegrator->Li (this,ray,sample,alpha)
            return T * Lo + Lv
         */
-        if (doesIntersect (ray)) {
-                return tuple<real_t,Color> (1.0, Color(1.0,0.7,0.5));
+        
+        tuple<bool,Intersection> const bi (intersect (ray));
+        
+        const bool         & does (get<0>(bi));
+        const Intersection & i    (get<1>(bi));
+
+        if (does) {                
+                return make_tuple (1.0, 
+                        Color(
+                                i.getNormal().x+0.5,
+                                i.getNormal().y+0.5,
+                                i.getNormal().z+0.5
+                                )
+                );                
         }
-        Color col (0.5+ray.direction.x,0.5+ray.direction.y,
-                ray.direction.z);
-        return tuple<real_t,Color> (1.0, col); 
+        Color const col (0.5+ray.direction.x,0.5+ray.direction.y,
+                                                        0.5+ray.direction.z);
+        return make_tuple (1.0, col); 
 }
 
 
@@ -102,8 +115,7 @@ void Scene::render() const {
                         ImageCoordinates(static_cast<real_t>(x),
                                             static_cast<real_t>(y)),
                         LensCoordinates()
-                );
-
+                );                
                 const tuple<real_t,RayDifferential>
                                           primo = camera->generateRay (sample);
                 const real_t rayWeight (get<0>(primo));
@@ -122,7 +134,6 @@ void Scene::render() const {
                 const real_t Ls_alpha (get<0>(Ls_));
                 const Color Ls_color  (get<1>(Ls_));
                 const Color finalColor = rayWeight * Ls_color;
-                
                 //<issue warning if unexpected radiance value returned>
 
                 //<add sample contribution to image> 28                

@@ -27,9 +27,26 @@ namespace redshift {
 
         class DifferentialGeometry : DoFinalize(DifferentialGeometry) {
         public:
-                DifferentialGeometry (real_t distance);
-
-                real_t const distance;
+                DifferentialGeometry (
+                        real_t distance,                        
+                        Point  const &center,
+                        Vector const &normal
+                );
+                
+                DifferentialGeometry (DifferentialGeometry const &) ;
+                DifferentialGeometry& operator= (DifferentialGeometry const &);
+                
+                real_t getDistance() const ;
+                Point  getCenter() const ;
+                Vector getNormal() const ;
+               
+        
+        private:
+                DifferentialGeometry();
+                
+                real_t distance;
+                Point  center;
+                Vector normal;                
         };
 }
 

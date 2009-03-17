@@ -25,6 +25,7 @@
 #include "../../include/coordinates/lenscoordinates.hh"
 #include "../../include/coordinates/imagecoordinates.hh"
 
+#include "../../include/basictypes/differentialgeometry.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/basictypes/background.hh"
 #include "../../include/basictypes/sample.hh"

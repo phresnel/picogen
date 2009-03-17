@@ -25,7 +25,10 @@ namespace redshift { namespace primitive {
         
         DefineFinalizer(ClosedSphere);
         
-        class ClosedSphere : public Primitive, DoFinalize(ClosedSphere) {
+        class ClosedSphere
+                : public Primitive                
+                , DoFinalize(ClosedSphere)
+        {
         public:
                 ClosedSphere(Point const & center, real_t radius);
                 ~ClosedSphere ();
