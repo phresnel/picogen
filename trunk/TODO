@@ -1,7 +1,23 @@
 redshift:
         * create policy classes
                 * NonCopyable
-        * make final what can be made final
-        * implement sphere-shape
-        * implement sphere-primitive
-        * implement some surface-integrator
+        * make final what can be made final        
+        * implement some surface-integrator        
+        
+        * rename DoFinalize to MakeFinal
+        * rename DefineFinalizer to EnableMakeFinal, or similar
+
+        * make that beast a standard trait in kallisto
+                // create a compatible vector-type for our point_t
+                typedef Vector<
+                   static_cast<coordinate_space_t>
+                        (traits::get_coordinate_space<point_t>::value),
+                   typename traits::get_scalar_type<point_t>::type
+                > PV;
+                
+                
+        * make new type "Intensity", to be used in tuple<> by intersection
+          methods
+        * check if it is costy to implement vector::operator* so that it can
+          both return a cross-product xor a dot-product (via a thin wrapper
+          that defines two conversions)
