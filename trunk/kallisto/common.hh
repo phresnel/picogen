@@ -54,6 +54,9 @@
 #include "types/normal.hh"
 #include "traits/normal_traits.hh"
 
+#include "types/scalar_cast.hh"
+#include "types/vector_cast.hh"
+
 #include "types/proto_ray.hh"
 #include "traits/proto_ray_traits.hh"
 
@@ -65,9 +68,6 @@
 
 #include "types/orthonormal_basis.hh"
 #include "traits/orthonormal_basis_traits.hh"
-
-#include "types/scalar_cast.hh"
-#include "types/vector_cast.hh"
 
 #include "types/sphere.hh"
 #include "traits/sphere_traits.hh"

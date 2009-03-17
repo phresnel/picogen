@@ -81,6 +81,7 @@ namespace kallisto {
                 // *Vector<S, T> operator- (Point const &lhs, Point const &rhs)
 
 
+                // vector = point - point
                 friend inline Vector<CARTESIAN, T>
                 operator- (Point const &lhs, Point const &rhs) {
                         return Vector<CARTESIAN, T> (
@@ -89,16 +90,16 @@ namespace kallisto {
                 }
 
                 // point = point + vector
-                template <coordinate_space_t S>
                 friend inline
-                Point operator+ (Point const &lhs, Vector<S,T> const &rhs) {
+                Point operator+ (Point const &lhs, 
+                                              Vector<CARTESIAN,T> const &rhs) {
                         return Point (lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z);
                 }
 
                 // point = point - vector
-                template <coordinate_space_t S>
                 friend inline
-                Point operator- (Point const &lhs, Vector<S,T> const &rhs) {
+                Point operator- (Point const &lhs, 
+                                              Vector<CARTESIAN,T> const &rhs) {
                         return Point (lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z);
                 }
 

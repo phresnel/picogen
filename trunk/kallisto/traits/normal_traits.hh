@@ -87,12 +87,14 @@ namespace kallisto { namespace traits {
         template <typename T, coordinate_space_t SPACE>
         struct get_coordinate_space <normal_t<SPACE,T> > {
                 enum { space = SPACE };
+                enum { value = SPACE };
         };
 
         // Normal
         template <typename T, coordinate_space_t SPACE>
         struct get_coordinate_space <Normal<SPACE,T> > {
                 enum { space = SPACE };
+                enum { value = SPACE };
         };
 
 

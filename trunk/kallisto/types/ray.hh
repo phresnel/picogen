@@ -46,6 +46,21 @@ namespace kallisto {
                 Ray (point_t const &pos, direction_t const &dir)
                 : ProtoRay<point_t, direction_t>(pos, dir), min_t(), max_t()
                 {}
+                
+                point_t operator () (
+                        typename traits::get_scalar_type<direction_t>::type f
+                ) const {
+                        // create a compatible vector-type for our point_t
+                        typedef Vector<
+                           static_cast<coordinate_space_t>
+                                (traits::get_coordinate_space<point_t>::value),
+                           typename traits::get_scalar_type<point_t>::type
+                        > PV;
+                        
+                        PV      const tmp = vector_cast<PV>(this->direction*f);
+                        point_t const tmp2= this->position;
+                        return this->position + tmp;
+                }
         };
 }
 

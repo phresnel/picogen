@@ -46,4 +46,14 @@ namespace kallisto {
         inline long double   abs (long double const &rhs)  {return fabsl(rhs);}
 }
 
+/*
+#include <boost/tuple/tuple.hpp>
+
+namespace redshift {
+        using boost::tuple;
+        using boost::get;
+        using boost::make_tuple;
+}
+*/
+
 #endif // KALLISTO_HH_INCLUDED_20090218
