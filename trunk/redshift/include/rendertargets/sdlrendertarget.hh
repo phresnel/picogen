@@ -31,6 +31,7 @@ namespace redshift {
                 SdlRenderTarget (int width_, int height_);
                 ~SdlRenderTarget();
                 shared_ptr<RenderTargetLock> lock ();
+                shared_ptr<RenderTargetLock const> lock () const;
                 void flip();        
                 int getWidth() const;        
                 int getHeight() const;
@@ -38,12 +39,14 @@ namespace redshift {
         private:         
                 int width, height;
                 SDL_Surface *display;
-
-                SdlRenderTarget();
-                SdlRenderTarget(SdlRenderTarget const&);
-                SdlRenderTarget & operator = (SdlRenderTarget const &);
+                
                 class SdlRenderTargetLock;
                 friend class SdlRenderTargetLock;
+
+                // disable
+                SdlRenderTarget() ;
+                SdlRenderTarget(SdlRenderTarget const&) ;
+                SdlRenderTarget & operator = (SdlRenderTarget const &) ;                                
         };
 
 } // namespace redshift

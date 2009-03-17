@@ -33,9 +33,9 @@ namespace redshift {
 
 struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
         
-        redshift::ColorRenderTarget &display;
+        redshift::ColorRenderTarget const & display;
         
-        ColorRenderTargetLock (redshift::ColorRenderTarget &display_)
+        ColorRenderTargetLock (redshift::ColorRenderTarget const & display_)
         : display (display_)
         {
         }
@@ -96,6 +96,13 @@ ColorRenderTarget::~ColorRenderTarget() {
 
 shared_ptr<RenderTargetLock> ColorRenderTarget::lock () {
         return shared_ptr<RenderTargetLock> (new ColorRenderTargetLock (*this));
+}
+
+
+
+shared_ptr<RenderTargetLock const> ColorRenderTarget::lock () const {
+        return shared_ptr<RenderTargetLock const>
+                        (new ColorRenderTargetLock (*this));
 }
 
 

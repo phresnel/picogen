@@ -39,14 +39,76 @@
 #endif
 
 
+// TODO: write a pure console reporter
+// TODO: reporter should react on user entry (esp. <escape>)
+class MyProgressReporter : public redshift::ProgressReporter {
+public:
+        
+        
+        
+        MyProgressReporter (
+                redshift::RenderTarget::Ptr src,
+                redshift::RenderTarget::Ptr target_
+        ) : source (src), target (target_)
+        {}
+        
+        
+        
+        void report (int completed, int total) const {
+                using redshift::real_t;
+                using std::cout; using std::endl;
+                if (0 == completed % (target->getWidth()*16)) {
+                        real_t const finished = static_cast<real_t>(completed)
+                                                  / static_cast<real_t>(total);
+                        /*
+                        if (total>0.0) {
+                                cout << real_t(100)*(finished) << "%"
+                                     << endl;
+                        } else {
+                                cout << completed << endl; 
+                        }
+                        */
+                        redshift::copy (source, target);
+                        target->flip();
+                }
+        }
+        
+        
+        
+        void reportDone () const {
+                redshift::copy (source, target);
+                target->flip();
+        }
+        
+        
+        
+        bool doQuit () const {
+                return false;
+        }
+        
+        
+        
+private:
+        MyProgressReporter();
+        MyProgressReporter(MyProgressReporter const &);
+        MyProgressReporter & operator = (MyProgressReporter const &);
+
+        redshift::RenderTarget::Ptr source;
+        redshift::RenderTarget::Ptr target;
+};
+
+
+
 void run() {
         using namespace redshift;
         using namespace redshift::camera;
 
         // TODO replace RenderTarget with Film?
-        //    i mean, a "RenderTarget" might be flipable, but a Film not, or so        
-        shared_ptr<RenderTarget> renderTarget (new ColorRenderTarget(512,512));
-        shared_ptr<Camera> camera (new Pinhole(renderTarget));
+        //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
+        int const width = 512;
+        int const height = 512;
+        RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer));
         shared_ptr<primitive::Primitive> agg (
                 new primitive::ClosedSphere(
                         Point(scalar_cast<fixed_point_t>(0),
@@ -55,11 +117,14 @@ void run() {
                         10.0)
         );
         
-        Scene Scene (renderTarget, camera, agg);
+        Scene Scene (renderBuffer, camera, agg);
 
-        Scene.render();
-        shared_ptr<RenderTarget> sdl (convert<SdlRenderTarget> (renderTarget));
-        sdl->flip();
+        RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
+        ProgressReporter::Ptr reporter (
+                        new MyProgressReporter(renderBuffer, screenBuffer));
+        Scene.render(reporter);
+        copy (renderBuffer, screenBuffer);
+        screenBuffer->flip();
         
         SDL_WM_SetCaption ("redshift-sdl.", "redshift-sdl.");
         bool done = false;

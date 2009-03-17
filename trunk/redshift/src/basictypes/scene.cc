@@ -34,6 +34,8 @@
 #include "../../include/cameras/camera.hh"
 
 #include "../../include/primitives/primitive.hh"
+#include "../../include/basictypes/progressreporter.hh"
+
 #include "../../include/basictypes/scene.hh"
 
 
@@ -107,9 +109,13 @@ inline tuple<real_t,Color> Scene::Li (
 
 
 
-void Scene::render() const {
+void Scene::render (shared_ptr<ProgressReporter const> reporter) const {
+        const real_t totalNumberOfSamples = static_cast<real_t>
+                (renderTarget->getWidth() * renderTarget->getHeight());
+        real_t sampleNumber = 0;
+
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
-        for (int y=0; y<renderTarget->getHeight(); ++y)
+        for (int y=renderTarget->getHeight()-1; y>=0; --y)
          for (int x=0; x<renderTarget->getWidth(); ++x) {
                 Sample sample (
                         ImageCoordinates(static_cast<real_t>(x),
@@ -118,13 +124,14 @@ void Scene::render() const {
                 );                
                 const tuple<real_t,RayDifferential>
                                           primo = camera->generateRay (sample);
-                const real_t rayWeight (get<0>(primo));
-                RayDifferential ray (get<1>(primo));
+                const real_t & rayWeight (get<0>(primo));
+                RayDifferential ray (get<1>(primo)); // Will be modified, hence
+                                                     // non-const non-ref.
 
                 sample.imageCoordinates.u++;
                 ray.rx = get<1>(camera->generateRay (sample));
                 sample.imageCoordinates.u--;
-                
+
                 ++sample.imageCoordinates.v;
                 ray.ry = get<1>(camera->generateRay (sample));
                 --sample.imageCoordinates.v;
@@ -134,15 +141,19 @@ void Scene::render() const {
                 const real_t Ls_alpha (get<0>(Ls_));
                 const Color Ls_color  (get<1>(Ls_));
                 const Color finalColor = rayWeight * Ls_color;
-                //<issue warning if unexpected radiance value returned>
+                
+                //PBRT:<issue warning if unexpected radiance value returned>
 
-                //<add sample contribution to image> 28                
+                //PBRT:<add sample contribution to image> 28                
                 lock->setPixel (x,y,finalColor);
                         /*Rgb (
                                 (float)x/(float)renderTarget->getWidth(),
                                 (float)y/(float)renderTarget->getHeight(), 
                                 0.5));*/
+                ++sampleNumber;
+                reporter->report (sampleNumber, totalNumberOfSamples);
         }
+        reporter->reportDone ();
 }
 
 

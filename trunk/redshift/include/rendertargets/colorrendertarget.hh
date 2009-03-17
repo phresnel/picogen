@@ -30,7 +30,10 @@ namespace redshift {
         public:
                 ColorRenderTarget (int width_, int height_);
                 ~ColorRenderTarget();
+                
                 shared_ptr<RenderTargetLock> lock ();
+                shared_ptr<RenderTargetLock const> lock () const;
+                
                 void flip();        
                 int getWidth() const;        
                 int getHeight() const;
@@ -38,13 +41,14 @@ namespace redshift {
         private:         
                 int width, height;
                 shared_array<Color> display;
-
-                ColorRenderTarget();
-                ColorRenderTarget(ColorRenderTarget const&);
-                ColorRenderTarget & operator = (ColorRenderTarget const &);
                 
                 class ColorRenderTargetLock;
                 friend class ColorRenderTargetLock;
+
+                // disable
+                ColorRenderTarget() ;
+                ColorRenderTarget(ColorRenderTarget const&) ;
+                ColorRenderTarget & operator = (ColorRenderTarget const &) ;                                
         };
 
 } // namespace redshift

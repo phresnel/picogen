@@ -18,23 +18,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SHAPE_H_INCLUDED_20090301
-#define SHAPE_H_INCLUDED_20090301
+#ifndef PROGRESSREPORTER_HH_INCLUDED_20090317
+#define PROGRESSREPORTER_HH_INCLUDED_20090317
 
 namespace redshift {
-        class Shape {
+        class ProgressReporter {
         public:
-                // If only the information is need whether the ray hits or not.
-                virtual bool doesIntersect (Ray const &ray) = 0;
-
-                // If only the intersection distance is needed.
-                // TODO: is below thing really needed?
-                //virtual tuple<bool,real_t>bool intersect(Ray const &ray) = 0;
-
-                // Full fledged information including Normal, U/V, etc.
-                virtual
-                tuple<bool,DifferentialGeometry> intersect(Ray const &ray) = 0;
+                virtual void report (int completed, int total) const = 0;
+                virtual void reportDone () const = 0;
+                virtual bool doQuit () const = 0;
+                
+                typedef shared_ptr<ProgressReporter> Ptr;
+                typedef shared_ptr<ProgressReporter const> ConstPtr;
         };
 }
 
-#endif // SHAPE_H_INCLUDED_20090301
+#endif // PROGRESSREPORTER_HH_INCLUDED_20090317

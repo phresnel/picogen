@@ -41,6 +41,7 @@
 #include "coordinates/texture2dcoordinates.hh"
 
 // basictypes/
+#include "basictypes/progressreporter.hh"
 #include "basictypes/rectangle.hh"
 #include "basictypes/sample.hh"
 

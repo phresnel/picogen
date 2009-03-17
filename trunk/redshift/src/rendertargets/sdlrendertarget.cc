@@ -33,9 +33,9 @@ namespace redshift {
 
 struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
         
-        redshift::SdlRenderTarget &display;
+        redshift::SdlRenderTarget const & display;
         
-        SdlRenderTargetLock (redshift::SdlRenderTarget &display_)
+        SdlRenderTargetLock (redshift::SdlRenderTarget const & display_)
         : display (display_)
         {
                 if (SDL_MUSTLOCK (display.display) && 
@@ -125,6 +125,13 @@ SdlRenderTarget::~SdlRenderTarget() {
 
 shared_ptr<RenderTargetLock> SdlRenderTarget::lock () {
         return shared_ptr<RenderTargetLock> (new SdlRenderTargetLock (*this));
+}
+
+
+
+shared_ptr<RenderTargetLock const> SdlRenderTarget::lock () const {
+        return shared_ptr<RenderTargetLock const>
+                        (new SdlRenderTargetLock (*this));
 }
 
 

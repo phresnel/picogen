@@ -21,6 +21,8 @@
 #ifndef RENDERTARGET_HH_INCLUDED_20090306
 #define RENDERTARGET_HH_INCLUDED_20090306
 
+#include <stdexcept>
+
 namespace redshift {
         class RenderTarget {
         public:
@@ -28,12 +30,19 @@ namespace redshift {
                 virtual int getWidth () const = 0;
                 virtual int getHeight () const = 0;
                 virtual shared_ptr<RenderTargetLock> lock () = 0;
+                virtual shared_ptr<RenderTargetLock const> lock () const = 0;
                 virtual void flip () = 0;
                 virtual ~RenderTarget() {}
+                
+                typedef shared_ptr<RenderTarget> Ptr;
+                typedef shared_ptr<RenderTargetLock> LockPtr;
+                typedef shared_ptr<RenderTargetLock const> ReadLockPtr;
+                typedef shared_ptr<RenderTargetLock> WriteLockPtr;
         };
         
         template <typename lhs_t>
-        inline shared_ptr<RenderTarget> convert (shared_ptr<RenderTarget> rhs){
+        inline shared_ptr<RenderTarget>
+        convert (shared_ptr<RenderTarget const> rhs) {
                 shared_ptr<RenderTarget> lhs (
                         new lhs_t (rhs->getWidth(), rhs->getHeight()));
                 shared_ptr<RenderTargetLock> lockr (rhs->lock());
@@ -43,6 +52,24 @@ namespace redshift {
                         lockl->setPixel (x, y, lockr->getPixel (x, y));
                 }
                 return lhs;
+        }
+        
+        inline void copy (shared_ptr<RenderTarget const> source,
+                                             shared_ptr<RenderTarget> target) {
+                int const width = source->getWidth() < target->getWidth()
+                                ? source->getWidth()
+                                : target->getWidth();
+                int const height = source->getHeight() < target->getHeight()
+                                ? source->getHeight()
+                                : target->getHeight();
+
+                RenderTarget::ReadLockPtr sourcel (source->lock());
+                RenderTarget::WriteLockPtr targetl (target->lock());
+
+                for (int y=0; y<height; ++y)
+                 for (int x=0; x<width; ++x) {
+                        targetl->setPixel (x, y, sourcel->getPixel (x, y));
+                }
         }
 }
 
