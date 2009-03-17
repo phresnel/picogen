@@ -36,6 +36,7 @@
 #include "../../include/cameras/camera.hh"
 #include "../../include/primitives/primitive.hh"
 
+#include "../../include/basictypes/progressreporter.hh"
 #include "../../include/basictypes/scene.hh"
 
 #include "../../include/cameras/pinhole.hh"
