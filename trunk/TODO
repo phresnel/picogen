@@ -21,3 +21,10 @@ redshift:
         * check if it is costy to implement vector::operator* so that it can
           both return a cross-product xor a dot-product (via a thin wrapper
           that defines two conversions)
+          
+        * remove flip() from RenderTarget, and provide a Display interface
+          instead
+          
+        * write a pure console reporter
+        * write a void reporter
+        * write a void command-processor

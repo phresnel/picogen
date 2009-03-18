@@ -18,16 +18,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef RENDERTARGETLOCK_HH_INCLUDED_20090307
-#define RENDERTARGETLOCK_HH_INCLUDED_20090307
+#ifndef PROGRESSREPORTER_HH_INCLUDED_20090317
+#define PROGRESSREPORTER_HH_INCLUDED_20090317
 
-namespace redshift {
-        class RenderTargetLock {
-        public:                
-                virtual void setPixel (int x, int y, Color const & color) = 0;
-                virtual Color getPixel (int x, int y) const = 0;
-                virtual ~RenderTargetLock () {}                
+namespace redshift { class RenderTargetLock; }
+
+namespace redshift { namespace interaction {
+        class ProgressReporter {
+        public:
+                virtual void report (shared_ptr<RenderTargetLock const> rlock,
+                                        int completed, int total) const = 0;
+                virtual void reportDone () const = 0;
+                
+                typedef shared_ptr<ProgressReporter> Ptr;
+                typedef shared_ptr<ProgressReporter const> ConstPtr;
         };
-}
+} }
 
-#endif // RENDERTARGETLOCK_HH_INCLUDED_20090307
+#endif // PROGRESSREPORTER_HH_INCLUDED_20090317

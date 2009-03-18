@@ -18,19 +18,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PROGRESSREPORTER_HH_INCLUDED_20090317
-#define PROGRESSREPORTER_HH_INCLUDED_20090317
+#ifndef USERCOMMANDPROCESSOR_HH_INCLUDED_20090318
+#define USERCOMMANDPROCESSOR_HH_INCLUDED_20090318
 
-namespace redshift {
-        class ProgressReporter {
+namespace redshift { namespace interaction {
+        class UserCommandProcessor {
         public:
-                virtual void report (int completed, int total) const = 0;
-                virtual void reportDone () const = 0;
-                virtual bool doQuit () const = 0;
+                virtual void tick () = 0;
+                virtual bool userWantsToQuit () const = 0;
+                virtual void waitForQuit () = 0;
+                virtual ~UserCommandProcessor () {}
                 
-                typedef shared_ptr<ProgressReporter> Ptr;
-                typedef shared_ptr<ProgressReporter const> ConstPtr;
+                typedef shared_ptr<UserCommandProcessor> Ptr;
+                typedef shared_ptr<UserCommandProcessor const> ConstPtr;
         };
-}
+} }
 
-#endif // PROGRESSREPORTER_HH_INCLUDED_20090317
+#endif // USERCOMMANDPROCESSOR_HH_INCLUDED_20090318

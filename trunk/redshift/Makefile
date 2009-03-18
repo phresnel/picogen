@@ -8,6 +8,7 @@ ACCELERATORSOBJDIR  := $(OBJDIR)/accelerators
 APPOBJDIR           := $(OBJDIR)/app
 BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 CAMERASOBJDIR       := $(OBJDIR)/cameras
+INTERACTIONOBJDIR   := $(OBJDIR)/interaction
 PRIMITIVESOBJDIR    := $(OBJDIR)/primitives
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
@@ -83,6 +84,7 @@ redshift_:      $(OBJDIR)/main.o      \
                 $(OBJDIR)/accelerators.a \
                 \
                 $(OBJDIR)/cameras.a \
+                $(OBJDIR)/interaction.a \
                 $(OBJDIR)/primitives.a \
                 $(OBJDIR)/rendertargets.a \
                 $(OBJDIR)/shapes.a \
@@ -163,6 +165,21 @@ $(OBJDIR)/samplers.a: \
 
 $(SAMPLERSOBJDIR)/sampler.o: \
                      ./src/samplers/sampler.cc
+	$(CXX) -o $@ $<
+
+
+###############################################################################
+# interaction
+###############################################################################
+.PHONY: interaction
+interaction: init-dir-tree $(OBJDIR)/interaction.a
+
+$(OBJDIR)/interaction.a: \
+                     $(INTERACTIONOBJDIR)/sdlcommandprocessor.o 
+	$(AR) -o $@ $^
+
+$(INTERACTIONOBJDIR)/sdlcommandprocessor.o: \
+                     ./src/interaction/sdlcommandprocessor.cc
 	$(CXX) -o $@ $<
 
 
@@ -253,24 +270,26 @@ init-dir-tree:
 	mkdir -p $(OBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
 	mkdir -p $(APPOBJDIR)
-	mkdir -p $(BASICTYPESOBJDIR)
+	mkdir -p $(BASICTYPESOBJDIR)	
 	mkdir -p $(CAMERASOBJDIR)
+	mkdir -p $(INTERACTIONOBJDIR)
 	mkdir -p $(PRIMITIVESOBJDIR)
 	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SAMPLERSOBJDIR)
 	mkdir -p $(SHAPEOBJDIR)		
 	mkdir -p ./tmp/amalgam
 
-# do not apply when on svn!
+###############################################################################
+# cleanup
+###############################################################################
+
+# do apply only when you know what you do!
 .PHONY: disintegrate
-disintegrate: clean
+disintegrate: 
 	rm -r ./obj/* || echo "./obj was clean"
 	rm -r ./bin/* || echo "./bin was clean"
 	rm -r ./tmp/* || echo "./tmp was clean"
 
-###############################################################################
-# cleanup
-###############################################################################
 
 .PHONY: clean
 clean:
@@ -282,6 +301,7 @@ clean:
 	rm -f $(APPOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
 	rm -f $(CAMERASOBJDIR)/*.o
+	rm -f $(INTERACTIONOBJDIR)/*.o
 	rm -f $(OBJDIR)/*.o	
 	rm -f $(PRIMITIVESOBJDIR)/*.o
 	rm -f $(RENDERTARGETSOBJDIR)/*.o

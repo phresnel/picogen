@@ -18,16 +18,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef RENDERTARGETLOCK_HH_INCLUDED_20090307
-#define RENDERTARGETLOCK_HH_INCLUDED_20090307
+#ifndef SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
+#define SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
 
-namespace redshift {
-        class RenderTargetLock {
-        public:                
-                virtual void setPixel (int x, int y, Color const & color) = 0;
-                virtual Color getPixel (int x, int y) const = 0;
-                virtual ~RenderTargetLock () {}                
+namespace redshift { namespace interaction {
+
+        class SdlCommandProcessor : public UserCommandProcessor {
+        public:
+                SdlCommandProcessor () ;
+
+                void tick () ;
+                
+                bool userWantsToQuit () const ;
+                
+                void waitForQuit () ;
+                
+        private:
+                bool quit;
+                clock_t lastTime;
+
+                SdlCommandProcessor (SdlCommandProcessor const &);        
+                SdlCommandProcessor & operator = (SdlCommandProcessor const &);
         };
-}
+} }
 
-#endif // RENDERTARGETLOCK_HH_INCLUDED_20090307
+#endif // SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318

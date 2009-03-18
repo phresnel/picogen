@@ -40,8 +40,11 @@
 #include "coordinates/lenscoordinates.hh"
 #include "coordinates/texture2dcoordinates.hh"
 
+// interaction/
+#include "interaction/usercommandprocessor.hh"
+#include "interaction/progressreporter.hh"
+
 // basictypes/
-#include "basictypes/progressreporter.hh"
 #include "basictypes/rectangle.hh"
 #include "basictypes/sample.hh"
 

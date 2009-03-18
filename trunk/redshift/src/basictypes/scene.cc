@@ -34,7 +34,9 @@
 #include "../../include/cameras/camera.hh"
 
 #include "../../include/primitives/primitive.hh"
-#include "../../include/basictypes/progressreporter.hh"
+
+#include "../../include/interaction/progressreporter.hh"
+#include "../../include/interaction/usercommandprocessor.hh"
 
 #include "../../include/basictypes/scene.hh"
 
@@ -109,7 +111,11 @@ inline tuple<real_t,Color> Scene::Li (
 
 
 
-void Scene::render (shared_ptr<ProgressReporter const> reporter) const {
+void Scene::render (
+        interaction::ProgressReporter::ConstPtr reporter,
+        interaction::UserCommandProcessor::Ptr ucp
+        
+) const {
         const real_t totalNumberOfSamples = static_cast<real_t>
                 (renderTarget->getWidth() * renderTarget->getHeight());
         real_t sampleNumber = 0;
@@ -151,7 +157,12 @@ void Scene::render (shared_ptr<ProgressReporter const> reporter) const {
                                 (float)y/(float)renderTarget->getHeight(), 
                                 0.5));*/
                 ++sampleNumber;
-                reporter->report (sampleNumber, totalNumberOfSamples);
+                reporter->report (lock, sampleNumber, totalNumberOfSamples);
+
+                ucp->tick();
+                if (ucp->userWantsToQuit()) {
+                        break;
+                }
         }
         reporter->reportDone ();
 }

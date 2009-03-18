@@ -32,7 +32,8 @@ namespace redshift {
                                              shared_ptr<primitive::Primitive>);
                 ~Scene ();
                 
-                void render(shared_ptr<ProgressReporter const>) const ;                
+                void render(interaction::ProgressReporter::ConstPtr, 
+                          interaction::UserCommandProcessor::Ptr) const ;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead

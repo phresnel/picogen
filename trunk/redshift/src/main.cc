@@ -31,46 +31,50 @@
 #include "../../include/rendertargets/sdlrendertarget.hh"
 #include "../../include/rendertargets/colorrendertarget.hh"
 #include "../../include/cameras/pinhole.hh"
+#include "../../include/interaction/sdlcommandprocessor.hh"
 #else
 #include "../include/redshift.hh"
 #include "../include/rendertargets/sdlrendertarget.hh"
 #include "../include/rendertargets/colorrendertarget.hh"
 #include "../include/cameras/pinhole.hh"
+#include "../include/interaction/sdlcommandprocessor.hh"
 #endif
 
 
-// TODO: write a pure console reporter
-// TODO: reporter should react on user entry (esp. <escape>)
-class MyProgressReporter : public redshift::ProgressReporter {
-public:
+
+namespace redshift { namespace interaction {
+class RenderTargetCopyingReporter : public ProgressReporter {
+public:        
         
-        
-        
-        MyProgressReporter (
-                redshift::RenderTarget::Ptr src,
-                redshift::RenderTarget::Ptr target_
-        ) : source (src), target (target_)
+        RenderTargetCopyingReporter (
+                RenderTarget::Ptr src,
+                RenderTarget::Ptr target_
+        ) 
+        : source (src), target (target_), lastTime (clock())
         {}
         
         
         
-        void report (int completed, int total) const {
-                using redshift::real_t;
-                using std::cout; using std::endl;
-                if (0 == completed % (target->getWidth()*16)) {
-                        real_t const finished = static_cast<real_t>(completed)
-                                                  / static_cast<real_t>(total);
-                        /*
-                        if (total>0.0) {
-                                cout << real_t(100)*(finished) << "%"
-                                     << endl;
-                        } else {
-                                cout << completed << endl; 
-                        }
-                        */
-                        redshift::copy (source, target);
-                        target->flip();
+        void report (RenderTarget::ReadLockPtr sourcel, 
+                                              int completed, int total) const {                                              
+
+                clock_t const curr = clock();
+                if (curr - lastTime < (CLOCKS_PER_SEC/2))
+                        return;
+                lastTime = clock();
+                
+                real_t const finished = static_cast<real_t>(completed)
+                                          / static_cast<real_t>(total);
+                /*
+                if (total>0.0) {
+                        cout << real_t(100)*(finished) << "%"
+                             << endl;
+                } else {
+                        cout << completed << endl; 
                 }
+                */
+                copy (source, sourcel, target);
+                target->flip();
         }
         
         
@@ -78,30 +82,29 @@ public:
         void reportDone () const {
                 redshift::copy (source, target);
                 target->flip();
-        }
-        
-        
-        
-        bool doQuit () const {
-                return false;
-        }
-        
-        
+        }        
         
 private:
-        MyProgressReporter();
-        MyProgressReporter(MyProgressReporter const &);
-        MyProgressReporter & operator = (MyProgressReporter const &);
-
-        redshift::RenderTarget::Ptr source;
-        redshift::RenderTarget::Ptr target;
+        RenderTargetCopyingReporter();
+        RenderTargetCopyingReporter(RenderTargetCopyingReporter const &);
+        RenderTargetCopyingReporter &
+                        operator = (RenderTargetCopyingReporter const &);
+        
+        RenderTarget::ConstPtr source;
+        RenderTarget::Ptr target;
+        
+        mutable clock_t lastTime;
 };
+
+} }
+
 
 
 
 void run() {
         using namespace redshift;
         using namespace redshift::camera;
+        using namespace redshift::interaction;
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
@@ -120,32 +123,18 @@ void run() {
         Scene Scene (renderBuffer, camera, agg);
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
-        ProgressReporter::Ptr reporter (
-                        new MyProgressReporter(renderBuffer, screenBuffer));
-        Scene.render(reporter);
-        copy (renderBuffer, screenBuffer);
-        screenBuffer->flip();
         
-        SDL_WM_SetCaption ("redshift-sdl.", "redshift-sdl.");
-        bool done = false;
-        while (!done) {
-                // message processing loop
-                SDL_Event event;
-                while (SDL_PollEvent(&event)) {
-                        // check for messages
-                        switch (event.type) {
-                        case SDL_KEYDOWN:
-                        case SDL_KEYUP:
-                                if (SDLK_ESCAPE != event.key.keysym.sym)
-                                        break;
-                                // Fall through
-                        case SDL_QUIT:
-                                done = true;
-                                break;
-                                                
-                        }
-                }                       
-        }
+        UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
+
+        ProgressReporter::Ptr reporter (
+                  new RenderTargetCopyingReporter(renderBuffer, screenBuffer));        
+        
+        Scene.render(reporter, commandProcessor);
+        copy (renderBuffer, screenBuffer);
+        screenBuffer->flip(); 
+        
+        commandProcessor->waitForQuit();
+        
 }
 
 

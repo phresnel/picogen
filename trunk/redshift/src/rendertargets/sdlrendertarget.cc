@@ -45,6 +45,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                            << "SdlRenderTargetLock()";
                         throw std::runtime_error (ss.str());
                 }
+                SDL_WM_SetCaption ("redshift-sdl.", "redshift-sdl.");
         }
 
         ~SdlRenderTargetLock () {
