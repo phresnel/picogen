@@ -99,12 +99,22 @@ private:
 } }
 
 
+class HeightFunction : public redshift::primitive::HeightFunction {
+        typedef redshift::real_t real_t;
+        typedef redshift::fixed_point_t fixed_point_t;
+        real_t operator ()
+         (real_t const & u, real_t const & v) const {
+                real_t const d = sqrt (u*u + v*v);
+                return (sin(u*0.7)*sin(v*0.7)) - 4;
+        }
+};
 
 
 void run() {
         using namespace redshift;
         using namespace redshift::camera;
         using namespace redshift::interaction;
+        using namespace redshift::primitive;
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
@@ -113,11 +123,14 @@ void run() {
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));
         shared_ptr<primitive::Primitive> agg (
-                new primitive::ClosedSphere(
+                /*new primitive::ClosedSphere(
                         Point(scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(25)),
-                        10.0)
+                        10.0)*/
+                new Heightmap (shared_ptr<primitive::HeightFunction>(
+                        new ::HeightFunction()
+                ))
         );
         
         Scene Scene (renderBuffer, camera, agg);

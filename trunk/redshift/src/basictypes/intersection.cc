@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-namespace redshift { namespace primitive { class Primitive; } }
+
 
 #include "../../include/setup.hh"
 #include "../../include/basictypes/differentialgeometry.hh"
@@ -27,7 +27,16 @@ namespace redshift { namespace primitive { class Primitive; } }
 #include "../../include/primitives/primitive.hh"
 
 
+
 namespace redshift {
+
+
+
+Intersection::Intersection ()
+: primitive()
+, differentialGeometry()
+{
+}
 
 
 
@@ -63,7 +72,7 @@ real_t Intersection::getDistance() const {
 
 
 
-Vector Intersection::getNormal() const {
+Normal Intersection::getNormal() const {
         return differentialGeometry.getNormal();
 }
 

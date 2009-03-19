@@ -61,7 +61,7 @@
 
 #include "basictypes/background.hh"
 
-// Render Targets
+// rendertargets/
 #include "rendertargets/rendertargetlock.hh"
 #include "rendertargets/rendertarget.hh"
 
@@ -73,6 +73,7 @@
 // primitive/
 #include "primitives/primitive.hh"
 #include "primitives/closedsphere.hh"
+#include "primitives/heightmap.hh"
 
 // Cameras.
 #include "cameras/camera.hh"

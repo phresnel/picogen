@@ -31,19 +31,19 @@ namespace redshift {
                 Intersection (
                         shared_ptr<redshift::primitive::Primitive const>,
                         DifferentialGeometry const &geom);
+                        
+                Intersection () ;
                 
                 Intersection (Intersection const &) ;                
                 Intersection & operator = (Intersection const &);                
                 
                 real_t getDistance() const ;                
-                Vector getNormal() const ;                
+                Normal getNormal() const ;                
                 DifferentialGeometry getDifferentialGeometry() const ;
                 
                 shared_ptr<primitive::Primitive const> getPrimitive () const ;
                 
-        private:
-        
-                Intersection () ;                
+        private:               
 
                 shared_ptr<primitive::Primitive const> primitive;
                 DifferentialGeometry differentialGeometry;

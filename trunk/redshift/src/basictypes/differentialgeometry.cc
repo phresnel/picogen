@@ -25,10 +25,19 @@ namespace redshift {
 
 
 
+DifferentialGeometry::DifferentialGeometry () 
+: distance ()
+, center ()
+, normal ()
+{
+}
+
+
+
 DifferentialGeometry::DifferentialGeometry (
         real_t distance_,
         Point  const &center_,
-        Vector const &normal_        
+        Normal const &normal_        
 ) 
 : distance (distance_)
 , center (center_)
@@ -71,7 +80,7 @@ Point  DifferentialGeometry::getCenter() const {
 
 
 
-Vector DifferentialGeometry::getNormal() const {
+Normal DifferentialGeometry::getNormal() const {
         return normal;
 }
                 

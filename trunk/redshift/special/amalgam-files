@@ -10,4 +10,5 @@ src/basictypes/intersection.cc
 src/basictypes/scene.cc
 src/shapes/closedsphere.cc
 src/primitives/closedsphere.cc
+src/primitives/heightmap.cc
 src/interaction/sdlcommandprocessor.cc

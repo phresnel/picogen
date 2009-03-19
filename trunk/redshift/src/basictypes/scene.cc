@@ -98,10 +98,13 @@ inline tuple<real_t,Color> Scene::Li (
         if (does) {                
                 return make_tuple (1.0, 
                         Color(
+                                /*i.getDistance()*0.05,
+                                i.getDistance()*0.025,
+                                i.getDistance()*0.0125*/
                                 i.getNormal().x+0.5,
                                 i.getNormal().y+0.5,
                                 i.getNormal().z+0.5
-                                )
+                        )
                 );                
         }
         Color const col (0.5+ray.direction.x,0.5+ray.direction.y,

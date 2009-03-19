@@ -46,7 +46,7 @@ LIBS   := $(SDLLIBS)
 #------------------------------------------------------------------------------
 COMPILE := ""
 ifeq ($(COMPILE), "FAST_COMPILE")
-else ifeq ($(COMPILE), "PROFILE")
+else ifeq ($(COMPILE), "DEBUG")
         CXXFLAGS += -O0 -g
 else
 	CXXFLAGS += -O3 -march=native
@@ -190,11 +190,16 @@ $(INTERACTIONOBJDIR)/sdlcommandprocessor.o: \
 primitives: init-dir-tree $(OBJDIR)/primitives.a
 
 $(OBJDIR)/primitives.a: \
-                     $(PRIMITIVESOBJDIR)/closedsphere.o 
+                     $(PRIMITIVESOBJDIR)/closedsphere.o \
+                     $(PRIMITIVESOBJDIR)/heightmap.o 
 	$(AR) -o $@ $^
 
 $(PRIMITIVESOBJDIR)/closedsphere.o: \
                      ./src/primitives/closedsphere.cc
+	$(CXX) -o $@ $<
+
+$(PRIMITIVESOBJDIR)/heightmap.o: \
+                     ./src/primitives/heightmap.cc
 	$(CXX) -o $@ $<
 
 
@@ -286,9 +291,9 @@ init-dir-tree:
 # do apply only when you know what you do!
 .PHONY: disintegrate
 disintegrate: 
-	rm -r ./obj/* || echo "./obj was clean"
-	rm -r ./bin/* || echo "./bin was clean"
-	rm -r ./tmp/* || echo "./tmp was clean"
+	rm -r ./obj/*
+	rm -r ./bin/*
+	rm -r ./tmp/*
 
 
 .PHONY: clean

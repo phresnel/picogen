@@ -18,37 +18,44 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
-#define DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
+#ifndef PRIMITIVE_HEIGHTMAP_HH_INCLUDED_20090318
+#define PRIMITIVE_HEIGHTMAP_HH_INCLUDED_20090318
 
-namespace redshift {
+namespace redshift { namespace primitive {
 
-        DefineFinalizer(DifferentialGeometry);
-
-        class DifferentialGeometry : DoFinalize(DifferentialGeometry) {
+        class HeightFunction {
         public:
-                DifferentialGeometry();
-                
-                DifferentialGeometry (
-                        real_t distance,                        
-                        Point  const &center,
-                        Normal const &normal
-                );
-                
-                DifferentialGeometry (DifferentialGeometry const &) ;
-                DifferentialGeometry& operator= (DifferentialGeometry const &);
-                
-                real_t getDistance() const ;
-                Point  getCenter() const ;
-                Normal getNormal() const ;
-               
-        
-        private:
-                
-                real_t distance;
-                Point  center;
-                Normal normal;                
+                virtual 
+                 real_t operator ()
+                   (real_t const &u, real_t const &v)
+                 const = 0;
         };
-}
+        
+        DefineFinalizer(Heightmap);
+        
+        class Heightmap
+                : public Primitive
+                , DoFinalize(Heightmap)
+        {
+        public:
+                Heightmap(shared_ptr<HeightFunction const> fun);
+                ~Heightmap ();
+                
+                bool doesIntersect (RayDifferential const &ray) const;
 
-#endif // DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
+                tuple<bool,Intersection>
+                        intersect(RayDifferential const &ray) const;
+                
+        private:
+                // forbid
+                Heightmap();
+                Heightmap(Heightmap const&);
+                Heightmap &operator = (Heightmap const&);
+                
+                // data
+                shared_ptr<HeightFunction const> function;
+        };
+
+} }
+
+#endif // PRIMITIVE_HEIGHTMAP_HH_INCLUDED_20090318
