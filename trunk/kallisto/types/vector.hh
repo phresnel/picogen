@@ -84,72 +84,9 @@ namespace kallisto {
                         return kallisto::sqrt (this->lengthSq ());
                 }*/
 
-        public: // Friend injections.
-
-                /*
-                friend inline
-                Vector operator- (Vector const & rhs) {
-                        return Vector (-rhs.x, -rhs.y, -rhs.z);
-                }
-
-                friend inline
-                Vector operator+ (Vector const & rhs) {
-                        return rhs;
-                }
-
-                friend inline
-                Vector operator+ (Vector const & lhs, Vector const & rhs) {
-                        return Vector (lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z);
-                }
-
-                friend inline
-                Vector operator- (Vector const & lhs, Vector const & rhs) {
-                        return Vector (lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z);
-                }
-
-                friend inline
-                T operator* (Vector const & lhs, Vector const & rhs) {
-                        return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
-                }
-
-                friend inline
-                T dot (Vector const & lhs, Vector const & rhs) {
-                        return lhs * rhs;
-                }
-
-                friend inline
-                T absDot (Vector const & lhs, Vector const & rhs) {
-                        return abs (lhs * rhs);
-                }
-
-                friend inline
-                Vector operator* (Vector const & lhs, T const & rhs) {
-                        return Vector (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
-                }
-
-                friend inline
-                Vector operator* (T const & lhs, Vector const & rhs) {
-                        return Vector (lhs*rhs.x, lhs*rhs.y, lhs*rhs.z);
-                }
-
-                friend inline
-                Vector operator/ (Vector const & lhs, T const & rhs) {
-                        T const inv = 1.0 / rhs;
-                        return Vector (lhs.x*inv, lhs.y*inv, lhs.z*inv);
-                }
-
-                friend inline T lengthSq (T const & v) {
-                        return v * v;
-                }
-
-                friend inline T length (T const & v) {
-                        return kallisto::sqrt (lengthSq (v));
-                }
-
-                friend inline Vector normalize (Vector const & v) {
-                        return v / v.length ();
-                }
-                */
+        public: // I would have liked to use friend injections (in fact I had
+                // quite some, that were much nicer to read), but that
+                // doesn't work without many using directives over namespaces.
         };
         
         
@@ -181,6 +118,16 @@ namespace kallisto {
         T operator* (Vector <CARTESIAN,T> const & lhs, 
                                             Vector <CARTESIAN,T> const & rhs) {
                 return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
+        }
+        
+        template <typename T> inline
+        Vector<CARTESIAN,T> cross (Vector <CARTESIAN,T> const & lhs, 
+                                            Vector <CARTESIAN,T> const & rhs) {
+                return Vector<CARTESIAN,T>(
+                        lhs.y*rhs.z - lhs.z*rhs.y,
+                        lhs.z*rhs.x - lhs.x*rhs.z,
+                        lhs.x*rhs.y - lhs.y*rhs.x
+                );
         }
 
         template <coordinate_space_t SPACE, typename T> inline

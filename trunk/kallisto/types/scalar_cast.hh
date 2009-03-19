@@ -81,7 +81,6 @@ namespace kallisto {
                                   static_cast<lhs_basetype>(rhs) <<
                                       static_cast<lhs_basetype>(lhs_fractbits)
                                 };
-                                //std::cout << " lhs:" << ret.bits << std::endl;
                                 return ret;
                         }
                 };
