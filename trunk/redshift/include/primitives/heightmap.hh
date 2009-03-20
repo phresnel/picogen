@@ -38,7 +38,7 @@ namespace redshift { namespace primitive {
                 , DoFinalize(Heightmap)
         {
         public:
-                Heightmap(shared_ptr<HeightFunction const> fun);
+                Heightmap(shared_ptr<HeightFunction const> fun, real_t detail);
                 ~Heightmap ();
                 
                 bool doesIntersect (RayDifferential const &ray) const;
@@ -54,6 +54,7 @@ namespace redshift { namespace primitive {
                 
                 // data
                 shared_ptr<HeightFunction const> function;
+                real_t detail;
         };
 
 } }

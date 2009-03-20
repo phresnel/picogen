@@ -28,3 +28,4 @@ redshift:
         * write a pure console reporter
         * write a void reporter
         * write a void command-processor
+        * give all relevant functions the inline attribute within sourcefiles

@@ -128,9 +128,12 @@ void run() {
                                 scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(25)),
                         10.0)*/
-                new Heightmap (shared_ptr<primitive::HeightFunction>(
-                        new ::HeightFunction()
-                ))
+                new Heightmap (
+                        shared_ptr<primitive::HeightFunction>(
+                                new ::HeightFunction()
+                        ),
+                        15.0
+                )
         );
         
         Scene Scene (renderBuffer, camera, agg);
@@ -146,7 +149,7 @@ void run() {
         copy (renderBuffer, screenBuffer);
         screenBuffer->flip(); 
         
-        commandProcessor->waitForQuit();
+        //commandProcessor->waitForQuit();
         
 }
 

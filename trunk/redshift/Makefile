@@ -52,6 +52,7 @@ else
 	CXXFLAGS += -O3 -march=native
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
 	CXXFLAGS += -ffast-math -march=native -fassociative-math
+	CXXFLAGS += -mfpmath=sse
 endif
 
 CXXFLAGS += -Wall -Wno-unused -pedantic

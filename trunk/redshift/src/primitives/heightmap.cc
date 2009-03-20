@@ -28,8 +28,8 @@ namespace redshift { namespace primitive {
 
 
 
-Heightmap::Heightmap(shared_ptr<HeightFunction const> fun) 
-: function (fun) {
+Heightmap::Heightmap(shared_ptr<HeightFunction const> fun, real_t detail_) 
+: function (fun), detail (detail_) {
 }
 
 
@@ -51,16 +51,33 @@ Heightmap::intersect(RayDifferential const &ray) const {
         // ugly, get rid of that namespace qualify
         typedef kallisto::Point<kallisto::CARTESIAN,real_t> PointR;
         
-        real_t step = 0.5*0.125;
+        real_t step;
+        const real_t step_epsilon = 0.1;
+        
+        if (ray.hasDifferentials) {
+                step = detail*
+                        min(
+                                length(vector_cast<Vector> (ray(0)-ray.rx(0))),
+                                length(vector_cast<Vector> (ray(0)-ray.ry(0)))
+                        );
+                if (step < step_epsilon) {
+                        step = step_epsilon;
+                }
+        } else {
+                step = 0.1;
+                if (step < step_epsilon) {
+                        step = step_epsilon;
+                }
+        }        
         
         // get initial sign
         const PointR first_ = vector_cast<PointR>(ray(0));
         const real_t first = (*function) (first_.x, first_.z);
         const real_t sign = first > 0;
         
-        for (real_t distance = 0.0; distance < 100.0; distance += step) {
+        for (real_t d = 0.0; d < 100.0; d += step) {
                 
-                const Point curr = ray(distance);
+                const Point curr = ray(d);
                 const PointR currr = vector_cast<PointR> (curr);
                 const real_t h = (*function) (currr.x, currr.z);
                 if ((currr.y < h) != sign) {
@@ -72,13 +89,24 @@ Heightmap::intersect(RayDifferential const &ray) const {
                         return make_tuple (true, 
                                 Intersection(shared_from_this(),
                                         DifferentialGeometry(
-                                                distance,
+                                                d,
                                                 curr,
                                                 n
                                         )
                         ));
-                }
-                step += step * 0.05; 
+                }                
+                if (ray.hasDifferentials) {
+                        step = detail*
+                                min(
+                                 length(vector_cast<Vector>(ray(d)-ray.rx(d))),
+                                 length(vector_cast<Vector>(ray(d)-ray.ry(d)))
+                                );
+                        if (step < step_epsilon) {
+                                step = step_epsilon;
+                        }
+                } else {
+                        step += step * 0.05;
+                }                
         }
         
         return make_tuple (false, Intersection());

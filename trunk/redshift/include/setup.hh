@@ -66,6 +66,14 @@ namespace redshift {
         using kallisto::vector_cast;
         using kallisto::scalar_cast;
         
+        template <typename T> inline T min (T const &lhs, T const &rhs) {
+                return lhs < rhs ? lhs : rhs; 
+        }
+        
+        template <typename T> inline T max (T const &lhs, T const &rhs) {
+                return lhs > rhs ? lhs : rhs; 
+        }
+        
 }
 
 #include "basictypes/rgb.hh"
