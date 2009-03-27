@@ -1,0 +1,90 @@
+<ui version="4.0" >
+ <class>PicogenQT</class>
+ <widget class="QMainWindow" name="PicogenQT" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>762</width>
+    <height>433</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <widget class="QMdiArea" name="mdiArea" >
+    <property name="geometry" >
+     <rect>
+      <x>110</x>
+      <y>80</y>
+      <width>200</width>
+      <height>160</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>762</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QToolBar" name="toolBar" >
+   <property name="windowTitle" >
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize" >
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea" >
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak" >
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionCamera" />
+   <addaction name="actionSun_and_Sky" />
+   <addaction name="actionTerrain_Definition" />
+  </widget>
+  <action name="actionCamera" >
+   <property name="icon" >
+    <iconset resource="../resources/resources.qrc" >
+     <normaloff>:/camera/icons/lphoto.png</normaloff>:/camera/icons/lphoto.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Camera</string>
+   </property>
+  </action>
+  <action name="actionSun_and_Sky" >
+   <property name="icon" >
+    <iconset resource="../resources/resources.qrc" >
+     <normaloff>:/sun/icons/sunny.png</normaloff>:/sun/icons/sunny.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Sun and Sky</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Definition" >
+   <property name="icon" >
+    <iconset resource="../resources/resources.qrc" >
+     <normaloff>:/terrain/icons/terrain.png</normaloff>:/terrain/icons/terrain.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Terrain Definition</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../resources/resources.qrc" />
+ </resources>
+ <connections/>
+</ui>

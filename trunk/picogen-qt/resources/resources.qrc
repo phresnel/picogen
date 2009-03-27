@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="camera" >
+    <file>icons/lphoto.png</file>
+  </qresource>
+  <qresource prefix="redshiftLogo" >
+    <file>images/redshift.png</file>
+  </qresource>
+  <qresource prefix="sun" >
+    <file>icons/sunny.png</file>
+  </qresource>
+  <qresource prefix="terrain" >
+    <file>icons/terrain.png</file>
+  </qresource>
+</RCC>
