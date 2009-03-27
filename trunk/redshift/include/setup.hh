@@ -21,7 +21,7 @@
 #ifndef SETUP_HH_INCLUDED_20090303
 #define SETUP_HH_INCLUDED_20090303
 
-#include <kallisto/common.hh>
+#include "../../kallisto/common.hh"
 
 #define DefineFinalizer(x) \
         class x##Finalize { \

@@ -153,9 +153,12 @@ void run() {
         
 }
 
-
-
-int main () {
+#ifdef PICOGENLIB
+int picogen_main ()
+#else
+int main ()
+#endif
+{
         using namespace redshift;
         
         try {
