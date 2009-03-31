@@ -205,7 +205,7 @@ $(RENDERTARGETSOBJDIR)/sdlrendertarget.o: \
 $(RENDERTARGETSOBJDIR)/colorrendertarget.o: \
                      ./src/rendertargets/colorrendertarget.cc
 	$(CXX) -o $@ $<
-
+	
 
 
 ###############################################################################

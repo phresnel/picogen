@@ -38,6 +38,13 @@ FORMS += ../ui/camerasettings.ui
 
 
 
+# Heightmap Designer
+SOURCES += ../src/heightmap-designer.cc
+HEADERS += ../include/heightmap-designer.hh
+FORMS += ../ui/heightmap-designer.ui
+
+
+
 # Main Window
 SOURCES += ../src/picogenqt.cc
 HEADERS += ../include/picogenqt.hh
@@ -45,10 +52,24 @@ FORMS += ../ui/picogenqt.ui
 
 
 
-# Application
-SOURCES += ../src/main.cc 
+# QImageRenderTarget
+SOURCES += ../src/qimagerendertarget.cc
+HEADERS += ../include/qimagerendertarget.hh
+
+
+
+# main
+SOURCES += ../src/main.cc
+
+
+
+# sdl-config --cflags
+INCLUDEPATHS += /usr/include/SDL
+DEFINES += GNU_SOURCE=1 REENTRANT
+LIBS += `sdl-config --static-libs` 
+
  
 
 # ...
 RESOURCES += ../resources/resources.qrc
-LIBS += -L../../redshift/lib -lpicogen `sdl-config --static-libs`
+LIBS += -L../../redshift/lib -lpicogen 
