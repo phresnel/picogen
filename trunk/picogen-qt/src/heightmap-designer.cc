@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <iostream>
+#include <sstream>
 
 #include <QMessageBox>
 
@@ -33,6 +34,20 @@ HeightmapDesignerImpl::HeightmapDesignerImpl(/*QWidget *parent*/) {
 
 HeightmapDesignerImpl::~HeightmapDesignerImpl() {
 
+}
+
+
+
+void HeightmapDesignerImpl::on_showJuxCode_clicked() {
+        QList<QTreeWidgetItem *> items = tree->selectedItems();
+        if (1 == items.size()) {                
+                QMessageBox box (
+                        QMessageBox::Information, 
+                        "jux code",
+                        generateJuxCode(items [0]).c_str()
+                );
+                box.exec();
+        }        
 }
 
 
@@ -79,71 +94,90 @@ void HeightmapDesignerImpl::on_addDivision_clicked () {
 
 
 
-void HeightmapDesignerImpl::addItem (item_type_t type) {
-        QTreeWidgetItem * item = new QTreeWidgetItem (type);
-
-        switch (type) {
-        case CONSTANT:
-                item->setText (0, "<const>");
-                addItem (item);
-                break;
-        case X_PARAMETER:
-                item->setText (0, "[x]");
-                addItem (item);
-                break;
-        case Y_PARAMETER:
-                item->setText (0, "[y]");
-                addItem (item);
-                break;
-        
-        case ADDITION:
-                item->setText (0, "+");
-                addItem (item);
-                break;
-        case SUBTRACTION:
-                item->setText (0, "-");
-                addItem (item);
-                break;
-        case MULTIPLICATION:
-                item->setText (0, "*");
-                addItem (item);
-                break;
-        case DIVISION:                
-                item->setText (0, "/");
-                addItem (item);
-                break;
-                
-        default:
-                delete item;
-        };
-}
-
-
-
 void HeightmapDesignerImpl::addItem (QTreeWidgetItem* item) {
-        if (0 == tree->topLevelItemCount()) {
+        QList<QTreeWidgetItem *> items = tree->selectedItems();
+        if (1 == items.size()) {
+                items [0]->addChild (item);
+                tree->setItemExpanded (items [0], true);
+        } else if (0 == items.size()) {
                 tree->addTopLevelItem (item);
-        } else {
-                QList<QTreeWidgetItem *> items = tree->selectedItems();
-                if (1 == items.size()) {
-                        items [0]->addChild (item);
-                        tree->setItemExpanded (items [0], true);
-                }
         }
 }
 
 
 
-void HeightmapDesignerImpl::on_showJuxCode_clicked() {
+void HeightmapDesignerImpl::addItem (item_type_t type) {
+        
+        
+        QTreeWidgetItem * item = 0;
+        QTreeWidgetItem * parent = 0;
+        
+        
+        bool parentIsAggregate = false;
+        bool canInsert = false;
         QList<QTreeWidgetItem *> items = tree->selectedItems();
-        if (1 == items.size()) {                
-                QMessageBox box (
-                        QMessageBox::Information, 
-                        "jux code",
-                        generateJuxCode(items [0]).c_str()
-                );
-                box.exec();
-        }        
+        if (1 == items.size()) {
+                parent = items [0];
+                parentIsAggregate = parent->type() == ADDITION
+                                 || parent->type() == SUBTRACTION
+                                 || parent->type() == MULTIPLICATION
+                                 || parent->type() == DIVISION
+                                  ;
+        }
+        canInsert = parentIsAggregate || 0 == parent;
+        
+
+        switch (type) {
+        case CONSTANT:
+                if (canInsert) {
+                        item = new QTreeWidgetItem (type);
+                        item->setText (0, "<const>");
+                        item->setFlags ( Qt::ItemIsSelectable 
+                                       | Qt::ItemIsEditable
+                                       | Qt::ItemIsEnabled );
+                        item->setData (0,
+                                Qt::DisplayRole | Qt::EditRole, 
+                                QVariant(0.0));
+                }
+                break;                        
+        case X_PARAMETER:
+                item = new QTreeWidgetItem (type);
+                item->setText (0, "[x]");
+                break;
+        case Y_PARAMETER:
+                item = new QTreeWidgetItem (type);
+                item->setText (0, "[y]");
+                break;
+        
+        case ADDITION:
+                item = new QTreeWidgetItem (type);
+                item->setText (0, "+");
+                break;
+        case SUBTRACTION:
+                item = new QTreeWidgetItem (type);
+                item->setText (0, "-");
+                break;
+        case MULTIPLICATION:
+                item = new QTreeWidgetItem (type);
+                item->setText (0, "*");
+                break;
+        case DIVISION:
+                item = new QTreeWidgetItem (type);
+                item->setText (0, "/");
+                break;
+                
+        default:;
+        };
+        
+        
+        if (0 != item) {
+                if (0 != parent) {
+                        parent->addChild (item);
+                        tree->setItemExpanded (parent, true);
+                } else {
+                        tree->addTopLevelItem (item);
+                }
+        }
 }
 
 
@@ -158,9 +192,12 @@ HeightmapDesignerImpl::generateJuxCode (
         bool isAggregate = false;
         
         switch (root->type()) {
-        case CONSTANT:
-                ret += indent + "0.0";
+        case CONSTANT: {
+                std::stringstream ss;
+                ss << root->data(0, Qt::EditRole).toDouble();
+                ret += indent + ss.str().c_str();
                 break;
+        } break;
         case X_PARAMETER:
                 ret += indent + "x";
                 break;

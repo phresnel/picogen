@@ -12,6 +12,9 @@
   <property name="windowTitle" >
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet" >
+   <string notr="true" />
+  </property>
   <widget class="QWidget" name="centralwidget" >
    <widget class="QMdiArea" name="mdiArea" >
     <property name="geometry" >
@@ -76,7 +79,7 @@
   </widget>
   <action name="actionCamera" >
    <property name="icon" >
-    <iconset resource="../resources/resources.qrc" >
+    <iconset>
      <normaloff>:/camera/icons/lphoto.png</normaloff>:/camera/icons/lphoto.png</iconset>
    </property>
    <property name="text" >
@@ -85,7 +88,7 @@
   </action>
   <action name="actionSun_and_Sky" >
    <property name="icon" >
-    <iconset resource="../resources/resources.qrc" >
+    <iconset>
      <normaloff>:/sun/icons/sunny.png</normaloff>:/sun/icons/sunny.png</iconset>
    </property>
    <property name="text" >
@@ -94,7 +97,7 @@
   </action>
   <action name="actionTerrain_Definition" >
    <property name="icon" >
-    <iconset resource="../resources/resources.qrc" >
+    <iconset>
      <normaloff>:/terrain/icons/terrain.png</normaloff>:/terrain/icons/terrain.png</iconset>
    </property>
    <property name="text" >
