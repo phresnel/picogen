@@ -98,6 +98,56 @@ private:
 } }
 
 
+#ifdef AMALGAM
+#include "../../../quatsch/quatsch.hh"
+#include "../../../quatsch/frontend/jux.hh"
+#include "../../../quatsch/backend/est/backend.hh"
+#else
+#include "../../quatsch/quatsch.hh"
+#include "../../quatsch/frontend/jux.hh"
+#include "../../quatsch/backend/est/backend.hh"
+#endif
+
+namespace redshift {
+class QuatschHeightFunction : public redshift::primitive::HeightFunction {
+private:
+        // quatsch
+        typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
+    
+        typedef backend_t::Function Function;
+        typedef backend_t::FunctionPtr FunctionPtr;
+        typedef backend_t::scalar_t scalar_t;
+        typedef backend_t::parameters_t parameters_t;
+
+        typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
+        
+        struct FunctionSet {
+                Compiler::ConfigurableFunctionsMap cfm;
+                operator Compiler::ConfigurableFunctionsMap () {
+                        return cfm;
+                }
+        };
+        
+        FunctionSet functionSet;
+        Compiler::FunctionPtr fun;
+
+public:
+        real_t operator ()
+         (real_t const & u, real_t const & v) const {
+                //real_t const d = sqrt (u*u + v*v);
+                const real_t p [] = { u, v };
+                return (*fun) (p);
+        }
+        
+        
+        QuatschHeightFunction ()
+        : fun (Compiler::compile ("x;y", "(- (* (sin (* x 0.7)) (sin(* y 0.7)) ) 4)", functionSet))
+        {
+        }                
+};
+} // namespace redshift
+
+
 class HeightFunction : public redshift::primitive::HeightFunction {
         typedef redshift::real_t real_t;
         typedef redshift::fixed_point_t fixed_point_t;
@@ -121,18 +171,21 @@ void run() {
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));
+        
+        shared_ptr<primitive::HeightFunction> heightFunction;
+        try {
+                heightFunction = shared_ptr<primitive::HeightFunction> (
+                                      new ::redshift::QuatschHeightFunction());
+        } catch (...) { // TODO (!!!)
+        }
+        
         shared_ptr<primitive::Primitive> agg (
                 /*new primitive::ClosedSphere(
                         Point(scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(25)),
                         10.0)*/
-                new Heightmap (
-                        shared_ptr<primitive::HeightFunction>(
-                                new ::HeightFunction()
-                        ),
-                        0.25
-                )
+                new Heightmap (heightFunction, 1.5)
         );
         
         Scene Scene (renderBuffer, camera, agg);

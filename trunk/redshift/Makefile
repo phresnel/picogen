@@ -67,6 +67,7 @@ AMALGAM := g++-4.3 $(CXXFLAGS) \
 OBJFILES :=
 # main.o is intentionally excluded, and must be included by main targets 
 OBJFILES += $(OBJDIR)/constants.o
+OBJFILES += $(OBJDIR)/quatsch-integration.o
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
 OBJFILES += $(BASICTYPESOBJDIR)/differentialgeometry.o
@@ -127,6 +128,10 @@ $(OBJDIR)/lib-main.o: ./src/main.cc
  
 	
 $(OBJDIR)/constants.o: ./src/constants.cc
+	$(CXX) -o $@ $<
+
+
+$(OBJDIR)/quatsch-integration.o: ./src/quatsch-integration.cc
 	$(CXX) -o $@ $<
 
 	                
