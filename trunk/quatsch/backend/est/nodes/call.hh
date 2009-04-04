@@ -122,12 +122,17 @@ namespace quatsch {  namespace backend {  namespace est {
 
             
             template <typename scalar_t, typename parameters_t> struct DoCall <scalar_t, parameters_t*> {
-                static scalar_t etHop (const Call &self, parameters_t * const parameters_) { 
-                    typename TYPES::scalar_t parameters [self.argumentCount];
+                static scalar_t etHop (const Call &self, parameters_t * const parameters_) {
+                    // TODO allow to use GCC extension of variable length arrays 
+                    //typename TYPES::scalar_t parameters [self.argumentCount];
+                    typename TYPES::scalar_t* parameters =
+                        new typename TYPES::scalar_t [self.argumentCount];
                     for (unsigned int i=0; i<self.argumentCount; ++i) {
                         parameters [i] = (*self.arguments [i]) (parameters_);
                     }
-                    return (*self.function.lock()) (parameters);
+                    const scalar_t ret = (*self.function.lock()) (parameters);
+                    delete [] parameters; 
+                    return ret;
                 }
             };
             
