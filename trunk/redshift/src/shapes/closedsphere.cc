@@ -36,21 +36,26 @@ ClosedSphere::ClosedSphere (Point const & center, real_t radius)
 
 
 bool ClosedSphere::doesIntersect (Ray const &ray) const {
-        return kallisto::intersect<true> (ray, sphereData) >= constants::zero;
+        if (kallisto::intersect<true> (ray, sphereData))
+                return true;
+        else
+                return false;
 }
 
 
 
 
-tuple<bool,DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const{
-        real_t const d = kallisto::intersect<true> (ray, sphereData);
-        Point const poi = ray (d);
-        Normal const normal = normalize (
-                                vector_cast<Normal> (poi - sphereData.center));
+optional<DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const {
+        const optional<real_t> d = kallisto::intersect<true> (ray, sphereData);
+        if (!d) {
+                return false;
+        }
+
+        const Point  poi = ray (*d);
+        const Normal normal = 
+                     normalize (vector_cast<Normal> (poi - sphereData.center));
         
-        //Vector const normal = (ray.position+ray.direction*d) ;
-        DifferentialGeometry dg (d, poi, normal);
-        return make_tuple(d>=0, dg);
+        return DifferentialGeometry (*d, poi, normal);
 }
 
 

@@ -28,12 +28,20 @@
 #include "../../include/basictypes/differentialgeometry.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/basictypes/background.hh"
+
+#include "../../include/coordinates/uvcoordinates.hh"
+#include "../../include/coordinates/imagecoordinates.hh"
+#include "../../include/coordinates/lenscoordinates.hh"
+#include "../../include/rendertargets/rendertargetlock.hh"
+#include "../../include/rendertargets/rendertarget.hh"
 #include "../../include/basictypes/sample.hh"
+
 
 #include "../../include/rendertargets/rendertargetlock.hh"
 #include "../../include/rendertargets/rendertarget.hh"
 
 #include "../../include/cameras/camera.hh"
+
 #include "../../include/primitives/primitive.hh"
 
 #include "../../include/interaction/usercommandprocessor.hh"
@@ -68,8 +76,8 @@ tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
         ray.direction.z = 1.0;
         ray.direction = normalize (ray.direction);
         ray.position = Point ();
-        ray.min_t = constants::epsilon;
-        ray.max_t = constants::infinity;
+        ray.minT = constants::epsilon;
+        ray.maxT = constants::infinity;
         return make_tuple (1.0, ray);
 }
 

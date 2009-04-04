@@ -43,8 +43,10 @@ namespace redshift { namespace primitive {
                 
                 bool doesIntersect (RayDifferential const &ray) const;
 
-                tuple<bool,Intersection>
-                        intersect(RayDifferential const &ray) const;
+                optional<Intersection>
+                        intersect(RayDifferential const &ray) const;                
+                        
+                optional<Intersection> intersect(Sample const &sample) const;
                 
         private:
                 // forbid
@@ -52,9 +54,15 @@ namespace redshift { namespace primitive {
                 Heightmap(Heightmap const&);
                 Heightmap &operator = (Heightmap const&);
                 
+                // .
+                optional<Intersection>
+                      intersect (RayDifferential const &ray, real_t min) const;
+                
                 // data
+                mutable std::vector<real_t> depthBuffer;                
                 shared_ptr<HeightFunction const> function;
                 real_t detail;
+                BoundingBox boundingBox;
         };
 
 } }

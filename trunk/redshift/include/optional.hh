@@ -18,24 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef CLOSEDSPHERE_H_INCLUDED_20090301
-#define CLOSEDSPHERE_H_INCLUDED_20090301
+#ifndef OPTIONAL_HH_INCLUDED_20090402
+#define OPTIONAL_HH_INCLUDED_20090402
 
-namespace redshift { namespace shape {
-        DefineFinalizer(ClosedSphere); 
-        
-        class ClosedSphere : public Shape, DoFinalize(ClosedSphere) {
-        public:
-                ClosedSphere (Point const &, real_t);
-                bool doesIntersect (Ray const &ray) const ;
-                optional<DifferentialGeometry> intersect (Ray const&ray) const;
-        private:
-                redshift::Sphere sphereData;
-                
-                ClosedSphere();
-                ClosedSphere(ClosedSphere const&);
-                ClosedSphere &operator = (ClosedSphere const&);
-        };
-} }
+#include <boost/optional.hpp>
 
-#endif // CLOSEDSPHERE_H_INCLUDED_20090301
+namespace redshift {
+        using boost::optional;        
+}
+
+#endif // OPTIONAL_HH_INCLUDED_20090402

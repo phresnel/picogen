@@ -27,11 +27,29 @@ namespace redshift {
         public:
                 ImageCoordinates imageCoordinates;
                 LensCoordinates lensCoordinates;
+                RayDifferential primaryRay;
+                shared_ptr<RenderTarget> renderTarget;
 
                 Sample (ImageCoordinates const & imageCoordinates_,
                         LensCoordinates const & lensCoordinates_)
                 : imageCoordinates(imageCoordinates_)
                 , lensCoordinates(lensCoordinates_)
+                {}
+                
+                Sample (ImageCoordinates const & imageCoordinates_,
+                        LensCoordinates const & lensCoordinates_,
+                        shared_ptr<RenderTarget> renderTarget_)
+                : imageCoordinates (imageCoordinates_)
+                , lensCoordinates (lensCoordinates_)
+                , renderTarget (renderTarget_)
+                {}
+           
+                Sample (ImageCoordinates const & imageCoordinates_,
+                        LensCoordinates const & lensCoordinates_,
+                        RayDifferential const & primaryRay_)
+                : imageCoordinates(imageCoordinates_)
+                , lensCoordinates(lensCoordinates_)
+                , primaryRay (primaryRay_)
                 {}
 
         };        

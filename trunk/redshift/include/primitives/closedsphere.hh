@@ -35,7 +35,7 @@ namespace redshift { namespace primitive {
                 
                 bool doesIntersect (RayDifferential const &ray) const;
 
-                tuple<bool,Intersection>
+                optional<Intersection>
                         intersect(RayDifferential const &ray) const;
                 
         private:

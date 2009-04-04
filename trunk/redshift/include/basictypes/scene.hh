@@ -42,13 +42,12 @@ namespace redshift {
                 Scene();
                 
                 
-                inline tuple<real_t,Color> Li(
-                                  RayDifferential const&, Sample const&) const;
+                inline tuple<real_t,Color> Li(Sample const&) const;
                         
-                inline bool doesIntersect (RayDifferential const &ray) const;
+                inline bool doesIntersect (Sample const &sample) const;
                 
-                inline tuple<bool,Intersection> intersect(
-                                             RayDifferential const &ray) const;
+                inline optional<Intersection> intersect(
+                                             Sample const &sample) const;
                         
                 
 

@@ -44,6 +44,9 @@ namespace redshift {
 
         typedef float real_t;
         typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;        
+        //typedef float fixed_point_t; //<-- lasttime I checked, floats where
+                                       // at only roughly 70% of runtime
+                                       // compared to int
 
         // Cartesian Types
         typedef kallisto::Point<kallisto::CARTESIAN,
@@ -57,6 +60,7 @@ namespace redshift {
         typedef CartesianNormal Normal;
         typedef CartesianVector Vector;
 
+        typedef kallisto::BoundingBox<Point>            BoundingBox;
         typedef kallisto::Sphere<Point,real_t>          Sphere;
         typedef kallisto::Ray   <Point,Vector>          Ray;
         typedef kallisto::RayDifferential<Point,Vector> RayDifferential;
@@ -136,5 +140,6 @@ namespace redshift {
 
 #include "smart_ptr.hh"
 #include "tuple.hh"
+#include "optional.hh"
 
 #endif // SETUP_HH_INCLUDED_20090303

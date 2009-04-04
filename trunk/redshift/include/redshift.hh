@@ -45,6 +45,7 @@
 #include "interaction/progressreporter.hh"
 
 // basictypes/
+namespace redshift{class RenderTarget;}
 #include "basictypes/rectangle.hh"
 #include "basictypes/sample.hh"
 

@@ -24,6 +24,14 @@
 #include "../../include/basictypes/differentialgeometry.hh"
 #include "../../include/shapes/shape.hh"
 #include "../../include/basictypes/intersection.hh"
+
+#include "../../include/coordinates/uvcoordinates.hh"
+#include "../../include/coordinates/imagecoordinates.hh"
+#include "../../include/coordinates/lenscoordinates.hh"
+#include "../../include/rendertargets/rendertargetlock.hh"
+#include "../../include/rendertargets/rendertarget.hh"
+#include "../../include/basictypes/sample.hh"
+
 #include "../../include/primitives/primitive.hh"
 
 

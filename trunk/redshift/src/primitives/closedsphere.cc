@@ -23,7 +23,16 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/shapes/shape.hh"
 #include "../../include/shapes/closedsphere.hh"
+
+#include "../../include/coordinates/uvcoordinates.hh"
+#include "../../include/coordinates/imagecoordinates.hh"
+#include "../../include/coordinates/lenscoordinates.hh"
+#include "../../include/rendertargets/rendertargetlock.hh"
+#include "../../include/rendertargets/rendertarget.hh"
+#include "../../include/basictypes/sample.hh"
+
 #include "../../include/primitives/primitive.hh"
+
 #include "../../include/primitives/closedsphere.hh"
 
 namespace redshift { namespace primitive {
@@ -47,10 +56,11 @@ bool ClosedSphere::doesIntersect (RayDifferential const &ray) const {
 
 
 
-tuple<bool,Intersection>
+optional<Intersection>
  ClosedSphere::intersect(RayDifferential const &ray) const {
 
-        tuple<bool const,DifferentialGeometry const> 
+        /*
+        tuple<bool const,DifferentialGeometry const>
                        i(sphereData.intersect(ray));
 
 
@@ -63,6 +73,14 @@ tuple<bool,Intersection>
                 dg);
 
         return make_tuple (does, iret);
+        */
+        optional<DifferentialGeometry> 
+                       i(sphereData.intersect(ray));
+        if (i) { 
+                return Intersection (shared_from_this(), *i);
+        } else {
+                return false;
+        }
 }
 
 

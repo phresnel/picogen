@@ -18,7 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <iostream>
 #include <SDL.h>
 
 #include <cstdlib>
@@ -118,8 +117,8 @@ void run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 512;
-        int const height = 512;
+        int const width = 1024;
+        int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));
         shared_ptr<primitive::Primitive> agg (
@@ -132,7 +131,7 @@ void run() {
                         shared_ptr<primitive::HeightFunction>(
                                 new ::HeightFunction()
                         ),
-                        15.0
+                        0.25
                 )
         );
         

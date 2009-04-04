@@ -33,7 +33,7 @@ namespace redshift { namespace shape {
 
                 // Full fledged information including Normal, U/V, etc.
                 virtual
-                tuple<bool,DifferentialGeometry> intersect(Ray const &ray)
+                optional<DifferentialGeometry> intersect(Ray const &ray)
                 const = 0;
         };
 } }

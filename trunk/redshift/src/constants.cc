@@ -20,28 +20,28 @@
 
 #ifdef AMALGAM
 #include "../../include/setup.hh"
-#else 
+#else
 #include "../include/setup.hh"
 #endif
 
 
-namespace redshift { namespace constants {       
-        
-        float const epsilon_value<float>::value = 0.01f; 
-        double const epsilon_value<double>::value = 0.01; 
-        long double const epsilon_value<long double>::value = 0.01L; 
-        
-        float const infinity_value<float>::value = 10000000.0f; 
-        double const infinity_value<double>::value = 10000000.0; 
-        long double const infinity_value<long double>::value = 10000000.0L; 
-                
+namespace redshift { namespace constants {
+
+        float const epsilon_value<float>::value = 0.01f;
+        double const epsilon_value<double>::value = 0.01;
+        long double const epsilon_value<long double>::value = 0.01L;
+
+        float const infinity_value<float>::value = 10000000.0f;
+        double const infinity_value<double>::value = 10000000.0;
+        long double const infinity_value<long double>::value = 10000000.0L;
+
         real_t const epsilon = epsilon_value<real_t>::value;
         real_t const infinity = infinity_value<real_t>::value;
-        
+
         real_t const earth_radius_m   = static_cast<real_t>(km2m (12756.0));
         real_t const sun_radius_m = static_cast<real_t>(km2m (1.392 * 10.0e9));
         real_t const jupiter_radius_m = static_cast<real_t>(km2m (133708.0));
-        
+
         real_t const zero = static_cast<real_t>(0);
         real_t const one = static_cast<real_t>(1);
         real_t const two = static_cast<real_t>(2);

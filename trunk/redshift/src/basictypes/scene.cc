@@ -26,10 +26,11 @@
 #include "../../include/coordinates/uvcoordinates.hh"
 #include "../../include/coordinates/lenscoordinates.hh"
 #include "../../include/coordinates/imagecoordinates.hh"
-#include "../../include/basictypes/sample.hh"
 
 #include "../../include/rendertargets/rendertargetlock.hh"
 #include "../../include/rendertargets/rendertarget.hh"
+
+#include "../../include/basictypes/sample.hh"
 
 #include "../../include/cameras/camera.hh"
 
@@ -63,26 +64,19 @@ Scene::~Scene () {
 
 
 
-inline
-bool Scene::doesIntersect (RayDifferential const &ray)
-const {
-        return aggregate->doesIntersect (ray);
+inline bool Scene::doesIntersect (Sample const &sample) const {
+        return aggregate->doesIntersect (sample);
 }
 
 
 
-inline
-tuple<bool,Intersection> Scene::intersect (RayDifferential const &ray)
-const {
-        return aggregate->intersect (ray);
+inline optional<Intersection> Scene::intersect (Sample const &sample) const {
+        return aggregate->intersect (sample);
 }
                                                 
                                                 
 
-inline tuple<real_t,Color> Scene::Li (
-        RayDifferential const & ray,
-        Sample const & sample
-) const {
+inline tuple<real_t,Color> Scene::Li (Sample const & sample) const {
         /* PBRT:
            Spectrum Lo = surfaceIntegrator->Li (this, ray, sample, alpha)
            Spectrum T = volumeIntegrator->Transmittance (this,ray,sample,alpha)
@@ -90,26 +84,25 @@ inline tuple<real_t,Color> Scene::Li (
            return T * Lo + Lv
         */
         
-        tuple<bool,Intersection> const bi (intersect (ray));
+        const optional<Intersection> I (intersect (sample));
         
-        const bool         & does (get<0>(bi));
-        const Intersection & i    (get<1>(bi));
-
-        if (does) {                
+        if (I) {                
                 return make_tuple (1.0, 
                         Color(
-                                i.getDistance()*0.05,
-                                i.getDistance()*0.025,
-                                i.getDistance()*0.0125
+                                I->getDistance()*0.05,
+                                I->getDistance()*0.025,
+                                I->getDistance()*0.0125
                                 /*i.getNormal().x+0.5,
                                 i.getNormal().y+0.5,
                                 i.getNormal().z+0.5*/
                         )
                 );                
+        } else {
+                Color const col (0.5+sample.primaryRay.direction.x,
+                                 0.5+sample.primaryRay.direction.y,
+                                 0.5+sample.primaryRay.direction.z);
+                return make_tuple (1.0, col);
         }
-        Color const col (0.5+ray.direction.x,0.5+ray.direction.y,
-                                                        0.5+ray.direction.z);
-        return make_tuple (1.0, col); 
 }
 
 
@@ -126,27 +119,30 @@ void Scene::render (
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
         for (int y=renderTarget->getHeight()-1; y>=0; --y)
          for (int x=0; x<renderTarget->getWidth(); ++x) {
+                
                 Sample sample (
                         ImageCoordinates(static_cast<real_t>(x),
                                             static_cast<real_t>(y)),
-                        LensCoordinates()
+                        LensCoordinates(),
+                        renderTarget
                 );                
                 const tuple<real_t,RayDifferential>
                                           primo = camera->generateRay (sample);
                 const real_t & rayWeight (get<0>(primo));
-                RayDifferential ray (get<1>(primo)); // Will be modified, hence
+                sample.primaryRay = get<1>(primo); // Will be modified, hence
                                                      // non-const non-ref.
 
                 sample.imageCoordinates.u++;
-                ray.rx = get<1>(camera->generateRay (sample));
+                sample.primaryRay.rx = get<1>(camera->generateRay (sample));
                 sample.imageCoordinates.u--;
 
                 ++sample.imageCoordinates.v;
-                ray.ry = get<1>(camera->generateRay (sample));
+                sample.primaryRay.ry = get<1>(camera->generateRay (sample));
                 --sample.imageCoordinates.v;
-                ray.hasDifferentials= true;
                 
-                const tuple<real_t,Color> Ls_ (Li(ray,sample));
+                sample.primaryRay.hasDifferentials= true;
+               
+                const tuple<real_t,Color> Ls_ (Li(sample));
                 const real_t Ls_alpha (get<0>(Ls_));
                 const Color Ls_color  (get<1>(Ls_));
                 const Color finalColor = rayWeight * Ls_color;
