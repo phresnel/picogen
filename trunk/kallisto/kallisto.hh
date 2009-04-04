@@ -28,6 +28,10 @@ namespace kallisto {
                 CARTESIAN,
                 SPHERICAL
         };
+        
+        namespace traits {
+                using std::numeric_limits;
+        }
 
 
         // Template friendly sqrt().
@@ -44,16 +48,33 @@ namespace kallisto {
         inline float         abs (float const &rhs)        {return fabsf(rhs);}
         inline double        abs (double const &rhs)       {return fabs(rhs); }
         inline long double   abs (long double const &rhs)  {return fabsl(rhs);}
+        
+        
+        
+        template <typename T> inline void swap (T &lhs, T &rhs) {
+                const T tmp = lhs;
+                lhs = rhs;
+                rhs = tmp;
+        }
+        
+        template <typename T> inline T min (T lhs, T rhs) {
+                return lhs < rhs ? lhs : rhs;
+        }
+        
+        template <typename T> inline T max (T lhs, T rhs) {
+                return lhs > rhs ? lhs : rhs;
+        }
 }
 
-/*
 #include <boost/tuple/tuple.hpp>
+#include <boost/optional.hpp>
 
-namespace redshift {
+namespace kallisto {
+        using boost::optional;
+        
         using boost::tuple;
         using boost::get;
         using boost::make_tuple;
 }
-*/
 
 #endif // KALLISTO_HH_INCLUDED_20090218

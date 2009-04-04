@@ -47,7 +47,7 @@ namespace kallisto {
                 typename radius_t,
                 typename direction_t
         >
-        typename traits::get_scalar_type<direction_t>::type
+        optional <typename traits::get_scalar_type<direction_t>::type>
         intersect(
                 Ray<point_t,direction_t> const & ray,
                 Sphere<point_t,radius_t> const & sphere
@@ -74,10 +74,10 @@ namespace kallisto {
 
         	real_t const D = B*B - C;
         	real_t const E = final_scale * (-B - sqrt(D));
-        	if ((D>=0) & (E>=ray.min_t) & (ray.max_t>=E)) {
+        	if ((D>=0) & (E>=ray.minT) & (ray.maxT>=E)) {
         	        return E;
         	} else {
-        	        return -1;
+        	        return optional <real_t>();
         	}
         }
 }
