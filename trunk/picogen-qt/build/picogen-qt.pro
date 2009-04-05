@@ -52,6 +52,17 @@ FORMS += ../ui/picogenqt.ui
 
 
 
+##
+# Display Forms
+FORMS += ../ui/render-window.ui
+
+
+# Scene Display
+SOURCES += ../src/scene-display.cc
+HEADERS += ../include/scene-display.hh
+
+
+
 # QImageRenderTarget
 SOURCES += ../src/qimagerendertarget.cc
 HEADERS += ../include/qimagerendertarget.hh

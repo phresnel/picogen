@@ -18,27 +18,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
-#define SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
+#ifndef PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404
+#define PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404
 
 namespace redshift { namespace interaction {
-
-        DefineFinalizer(SdlCommandProcessor);
-        class SdlCommandProcessor
-        : public UserCommandProcessor, DoFinalize (SdlCommandProcessor) {
+        
+        DefineFinalizer(PassiveCommandProcessor);
+        
+        class PassiveCommandProcessor
+        : public UserCommandProcessor
+        , DoFinalize (PassiveCommandProcessor) {
+        
         public:
-                SdlCommandProcessor () ;
-
-                void tick () ;                
-                bool userWantsToQuit () const ;                
+                PassiveCommandProcessor() ;
+                
+                
+                // UserCommandProcessor:
+                void tick ();
+                bool userWantsToQuit () const;
+                
+                // Additional functions:
+                void setQuitState (bool doQuit);
+                
+                virtual ~PassiveCommandProcessor ();
                 
         private:
-                bool quit;
-                clock_t lastTime;
-
-                SdlCommandProcessor (SdlCommandProcessor const &);        
-                SdlCommandProcessor & operator = (SdlCommandProcessor const &);
+                bool doQuit;
         };
 } }
 
-#endif // SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
+#endif // PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404

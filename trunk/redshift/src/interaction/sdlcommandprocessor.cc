@@ -21,8 +21,7 @@
 #include <SDL.h>
 #include <ctime>
 
-#include "../../include/smart_ptr.hh"
-
+#include "../../include/setup.hh"
 #include "../../include/interaction/usercommandprocessor.hh"
 #include "../../include/interaction/sdlcommandprocessor.hh"
 
@@ -63,14 +62,6 @@ void SdlCommandProcessor::tick () {
 
 bool SdlCommandProcessor::userWantsToQuit () const {
         return quit;
-}
-
-
-
-void SdlCommandProcessor::waitForQuit () {
-        do{
-                tick();
-        }while (!userWantsToQuit());
 }
 
 

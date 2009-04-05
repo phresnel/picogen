@@ -24,13 +24,6 @@
 #include "ui_picogenqt.h"
 
 #include <QMdiSubWindow>
-#include <QThread>
-
-class MyThread : public QThread {
-public:
-        void run();
-        QImage qimage;
-};
 
 
 class PicogenQTImpl : public QMainWindow, private Ui::PicogenQT
@@ -42,15 +35,9 @@ public:
         virtual ~PicogenQTImpl() {}        
 
 private slots:
-        /*void on_edRed_textChanged(QString value);
-        void on_edGreen_textChanged(QString value);
-        void on_edBlue_textChanged(QString value);*/        
         
-        void thread_finished ();
- 
 private:
-        MyThread my_thread;
-        //Ui::PicogenQT picogenQT;
+
 };
 
 

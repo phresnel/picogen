@@ -28,15 +28,8 @@ CameraSettingsImpl::CameraSettingsImpl(/*QWidget *parent*/)
 {
         setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
-        //setWidgetResizable (false);
-        //setGeometry (0, 0, 320, 240); 
-        /*show();*/
-        //setWidget (this);        
-        //QMetaObject::connectSlotsByName(this);
-        cout << "created Camera Settings" << endl;
 }
 
 
 CameraSettingsImpl::~CameraSettingsImpl(/*QWidget *parent*/) {
-        cout << "deleted Camera Settings" << endl;
 }

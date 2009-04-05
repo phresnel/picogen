@@ -75,6 +75,7 @@ OBJFILES += $(BASICTYPESOBJDIR)/intersection.o
 OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
+OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
@@ -173,6 +174,10 @@ $(INTERACTIONOBJDIR)/sdlcommandprocessor.o: \
                      ./src/interaction/sdlcommandprocessor.cc
 	$(CXX) -o $@ $<
 
+
+$(INTERACTIONOBJDIR)/passivecommandprocessor.o: \
+                     ./src/interaction/passivecommandprocessor.cc
+	$(CXX) -o $@ $<
 
 
 ###############################################################################

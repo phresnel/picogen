@@ -42,6 +42,7 @@
 
 // interaction/
 #include "interaction/usercommandprocessor.hh"
+#include "interaction/passivecommandprocessor.hh"
 #include "interaction/progressreporter.hh"
 
 // basictypes/
