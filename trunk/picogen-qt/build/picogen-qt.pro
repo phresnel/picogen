@@ -31,6 +31,13 @@ INCLUDEPATH += .
 
 
 
+# Camera List Window
+SOURCES += ../src/camera-list.cc
+HEADERS += ../include/camera-list.hh
+FORMS += ../ui/camera-list.ui
+
+
+
 # Camera Settings Window
 SOURCES += ../src/camerasettings.cc
 HEADERS += ../include/camerasettings.hh

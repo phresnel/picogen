@@ -26,6 +26,13 @@
 #include <QMdiSubWindow>
 
 
+#include "../include/camerasettings.hh"
+#include "../include/camera-list.hh"
+#include "../include/heightmap-designer.hh"
+#include "../include/scene-display.hh"
+
+
+
 class PicogenQTImpl : public QMainWindow, private Ui::PicogenQT
 {
         Q_OBJECT
@@ -35,9 +42,17 @@ public:
         virtual ~PicogenQTImpl() {}        
 
 private slots:
+
+        void on_actionCamera_triggered ();
+        void on_actionSun_and_Sky_triggered ();
+        void on_actionTerrain_Definition_triggered ();
+        
+        void openCameraSettings (QString const &);
+        void renameCamera (QString const &oldName, QString const &newName);
+        void closeCamera (QString const &name);
         
 private:
-
+        QMap <QString, CameraSettingsImpl*> cameraSettings;
 };
 
 

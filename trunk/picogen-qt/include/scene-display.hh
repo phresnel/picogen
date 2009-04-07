@@ -25,6 +25,7 @@
 
 #include <QThread>
 #include <QImage>
+#include <QResizeEvent>
 
 #include "ui_render-window.h"
 
@@ -76,6 +77,10 @@ private:
         friend class Reporter;
         void reportPartialImage ();
         void reportFullImage ();
+        
+private:
+        friend class SceneDisplayImpl;
+        int widthForNextRender, heightForNextRender;        
 
 protected:
         // QThread:
@@ -102,14 +107,19 @@ class SceneDisplayImpl : public QWidget, private Ui::RenderWindow
 public:
         SceneDisplayImpl(/*QWidget* parent=0*/);
         virtual ~SceneDisplayImpl();
+        
+protected:
+        void resizeEvent(QResizeEvent *event);
 
 private slots:
 
-        void updateDisplay (QImage const &image);        
+        void updateDisplay (QImage const &image);
+        void fullImage ();
  
 private:
 
         SceneDisplayThread renderThread;
+        bool mustReRender;
 
 };
 

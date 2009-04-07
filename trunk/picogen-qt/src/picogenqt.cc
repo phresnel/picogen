@@ -20,17 +20,13 @@
 
 #include <iostream>
 
+#include <QMessageBox>
+
 #include "../../redshift/include/redshift.hh"
 
 #include "../include/picogenqt.hh"
-#include "../include/camerasettings.hh"
-#include "../include/heightmap-designer.hh"
-#include "../include/scene-display.hh"
 
 
-
-
-int picogen_main ();
 
 PicogenQTImpl::PicogenQTImpl(QWidget *parent)
 : QMainWindow (parent), PicogenQT() 
@@ -58,5 +54,66 @@ PicogenQTImpl::PicogenQTImpl(QWidget *parent)
                 SceneDisplayImpl *cs = new SceneDisplayImpl;        
                 QMdiSubWindow *sub = mdiArea->addSubWindow(cs);                
                 sub->show();
-        }                
+        }
+}
+
+
+
+void PicogenQTImpl::on_actionCamera_triggered () {
+        CameraListImpl *cs = new CameraListImpl;        
+        QMdiSubWindow *sub = mdiArea->addSubWindow(cs);
+        connect(cs, SIGNAL(openCameraSettings (const QString &)),
+             this, SLOT(openCameraSettings(const QString &)));
+        connect(cs, SIGNAL(renameCamera (const QString &, const QString &)),
+             this, SLOT(renameCamera (const QString &, const QString &)));        
+        sub->show();
+}
+
+
+
+void PicogenQTImpl::on_actionSun_and_Sky_triggered () {
+}
+
+
+
+void PicogenQTImpl::openCameraSettings (QString const &id) {
+        if (cameraSettings.contains (id)) {
+                cameraSettings [id]->setFocus();
+        } else {
+                CameraSettingsImpl *cs = new CameraSettingsImpl;
+                cs->renameCamera (id);
+                QMdiSubWindow *sub = mdiArea->addSubWindow(cs);
+                cameraSettings [id] = cs;
+                sub->show();
+                
+                connect(cs, SIGNAL(closeCamera (const QString &)),
+                        this, SLOT(closeCamera (const QString &)));
+        }
+}
+
+
+
+void PicogenQTImpl::on_actionTerrain_Definition_triggered () {
+        HeightmapDesignerImpl *hd = new HeightmapDesignerImpl;        
+        QMdiSubWindow *sub = mdiArea->addSubWindow(hd);                
+        sub->show();
+}
+
+
+
+void PicogenQTImpl::renameCamera (
+        QString const &oldName, QString const &newName
+) {
+        if (cameraSettings.contains (oldName)) {
+                cameraSettings [oldName]->renameCamera (newName);
+                cameraSettings [newName] = cameraSettings [oldName];
+                cameraSettings.remove (oldName);
+        } // else nothing to rename
+}
+
+
+
+void PicogenQTImpl::closeCamera (QString const &name) {
+        std::cout << "remove " << name.toStdString() << std::endl;
+        cameraSettings.remove (name);
 }

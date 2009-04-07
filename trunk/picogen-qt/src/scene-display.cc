@@ -28,7 +28,6 @@
 
 /////////////////////////////
 #include <iostream>
-#include <SDL/SDL.h>
 
 #include <cstdlib>
 #include <stdexcept>
@@ -38,7 +37,7 @@
 #include "../../redshift/include/redshift.hh"
 #include "../../redshift/include/rendertargets/colorrendertarget.hh"
 #include "../../redshift/include/cameras/pinhole.hh"
-#include "../../redshift/include/interaction/sdlcommandprocessor.hh"
+//#include "../../redshift/include/interaction/sdlcommandprocessor.hh"
 
 #include "../include/qimagerendertarget.hh"
 
@@ -164,8 +163,8 @@ void SceneDisplayThread::run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 1024;
-        int const height = width;
+        int const width = widthForNextRender;
+        int const height = heightForNextRender;
         this->renderBuffer = RenderTarget::Ptr(new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));
         
@@ -218,44 +217,26 @@ void SceneDisplayThread::reportFullImage() {
         emit fullImage (*((QImageRenderTarget*)&*screenBuffer));
 }
 
-/*
-void SceneDisplayThread::report (
-        redshift::RenderTarget::ReadLockPtr sourcel, 
-        int, 
-        int
-) const {
-        clock_t const curr = clock();
-        if (curr - lastReportTime < (CLOCKS_PER_SEC/2))
-                return;
-        lastReportTime = clock();
-        
-        copy (renderBuffer, sourcel, screenBuffer);
-        screenBuffer->flip();
-}
-
-
-
-void SceneDisplayThread::reportDone () const {
-        redshift::copy (renderBuffer, screenBuffer);
-        screenBuffer->flip();
-}
-*/
-
         
 
-SceneDisplayImpl::SceneDisplayImpl(/*QWidget *parent*/)
+SceneDisplayImpl::SceneDisplayImpl()
+: mustReRender (false)
 {
         qRegisterMetaType<QImage>("QImage");
         connect(&renderThread, SIGNAL(partialImage (const QImage&)),
              this, SLOT(updateDisplay(const QImage&)));
         connect(&renderThread, SIGNAL(fullImage (const QImage &)),
              this, SLOT(updateDisplay(const QImage &)));
+        connect(&renderThread, SIGNAL(fullImage (const QImage &)),
+             this, SLOT(fullImage()));
 
         
         //setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
         
-        renderThread.start();
+        renderThread.widthForNextRender = width();
+        renderThread.heightForNextRender = width();
+        //renderThread.start();
 }
 
 
@@ -271,4 +252,30 @@ void SceneDisplayImpl::updateDisplay(QImage const &image) {
         imageLabel->resize (pix.width(), pix.height());
         //setMinimumSize (pix.width(), pix.height());
         update();
+}
+
+
+
+void SceneDisplayImpl::fullImage() {
+        if (mustReRender) {
+                mustReRender = false;
+                renderThread.widthForNextRender = width();
+                renderThread.heightForNextRender = height();
+                renderThread.start();
+        }
+}
+
+
+
+void SceneDisplayImpl::resizeEvent(QResizeEvent *event) {
+
+        renderThread.widthForNextRender = width();
+        renderThread.heightForNextRender = height();
+        if (renderThread.isRunning()) {
+                mustReRender = true;
+        } else {
+                mustReRender = false;
+                renderThread.start();
+        }
+        QWidget::resizeEvent (event);
 }

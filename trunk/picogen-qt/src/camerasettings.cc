@@ -18,18 +18,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <iostream>
-using namespace std;
-
 #include "../include/camerasettings.hh"
 
-CameraSettingsImpl::CameraSettingsImpl(/*QWidget *parent*/)
-//: QWidget (/*parent*/), CameraSettings()
-{
+
+
+CameraSettingsImpl::CameraSettingsImpl() {
         setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
 }
 
 
-CameraSettingsImpl::~CameraSettingsImpl(/*QWidget *parent*/) {
+
+CameraSettingsImpl::~CameraSettingsImpl() {
+        emit closeCamera (name);
+}
+
+
+
+void CameraSettingsImpl::renameCamera (QString const &newName) {
+        name = newName;
+        setWindowTitle ("Camera: " + newName);
 }

@@ -18,32 +18,36 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef CAMERASETTINGS_HH_INCLUDED_20090323
-#define CAMERASETTINGS_HH_INCLUDED_20090323
+#ifndef CAMERA_LIST_HH_INCLUDED_20090406
+#define CAMERA_LIST_HH_INCLUDED_20090406
 
-#include <QScrollArea>
-#include <QTextEdit>
-#include "ui_camerasettings.h"
+#include "ui_camera-list.h"
+#include "../include/camerasettings.hh"
 
 
-class CameraSettingsImpl : public QWidget, private Ui::CameraSettings
+class CameraListImpl : public QWidget, private Ui::CameraList
 {
         Q_OBJECT
 
 public:
-        CameraSettingsImpl(/*QWidget* parent=0*/);
-        virtual ~CameraSettingsImpl();
-
-        void renameCamera (QString const &newName);               
+        CameraListImpl(QWidget* parent=0);
+        virtual ~CameraListImpl() {}        
 
 private slots:
-
+        void on_newCamera_clicked();
+        void on_openSettings_clicked();
+        
+        void on_list_itemChanged (QListWidgetItem * item);
+        void on_list_currentItemChanged (QListWidgetItem *current, 
+                                         QListWidgetItem *previous);
+        
 signals:
-        void closeCamera (QString const &cameraName);
- 
+        void openCameraSettings(QString const &);
+        void renameCamera (QString const &oldName, QString const &newName);
+
 private:
-        QString name;
+        QString currentItemOldText;
 };
 
 
-#endif // HEIGHTFIELDPROJECT_H_INCLUDED_20090323
+#endif // CAMERA_LIST_HH_INCLUDED_20090406
