@@ -245,8 +245,10 @@ namespace quatsch {  namespace frontend {  namespace jux {
 
 
     template <typename BACKEND>
-    void Compiler <BACKEND> :: dumpErrorMessages () const {
-        backend.dumpErrorMessages ();
+    void Compiler <BACKEND> :: dumpErrorMessagesAndThrow (
+        std::ostream &o
+    ) const {
+        backend.dumpErrorMessagesAndThrow (o);
     }
 
 
@@ -259,7 +261,8 @@ namespace quatsch {  namespace frontend {  namespace jux {
         Compiler <BACKEND> :: compile (
             const ::std::string &parameterNames, 
             const ::std::string &code,
-            const ConfigurableFunctionsMap &addfuns
+            const ConfigurableFunctionsMap &addfuns,
+            std::ostream &o
         )
     {
         using namespace ::boost::spirit;
@@ -279,7 +282,7 @@ namespace quatsch {  namespace frontend {  namespace jux {
             compiler.syntaxError.invalidProgram (begin, info.stop);
             //throw;
         }
-        compiler.dumpErrorMessages ();
+        compiler.dumpErrorMessagesAndThrow (o);
         //throw;
         return compiler.backend.getFunction ();
     }

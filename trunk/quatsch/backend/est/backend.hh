@@ -43,122 +43,143 @@
 #include "actions/functiondefinition.hh"
 #include "actions/codedefinition.hh"
 
-namespace quatsch {  namespace backend {  namespace est {
+namespace quatsch {
+namespace backend {
+namespace est {
 
-    // The 'virtual virtual machine' backend, as in "a virtual machine consisting of virtual function calls" :S
-    template <typename SCALAR, typename PARAMETERS /*= ::std::vector <scalar_t>*/> class Backend {
-            enum { debug=0 };
-        public:
-            
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // Basic Types.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            typedef SCALAR     scalar_t;
-            typedef PARAMETERS parameters_t;
-            
-            typedef ::boost :: spirit :: position_iterator<char const*>  code_iterator_t;
+// The 'virtual virtual machine' backend, as in "a virtual machine consisting
+// of virtual function calls" :/
+template <typename SCALAR,typename PARAMETERS> class Backend
+{
+        enum { debug=0 };
+public:
 
-            
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // Function[Ptr] related.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            typedef typename ::quatsch :: Function<scalar_t, parameters_t>                Function;
-            typedef typename ::quatsch :: Function<scalar_t, parameters_t> :: FunctionPtr FunctionPtr;
-        
-            typedef typename ::quatsch :: ICreateConfigurableFunction <Function>                             ICreateConfigurableFunction;
-            typedef typename ::quatsch :: ICreateConfigurableFunction <Function> :: ConfigurableFunctionsMap ConfigurableFunctionsMap;
-        
-            
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // Parser Actions.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        public: 
-            // > aliases:
-            typedef        parser_actions :: Program           <Backend>  Program;
-            typedef        parser_actions :: SyntaxError       <Backend>  SyntaxError;
-            typedef        parser_actions :: FunctionDefinition<Backend>  FunctionDefinition;
-            typedef        parser_actions :: CodeDefinition    <Backend>  CodeDefinition;            
-        
-        private: 
-            // > mates:
-            friend  class  parser_actions :: Program           <Backend>;
-            friend  class  parser_actions :: SyntaxError       <Backend>;
-            friend  class  parser_actions :: FunctionDefinition<Backend>;
-            friend  class  parser_actions :: CodeDefinition    <Backend>;                        
-        
-            
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // More friends.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            
-            friend  class  FunctionDescriptor<Backend>;
+        ///////////////////////////////////////////////////////////////////////
+        // Basic Types.
+        ///////////////////////////////////////////////////////////////////////
+        typedef SCALAR       scalar_t;
+        typedef PARAMETERS   parameters_t;
 
-        private:           
-            
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // Private fields.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            
-            // operators: To which operator the operands at this->operands.back() belong. 
-            // Do not confuse with functions, in which user defined functions are stored!    
-            ::std::vector < ::std::string> operators; 
-            //::std::vector < ::boost::shared_ptr <ICreateConfigurableFunction> > configurableFunctionCreators;
-            struct ConfigurableCallDescriptor {
+        typedef ::boost::spirit::position_iterator<char const*>
+                code_iterator_t;
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // Function[Ptr] related.
+        ///////////////////////////////////////////////////////////////////////
+        typedef typename ::quatsch :: Function<scalar_t,parameters_t> Function;
+        typedef typename   Function:: FunctionPtr                  FunctionPtr;
+
+        typedef typename ::quatsch :: ICreateConfigurableFunction <Function>
+                ICreateConfigurableFunction;
+
+        typedef typename ICreateConfigurableFunction::ConfigurableFunctionsMap
+                ConfigurableFunctionsMap;
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // Parser Actions.
+        ///////////////////////////////////////////////////////////////////////
+
+public:
+        // > aliases:
+        typedef parser_actions::Program           <Backend> Program;
+        typedef parser_actions::SyntaxError       <Backend> SyntaxError;
+        typedef parser_actions::FunctionDefinition<Backend> FunctionDefinition;
+        typedef parser_actions::CodeDefinition    <Backend> CodeDefinition;
+
+private:
+        // > mates:
+        friend  class  parser_actions :: Program           <Backend>;
+        friend  class  parser_actions :: SyntaxError       <Backend>;
+        friend  class  parser_actions :: FunctionDefinition<Backend>;
+        friend  class  parser_actions :: CodeDefinition    <Backend>;
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // More friends.
+        ///////////////////////////////////////////////////////////////////////
+
+        friend  class  FunctionDescriptor<Backend>;
+
+private:
+
+        ///////////////////////////////////////////////////////////////////////
+        // Private fields.
+        ///////////////////////////////////////////////////////////////////////
+
+        // operators: To which operator the operands at operands.back() belong.
+        // Don not confuse with functions, in which user defined functions are
+        // stored!
+        ::std::vector < ::std::string> operators;
+        
+        
+
+        struct ConfigurableCallDescriptor {
                 ::boost::shared_ptr <ICreateConfigurableFunction> creator;
                 ::std::map <std::string, std::string> static_arguments;
 
-                ConfigurableCallDescriptor (::boost::shared_ptr <ICreateConfigurableFunction> &creator, ::std::map <std::string, std::string> &static_arguments)
+                ConfigurableCallDescriptor (
+                    ::boost::shared_ptr <ICreateConfigurableFunction> &creator,
+                    ::std::map <std::string, std::string> &static_arguments
+                )
                 : creator (creator), static_arguments (static_arguments)
-                {}
-            };
-            ::std::vector <ConfigurableCallDescriptor> configurableCallDescriptors;
-            ::std::vector < ::std::vector <FunctionPtr> > operands;
-
-            // In this stack of SymbolTables, each table is distinct, and no table is derived from any other,
-            // that is, parameters[x+1] does NOT include the symbols of parameters[x].
-            ::std::vector <SymbolTable <unsigned int> > parameters;    
-            
-            SymbolTable <FunctionDescriptor<Backend> > functions;
-            const ConfigurableFunctionsMap &configurableFunctions;    
+                {
+                }
+        };
         
-            // To stack up error- and warning-messages.
-            ::std::vector <ErrorMessage> errorMessages;
         
-            Backend ();
+        
+        ::std::vector <ConfigurableCallDescriptor> configurableCallDescriptors;
+        ::std::vector < ::std::vector <FunctionPtr> > operands;
 
-        public:
+        // In this stack of SymbolTables, each table  is distinct, and no table
+        // is derived from any other, that is, parameters[x+1] does NOT include
+        // the symbols of parameters[x].
+        ::std::vector <SymbolTable <unsigned int> > parameters;
 
+        SymbolTable <FunctionDescriptor<Backend> > functions;
+        const ConfigurableFunctionsMap &configurableFunctions;
 
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // Public Functors.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // To stack up error- and warning-messages.
+        ::std::vector <ErrorMessage> errorMessages;
 
-            // > members:
-            Program             program;
-            FunctionDefinition  functionDefinition;
-            CodeDefinition      codeDefinition;
-            SyntaxError         syntaxError;
+        Backend ();
 
-
-
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // Public Methods.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            void dumpErrorMessages () const;
-            void addParameter (const ::std::string &name);
-            FunctionPtr getFunction ();
+public:
 
 
+        ///////////////////////////////////////////////////////////////////////
+        // Public Functors.
+        ///////////////////////////////////////////////////////////////////////
 
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            // Alpha + Omega.
-            ///////////////////////////////////////////////////////////////////////////////////////////////////
-            Backend (const ConfigurableFunctionsMap &configurableFunctions);
-            virtual ~Backend();
-            
-    };
+        // > members:
+        Program             program;
+        FunctionDefinition  functionDefinition;
+        CodeDefinition      codeDefinition;
+        SyntaxError         syntaxError;
 
-} } }
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // Public Methods.
+        ///////////////////////////////////////////////////////////////////////
+        void dumpErrorMessagesAndThrow (std::ostream &cerr) const;
+        void addParameter (const ::std::string &name);
+        FunctionPtr getFunction ();
+
+
+
+        ///////////////////////////////////////////////////////////////////////
+        // Alpha + Omega.
+        ///////////////////////////////////////////////////////////////////////
+        Backend (const ConfigurableFunctionsMap &configurableFunctions);
+        virtual ~Backend();
+
+};
+
+}
+}
+}
 
 #endif // EST_BACKEND__INCLUDED__20090104

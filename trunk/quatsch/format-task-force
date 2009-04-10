@@ -1,0 +1,15 @@
+formatting clean:
+
+        quatsch.hh
+
+        backend/est/backend.hh
+        backend/est/backenddef.hh
+        backend/est/exceptions.hh
+        backend/est/functiondescriptor.hh
+        backend/est/node_types.hh
+        
+        configurable-functions/noise2d.hh
+        configurable-functions/noise2ddef.hh
+        
+        frontend/juxinst-all.cc
+        frontend/juxinst-double-doubleptr.cc

@@ -61,7 +61,7 @@ namespace quatsch {  namespace frontend {  namespace jux {
             
             void setParameterNames (const ::std::string & parameterNames);
         
-            void dumpErrorMessages () const;
+            void dumpErrorMessagesAndThrow (std::ostream &o) const;
         
         public:
             
@@ -94,7 +94,8 @@ namespace quatsch {  namespace frontend {  namespace jux {
             static typename ::quatsch::Function <scalar_t, parameters_t>::FunctionPtr compile (
                 const ::std::string &parameterNames,
                 const ::std::string &code,
-                const ConfigurableFunctionsMap &addfuns
+                const ConfigurableFunctionsMap &addfuns,
+                std::ostream &o
             );
     };
 

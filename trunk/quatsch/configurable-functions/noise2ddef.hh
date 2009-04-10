@@ -30,12 +30,15 @@
 
 namespace quatsch {  namespace configurable_functions {
 
-    template <typename FUNCTION, typename COMPILER> 
-    Noise2d <FUNCTION, COMPILER> :: Noise2d (std::map<std::string,std::string> &parameters, FunctionPtr ufun, FunctionPtr vfun)
-                : ufun(ufun), vfun(vfun)
-                , filter (cosine)
-                , frequency (8.0)
-    {
+template <typename FUNCTION, typename COMPILER> 
+Noise2d <FUNCTION, COMPILER> :: Noise2d (
+        std::map<std::string,std::string> &parameters, 
+        FunctionPtr ufun, FunctionPtr vfun
+)
+: ufun(ufun), vfun(vfun)
+, filter (cosine)
+, frequency (8.0)
+{
         using namespace std;
         typedef map<string,string> Map;
 
@@ -44,43 +47,58 @@ namespace quatsch {  namespace configurable_functions {
         //====---- - - -  -   -    -      -
         // Scan Parameters.
         //====---- - - -  -   -    -      -
-        string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
+        // To collect together parameter names that don't exist, 
+        // and for dumping errors in the end.
+        string nonExistantParameterNames ("");
 
-        for ( Map::const_iterator it=parameters.begin(); it!=parameters.end(); ++it ) {
-            const string name = it->first;
-            /// \todo Add some shorter Mnenomics.
-            if (name == string("seed")) {
-                istringstream hmmm (parameters[name]);
-                hmmm >> seed;
-            } else if (name == string("frequency") ) {
-                istringstream hmmm (parameters[name]);
-                hmmm >> frequency;
-            } else if (name == string("filter")) {
-                istringstream hmmm (parameters[name]);
-                string filterType;
-                hmmm >> filterType;
-                if (filterType == "bilinear") {
-                    filter = bilinear;
-                } else if (filterType == "nearest") {
-                    filter = nearest;
-                } else if (filterType == "cosine") {
-                    filter = cosine;
+        for (Map::const_iterator it=parameters.begin() ;
+             it!=parameters.end() ;
+             ++it
+        ) {
+                const string name = it->first;
+                /// \todo Add some shorter Mnenomics.
+                if (name == string("seed")) {
+                        istringstream hmmm (parameters[name]);
+                        hmmm >> seed;
+                } else if (name == string("frequency") ) {
+                        istringstream hmmm (parameters[name]);
+                        hmmm >> frequency;
+                } else if (name == string("filter")) {
+                        istringstream hmmm (parameters[name]);
+                        string filterType;
+                        hmmm >> filterType;
+                        if (filterType == "bilinear") {
+                                filter = bilinear;
+                        } else if (filterType == "nearest") {
+                                filter = nearest;
+                        } else if (filterType == "cosine") {
+                                filter = cosine;
+                        } else {
+                                throw general_exception (
+                                "unknown filter type for 'noisemapfilter': '" + 
+                                filterType + "' (only 'bilinear' and 'nearest'"
+                                "are supported)"
+                                );
+                        }
                 } else {
-                    throw general_exeption ("unknown filter type for 'noisemapfilter': '" + filterType + "' (only 'bilinear' and 'nearest' are supported)");
+                        nonExistantParameterNames += 
+                                (nonExistantParameterNames!=""?", ":"") +
+                                string("'") + 
+                                it->first + 
+                                string("'");
                 }
-            } else {
-                nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
-            }
         }
         // Any parameters set that we don't know?
         if (nonExistantParameterNames != "") {
-            throw general_exeption ("the following parameters do not exist for 'Noise': "+nonExistantParameterNames);
+                throw general_exception ("the following parameters do not "
+                        "exist for 'Noise': " + nonExistantParameterNames);
         }
 
         //====---- - - -  -   -    -      -
         // Initialise Noise.
-        //====---- - - -  -   -    -      -
+        //====---- - - -  -   -    -      -        
         /*
+        using boost::shared_array;
         ::picogen::generators::rng::MersenneTwister twister (seed);
 
         const unsigned int offsetLutNumBits = 8;
@@ -94,42 +112,50 @@ namespace quatsch {  namespace configurable_functions {
                 std::cout << i << ":" << (i&offsetLutMask) << std::endl;
             }
         }
-        offsetLut = boost::shared_array <unsigned int> (new unsigned int [offsetLutSize]);
-        rngLut    = boost::shared_array <scalar_t>     (new scalar_t [offsetLutSize]);
+        offsetLut = shared_array<unsigned int>(new unsigned [offsetLutSize]);
+        rngLut    = shared_array<scalar_t>(new scalar_t [offsetLutSize]);
 
         for (unsigned int u=0; u<offsetLutSize; ++u) {
-            offsetLut [u] = static_cast<unsigned int> ((twister.randf()) * static_cast<scalar_t> (offsetLutSize));
+            offsetLut [u] = static_cast<unsigned int> ((twister.randf()) * 
+                                static_cast<scalar_t> (offsetLutSize));
             rngLut    [u] = -0.5 + 1.0 * twister.randf();
         }
         */
         #warning "implement twister!"
-
-    }
-
+}
 
 
-    template <typename FUNCTION, typename COMPILER> Noise2d <FUNCTION, COMPILER> :: ~Noise2d() {
+
+template <typename FUNCTION, typename COMPILER>
+Noise2d <FUNCTION, COMPILER> :: ~Noise2d() {
         /*if (0 != offsetLut) {
-            delete [] offsetLut;
+                delete [] offsetLut;
         }
         if (0 != rngLut) {
-            delete [] rngLut;
+                delete [] rngLut;
         }
         if (0 != vfun) {
-            delete vfun;
+                delete vfun;
         }
         if (0 != ufun) {
-            delete ufun;
-        }*/
-    }
+                delete ufun;
+        }*/     
+}
 
 
-// const float *vg = lot_vals[ (i+lot_ofs[ (j+lot_ofs[k&0xFE]) &0xFE]) &0xFE ];
-//#define LN2D_LUTINDEX(u, v, depth )  (((v) + offsetLut [((u) + offsetLut [(depth) %offsetLutSize]) %offsetLutSize]) %offsetLutSize)
-//#define LN2D_RNG(u, v, depth ) rngLut [ LN2D_LUTINDEX (u, v, depth) ]
-#define LN2D_RNG( u, v, depth ) rngLut [ ((v) + offsetLut [((u) + offsetLut [(depth) &offsetLutMask]) &offsetLutMask]) &offsetLutMask]
+#define LN2D_RNG( u, v, depth ) \
+        rngLut [ \
+                ((v) + offsetLut [  \
+                        ((u) + offsetLut [  \
+                                (depth)  \
+                                & offsetLutMask  \
+                        ])  \
+                        & offsetLutMask  \
+                ])  \
+                & offsetLutMask  \
+        ]
 
-    namespace {
+namespace {
         template <typename RT, typename T> RT floor (const T &v) {
             assert (static_cast<int>(1.75) == 1);
             assert (static_cast<int>(1.5) == 1);
@@ -139,13 +165,13 @@ namespace quatsch {  namespace configurable_functions {
             assert (static_cast<int>(-0.25) == 0);
             return (RT)(int)(v<0 ? v-1 : v);
         }
-    }
+}
 
-    template <typename FUNCTION, typename COMPILER>
-    typename Noise2d <FUNCTION, COMPILER>::scalar_t 
-    Noise2d <FUNCTION, COMPILER>::operator () (
+template <typename FUNCTION, typename COMPILER>
+typename Noise2d <FUNCTION, COMPILER>::scalar_t 
+Noise2d <FUNCTION, COMPILER>::operator () (
         const Noise2d <FUNCTION, COMPILER>::parameters_t& parameters
-    ) const {
+) const {
 
         using namespace std;
 ::std::cout << "Noise2d::operator () called" << ::std::endl;
@@ -156,7 +182,7 @@ namespace quatsch {  namespace configurable_functions {
         const int depth = 0;
 
         switch (filter) {
-            case bilinear: {
+        case bilinear: {
                 const scalar_t u__  = x;
                 const scalar_t u_   = u__ * frequency;
                 const int u     = floor <int> (u_);
@@ -180,8 +206,10 @@ namespace quatsch {  namespace configurable_functions {
 
                 const scalar_t Z = P*(1.0-pv) + Q*(pv);
                 return Z;
-            }
-            case cosine: {
+        } break;
+        case cosine: {
+                using constants::pi;
+
                 const scalar_t u__  = x;
                 const scalar_t u_   = u__ * frequency;
                 const int u     = floor <int> (u_);
@@ -193,8 +221,10 @@ namespace quatsch {  namespace configurable_functions {
                 const int  v1   = floor <int> (1 + v_);
 
                 /*
-                    :from Hugo Elias (http://freespace.virgin.net/hugo.elias/models/m_perlin.htm)
+                    from Hugo Elias
+                    http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
 
+                    -- 
                     function Cosine_Interpolate(a, b, x)
                         ft = x * 3.1415927
                         f = (1 - cos(ft)) * .5
@@ -202,9 +232,9 @@ namespace quatsch {  namespace configurable_functions {
                         return  a*(1-f) + b*f
                     end of function
                 */
-                const scalar_t pu_ = constants::pi * (u_ - static_cast<scalar_t> (u));
+                const scalar_t pu_ = pi * (u_ - static_cast<scalar_t> (u));
                 const scalar_t pu  = (1.0 - cos (pu_)) * 0.5;
-                const scalar_t pv_ = constants::pi * (v_ - static_cast<scalar_t> (v));
+                const scalar_t pv_ = pi * (v_ - static_cast<scalar_t> (v));
                 const scalar_t pv  = (1.0 - cos (pv_)) * 0.5;
 
                 const scalar_t A = LN2D_RNG( u  , v  , 0);
@@ -217,8 +247,8 @@ namespace quatsch {  namespace configurable_functions {
 
                 const scalar_t Z = P*(1.0-pv) + Q*(pv);
                 return Z;
-            }
-            case nearest: {
+        } break; 
+        case nearest: {
                 const scalar_t         u__  = x;// - ::floor (x); // > [0..1)
                 const scalar_t         u_   = u__ * frequency;
                 const unsigned int u    = static_cast<unsigned int>(u_);
@@ -229,8 +259,11 @@ namespace quatsch {  namespace configurable_functions {
 
                 const scalar_t Z = LN2D_RNG( u, v, depth);
                 return Z;
-            }
+        } break;
         }
+        
         return 0.0;
-    }
-} }
+}
+
+
+} } // namespaces

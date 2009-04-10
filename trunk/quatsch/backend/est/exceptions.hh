@@ -23,34 +23,168 @@
 
 #ifndef ESTEXCEPTIONS__20090123
 #define ESTEXCEPTIONS__20090123
+
+#include <string>
+#include <sstream>
+
+#include "../../quatsch.hh"
+
 namespace quatsch {  namespace backend {  namespace est {
-    class definition_does_not_match_forward_declaration_exception {};
-    class unresolved_forward_declaration_exception {};
-    class invalid_program_exception {};
-    class operation_not_allowed_exception {};
+
+
+        //++
+        // Important Note.
+        //
+        // Most exceptions defined in this file are not escalated to clients
+        // of an compiler instance, except for invalid_program_exception.
+        //
+        // Instead, most exception types will be caught by:
+        //      - backend/est/actions/*, in case of the est-backend
+        //      - <other places>, in case of another backend
+        //           (but as of 20090410, there is only the est backend)
+        //--
+
+
+        template <typename T> std::string to_string (T const &val) {
+                std::stringstream ss;
+                ss << val;
+                return ss.str();
+        }
+    
+    
+    
+        class definition_does_not_match_forward_declaration_exception
+        : public general_exception {
+        public:
+                definition_does_not_match_forward_declaration_exception ()
+                : general_exception ("definition does not match "
+                                     "forward declaration"
+                  )
+                {}
+        };
+    
+    
+    
+        class unresolved_forward_declaration_exception
+        : public general_exception {
+        public:
+                unresolved_forward_declaration_exception ()
+                : general_exception ("unresolved forward declaration")
+                {}
+        };
+    
+    
+    
+        class invalid_program_exception
+        : public general_exception {
+        public:
+                invalid_program_exception ()
+                : general_exception ("invalid program")
+                {}
+                
+                
+                
+                invalid_program_exception (std::string const &message)
+                : general_exception (message)
+                {}
+        };
+    
+    
+    
+        class operation_not_allowed_exception
+        : public general_exception {
+        public:
+                operation_not_allowed_exception ()
+                : general_exception ("operation not allowed")
+                {}
+        };
         
-    class insufficient_number_of_operands_exception {
+    
+    
+        class insufficient_number_of_operands_exception
+        : public general_exception {
         private:
-            const unsigned int minimumCount;
+                const unsigned int minimumCount;
         public:
-            insufficient_number_of_operands_exception (unsigned int minimumCount) : minimumCount (minimumCount) {}
-            unsigned int getMinimumCount () const { return minimumCount; }
-    };
-    class too_many_operands_exception {
+        
+                insufficient_number_of_operands_exception (
+                        unsigned int minimumCount
+                )
+                : minimumCount (minimumCount)
+                , general_exception (
+                        std::string("Insufficient number of operands: ")
+                        + "At least " + to_string (minimumCount)
+                        + " are required"
+                  )                
+                {
+                }
+            
+                unsigned int getMinimumCount () const { return minimumCount; }
+        };
+    
+    
+    
+        class too_many_operands_exception
+        : public general_exception {
         private:
-            const unsigned int maximumCount;
+                const unsigned int maximumCount;
         public:
-            too_many_operands_exception (unsigned int maximumCount) : maximumCount (maximumCount) {}
-            unsigned int getMaximumCount () const { return maximumCount; }
-    };
-    class invalid_number_of_operands_exception {
+        
+                too_many_operands_exception (
+                        unsigned int maximumCount
+                )
+                : maximumCount (maximumCount)
+                , general_exception (
+                        std::string("Passed too many arguments: ")
+                        + "At maximum, " + to_string (maximumCount)
+                        + " are allowed"
+                  )
+                {
+                }
+
+                unsigned int getMaximumCount () const { return maximumCount; }
+        };
+    
+    
+    
+        class invalid_number_of_operands_exception
+        : public general_exception {
         private:
-            const unsigned int count;
+                const unsigned int count;
         public:
-            invalid_number_of_operands_exception (unsigned int count) : count (count) {}
-            unsigned int getRequiredCount () const { return count; }
-    };
-    class unknown_operator_exception {};
-    class null_operation_exception {};
+                
+                invalid_number_of_operands_exception (unsigned int count)
+                : count (count)
+                , general_exception (
+                        std::string("Passed a wrong number of arguments: ")
+                        + "Exactly " + to_string (count)
+                        + " are required"
+                  )
+                {
+                }
+                
+                unsigned int getRequiredCount () const { return count; }
+        };
+
+
+
+        class unknown_operator_exception
+        : public general_exception {
+        public:
+                unknown_operator_exception ()
+                : general_exception ("unknown operator")
+                {}
+        };
+
+
+
+        class null_operation_exception
+        : public general_exception {
+        public:
+                null_operation_exception ()
+                : general_exception ("nulloperation")
+                {}
+        };
+    
 } } }
 #endif // ESTEXCEPTIONS__20090123
