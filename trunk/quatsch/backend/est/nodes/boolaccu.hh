@@ -55,7 +55,7 @@ namespace quatsch {  namespace backend {  namespace est {
                 for (unsigned int i=0; i<numOps-1; ++i) {
                     result = result && (predicate_t::operator () ((*operands [0+i]) (parameters), (*operands [1+i]) (parameters)));
                 }
-                return bool2scalar<typename TYPES::scalar_t> (result);
+                return util::bool2scalar<typename TYPES::scalar_t> (result);
             }
     };
     
@@ -128,7 +128,7 @@ namespace quatsch {  namespace backend {  namespace est {
                 for (unsigned int i=0; i<operandCount-1; ++i) {
                     result = result && (predicate_t::operator () ((*operands [0+i]) (parameters), (*operands [1+i]) (parameters)));
                 }
-                return bool2scalar<typename TYPES::scalar_t> (result);
+                return util::bool2scalar<typename TYPES::scalar_t> (result);
             }
     };
 } } }

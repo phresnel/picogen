@@ -80,7 +80,7 @@ namespace quatsch {  namespace backend {  namespace est {
                     result = result && minPred (min, val);
                     result = result && maxPred (val, max);
                 }
-                return bool2scalar<typename TYPES::scalar_t> (result);
+                return util::bool2scalar<typename TYPES::scalar_t> (result);
             }
     };
 
@@ -225,7 +225,7 @@ namespace quatsch {  namespace backend {  namespace est {
                     result = result && minPred(min, val);
                     result = result && maxPred(val, max);
                 }
-                return bool2scalar<typename TYPES::scalar_t> (result);
+                return util::bool2scalar<typename TYPES::scalar_t> (result);
             }
     };
 } } }

@@ -37,6 +37,39 @@
 
 // Mother of all functions.
 namespace quatsch {
+
+        
+        namespace util {
+
+                template <typename scalar_t>
+                inline bool scalar2bool (const scalar_t &r) {
+                        return (r>0.5) ? true : false;
+                }
+
+                template <typename scalar_t>
+                inline scalar_t bool2scalar (const bool &b) {
+                        return b ? 1.0 : 0.0;
+                }
+
+                template<typename scalar_t>
+                inline scalar_t scalar2bool2scalar (const scalar_t&r) {
+                        return bool2scalar (scalar2bool (r));
+                }
+
+                template <typename scalar_t> inline 
+                scalar_t floor (const scalar_t &v) {
+                        // TODO: replace with static assert
+                        assert (static_cast<int>(1.75) == 1);
+                        assert (static_cast<int>(1.5) == 1);
+                        assert (static_cast<int>(1.25) == 1);
+                        assert (static_cast<int>(-0.75) == 0);
+                        assert (static_cast<int>(-0.5) == 0);
+                        assert (static_cast<int>(-0.25) == 0);
+                        return static_cast <scalar_t> (
+                                static_cast <int> (v<0 ? v-1 : v)
+                        );
+                }
+        }
         
         
         

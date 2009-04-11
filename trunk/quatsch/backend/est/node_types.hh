@@ -28,36 +28,6 @@
 #include <cmath>
 
 
-
-namespace {
-
-template <typename scalar_t>
-inline bool scalar2bool (const scalar_t &r) {
-        return (r>0.5) ? true : false;
-}
-
-template <typename scalar_t>
-inline scalar_t bool2scalar (const bool &b) {
-        return b ? 1.0 : 0.0;
-}
-
-template<typename scalar_t>
-inline scalar_t scalar2bool2scalar (const scalar_t&r) {
-        return bool2scalar (scalar2bool (r));
-}
-
-template <typename scalar_t> inline scalar_t floor (const scalar_t &v) {
-        // TODO: replace with static assert
-        assert (static_cast<int>(1.75) == 1);
-        assert (static_cast<int>(1.5) == 1);
-        assert (static_cast<int>(1.25) == 1);
-        assert (static_cast<int>(-0.75) == 0);
-        assert (static_cast<int>(-0.5) == 0);
-        assert (static_cast<int>(-0.25) == 0);
-        return static_cast <scalar_t> (static_cast <int> (v<0 ? v-1 : v));
-}
-}
-
 #include "nodes/rootfunction.hh"
 #include "nodes/null.hh"
 #include "nodes/constant.hh"
@@ -66,6 +36,7 @@ template <typename scalar_t> inline scalar_t floor (const scalar_t &v) {
 #include "nodes/accumulatingop.hh"
 #include "nodes/boolaccu.hh"
 #include "nodes/rangeop.hh"
+#include "nodes/lerp.hh"
 
 
 
@@ -157,8 +128,9 @@ template <typename BACKEND_T> struct node_types {
                         scalar_t operator () (
                                 const scalar_t &lhs, const scalar_t &rhs
                         ) const {
-                                return bool2scalar<scalar_t> (
-                                     scalar2bool(lhs) bitand scalar2bool(rhs)
+                                return util::bool2scalar<scalar_t> (
+                                     util::scalar2bool(lhs) 
+                                     bitand util::scalar2bool(rhs)
                                 );
                         }
                 };
@@ -168,8 +140,9 @@ template <typename BACKEND_T> struct node_types {
                         scalar_t operator () (
                                 const scalar_t &lhs, const scalar_t &rhs
                         ) const {
-                                return bool2scalar<scalar_t> (
-                                     scalar2bool (lhs) bitor scalar2bool (rhs)
+                                return util::bool2scalar<scalar_t> (
+                                     util::scalar2bool (lhs) 
+                                     bitor util::scalar2bool (rhs)
                                 );
                         }
                 };
@@ -247,7 +220,7 @@ template <typename BACKEND_T> struct node_types {
         typedef est::Parameter   <node_types>  Parameter;
         typedef est::Call        <node_types>  Call;
 
-        struct p1 {
+        struct unary {
 
                 static void probe (const unsigned int operandCount) {
                         if (operandCount != 1) 
@@ -320,7 +293,7 @@ template <typename BACKEND_T> struct node_types {
                         scalar_t operator () (
                                 const parameters_t &parameters
                         ) const {
-                                return floor ((*operand ) (parameters));
+                                return util::floor ((*operand ) (parameters));
                         }
                 };
 
@@ -378,7 +351,7 @@ template <typename BACKEND_T> struct node_types {
                                 const parameters_t &parameters
                         ) const {
                                 const scalar_t tmp = (*operand ) (parameters);
-                                return tmp - floor (tmp);
+                                return tmp - util::floor (tmp);
                         }
                 };
 
@@ -414,8 +387,8 @@ template <typename BACKEND_T> struct node_types {
                         scalar_t operator () (
                                 const parameters_t &parameters
                         ) const {
-                                return bool2scalar<scalar_t> (
-                                        !scalar2bool ((*operand ) (parameters))
+                                return util::bool2scalar<scalar_t> (
+                                  !util::scalar2bool ((*operand ) (parameters))
                                 );
                         }
                 };
@@ -438,12 +411,12 @@ template <typename BACKEND_T> struct node_types {
                         }
                 };
 
-        }; // struct p1
+        }; // struct unary
 
 
 
 
-        struct p2 {
+        struct binary {
 
                 static void probe (const unsigned int operandCount) {
                         if (operandCount != 2) 
@@ -494,16 +467,18 @@ template <typename BACKEND_T> struct node_types {
                         scalar_t operator () (
                                 const parameters_t &parameters
                         ) const {
+                                using util::scalar2bool;
+                                using util::bool2scalar;
                                 const bool a = scalar2bool((*lhs)(parameters));
                                 const bool b = scalar2bool((*rhs)(parameters));
                                 return bool2scalar<scalar_t> (a != b);
                         }
                 };
 
-        }; // struct p2
+        }; // struct binary
 
 
-        struct p3 {
+        struct tertiary {
 
                 static void probe (const unsigned int operandCount) {
                         if (operandCount != 3)
@@ -538,7 +513,7 @@ template <typename BACKEND_T> struct node_types {
                         scalar_t operator () (
                                 const parameters_t &parameters
                         ) const {
-                                if (scalar2bool ((*if_) (parameters))) {
+                                if (util::scalar2bool ((*if_) (parameters))) {
                                         return (*then_) (parameters);
                                 } else {
                                         return (*else_) (parameters);
@@ -584,7 +559,7 @@ template <typename BACKEND_T> struct node_types {
                         }
                 };
 
-        }; // struct p2
+        }; // struct binary
 
 
         // TODO: this function must be outsourced
@@ -607,6 +582,8 @@ template <typename BACKEND_T> struct node_types {
                 } else if ("and" == operator_) {
                         return true;
                 } else if ("or" == operator_) {
+                        return true;
+                } else if ("lerp" == operator_) {
                         return true;
                 } else
 
@@ -637,7 +614,7 @@ template <typename BACKEND_T> struct node_types {
                 } else
 
 
-                // p1
+                // unary
                 if ("inv" == operator_) {
                         return true;
                 } else if ("sin" == operator_) {
@@ -660,14 +637,14 @@ template <typename BACKEND_T> struct node_types {
                         return true;
                 } else
 
-                // p2
+                // binary
                 if ("delta" == operator_) {
                         return true;
                 } else if ("xor" == operator_) {
                         return true;
                 } else
 
-                // p3
+                // tertiary
                 if ("?" == operator_ || "if" == operator_) {
                         return true;
                 } else if ("lerp" == operator_) {
@@ -699,7 +676,7 @@ template <typename BACKEND_T> struct node_types {
                 const operand_vector_t &operands_
         ) {
 
-                const int max_fold = 8;
+                const int max_fold = 16;
                 if ("+" == operator_) {
                         return AccumulatingOp <node_types, 
                                 typename Operators::add, 2, max_fold
@@ -735,6 +712,13 @@ template <typename BACKEND_T> struct node_types {
                 } else if ("or" == operator_) {
                         return AccumulatingOp <node_types, 
                                 typename Operators::or_, 2, max_fold
+                        >::create (operandCount, operands_);
+                } else 
+                
+                
+                if ("lerp" == operator_) {
+                        return Lerp <
+                                node_types, 2, max_fold
                         >::create (operandCount, operands_);
                 } else
 
@@ -797,64 +781,68 @@ template <typename BACKEND_T> struct node_types {
                 } else
 
 
-                // p1
+                // unary
                 if ("inv" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Inv::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Inv::create (operands_ [0]);
                 } else if ("sin" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Sin::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Sin::create (operands_ [0]);
                 } else if ("cos" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Cos::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Cos::create (operands_ [0]);
                 } else if ("floor" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Floor::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Floor::create (operands_ [0]);
                 } else if ("abs" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Abs::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Abs::create (operands_ [0]);
                 } else if ("trunc" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Trunc::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Trunc::create (operands_ [0]);
                 } else if ("frac" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Frac::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Frac::create (operands_ [0]);
                 } else if ("neg" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Neg::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Neg::create (operands_ [0]);
                 } else if ("not" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Not::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Not::create (operands_ [0]);
                 } else if ("sqrt" == operator_) {
-                        p1::probe (operandCount);
-                        return p1::Sqrt::create (operands_ [0]);
+                        unary::probe (operandCount);
+                        return unary::Sqrt::create (operands_ [0]);
                 } else
 
-                // p2
+                // binary
                 if ("delta" == operator_) {
-                        p2::probe (operandCount);
-                        return p2::Delta::create(operands_ [0], operands_ [1]);
+                        binary::probe (operandCount);
+                        return binary::Delta::create(
+                                operands_[0],operands_[1]
+                        );
                 } else if ("xor" == operator_) {
-                        p2::probe (operandCount);
-                        return p2::Xor::create (operands_ [0], operands_ [1]);
+                        binary::probe (operandCount);
+                        return binary::Xor::create(
+                                operands_[0],operands_[1]
+                        );
                 } else
 
-                // p3
+                // tertiary
                 if ("?" == operator_ || "if" == operator_) {
-                        p3::probe (operandCount);
-                        return p3::IfThenElse::create (
+                        tertiary::probe (operandCount);
+                        return tertiary::IfThenElse::create (
                                 operands_ [0], 
                                 operands_ [1], 
                                 operands_ [2]
                         );
-                } else if ("lerp" == operator_) {
-                        p3::probe (operandCount);
-                        return p3::Lerp::create (
+                } else /* if ("lerp" == operator_) {
+                        tertiary::probe (operandCount);
+                        return tertiary::Lerp::create (
                                 operands_ [0], 
                                 operands_ [1], 
                                 operands_ [2]
                         );
-                } else
+                } else*/
 
                 // misc
                 {
