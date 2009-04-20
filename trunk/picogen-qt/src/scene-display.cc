@@ -122,6 +122,7 @@ private:
         
         FunctionSet functionSet;
         Compiler::FunctionPtr fun;
+        std::stringstream errors; 
 
 public:
         real_t operator ()
@@ -133,7 +134,11 @@ public:
         
         
         QuatschHeightFunction ()
-        : fun (Compiler::compile ("x;y", "(- (* (sin (* x 0.7)) (sin(* y 0.7)) ) 4)", functionSet))
+        : fun (Compiler::compile (
+                "x;y",
+                "(- (* (sin (* x 0.7)) (sin(* y 0.7)) ) 4)",
+                functionSet, 
+                errors))
         {
         }                
 };
@@ -269,8 +274,8 @@ void SceneDisplayImpl::fullImage() {
 
 void SceneDisplayImpl::resizeEvent(QResizeEvent *event) {
 
-        renderThread.widthForNextRender = width();
-        renderThread.heightForNextRender = height();
+        renderThread.widthForNextRender = event->size().width();
+        renderThread.heightForNextRender = event->size().height();
         if (renderThread.isRunning()) {
                 mustReRender = true;
         } else {

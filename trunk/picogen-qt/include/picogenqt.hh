@@ -29,6 +29,7 @@
 #include "../include/camerasettings.hh"
 #include "../include/camera-list.hh"
 #include "../include/heightmap-designer.hh"
+#include "../include/heightmap-layers.hh"
 #include "../include/scene-display.hh"
 
 

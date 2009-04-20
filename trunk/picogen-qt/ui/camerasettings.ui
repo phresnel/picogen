@@ -44,24 +44,23 @@
        <layout class="QFormLayout" name="formLayout_2" >
         <item row="0" column="0" >
          <layout class="QFormLayout" name="formLayout" >
-          <item row="0" column="0" >
-           <widget class="QLabel" name="label" >
-            <property name="text" >
-             <string>x</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="0" >
            <widget class="QLabel" name="label_2" >
             <property name="text" >
-             <string>z</string>
+             <string>&amp;z</string>
+            </property>
+            <property name="buddy" >
+             <cstring>doubleSpinBox_5</cstring>
             </property>
            </widget>
           </item>
           <item row="2" column="0" >
            <widget class="QLabel" name="label_3" >
             <property name="text" >
-             <string>Altitude</string>
+             <string>&amp;Altitude</string>
+            </property>
+            <property name="buddy" >
+             <cstring>doubleSpinBox_6</cstring>
             </property>
            </widget>
           </item>
@@ -83,6 +82,16 @@
            <widget class="QDoubleSpinBox" name="doubleSpinBox_6" >
             <property name="buttonSymbols" >
              <enum>QAbstractSpinBox::PlusMinus</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" >
+           <widget class="QLabel" name="label" >
+            <property name="text" >
+             <string>&amp;x</string>
+            </property>
+            <property name="buddy" >
+             <cstring>doubleSpinBox_4</cstring>
             </property>
            </widget>
           </item>
@@ -148,6 +157,24 @@
         <property name="maximum" >
          <number>90</number>
         </property>
+        <property name="value" >
+         <number>0</number>
+        </property>
+        <property name="sliderPosition" >
+         <number>0</number>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="invertedAppearance" >
+         <bool>false</bool>
+        </property>
+        <property name="invertedControls" >
+         <bool>false</bool>
+        </property>
+        <property name="wrapping" >
+         <bool>false</bool>
+        </property>
         <property name="notchTarget" >
          <double>22.500000000000000</double>
         </property>
@@ -193,7 +220,10 @@
          <item>
           <widget class="QLabel" name="label_6" >
            <property name="text" >
-            <string>Roll</string>
+            <string>&amp;Roll</string>
+           </property>
+           <property name="buddy" >
+            <cstring>spinBox_3</cstring>
            </property>
           </widget>
          </item>
@@ -250,7 +280,10 @@
          <item>
           <widget class="QLabel" name="label_5" >
            <property name="text" >
-            <string>Pitch</string>
+            <string>&amp;Pitch</string>
+           </property>
+           <property name="buddy" >
+            <cstring>spinBox_2</cstring>
            </property>
           </widget>
          </item>
@@ -307,7 +340,10 @@
          <item>
           <widget class="QLabel" name="label_4" >
            <property name="text" >
-            <string>Yaw</string>
+            <string>&amp;Yaw</string>
+           </property>
+           <property name="buddy" >
+            <cstring>spinBox</cstring>
            </property>
           </widget>
          </item>
@@ -357,6 +393,117 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>doubleSpinBox_4</tabstop>
+  <tabstop>doubleSpinBox_5</tabstop>
+  <tabstop>doubleSpinBox_6</tabstop>
+  <tabstop>spinBox</tabstop>
+  <tabstop>doubleSpinBox</tabstop>
+  <tabstop>spinBox_2</tabstop>
+  <tabstop>doubleSpinBox_2</tabstop>
+  <tabstop>spinBox_3</tabstop>
+  <tabstop>doubleSpinBox_3</tabstop>
+  <tabstop>dial</tabstop>
+  <tabstop>dial_2</tabstop>
+  <tabstop>dial_3</tabstop>
+ </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dial</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>234</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>272</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dial</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>212</x>
+     <y>145</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>238</x>
+     <y>72</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dial_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>351</x>
+     <y>144</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>364</x>
+     <y>74</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dial_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>377</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>381</x>
+     <y>160</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dial_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>480</x>
+     <y>74</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>493</x>
+     <y>177</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dial_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>496</x>
+     <y>148</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>511</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

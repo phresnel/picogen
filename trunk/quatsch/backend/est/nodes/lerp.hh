@@ -62,6 +62,8 @@ public:
                                          > (numOps-2),
                      fractional = indexF - util::floor (indexF)
                 ;
+                
+                const int operandCount = static_cast<int>(numOps);
                                 
                 const int
                         index_ = 1 + static_cast<size_t> (
@@ -69,11 +71,11 @@ public:
                                  ),                        
                         
                         indexA = index_ < 1 ? 1
-                               : index_ >= (numOps-1) ? numOps-1
+                               : index_ >= (operandCount-1) ? operandCount-1
                                : index_,
                                
                         indexB = index_ < 1 ? 1
-                               : index_+1 >= (numOps-1) ? numOps-1
+                               : index_+1 >= (operandCount-1) ? operandCount-1
                                : index_+1                        
                 ;
                 
@@ -164,6 +166,8 @@ public:
                                          > (operandCount-2),
                      fractional = indexF - util::floor (indexF)
                 ;
+                
+                const int operandCount = static_cast<int>(this->operandCount);
                                 
                 const int
                         index_ = 1 + static_cast<size_t> (

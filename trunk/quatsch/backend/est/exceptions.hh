@@ -108,14 +108,14 @@ namespace quatsch {  namespace backend {  namespace est {
         public:
         
                 insufficient_number_of_operands_exception (
-                        unsigned int minimumCount
+                        unsigned int minimumCount_
                 )
-                : minimumCount (minimumCount)
-                , general_exception (
+                : general_exception (
                         std::string("Insufficient number of operands: ")
-                        + "At least " + to_string (minimumCount)
+                        + "At least " + to_string (minimumCount_)
                         + " are required"
-                  )                
+                  )
+                , minimumCount (minimumCount_)
                 {
                 }
             
@@ -131,14 +131,14 @@ namespace quatsch {  namespace backend {  namespace est {
         public:
         
                 too_many_operands_exception (
-                        unsigned int maximumCount
+                        unsigned int maximumCount_
                 )
-                : maximumCount (maximumCount)
-                , general_exception (
+                : general_exception (
                         std::string("Passed too many arguments: ")
-                        + "At maximum, " + to_string (maximumCount)
+                        + "At maximum, " + to_string (maximumCount_)
                         + " are allowed"
                   )
+                , maximumCount (maximumCount_)
                 {
                 }
 
@@ -153,13 +153,13 @@ namespace quatsch {  namespace backend {  namespace est {
                 const unsigned int count;
         public:
                 
-                invalid_number_of_operands_exception (unsigned int count)
-                : count (count)
-                , general_exception (
+                invalid_number_of_operands_exception (unsigned int count_)                
+                : general_exception (
                         std::string("Passed a wrong number of arguments: ")
-                        + "Exactly " + to_string (count)
+                        + "Exactly " + to_string (count_)
                         + " are required"
                   )
+                , count (count_)
                 {
                 }
                 

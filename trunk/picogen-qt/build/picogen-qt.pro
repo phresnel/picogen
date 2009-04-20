@@ -52,6 +52,20 @@ FORMS += ../ui/heightmap-designer.ui
 
 
 
+# Quatsch Editor
+SOURCES += ../src/quatsch-editor.cc
+HEADERS += ../include/quatsch-editor.hh
+FORMS += ../ui/quatsch-editor.ui
+
+
+
+# Heightmap Layers
+SOURCES += ../src/heightmap-layers.cc
+HEADERS += ../include/heightmap-layers.hh
+FORMS += ../ui/heightmap-layers.ui
+
+
+
 # Main Window
 SOURCES += ../src/picogenqt.cc
 HEADERS += ../include/picogenqt.hh

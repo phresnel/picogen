@@ -94,7 +94,12 @@ void PicogenQTImpl::openCameraSettings (QString const &id) {
 
 
 void PicogenQTImpl::on_actionTerrain_Definition_triggered () {
-        HeightmapDesignerImpl *hd = new HeightmapDesignerImpl;        
+        /*
+        HeightmapDesignerImpl *hd = new HeightmapDesignerImpl;
+        QMdiSubWindow *sub = mdiArea->addSubWindow(hd);                
+        sub->show();
+        */
+        HeightmapLayersImpl *hd = new HeightmapLayersImpl (mdiArea);        
         QMdiSubWindow *sub = mdiArea->addSubWindow(hd);                
         sub->show();
 }
@@ -108,7 +113,7 @@ void PicogenQTImpl::renameCamera (
                 cameraSettings [oldName]->renameCamera (newName);
                 cameraSettings [newName] = cameraSettings [oldName];
                 cameraSettings.remove (oldName);
-        } // else nothing to rename
+        }
 }
 
 

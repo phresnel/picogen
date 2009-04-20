@@ -2,6 +2,14 @@
   <qresource prefix="camera" >
     <file>icons/lphoto.png</file>
   </qresource>
+  <qresource prefix="heightmap-layers" >
+    <file>icons/darkglass _reworked/1239214437_dolphin.png</file>
+    <file>icons/darkglass _reworked/1239214586_tiff.png</file>
+  </qresource>
+  <qresource prefix="locked" >
+    <file>icons/darkglass/1239259860_gpg.png</file>
+    <file>icons/crystal_clear/1239259805_lock.png</file>
+  </qresource>
   <qresource prefix="redshiftLogo" >
     <file>images/redshift.png</file>
   </qresource>
@@ -10,5 +18,11 @@
   </qresource>
   <qresource prefix="terrain" >
     <file>icons/terrain.png</file>
+  </qresource>
+  <qresource prefix="visible" >
+    <file>icons/darkglass _reworked/1239215171_stop.png</file>
+    <file>icons/darkglass _reworked/1239214271_laptop_power.png</file>
+    <file>icons/darkglass _reworked/1239214420_runprocesscatcher.png</file>
+    <file>icons/darkglass _reworked/1239214390_xeyes.png</file>
   </qresource>
 </RCC>
