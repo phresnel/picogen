@@ -130,6 +130,7 @@ private:
         
         FunctionSet functionSet;
         Compiler::FunctionPtr fun;
+        std::stringstream errors;
 
 public:
         real_t operator ()
@@ -141,7 +142,11 @@ public:
         
         
         QuatschHeightFunction ()
-        : fun (Compiler::compile ("x;y", "(- (* (sin (* x 0.7)) (sin(* y 0.7)) ) 4)", functionSet))
+        : fun (Compiler::compile (
+                "x;y",
+                "(- (* (sin (* x 0.7)) (sin(* y 0.7)) ) 4)", 
+                functionSet,
+                errors))
         {
         }                
 };
@@ -233,4 +238,5 @@ int main ()
                           << ex.what()
                           << std::endl;
         } 
+        return 0;
 }
