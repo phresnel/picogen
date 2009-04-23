@@ -59,6 +59,12 @@ FORMS += ../ui/quatsch-editor.ui
 
 
 
+# Heightmap Codegen
+SOURCES += ../src/heightmap/codegen.cc
+HEADERS += ../include/heightmap/codegen.hh
+
+
+
 # Heightmap Layers
 SOURCES += ../src/heightmap-layers.cc
 HEADERS += ../include/heightmap-layers.hh

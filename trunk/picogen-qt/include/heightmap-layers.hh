@@ -31,6 +31,8 @@
 
 #include "ui_heightmap-layers.h"
 
+#include "heightmap/codegen.hh"
+
 
 
 enum CompositionType {
@@ -177,6 +179,7 @@ private:
 
 
 
+
 // when we derive from QAbstractScrollArea, the content is displayed
 class HeightmapLayersImpl : public QWidget, private Ui::HeightmapLayers
 {
@@ -252,10 +255,11 @@ private:
                            redshift::shared_ptr<const Composition> composition,
                            int recDepth=0) const;
         redshift::tuple<QString, QString> generateJuxCode (
-                         redshift::shared_ptr<const Composition> composition,
-                         int indent,                                 
-                         size_t &rowIndex,
-                         bool startsInGroup = false
+                 redshift::shared_ptr<const Composition> composition,
+                 redshift::shared_ptr<heightmap_codegen::NamespaceMaker> nm,
+                 int indent,                                 
+                 size_t &rowIndex,
+                 bool startsInGroup = false
                         ) const;
         QString getJuxIndendationString (int indent) const ;
         

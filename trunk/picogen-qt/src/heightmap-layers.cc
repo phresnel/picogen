@@ -41,7 +41,7 @@ unsigned int Composition::generateId () const {
       again:
         const int id = rand();
         for (size_t i=0; i<data.size(); ++i) {
-                if (id == data [i].id) {
+                if (0 == id || id == data [i].id) {
                         goto again;
                 }
         }
@@ -225,7 +225,8 @@ RowData HeightmapLayersImpl::rowFromView (int row) const {
         const QComboBox *typeComboBox =
                         ((QComboBox*)table->cellWidget (row, Indices::Type));
         
-        const int id = table->item (row, Indices::Id)->data(0).toInt();
+        const int id = table->item (row, Indices::Id)
+                            ->data(Qt::UserRole).toInt();
         
         // RowParameters aren't stored in the TableWidget, so those have to be
         // pulled from our actual data representation. (hack)
@@ -270,9 +271,13 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
         {
                 QTableWidgetItem *item = new QTableWidgetItem(tr(""));
                 item->setFlags (Qt::ItemIsSelectable);
-                item->setData (0, QVariant (data.id));
-                item->setText ("");//item->data(0).toString());
-                item->setSizeHint (QSize (0,0));
+                item->setData (Qt::UserRole, QVariant (data.id));
+                if (1) {
+                        item->setText ("");
+                        item->setSizeHint (QSize (0,0));
+                } else {
+                        item->setText (item->data(Qt::UserRole).toString());
+                }
                 table->setItem (rowIndex, Indices::Id, item);
         }
 
@@ -606,7 +611,8 @@ QString HeightmapLayersImpl::getJuxIndendationString (int indent) const {
 
 
 redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
-        redshift::shared_ptr<const Composition> composition, 
+        redshift::shared_ptr<const Composition> composition,
+        redshift::shared_ptr<heightmap_codegen::NamespaceMaker> namespaceMaker,
         int indent_, 
         size_t &rowIndex,
         bool startsInGroup
@@ -635,8 +641,18 @@ redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
                         ++ rowIndex;
                         break;
                 case RowData::Code:
-                        prolog += params.code + "\n"; 
-                        code += indent + "($main x y)\n";
+                        prolog += QString("\n")
+                               + "//----------------------------------------\n"
+                               + "// code for \"" + data.name + "\"\n"
+                               + QString (params.code).replace (
+                                        "$", namespaceMaker->getNamespace())
+                               + "\n"
+                               + "//----------------------------------------\n"
+                               + "\n";
+                        code += indent + QString ("($main x y)\n").replace (
+                                "$", namespaceMaker->getNamespace()
+                        );
+                        namespaceMaker->generateNewNamespace();
                         ++ rowIndex;
                         break;
                 
@@ -673,8 +689,8 @@ redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
                         
                 rest: {
                         redshift::tuple<QString,QString> tmp = 
-                                generateJuxCode (composition, 1+indent_, 
-                                                        ++rowIndex, true);
+                                generateJuxCode (composition, namespaceMaker,
+                                                1+indent_, ++rowIndex, true);
                         prolog += redshift::get<0> (tmp);
                         code += redshift::get<1> (tmp);
                         code += indent + ")\n";
@@ -690,6 +706,10 @@ QString HeightmapLayersImpl::generateJuxCode(
         int &juxFunctionId, QString &callCode, 
         redshift::shared_ptr<const Composition> composition, int recDepth
 ) const {
+
+        // TODO should not be created here
+        redshift::shared_ptr<heightmap_codegen::NamespaceMaker>
+                namespaceMaker (new heightmap_codegen::NamespaceMaker()); 
 
         int indent_ = 0;
         QString indent = getJuxIndendationString (indent_);
@@ -718,7 +738,8 @@ QString HeightmapLayersImpl::generateJuxCode(
         
         for (size_t i=0; i<composition->data.size(); ++i) {
                 redshift::tuple<QString,QString> t = 
-                                generateJuxCode (composition, 1+indent_, i);
+                                generateJuxCode (composition, namespaceMaker,
+                                                                 1+indent_, i);
                 prolog += redshift::get<0>(t);
                 code += redshift::get<1>(t);
         }
