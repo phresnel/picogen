@@ -22,11 +22,160 @@
 #define HEIGHTMAP_LAYERS_HH_INCLUDED_20090408
 
 #include <iostream>
+#include <map>
 
 #include <QCheckBox>
 #include <QMdiArea>
 
+#include "../../redshift/include/setup.hh"
+
 #include "ui_heightmap-layers.h"
+
+
+
+enum CompositionType {
+        Addition,
+        Subtraction,
+        Multiplication,
+        Division,                
+        Lerp
+};
+
+
+struct RowParameters {
+        // Let's not make this an enum and simply save
+        // everything. The user can thus change the type
+        // of the layer, try something out (maybe accidentally!),
+        // and then just return back to the old settings.
+        QString code;
+        
+        RowParameters () 
+        : code ("// Example code:\n" 
+                "(defun $main (x y) (if (< x y) x y))")
+        {}
+        
+        RowParameters (RowParameters const &rhs)
+        : code (rhs.code)
+        {}
+        
+        RowParameters &operator = (RowParameters const &rhs) {
+                code = rhs.code;
+                return *this;
+        }
+};
+
+
+class RowParametersMerger {
+        RowParameters parameters;
+        bool codeChanged;
+public:
+        RowParametersMerger () : codeChanged (false) {}
+        
+        QString code () const { return parameters.code; }
+        void setCode (QString const &s) { 
+                codeChanged = true; 
+                parameters.code = s;
+        }
+        
+        RowParameters merge (RowParameters const &in) const {
+                RowParameters ret = in; 
+                if (codeChanged)
+                        ret.code = parameters.code;
+                return ret;
+        }
+};
+
+
+
+struct RowData {
+        enum Type {
+                // primitives
+                FirstClass,
+                Bitmap,
+                Composition,
+                Code,
+                
+                // aggregates
+                Group,
+                GroupAddition = Group,
+                GroupSubtraction,
+                GroupMultiplication,
+                GroupDivision,
+                GroupLerp
+        };                
+
+        int id;
+        bool visible;
+        bool locked;
+        bool hardLock;
+        Type type;
+        QString name;
+        //CompositionType groupType;
+        
+        RowParameters parameters;
+        
+        RowData (int id_, bool visible_, bool locked_, bool hardLock_,
+                Type type_, QString name_, 
+                //CompositionType groupType_=Addition,                
+                RowParameters params=RowParameters())
+        : id (id_), visible(visible_)
+        , locked(locked_), hardLock (hardLock_)
+        , type(type_)
+        , name(name_)
+        //, groupType(groupType_)
+        , parameters (params)
+        {}
+        
+        RowData (RowData const &r)
+        : id (r.id), visible (r.visible), locked (r.locked)
+        , hardLock(r.hardLock)
+        , type (r.type), name (r.name)//, groupType (r.groupType)
+        , parameters (r.parameters)
+        {
+        }
+        
+        RowData &operator = (RowData const &r) {
+                id = r.id;
+                visible = r.visible;
+                locked = r.locked;
+                hardLock = r.hardLock;
+                type = r.type;
+                name = r.name;
+                //groupType = r.groupType;
+                parameters = r.parameters;
+                return *this;
+        }
+        
+        void swap (RowData &r) {
+                RowData tmp (r);
+                r = *this;
+                *this = tmp;
+        }
+        
+        RowData () {}
+};
+
+
+class HeightmapLayersImpl;
+struct Composition {
+        Composition () {}
+        /*Composition (Composition const &c) {
+                
+        }*/
+        
+        CompositionType type;
+        std::vector <RowData> data;
+        
+        unsigned int generateId () const ;
+        redshift::optional<RowData> getRowById (int id) const ;
+        bool setRowById (int id, RowData rowData) ;
+        
+private:        
+        friend class HeightmapLayersImpl;
+        HeightmapLayersImpl *window;
+};
+
+
 
 // when we derive from QAbstractScrollArea, the content is displayed
 class HeightmapLayersImpl : public QWidget, private Ui::HeightmapLayers
@@ -48,6 +197,16 @@ private slots:
         void on_openDefinition_clicked();
         
         void on_showJuxCode_clicked();
+        
+        
+        void storeRowParameters(int rowId, RowParametersMerger const &merge);
+        void closingDefinitionWindow(int rowId);
+        
+        void slot_syncFromView ();
+
+        
+signals:
+        //void setRowParameters(int rowId, RowParameters const &params);        
  
 private:
 
@@ -59,93 +218,23 @@ private:
                 const static int Type = 3;
                 const static int Preview = 4;
                 const static int Name = 5;
-                const static int RightMostData = Name;
+                const static int Id = 6;
+                const static int RightMostData = Id;
                 
                 const static int LeftBorder = 0;
-                const static int RightBorder = 6;
+                const static int RightBorder = 7;
         };
-        
-        enum CompositionType {
-                Addition,
-                Subtraction,
-                Multiplication,
-                Division,                
-                Lerp
-        };
-        
-        struct RowData {
-                enum Type {
-                        // primitives
-                        FirstClass,
-                        Bitmap,
-                        Composition,
-                        Code,
-                        
-                        // aggregates
-                        Group,
-                        GroupAddition = Group,
-                        GroupSubtraction,
-                        GroupMultiplication,
-                        GroupDivision,
-                        GroupLerp
-                };                
-                
-                unsigned int id;
-                bool visible;
-                bool locked;
-                Type type;
-                QString name;
-                CompositionType groupType;                
-                
-                RowData (unsigned int id_, bool visible_, bool locked_, 
-                        Type type_, QString name_, 
-                        CompositionType groupType_=Addition)
-                : id (id_), visible(visible_), locked(locked_), type(type_) 
-                , name(name_), groupType(groupType_)
-                {}
-                
-                RowData (RowData const &r)
-                : id (r.id), visible (r.visible), locked (r.locked) 
-                , type (r.type), name (r.name), groupType (r.groupType)
-                {
-                }
-                
-                RowData &operator = (RowData const &r) {
-                        id = r.id;
-                        visible = r.visible;
-                        locked = r.locked;
-                        type = r.type;
-                        name = r.name;
-                        groupType = r.groupType;
-                        return *this;
-                }
-                
-                void swap (RowData &r) {
-                        RowData tmp (r);
-                        r = *this;
-                        *this = tmp;
-                }
-                
-                RowData () {}
-        };
+public:  
         
         
-        struct Composition {
-                CompositionType type;
-                std::vector <RowData> data;
-                unsigned int generateId () const {
-                       again:
-                        const unsigned int id = rand();
-                        for (size_t i=0; i<data.size(); ++i) {
-                                if (id == data [i].id) {
-                                        goto again;
-                                }
-                        }
-                        return id;
-                }
-        };
+        friend struct Composition;
+
         
-        Composition composition;
+private:
+
+        std::map<int, QWidget*> openDefinitionWindows;
+
+        redshift::shared_ptr<Composition> composition;
         void syncFromView ();
         void syncToView ();
 
@@ -160,12 +249,14 @@ private:
 
 
         QString generateJuxCode(int &juxFunctionId, QString &callCode,
-                                Composition const &comp, int recDepth=0) const;
-        QString generateJuxCode (Composition const &composition, 
-                                 int indent,                                 
-                                 size_t &rowIndex,
-                                 bool startsInGroup = false
-                                ) const;
+                           redshift::shared_ptr<const Composition> composition,
+                           int recDepth=0) const;
+        redshift::tuple<QString, QString> generateJuxCode (
+                         redshift::shared_ptr<const Composition> composition,
+                         int indent,                                 
+                         size_t &rowIndex,
+                         bool startsInGroup = false
+                        ) const;
         QString getJuxIndendationString (int indent) const ;
         
         void makeVisibilityCheckBox (QCheckBox *box, bool checked) const ;

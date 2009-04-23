@@ -20,6 +20,7 @@
 
 #include <cstdlib>
 
+
 #include <iostream>
 
 #include <QHeaderView>
@@ -31,9 +32,54 @@
 #include "../include/heightmap-layers.hh"
 #include "../include/quatsch-editor.hh"
 
+
+
+
+
+
+unsigned int Composition::generateId () const {
+      again:
+        const int id = rand();
+        for (size_t i=0; i<data.size(); ++i) {
+                if (id == data [i].id) {
+                        goto again;
+                }
+        }
+        return id;
+}
+
+redshift::optional<RowData> Composition::getRowById (int id) const {
+        for (size_t i=0; i<data.size(); ++i) {
+                if (data [i].id == id)
+                        return data [i];
+        }
+        return false;
+}
+
+bool Composition::setRowById (int id, RowData rowData) {
+        for (size_t i=0; i<data.size(); ++i) {
+                if (data [i].id == id) {
+                        data [i] = rowData;
+                        if (0 != window) {
+                                window->syncToView();
+                        } else {
+                        }
+                        return true;
+                }
+        }
+        return false;
+}
+        
+
+
+
+
+
 HeightmapLayersImpl::HeightmapLayersImpl(QMdiArea *mdiArea_)
-: mdiArea (mdiArea_)
+: mdiArea (mdiArea_), composition (new Composition())
 {
+        composition->window = this;
+
         setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
         
@@ -90,17 +136,12 @@ void HeightmapLayersImpl::fillCompositionTypeComboBox (QComboBox *box) const {
 void HeightmapLayersImpl::swapRows(int rowA, int rowB)
 {
         syncFromView ();
-        if (rowA>=0 && (size_t)rowA < composition.data.size() 
-            && rowB>=0 && (size_t)rowB < composition.data.size() 
+        if (rowA>=0 && (size_t)rowA < composition->data.size() 
+            && rowB>=0 && (size_t)rowB < composition->data.size() 
         ) {
-                /*const RowData a = getRowData (rowA);
-                const RowData b = getRowData (rowB);
-                setRowData (rowA, b);
-                setRowData (rowB, a);*/
-                
-                RowData tmp = composition.data [rowA];
-                composition.data [rowA] = composition.data [rowB];
-                composition.data [rowB] = tmp;                
+                RowData tmp = composition->data [rowA];
+                composition->data [rowA] = composition->data [rowB];
+                composition->data [rowB] = tmp;                
                 
                 table->selectRow (rowB);               
                 
@@ -124,19 +165,44 @@ void HeightmapLayersImpl::moveRowDown(int row) {
 
 void HeightmapLayersImpl::on_moveUp_clicked() {
         moveRowUp (table->currentRow());
-        syncToView ();
 }
 
 
 
 void HeightmapLayersImpl::on_moveDown_clicked() {
         moveRowDown (table->currentRow());
-        syncToView ();
 }
 
 
 
-HeightmapLayersImpl::RowData HeightmapLayersImpl::rowFromView (int row) const {
+void HeightmapLayersImpl::storeRowParameters (
+        int rowId, RowParametersMerger const &params
+) {
+        redshift::optional<RowData> data = composition->getRowById (rowId);
+        if (data) {
+                data->parameters = params.merge (data->parameters);
+                composition->setRowById (rowId, *data);
+                //emit setRowParameters (rowId, data->parameters);
+        }        
+}
+
+
+
+void HeightmapLayersImpl::closingDefinitionWindow (int id) {
+        //std::cout << "closing def-editor for id " << id << std::endl;        
+        if (openDefinitionWindows.find (id) != openDefinitionWindows.end())
+                openDefinitionWindows.erase (id);
+        redshift::optional<RowData> row = composition->getRowById (id);
+        if (row) {
+                row->hardLock = false;
+                composition->setRowById (id, *row);
+                syncToView();
+        }
+}
+
+
+
+RowData HeightmapLayersImpl::rowFromView (int row) const {
         if (0>row)
                 return RowData();
 
@@ -158,15 +224,39 @@ HeightmapLayersImpl::RowData HeightmapLayersImpl::rowFromView (int row) const {
         
         const QComboBox *typeComboBox =
                         ((QComboBox*)table->cellWidget (row, Indices::Type));
-
+        
+        const int id = table->item (row, Indices::Id)->data(0).toInt();
+        
+        // RowParameters aren't stored in the TableWidget, so those have to be
+        // pulled from our actual data representation. (hack)
+        // > same for hardLock
+        redshift::optional<RowData> rp = composition->getRowById (id);
+        RowParameters params;
+        bool hardLock = false;
+        
+        if (rp) {
+                params = rp->parameters;
+                hardLock = rp->hardLock;
+        }       
+        
+        
         return RowData(
+                id,
+                
                 ((QCheckBox*)table->cellWidget (row, Indices::Visible))->
                                                                 isChecked(),
+                                                                
                 ((QCheckBox*)table->cellWidget (row, Indices::Locked))->
                                                                 isChecked(),
+                                                                
+                hardLock,
+                
                 static_cast<RowData::Type>(typeComboBox->itemData (
                         typeComboBox->currentIndex()).toInt()),
-                table->item (row, Indices::Name)->text()              
+                        
+                table->item (row, Indices::Name)->text(),
+                
+                params
         );
 }
 
@@ -174,26 +264,44 @@ HeightmapLayersImpl::RowData HeightmapLayersImpl::rowFromView (int row) const {
 
 void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
 
-     
+        const bool locked = data.locked || data.hardLock; 
+
+        // Id
+        {
+                QTableWidgetItem *item = new QTableWidgetItem(tr(""));
+                item->setFlags (Qt::ItemIsSelectable);
+                item->setData (0, QVariant (data.id));
+                item->setText ("");//item->data(0).toString());
+                item->setSizeHint (QSize (0,0));
+                table->setItem (rowIndex, Indices::Id, item);
+        }
 
         // Enable/Disable (i.e. visibility)
         {
                 
-                QCheckBox *box = new QCheckBox ();
+                QCheckBox *box = new QCheckBox ();                
                 table->setCellWidget (rowIndex, Indices::Visible, box);                
                 makeVisibilityCheckBox (box, data.visible);
+                box->setEnabled (!locked);
+                
+                connect(box,SIGNAL(stateChanged (int)),
+                        this, SLOT(slot_syncFromView ()));
         }
         
         // Lock status
         {
                 QCheckBox *box = new QCheckBox ();        
                 table->setCellWidget (rowIndex, Indices::Locked, box);
-                makeLockingCheckBox (box, data.locked);                
+                makeLockingCheckBox (box, locked);
+                box->setEnabled (!data.hardLock);
+                
+                connect(box,SIGNAL(stateChanged (int)),
+                        this, SLOT(slot_syncFromView ()));
         }
         
         // Type
         {
-                QComboBox *box = new QComboBox ();
+                QComboBox *box = new QComboBox ();                
                 table->setCellWidget (rowIndex, Indices::Type, box);               
                 
                 
@@ -210,7 +318,7 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
                         box->addItem ("Divide", QVariant(RowData::GroupDivision));
                         box->addItem ("Lerp", QVariant(RowData::GroupLerp));
                 }                        
-                
+                box->setEnabled (!locked);
                 box->setSizeAdjustPolicy (QComboBox::AdjustToContents);                        
                 
                 for (int i=0; i<box->count(); ++i) {
@@ -220,8 +328,12 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
                 }                        
                 
                 QTableWidgetItem *item = new QTableWidgetItem(tr(""));                        
-                item->setSizeHint( box->sizeHint() );
+                item->setSizeHint (box->sizeHint());
+                item->setFlags (Qt::ItemIsSelectable |
+                        (locked?Qt::NoItemFlags:Qt::ItemIsEnabled));
                 table->setItem (rowIndex, Indices::Type, item);
+                
+                // TODO does resize properly?
         }
   
         // Icon size preview
@@ -229,7 +341,9 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
                 QTableWidgetItem *item = new QTableWidgetItem(tr(""));
                 item->setIcon(QIcon(
                                QPixmap(":/redshiftLogo/images/redshift.png")));
-                item->setTextAlignment(Qt::AlignVCenter);                
+                item->setTextAlignment(Qt::AlignVCenter);
+                item->setFlags (Qt::ItemIsSelectable |
+                        (locked?Qt::NoItemFlags:Qt::ItemIsEnabled));
                 table->setItem (rowIndex, Indices::Preview, item);
         }
 
@@ -237,6 +351,13 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
         {
                 QTableWidgetItem *item = new QTableWidgetItem(data.name);
                 item->setTextAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+                item->setFlags (
+                        Qt::ItemIsSelectable |
+                        (!locked ?
+                           Qt::ItemIsEditable|Qt::ItemIsEnabled :
+                           Qt::NoItemFlags
+                        )
+                );
                 table->setItem (rowIndex, Indices::Name, item);
         }
         
@@ -263,7 +384,7 @@ void HeightmapLayersImpl::colorizeGroups () {
         int colorId = 0;
         
         for (int i=0; i<table->rowCount(); ++i) {
-                const RowData::Type type = composition.data[i].type;
+                const RowData::Type type = composition->data[i].type;
                 if (type >= RowData::Group) {                        
                         ++colorId;
                         colorId %= colorCount;
@@ -291,7 +412,17 @@ void HeightmapLayersImpl::on_openDefinition_clicked() {
         }
         
         syncFromView();
-        const RowData data = composition.data [row];//getRowData (row);
+        const RowData data = composition->data [row];//getRowData (row);
+        
+        
+        // If def-window already open, focus that and return. 
+        if (openDefinitionWindows.find(data.id)!=openDefinitionWindows.end()) {
+                openDefinitionWindows [data.id]->setFocus();
+                return;
+        } else if (data.locked || data.hardLock) {
+                return;
+        }
+        
         
         switch (data.type) {
         case RowData::FirstClass:
@@ -307,9 +438,24 @@ void HeightmapLayersImpl::on_openDefinition_clicked() {
                 sub->show();
                 } break;
         case RowData::Code: {
-                QuatschEditorImpl *ed = new QuatschEditorImpl ();
+                QuatschEditorImpl *ed = new QuatschEditorImpl (
+                                                data.parameters.code, data.id);
+                ed->setWindowTitle (data.name);
+                connect(
+                        ed, SIGNAL(storeRowParameters (int, 
+                                                RowParametersMerger const &)),
+                        this, SLOT(storeRowParameters (int, 
+                                                RowParametersMerger const &))
+                );
+                connect(ed, SIGNAL(closingDefinitionWindow (int)),
+                        this, SLOT(closingDefinitionWindow (int)));                                
                 QMdiSubWindow *sub = mdiArea->addSubWindow(ed);
                 sub->show();
+                
+                openDefinitionWindows[data.id] = sub;
+                
+                composition->data [row].hardLock = true;
+                syncToView();
                 } break;
                 
         case RowData::GroupAddition:                
@@ -373,10 +519,44 @@ void HeightmapLayersImpl::on_newLayer_clicked() {
         const int index = table->currentRow() >= 0
                         ? 1+table->currentRow()
                         : table->rowCount();
-        composition.data.push_back ( 
-                RowData (composition.generateId(),
-                        true, false, RowData::FirstClass, tr("New Layer"))
-        );
+        
+        syncFromView ();
+        
+        const RowData newRow = RowData (composition->generateId(),
+                                true, false, false,  // visible, lock, hardLock
+                                RowData::FirstClass, tr("New Layer")); 
+        
+        if (composition->data.size() == 0) {
+                composition->data.push_back (newRow);
+        } else {
+                composition->data.insert (
+                        composition->data.begin()+index, newRow);
+        }
+
+        syncToView ();
+        colorizeGroups ();
+}
+
+
+
+void HeightmapLayersImpl::on_newGroup_clicked() {
+        const int index = table->currentRow() >= 0
+                        ? 1+table->currentRow()
+                        : table->rowCount();
+                        
+        syncFromView ();
+        
+        const RowData newRow = RowData (composition->generateId(), 
+                                true, false, false, // visible, lock, hardLock
+                                RowData::GroupAddition, tr("New Group"));                                
+        
+        if (composition->data.size() == 0) {
+                composition->data.push_back (newRow);
+        } else {
+                composition->data.insert (
+                        composition->data.begin()+index, newRow);
+        }
+        
         syncToView ();
         colorizeGroups ();
 }
@@ -389,8 +569,8 @@ void HeightmapLayersImpl::on_deleteLayer_clicked() {
                 QMessageBox::Yes |  QMessageBox::Cancel, QMessageBox::Cancel))
         {
                 //table->removeRow (table->currentRow());
-                composition.data.erase (
-                        composition.data.begin()+table->currentRow()
+                composition->data.erase (
+                        composition->data.begin()+table->currentRow()
                 );
                 syncToView ();
                 colorizeGroups ();
@@ -399,23 +579,10 @@ void HeightmapLayersImpl::on_deleteLayer_clicked() {
 
 
 
-void HeightmapLayersImpl::on_newGroup_clicked() {
-        const int index = table->currentRow() >= 0
-                        ? 1+table->currentRow()
-                        : table->rowCount();
-        composition.data.push_back ( 
-                RowData (composition.generateId(), 
-                        true, false, RowData::Group, tr("New Group"),Addition)
-        );
-        syncToView ();
-        colorizeGroups ();
-}
-
-
-
 void HeightmapLayersImpl::on_showJuxCode_clicked() {
         int juxFunctionId = 0;
         QString callCode;
+
         syncFromView();
         const QString code = generateJuxCode(juxFunctionId, callCode, 
                                              composition, 0);
@@ -438,18 +605,22 @@ QString HeightmapLayersImpl::getJuxIndendationString (int indent) const {
 
 
 
-QString HeightmapLayersImpl::generateJuxCode (
-        Composition const &composition, 
+redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
+        redshift::shared_ptr<const Composition> composition, 
         int indent_, 
         size_t &rowIndex,
         bool startsInGroup
 ) const {
 
         const QString indent = getJuxIndendationString (indent_);
+        QString prolog;
         QString code;
         
-        while (rowIndex<composition.data.size()) {
-                switch (composition.data[rowIndex].type) {
+        while (rowIndex<composition->data.size()) {
+                const RowData data = composition->data [rowIndex];
+                const RowParameters params = data.parameters;
+
+                switch (data.type) {
                 // primitives
                 case RowData::FirstClass: 
                         code += indent + "(first-class x y)\n";
@@ -464,7 +635,8 @@ QString HeightmapLayersImpl::generateJuxCode (
                         ++ rowIndex;
                         break;
                 case RowData::Code:
-                        code += indent + "(code code code)\n";
+                        prolog += params.code + "\n"; 
+                        code += indent + "($main x y)\n";
                         ++ rowIndex;
                         break;
                 
@@ -499,30 +671,34 @@ QString HeightmapLayersImpl::generateJuxCode (
                         code += indent + "( lerp X\n";
                         goto rest;
                         
-                rest:
-                        code += generateJuxCode (composition, 1+indent_, 
+                rest: {
+                        redshift::tuple<QString,QString> tmp = 
+                                generateJuxCode (composition, 1+indent_, 
                                                         ++rowIndex, true);
+                        prolog += redshift::get<0> (tmp);
+                        code += redshift::get<1> (tmp);
                         code += indent + ")\n";
-                        break;
+                        } break;
                 };                
         }
-        return code;
+        return redshift::make_tuple (prolog, code);
 }
 
 
 
 QString HeightmapLayersImpl::generateJuxCode(
         int &juxFunctionId, QString &callCode, 
-        Composition const &composition, int recDepth
+        redshift::shared_ptr<const Composition> composition, int recDepth
 ) const {
 
         int indent_ = 0;
         QString indent = getJuxIndendationString (indent_);
-        QString code = indent + "// Auto generated\n";
+        QString prolog = "// prolog\n";
+        QString code = indent + "// Main\n";
         
         // Set top level type.
         code += indent + "( ";
-        switch (composition.type) {
+        switch (composition->type) {
         case Addition:
                 code += indent + "+ \n";
                 break;
@@ -540,38 +716,49 @@ QString HeightmapLayersImpl::generateJuxCode(
                 break;
         };
         
-        for (size_t i=0; i<composition.data.size(); ++i) {
-                code += generateJuxCode (composition, 1+indent_, i);
+        for (size_t i=0; i<composition->data.size(); ++i) {
+                redshift::tuple<QString,QString> t = 
+                                generateJuxCode (composition, 1+indent_, i);
+                prolog += redshift::get<0>(t);
+                code += redshift::get<1>(t);
         }
         
         code += ")";
 
-        return code;
+        return prolog + code;
 }
 
 
 
 void HeightmapLayersImpl::syncFromView () {
-        if ((size_t)table->rowCount() != composition.data.size()) {
-                composition.data.resize (table->rowCount());
+        if ((size_t)table->rowCount() != composition->data.size()) {
+                composition->data.resize (table->rowCount());
         }
         
-        composition.type = (CompositionType)compositionType->
+        composition->type = (CompositionType)compositionType->
                         itemData(compositionType->currentIndex()).toInt();
         
         for (int i=0; i<table->rowCount(); ++i) {
-                composition.data [i] = rowFromView (i);
+                composition->data [i] = rowFromView (i);
         }        
 }
 
 
 
+void HeightmapLayersImpl::slot_syncFromView () {
+        syncFromView ();
+        syncToView(); // A bit messy, sorry. But this will e.g. in case of a 
+                      // user-row-lock update lock statuses in the view.
+}
+
+
+
 void HeightmapLayersImpl::syncToView () {
-        if ((size_t)table->rowCount() != composition.data.size()) {
-                table->setRowCount (composition.data.size());
+        if ((size_t)table->rowCount() != composition->data.size()) {
+                table->setRowCount (composition->data.size());
         }
-        for (size_t i=0; i<composition.data.size(); ++i) {
-                rowToView (i, composition.data [i]);
+        for (size_t i=0; i<composition->data.size(); ++i) {
+                rowToView (i, composition->data [i]);
         }
         colorizeGroups ();
 }

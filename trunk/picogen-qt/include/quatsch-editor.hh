@@ -22,6 +22,9 @@
 #define QUATSCH_EDITOR_HH_INCLUDED_20090419
 
 #include "ui_quatsch-editor.h"
+
+#include "heightmap-layers.hh"
+
 #include <QSyntaxHighlighter>
 #include <QTextEdit>
 
@@ -66,15 +69,28 @@ class QuatschEditorImpl : public QWidget, private Ui::QuatschEditor
         Q_OBJECT
 
 public:
-        QuatschEditorImpl();
-        virtual ~QuatschEditorImpl() {}        
+        QuatschEditorImpl(
+            QString code,
+            int rowId);
+        virtual ~QuatschEditorImpl() {}
+        
+private:
+        void closeEvent(QCloseEvent *event);
 
 private slots:
-                
+
+        void on_edit_textChanged();
+        
+        //void setRowParameters(int rowId, RowParameters const &params);        
+
 signals:
 
-private:        
+        void storeRowParameters(int rowId, RowParametersMerger const &merge);
+        void closingDefinitionWindow (int id);
+
+private:
         QuatschHighlighter *highlighter;
+        int id;
 };
 
 

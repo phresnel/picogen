@@ -22,11 +22,19 @@
 
 #include "../../redshift/include/redshift.hh"
 
+
 #include "../include/quatsch-editor.hh"
 
+#include <QCloseEvent>
 
 
-QuatschEditorImpl::QuatschEditorImpl() {
+
+QuatschEditorImpl::QuatschEditorImpl( 
+        QString code,
+        int rowId
+)
+: id (rowId)
+{
         setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
 
@@ -38,7 +46,43 @@ QuatschEditorImpl::QuatschEditorImpl() {
         font.setFixedPitch(true);
         font.setPointSize(10);
         edit->setFont (font);
+        
+        if (code.trimmed() == "") {
+                edit->setText (
+                        "// Example code:\n" 
+                        "(defun $main (x y) (if (< x y) x y))"                          
+                );
+        } else {
+                edit->setText (code);
+        }
 }
+
+
+
+void QuatschEditorImpl::on_edit_textChanged() {        
+        RowParametersMerger params;
+        params.setCode (edit->toPlainText());
+        emit storeRowParameters (id, params);
+}
+
+
+
+void QuatschEditorImpl::closeEvent(QCloseEvent *event) {
+        emit closingDefinitionWindow (id);
+        event->accept();
+}
+
+
+
+/*
+void QuatschEditorImpl::setRowParameters(
+        int rowId, RowParameters const &params
+) {
+        if (rowId != this->id)
+                return;
+        if (params.code != edit->toPlainText())
+                edit->setText (params.code);
+}*/
 
 
 
@@ -107,12 +151,13 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
         highlightingRules.append(rule);
         
         
+        /*
         parametersFormat.setForeground(Qt::darkGreen);
         parametersFormat.setFontWeight(QFont::Bold);
         parametersFormat.setFontItalic(true);
         rule.pattern = QRegExp("\\b[xy]\\b");
         rule.format = parametersFormat;
-        highlightingRules.append(rule);
+        highlightingRules.append(rule);*/
         
         numberFormat.setForeground(Qt::magenta);
         rule.pattern = QRegExp("\\b[0-9]+(\\.[0-9]+)?\\b");
