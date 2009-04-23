@@ -59,6 +59,13 @@ FORMS += ../ui/quatsch-editor.ui
 
 
 
+# Quatsch Editor
+SOURCES += ../src/presets.cc
+HEADERS += ../include/presets.hh
+FORMS += ../ui/presets.ui
+
+
+
 # Heightmap Codegen
 SOURCES += ../src/heightmap/codegen.cc
 HEADERS += ../include/heightmap/codegen.hh
