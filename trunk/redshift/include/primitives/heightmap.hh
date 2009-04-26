@@ -23,47 +23,45 @@
 
 namespace redshift { namespace primitive {
 
-        class HeightFunction {
-        public:
-                virtual 
-                 real_t operator ()
-                   (real_t const &u, real_t const &v)
-                 const = 0;
-        };
-        
-        DefineFinalizer(Heightmap);
-        
-        class Heightmap
-                : public Primitive
-                , DoFinalize(Heightmap)
-        {
-        public:
-                Heightmap(shared_ptr<HeightFunction const> fun, real_t detail);
-                ~Heightmap ();
-                
-                bool doesIntersect (RayDifferential const &ray) const;
+class HeightFunction {
+public:
+        virtual 
+         real_t operator ()
+           (real_t const &u, real_t const &v)
+         const = 0;
+};
 
-                optional<Intersection>
-                        intersect(RayDifferential const &ray) const;                
-                        
-                optional<Intersection> intersect(Sample const &sample) const;
-                
-        private:
-                // forbid
-                Heightmap();
-                Heightmap(Heightmap const&);
-                Heightmap &operator = (Heightmap const&);
-                
-                // .
-                optional<Intersection>
-                      intersect (RayDifferential const &ray, real_t min) const;
-                
-                // data
-                mutable std::vector<real_t> depthBuffer;                
-                shared_ptr<HeightFunction const> function;
-                real_t detail;
-                BoundingBox boundingBox;
-        };
+
+
+DefineFinalizer(Heightmap);
+class Heightmap
+        : public Primitive
+        , DoFinalize(Heightmap)
+{
+public:
+        Heightmap(shared_ptr<HeightFunction const> fun, real_t detail);
+        ~Heightmap ();
+        
+        bool doesIntersect (RayDifferential const &ray) const;
+
+        optional<Intersection> intersect(RayDifferential const &ray) const;
+        optional<Intersection> intersect(Sample const &sample) const;
+        
+private:
+        // forbid
+        Heightmap();
+        Heightmap(Heightmap const&);
+        Heightmap &operator = (Heightmap const&);
+        
+        // .
+        optional<Intersection> intersect(RayDifferential const &,real_t) const;
+        
+        // data
+        mutable std::vector<real_t> depthBuffer;                
+        shared_ptr<HeightFunction const> function;
+        real_t detail;
+        BoundingBox boundingBox;
+};
 
 } }
 

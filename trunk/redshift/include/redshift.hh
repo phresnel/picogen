@@ -82,6 +82,7 @@ namespace redshift{class RenderTarget;}
 
 // basictypes/
 #include "basictypes/scene.hh"
+#include "basictypes/heightmap.hh"
 
 
 #endif // REDSHIFT_H_INCLUDED_20090223

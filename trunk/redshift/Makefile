@@ -70,6 +70,7 @@ OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
+OBJFILES += $(BASICTYPESOBJDIR)/heightmap.o
 OBJFILES += $(BASICTYPESOBJDIR)/differentialgeometry.o
 OBJFILES += $(BASICTYPESOBJDIR)/intersection.o
 OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
@@ -145,6 +146,9 @@ $(BASICTYPESOBJDIR)/material.o: ./src/basictypes/material.cc
 	$(CXX) -o $@ $<
 
 $(BASICTYPESOBJDIR)/scene.o: ./src/basictypes/scene.cc
+	$(CXX) -o $@ $<
+
+$(BASICTYPESOBJDIR)/heightmap.o: ./src/basictypes/heightmap.cc
 	$(CXX) -o $@ $<
 	
 $(BASICTYPESOBJDIR)/differentialgeometry.o: \
