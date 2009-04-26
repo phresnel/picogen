@@ -410,6 +410,58 @@ template <typename BACKEND_T> struct node_types {
                                 return ::sqrt ((*operand ) (parameters));
                         }
                 };
+                
+                
+                
+                struct Log : public Function {
+                        FunctionPtr operand;
+                        Log ();
+                        Log (const Sqrt &);
+                        Log (FunctionPtr operand) : operand (operand) {}
+                public:
+                        static FunctionPtr create (FunctionPtr operand) {
+                                return FunctionPtr (new Log (operand));
+                        }
+                        scalar_t operator () (
+                                const parameters_t &parameters
+                        ) const {
+                                return ::log ((*operand ) (parameters));
+                        }
+                };
+                
+                struct Log10 : public Function {
+                        FunctionPtr operand;
+                        Log10 ();
+                        Log10 (const Sqrt &);
+                        Log10 (FunctionPtr operand) : operand (operand) {}
+                public:
+                        static FunctionPtr create (FunctionPtr operand) {
+                                return FunctionPtr (new Log10 (operand));
+                        }
+                        scalar_t operator () (
+                                const parameters_t &parameters
+                        ) const {
+                                return ::log10 ((*operand ) (parameters));
+                        }
+                };
+                
+                
+                
+                struct Exp : public Function {
+                        FunctionPtr operand;
+                        Exp ();
+                        Exp (const Sqrt &);
+                        Exp (FunctionPtr operand) : operand (operand) {}
+                public:
+                        static FunctionPtr create (FunctionPtr operand) {
+                                return FunctionPtr (new Exp (operand));
+                        }
+                        scalar_t operator () (
+                                const parameters_t &parameters
+                        ) const {
+                                return ::exp ((*operand ) (parameters));
+                        }
+                };
 
         }; // struct unary
 
@@ -635,6 +687,12 @@ template <typename BACKEND_T> struct node_types {
                         return true;
                 } else if ("sqrt" == operator_) {
                         return true;
+                } else if ("log" == operator_) {
+                        return true;
+                } else if ("log10" == operator_) {
+                        return true;
+                } else if ("exp" == operator_) {
+                        return true;
                 } else
 
                 // binary
@@ -812,6 +870,15 @@ template <typename BACKEND_T> struct node_types {
                 } else if ("sqrt" == operator_) {
                         unary::probe (operandCount);
                         return unary::Sqrt::create (operands_ [0]);
+                } else if ("log" == operator_) {
+                        unary::probe (operandCount);
+                        return unary::Log::create (operands_ [0]);
+                } else if ("log10" == operator_) {
+                        unary::probe (operandCount);
+                        return unary::Log10::create (operands_ [0]);
+                } else if ("exp" == operator_) {
+                        unary::probe (operandCount);
+                        return unary::Exp::create (operands_ [0]);
                 } else
 
                 // binary
