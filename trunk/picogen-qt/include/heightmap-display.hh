@@ -18,27 +18,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef CAMERASETTINGS_HH_INCLUDED_20090323
-#define CAMERASETTINGS_HH_INCLUDED_20090323
+#ifndef HEIGHTMAP_DISPLAY_HH_INCLUDED_20090424
+#define HEIGHTMAP_DISPLAY_HH_INCLUDED_20090424
 
 #include <QScrollArea>
 #include <QTextEdit>
-#include "ui_camerasettings.h"
+#include "scene-display.hh"
+#include "ui_heightmap-display.h"
 
 // when we derive from QAbstractScrollArea, the content is displayed
-class CameraSettingsImpl : public QWidget, private Ui::CameraSettings
+class HeightmapDisplayImpl : public QWidget, private Ui::HeightmapDisplay
 {
         Q_OBJECT
 
 public:
-        CameraSettingsImpl(/*QWidget* parent=0*/);
-        virtual ~CameraSettingsImpl();
+        HeightmapDisplayImpl();
+        virtual ~HeightmapDisplayImpl();
 
 private slots:        
  
 private:
-        //Ui::CameraSettings cameraSettings;
+        SceneDisplayImpl *display;
 };
 
 
-#endif // HEIGHTFIELDPROJECT_H_INCLUDED_20090323
+#endif // HEIGHTMAP_DISPLAY_HH_INCLUDED_20090424

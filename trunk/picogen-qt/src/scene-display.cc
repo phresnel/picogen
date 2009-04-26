@@ -41,20 +41,20 @@
 
 #include "../include/qimagerendertarget.hh"
 
-       
-        
+
+
 Reporter::Reporter (
         SceneDisplayThread &sceneDisplayThread_,
         redshift::RenderTarget::Ptr src,
         redshift::RenderTarget::Ptr target_
-) 
+)
 : lastReportTime (clock()), renderBuffer (src), screenBuffer (target_)
 , sceneDisplayThread(sceneDisplayThread_)
 {}
-        
-        
-        
-void Reporter::report (redshift::RenderTarget::ReadLockPtr sourcel, 
+
+
+
+void Reporter::report (redshift::RenderTarget::ReadLockPtr sourcel,
         int /*completed*/,
         int /*total*/
 ) const {
@@ -63,7 +63,7 @@ void Reporter::report (redshift::RenderTarget::ReadLockPtr sourcel,
         if (curr - lastReportTime < (CLOCKS_PER_SEC/2))
                 return;
         lastReportTime = clock();
-        
+
         /*real_t const finished = static_cast<real_t>(completed)
                                   / static_cast<real_t>(total);*/
         /*
@@ -71,22 +71,22 @@ void Reporter::report (redshift::RenderTarget::ReadLockPtr sourcel,
                 cout << real_t(100)*(finished) << "%"
                      << endl;
         } else {
-                cout << completed << endl; 
+                cout << completed << endl;
         }
         */
         copy (renderBuffer, sourcel, screenBuffer);
         screenBuffer->flip();
         sceneDisplayThread.reportPartialImage();
 }
-        
-        
-        
+
+
+
 void Reporter::reportDone () const {
         redshift::copy (renderBuffer, screenBuffer);
         screenBuffer->flip();
         sceneDisplayThread.reportFullImage();
 }
-        
+
 
 
 
@@ -105,24 +105,24 @@ class QuatschHeightFunction : public redshift::primitive::HeightFunction {
 private:
         // quatsch
         typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
-    
+
         typedef backend_t::Function Function;
         typedef backend_t::FunctionPtr FunctionPtr;
         typedef backend_t::scalar_t scalar_t;
         typedef backend_t::parameters_t parameters_t;
 
         typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
-        
+
         struct FunctionSet {
                 Compiler::ConfigurableFunctionsMap cfm;
                 operator Compiler::ConfigurableFunctionsMap () {
                         return cfm;
                 }
         };
-        
+
         FunctionSet functionSet;
         Compiler::FunctionPtr fun;
-        std::stringstream errors; 
+        std::stringstream errors;
 
 public:
         real_t operator ()
@@ -131,16 +131,16 @@ public:
                 const real_t p [] = { u, v };
                 return (*fun) (p);
         }
-        
-        
+
+
         QuatschHeightFunction ()
         : fun (Compiler::compile (
                 "x;y",
                 "(- (* (sin (* x 0.7)) (sin(* y 0.7)) ) 4)",
-                functionSet, 
+                functionSet,
                 errors))
         {
-        }                
+        }
 };
 } // namespace redshift
 
@@ -160,53 +160,81 @@ class HeightFunction : public redshift::primitive::HeightFunction {
 using namespace std;
 
 
-void SceneDisplayThread::run() {
-        using namespace redshift;
-        using namespace redshift::camera;
-        using namespace redshift::interaction;
-        using namespace redshift::primitive;
 
-        // TODO replace RenderTarget with Film?
-        //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
+class DummySubject : public SceneDisplaySubject {
+public:
+        void render (int /*width*/, int /*height*/,
+                     redshift::RenderTarget::Ptr renderBuffer,
+                     redshift::RenderTarget::Ptr screenBuffer,
+                     redshift::shared_ptr<redshift::interaction::
+                                          ProgressReporter>  reporter
+        ) {
+                using namespace redshift;
+                using namespace redshift::camera;
+                using namespace redshift::interaction;
+                using namespace redshift::primitive;
+
+                // TODO replace RenderTarget with Film?
+                //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
+
+                shared_ptr<Camera> camera (new Pinhole(renderBuffer));
+
+                shared_ptr<primitive::HeightFunction> heightFunction;
+                try {
+                        heightFunction = shared_ptr<primitive::HeightFunction> (
+                                              new ::redshift::QuatschHeightFunction());
+                } catch (...) { // TODO (!!!)
+                }
+
+                shared_ptr<primitive::Primitive> agg (
+                        /*new primitive::ClosedSphere(
+                                Point(scalar_cast<fixed_point_t>(0),
+                                        scalar_cast<fixed_point_t>(0),
+                                        scalar_cast<fixed_point_t>(25)),
+                                10.0)*/
+                        new Heightmap (heightFunction, 0.25)
+                );
+
+                Scene Scene (renderBuffer, camera, agg);
+
+
+                UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
+
+                Scene.render(reporter, commandProcessor);
+
+
+                copy (renderBuffer, screenBuffer);
+                screenBuffer->flip();
+
+                //commandProcessor->waitForQuit();
+                //emit fullImage (*((QImageRenderTarget*)&*screenBuffer));
+        }
+};
+
+
+
+void SceneDisplayThread::run() {
         int const width = widthForNextRender;
         int const height = heightForNextRender;
-        this->renderBuffer = RenderTarget::Ptr(new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer));
-        
-        shared_ptr<primitive::HeightFunction> heightFunction;
-        try {
-                heightFunction = shared_ptr<primitive::HeightFunction> (
-                                      new ::redshift::QuatschHeightFunction());
-        } catch (...) { // TODO (!!!)
-        }
-        
-        shared_ptr<primitive::Primitive> agg (
-                /*new primitive::ClosedSphere(
-                        Point(scalar_cast<fixed_point_t>(0),
-                                scalar_cast<fixed_point_t>(0),
-                                scalar_cast<fixed_point_t>(25)),
-                        10.0)*/
-                new Heightmap (heightFunction, 0.25)
-        );
-        
-        Scene Scene (renderBuffer, camera, agg);
 
-        this->screenBuffer = RenderTarget::Ptr(new QImageRenderTarget(width,height));
-        
-        UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
+        this->screenBuffer =
+           redshift::RenderTarget::Ptr(
+                                new redshift::QImageRenderTarget(width,height));
 
-        
-        reporter = shared_ptr<redshift::interaction::ProgressReporter>(
+        this->renderBuffer =
+           redshift::RenderTarget::Ptr(new redshift::ColorRenderTarget(width,height));
+
+        this->reporter =
+                redshift::shared_ptr<redshift::interaction::ProgressReporter>(
                         new Reporter (*this, renderBuffer, screenBuffer));
-        Scene.render(reporter, commandProcessor);
-        
-        
-        copy (renderBuffer, screenBuffer);
-        screenBuffer->flip(); 
-      
-        //commandProcessor->waitForQuit();
-        //emit fullImage (*((QImageRenderTarget*)&*screenBuffer)); 
-}
+
+        if (subject.get()) {
+                subject->render(width, height,
+                                this->renderBuffer,
+                                this->screenBuffer,
+                                this->reporter
+                               );
+        }}
 
 
 
@@ -222,10 +250,20 @@ void SceneDisplayThread::reportFullImage() {
         emit fullImage (*((QImageRenderTarget*)&*screenBuffer));
 }
 
-        
 
-SceneDisplayImpl::SceneDisplayImpl()
-: mustReRender (false)
+
+void SceneDisplayThread::setDisplaySubject (
+                redshift::shared_ptr<SceneDisplaySubject> subject) {
+        this->subject = subject;
+}
+
+
+
+
+
+
+SceneDisplayImpl::SceneDisplayImpl(QWidget* parent)
+: QWidget (parent), mustReRender (false)
 {
         qRegisterMetaType<QImage>("QImage");
         connect(&renderThread, SIGNAL(partialImage (const QImage&)),
@@ -235,18 +273,30 @@ SceneDisplayImpl::SceneDisplayImpl()
         connect(&renderThread, SIGNAL(fullImage (const QImage &)),
              this, SLOT(fullImage()));
 
-        
+
         //setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
-        
+
         renderThread.widthForNextRender = width();
-        renderThread.heightForNextRender = width();
+        renderThread.heightForNextRender = height();
         //renderThread.start();
+
+        renderThread.setDisplaySubject(
+                        redshift::shared_ptr<SceneDisplaySubject> (
+                                new DummySubject ()));
 }
 
 
 
 SceneDisplayImpl::~SceneDisplayImpl() {
+}
+
+
+
+void SceneDisplayImpl::setSubject (
+        redshift::shared_ptr<SceneDisplaySubject> subject
+) {
+        renderThread.setDisplaySubject(subject);
 }
 
 
@@ -273,7 +323,7 @@ void SceneDisplayImpl::fullImage() {
 
 
 void SceneDisplayImpl::resizeEvent(QResizeEvent *event) {
-
+/*
         renderThread.widthForNextRender = event->size().width();
         renderThread.heightForNextRender = event->size().height();
         if (renderThread.isRunning()) {
@@ -281,6 +331,28 @@ void SceneDisplayImpl::resizeEvent(QResizeEvent *event) {
         } else {
                 mustReRender = false;
                 renderThread.start();
-        }
+        }*/
         QWidget::resizeEvent (event);
 }
+
+
+
+void SceneDisplayImpl::paintEvent (QPaintEvent * event) {
+        if (true/*lastRenderedWidth != this->width()
+            || lastRenderedHeight != this->height()*/
+        ) {
+                lastRenderedWidth =
+                 renderThread.widthForNextRender = this->width();
+                lastRenderedHeight =
+                 renderThread.heightForNextRender = this->height();
+
+                if (renderThread.isRunning()) {
+                        mustReRender = true;
+                } else {
+                        mustReRender = false;
+                        renderThread.start();
+                }
+        }
+        QWidget::paintEvent (event);
+}
+

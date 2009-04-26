@@ -22,6 +22,7 @@
 
 
 #include <iostream>
+#include <sstream>
 
 #include <QHeaderView>
 #include <QCheckBox>
@@ -33,10 +34,24 @@
 #include "../include/quatsch-editor.hh"
 
 
+#include "../../redshift/include/redshift.hh"
+#include "../../redshift/include/setup.hh"
+#include "../../quatsch/quatsch.hh"
+#include "../../quatsch/frontend/jux.hh"
+#include "../../quatsch/backend/est/backend.hh"
+
+#include "../../redshift/include/redshift.hh"
+#include "../../redshift/include/rendertargets/colorrendertarget.hh"
+#include "../../redshift/include/cameras/pinhole.hh"
+//#include "../../redshift/include/interaction/sdlcommandprocessor.hh"
+
+#include "../include/qimagerendertarget.hh"
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+// Composition
+////////////////////////////////////////////////////////////////////////////////
 unsigned int Composition::generateId () const {
       again:
         const int id = rand();
@@ -69,11 +84,188 @@ bool Composition::setRowById (int id, RowData rowData) {
         }
         return false;
 }
-        
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// HeightmapDisplaySubject
+////////////////////////////////////////////////////////////////////////////////
+
+
+namespace redshift {
+class QuatschHeightFunction : public redshift::primitive::HeightFunction {
+private:
+        // quatsch
+        typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
+
+        typedef backend_t::Function Function;
+        typedef backend_t::FunctionPtr FunctionPtr;
+        typedef backend_t::scalar_t scalar_t;
+        typedef backend_t::parameters_t parameters_t;
+
+        typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
+
+        struct FunctionSet {
+                Compiler::ConfigurableFunctionsMap cfm;
+                operator Compiler::ConfigurableFunctionsMap () {
+                        return cfm;
+                }
+        };
+
+        FunctionSet functionSet;
+        Compiler::FunctionPtr fun;
+
+public:
+        real_t operator ()
+         (real_t const & u, real_t const & v) const {
+                //real_t const d = sqrt (u*u + v*v);
+                const real_t p [] = { u, v };
+                return (*fun) (p);
+        }
+
+
+        QuatschHeightFunction (std::string code, std::stringstream &errors_)
+        : fun (Compiler::compile (
+                "x;y",
+                code,
+                functionSet,
+                errors_))
+        {
+        }
+
+};
+} // namespace redshift
+
+class HeightFunction : public redshift::primitive::HeightFunction {
+        typedef redshift::real_t real_t;
+        typedef redshift::fixed_point_t fixed_point_t;
+        real_t operator ()
+         (real_t const & u, real_t const & v) const {
+                //real_t const d = sqrt (u*u + v*v);
+                return (sin(u*0.7)*sin(v*0.7)) - 4;
+        }
+};
+
+
+class Heightmap3dDisplaySubject : public SceneDisplaySubject {
+public:
+        std::string code;
+
+        Heightmap3dDisplaySubject (std::string code_) : code(code_) {}
+
+        void render (int /*width*/, int /*height*/,
+                     redshift::RenderTarget::Ptr renderBuffer,
+                     redshift::RenderTarget::Ptr screenBuffer,
+                     redshift::shared_ptr<redshift::interaction::
+                                          ProgressReporter>  reporter
+        ) {
+                using namespace redshift;
+                using namespace redshift::camera;
+                using namespace redshift::interaction;
+                using namespace redshift::primitive;
+
+                // TODO replace RenderTarget with Film?
+                //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
+
+                shared_ptr<Camera> camera (new Pinhole(renderBuffer));
+
+                shared_ptr<primitive::HeightFunction> heightFunction;
+                std::stringstream errors;
+
+                try {
+                        heightFunction = shared_ptr<primitive::HeightFunction> (
+                                new ::redshift::QuatschHeightFunction(
+                                        code,
+                                        errors
+                                ));
+                } catch (...) { // TODO (!!!)
+                        std::cerr << "syntax error?\n"
+                                  << " code: {\n"
+                                  << code
+                                  << "}\n"
+                                  << " errors: {"
+                                  << errors.str()
+                                  << "}\n";
+                        return;
+                }
+
+                shared_ptr<primitive::Primitive> agg (
+                        /*new primitive::ClosedSphere(
+                                Point(scalar_cast<fixed_point_t>(0),
+                                        scalar_cast<fixed_point_t>(0),
+                                        scalar_cast<fixed_point_t>(25)),
+                                10.0)*/
+                        new Heightmap (heightFunction, 0.25)
+                );
+
+                Scene scene (renderBuffer, camera, agg);
+                UserCommandProcessor::Ptr commandProcessor (
+                                new PassiveCommandProcessor());
+                scene.render(reporter, commandProcessor);
+
+                copy (renderBuffer, screenBuffer);
+                screenBuffer->flip();
+
+                //commandProcessor->waitForQuit();
+                //emit fullImage (*((QImageRenderTarget*)&*screenBuffer));
+        }
+};
 
 
 
 
+class HeightmapDisplaySubject : public SceneDisplaySubject {
+public:
+        std::string code;
+
+        HeightmapDisplaySubject (std::string code_) : code(code_) {}
+
+        void render (int /*width*/, int /*height*/,
+                     redshift::RenderTarget::Ptr renderBuffer,
+                     redshift::RenderTarget::Ptr screenBuffer,
+                     redshift::shared_ptr<redshift::interaction::
+                                          ProgressReporter>  reporter
+        ) {
+                using namespace redshift;
+                using namespace redshift::camera;
+                using namespace redshift::interaction;
+                using namespace redshift::primitive;
+
+                shared_ptr<primitive::HeightFunction> heightFunction;
+                std::stringstream errors;
+
+                try {
+                        heightFunction = shared_ptr<primitive::HeightFunction> (
+                                new ::redshift::QuatschHeightFunction(
+                                        code,
+                                        errors
+                                ));
+                } catch (...) { // TODO (!!!)
+                        std::cerr << "syntax error?\n"
+                                  << " code: {\n"
+                                  << code
+                                  << "}\n"
+                                  << " errors: {"
+                                  << errors.str()
+                                  << "}\n";
+                        return;
+                }
+
+                HeightmapRenderer scene (renderBuffer, heightFunction);
+                UserCommandProcessor::Ptr commandProcessor (
+                                        new PassiveCommandProcessor());
+                scene.render(reporter, commandProcessor);
+                copy (renderBuffer, screenBuffer);
+                screenBuffer->flip();
+        }
+};
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// HeightmapLayersImpl
+////////////////////////////////////////////////////////////////////////////////
 
 HeightmapLayersImpl::HeightmapLayersImpl(QMdiArea *mdiArea_)
 : mdiArea (mdiArea_), composition (new Composition())
@@ -82,30 +274,37 @@ HeightmapLayersImpl::HeightmapLayersImpl(QMdiArea *mdiArea_)
 
         setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
-        
-        
+
+
         QHeaderView *horizontalHeader = table->horizontalHeader();
         horizontalHeader->setResizeMode(QHeaderView::ResizeToContents);
         horizontalHeader->setResizeMode(Indices::RightMostData, QHeaderView::Stretch);
         //horizontalHeader->setStretchLastSection (true);
         horizontalHeader->hide();
-        
-        QHeaderView *verticalHeader = table->verticalHeader();        
+
+        QHeaderView *verticalHeader = table->verticalHeader();
         verticalHeader->setResizeMode(QHeaderView::Fixed);
         verticalHeader->setDefaultSectionSize (36);
         verticalHeader->hide();
-        
+
         verticalHeader->setStyleSheet (
                  "QHeaderView::section { \n"
-                 "    background-color: #666666 ; \n" 
+                 "    background-color: #666666 ; \n"
                  "    color: white; \n"
                  "    padding-left: 4px; \n"
                  "    border: 1px solid #6c6c6c; \n"
                  "}"
         );
-        
+
         fillCompositionTypeComboBox (compositionType);
-        
+
+        display = new SceneDisplayImpl ();
+        mdiArea->addSubWindow (display);
+        display->show();
+        display->setSubject (redshift::shared_ptr<SceneDisplaySubject>(
+                new HeightmapDisplaySubject("(sin (* 10 x))")
+        ));
+
         /*table->setStyleSheet (
         "QTableView {\n"
         "  selection-background-color: qlineargradient( \n"
@@ -118,6 +317,22 @@ HeightmapLayersImpl::HeightmapLayersImpl(QMdiArea *mdiArea_)
 
 
 HeightmapLayersImpl::~HeightmapLayersImpl() {
+}
+
+
+
+
+void HeightmapLayersImpl::changeEvent(QEvent *e) {
+        switch (e->type()) {
+        case QEvent::LanguageChange:
+                retranslateUi(this);
+                break;
+        case QEvent::Close:
+                display->close();
+                break;
+        default:
+                break;
+        }
 }
 
 
@@ -136,15 +351,15 @@ void HeightmapLayersImpl::fillCompositionTypeComboBox (QComboBox *box) const {
 void HeightmapLayersImpl::swapRows(int rowA, int rowB)
 {
         syncFromView ();
-        if (rowA>=0 && (size_t)rowA < composition->data.size() 
-            && rowB>=0 && (size_t)rowB < composition->data.size() 
+        if (rowA>=0 && (size_t)rowA < composition->data.size()
+            && rowB>=0 && (size_t)rowB < composition->data.size()
         ) {
                 RowData tmp = composition->data [rowA];
                 composition->data [rowA] = composition->data [rowB];
-                composition->data [rowB] = tmp;                
-                
-                table->selectRow (rowB);               
-                
+                composition->data [rowB] = tmp;
+
+                table->selectRow (rowB);
+
         }
         syncToView ();
 }
@@ -183,13 +398,13 @@ void HeightmapLayersImpl::storeRowParameters (
                 data->parameters = params.merge (data->parameters);
                 composition->setRowById (rowId, *data);
                 //emit setRowParameters (rowId, data->parameters);
-        }        
+        }
 }
 
 
 
 void HeightmapLayersImpl::closingDefinitionWindow (int id) {
-        //std::cout << "closing def-editor for id " << id << std::endl;        
+        //std::cout << "closing def-editor for id " << id << std::endl;
         if (openDefinitionWindows.find (id) != openDefinitionWindows.end())
                 openDefinitionWindows.erase (id);
         redshift::optional<RowData> row = composition->getRowById (id);
@@ -207,56 +422,56 @@ RowData HeightmapLayersImpl::rowFromView (int row) const {
                 return RowData();
 
         if (0) {
-                std::cout << "Row " << row << '\n';        
-                std::cout << "  visible: " 
-                        << ((QCheckBox*)table->cellWidget (row, 
+                std::cout << "Row " << row << '\n';
+                std::cout << "  visible: "
+                        << ((QCheckBox*)table->cellWidget (row,
                                         Indices::Visible))->isChecked()
                         << '\n';
-                std::cout << "  locked: " 
-                        << ((QCheckBox*)table->cellWidget (row, 
+                std::cout << "  locked: "
+                        << ((QCheckBox*)table->cellWidget (row,
                                         Indices::Locked))->isChecked()
                         << '\n';
-                std::cout << "  name: " 
-                        << table->item (row, 
+                std::cout << "  name: "
+                        << table->item (row,
                                         Indices::Name)->text().toStdString()
                         << '\n';
         }
-        
+
         const QComboBox *typeComboBox =
                         ((QComboBox*)table->cellWidget (row, Indices::Type));
-        
+
         const int id = table->item (row, Indices::Id)
                             ->data(Qt::UserRole).toInt();
-        
+
         // RowParameters aren't stored in the TableWidget, so those have to be
         // pulled from our actual data representation. (hack)
         // > same for hardLock
         redshift::optional<RowData> rp = composition->getRowById (id);
         RowParameters params;
         bool hardLock = false;
-        
+
         if (rp) {
                 params = rp->parameters;
                 hardLock = rp->hardLock;
-        }       
-        
-        
+        }
+
+
         return RowData(
                 id,
-                
+
                 ((QCheckBox*)table->cellWidget (row, Indices::Visible))->
                                                                 isChecked(),
-                                                                
+
                 ((QCheckBox*)table->cellWidget (row, Indices::Locked))->
                                                                 isChecked(),
-                                                                
+
                 hardLock,
-                
+
                 static_cast<RowData::Type>(typeComboBox->itemData (
                         typeComboBox->currentIndex()).toInt()),
-                        
+
                 table->item (row, Indices::Name)->text(),
-                
+
                 params
         );
 }
@@ -265,7 +480,7 @@ RowData HeightmapLayersImpl::rowFromView (int row) const {
 
 void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
 
-        const bool locked = data.locked || data.hardLock; 
+        const bool locked = data.locked || data.hardLock;
 
         // Id
         {
@@ -283,64 +498,64 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
 
         // Enable/Disable (i.e. visibility)
         {
-                
-                QCheckBox *box = new QCheckBox ();                
-                table->setCellWidget (rowIndex, Indices::Visible, box);                
+
+                QCheckBox *box = new QCheckBox ();
+                table->setCellWidget (rowIndex, Indices::Visible, box);
                 makeVisibilityCheckBox (box, data.visible);
                 box->setEnabled (!locked);
-                
+
                 connect(box,SIGNAL(stateChanged (int)),
                         this, SLOT(slot_syncFromView ()));
         }
-        
+
         // Lock status
         {
-                QCheckBox *box = new QCheckBox ();        
+                QCheckBox *box = new QCheckBox ();
                 table->setCellWidget (rowIndex, Indices::Locked, box);
                 makeLockingCheckBox (box, locked);
                 box->setEnabled (!data.hardLock);
-                
+
                 connect(box,SIGNAL(stateChanged (int)),
                         this, SLOT(slot_syncFromView ()));
         }
-        
+
         // Type
         {
-                QComboBox *box = new QComboBox ();                
-                table->setCellWidget (rowIndex, Indices::Type, box);               
-                
-                
+                QComboBox *box = new QComboBox ();
+                table->setCellWidget (rowIndex, Indices::Type, box);
+
+
                 if (data.type < RowData::Group) {
                         box->setInsertPolicy (QComboBox::InsertAtBottom);
                         box->addItem ("1st Class", QVariant(RowData::FirstClass));
                         box->addItem ("Composition", QVariant(RowData::Composition));
                         box->addItem ("Bitmap", QVariant(RowData::Bitmap));
-                        box->addItem ("Code", QVariant(RowData::Code));                                
-                } else {                                
+                        box->addItem ("Code", QVariant(RowData::Code));
+                } else {
                         box->addItem ("Add", QVariant(RowData::GroupAddition));
                         box->addItem ("Subtract", QVariant(RowData::GroupSubtraction));
                         box->addItem ("Multiply", QVariant(RowData::GroupMultiplication));
                         box->addItem ("Divide", QVariant(RowData::GroupDivision));
                         box->addItem ("Lerp", QVariant(RowData::GroupLerp));
-                }                        
+                }
                 box->setEnabled (!locked);
-                box->setSizeAdjustPolicy (QComboBox::AdjustToContents);                        
-                
+                box->setSizeAdjustPolicy (QComboBox::AdjustToContents);
+
                 for (int i=0; i<box->count(); ++i) {
                         if (data.type == box->itemData (i).toInt()) {
                                 box->setCurrentIndex (i);
                         }
-                }                        
-                
-                QTableWidgetItem *item = new QTableWidgetItem(tr(""));                        
+                }
+
+                QTableWidgetItem *item = new QTableWidgetItem(tr(""));
                 item->setSizeHint (box->sizeHint());
                 item->setFlags (Qt::ItemIsSelectable |
                         (locked?Qt::NoItemFlags:Qt::ItemIsEnabled));
                 table->setItem (rowIndex, Indices::Type, item);
-                
+
                 // TODO does resize properly?
         }
-  
+
         // Icon size preview
         {
                 QTableWidgetItem *item = new QTableWidgetItem(tr(""));
@@ -365,10 +580,10 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
                 );
                 table->setItem (rowIndex, Indices::Name, item);
         }
-        
+
         // This is a hack to align all cell elements correctly
-        // (resizeRowsToContents() alone won't align elements; but when the 
-        // window gets resized, all seems to align properly, so we force a 
+        // (resizeRowsToContents() alone won't align elements; but when the
+        // window gets resized, all seems to align properly, so we force a
         // resize here)
         const QSize oldSize (table->size());
         const QSize newSize (oldSize.width(), oldSize.height()+1);
@@ -381,33 +596,33 @@ void HeightmapLayersImpl::rowToView (int rowIndex, RowData data) {
 
 void HeightmapLayersImpl::colorizeGroups () {
         srand (16); // No I am not going to use a Mersenne Twister here. lulz.
-        
+
         QString color [2] = {
                 "#333333", "#CCCCCC"
         };
         const int colorCount = sizeof color / sizeof color[0];
         int colorId = 0;
-        
+
         for (int i=0; i<table->rowCount(); ++i) {
                 const RowData::Type type = composition->data[i].type;
-                if (type >= RowData::Group) {                        
+                if (type >= RowData::Group) {
                         ++colorId;
                         colorId %= colorCount;
-                }                                
-                
-                const QString stylesheet = "QFrame { background-color: " + 
+                }
+
+                const QString stylesheet = "QFrame { background-color: " +
                                                 color [colorId] + "}";
 
                 QFrame *gi = new QFrame ();
                 gi->setStyleSheet (stylesheet);
                 table->setCellWidget (i, Indices::LeftBorder, gi);
-                
+
                 gi = new QFrame ();
                 gi->setStyleSheet (stylesheet);
                 table->setCellWidget (i, Indices::RightBorder, gi);
         }
 }
- 
+
 
 
 void HeightmapLayersImpl::on_openDefinition_clicked() {
@@ -415,20 +630,20 @@ void HeightmapLayersImpl::on_openDefinition_clicked() {
         if (0>row) {
                 return;
         }
-        
+
         syncFromView();
         const RowData data = composition->data [row];//getRowData (row);
-        
-        
-        // If def-window already open, focus that and return. 
+
+
+        // If def-window already open, focus that and return.
         if (openDefinitionWindows.find(data.id)!=openDefinitionWindows.end()) {
                 openDefinitionWindows [data.id]->setFocus();
                 return;
         } else if (data.locked || data.hardLock) {
                 return;
         }
-        
-        
+
+
         switch (data.type) {
         case RowData::FirstClass:
                 std::cout << "must. open. presets-dialog." << std::endl;
@@ -438,8 +653,8 @@ void HeightmapLayersImpl::on_openDefinition_clicked() {
                 break;
         case RowData::Composition: {
                 std::cout << "must. open. composition dialog." << std::endl;
-                HeightmapLayersImpl *hd = new HeightmapLayersImpl (mdiArea);        
-                QMdiSubWindow *sub = mdiArea->addSubWindow(hd);                
+                HeightmapLayersImpl *hd = new HeightmapLayersImpl (mdiArea);
+                QMdiSubWindow *sub = mdiArea->addSubWindow(hd);
                 sub->show();
                 } break;
         case RowData::Code: {
@@ -447,32 +662,32 @@ void HeightmapLayersImpl::on_openDefinition_clicked() {
                                                 data.parameters.code, data.id);
                 ed->setWindowTitle (data.name);
                 connect(
-                        ed, SIGNAL(storeRowParameters (int, 
+                        ed, SIGNAL(storeRowParameters (int,
                                                 RowParametersMerger const &)),
-                        this, SLOT(storeRowParameters (int, 
+                        this, SLOT(storeRowParameters (int,
                                                 RowParametersMerger const &))
                 );
                 connect(ed, SIGNAL(closingDefinitionWindow (int)),
-                        this, SLOT(closingDefinitionWindow (int)));                                
+                        this, SLOT(closingDefinitionWindow (int)));
                 QMdiSubWindow *sub = mdiArea->addSubWindow(ed);
                 sub->show();
-                
+
                 openDefinitionWindows[data.id] = sub;
-                
+
                 composition->data [row].hardLock = true;
                 syncToView();
                 } break;
-                
-        case RowData::GroupAddition:                
+
+        case RowData::GroupAddition:
                 break;
-        case RowData::GroupSubtraction:                
+        case RowData::GroupSubtraction:
                 break;
-        case RowData::GroupMultiplication:                
+        case RowData::GroupMultiplication:
                 break;
-        case RowData::GroupDivision:                
+        case RowData::GroupDivision:
                 break;
-        case RowData::GroupLerp:                
-                break;        
+        case RowData::GroupLerp:
+                break;
         };
 }
 
@@ -515,7 +730,7 @@ void HeightmapLayersImpl::makeLockingCheckBox (
                "QCheckBox::indicator:checked {"
                "   image: url(:/locked/icons/darkglass/1239259860_gpg.png)"
                "}"
-        );        
+        );
 }
 
 
@@ -524,13 +739,13 @@ void HeightmapLayersImpl::on_newLayer_clicked() {
         const int index = table->currentRow() >= 0
                         ? 1+table->currentRow()
                         : table->rowCount();
-        
+
         syncFromView ();
-        
+
         const RowData newRow = RowData (composition->generateId(),
                                 true, false, false,  // visible, lock, hardLock
-                                RowData::FirstClass, tr("New Layer")); 
-        
+                                RowData::FirstClass, tr("New Layer"));
+
         if (composition->data.size() == 0) {
                 composition->data.push_back (newRow);
         } else {
@@ -548,20 +763,20 @@ void HeightmapLayersImpl::on_newGroup_clicked() {
         const int index = table->currentRow() >= 0
                         ? 1+table->currentRow()
                         : table->rowCount();
-                        
+
         syncFromView ();
-        
-        const RowData newRow = RowData (composition->generateId(), 
+
+        const RowData newRow = RowData (composition->generateId(),
                                 true, false, false, // visible, lock, hardLock
-                                RowData::GroupAddition, tr("New Group"));                                
-        
+                                RowData::GroupAddition, tr("New Group"));
+
         if (composition->data.size() == 0) {
                 composition->data.push_back (newRow);
         } else {
                 composition->data.insert (
                         composition->data.begin()+index, newRow);
         }
-        
+
         syncToView ();
         colorizeGroups ();
 }
@@ -579,7 +794,24 @@ void HeightmapLayersImpl::on_deleteLayer_clicked() {
                 );
                 syncToView ();
                 colorizeGroups ();
-        }        
+        }
+}
+
+
+
+void HeightmapLayersImpl::on_updatePreview_clicked() {
+        int juxFunctionId = 0;
+        QString callCode;
+
+        syncFromView();
+        const QString code = generateJuxCode(juxFunctionId, callCode,
+                                             composition, 0);
+
+        display->setSubject (redshift::shared_ptr<SceneDisplaySubject>(
+                new HeightmapDisplaySubject(
+                                (code + "\n" + callCode).toStdString()
+                )));
+        display->update();
 }
 
 
@@ -589,12 +821,12 @@ void HeightmapLayersImpl::on_showJuxCode_clicked() {
         QString callCode;
 
         syncFromView();
-        const QString code = generateJuxCode(juxFunctionId, callCode, 
+        const QString code = generateJuxCode(juxFunctionId, callCode,
                                              composition, 0);
         QMessageBox box (
-                QMessageBox::Information, 
+                QMessageBox::Information,
                 "jux code",
-                code + "\n" + callCode                
+                code + "\n" + callCode
         );
         box.exec();
 }
@@ -613,7 +845,7 @@ QString HeightmapLayersImpl::getJuxIndendationString (int indent) const {
 redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
         redshift::shared_ptr<const Composition> composition,
         redshift::shared_ptr<heightmap_codegen::NamespaceMaker> namespaceMaker,
-        int indent_, 
+        int indent_,
         size_t &rowIndex,
         bool startsInGroup
 ) const {
@@ -621,14 +853,14 @@ redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
         const QString indent = getJuxIndendationString (indent_);
         QString prolog;
         QString code;
-        
+
         while (rowIndex<composition->data.size()) {
                 const RowData data = composition->data [rowIndex];
                 const RowParameters params = data.parameters;
 
                 switch (data.type) {
                 // primitives
-                case RowData::FirstClass: 
+                case RowData::FirstClass:
                         code += indent + "(first-class x y)\n";
                         ++ rowIndex;
                         break;
@@ -655,47 +887,47 @@ redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
                         namespaceMaker->generateNewNamespace();
                         ++ rowIndex;
                         break;
-                
+
                 // aggregates
                 case RowData::GroupAddition:
-                        if (startsInGroup) 
+                        if (startsInGroup)
                                 return code;
                         code += indent + "( +\n";
-                        goto rest;   
-                        
+                        goto rest;
+
                 case RowData::GroupSubtraction:
-                        if (startsInGroup) 
+                        if (startsInGroup)
                                 return code;
                         code += indent + "( -\n";
                         goto rest;
-                        
+
                 case RowData::GroupMultiplication:
-                        if (startsInGroup) 
+                        if (startsInGroup)
                                 return code;
                         code += indent + "( *\n";
                         goto rest;
-                        
+
                 case RowData::GroupDivision:
-                        if (startsInGroup) 
+                        if (startsInGroup)
                                 return code;
                         code += indent + "( /\n";
                         goto rest;
-                        
+
                 case RowData::GroupLerp:
-                        if (startsInGroup) 
+                        if (startsInGroup)
                                 return code;
                         code += indent + "( lerp X\n";
                         goto rest;
-                        
+
                 rest: {
-                        redshift::tuple<QString,QString> tmp = 
+                        redshift::tuple<QString,QString> tmp =
                                 generateJuxCode (composition, namespaceMaker,
                                                 1+indent_, ++rowIndex, true);
                         prolog += redshift::get<0> (tmp);
                         code += redshift::get<1> (tmp);
                         code += indent + ")\n";
                         } break;
-                };                
+                };
         }
         return redshift::make_tuple (prolog, code);
 }
@@ -703,19 +935,19 @@ redshift::tuple<QString, QString> HeightmapLayersImpl::generateJuxCode (
 
 
 QString HeightmapLayersImpl::generateJuxCode(
-        int &juxFunctionId, QString &callCode, 
+        int &juxFunctionId, QString &callCode,
         redshift::shared_ptr<const Composition> composition, int recDepth
 ) const {
 
         // TODO should not be created here
         redshift::shared_ptr<heightmap_codegen::NamespaceMaker>
-                namespaceMaker (new heightmap_codegen::NamespaceMaker()); 
+                namespaceMaker (new heightmap_codegen::NamespaceMaker());
 
         int indent_ = 0;
         QString indent = getJuxIndendationString (indent_);
         QString prolog = "// prolog\n";
         QString code = indent + "// Main\n";
-        
+
         // Set top level type.
         code += indent + "( ";
         switch (composition->type) {
@@ -735,15 +967,15 @@ QString HeightmapLayersImpl::generateJuxCode(
                 code += indent + "lerp X \n";
                 break;
         };
-        
+
         for (size_t i=0; i<composition->data.size(); ++i) {
-                redshift::tuple<QString,QString> t = 
+                redshift::tuple<QString,QString> t =
                                 generateJuxCode (composition, namespaceMaker,
                                                                  1+indent_, i);
                 prolog += redshift::get<0>(t);
                 code += redshift::get<1>(t);
         }
-        
+
         code += ")";
 
         return prolog + code;
@@ -755,20 +987,20 @@ void HeightmapLayersImpl::syncFromView () {
         if ((size_t)table->rowCount() != composition->data.size()) {
                 composition->data.resize (table->rowCount());
         }
-        
+
         composition->type = (CompositionType)compositionType->
                         itemData(compositionType->currentIndex()).toInt();
-        
+
         for (int i=0; i<table->rowCount(); ++i) {
                 composition->data [i] = rowFromView (i);
-        }        
+        }
 }
 
 
 
 void HeightmapLayersImpl::slot_syncFromView () {
         syncFromView ();
-        syncToView(); // A bit messy, sorry. But this will e.g. in case of a 
+        syncToView(); // A bit messy, sorry. But this will e.g. in case of a
                       // user-row-lock update lock statuses in the view.
 }
 

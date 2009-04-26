@@ -20,24 +20,29 @@
 
 
 #include <iostream>
-using namespace std;
+#include <QPushButton>
 
-#include "../include/camerasettings.hh"
 
-CameraSettingsImpl::CameraSettingsImpl(/*QWidget *parent*/)
-//: QWidget (/*parent*/), CameraSettings()
+#include "../../redshift/include/redshift.hh"
+#include "../../redshift/include/rendertargets/colorrendertarget.hh"
+#include "../../redshift/include/cameras/pinhole.hh"
+//#include "../../redshift/include/interaction/sdlcommandprocessor.hh"
+
+#include "../include/qimagerendertarget.hh"
+
+#include "../include/heightmap-display.hh"
+
+
+
+HeightmapDisplayImpl::HeightmapDisplayImpl()
 {
         setAttribute(Qt::WA_DeleteOnClose);
         setupUi(this);
-        //setWidgetResizable (false);
-        //setGeometry (0, 0, 320, 240); 
-        /*show();*/
-        //setWidget (this);        
-        //QMetaObject::connectSlotsByName(this);
-        cout << "created Camera Settings" << endl;
+        display = new SceneDisplayImpl (this);        
+        centralLayout->addWidget (display);
+        display->show();
 }
 
 
-CameraSettingsImpl::~CameraSettingsImpl(/*QWidget *parent*/) {
-        cout << "deleted Camera Settings" << endl;
+HeightmapDisplayImpl::~HeightmapDisplayImpl() {
 }

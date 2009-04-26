@@ -29,13 +29,13 @@ NamespaceMaker::NamespaceMaker ()
 {}
 
 
-                
+
 QString NamespaceMaker::getNamespace () const {
-        return "namespace" + QString::number(num) + "-";
+        return "namespace" + QString::number(num) + "";
 }
 
 
-                
+
 void NamespaceMaker::generateNewNamespace () {
         ++num;
 }

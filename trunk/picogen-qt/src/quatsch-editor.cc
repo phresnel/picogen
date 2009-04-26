@@ -29,7 +29,7 @@
 
 
 
-QuatschEditorImpl::QuatschEditorImpl( 
+QuatschEditorImpl::QuatschEditorImpl(
         QString code,
         int rowId
 )
@@ -39,18 +39,18 @@ QuatschEditorImpl::QuatschEditorImpl(
         setupUi(this);
 
         highlighter = new QuatschHighlighter (edit->document());
-        
+
         QFont font;
         font.setStyleHint (QFont::TypeWriter);
         font.setFamily("Monospace");
         font.setFixedPitch(true);
         font.setPointSize(10);
         edit->setFont (font);
-        
+
         if (code.trimmed() == "") {
                 edit->setText (
-                        "// Example code:\n" 
-                        "(defun $main (x y) (if (< x y) x y))"                          
+                        "// Example code:\n"
+                        "(defun $main (x y) (if (< x y) x y))"
                 );
         } else {
                 edit->setText (code);
@@ -59,7 +59,7 @@ QuatschEditorImpl::QuatschEditorImpl(
 
 
 
-void QuatschEditorImpl::on_edit_textChanged() {        
+void QuatschEditorImpl::on_edit_textChanged() {
         RowParametersMerger params;
         params.setCode (edit->toPlainText());
         emit storeRowParameters (id, params);
@@ -90,14 +90,14 @@ void QuatschEditorImpl::setRowParameters(
 
 QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
 : QSyntaxHighlighter(parent)
-{        
+{
         HighlightingRule rule;
 
         keywordFormat.setForeground(Qt::blue);
         //keywordFormat.setFontWeight(QFont::Bold);
         keywordFormat.setFontItalic(true);
         QStringList keywordPatterns;
-        
+
         keywordPatterns
                 << QRegExp::escape("+")
                 << QRegExp::escape("-")
@@ -120,7 +120,7 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
                 << "\\band\\b"
                 << "\\bor\\b"
                 << "\\blerp\\b"
-                     
+
                 << "\\bsin\\b"
                 << "\\bcos\\b"
                 << "\\bfloor\\b"
@@ -130,12 +130,15 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
                 << "\\bneg\\b"
                 << "\\bnot\\b"
                 << "\\bsqrt\\b"
-                     
+                << "\\blog\\b"
+                << "\\blog10\\b"
+                << "\\bexp\\b"
+
                 << "\\bdelta\\b"
                 << "\\bxor\\b"
-                     
+
                 << "\\bif\\b"
-                     
+
                 << "\\bdefun\\b"
                 ;
 
@@ -149,8 +152,8 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
         rule.pattern = QRegExp("//[^\n]*");
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
-        
-        
+
+
         /*
         parametersFormat.setForeground(Qt::darkGreen);
         parametersFormat.setFontWeight(QFont::Bold);
@@ -158,13 +161,13 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
         rule.pattern = QRegExp("\\b[xy]\\b");
         rule.format = parametersFormat;
         highlightingRules.append(rule);*/
-        
+
         numberFormat.setForeground(Qt::magenta);
         rule.pattern = QRegExp("\\b[0-9]+(\\.[0-9]+)?\\b");
         rule.format = numberFormat;
         highlightingRules.append(rule);
-        
-        multiLineCommentFormat.setForeground(Qt::red);        
+
+        multiLineCommentFormat.setForeground(Qt::red);
 
         functionFormat.setFontItalic(true);
         functionFormat.setForeground(Qt::blue);

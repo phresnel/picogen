@@ -37,7 +37,7 @@ public:
         // redshift::ProgressReporter:
         virtual void report (redshift::RenderTarget::ReadLockPtr,int,int)const;
         virtual void reportDone () const;
-        
+
         Reporter (
                 SceneDisplayThread &sceneDisplayThread,
                 redshift::RenderTarget::Ptr renderBuffer,
@@ -45,12 +45,12 @@ public:
         ) ;
 
 
-private:                
+private:
         mutable clock_t lastReportTime;
         redshift::RenderTarget::Ptr renderBuffer;
         redshift::RenderTarget::Ptr screenBuffer;
         SceneDisplayThread &sceneDisplayThread;
-        
+
 private:
         Reporter ();
         Reporter(Reporter const &);
@@ -63,30 +63,47 @@ private:
 
 
 
+class SceneDisplaySubject {
+public:
+        virtual void render (
+             int width, int height,
+             redshift::RenderTarget::Ptr renderBuffer,
+             redshift::RenderTarget::Ptr screenBuffer,
+             redshift::shared_ptr<redshift::interaction::
+                        ProgressReporter>  reporter
+        ) = 0;
+};
+
+
+
+
+
 class SceneDisplayThread
 : public QThread
 {
 
         Q_OBJECT
-
-signals:        
+public:
+        void setDisplaySubject (redshift::shared_ptr<SceneDisplaySubject>);
+signals:
         void partialImage (const QImage &image);
         void fullImage (const QImage &image);
-        
+
 private:
         friend class Reporter;
         void reportPartialImage ();
         void reportFullImage ();
-        
+
 private:
         friend class SceneDisplayImpl;
-        int widthForNextRender, heightForNextRender;        
+        int widthForNextRender, heightForNextRender;
+        redshift::shared_ptr<SceneDisplaySubject> subject;
 
 protected:
         // QThread:
         void run();
-        
-        
+
+
 private:
         redshift::interaction::ProgressReporter::Ptr reporter;
         redshift::RenderTarget::Ptr renderBuffer;
@@ -105,21 +122,25 @@ class SceneDisplayImpl : public QWidget, private Ui::RenderWindow
         Q_OBJECT
 
 public:
-        SceneDisplayImpl(/*QWidget* parent=0*/);
+        SceneDisplayImpl(QWidget* parent=0);
         virtual ~SceneDisplayImpl();
-        
+
+        void setSubject (redshift::shared_ptr<SceneDisplaySubject> subject);
+
 protected:
         void resizeEvent(QResizeEvent *event);
+        void paintEvent (QPaintEvent * event);
 
 private slots:
 
         void updateDisplay (QImage const &image);
         void fullImage ();
- 
-private:
 
+private:
+        redshift::shared_ptr<SceneDisplaySubject> subject;
         SceneDisplayThread renderThread;
         bool mustReRender;
+        int lastRenderedWidth, lastRenderedHeight;
 
 };
 

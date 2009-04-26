@@ -23,10 +23,6 @@
 
 #include <QColor>
 
-#include "../../redshift/include/setup.hh"
-#include "../../redshift/include/rendertargets/rendertargetlock.hh"
-#include "../../redshift/include/rendertargets/rendertarget.hh"
-#include "../../redshift/include/smart_ptr.hh"
 #include "../include/qimagerendertarget.hh"
 
 namespace redshift {

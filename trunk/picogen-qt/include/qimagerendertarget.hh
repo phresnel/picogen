@@ -21,6 +21,11 @@
 #ifndef QIMAGERENDERTARGET_HH_INCLUDED_20090327
 #define QIMAGERENDERTARGET_HH_INCLUDED_20090327
 
+#include "../../redshift/include/setup.hh"
+#include "../../redshift/include/rendertargets/rendertargetlock.hh"
+#include "../../redshift/include/rendertargets/rendertarget.hh"
+#include "../../redshift/include/smart_ptr.hh"
+
 #include <QImage>
 
 namespace redshift {

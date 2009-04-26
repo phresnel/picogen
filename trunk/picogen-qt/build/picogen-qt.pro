@@ -52,6 +52,13 @@ FORMS += ../ui/heightmap-designer.ui
 
 
 
+# Heightmap Display
+SOURCES += ../src/heightmap-display.cc
+HEADERS += ../include/heightmap-display.hh
+FORMS += ../ui/heightmap-display.ui
+
+
+
 # Quatsch Editor
 SOURCES += ../src/quatsch-editor.cc
 HEADERS += ../include/quatsch-editor.hh
