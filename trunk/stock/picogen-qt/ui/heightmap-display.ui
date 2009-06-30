@@ -1,0 +1,32 @@
+<ui version="4.0" >
+ <class>HeightmapDisplay</class>
+ <widget class="QWidget" name="HeightmapDisplay" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>325</width>
+    <height>362</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle" >
+   <string>Heightmap</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2" >
+   <property name="sizeConstraint" >
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
+   <item>
+    <layout class="QVBoxLayout" name="centralLayout" />
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

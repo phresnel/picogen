@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 #include <string>
 
 #include "utility/symboltable.hh"
@@ -38,7 +39,7 @@
 // Mother of all functions.
 namespace quatsch {
 
-        
+
         namespace util {
 
                 template <typename scalar_t>
@@ -56,7 +57,7 @@ namespace quatsch {
                         return bool2scalar (scalar2bool (r));
                 }
 
-                template <typename scalar_t> inline 
+                template <typename scalar_t> inline
                 scalar_t floor (const scalar_t &v) {
                         // TODO: replace with static assert
                         assert (static_cast<int>(1.75) == 1);
@@ -70,18 +71,18 @@ namespace quatsch {
                         );
                 }
         }
-        
-        
-        
+
+
+
         namespace constants {
                 const static double pi = 3.141592654;
         }
-        
-        
-    
-        
-        
-        
+
+
+
+
+
+
         template <
                 typename T,
                 typename PARAMETERS,
@@ -90,9 +91,9 @@ namespace quatsch {
 
 
 
-        
-        
-        
+
+
+
         template <
                 typename T, typename PARAMETERS
         > class Function <
@@ -100,27 +101,27 @@ namespace quatsch {
         > {
         public:
                 Function () {
-                        ::std::cout << "Constructed function " 
+                        ::std::cout << "Constructed function "
                                     << this << ::std::endl;
                 }
 
                 virtual ~Function () {
-                        ::std::cout << "Destructed function " 
+                        ::std::cout << "Destructed function "
                                     << this << ::std::endl;
                 }
-            
+
                 virtual T operator () (const PARAMETERS &) const = 0;
-            
+
                 typedef ::boost::shared_ptr <Function> FunctionPtr;
                 typedef T scalar_t;
                 typedef PARAMETERS parameters_t;
-        };    
-    
-    
-    
-        
-        
-        
+        };
+
+
+
+
+
+
         template <
                 typename T,
                 typename PARAMETERS
@@ -130,7 +131,7 @@ namespace quatsch {
                 false
         > {
         public:
-                virtual ~Function () {}            
+                virtual ~Function () {}
                 virtual T operator () (const PARAMETERS &) const = 0;
                 typedef ::boost::shared_ptr <Function> FunctionPtr;
                 typedef T scalar_t;
@@ -138,61 +139,61 @@ namespace quatsch {
         };
 
 
-    
-        
-        
-        
+
+
+
+
         template <typename FUNCTION>
-        struct ICreateConfigurableFunction {        
-        
+        struct ICreateConfigurableFunction {
+
                 virtual typename FUNCTION::FunctionPtr create (
                   ::std::map<std::string,std::string> &static_parms,
                   ::std::vector <typename FUNCTION::FunctionPtr> &runtime_parms
                   // ?? This parameter enables us to avoid a costly Call,
                   // thus making the AST tighter.
                 ) const = 0;
-        
+
                 virtual ~ICreateConfigurableFunction() {}
-        
+
                 virtual ::std::string const & name() = 0;
                 virtual unsigned int parameterCount() = 0;
-        
+
                 typedef ::boost::shared_ptr <
-                        ICreateConfigurableFunction 
+                        ICreateConfigurableFunction
                 > ConfigurableFunctionDescriptionPtr;
-        
+
                 typedef SymbolTable <
                         ConfigurableFunctionDescriptionPtr
                 > ConfigurableFunctionsMap;
         };
 
-        
-        
-        
-        
-        
+
+
+
+
+
         template <typename T, typename FUNCTION>
         class CreateConfigurableFunction
         : public ICreateConfigurableFunction <FUNCTION> {
-        
+
         public:
                 typedef T type_t;
                 typedef FUNCTION function_t;
-            
-                
+
+
                 virtual ::std::string const & name() {
                         return T::name();
                 }
-                
-                
+
+
                 virtual unsigned int parameterCount() {
                         return T::parameterCount();
                 }
-                
-                
+
+
                 virtual ~CreateConfigurableFunction() {}
-                
-                
+
+
                 virtual typename FUNCTION::FunctionPtr create (
                   ::std::map<std::string,std::string> &static_parms,
                   ::std::vector <typename FUNCTION::FunctionPtr> &runtime_parms
@@ -202,42 +203,42 @@ namespace quatsch {
                         );
                 }
         };
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         class general_exception : public std::exception {
                 const ::std::string code;
                 const ::std::string message;
         public:
-                
+
                 explicit general_exception (const ::std::string &message)
                 : code ("<code unavailable>"), message (message)
                 { }
-                
-            
+
+
                 explicit general_exception (
                         const ::std::string &code,
                         const ::std::string &message
                 )
                 : code (code), message (message) { }
-                
-                
+
+
                 virtual ~general_exception () throw () {}
-            
-                
+
+
                 const ::std::string &getMessage() const {
                         return message;
                 }
-            
-                
+
+
                 const ::std::string &getCode() const {
                         return code;
                 }
-            
-                
+
+
                 // std::exception
                 virtual const char* what() const throw() {
                         return message.c_str();

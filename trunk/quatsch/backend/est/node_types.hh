@@ -737,19 +737,19 @@ template <typename BACKEND_T> struct node_types {
                 const int max_fold = 16;
                 if ("+" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::add, 2, max_fold
+                                typename Operators::add, 1, max_fold
                         >::create (operandCount, operands_);
                 } else if ("-" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::sub, 2, max_fold
+                                typename Operators::sub, 1, max_fold
                         >::create (operandCount, operands_);
                 } else if ("*" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::mul, 2, max_fold
+                                typename Operators::mul, 1, max_fold
                         >::create (operandCount, operands_);
                 } else if ("/" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::div, 2, max_fold
+                                typename Operators::div, 1, max_fold
                         >::create (operandCount, operands_);
                 } else if ("^" == operator_) {
                         return AccumulatingOp <node_types, 
@@ -757,19 +757,19 @@ template <typename BACKEND_T> struct node_types {
                         >::create (operandCount, operands_);
                 } else if ("min" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::min, 2, max_fold
+                                typename Operators::min, 1, max_fold
                         >::create (operandCount, operands_);
                 } else if ("max" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::max, 2, max_fold
+                                typename Operators::max, 1, max_fold
                         >::create (operandCount, operands_);
                 } else if ("and" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::and_, 2, max_fold
+                                typename Operators::and_, 1, max_fold
                         >::create (operandCount, operands_);
                 } else if ("or" == operator_) {
                         return AccumulatingOp <node_types, 
-                                typename Operators::or_, 2, max_fold
+                                typename Operators::or_, 1, max_fold
                         >::create (operandCount, operands_);
                 } else 
                 

@@ -8,6 +8,8 @@ formatting clean:
         backend/est/functiondescriptor.hh
         backend/est/node_types.hh
         
+        backend/est/nodes/accumulatingop.hh
+        
         configurable-functions/noise2d.hh
         configurable-functions/noise2ddef.hh
         
