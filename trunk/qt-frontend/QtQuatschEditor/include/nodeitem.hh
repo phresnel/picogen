@@ -25,6 +25,12 @@
 #include <list>
 #include <QtGui>
 
+
+class UpdateHeightmapMixin {
+public:
+        virtual void updateHeightmap () = 0;
+};
+
 class EdgeItem;
 class NodeItem : public QGraphicsItem, QGraphicsItemAnimation {
 public:
@@ -73,7 +79,7 @@ public:
         bool isRootItem () const ;
 
         //NodeItem(NodeItem const &rhs) ;
-        NodeItem(QGraphicsScene *scene, NodeItem *parent, NodeItem *root);
+        NodeItem(QGraphicsScene *scene, UpdateHeightmapMixin *updateHeightmapMixin, NodeItem *parent, NodeItem *root);
         virtual ~NodeItem();
 
         //NodeItem &operator = (NodeItem const &rhs) ;
@@ -142,6 +148,9 @@ private:
 
         // relatives
         NodeItem *parent, *root;
+
+
+        UpdateHeightmapMixin *updateHeightmapMixin;
 
 
         QPixmap pixmap;

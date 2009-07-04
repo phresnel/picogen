@@ -1,6 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-06-17T07:49:33
 # -------------------------------------------------
+QT += opengl
 TARGET = QtQuatschEditor
 TEMPLATE = app
 INCLUDEPATH += ../include/ \
@@ -12,14 +13,16 @@ SOURCES += ../src/main.cpp \
     ../src/parameter.cc \
     ../src/quatsch-integration.cc \
     ../src/nodeitem.cc \
-    ../src/edgeitem.cc
+    ../src/edgeitem.cc \
+    ../glwidget.cpp
 HEADERS += ../include/qtquatscheditor.hh \
     ../include/userconstant.hh \
     ../include/predefinedconstant.hh \
     ../include/parameter.hh \
     ../include/nodeitem.hh \
     ../include/edgeitem.hh \
-    ../include/jux_gen.hh
+    ../include/jux_gen.hh \
+    ../glwidget.h
 FORMS += ../forms/qtquatscheditor.ui \
     ../forms/userconstant.ui \
     ../forms/predefinedconstant.ui \

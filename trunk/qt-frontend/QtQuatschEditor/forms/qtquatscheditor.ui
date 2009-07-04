@@ -95,6 +95,9 @@
      left: 1px;
  }</string>
   </property>
+  <property name="locale">
+   <locale language="English" country="UnitedKingdom"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QGraphicsView" name="graphicsView">
@@ -439,7 +442,7 @@
             <string>Undefined</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/error</normaloff>:/aggregate/error</iconset>
            </property>
           </item>
@@ -448,7 +451,7 @@
             <string>Parameter</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/parameter</normaloff>:/aggregate/parameter</iconset>
            </property>
           </item>
@@ -457,7 +460,7 @@
             <string>User Constant</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/user-constant</normaloff>:/aggregate/user-constant</iconset>
            </property>
           </item>
@@ -466,7 +469,7 @@
             <string>Predefined Constant</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/predefined-constant</normaloff>:/aggregate/predefined-constant</iconset>
            </property>
           </item>
@@ -475,7 +478,7 @@
             <string>Addition</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/addition</normaloff>:/aggregate/addition</iconset>
            </property>
           </item>
@@ -484,7 +487,7 @@
             <string>Subtraction</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/subtraction</normaloff>:/aggregate/subtraction</iconset>
            </property>
           </item>
@@ -493,7 +496,7 @@
             <string>Multiplication</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/multiplication</normaloff>:/aggregate/multiplication</iconset>
            </property>
           </item>
@@ -502,7 +505,7 @@
             <string>Division</string>
            </property>
            <property name="icon">
-            <iconset resource="icons.qrc">
+            <iconset>
              <normaloff>:/aggregate/division</normaloff>:/aggregate/division</iconset>
            </property>
           </item>
@@ -598,8 +601,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

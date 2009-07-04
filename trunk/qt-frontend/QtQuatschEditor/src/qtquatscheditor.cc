@@ -27,6 +27,33 @@
 #include <QComboBox>
 
 
+GLGraphicsScene::GLGraphicsScene (QWidget *parent) : QGraphicsScene (parent) {
+}
+
+void GLGraphicsScene::drawBackground( QPainter* painter, const QRectF & rect ) {
+        Q_UNUSED(painter)
+        Q_UNUSED(rect)
+
+        glClearColor(0.5,0.5,0.5,1.0);
+        glClear (GL_COLOR_BUFFER_BIT);
+        //glLoadIdentity();
+
+        glColor3f (1.0, 0.5, 0.25);
+        glOrtho(0.0, 0.01, 0.0, 0.01, -0.01, 0.01);
+        glBegin(GL_POLYGON);
+                glVertex3f (0.25, 0.25, 0.0);
+                glVertex3f (0.75, 0.25, 0.0);
+                glVertex3f (0.75, 0.75, 0.0);
+                glVertex3f (0.25, 0.75, 0.0);
+        glEnd();
+        glFlush();
+}
+
+QRectF GLGraphicsScene::itemsBoundingRect () const {
+        return QRectF (-1.0,-1.0,2.0,2.0);
+}
+
+
 QtQuatschEditor::QtQuatschEditor(QWidget *parent)
     : QWidget(parent), ui(new Ui::QtQuatschEditor)
     , currentPropertyWidget (0)
@@ -44,7 +71,7 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
                 QObject::connect(scene, SIGNAL(selectionChanged()),
                   this, SLOT(on_graphicsScene_selectionChanged()));
 
-                this->rootNode = new NodeItem (scene, 0, 0);
+                this->rootNode = new NodeItem (scene, this, 0, 0);
 
                 on_graphicsScene_selectionChanged();
                 rootNode->doLayout();
@@ -54,20 +81,26 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
                 ui->graphicsView->show();
         }
 
-        // Heightmap Preview
+        // Heightmap 3d Preview
         {
-                QGraphicsScene *scene = new QGraphicsScene (this);
-                scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+                QGraphicsScene *scene = new GLGraphicsScene (this);
+                scene->setSceneRect(0.0,0.0,1.0,1.0);
+
                 ui->heightmapView->setScene(scene);
-                ui->heightmapView->setRenderHint(QPainter::Antialiasing);
+                //ui->heightmapView->setSceneRect(-1.0,-1.0,2.0,2.0);
+                ui->heightmapView->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+                //ui->heightmapView->setRenderHint(QPainter::Antialiasing);
 
+                ui->heightmapView->setSceneRect(scene->itemsBoundingRect());
 
+                //glWidget = new GLWidget;
+                //ui->horizontalLayout->addWidget(glWidget);
+        }
+
+        // Heightmap 2d Preview
+        {
                 heightmap = QPixmap (256,256);
                 ui->heightmapLabel->setPixmap(heightmap);
-
-                QRectF rect = scene->itemsBoundingRect();
-                ui->heightmapView->setSceneRect(rect);
-                ui->heightmapView->show();
         }
 }
 
@@ -187,16 +220,7 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 ui->centerOnSelectedButton->setEnabled (true);
                 ui->nodePropertiesGroupBox->setEnabled(true);
 
-                if (node->isCompilable()) {
-                        QImage q = node->genHeightmap(256,256);
-                        heightmap = QPixmap::fromImage(q);
-                        ui->heightmapLabel->setPixmap (heightmap);
-                } else {
-                        QImage q(256,256,QImage::Format_RGB32);
-                        q.fill(QColor(200,130,130).rgb());
-                        heightmap = QPixmap::fromImage(q);
-                        ui->heightmapLabel->setPixmap (heightmap);
-                }
+                updateHeightmap (node);
 
         } else {
                 ui->insertLeftSiblingButton->setEnabled (false);
@@ -222,6 +246,34 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
 
         displayPropertyWindow();
         repaint();
+}
+
+
+
+void QtQuatschEditor::updateHeightmap () {
+        QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
+        if (1 == selected.size()) {
+                NodeItem* node = dynamic_cast<NodeItem*> (selected [0]);
+                if (0 == node)
+                        return;
+                updateHeightmap (node);
+        }
+}
+
+
+
+void QtQuatschEditor::updateHeightmap (NodeItem *node) {
+        if (node->isCompilable()) {
+                QImage q = node->genHeightmap(256,256);
+                heightmap = QPixmap::fromImage(q);
+                ui->heightmapLabel->setPixmap (heightmap);
+                drawHeightmap3d (q);
+        } else {
+                QImage q(256,256,QImage::Format_RGB32);
+                q.fill(QColor(200,130,130).rgb());
+                heightmap = QPixmap::fromImage(q);
+                ui->heightmapLabel->setPixmap (heightmap);
+        }
 }
 
 
@@ -389,4 +441,10 @@ void QtQuatschEditor::on_asRightSiblingsChildButton_clicked() {
                         return;
                 node->asRightSiblingsChild();
         }
+}
+
+
+
+void QtQuatschEditor::drawHeightmap3d (QImage const &heightmap) {
+        ui->heightmapView->repaint();
 }

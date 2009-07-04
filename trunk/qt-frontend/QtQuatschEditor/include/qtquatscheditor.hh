@@ -24,6 +24,7 @@
 #include <QtGui/QWidget>
 #include <QtGui>
 #include <QtGui/QMainWindow>
+#include <QtOpenGL>
 
 #include <userconstant.hh>
 #include <predefinedconstant.hh>
@@ -38,9 +39,10 @@ namespace Ui
 }
 
 
+//class GLWidget ;
+#include "../glwidget.h"
 
-
-class QtQuatschEditor : public QWidget
+class QtQuatschEditor : public QWidget, public UpdateHeightmapMixin
 {
         Q_OBJECT
 
@@ -54,14 +56,20 @@ public:
         void keyPressEvent(QKeyEvent*);
         void keyReleaseEvent(QKeyEvent*);
 
+        void updateHeightmap ();
+
 private:
         Ui::QtQuatschEditor *ui;
         NodeItem *rootNode;
         QWidget *currentPropertyWidget;
 
         void displayPropertyWindow ();
+        void updateHeightmap (NodeItem *node);
+        void drawHeightmap3d (QImage const &heightmap);
 
         QPixmap heightmap;
+
+        GLWidget *glWidget;
 
 private slots:
         void on_asRightSiblingsChildButton_clicked();
@@ -79,5 +87,15 @@ private slots:
         void on_insertRightSiblingButton_clicked();
         void on_graphicsScene_selectionChanged();
 };
+
+
+class GLGraphicsScene : public QGraphicsScene {
+        Q_OBJECT
+public:
+        GLGraphicsScene (QWidget *parent = 0) ;
+        void drawBackground( QPainter* painter, const QRectF & rect );
+        QRectF itemsBoundingRect () const ;
+};
+
 
 #endif // QTQUATSCHEDITOR_HH

@@ -21,8 +21,15 @@
 #include <edgeitem.hh>
 #include "nodeitem.hh"
 
-NodeItem::NodeItem(QGraphicsScene *scene, NodeItem *parent_, NodeItem *root_)
-: /*nodeItemEvents(*this),*/ parent(parent_), root(root_) {
+NodeItem::NodeItem(
+        QGraphicsScene *scene,
+        UpdateHeightmapMixin *updateHeightmapMixin_,
+        NodeItem *parent_,
+        NodeItem *root_
+)
+: /*nodeItemEvents(*this),*/ parent(parent_)
+, root(root_)
+, updateHeightmapMixin (updateHeightmapMixin_) {
         scene->addItem (this);
 
         QGraphicsItemAnimation::setItem (this);
@@ -452,7 +459,7 @@ NodeItem* NodeItem::addChild (NodeItem *sibling, bool after, QPointF pos) {
             !after
               ? std::find (children.begin(), children.end(), sibling)
               : ++std::find (children.begin(), children.end(), sibling),
-            new NodeItem(scene(), this, parent == 0 ? this: root)
+            new NodeItem(scene(), updateHeightmapMixin, this, parent == 0 ? this: root)
         );
         if (pos != QPointF())
                 newItem->setPos (pos);
@@ -565,7 +572,8 @@ NodeItem::Value NodeItem::getValue () const {
 
 void NodeItem::setValue (NodeItem::Value val) {
         value = val;
-        scene()->invalidate();//boundingRect());
+        updateHeightmapMixin->updateHeightmap();
+        scene()->invalidate();
 }
 
 
