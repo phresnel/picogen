@@ -1,3 +1,22 @@
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Copyright (C) 2009  Sebastian Mach (*1983)
+// * mail: phresnel/at/gmail/dot/com
+// * http://phresnel.org
+// * http://picogen.org
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #define STANDALONE 1
 
@@ -17,7 +36,7 @@
 
 
 namespace {
-        
+
 
 float heightFunction (float u, float v) {
         return 1.0f * sinf(u*1.0f) * sinf (v*1.0f);
@@ -51,17 +70,17 @@ void setupLighting () {
 
 void setupCamera () {
         glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(70.0f,(GLfloat)800/(GLfloat)600,0.1f,500.0f);
+        glLoadIdentity();
+        gluPerspective(70.0f,(GLfloat)800/(GLfloat)600,0.1f,500.0f);
 
 
-        glMatrixMode(GL_MODELVIEW);        
-        glLoadIdentity();        
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
         gluLookAt(0,5.0,15.0f, 0.0,0.0,0.0, 0,1,0);
         glScalef (1.0f,1.0f,-1.0f);
-        
-        //glTranslatef(-0.0f,-5.0f,-16.0f);	
-        /*const float 
+
+        //glTranslatef(-0.0f,-5.0f,-16.0f);
+        /*const float
                 c = 0.0f,//static_cast<float>(clock ()) / static_cast<float>(CLOCKS_PER_SEC),
                 r = 10.0f + 5.0f * sinf (c)
         ;
@@ -84,59 +103,59 @@ namespace instant_preview {
         void draw (const HeightFunction &heightFunction) {
         glClearColor (0.5f, 0.5f, 0.5f, 1.0f);
         glClearDepth (1.0f);
-        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);        
+        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-        
+        glDepthFunc(GL_LEQUAL);
+
         setupQuality();
         setupLighting();
         setupCamera();
-        
+
         const int width = 128, height = width;
         const float
                 widthf = static_cast<float>(width),
-                heightf = static_cast<float>(height),                
+                heightf = static_cast<float>(height),
                 rwidthf = 1.0f / widthf,
                 rheightf = 1.0f / heightf
         ;
 
-        const float 
+        const float
                 scale = 10.0f
         ;
-        
-        glColor3f(1.0f, 1.0f, 1.0f);        
-        
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+
         for (int v=0; v<height; ++v) {
-                const float 
+                const float
                         v0 = scale * (static_cast<float>(v)   * rheightf - 0.5f),
                         v1 = scale * (static_cast<float>(v+1) * rheightf - 0.5f),
                         v2 = scale * (static_cast<float>(v+2) * rheightf - 0.5f),
                         v3 = scale * (static_cast<float>(v+3) * rheightf - 0.5f)
                 ;
-                
+
                 glBegin (GL_QUAD_STRIP);
                 for (int u=0; u<=width; ++u) {
-                        const float 
+                        const float
                                 u0 = scale * (static_cast<float>(u)   * rwidthf - 0.5f),
                                 u1 = scale * (static_cast<float>(u+1) * rwidthf - 0.5f),
                                 u2 = scale * (static_cast<float>(u+2) * rwidthf - 0.5f)
                         ;
-                        
+
                         // Invoke height function and pump into vertices.
                         const float
                                 h01[3] = {u0, heightFunction (u0, v1), v1},
                                 h02[3] = {u0, heightFunction (u0, v2), v2},
-                                
+
                                 h10[3] = {u1, heightFunction (u1, v0), v0},
                                 h11[3] = {u1, heightFunction (u1, v1), v1},
                                 h12[3] = {u1, heightFunction (u1, v2), v2},
-                                h13[3] = {u1, heightFunction (u1, v3), v3},                                
-                                
+                                h13[3] = {u1, heightFunction (u1, v3), v3},
+
                                 h21[3] = {u2, heightFunction (u2, v1), v1},
                                 h22[3] = {u2, heightFunction (u2, v2), v2}
                         ;
-                                
+
                         // Grab u/v vectors.
                         const float
                                 u11_[3] = {h21[0]-h01[0], h21[1]-h01[1], h21[2]-h01[2]},
@@ -144,21 +163,21 @@ namespace instant_preview {
                                 v11_[3] = {h12[0]-h10[0], h12[1]-h10[1], h12[2]-h10[2]},
                                 v12_[3] = {h13[0]-h11[0], h13[1]-h11[1], h13[2]-h11[2]}
                         ;
-                                
+
                         // Normalise.
                         const float
                                 l11 = 1.0f / sqrtf (u11_[0]*u11_[0] + u11_[1]*u11_[1] + u11_[2]*u11_[2]),
-                                l12 = 1.0f / sqrtf (u12_[0]*u12_[0] + u12_[1]*u12_[1] + u12_[2]*u12_[2]),                                
-                                
+                                l12 = 1.0f / sqrtf (u12_[0]*u12_[0] + u12_[1]*u12_[1] + u12_[2]*u12_[2]),
+
                                 u11[3] = {l11*u11_[0], l11*u11_[1], l11*u11_[2]},
-                                u12[3] = {l12*u12_[0], l12*u12_[1], l12*u12_[2]},                                
-                                
+                                u12[3] = {l12*u12_[0], l12*u12_[1], l12*u12_[2]},
+
                                 v11[3] = {l11*v11_[0], l11*v11_[1], l11*v11_[2]},
                                 v12[3] = {l12*v12_[0], l12*v12_[1], l12*v12_[2]}
                         ;
-                                
+
                         // Get cross products from normalised u/v -> our vertex normals.
-                        const float                                
+                        const float
                                 cross11[3] = {
                                         u11[1]*v11[2] - u11[2]*v11[1],
                                         u11[2]*v11[0] - u11[0]*v11[2],
@@ -169,28 +188,28 @@ namespace instant_preview {
                                         u12[2]*v12[0] - u12[0]*v12[2],
                                         u12[0]*v12[1] - u12[1]*v12[0]
                                 }
-                        ;                                
+                        ;
 
                         // Draw the stuff.
                         glNormal3fv (cross11);
                         glVertex3fv (h11);
                         glNormal3fv (cross12);
-                        glVertex3fv (h12);                        
+                        glVertex3fv (h12);
                 }
                 glEnd ();
-        }        
-        
+        }
+
         glFlush();
 }
 }
 
-        
+
 #if STANDALONE
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 
-namespace {        
+namespace {
 int standalone () {
         if (0 != SDL_Init (SDL_INIT_VIDEO)) {
                 return 1;
@@ -205,12 +224,12 @@ int standalone () {
                         return sinf(u) * cosf (v);
                 }
         };
-        
+
         bool done = false;
         while (!done) {
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
-                        switch(event.type) {                      
+                        switch(event.type) {
                         case SDL_QUIT:
                                 done = true;
                                 break;
@@ -223,7 +242,7 @@ int standalone () {
                         }
                 }
                 draw (fun());
-                SDL_GL_SwapBuffers();                
+                SDL_GL_SwapBuffers();
         }
         return 0;
 }

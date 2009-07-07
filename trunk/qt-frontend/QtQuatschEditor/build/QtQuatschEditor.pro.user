@@ -58,7 +58,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-RroAzbTz6p,guid=63ddc747119cf99119479e4a4a4d9e9b</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-i4SRvs7Vec,guid=6d22de73ee221b30a8a13a794a52d990</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -66,9 +66,9 @@
     <value type="QString" >GDM_LANG=de_DE.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=Default</value>
-    <value type="QString" >GNOME_KEYRING_PID=10996</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-lpvTzo/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-OeJFBc/S.gpg-agent:11052:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=3573</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-xBucgh/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-AOhfKQ/S.gpg-agent:3629:1</value>
     <value type="QString" >GTK_MODULES=gnomebreakpad</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smach/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/smach</value>
@@ -78,13 +78,13 @@
     <value type="QString" >PATH=/home/smach/qtsdk-2009.02/qt/bin:/usr/local/bin:/usr/bin:/bin:/usr/games</value>
     <value type="QString" >PWD=/home/smach</value>
     <value type="QString" >QTDIR=/home/smach/qtsdk-2009.02/qt</value>
-    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/10997</value>
+    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/3574</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=0</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-lpvTzo/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-xBucgh/ssh</value>
     <value type="QString" >USER=smach</value>
     <value type="QString" >USERNAME=smach</value>
-    <value type="QString" >WINDOWPATH=7:7</value>
+    <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XAUTHORITY=/home/smach/.Xauthority</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
    </valuelist>
@@ -106,7 +106,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-RroAzbTz6p,guid=63ddc747119cf99119479e4a4a4d9e9b</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-i4SRvs7Vec,guid=6d22de73ee221b30a8a13a794a52d990</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -114,9 +114,9 @@
     <value type="QString" >GDM_LANG=de_DE.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=Default</value>
-    <value type="QString" >GNOME_KEYRING_PID=10996</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-lpvTzo/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-OeJFBc/S.gpg-agent:11052:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=3573</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-xBucgh/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-AOhfKQ/S.gpg-agent:3629:1</value>
     <value type="QString" >GTK_MODULES=gnomebreakpad</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smach/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/smach</value>
@@ -126,13 +126,13 @@
     <value type="QString" >PATH=/home/smach/qtsdk-2009.02/qt/bin:/usr/local/bin:/usr/bin:/bin:/usr/games</value>
     <value type="QString" >PWD=/home/smach</value>
     <value type="QString" >QTDIR=/home/smach/qtsdk-2009.02/qt</value>
-    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/10997</value>
+    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/3574</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=0</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-lpvTzo/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-xBucgh/ssh</value>
     <value type="QString" >USER=smach</value>
     <value type="QString" >USERNAME=smach</value>
-    <value type="QString" >WINDOWPATH=7:7</value>
+    <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XAUTHORITY=/home/smach/.Xauthority</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
    </valuelist>
@@ -149,7 +149,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-RroAzbTz6p,guid=63ddc747119cf99119479e4a4a4d9e9b</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-i4SRvs7Vec,guid=6d22de73ee221b30a8a13a794a52d990</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -157,9 +157,9 @@
     <value type="QString" >GDM_LANG=de_DE.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=Default</value>
-    <value type="QString" >GNOME_KEYRING_PID=10996</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-lpvTzo/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-OeJFBc/S.gpg-agent:11052:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=3573</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-xBucgh/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-AOhfKQ/S.gpg-agent:3629:1</value>
     <value type="QString" >GTK_MODULES=gnomebreakpad</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smach/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/smach</value>
@@ -169,13 +169,13 @@
     <value type="QString" >PATH=/home/smach/qtsdk-2009.02/qt/bin:/usr/local/bin:/usr/bin:/bin:/usr/games</value>
     <value type="QString" >PWD=/home/smach</value>
     <value type="QString" >QTDIR=/home/smach/qtsdk-2009.02/qt</value>
-    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/10997</value>
+    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/3574</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=0</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-lpvTzo/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-xBucgh/ssh</value>
     <value type="QString" >USER=smach</value>
     <value type="QString" >USERNAME=smach</value>
-    <value type="QString" >WINDOWPATH=7:7</value>
+    <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XAUTHORITY=/home/smach/.Xauthority</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
    </valuelist>
