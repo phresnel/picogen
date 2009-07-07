@@ -38,6 +38,48 @@ namespace kallisto {
                 : center (center), radius (radius)
                 {}
         };
+        
+        
+        // http://devmaster.net/wiki/Ray-sphere_intersection: Algebraic Method
+        template <
+                bool do_normalize_ray_direction,
+                typename point_t, 
+                typename radius_t,
+                typename direction_t
+        >
+        optional <typename traits::get_scalar_type<direction_t>::type>
+        intersect(
+                Ray<point_t,direction_t> const & ray,
+                Sphere<point_t,radius_t> const & sphere
+        ) {
+                typedef
+                    typename traits::get_scalar_type<direction_t>::type real_t;
+                
+                direction_t ray_direction = ray.direction;
+                real_t final_scale = 1.0;
+                if (do_normalize_ray_direction) {
+                        // Ugly hack to return the distance in 
+                        // incoming-ray-space.
+                        final_scale = 1.0 / length (ray.direction);
+                        ray_direction = normalize (ray.direction); 
+                }
+
+        	direction_t const dst = vector_cast<direction_t> 
+        	                                (ray.position - sphere.center);
+
+        	real_t const B = dst * ray_direction;
+
+        	real_t const C = (dst*dst) - 
+        	              static_cast<real_t>(sphere.radius*sphere.radius);
+
+        	real_t const D = B*B - C;
+        	real_t const E = final_scale * (-B - sqrt(D));
+        	if ((D>=0) & (E>=ray.minT) & (ray.maxT>=E)) {
+        	        return E;
+        	} else {
+        	        return optional <real_t>();
+        	}
+        }
 }
 
 namespace kallisto { namespace unit_test {

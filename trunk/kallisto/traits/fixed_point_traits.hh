@@ -104,4 +104,20 @@ namespace kallisto { namespace traits {
                 fixed_point_t<int,4> >::value));
 } }
 
+namespace std {
+        ///////////////////////////////////////////////////////////////////////
+        // numeric_limits        
+        ///////////////////////////////////////////////////////////////////////
+        template <typename T, unsigned int FRACT_BITS>
+        struct numeric_limits<kallisto::fixed_point_t<T,FRACT_BITS> > {
+                static kallisto::fixed_point_t<T,FRACT_BITS> max() {
+                        const kallisto::fixed_point_t<T,FRACT_BITS> ret = {
+                                numeric_limits<T>::max()
+                        };
+                        return ret;
+                }
+        };
+}
+
+
 #endif // FIXED_POINT_TRAITS_H_20090221

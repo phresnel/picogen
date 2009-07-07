@@ -126,12 +126,14 @@ namespace kallisto { namespace traits {
         template <typename T, coordinate_space_t SPACE>
         struct get_coordinate_space <vector_t<SPACE,T> > {
                 enum { space = SPACE };
+                enum { value = SPACE };
         };
 
         // Vector
         template <typename T, coordinate_space_t SPACE>
         struct get_coordinate_space <Vector<SPACE,T> > {
                 enum { space = SPACE };
+                enum { value = SPACE };
         };
 
         // Tests

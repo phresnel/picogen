@@ -22,8 +22,10 @@
 #define RAY_H_INCLUDED_20090223
 
 namespace kallisto {
-        template <typename point_t, typename direction_t> struct ray_t {
+        template <typename point_t, typename direction_t> struct ray_t {                
                 proto_ray_t<point_t, direction_t> proto_ray;
+                typename traits::get_scalar_type<direction_t>::type minT;
+                typename traits::get_scalar_type<direction_t>::type maxT;
         };
 }
 
@@ -33,10 +35,32 @@ namespace kallisto {
         template <typename point_t, typename direction_t> class Ray
         : public ProtoRay<point_t, direction_t> {
         public:
+        
+                typename traits::get_scalar_type<direction_t>::type minT;
+                typename traits::get_scalar_type<direction_t>::type maxT;
 
-                Ray (point_t const &pos, direction_t const &dir)
-                : ProtoRay<point_t, direction_t> (pos, dir)
+                Ray ()
+                : ProtoRay<point_t, direction_t>(), minT(), maxT()                
                 {}
+                
+                Ray (point_t const &pos, direction_t const &dir)
+                : ProtoRay<point_t, direction_t>(pos, dir), minT(), maxT()
+                {}
+                
+                point_t operator () (
+                        typename traits::get_scalar_type<direction_t>::type f
+                ) const {
+                        // create a compatible vector-type for our point_t
+                        typedef Vector<
+                           static_cast<coordinate_space_t>
+                                (traits::get_coordinate_space<point_t>::value),
+                           typename traits::get_scalar_type<point_t>::type
+                        > PV;
+                        
+                        PV      const tmp = vector_cast<PV>(this->direction*f);
+                        point_t const tmp2= this->position;
+                        return this->position + tmp;
+                }
         };
 }
 

@@ -48,7 +48,7 @@ namespace kallisto {
                 T x, y, z;
 
                 Normal ()
-                : x(0.0), y(0.0), z(0.0) {
+                : x(T()), y(T()), z(T()) {
                 }
 
                 Normal (Normal const &rhs)
@@ -71,71 +71,96 @@ namespace kallisto {
                         return ret;
                 }
 
-        public: // Friend injections.
-
-                friend inline
-                Normal operator- (Normal const & rhs) {
-                        return Normal (-rhs.x, -rhs.y, -rhs.z);
-                }
-
-                friend inline
-                Normal operator+ (Normal const & rhs) {
-                        return rhs;
-                }
-
-                friend inline
-                Normal operator+ (Normal const & lhs, Normal const & rhs) {
-                        return Normal (lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z);
-                }
-
-                friend inline
-                Normal operator- (Normal const & lhs, Normal const & rhs) {
-                        return Normal (lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z);
-                }
-
-                friend inline
-                T operator* (Normal const & lhs, Normal const & rhs) {
-                        return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
-                }
-
-                friend inline
-                T dot (Normal const & lhs, Normal const & rhs) {
-                        return lhs * rhs;
-                }
-
-                friend inline
-                T absDot (Normal const & lhs, Normal const & rhs) {
-                        return abs (lhs * rhs);
-                }
-
-                friend inline
-                Normal operator* (Normal const & lhs, T const & rhs) {
-                        return Normal (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
-                }
-
-                friend inline
-                Normal operator* (T const & lhs, Normal const & rhs) {
-                        return Normal (lhs*rhs.x, lhs*rhs.y, lhs*rhs.z);
-                }
-
-                friend inline
-                Normal operator/ (Normal const & lhs, T const & rhs) {
-                        T const inv = 1.0 / rhs;
-                        return Normal (lhs.x*inv, lhs.y*inv, lhs.z*inv);
-                }
-
-                friend inline T lengthSq (T const & v) {
-                        return v * v;
-                }
-
-                friend inline T length (T const & v) {
-                        return kallisto::sqrt (lengthSq (v));
-                }
-
-                friend inline Normal normalize (Normal const & v) {
-                        return v / length (v);
-                }
+        public: // I would have liked to use friend injections (in fact I had
+                // quite some, that were much nicer to read), but that
+                // doesn't work without many using directives over namespaces.                
         };
+        
+        
+        template <typename T> inline
+        Normal <CARTESIAN,T> operator- (Normal <CARTESIAN,T> const & rhs) {
+                return Normal <CARTESIAN,T> (-rhs.x, -rhs.y, -rhs.z);
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        Normal <SPACE,T> operator+ (Normal <SPACE,T> const & rhs) {
+                return rhs;
+        }
+
+        template <typename T> inline
+        Normal <CARTESIAN,T> operator+ (Normal <CARTESIAN,T> const & lhs, 
+                                            Normal <CARTESIAN,T> const & rhs) {
+                return Normal<CARTESIAN,T>(lhs.x+rhs.x, lhs.y+rhs.y,
+                                                                  lhs.z+rhs.z);
+        }
+
+        template <typename T> inline
+        Normal <CARTESIAN,T> operator- (Normal <CARTESIAN,T> const & lhs,
+                                            Normal <CARTESIAN,T> const & rhs) {
+                return Normal <CARTESIAN,T> (lhs.x-rhs.x, lhs.y-rhs.y,
+                                                                  lhs.z-rhs.z);
+        }
+
+        template <typename T> inline
+        T operator* (Normal <CARTESIAN,T> const & lhs, 
+                                            Normal <CARTESIAN,T> const & rhs) {
+                return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
+        }
+        
+        template <typename T> inline
+        Normal<CARTESIAN,T> cross (Normal <CARTESIAN,T> const & lhs, 
+                                            Normal <CARTESIAN,T> const & rhs) {
+                return Normal<CARTESIAN,T>(
+                        lhs.y*rhs.z - lhs.z*rhs.y,
+                        lhs.z*rhs.x - lhs.x*rhs.z,
+                        lhs.x*rhs.y - lhs.y*rhs.x
+                );
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T dot (Normal <SPACE,T> const & lhs, Normal <SPACE,T> const & rhs) {
+                return lhs * rhs;
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T absDot (Normal <SPACE,T> const & lhs, Normal <SPACE,T> const & rhs) {
+                return abs (lhs * rhs);
+        }
+
+        template <typename T> inline
+        Normal <CARTESIAN,T> operator* (Normal <CARTESIAN,T> const & lhs, 
+                                                               T const & rhs) {
+                return Normal <CARTESIAN,T> (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
+        }
+
+        template <typename T> inline
+        Normal <CARTESIAN,T> operator* (T const & lhs,
+                                            Normal <CARTESIAN,T> const & rhs) {
+                return Normal <CARTESIAN,T> (lhs*rhs.x, lhs*rhs.y, lhs*rhs.z);
+        }
+
+        template <typename T> inline
+        Normal <CARTESIAN,T> operator/ (Normal <CARTESIAN,T> const & lhs,
+                                                               T const & rhs) {
+                T const inv = 1.0 / rhs;
+                return Normal <CARTESIAN,T> (lhs.x*inv, lhs.y*inv, lhs.z*inv);
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T lengthSq (Normal<SPACE,T> const & v) {
+                return v * v;
+        }
+
+        template <coordinate_space_t SPACE, typename T> inline
+        T length (Normal<SPACE,T> const & v) {
+                return kallisto::sqrt (lengthSq (v));
+        }
+
+        //template <typename T> inline T normalize (T const & v);        
+        template <coordinate_space_t SPACE, typename T> inline
+        Normal <SPACE,T> normalize (Normal <SPACE,T> const & v) {
+                return v / length (v);
+        }
 }
 
 namespace kallisto {

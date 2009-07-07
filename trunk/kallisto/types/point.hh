@@ -49,7 +49,7 @@ namespace kallisto {
                 T x, y, z;
 
                 Point ()
-                : x(0.0), y(0.0), z(0.0) {
+                : x(T()), y(T()), z(T()) {
                 }
 
                 Point (Point const &rhs)
@@ -73,67 +73,74 @@ namespace kallisto {
                 }
 
         public: // Friend injections.
-
-                // vector = point - point
-                // Left for reference: Below thing is useless, as ADL won't
-                // take the return value into account:
-                // *template <coordinate_space_t S> friend inline
-                // *Vector<S, T> operator- (Point const &lhs, Point const &rhs)
-
-
-                friend inline Vector<CARTESIAN, T>
-                operator- (Point const &lhs, Point const &rhs) {
-                        return Vector<CARTESIAN, T> (
-                                lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z
-                        );
-                }
-
-                // point = point + vector
-                template <coordinate_space_t S>
-                friend inline
-                Point operator+ (Point const &lhs, Vector<S,T> const &rhs) {
-                        return Point (lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z);
-                }
-
-                // point = point - vector
-                template <coordinate_space_t S>
-                friend inline
-                Point operator- (Point const &lhs, Vector<S,T> const &rhs) {
-                        return Point (lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z);
-                }
-
-                // I think "point = vector [-+] point" would not make sense, as
-                // as adding a *position* to a *direction* sounds crazy.
-
-
-                // To allow for weighted sums.
-                // Disallowed until *really* needed. Restrict first!
-                /*
-                friend inline
-                T operator* (Vector const & lhs, Vector const & rhs) {
-                        return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
-                }
-
-
-                friend inline
-                Point operator* (Vector const & lhs, T const & rhs) {
-                        return Point (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
-                }
-
-                friend inline
-                Point operator* (T const & lhs, Vector const & rhs) {
-                        return Point (lhs*rhs.x, lhs*rhs.y, lhs*rhs.z);
-                }
-                */
-
-                friend inline T distSq (Point const &lhs, Point const &rhs) {
-                        return lengthSq (lhs - rhs);
-                }
-
-                friend inline T dist (Point const &lhs, Point const &rhs) {
-                        return length (lhs - rhs);
-                }
+                
         };
+        
+        // vector = point - point
+        // Left for reference: Below thing is useless, as ADL won't
+        // take the return value into account:
+        // *template <coordinate_space_t S> friend inline
+        // *Vector<S, T> operator- (Point const &lhs, Point const &rhs)
+
+
+        // vector = point - point
+        template <typename T>
+        inline Vector<CARTESIAN, T> operator-
+        (Point<CARTESIAN,T> const &lhs, Point<CARTESIAN,T> const &rhs) {
+                return Vector<CARTESIAN, T> (
+                        lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z
+                );
+        }
+
+        // point = point + vector
+        template <typename T>
+        inline Point<CARTESIAN, T> operator+
+        (Point<CARTESIAN,T> const &lhs, Vector<CARTESIAN,T> const &rhs) {
+                return Point<CARTESIAN,T>(lhs.x+rhs.x,lhs.y+rhs.y,lhs.z+rhs.z);
+        }
+
+        // point = point - vector
+        template <typename T>
+        inline Point<CARTESIAN, T> operator-
+        (Point<CARTESIAN,T> const &lhs, Vector<CARTESIAN,T> const &rhs) {
+                return Point<CARTESIAN,T>(lhs.x-rhs.x,lhs.y-rhs.y,lhs.z-rhs.z);
+        }
+
+        // I think "point = vector [-+] point" would not make sense, as
+        // as adding a *position* to a *direction* sounds crazy.
+
+
+        // To allow for weighted sums.
+        // Disallowed until *really* needed. Restrict first!
+        /*
+        friend inline
+        T operator* (Vector const & lhs, Vector const & rhs) {
+                return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
+        }
+
+
+        friend inline
+        Point operator* (Vector const & lhs, T const & rhs) {
+                return Point (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
+        }
+
+        friend inline
+        Point operator* (T const & lhs, Vector const & rhs) {
+                return Point (lhs*rhs.x, lhs*rhs.y, lhs*rhs.z);
+        }
+        */
+
+        template <coordinate_space_t SPACE, typename T>
+        inline T distanceSq
+        (Point<SPACE,T> const &lhs, Point<SPACE,T> const &rhs) {
+                return lengthSq (lhs - rhs);
+        }
+
+        template <coordinate_space_t SPACE, typename T>
+        inline T distance
+        (Point<SPACE,T> const &lhs, Point<SPACE,T> const &rhs) {
+                return length (lhs - rhs);
+        }
 }
 
 namespace kallisto {

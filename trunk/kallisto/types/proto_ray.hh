@@ -35,6 +35,10 @@ namespace kallisto {
         public:
                 point_t position;
                 direction_t direction;
+                
+                ProtoRay ()
+                : position (), direction ()
+                {}
 
                 ProtoRay (point_t const &pos, direction_t const &dir)
                 : position (pos), direction (dir)

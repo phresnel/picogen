@@ -51,6 +51,49 @@ namespace kallisto {
                 };
                 return ret;
         }
+        
+        template <typename INT_T, unsigned int FRACT_BITS>
+        inline fixed_point_t<INT_T,FRACT_BITS>
+        operator- (fixed_point_t<INT_T,FRACT_BITS> const &lhs) {
+                fixed_point_t<INT_T,FRACT_BITS> const ret = {
+                        -lhs.bits
+                };
+                return ret;
+        }
+        
+        template <typename INT_T, unsigned int FRACT_BITS>
+        inline fixed_point_t<INT_T,FRACT_BITS>
+        operator+ (fixed_point_t<INT_T,FRACT_BITS> const &lhs) {
+                return lhs;
+        }
+        
+        template <typename INT_T, unsigned int FRACT_BITS>
+        bool
+        operator < (fixed_point_t<INT_T,FRACT_BITS> const &lhs,
+                        fixed_point_t<INT_T,FRACT_BITS> const &rhs) {                
+                return lhs.bits < rhs.bits;
+        }
+        
+        template <typename INT_T, unsigned int FRACT_BITS>
+        bool
+        operator > (fixed_point_t<INT_T,FRACT_BITS> const &lhs,
+                        fixed_point_t<INT_T,FRACT_BITS> const &rhs) {                
+                return lhs.bits > rhs.bits;
+        }
+        
+        template <typename INT_T, unsigned int FRACT_BITS>
+        bool
+        operator == (fixed_point_t<INT_T,FRACT_BITS> const &lhs,
+                        fixed_point_t<INT_T,FRACT_BITS> const &rhs) {                
+                return lhs.bits == rhs.bits;
+        }
+        
+        template <typename INT_T, unsigned int FRACT_BITS>
+        bool
+        operator != (fixed_point_t<INT_T,FRACT_BITS> const &lhs,
+                        fixed_point_t<INT_T,FRACT_BITS> const &rhs) {                
+                return lhs.bits != rhs.bits;
+        }
 }
 
 
