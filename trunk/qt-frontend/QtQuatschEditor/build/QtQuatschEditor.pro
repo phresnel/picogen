@@ -4,8 +4,10 @@
 QT += opengl
 TARGET = QtQuatschEditor
 TEMPLATE = app
+LIBS += ../../../instant-preview/open-gl/build/libinstantpreview.a
 INCLUDEPATH += ../include/ \
-    ../../../
+    ../../../ \
+    ../../../instant-preview/open-gl/include/
 SOURCES += ../src/main.cpp \
     ../src/qtquatscheditor.cc \
     ../src/userconstant.cc \

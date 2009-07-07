@@ -33,6 +33,8 @@
 #include <edgeitem.hh>
 #include <nodeitem.hh>
 
+#include <instantpreview.hh>
+
 namespace Ui
 {
     class QtQuatschEditor;
