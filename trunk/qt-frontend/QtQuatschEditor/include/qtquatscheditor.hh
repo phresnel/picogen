@@ -42,7 +42,7 @@ namespace Ui
 
 
 //class GLWidget ;
-#include "../glwidget.h"
+//#include "../glwidget.h"
 
 class QtQuatschEditor : public QWidget, public UpdateHeightmapMixin
 {
@@ -71,7 +71,7 @@ private:
 
         QPixmap heightmap;
 
-        GLWidget *glWidget;
+        //GLWidget *glWidget;
 
 private slots:
         void on_asRightSiblingsChildButton_clicked();

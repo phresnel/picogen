@@ -15,16 +15,14 @@ SOURCES += ../src/main.cpp \
     ../src/parameter.cc \
     ../src/quatsch-integration.cc \
     ../src/nodeitem.cc \
-    ../src/edgeitem.cc \
-    ../glwidget.cpp
+    ../src/edgeitem.cc
 HEADERS += ../include/qtquatscheditor.hh \
     ../include/userconstant.hh \
     ../include/predefinedconstant.hh \
     ../include/parameter.hh \
     ../include/nodeitem.hh \
     ../include/edgeitem.hh \
-    ../include/jux_gen.hh \
-    ../glwidget.h
+    ../include/jux_gen.hh
 FORMS += ../forms/qtquatscheditor.ui \
     ../forms/userconstant.ui \
     ../forms/predefinedconstant.ui \
