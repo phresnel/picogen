@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#define STANDALONE 1
+//#define STANDALONE 1
 
 #if STANDALONE
 # include <SDL/SDL.h>
@@ -55,9 +55,9 @@ void setupQuality () {
 
 
 void setupLighting () {
-        const float noAmbient[] = {0.0f, 0.0f, 0.0f, 1.0f};
-        const float f=2.0f, whiteDiffuse[] = {f*1.0f, f*0.75f, f*0.50f, 1.0f};
-        const float position[] = {0.0f, -0.5f, 1.0f, 0.0f};
+        const float noAmbient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+        const float f=1.0f, whiteDiffuse[] = {f*1.0f, f*1.0f, f*1.0f, 1.0f};
+        const float position[] = {1.0f, -1.0f, 1.0f, 0.0f};
         glLightfv(GL_LIGHT0, GL_AMBIENT, noAmbient);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuse);
         glLightfv(GL_LIGHT0, GL_POSITION, position);
@@ -100,7 +100,7 @@ void setupFillmode () {
 
 
 namespace instant_preview {
-        void draw (const HeightFunction &heightFunction) {
+void draw (const HeightFunction &heightFunction) {
         glClearColor (0.5f, 0.5f, 0.5f, 1.0f);
         glClearDepth (1.0f);
         glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
