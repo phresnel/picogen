@@ -121,6 +121,7 @@ public:
         QString genJuxCode (JuxGeneratorState &state) const ;
 
         QImage genHeightmap (int w, int h) const ;
+        Compiler::FunctionPtr genQuatsch () const ;
 
 protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -128,6 +129,8 @@ protected:
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+
+        Compiler::ConfigurableFunctionsMap addfuns;
 
         void remove (NodeItem *node) ;
 

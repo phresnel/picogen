@@ -43,7 +43,7 @@ namespace Ui
 
 //class GLWidget ;
 //#include "../glwidget.h"
-
+class GLGraphicsScene;
 class QtQuatschEditor : public QWidget, public UpdateHeightmapMixin
 {
         Q_OBJECT
@@ -64,14 +64,13 @@ private:
         Ui::QtQuatschEditor *ui;
         NodeItem *rootNode;
         QWidget *currentPropertyWidget;
+        GLGraphicsScene *glScene;
 
         void displayPropertyWindow ();
         void updateHeightmap (NodeItem *node);
         void drawHeightmap3d (QImage const &heightmap);
 
         QPixmap heightmap;
-
-        //GLWidget *glWidget;
 
 private slots:
         void on_asRightSiblingsChildButton_clicked();
@@ -97,6 +96,10 @@ public:
         GLGraphicsScene (QWidget *parent = 0) ;
         void drawBackground( QPainter* painter, const QRectF & rect );
         QRectF itemsBoundingRect () const ;
+
+        void setCurrentNode (NodeItem *);
+private:
+        NodeItem *currentNode;
 };
 
 

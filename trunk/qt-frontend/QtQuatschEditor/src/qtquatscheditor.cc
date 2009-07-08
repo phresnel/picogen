@@ -27,30 +27,43 @@
 #include <QComboBox>
 
 
-GLGraphicsScene::GLGraphicsScene (QWidget *parent) : QGraphicsScene (parent) {
+GLGraphicsScene::GLGraphicsScene (QWidget *parent)
+: QGraphicsScene (parent), currentNode(0) {
 }
 
-void GLGraphicsScene::drawBackground( QPainter* painter, const QRectF & rect ) {
+void GLGraphicsScene::drawBackground (QPainter* painter, const QRectF & rect) {
         Q_UNUSED(painter)
         Q_UNUSED(rect)
 
-        glClearColor(0.5,0.5,0.5,1.0);
-        glClear (GL_COLOR_BUFFER_BIT);
-        //glLoadIdentity();
+        struct : public instant_preview::HeightFunction {
+                float operator () (float u, float v) const {
+                        const float argv [] = {u, v};
+                        return (*f) (argv);
+                }
+                Compiler::FunctionPtr f;
+        } fun;
 
-        glColor3f (1.0, 0.5, 0.25);
-        glOrtho(0.0, 0.01, 0.0, 0.01, -0.01, 0.01);
-        glBegin(GL_POLYGON);
-                glVertex3f (0.25, 0.25, 0.0);
-                glVertex3f (0.75, 0.25, 0.0);
-                glVertex3f (0.75, 0.75, 0.0);
-                glVertex3f (0.25, 0.75, 0.0);
-        glEnd();
-        glFlush();
+        struct : public instant_preview::HeightFunction {
+                float operator () (float, float) const {
+                        return 0.0f;
+                }
+        } fun0;
+
+        if (0 != currentNode) {
+                fun.f = currentNode->genQuatsch();
+                instant_preview::draw(fun);
+        } else {
+                instant_preview::draw(fun0);
+        }
 }
 
 QRectF GLGraphicsScene::itemsBoundingRect () const {
         return QRectF (-1.0,-1.0,2.0,2.0);
+}
+
+void GLGraphicsScene::setCurrentNode (NodeItem *node) {
+        currentNode = node;
+        this->invalidate();
 }
 
 
@@ -73,7 +86,6 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
 
                 this->rootNode = new NodeItem (scene, this, 0, 0);
 
-                on_graphicsScene_selectionChanged();
                 rootNode->doLayout();
 
                 QRectF rect = scene->itemsBoundingRect();
@@ -83,18 +95,12 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
 
         // Heightmap 3d Preview
         {
-                QGraphicsScene *scene = new GLGraphicsScene (this);
-                scene->setSceneRect(0.0,0.0,1.0,1.0);
-
-                ui->heightmapView->setScene(scene);
-                //ui->heightmapView->setSceneRect(-1.0,-1.0,2.0,2.0);
+                glScene = new GLGraphicsScene (this);
+                glScene->setSceneRect(0.0,0.0,1.0,1.0);
+                ui->heightmapView->setScene(glScene);
                 ui->heightmapView->setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-                //ui->heightmapView->setRenderHint(QPainter::Antialiasing);
-
-                ui->heightmapView->setSceneRect(scene->itemsBoundingRect());
-
-                //glWidget = new GLWidget;
-                //ui->horizontalLayout->addWidget(glWidget);
+                ui->heightmapView->setRenderHint(QPainter::Antialiasing);
+                ui->heightmapView->setSceneRect(glScene->itemsBoundingRect());
         }
 
         // Heightmap 2d Preview
@@ -102,6 +108,8 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
                 heightmap = QPixmap (256,256);
                 ui->heightmapLabel->setPixmap(heightmap);
         }
+
+        on_graphicsScene_selectionChanged();
 }
 
 
@@ -219,7 +227,6 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 }
                 ui->centerOnSelectedButton->setEnabled (true);
                 ui->nodePropertiesGroupBox->setEnabled(true);
-
                 updateHeightmap (node);
 
         } else {
@@ -232,7 +239,9 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 ui->typeCombo->setCurrentIndex(0);
                 ui->nodePropertiesGroupBox->setEnabled(false);
 
-                if (rootNode->isCompilable()) {
+                updateHeightmap (0);
+
+                /*if (rootNode->isCompilable()) {
                         QImage q = rootNode->genHeightmap(256,256);
                         heightmap = QPixmap::fromImage(q);
                         ui->heightmapLabel->setPixmap (heightmap);
@@ -241,11 +250,10 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                         q.fill(QColor(200,130,130).rgb());
                         heightmap = QPixmap::fromImage(q);
                         ui->heightmapLabel->setPixmap (heightmap);
-                }
+                }*/
         }
 
         displayPropertyWindow();
-        repaint();
 }
 
 
@@ -253,27 +261,34 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
 void QtQuatschEditor::updateHeightmap () {
         QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
         if (1 == selected.size()) {
-                NodeItem* node = dynamic_cast<NodeItem*> (selected [0]);
-                if (0 == node)
-                        return;
-                updateHeightmap (node);
+                updateHeightmap (dynamic_cast<NodeItem*> (selected [0]));
         }
 }
 
 
 
 void QtQuatschEditor::updateHeightmap (NodeItem *node) {
+        if (0 == node) {
+                node = rootNode;
+        }
+
         if (node->isCompilable()) {
                 QImage q = node->genHeightmap(256,256);
                 heightmap = QPixmap::fromImage(q);
                 ui->heightmapLabel->setPixmap (heightmap);
                 drawHeightmap3d (q);
+
+                glScene->setCurrentNode(node);
         } else {
                 QImage q(256,256,QImage::Format_RGB32);
                 q.fill(QColor(200,130,130).rgb());
                 heightmap = QPixmap::fromImage(q);
                 ui->heightmapLabel->setPixmap (heightmap);
+
+                glScene->setCurrentNode(0);
         }
+
+        repaint();
 }
 
 
@@ -286,6 +301,7 @@ void QtQuatschEditor::on_typeCombo_currentIndexChanged(int index) {
                         return;
 
                 node->setType(static_cast<NodeItem::Type>(index));
+                updateHeightmap();
         }
         displayPropertyWindow();
 }

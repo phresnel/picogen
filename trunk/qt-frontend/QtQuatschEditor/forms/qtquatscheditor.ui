@@ -442,7 +442,7 @@
             <string>Undefined</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/error</normaloff>:/aggregate/error</iconset>
            </property>
           </item>
@@ -451,7 +451,7 @@
             <string>Parameter</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/parameter</normaloff>:/aggregate/parameter</iconset>
            </property>
           </item>
@@ -460,7 +460,7 @@
             <string>User Constant</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/user-constant</normaloff>:/aggregate/user-constant</iconset>
            </property>
           </item>
@@ -469,7 +469,7 @@
             <string>Predefined Constant</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/predefined-constant</normaloff>:/aggregate/predefined-constant</iconset>
            </property>
           </item>
@@ -478,7 +478,7 @@
             <string>Addition</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/addition</normaloff>:/aggregate/addition</iconset>
            </property>
           </item>
@@ -487,7 +487,7 @@
             <string>Subtraction</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/subtraction</normaloff>:/aggregate/subtraction</iconset>
            </property>
           </item>
@@ -496,7 +496,7 @@
             <string>Multiplication</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/multiplication</normaloff>:/aggregate/multiplication</iconset>
            </property>
           </item>
@@ -505,7 +505,7 @@
             <string>Division</string>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/aggregate/division</normaloff>:/aggregate/division</iconset>
            </property>
           </item>
@@ -535,7 +535,7 @@
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>40</height>
+         <height>1</height>
         </size>
        </property>
       </spacer>
@@ -601,6 +601,8 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

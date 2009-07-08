@@ -777,17 +777,22 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
 
 
 
-QImage NodeItem::genHeightmap (int w, int h) const {
-        ::std::string parameters = "x;y";
-        Compiler::ConfigurableFunctionsMap addfuns;
-
+Compiler::FunctionPtr NodeItem::genQuatsch () const {
         JuxGeneratorState state;
         Compiler::FunctionPtr fun (Compiler::compile (
-                parameters,
+                "x;y",
                 genJuxCode (state).toStdString(),
                 addfuns,
                 std::cerr
         ));
+        return fun;
+}
+
+
+
+QImage NodeItem::genHeightmap (int w, int h) const {
+
+        Compiler::FunctionPtr fun = genQuatsch();
 
         const float
                 fw = static_cast<float>(w),
