@@ -72,6 +72,23 @@ private:
 
         QPixmap heightmap;
 
+        /*struct NodeItemDescriptor {
+                const bool isAggregate;
+                const int minParameterCount, maxParameterCount;
+
+                NodeItemDescriptor (
+                        bool isAggregate_,
+                        int minParameterCount_,
+                        int maxParameterCount_
+                )
+                : isAggregate(isAggregate_)
+                , minParameterCount(minParameterCount_)
+                , maxParameterCount(maxParameterCount_)
+        {}
+
+        std::map<NodeItem::Type, NodeItemDescriptor> descriptors;*/
+
+
 private slots:
         void on_asRightSiblingsChildButton_clicked();
         void on_asLeftSiblingsChildButton_clicked();

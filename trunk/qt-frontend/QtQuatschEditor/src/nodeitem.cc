@@ -286,6 +286,18 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 title = "Undefined";
                 pixmap.load(":/aggregate/error.n");
                 break;
+        case PredefinedConstant:
+                title = "Predefined Constant";
+                pixmap.load(":/aggregate/predefined-constant.n");
+                break;
+        case UserConstant:
+                title = "User Constant";
+                pixmap.load(":/aggregate/user-constant.n");
+                break;
+        case Parameter:
+                title = "Parameter";
+                pixmap.load(":/aggregate/parameter.n");
+                break;
         case Addition:
                 title = "Addition";
                 pixmap.load(":/aggregate/addition.n");
@@ -302,17 +314,23 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 title = "Division";
                 pixmap.load(":/aggregate/division.n");
                 break;
-        case PredefinedConstant:
-                title = "Predefined Constant";
-                pixmap.load(":/aggregate/predefined-constant.n");
+        case Inverse:
+                title = "1 / ...";
+                pixmap.load(":/aggregate/error.n");
                 break;
-        case UserConstant:
-                title = "User Constant";
-                pixmap.load(":/aggregate/user-constant.n");
+        case Sine:
+                title = "sin(...)";
+                pixmap.load(":/aggregate/error.n");
                 break;
-        case Parameter:
-                title = "Parameter";
-                pixmap.load(":/aggregate/parameter.n");
+        case Cosine:
+                title = "cos(...)";
+                pixmap.load(":/aggregate/error.n");
+                break;
+
+
+        case MultiplyWithPi:
+                title = "pi * ";
+                pixmap.load(":/aggregate/error.n");
                 break;
         };
         //pixmap = pixmap.scaledToHeight(32);
@@ -383,6 +401,21 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
                 painter->drawText(20,40,"%$#&!");
                 break;
+        case PredefinedConstant:
+                painter->setFont(QFont(QFont().family(), 17, QFont::Black, true));
+                switch (value.asPredefinedConstant()) {
+                case Value::Pi: painter->drawText (10,40,"Pi = 3.141..."); break;
+                case Value::e: painter->drawText (10,40,"e = 2.718..."); break;
+                };
+                break;
+        case Parameter:
+                painter->setFont(QFont(QFont().family(), 27, QFont::Black, true));
+                painter->drawText(10,40, QString("-> ") + QString::fromStdString(value.asParameter()));
+                break;
+        case UserConstant:
+                painter->setFont(QFont(QFont().family(), 27, QFont::Black, true));
+                painter->drawText(10,40,QString::number(value.asFloatConstant()));
+                break;
         case Addition:
                 painter->setFont(QFont(QFont().family(), 36, QFont::Black, true));
                 painter->drawText(40,40,"+");
@@ -399,20 +432,22 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 painter->setFont(QFont(QFont().family(), 36, QFont::Black, true));
                 painter->drawText(40,40,"/");
                 break;
-        case PredefinedConstant:
-                painter->setFont(QFont(QFont().family(), 17, QFont::Black, true));
-                switch (value.asPredefinedConstant()) {
-                case Value::Pi: painter->drawText (10,40,"Pi = 3.141..."); break;
-                case Value::e: painter->drawText (10,40,"e = 2.718..."); break;
-                };
+        case Inverse:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"1 / ...");
                 break;
-        case Parameter:
-                painter->setFont(QFont(QFont().family(), 27, QFont::Black, true));
-                painter->drawText(10,40, QString("-> ") + QString::fromStdString(value.asParameter()));
+        case Sine:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"sin(...)");
                 break;
-        case UserConstant:
-                painter->setFont(QFont(QFont().family(), 27, QFont::Black, true));
-                painter->drawText(10,40,QString::number(value.asFloatConstant()));
+        case Cosine:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"cos(...)");
+                break;
+
+        case MultiplyWithPi:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"pi * ...");
                 break;
         };
 
@@ -591,6 +626,10 @@ bool NodeItem::isTerminal () const {
         case Subtraction:
         case Multiplication:
         case Division:
+        case Inverse:
+        case Sine:
+        case Cosine:
+        case MultiplyWithPi:
                 return false;
         };
         throw NodeException ("switch() in NodeItem::isTerminal() is incomplete");
@@ -611,6 +650,10 @@ bool NodeItem::isAggregate () const {
         case Subtraction:
         case Multiplication:
         case Division:
+        case Inverse:
+        case Sine:
+        case Cosine:
+        case MultiplyWithPi:
                 return true;
         };
         throw NodeException ("switch() in NodeItem::isAggregate() is incomplete");
@@ -652,6 +695,20 @@ int NodeItem::getParameterCount (bool getMinCount) const {
         case Division:
                 if (getMinCount) return 2;
                 else return -1;
+
+        case Inverse:
+                if (getMinCount) return 1;
+                else return 1;
+        case Sine:
+                if (getMinCount) return 1;
+                else return 1;
+        case Cosine:
+                if (getMinCount) return 1;
+                else return 1;
+
+        case MultiplyWithPi:
+                if (getMinCount) return 1;
+                else return 1;
         };
         throw NodeException ("switch() in NodeItem::getParameterCount() is incomplete");
 }
@@ -758,6 +815,20 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                 goto aggregate;
         case Division:
                 tmp = indent + "( /\n";
+                goto aggregate;
+        case Inverse:
+                tmp = indent + "( inv\n";
+                goto aggregate;
+        case Sine:
+                tmp = indent + "( sin\n";
+                goto aggregate;
+        case Cosine:
+                tmp = indent + "( cos\n";
+                goto aggregate;
+
+        case MultiplyWithPi:
+                tmp = indent + "( *\n"
+                    + indent + indent + "3.1415926535897932385/*pi*/\n";
                 goto aggregate;
         aggregate:
 

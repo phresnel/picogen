@@ -509,6 +509,26 @@
              <normaloff>:/aggregate/division</normaloff>:/aggregate/division</iconset>
            </property>
           </item>
+          <item>
+           <property name="text">
+            <string>Inverse</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sine</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cosine</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>pi * ...</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item>

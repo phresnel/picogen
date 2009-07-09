@@ -26,7 +26,6 @@
 
 #include <QComboBox>
 
-
 GLGraphicsScene::GLGraphicsScene (QWidget *parent)
 : QGraphicsScene (parent), currentNode(0) {
 }
@@ -72,6 +71,25 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
     , currentPropertyWidget (0)
 {
         ui->setupUi(this);
+
+        /*{
+                descriptors[NodeItem::Undefined] = NodeItemDescriptor (
+                                false, -1, -1);
+                descriptors[NodeItem::Parameter] = NodeItemDescriptor (
+                                false, 0, 0);
+                descriptors[NodeItem::UserConstant] = NodeItemDescriptor (
+                                false, 0, 0);
+                descriptors[NodeItem::PredefinedConstant] = NodeItemDescriptor (
+                                false, 0, 0);
+                descriptors[NodeItem::Addition] = NodeItemDescriptor (
+                                false, -1, -1);
+                descriptors[NodeItem::Subtraction] = NodeItemDescriptor (
+                                false, -1, -1);
+                descriptors[NodeItem::Multiplication] = NodeItemDescriptor (
+                                false, -1, -1);
+                descriptors[NodeItem::Division] = NodeItemDescriptor (
+                                false, -1, -1);
+        }*/
 
 
         // Graph Editor
@@ -365,14 +383,6 @@ void QtQuatschEditor::displayPropertyWindow() {
                 switch (node->getType()) {
                 case NodeItem::Undefined:
                         break;
-                case NodeItem::Addition:
-                        break;
-                case NodeItem::Subtraction:
-                        break;
-                case NodeItem::Multiplication:
-                        break;
-                case NodeItem::Division:
-                        break;
                 case NodeItem::PredefinedConstant:
                         currentPropertyWidget = new PredefinedConstant(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
@@ -384,6 +394,23 @@ void QtQuatschEditor::displayPropertyWindow() {
                 case NodeItem::UserConstant:
                         currentPropertyWidget = new UserConstant(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
+                        break;
+                case NodeItem::Addition:
+                        break;
+                case NodeItem::Subtraction:
+                        break;
+                case NodeItem::Multiplication:
+                        break;
+                case NodeItem::Division:
+                        break;
+                case NodeItem::Inverse:
+                        break;
+                case NodeItem::Sine:
+                        break;
+                case NodeItem::Cosine:
+                        break;
+
+                case NodeItem::MultiplyWithPi:
                         break;
                 };
                 this->repaint();

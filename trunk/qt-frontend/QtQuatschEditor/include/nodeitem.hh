@@ -67,10 +67,46 @@ public:
                 Parameter,
                 UserConstant,
                 PredefinedConstant,
+
+                // +-*/
                 Addition,
                 Subtraction,
                 Multiplication,
-                Division
+                Division,
+
+                // ^ min max neg
+                //Exponentiate,
+                //Minimize,
+                //Maximize,
+                //Negate,
+
+                // and or not
+                //And,
+                //Or,
+                //Not,
+
+                // lerp
+                //Lerp
+
+                // < <= > >= = !=
+
+                // [] ]] ][ [[
+
+                // inv sin cos
+                Inverse,
+                Sine,
+                Cosine,
+
+                // floor abs trunc frac
+
+                // sqrt log log10 exp
+
+                // delta
+
+                // if
+
+                // mulpi
+                MultiplyWithPi
         };
 
         Type getType() const ;
