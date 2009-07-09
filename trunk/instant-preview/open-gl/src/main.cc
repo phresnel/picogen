@@ -128,32 +128,39 @@ void draw (const HeightFunction &heightFunction) {
 
         for (int v=0; v<height; ++v) {
                 const float
-                        v0 = scale * (static_cast<float>(v)   * rheightf - 0.5f),
-                        v1 = scale * (static_cast<float>(v+1) * rheightf - 0.5f),
-                        v2 = scale * (static_cast<float>(v+2) * rheightf - 0.5f),
-                        v3 = scale * (static_cast<float>(v+3) * rheightf - 0.5f)
+                        dv0 = static_cast<float>(v)   * rheightf,
+                        dv1 = static_cast<float>(v+1)   * rheightf,
+                        dv2 = static_cast<float>(v+2)   * rheightf,
+                        dv3 = static_cast<float>(v+3)   * rheightf,
+                        v0 = scale * (dv0 - 0.5f),
+                        v1 = scale * (dv1 - 0.5f),
+                        v2 = scale * (dv2 - 0.5f),
+                        v3 = scale * (dv3 - 0.5f)
                 ;
 
                 glBegin (GL_QUAD_STRIP);
                 for (int u=0; u<=width; ++u) {
                         const float
-                                u0 = scale * (static_cast<float>(u)   * rwidthf - 0.5f),
-                                u1 = scale * (static_cast<float>(u+1) * rwidthf - 0.5f),
-                                u2 = scale * (static_cast<float>(u+2) * rwidthf - 0.5f)
+                                du0 = static_cast<float>(u)   * rwidthf,
+                                du1 = static_cast<float>(u+1)   * rwidthf,
+                                du2 = static_cast<float>(u+2)   * rwidthf,
+                                u0 = scale * (du0 - 0.5f),
+                                u1 = scale * (du1 - 0.5f),
+                                u2 = scale * (du2 - 0.5f)
                         ;
 
                         // Invoke height function and pump into vertices.
                         const float
-                                h01[3] = {u0, heightFunction (u0, v1), v1},
-                                h02[3] = {u0, heightFunction (u0, v2), v2},
+                                h01[3] = {u0, heightFunction (du0, dv1), v1},
+                                h02[3] = {u0, heightFunction (du0, dv2), v2},
 
-                                h10[3] = {u1, heightFunction (u1, v0), v0},
-                                h11[3] = {u1, heightFunction (u1, v1), v1},
-                                h12[3] = {u1, heightFunction (u1, v2), v2},
-                                h13[3] = {u1, heightFunction (u1, v3), v3},
+                                h10[3] = {u1, heightFunction (du1, dv0), v0},
+                                h11[3] = {u1, heightFunction (du1, dv1), v1},
+                                h12[3] = {u1, heightFunction (du1, dv2), v2},
+                                h13[3] = {u1, heightFunction (du1, dv3), v3},
 
-                                h21[3] = {u2, heightFunction (u2, v1), v1},
-                                h22[3] = {u2, heightFunction (u2, v2), v2}
+                                h21[3] = {u2, heightFunction (du2, dv1), v1},
+                                h22[3] = {u2, heightFunction (du2, dv2), v2}
                         ;
 
                         // Grab u/v vectors.
