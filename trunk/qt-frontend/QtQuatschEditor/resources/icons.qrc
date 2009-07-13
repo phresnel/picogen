@@ -1,13 +1,5 @@
 <RCC>
     <qresource prefix="/aggregate" >
-        <file alias="subtraction" >icons/WebInjection.MidToneDesign.dbmin.png</file>
-        <file alias="addition" >icons/WebInjection.MidToneDesign.dbplus.png</file>
-        <file alias="division" >icons/Oxygen.OxygenTeam.kbruch.png</file>
-        <file alias="multiplication" >icons/9x9.png</file>
-        <file alias="subtraction.n" >icons/n/WebInjection.MidToneDesign.dbmin.png</file>
-        <file alias="addition.n" >icons/n/WebInjection.MidToneDesign.dbplus.png</file>
-        <file alias="multiplication.n" >icons/n/9x9.png</file>
-        <file alias="division.n" >icons/n/Oxygen.OxygenTeam.kbruch.png</file>
         <file alias="error" >icons/Oxygen.OxygenTeam.dialog-error.png</file>
         <file alias="error.n" >icons/n/Oxygen.OxygenTeam.dialog-error.png</file>
         <file alias="predefined-constant" >icons/Wiki-Commons.HILLGIALLO.pigreco.png</file>
@@ -16,5 +8,13 @@
         <file alias="user-constant.n" >icons/n/Oxygen.OxygenTeam.editinput.png</file>
         <file alias="parameter" >icons/Oxygen.OxygenTeam.arrow-right.png</file>
         <file alias="parameter.n" >icons/n/Oxygen.OxygenTeam.arrow-right.png</file>
+        <file alias="addition" >icons/picogen.add.png</file>
+        <file alias="multiplication" >icons/picogen.mul.png</file>
+        <file alias="addition.n" >icons/n/picogen.add.png</file>
+        <file alias="multiplication.n" >icons/n/picogen.mul.png</file>
+        <file alias="division" >icons/picogen.div.png</file>
+        <file alias="subtraction" >icons/picogen.sub.png</file>
+        <file alias="division.n" >icons/n/picogen.div.png</file>
+        <file alias="subtraction.n" >icons/n/picogen.sub.png</file>
     </qresource>
 </RCC>
