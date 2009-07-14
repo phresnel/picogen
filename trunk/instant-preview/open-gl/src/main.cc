@@ -55,9 +55,9 @@ void setupQuality () {
 
 
 void setupLighting () {
-        const float noAmbient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+        const float noAmbient[] = {0.3f, 0.3f, 0.4f, 1.0f};
         const float f=1.0f, whiteDiffuse[] = {f*1.0f, f*1.0f, f*1.0f, 1.0f};
-        const float position[] = {1.0f, -1.0f, 1.0f, 0.0f};
+        const float position[] = {1.0f, -1.0f, 0.5f, 0.0f};
         glLightfv(GL_LIGHT0, GL_AMBIENT, noAmbient);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuse);
         glLightfv(GL_LIGHT0, GL_POSITION, position);
