@@ -314,17 +314,37 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 title = "Division";
                 pixmap.load(":/aggregate/division.n");
                 break;
+        case Exponentiate:
+                title = "Exponentiate";
+                pixmap.load(":/aggregate/exponentiate.n");
+                break;
+        case Minimize:
+                title = "Minimize";
+                pixmap.load(":/aggregate/minimize.n");
+                break;
+        case Maximize:
+                title = "Maximize";
+                pixmap.load(":/aggregate/maximize.n");
+                break;
+        case Negate:
+                title = "Negate";
+                pixmap.load(":/aggregate/negate.n");
+                break;
+        case Lerp:
+                title = "Lerp";
+                pixmap.load(":/aggregate/lerp.n");
+                break;
         case Inverse:
                 title = "1 / ...";
-                pixmap.load(":/aggregate/error.n");
+                pixmap.load(":/aggregate/inverse.n");
                 break;
         case Sine:
                 title = "sin(...)";
-                pixmap.load(":/aggregate/error.n");
+                pixmap.load(":/aggregate/sine.n");
                 break;
         case Cosine:
                 title = "cos(...)";
-                pixmap.load(":/aggregate/error.n");
+                pixmap.load(":/aggregate/cosine.n");
                 break;
 
 
@@ -431,6 +451,28 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         case Division:
                 painter->setFont(QFont(QFont().family(), 36, QFont::Black, true));
                 painter->drawText(40,40,"/");
+                break;
+        case Exponentiate:
+                painter->setFont(QFont(QFont().family(), 32, QFont::Black, true));
+                painter->drawText(40,45,"x");
+                painter->setFont(QFont(QFont().family(), 23, QFont::Black, true));
+                painter->drawText(65,30,"y");
+                break;
+        case Minimize:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(10,40,"min(...)");
+                break;
+        case Maximize:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(10,40,"max(...)");
+                break;
+        case Negate:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(10,40,"h = -x");
+                break;
+        case Lerp:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40,"h = (1-f)*x + f*y");
                 break;
         case Inverse:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
@@ -626,6 +668,11 @@ bool NodeItem::isTerminal () const {
         case Subtraction:
         case Multiplication:
         case Division:
+        case Exponentiate:
+        case Minimize:
+        case Maximize:
+        case Negate:
+        case Lerp:
         case Inverse:
         case Sine:
         case Cosine:
@@ -650,6 +697,11 @@ bool NodeItem::isAggregate () const {
         case Subtraction:
         case Multiplication:
         case Division:
+        case Exponentiate:
+        case Minimize:
+        case Maximize:
+        case Negate:
+        case Lerp:
         case Inverse:
         case Sine:
         case Cosine:
@@ -693,6 +745,23 @@ int NodeItem::getParameterCount (bool getMinCount) const {
                 if (getMinCount) return 2;
                 else return -1;
         case Division:
+                if (getMinCount) return 2;
+                else return -1;
+
+        case Exponentiate:
+                if (getMinCount) return 2;
+                else return -1;
+        case Minimize:
+                if (getMinCount) return 1;
+                else return -1;
+        case Maximize:
+                if (getMinCount) return 1;
+                else return -1;
+        case Negate:
+                if (getMinCount) return 1;
+                else return -1;
+
+        case Lerp:
                 if (getMinCount) return 2;
                 else return -1;
 
@@ -816,6 +885,24 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
         case Division:
                 tmp = indent + "( /\n";
                 goto aggregate;
+
+        case Exponentiate:
+                tmp = indent + "( ^ \n";
+                goto aggregate;
+        case Minimize:
+                tmp = indent + "( min \n";
+                goto aggregate;
+        case Maximize:
+                tmp = indent + "( max \n";
+                goto aggregate;
+        case Negate:
+                tmp = indent + "( neg \n";
+                goto aggregate;
+
+        case Lerp:
+                tmp = indent + "( lerp \n";
+                goto aggregate;
+
         case Inverse:
                 tmp = indent + "( inv\n";
                 goto aggregate;

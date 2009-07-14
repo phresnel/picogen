@@ -374,6 +374,8 @@ void QtQuatschEditor::displayPropertyWindow() {
         }
 
 
+        ui->helpText->setText("");
+
         QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
         if (1 == selected.size()) {
                 NodeItem* node = dynamic_cast<NodeItem*> (selected [0]);
@@ -386,6 +388,7 @@ void QtQuatschEditor::displayPropertyWindow() {
                 case NodeItem::PredefinedConstant:
                         currentPropertyWidget = new PredefinedConstant(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
+                        ui->helpText->setText("Use one of the predefined constants.");
                         break;
                 case NodeItem::Parameter:
                         currentPropertyWidget = new Parameter(node);
@@ -394,14 +397,46 @@ void QtQuatschEditor::displayPropertyWindow() {
                 case NodeItem::UserConstant:
                         currentPropertyWidget = new UserConstant(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
+                        ui->helpText->setText("Enter a custom value.");
                         break;
                 case NodeItem::Addition:
+                        ui->helpText->setText("Sums up the values of its child nodes.");
                         break;
                 case NodeItem::Subtraction:
+                        ui->helpText->setText("Like Addition, but subtracts all values instead, beginning at the top most child.");
                         break;
                 case NodeItem::Multiplication:
                         break;
                 case NodeItem::Division:
+                        break;
+                case NodeItem::Exponentiate:
+                        ui->helpText->setText(
+                                "Raises the first operand to the power of the second: <big>x<sup>y</sup></big> <br>"
+                                "<strong>Note:</strong> This function accepts arbitrarily many "
+                                "operands, raising the 1st operand to the power of the 2nd to the power of the 3rd, etc."
+                        );
+                        break;
+                case NodeItem::Minimize:
+                        break;
+                case NodeItem::Maximize:
+                        break;
+                case NodeItem::Negate:
+                        break;
+                case NodeItem::Lerp:
+                        ui->helpText->setText(
+                                "Performs a linear interpolation between the 2nd, 3rd, n'th child. "
+                                "The <strong>1st</strong> child defines which of the other children "
+                                "are used / contribute at most."
+                                "<p>E.g., if the 1st child is 0, then the second child is the only "
+                                "child that is used. If it is 1, then the last child is used. "
+                                "And, assuming there are 3 children (apart from the 1st), a value "
+                                "of 0.5 would mean the 2nd child is used. <br>"
+                                "<p>Mathematically speaking, the formula for two child nodes would be "
+                                "<center><dfn>h = (1-x<sub>1</sub>)*x<sub>2</sub> + x<sub>1</sub>*x<sub>3</sub></dfn></center><br>"
+                                "with x<sub>n</sub> being the children. "
+                                "<p>As an extension for your convenience, lerp also works with only two operands, "
+                                "in which case lerp will always select the 2nd operand."
+                        );
                         break;
                 case NodeItem::Inverse:
                         break;

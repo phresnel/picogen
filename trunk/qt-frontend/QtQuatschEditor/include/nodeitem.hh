@@ -75,10 +75,10 @@ public:
                 Division,
 
                 // ^ min max neg
-                //Exponentiate,
-                //Minimize,
-                //Maximize,
-                //Negate,
+                Exponentiate,
+                Minimize,
+                Maximize,
+                Negate,
 
                 // and or not
                 //And,
@@ -86,7 +86,7 @@ public:
                 //Not,
 
                 // lerp
-                //Lerp
+                Lerp,
 
                 // < <= > >= = !=
 
