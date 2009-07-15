@@ -256,7 +256,7 @@ int standalone () {
 } // namespace {
 
 
-int main () {
+int main (int, char*[]) {
         return standalone ();
 }
 
