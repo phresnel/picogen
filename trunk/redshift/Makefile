@@ -54,11 +54,11 @@ CXXFLAGS += -Wall -Wno-unused -pedantic
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++-4.3 $(LIBS)
+LINK := g++ -s
 AR   := ar -rs 
-CXX  := g++-4.3 -c $(CXXFLAGS) $(LIBS)
+CXX  := g++ -c $(CXXFLAGS) $(LIBS)
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
-AMALGAM := g++-4.3 $(CXXFLAGS) \
+AMALGAM := g++ $(CXXFLAGS) \
 	-combine -fwhole-program -funit-at-a-time -DAMALGAM \
 	 -fipa-cp -fipa-matrix-reorg  \
 	$(LIBS)
@@ -96,8 +96,8 @@ all: redshift amalgam lib
 .PHONY: redshift
 redshift: init-dir-tree redshift_
 
-redshift_: $(OBJDIR)/main.o $(OBJFILES)                
-	$(LINK) -o $(BINDIR)/redshift $^
+redshift_: $(OBJDIR)/main.o $(OBJFILES)
+	$(LINK) -o $(BINDIR)/redshift $^ $(LIBS)
 
 	
 

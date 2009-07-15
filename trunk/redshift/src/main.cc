@@ -213,7 +213,7 @@ void run() {
 #ifdef PICOGENLIB
 int picogen_main ()
 #else
-int main ()
+int main (int, char*[])
 #endif
 {
         using namespace redshift;
