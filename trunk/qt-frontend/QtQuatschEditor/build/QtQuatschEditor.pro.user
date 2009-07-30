@@ -58,7 +58,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-YWSQrXqf3Y,guid=351a8100f8fcfb79396501144a5cd7b7</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-WFjUldKdNN,guid=c6ebaef17576ab18f207ca514a6ab9e8</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -66,9 +66,9 @@
     <value type="QString" >GDM_LANG=de_DE.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=Default</value>
-    <value type="QString" >GNOME_KEYRING_PID=3501</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-9R8Fs1/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-c7yFYc/S.gpg-agent:3557:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=3555</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-wRy7jt/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-qGZQtg/S.gpg-agent:3611:1</value>
     <value type="QString" >GTK_MODULES=gnomebreakpad</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smach/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/smach</value>
@@ -78,10 +78,10 @@
     <value type="QString" >PATH=/home/smach/qtsdk-2009.02/qt/bin:/usr/local/bin:/usr/bin:/bin:/usr/games</value>
     <value type="QString" >PWD=/home/smach</value>
     <value type="QString" >QTDIR=/home/smach/qtsdk-2009.02/qt</value>
-    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/3502</value>
+    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/3556</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=0</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-9R8Fs1/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-wRy7jt/ssh</value>
     <value type="QString" >USER=smach</value>
     <value type="QString" >USERNAME=smach</value>
     <value type="QString" >WINDOWPATH=7</value>
@@ -89,7 +89,7 @@
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
-    <value type="QString" >/home/smach/Projects/picogen/svn/trunk/qt-frontend/QtQuatschEditor/build/QtQuatschEditor.pro</value>
+    <value type="QString" >/home/smach/Projects/picogen/svn/picogen/trunk/qt-frontend/QtQuatschEditor/build/QtQuatschEditor.pro</value>
     <value type="QString" >-spec</value>
     <value type="QString" >linux-g++-64</value>
     <value type="QString" >-r</value>
@@ -97,7 +97,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString" >/home/smach/qtsdk-2009.02/qt/bin/qmake</value>
    <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >/home/smach/Projects/picogen/svn/trunk/qt-frontend/QtQuatschEditor/build</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >/home/smach/Projects/picogen/svn/picogen/trunk/qt-frontend/QtQuatschEditor/build</value>
    <value key="buildConfiguration" type="int" >2</value>
   </valuemap>
  </data>
@@ -106,7 +106,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-YWSQrXqf3Y,guid=351a8100f8fcfb79396501144a5cd7b7</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-WFjUldKdNN,guid=c6ebaef17576ab18f207ca514a6ab9e8</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -114,9 +114,9 @@
     <value type="QString" >GDM_LANG=de_DE.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=Default</value>
-    <value type="QString" >GNOME_KEYRING_PID=3501</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-9R8Fs1/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-c7yFYc/S.gpg-agent:3557:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=3555</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-wRy7jt/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-qGZQtg/S.gpg-agent:3611:1</value>
     <value type="QString" >GTK_MODULES=gnomebreakpad</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/smach/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/smach</value>
@@ -126,10 +126,10 @@
     <value type="QString" >PATH=/home/smach/qtsdk-2009.02/qt/bin:/usr/local/bin:/usr/bin:/bin:/usr/games</value>
     <value type="QString" >PWD=/home/smach</value>
     <value type="QString" >QTDIR=/home/smach/qtsdk-2009.02/qt</value>
-    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/3502</value>
+    <value type="QString" >SESSION_MANAGER=local/seb-debian-amd64:/tmp/.ICE-unix/3556</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SHLVL=0</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-9R8Fs1/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-wRy7jt/ssh</value>
     <value type="QString" >USER=smach</value>
     <value type="QString" >USERNAME=smach</value>
     <value type="QString" >WINDOWPATH=7</value>
@@ -141,7 +141,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString" >/usr/bin/make</value>
    <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >/home/smach/Projects/picogen/svn/trunk/qt-frontend/QtQuatschEditor/build</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >/home/smach/Projects/picogen/svn/picogen/trunk/qt-frontend/QtQuatschEditor/build</value>
   </valuemap>
  </data>
  <data>
