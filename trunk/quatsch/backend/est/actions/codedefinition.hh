@@ -114,7 +114,7 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                                 public:
                                     Name (Parameter &parent) : parent (parent) {}
                                     template <typename code_iterator_t> void operator () (const code_iterator_t& from, const code_iterator_t&to) const {
-                                        ::std::cout << "name:" << ::std::string (from, to) << ::std::endl;                                        
+                                        if (debug) ::std::cout << "name:" << ::std::string (from, to) << ::std::endl;                                        
                                         parent.name_ = ::std::string (from, to);
                                     }
                             };
@@ -124,7 +124,7 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                                 public:
                                     Value (Parameter &parent) : parent (parent) {}
                                     template <typename code_iterator_t> void operator () (const code_iterator_t& from, const code_iterator_t&to) const {
-                                        ::std::cout << "value:" << ::std::string (from, to) << ::std::endl;                                        
+                                        if (debug) ::std::cout << "value:" << ::std::string (from, to) << ::std::endl;                                        
                                         parent.value_ = ::std::string (from, to);
                                     }
                             };
@@ -134,7 +134,7 @@ namespace quatsch {  namespace backend {  namespace est {  namespace parser_acti
                                 public:
                                     Commit (Parameter &parent) : parent (parent) {}
                                     template <typename code_iterator_t> void operator () (const code_iterator_t& from, const code_iterator_t&to) const {
-                                        ::std::cout << "commit:" << ::std::string (from, to) << ::std::endl;                                        
+                                        if (debug) ::std::cout << "commit:" << ::std::string (from, to) << ::std::endl;                                        
                                         parent.backend.codeDefinition.configurableFunctionCall.static_arguments [parent.name_] = parent.value_;
                                         parent.name_ = parent.value_ = "";
                                     }
