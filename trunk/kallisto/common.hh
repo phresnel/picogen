@@ -21,6 +21,11 @@
 #ifndef COMMON_H__INCLUDED_20090215
 #define COMMON_H__INCLUDED_20090215
 
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+#include <stdint.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <ctime>
@@ -43,6 +48,7 @@
 #include "traits/traits.hh"
 
 #include "traits/float_traits.hh"
+#include "traits/int_traits.hh"
 
 #include "types/fixed_point.hh"
 #include "traits/fixed_point_traits.hh"
@@ -76,5 +82,7 @@
 
 #include "types/sphere.hh"
 #include "traits/sphere_traits.hh"
+
+#include "rng/mt.hh"
 
 #endif // COMMON_H__INCLUDED_20090215

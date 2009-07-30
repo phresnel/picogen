@@ -22,7 +22,7 @@
 #define FLOAT_TRAITS_H_20090221
 
 ///////////////////////////////////////////////////////////////////////////////
-// point_t and Point traits
+// float traits
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace kallisto { namespace traits {
@@ -43,6 +43,65 @@ namespace kallisto { namespace traits {
         STATIC_ASSERT(is_float<float>::value);
         STATIC_ASSERT(is_float<double>::value);
         STATIC_ASSERT(is_float<long double>::value);
+                
+        ///////////////////////////////////////////////////////////////////////
+        // bigger_float        
+        ///////////////////////////////////////////////////////////////////////
+        template <typename T> struct bigger_float ;
+        template <> struct bigger_float<float> {
+                typedef double type;
+        };
+        template <> struct bigger_float<double> {
+                typedef long double type;
+        };
+        
+        STATIC_ASSERT((types_equal<bigger_float<float>::type, double>::value));
+        STATIC_ASSERT((types_equal<
+                bigger_float<double>::type, 
+                long double>::value));
+        STATIC_ASSERT(!(types_equal<bigger_float<float>::type, float>::value));
+        STATIC_ASSERT(!(
+                types_equal<bigger_float<double>::type, double>::value
+        ));
+        STATIC_ASSERT(!(
+                types_equal<bigger_float<double>::type, float>::value
+        ));
+        
+        
+        ///////////////////////////////////////////////////////////////////////
+        // equal_sized_int
+        ///////////////////////////////////////////////////////////////////////
+
+        template <typename T> struct equal_sized_uint ;
+        
+        // I know the following is not very generic, 
+        // but we have YAGNI and STATIC_ASSERT .
+        template <> struct equal_sized_uint <float> {
+                typedef uint32_t type;
+        };
+        template <> struct equal_sized_uint <double> {
+                typedef uint64_t type;
+        };
+        
+        STATIC_ASSERT ((
+                types_equal<equal_sized_uint<double>::type,uint64_t>::value
+        ));
+        STATIC_ASSERT ((
+                types_equal<equal_sized_uint<float>::type,uint32_t>::value
+        ));
+        STATIC_ASSERT (
+                sizeof(equal_sized_uint<float>::type) == sizeof(float)
+        );
+        STATIC_ASSERT (
+                sizeof(equal_sized_uint<double>::type)==sizeof(double)
+        );
+        STATIC_ASSERT (!(
+                sizeof(equal_sized_uint<float>::type)==sizeof(double)
+        ));
+        STATIC_ASSERT (!(
+                sizeof(equal_sized_uint<double>::type)==sizeof(float)
+        ));
+        
 } }
 
 #endif // FLOAT_TRAITS_H_20090221

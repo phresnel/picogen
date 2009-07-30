@@ -32,6 +32,32 @@ namespace kallisto {
         namespace traits {
                 using std::numeric_limits;
         }
+        
+
+        // Integer comparison that takes care of gcc's warning ...
+        // "warning: comparison of unsigned expression >= 0 is always true"
+        // ... when compiled with -Wextra
+        template <
+                typename T,
+                T min,
+                T max,
+                bool min_zero = min == 0,
+                bool is_signed = traits::numeric_limits<T>::is_signed
+        > struct int_cmp_le;
+        template <typename T, T min, bool min_zero, T max>
+         struct int_cmp_le <T, min, max, min_zero, true> {
+                enum { value = min <= max };
+        };
+        template <typename T, T min, T max> 
+         struct int_cmp_le <T, min, max, false, false> {
+                enum { value = min <= max };
+        };
+        template <typename T, T min, T max> 
+         struct int_cmp_le <T, min, max, true, false> {
+                enum { value = true };
+        };
+
+
 
 
         // Template friendly sqrt().
