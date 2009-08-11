@@ -22,6 +22,8 @@
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+#include "kallisto/common.hh"
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -66,9 +68,10 @@ int main () {
                         Function
                 >
         );
+
     
    
-        ::std::string parameters = "alpha";
+        ::std::string parameters = "x;y";
         ::std::string code = //"/* faculty function. */\n"
                 //"// functions \n"
                 //"//(defun pi () (pi))\n"
@@ -78,8 +81,8 @@ int main () {
                 //"(defun something-awful x y z (+ x y z)) \n"
                 //"// program\n"
                 //"([Noise2d outer{outer}] ([Noise2d inner{inner}] alpha alpha) alpha)"
-                "(lerp 0 1 0.25)"
-                //"([Noise2d foo() boofar(0.5) ] alpha alpha)"
+                //"(lerp 0 1 0.25)"
+"([Noise2d frequency{10} filter{nearest}] x y)"
                 //"([Noise2d foo() boofar((+ 0.5 0.1)) ] alpha alpha)"
         ;
         //::std::string code = "(def x a (+ a a)) (+ (x 5) 1)";

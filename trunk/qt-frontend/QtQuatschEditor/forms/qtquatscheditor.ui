@@ -549,6 +549,11 @@
             <string>Cosine</string>
            </property>
           </item>
+          <item>
+           <property name="text">
+            <string>Noise2d</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item>

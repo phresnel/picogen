@@ -19,13 +19,35 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "kallisto/common.hh"
-#include <QtGui/QApplication>
-#include <qtquatscheditor.hh>
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    QtQuatschEditor w;
-    w.show();
-    return a.exec();
-}
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+
+#ifdef AMALGAM
+#include "../../../quatsch/quatsch.hh"
+#include "../../../quatsch/frontend/jux.hh"
+#include "../../../quatsch/frontend/juxdef.hh"
+#include "../../../quatsch/backend/est/backend.hh"
+#include "../../../quatsch/backend/est/backenddef.hh"
+#include "../../../quatsch/configurable-functions/noise2ddef.hh"
+#else
+#include "quatsch/quatsch.hh"
+#include "quatsch/frontend/jux.hh"
+#include "quatsch/frontend/juxdef.hh"
+#include "quatsch/backend/est/backend.hh"
+#include "quatsch/backend/est/backenddef.hh"
+#include "quatsch/configurable-functions/noise2ddef.hh"
+#endif
+
+template class quatsch::backend::est::Backend <double, const double *> ;
+template class quatsch::backend::est::Backend <float, const float *> ;
+
+template class quatsch::frontend::jux::Compiler <
+    quatsch::backend::est::Backend <float, const float *>
+>;
+
+template class quatsch::frontend::jux::Compiler <
+    quatsch::backend::est::Backend <double, const double *>
+>;

@@ -18,12 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-
 #ifdef AMALGAM
+#include "../../../kallisto/common.hh"
 #include "../../../quatsch/quatsch.hh"
 #include "../../../quatsch/frontend/jux.hh"
 #include "../../../quatsch/frontend/juxdef.hh"
@@ -31,6 +27,7 @@
 #include "../../../quatsch/backend/est/backenddef.hh"
 #include "../../../quatsch/configurable-functions/noise2ddef.hh"
 #else
+#include "kallisto/common.hh"
 #include "quatsch/quatsch.hh"
 #include "quatsch/frontend/jux.hh"
 #include "quatsch/frontend/juxdef.hh"
@@ -38,6 +35,12 @@
 #include "quatsch/backend/est/backenddef.hh"
 #include "quatsch/configurable-functions/noise2ddef.hh"
 #endif
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+
 
 template class quatsch::backend::est::Backend <double, const double *> ;
 template class quatsch::backend::est::Backend <float, const float *> ;

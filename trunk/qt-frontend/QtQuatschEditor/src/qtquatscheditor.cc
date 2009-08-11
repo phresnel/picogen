@@ -445,6 +445,11 @@ void QtQuatschEditor::displayPropertyWindow() {
                 case NodeItem::Cosine:
                         break;
 
+                case NodeItem::Noise2d:
+                        currentPropertyWidget = new Noise2d(node);
+                        ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
+                        break;
+
                 case NodeItem::MultiplyWithPi:
                         break;
                 };

@@ -21,6 +21,8 @@
 #ifndef QTQUATSCHEDITOR_HH
 #define QTQUATSCHEDITOR_HH
 
+#include "kallisto/common.hh"
+
 #include <QtGui/QWidget>
 #include <QtGui>
 #include <QtGui/QMainWindow>
@@ -29,6 +31,7 @@
 #include <userconstant.hh>
 #include <predefinedconstant.hh>
 #include <parameter.hh>
+#include <noise2d.hh>
 
 #include <edgeitem.hh>
 #include <nodeitem.hh>

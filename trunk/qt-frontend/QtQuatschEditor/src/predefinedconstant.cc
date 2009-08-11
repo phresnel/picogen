@@ -18,10 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "qtquatscheditor.hh"
 #include "predefinedconstant.hh"
 #include "ui_predefinedconstant.h"
 
-#include "qtquatscheditor.hh"
 
 PredefinedConstant::PredefinedConstant(NodeItem *node_, QWidget *parent) :
     QWidget(parent),

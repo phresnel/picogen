@@ -21,12 +21,14 @@
 //    You should have received a copy  of  the  GNU General Public License
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+#include <boost/shared_array.hpp>
+//#include <picogen/picogen.h>
+#include "kallisto/common.hh"
+
 #include <map>
 #include <vector>
 #include <string>
 
-#include <boost/shared_array.hpp>
-//#include <picogen/picogen.h>
 
 namespace quatsch {  namespace configurable_functions {
             
@@ -44,9 +46,9 @@ namespace quatsch {  namespace configurable_functions {
                 FunctionPtr vfun;
 
                 enum filter_t {
-                nearest,
-                bilinear,
-                cosine
+                        nearest,
+                        bilinear,
+                        cosine
                 };
                 filter_t filter;
 
@@ -57,9 +59,11 @@ namespace quatsch {  namespace configurable_functions {
                 unsigned int offsetLutSize;
                 scalar_t frequency;
 
-                scalar_t operator () (scalar_t x, scalar_t y, 
+                scalar_t operator () (
+                        scalar_t x, scalar_t y, 
                         scalar_t domainScale, scalar_t rangeScale, 
-                                                 unsigned int depth ) const;
+                        unsigned int depth
+                ) const;
 
         public:
             
@@ -72,25 +76,9 @@ namespace quatsch {  namespace configurable_functions {
                         return 2;
                 }
 
-                Noise2d (::std::map<std::string,std::string> &parameters, 
-                                        FunctionPtr ufun, FunctionPtr vfun);
-
                 Noise2d (::std::map<std::string,std::string>&static_parameters,
-                              ::std::vector <FunctionPtr> runtime_parameters
-                ) {
-                        
-                        ::std::cout << Noise2d::name ()
-                                    << " created with "
-                                    << runtime_parameters.size() 
-                                    << " arguments."
-                                    << std::endl;
-
-                        typename compiler_t::ConfigurableFunctionsMap addfuns;
-                        if (static_parameters ["inner"] == "inner")
-                                ::std::cout << "!!inner" << ::std::endl;
-                        if (static_parameters ["outer"] == "outer")
-                        ::std::cout << "!!outer" << ::std::endl;
-                }
+                              ::std::vector <FunctionPtr> &runtime_parameters
+                );
             
                 virtual ~Noise2d();
                 virtual scalar_t operator () (const parameters_t &) const;

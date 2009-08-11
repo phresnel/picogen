@@ -30,41 +30,48 @@
 
 namespace quatsch {  namespace configurable_functions {
 
-template <typename FUNCTION, typename COMPILER> 
+template <typename FUNCTION, typename COMPILER>
 Noise2d <FUNCTION, COMPILER> :: Noise2d (
-        std::map<std::string,std::string> &parameters, 
-        FunctionPtr ufun, FunctionPtr vfun
-)
-: ufun(ufun), vfun(vfun)
-, filter (cosine)
-, frequency (8.0)
-{
+        ::std::map<std::string,std::string>& static_parameters,
+        ::std::vector <FunctionPtr>& runtime_parameters
+) {
+        {
+                using namespace quatsch::backend::est;
+                if (runtime_parameters.size() < 2)
+                        throw insufficient_number_of_operands_exception (2);
+                if (runtime_parameters.size() > 2)
+                        throw too_many_operands_exception (2);
+
+                ufun = runtime_parameters[0];
+                vfun = runtime_parameters[1];
+        }
+
+        typename compiler_t::ConfigurableFunctionsMap addfuns;
         using namespace std;
         typedef map<string,string> Map;
 
-        unsigned int seed=42;
+        uint32_t seed=42;
 
         //====---- - - -  -   -    -      -
         // Scan Parameters.
         //====---- - - -  -   -    -      -
-        // To collect together parameter names that don't exist, 
+        // To collect together parameter names that don't exist,
         // and for dumping errors in the end.
         string nonExistantParameterNames ("");
 
-        for (Map::const_iterator it=parameters.begin() ;
-             it!=parameters.end() ;
+        for (Map::const_iterator it=static_parameters.begin() ;
+             it!=static_parameters.end() ;
              ++it
         ) {
                 const string name = it->first;
-                /// \todo Add some shorter Mnenomics.
                 if (name == string("seed")) {
-                        istringstream hmmm (parameters[name]);
+                        istringstream hmmm (static_parameters[name]);
                         hmmm >> seed;
                 } else if (name == string("frequency") ) {
-                        istringstream hmmm (parameters[name]);
+                        istringstream hmmm (static_parameters[name]);
                         hmmm >> frequency;
                 } else if (name == string("filter")) {
-                        istringstream hmmm (parameters[name]);
+                        istringstream hmmm (static_parameters[name]);
                         string filterType;
                         hmmm >> filterType;
                         if (filterType == "bilinear") {
@@ -75,16 +82,16 @@ Noise2d <FUNCTION, COMPILER> :: Noise2d (
                                 filter = cosine;
                         } else {
                                 throw general_exception (
-                                "unknown filter type for 'noisemapfilter': '" + 
-                                filterType + "' (only 'bilinear' and 'nearest'"
+                                "unknown filter type for 'noisemapfilter': '" +
+                                filterType + "' (only 'bilinear' and 'nearest' "
                                 "are supported)"
                                 );
                         }
                 } else {
-                        nonExistantParameterNames += 
+                        nonExistantParameterNames +=
                                 (nonExistantParameterNames!=""?", ":"") +
-                                string("'") + 
-                                it->first + 
+                                string("'") +
+                                it->first +
                                 string("'");
                 }
         }
@@ -96,32 +103,29 @@ Noise2d <FUNCTION, COMPILER> :: Noise2d (
 
         //====---- - - -  -   -    -      -
         // Initialise Noise.
-        //====---- - - -  -   -    -      -        
-        /*
-        using boost::shared_array;
-        ::picogen::generators::rng::MersenneTwister twister (seed);
+        //====---- - - -  -   -    -      -
+        {
+                using boost::shared_array;
+                using namespace kallisto;
+                random::MersenneTwister<float, 0, 1> mt (seed);
 
-        const unsigned int offsetLutNumBits = 8;
-        offsetLutMask = 0;
-        for (unsigned int u=0; u<offsetLutNumBits; ++u) {
-            offsetLutMask |= 1 << u;
-        }
-        offsetLutSize = offsetLutMask+1;
-        if (false) {
-            for (unsigned int i=0; i<300; ++i) {
-                std::cout << i << ":" << (i&offsetLutMask) << std::endl;
-            }
-        }
-        offsetLut = shared_array<unsigned int>(new unsigned [offsetLutSize]);
-        rngLut    = shared_array<scalar_t>(new scalar_t [offsetLutSize]);
+                const unsigned int offsetLutNumBits = 8;
+                offsetLutMask = 0;
+                for (unsigned int u=0; u<offsetLutNumBits; ++u) {
+                        offsetLutMask |= 1 << u;
+                }
+                offsetLutSize = offsetLutMask+1;
+                offsetLut = shared_array<unsigned int>(
+                                new unsigned [offsetLutSize]);
+                rngLut    = shared_array<scalar_t>(
+                                new scalar_t [offsetLutSize]);
 
-        for (unsigned int u=0; u<offsetLutSize; ++u) {
-            offsetLut [u] = static_cast<unsigned int> ((twister.randf()) * 
-                                static_cast<scalar_t> (offsetLutSize));
-            rngLut    [u] = -0.5 + 1.0 * twister.randf();
+                for (unsigned int u=0; u<offsetLutSize; ++u) {
+                        offsetLut [u] = static_cast<unsigned int> ((mt.rand()) *
+                                        static_cast<scalar_t> (offsetLutSize));
+                        rngLut    [u] = -0.5 + 1.0 * mt.rand();
+                }
         }
-        */
-        #warning "implement twister!"
 }
 
 
@@ -139,7 +143,7 @@ Noise2d <FUNCTION, COMPILER> :: ~Noise2d() {
         }
         if (0 != ufun) {
                 delete ufun;
-        }*/     
+        }*/
 }
 
 
@@ -157,28 +161,26 @@ Noise2d <FUNCTION, COMPILER> :: ~Noise2d() {
 
 namespace {
         template <typename RT, typename T> RT floor (const T &v) {
-            assert (static_cast<int>(1.75) == 1);
-            assert (static_cast<int>(1.5) == 1);
-            assert (static_cast<int>(1.25) == 1);
-            assert (static_cast<int>(-0.75) == 0);
-            assert (static_cast<int>(-0.5) == 0);
-            assert (static_cast<int>(-0.25) == 0);
-            return (RT)(int)(v<0 ? v-1 : v);
+                assert (static_cast<int>(1.75) == 1);
+                assert (static_cast<int>(1.5) == 1);
+                assert (static_cast<int>(1.25) == 1);
+                assert (static_cast<int>(-0.75) == 0);
+                assert (static_cast<int>(-0.5) == 0);
+                assert (static_cast<int>(-0.25) == 0);
+                return (RT)(int)(v<0 ? v-1 : v);
         }
 }
 
 template <typename FUNCTION, typename COMPILER>
-typename Noise2d <FUNCTION, COMPILER>::scalar_t 
+typename Noise2d <FUNCTION, COMPILER>::scalar_t
 Noise2d <FUNCTION, COMPILER>::operator () (
         const Noise2d <FUNCTION, COMPILER>::parameters_t& parameters
 ) const {
 
         using namespace std;
-::std::cout << "Noise2d::operator () called" << ::std::endl;
-        return 0.42;
-        
-        const scalar_t x = 0.5;//(*ufun) (parameters);
-        const scalar_t y = 0.5;//(*vfun) (parameters);
+
+        const scalar_t x = (*ufun) (parameters);
+        const scalar_t y = (*vfun) (parameters);
         const int depth = 0;
 
         switch (filter) {
@@ -224,7 +226,7 @@ Noise2d <FUNCTION, COMPILER>::operator () (
                     from Hugo Elias
                     http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
 
-                    -- 
+                    --
                     function Cosine_Interpolate(a, b, x)
                         ft = x * 3.1415927
                         f = (1 - cos(ft)) * .5
@@ -247,7 +249,7 @@ Noise2d <FUNCTION, COMPILER>::operator () (
 
                 const scalar_t Z = P*(1.0-pv) + Q*(pv);
                 return Z;
-        } break; 
+        } break;
         case nearest: {
                 const scalar_t         u__  = x;// - ::floor (x); // > [0..1)
                 const scalar_t         u_   = u__ * frequency;
@@ -261,7 +263,7 @@ Noise2d <FUNCTION, COMPILER>::operator () (
                 return Z;
         } break;
         }
-        
+
         return 0.0;
 }
 

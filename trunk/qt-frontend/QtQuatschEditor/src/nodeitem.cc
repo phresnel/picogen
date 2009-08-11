@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <edgeitem.hh>
 #include "nodeitem.hh"
+#include <edgeitem.hh>
 
 NodeItem::NodeItem(
         QGraphicsScene *scene,
@@ -44,6 +44,15 @@ NodeItem::NodeItem(
         setFlag(QGraphicsItem::ItemIsSelectable, true);
 
         setType (Undefined, true);
+
+
+        quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
+                new quatsch::CreateConfigurableFunction <
+                        quatsch :: configurable_functions :: Noise2d <Function, Compiler>,
+                        Function
+                >
+        );
+        addfuns.addSymbol ("Noise2d", noiseDesc);
 
         // create form elems
         /*
@@ -347,6 +356,10 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 pixmap.load(":/aggregate/cosine.n");
                 break;
 
+        case Noise2d:
+                title = "Noise2d";
+                pixmap.load(":/aggregate/noise2d.n");
+                break;
 
         case MultiplyWithPi:
                 title = "pi * ";
@@ -485,6 +498,11 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         case Cosine:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
                 painter->drawText(12,40,"cos(...)");
+                break;
+
+        case Noise2d:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"Noise2d");
                 break;
 
         case MultiplyWithPi:
@@ -642,6 +660,9 @@ void NodeItem::afterAnimationStep (qreal step) {
 
 
 NodeItem::Value NodeItem::getValue () const {
+        /*std::cout << "getValue:\nfilter: " << value.asNoise2d().filter << std::endl;
+        std::cout << "seed:   " << value.asNoise2d().seed << std::endl;
+        std::cout << "width:  " << value.asNoise2d().width << std::endl;*/
         return value;
 }
 
@@ -649,6 +670,9 @@ NodeItem::Value NodeItem::getValue () const {
 
 void NodeItem::setValue (NodeItem::Value val) {
         value = val;
+        /*std::cout << "setValue:\nfilter: " << value.asNoise2d().filter << std::endl;
+        std::cout << "seed:   " << value.asNoise2d().seed << std::endl;
+        std::cout << "width:  " << value.asNoise2d().width << std::endl;*/
         updateHeightmapMixin->updateHeightmap();
         scene()->invalidate();
 }
@@ -676,6 +700,7 @@ bool NodeItem::isTerminal () const {
         case Inverse:
         case Sine:
         case Cosine:
+        case Noise2d:
         case MultiplyWithPi:
                 return false;
         };
@@ -705,6 +730,7 @@ bool NodeItem::isAggregate () const {
         case Inverse:
         case Sine:
         case Cosine:
+        case Noise2d:
         case MultiplyWithPi:
                 return true;
         };
@@ -774,6 +800,10 @@ int NodeItem::getParameterCount (bool getMinCount) const {
         case Cosine:
                 if (getMinCount) return 1;
                 else return 1;
+
+        case Noise2d:
+                if (getMinCount) return 2;
+                else return 2;
 
         case MultiplyWithPi:
                 if (getMinCount) return 1;
@@ -853,6 +883,7 @@ void NodeItem::on_addChildNodeButton_pressed() {
 
 
 QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
+        //return "([Noise2d frequency{10} filter{nearest} seed{41}] x y)";
         JuxGeneratorState::Frame frame = state.getFrame();
         const QString indent = state.getIndendationString();
 
@@ -911,6 +942,18 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                 goto aggregate;
         case Cosine:
                 tmp = indent + "( cos\n";
+                goto aggregate;
+
+        case Noise2d:
+                tmp = indent + "( [Noise2d " +
+                      "frequency{" + QString::number(value.asNoise2d().width) + "} " +
+                      "seed{" + QString::number(value.asNoise2d().seed) + "}";
+                switch (value.asNoise2d().filter) {
+                case Value::Noise2d::Nearest: tmp += "filter{nearest}"; break;
+                case Value::Noise2d::Bilinear: tmp += "filter{bilinear}"; break;
+                case Value::Noise2d::Cosine: tmp += "filter{cosine}"; break;
+                };
+                tmp += "] \n";
                 goto aggregate;
 
         case MultiplyWithPi:

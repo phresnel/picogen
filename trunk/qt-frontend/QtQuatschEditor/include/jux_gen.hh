@@ -21,9 +21,12 @@
 #ifndef JUX_GEN_HH
 #define JUX_GEN_HH
 
-#include <quatsch/quatsch.hh>
-#include <quatsch/frontend/jux.hh>
-#include <quatsch/backend/est/backend.hh>
+#include "kallisto/common.hh"
+#include "quatsch/quatsch.hh"
+#include "quatsch/frontend/jux.hh"
+#include "quatsch/backend/est/backend.hh"
+
+#include "quatsch/configurable-functions/noise2ddef.hh"
 
 #include <QString>
 

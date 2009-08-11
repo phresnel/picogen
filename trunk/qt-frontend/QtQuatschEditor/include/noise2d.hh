@@ -18,14 +18,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "kallisto/common.hh"
-#include <QtGui/QApplication>
-#include <qtquatscheditor.hh>
+#ifndef NOISE2D_HH
+#define NOISE2D_HH
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    QtQuatschEditor w;
-    w.show();
-    return a.exec();
+#include <QtGui/QWidget>
+
+class NodeItem;
+
+namespace Ui {
+    class Noise2d;
 }
+
+class Noise2d : public QWidget {
+    Q_OBJECT
+    Q_DISABLE_COPY(Noise2d)
+public:
+    explicit Noise2d(NodeItem *node_, QWidget *parent = 0);
+    virtual ~Noise2d();
+
+protected:
+    virtual void changeEvent(QEvent *e);
+
+private:
+    Ui::Noise2d *m_ui;
+    NodeItem *node;
+
+private slots:
+    void on_filter_currentIndexChanged(int index);
+    void on_size_textChanged(QString );
+    void on_seed_textChanged(QString );
+};
+
+#endif // NOISE2D_HH

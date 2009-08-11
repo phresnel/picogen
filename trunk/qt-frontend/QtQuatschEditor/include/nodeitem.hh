@@ -44,10 +44,30 @@ public:
                 : predefinedConstant (Pi)
                 , floatConstant (0.0f)
                 , parameter ("x")
+                , noise2d ()
                 {}
 
-                PredefinedConstant asPredefinedConstant () const { return predefinedConstant; }
-                void setPredefinedConstant (PredefinedConstant val) { predefinedConstant = val; }
+                Value &operator = (Value const &val) {
+                        predefinedConstant = val.predefinedConstant;
+                        floatConstant = val.floatConstant;
+                        parameter = val.parameter;
+                        noise2d = val.noise2d;
+                        return *this;
+                }
+
+                Value (Value const &val)
+                :predefinedConstant (val.predefinedConstant)
+                ,floatConstant (val.floatConstant)
+                ,parameter (val.parameter)
+                ,noise2d (val.noise2d)
+                {
+                }
+
+                PredefinedConstant asPredefinedConstant () const
+                { return predefinedConstant; }
+
+                void setPredefinedConstant (PredefinedConstant val)
+                { predefinedConstant = val; }
 
                 float asFloatConstant () const { return floatConstant; }
                 void setFloatConstant (float val) { floatConstant = val; }
@@ -55,10 +75,39 @@ public:
                 std::string asParameter () const { return parameter; }
                 void setParameter (std::string p) { parameter = p; }
 
+
+                struct Noise2d {
+                        enum Filter { Nearest, Bilinear, Cosine };
+
+                        Filter filter;
+                        uint32_t seed;
+                        uint32_t width;
+
+                        Noise2d () : filter(Nearest), seed(42), width(16) {}
+                        Noise2d (Noise2d const&val)
+                        : filter(val.filter)
+                        , seed (val.seed)
+                        , width (val.width)
+                        {}
+
+                        Noise2d &operator = (Noise2d const &val) {
+                                filter = val.filter;
+                                seed = val.seed;
+                                width = val.width;
+                                return *this;
+                        }
+                };
+
+                Noise2d asNoise2d () const { return noise2d; }
+                void setNoise2d (Noise2d const &noise2d) {
+                        this->noise2d = noise2d;
+                }
+
         private:
                 PredefinedConstant predefinedConstant;
                 double floatConstant;
                 std::string parameter;
+                Noise2d noise2d;
         };
 
 
@@ -104,6 +153,9 @@ public:
                 // delta
 
                 // if
+
+                // [configurable]
+                Noise2d,
 
                 // mulpi
                 MultiplyWithPi

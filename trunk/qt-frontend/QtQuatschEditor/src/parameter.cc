@@ -18,10 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "qtquatscheditor.hh"
 #include "parameter.hh"
 #include "ui_parameter.h"
 
-#include "qtquatscheditor.hh"
 
 Parameter::Parameter(NodeItem *node_, QWidget *parent) :
     QWidget(parent),
