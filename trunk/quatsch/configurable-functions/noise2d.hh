@@ -21,6 +21,9 @@
 //    You should have received a copy  of  the  GNU General Public License
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef NOISE2D_HH_INCLUDED_20090813
+#define NOISE2D_HH_INCLUDED_20090813
+
 #include <boost/shared_array.hpp>
 //#include <picogen/picogen.h>
 #include "kallisto/common.hh"
@@ -34,6 +37,15 @@ namespace quatsch {  namespace configurable_functions {
             
         template <typename FUNCTION, typename COMPILER>
         class Noise2d : public FUNCTION {
+                template <typename RT, typename T> static RT floor (const T &v) {
+                        assert (static_cast<int>(1.75) == 1);
+                        assert (static_cast<int>(1.5) == 1);
+                        assert (static_cast<int>(1.25) == 1);
+                        assert (static_cast<int>(-0.75) == 0);
+                        assert (static_cast<int>(-0.5) == 0);
+                        assert (static_cast<int>(-0.25) == 0);
+                        return (RT)(int)(v<0 ? v-1 : v);
+                }
         private:
                 typedef FUNCTION function_t;            
                 typedef typename function_t::FunctionPtr  FunctionPtr;
@@ -84,3 +96,5 @@ namespace quatsch {  namespace configurable_functions {
                 virtual scalar_t operator () (const parameters_t &) const;
         };
 } }
+
+#endif // NOISE2D_HH_INCLUDED_20090813

@@ -36,6 +36,7 @@
 //#include "backend/est/backenddef.hh"
 
 #include "configurable-functions/noise2ddef.hh"
+#include "configurable-functions/layerednoise2ddef.hh"
 //template class quatsch::backend::est::Backend <double, const double *> ;
 
 // names: Quatsch, Witz, Jux
@@ -68,6 +69,12 @@ int main () {
                         Function
                 >
         );
+        quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoise2dDesc (
+                new quatsch::CreateConfigurableFunction <
+                        quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,  
+                        Function
+                >
+        );
 
     
    
@@ -82,13 +89,14 @@ int main () {
                 //"// program\n"
                 //"([Noise2d outer{outer}] ([Noise2d inner{inner}] alpha alpha) alpha)"
                 //"(lerp 0 1 0.25)"
-"([Noise2d frequency{10} filter{nearest}] x y)"
+"([LayeredNoise2d frequency{10} filter{nearest}] x y)"
                 //"([Noise2d foo() boofar((+ 0.5 0.1)) ] alpha alpha)"
         ;
         //::std::string code = "(def x a (+ a a)) (+ (x 5) 1)";
 
         Compiler::ConfigurableFunctionsMap addfuns;
         addfuns.addSymbol ("Noise2d", noiseDesc);
+        addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
 
         Compiler::FunctionPtr fun (Compiler::compile (parameters, code, addfuns, std::cerr));
         //exit(41);

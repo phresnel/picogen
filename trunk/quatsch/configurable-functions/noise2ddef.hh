@@ -21,6 +21,9 @@
 //    You should have received a copy  of  the  GNU General Public License
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef NOISE2DDEF_HH_INCLUDED_20090813
+#define NOISE2DDEF_HH_INCLUDED_20090813
+
 #include <string>
 #include <sstream>
 
@@ -51,6 +54,7 @@ Noise2d <FUNCTION, COMPILER> :: Noise2d (
         typedef map<string,string> Map;
 
         uint32_t seed=42;
+        //frequency = 
 
         //====---- - - -  -   -    -      -
         // Scan Parameters.
@@ -146,7 +150,9 @@ Noise2d <FUNCTION, COMPILER> :: ~Noise2d() {
         }*/
 }
 
-
+#ifdef LN2D_RNG
+#error
+#endif
 #define LN2D_RNG( u, v, depth ) \
         rngLut [ \
                 ((v) + offsetLut [  \
@@ -159,17 +165,6 @@ Noise2d <FUNCTION, COMPILER> :: ~Noise2d() {
                 & offsetLutMask  \
         ]
 
-namespace {
-        template <typename RT, typename T> RT floor (const T &v) {
-                assert (static_cast<int>(1.75) == 1);
-                assert (static_cast<int>(1.5) == 1);
-                assert (static_cast<int>(1.25) == 1);
-                assert (static_cast<int>(-0.75) == 0);
-                assert (static_cast<int>(-0.5) == 0);
-                assert (static_cast<int>(-0.25) == 0);
-                return (RT)(int)(v<0 ? v-1 : v);
-        }
-}
 
 template <typename FUNCTION, typename COMPILER>
 typename Noise2d <FUNCTION, COMPILER>::scalar_t
@@ -267,5 +262,9 @@ Noise2d <FUNCTION, COMPILER>::operator () (
         return 0.0;
 }
 
+#undef LN2D_RNG
+
 
 } } // namespaces
+
+#endif // NOISE2DDEF_HH_INCLUDED_20090813
