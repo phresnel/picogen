@@ -32,6 +32,7 @@
 #include <predefinedconstant.hh>
 #include <parameter.hh>
 #include <noise2d.hh>
+#include <layerednoise2d.hh>
 
 #include <edgeitem.hh>
 #include <nodeitem.hh>

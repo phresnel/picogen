@@ -258,17 +258,6 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 ui->nodePropertiesGroupBox->setEnabled(false);
 
                 updateHeightmap (0);
-
-                /*if (rootNode->isCompilable()) {
-                        QImage q = rootNode->genHeightmap(256,256);
-                        heightmap = QPixmap::fromImage(q);
-                        ui->heightmapLabel->setPixmap (heightmap);
-                } else {
-                        QImage q(256,256,QImage::Format_RGB32);
-                        q.fill(QColor(200,130,130).rgb());
-                        heightmap = QPixmap::fromImage(q);
-                        ui->heightmapLabel->setPixmap (heightmap);
-                }*/
         }
 
         displayPropertyWindow();
@@ -423,7 +412,7 @@ void QtQuatschEditor::displayPropertyWindow() {
                 case NodeItem::Negate:
                         break;
                 case NodeItem::Lerp:
-                        ui->helpText->setText(
+                        /*ui->helpText->setText(
                                 "Performs a linear interpolation between the 2nd, 3rd, n'th child. "
                                 "The <strong>1st</strong> child defines which of the other children "
                                 "are used / contribute at most."
@@ -436,7 +425,7 @@ void QtQuatschEditor::displayPropertyWindow() {
                                 "with x<sub>n</sub> being the children. "
                                 "<p>As an extension for your convenience, lerp also works with only two operands, "
                                 "in which case lerp will always select the 2nd operand."
-                        );
+                        );*/
                         break;
                 case NodeItem::Inverse:
                         break;
@@ -447,6 +436,10 @@ void QtQuatschEditor::displayPropertyWindow() {
 
                 case NodeItem::Noise2d:
                         currentPropertyWidget = new Noise2d(node);
+                        ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
+                        break;
+                case NodeItem::LayeredNoise2d:
+                        currentPropertyWidget = new LayeredNoise2d(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
                         break;
 
@@ -528,6 +521,6 @@ void QtQuatschEditor::on_asRightSiblingsChildButton_clicked() {
 
 
 
-void QtQuatschEditor::drawHeightmap3d (QImage const &heightmap) {
+void QtQuatschEditor::drawHeightmap3d (QImage const &/*heightmap*/) {
         ui->heightmapView->repaint();
 }

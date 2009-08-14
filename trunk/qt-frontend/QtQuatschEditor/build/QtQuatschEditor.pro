@@ -16,7 +16,9 @@ SOURCES += ../src/main.cpp \
     ../src/quatsch-integration.cc \
     ../src/nodeitem.cc \
     ../src/edgeitem.cc \
-    ../src/noise2d.cc
+    ../src/noise2d.cc \
+    ../src/nodelist.cc \
+    ../src/layerednoise2d.cc
 HEADERS += ../include/qtquatscheditor.hh \
     ../include/userconstant.hh \
     ../include/predefinedconstant.hh \
@@ -24,10 +26,14 @@ HEADERS += ../include/qtquatscheditor.hh \
     ../include/nodeitem.hh \
     ../include/edgeitem.hh \
     ../include/jux_gen.hh \
-    ../include/noise2d.hh
+    ../include/noise2d.hh \
+    ../include/nodelist.hh \
+    ../include/layerednoise2d.hh
 FORMS += ../forms/qtquatscheditor.ui \
     ../forms/userconstant.ui \
     ../forms/predefinedconstant.ui \
     ../forms/parameter.ui \
-    ../forms/noise2d.ui
+    ../forms/noise2d.ui \
+    ../forms/nodelist.ui \
+    ../forms/layerednoise2d.ui
 RESOURCES += ../resources/icons.qrc

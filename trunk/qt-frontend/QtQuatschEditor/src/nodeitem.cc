@@ -52,7 +52,15 @@ NodeItem::NodeItem(
                         Function
                 >
         );
+        quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoiseDesc (
+                new quatsch::CreateConfigurableFunction <
+                        quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,
+                        Function
+                >
+        );
+
         addfuns.addSymbol ("Noise2d", noiseDesc);
+        addfuns.addSymbol ("LayeredNoise2d", layeredNoiseDesc);
 
         // create form elems
         /*
@@ -360,6 +368,10 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 title = "Noise2d";
                 pixmap.load(":/aggregate/noise2d.n");
                 break;
+        case LayeredNoise2d:
+                title = "LayeredNoise2d";
+                pixmap.load(":/aggregate/layerednoise2d.n");
+                break;
 
         case MultiplyWithPi:
                 title = "pi * ";
@@ -502,7 +514,11 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
         case Noise2d:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
-                painter->drawText(12,40,"Noise2d");
+                painter->drawText(12,40,"Noise");
+                break;
+        case LayeredNoise2d:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"Layer-Noise");
                 break;
 
         case MultiplyWithPi:
@@ -701,6 +717,7 @@ bool NodeItem::isTerminal () const {
         case Sine:
         case Cosine:
         case Noise2d:
+        case LayeredNoise2d:
         case MultiplyWithPi:
                 return false;
         };
@@ -731,6 +748,7 @@ bool NodeItem::isAggregate () const {
         case Sine:
         case Cosine:
         case Noise2d:
+        case LayeredNoise2d:
         case MultiplyWithPi:
                 return true;
         };
@@ -785,7 +803,7 @@ int NodeItem::getParameterCount (bool getMinCount) const {
                 else return -1;
         case Negate:
                 if (getMinCount) return 1;
-                else return -1;
+                else return 1;
 
         case Lerp:
                 if (getMinCount) return 2;
@@ -802,6 +820,9 @@ int NodeItem::getParameterCount (bool getMinCount) const {
                 else return 1;
 
         case Noise2d:
+                if (getMinCount) return 2;
+                else return 2;
+        case LayeredNoise2d:
                 if (getMinCount) return 2;
                 else return 2;
 
@@ -952,6 +973,20 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                 case Value::Noise2d::Nearest: tmp += "filter{nearest}"; break;
                 case Value::Noise2d::Bilinear: tmp += "filter{bilinear}"; break;
                 case Value::Noise2d::Cosine: tmp += "filter{cosine}"; break;
+                };
+                tmp += "] \n";
+                goto aggregate;
+        case LayeredNoise2d:
+                tmp = indent + "( [LayeredNoise2d " +
+                      "frequency{" + QString::number(value.asLayeredNoise2d().width) + "} " +
+                      "seed{" + QString::number(value.asLayeredNoise2d().seed) + "}"
+                      "persistence{0.5}" // + QString::number(value.asNoise2d().seed) + "}"
+                      "layercount{" + QString::number(value.asLayeredNoise2d().depth) + "}"
+                ;
+                switch (value.asLayeredNoise2d().filter) {
+                case Value::LayeredNoise2d::Nearest: tmp += "filter{nearest}"; break;
+                case Value::LayeredNoise2d::Bilinear: tmp += "filter{bilinear}"; break;
+                case Value::LayeredNoise2d::Cosine: tmp += "filter{cosine}"; break;
                 };
                 tmp += "] \n";
                 goto aggregate;

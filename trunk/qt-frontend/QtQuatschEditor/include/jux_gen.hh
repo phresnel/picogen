@@ -27,6 +27,7 @@
 #include "quatsch/backend/est/backend.hh"
 
 #include "quatsch/configurable-functions/noise2ddef.hh"
+#include "quatsch/configurable-functions/layerednoise2ddef.hh"
 
 #include <QString>
 

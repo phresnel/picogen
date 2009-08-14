@@ -45,6 +45,7 @@ public:
                 , floatConstant (0.0f)
                 , parameter ("x")
                 , noise2d ()
+                , layeredNoise2d ()
                 {}
 
                 Value &operator = (Value const &val) {
@@ -52,6 +53,7 @@ public:
                         floatConstant = val.floatConstant;
                         parameter = val.parameter;
                         noise2d = val.noise2d;
+                        layeredNoise2d = val.layeredNoise2d;
                         return *this;
                 }
 
@@ -60,6 +62,7 @@ public:
                 ,floatConstant (val.floatConstant)
                 ,parameter (val.parameter)
                 ,noise2d (val.noise2d)
+                ,layeredNoise2d (val.layeredNoise2d)
                 {
                 }
 
@@ -98,9 +101,39 @@ public:
                         }
                 };
 
+                struct LayeredNoise2d {
+                        enum Filter { Nearest, Bilinear, Cosine };
+
+                        Filter filter;
+                        uint32_t seed;
+                        uint32_t width;
+                        uint32_t depth;
+
+                        LayeredNoise2d () : filter(Nearest), seed(42), width(16), depth(4) {}
+                        LayeredNoise2d (LayeredNoise2d const&val)
+                        : filter(val.filter)
+                        , seed (val.seed)
+                        , width (val.width)
+                        , depth (val.depth)
+                        {}
+
+                        LayeredNoise2d &operator = (LayeredNoise2d const &val) {
+                                filter = val.filter;
+                                seed = val.seed;
+                                width = val.width;
+                                depth = val.depth;
+                                return *this;
+                        }
+                };
+
                 Noise2d asNoise2d () const { return noise2d; }
                 void setNoise2d (Noise2d const &noise2d) {
                         this->noise2d = noise2d;
+                }
+
+                LayeredNoise2d asLayeredNoise2d () const { return layeredNoise2d; }
+                void setLayeredNoise2d (LayeredNoise2d const &layeredNoise2d) {
+                        this->layeredNoise2d = layeredNoise2d;
                 }
 
         private:
@@ -108,6 +141,7 @@ public:
                 double floatConstant;
                 std::string parameter;
                 Noise2d noise2d;
+                LayeredNoise2d layeredNoise2d;
         };
 
 
@@ -156,6 +190,7 @@ public:
 
                 // [configurable]
                 Noise2d,
+                LayeredNoise2d,
 
                 // mulpi
                 MultiplyWithPi
