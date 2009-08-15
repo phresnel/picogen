@@ -217,6 +217,8 @@ public:
 
         Value getValue () const;
         void setValue (Value val);
+        void updateHeightmap ();
+        void setEnableAutoUpdateHeightmap (bool enable);
 
         int getMinimumParameterCount () const ;
         int getMaximumParameterCount () const ;
@@ -252,6 +254,8 @@ protected:
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+
+        bool enableAutoUpdateHeightmap;
 
         Compiler::ConfigurableFunctionsMap addfuns;
 

@@ -30,11 +30,16 @@ PredefinedConstant::PredefinedConstant(NodeItem *node_, QWidget *parent) :
 {
         m_ui->setupUi(this);
 
+        node->setEnableAutoUpdateHeightmap(false);
+
         switch (node->getValue().asPredefinedConstant()) {
         case NodeItem::Value::Pi: m_ui->comboBox->setCurrentIndex(0); break;
         case NodeItem::Value::e: m_ui->comboBox->setCurrentIndex(1); break;
         };
         on_comboBox_currentIndexChanged (m_ui->comboBox->currentIndex());
+
+        node->setEnableAutoUpdateHeightmap(true);
+        node->updateHeightmap();
 }
 
 

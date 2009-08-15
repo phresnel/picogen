@@ -689,8 +689,21 @@ void NodeItem::setValue (NodeItem::Value val) {
         /*std::cout << "setValue:\nfilter: " << value.asNoise2d().filter << std::endl;
         std::cout << "seed:   " << value.asNoise2d().seed << std::endl;
         std::cout << "width:  " << value.asNoise2d().width << std::endl;*/
+        if (enableAutoUpdateHeightmap)
+                updateHeightmap();
+}
+
+
+
+void NodeItem::updateHeightmap () {
         updateHeightmapMixin->updateHeightmap();
         scene()->invalidate();
+}
+
+
+
+void NodeItem::setEnableAutoUpdateHeightmap (bool enable) {
+        enableAutoUpdateHeightmap = enable;
 }
 
 

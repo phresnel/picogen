@@ -29,7 +29,13 @@ UserConstant::UserConstant(NodeItem *node_, QWidget *parent) :
     node (node_)
 {
         m_ui->setupUi(this);
+
+        node->setEnableAutoUpdateHeightmap(false);
+
         m_ui->doubleSpinBox->setValue(node->getValue().asFloatConstant());
+
+        node->setEnableAutoUpdateHeightmap(true);
+        node->updateHeightmap();
 }
 
 UserConstant::~UserConstant() {

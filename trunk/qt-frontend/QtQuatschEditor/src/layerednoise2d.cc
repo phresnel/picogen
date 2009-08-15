@@ -31,6 +31,7 @@ LayeredNoise2d::LayeredNoise2d(NodeItem *node_, QWidget *parent) :
         m_ui->setupUi(this);
         NodeItem::Value value = node->getValue();
 
+        node->setEnableAutoUpdateHeightmap(false);
         switch (value.asLayeredNoise2d().filter) {
         case NodeItem::Value::LayeredNoise2d::Nearest:
                 m_ui->filter->setCurrentIndex(0);
@@ -55,6 +56,9 @@ LayeredNoise2d::LayeredNoise2d(NodeItem *node_, QWidget *parent) :
 
         m_ui->seed->setValue(value.asLayeredNoise2d().seed);
         on_seed_valueChanged(value.asLayeredNoise2d().seed);
+
+        node->setEnableAutoUpdateHeightmap(true);
+        node->updateHeightmap();
 }
 
 

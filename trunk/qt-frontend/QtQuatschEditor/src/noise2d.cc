@@ -33,6 +33,7 @@ Noise2d::Noise2d(NodeItem *node_, QWidget *parent) :
         m_ui->setupUi(this);
         NodeItem::Value value = node->getValue();
 
+        node->setEnableAutoUpdateHeightmap(false);
         switch (value.asNoise2d().filter) {
         case NodeItem::Value::Noise2d::Nearest:
                 m_ui->filter->setCurrentIndex(0);
@@ -54,6 +55,9 @@ Noise2d::Noise2d(NodeItem *node_, QWidget *parent) :
 
         m_ui->seed->setValue(value.asNoise2d().seed);
         on_seed_valueChanged(value.asNoise2d().seed);
+
+        node->setEnableAutoUpdateHeightmap(true);
+        node->updateHeightmap();
 }
 
 

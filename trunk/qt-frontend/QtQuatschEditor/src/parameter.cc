@@ -30,6 +30,8 @@ Parameter::Parameter(NodeItem *node_, QWidget *parent) :
 {
     m_ui->setupUi(this);
 
+    node->setEnableAutoUpdateHeightmap(false);
+
     const NodeItem::Value val = node->getValue();
     const std::string name = val.asParameter();
     if ("x" == name) {
@@ -39,6 +41,9 @@ Parameter::Parameter(NodeItem *node_, QWidget *parent) :
             m_ui->comboBox->setCurrentIndex(1);
             on_comboBox_currentIndexChanged(1);
     }
+
+    node->setEnableAutoUpdateHeightmap(true);
+    node->updateHeightmap();
 }
 
 
