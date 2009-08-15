@@ -44,9 +44,9 @@ private:
     NodeItem *node;
 
 private slots:
+    void on_size_valueChanged(int);
     void on_filter_currentIndexChanged(int index);
-    void on_size_textChanged(QString );
-    void on_seed_textChanged(QString );
+    void on_seed_valueChanged(int );
 };
 
 #endif // NOISE2D_HH

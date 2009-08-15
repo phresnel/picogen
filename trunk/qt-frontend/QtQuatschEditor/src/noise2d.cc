@@ -49,11 +49,11 @@ Noise2d::Noise2d(NodeItem *node_, QWidget *parent) :
         };
 
 
-        m_ui->size->setText(QString::number(value.asNoise2d().width));
-        on_size_textChanged(QString::number(value.asNoise2d().width));
+        m_ui->size->setValue(value.asNoise2d().width);
+        on_size_valueChanged(value.asNoise2d().width);
 
-        m_ui->seed->setText(QString::number(value.asNoise2d().seed));
-        on_seed_textChanged(QString::number(value.asNoise2d().seed));
+        m_ui->seed->setValue(value.asNoise2d().seed);
+        on_seed_valueChanged(value.asNoise2d().seed);
 }
 
 
@@ -91,20 +91,20 @@ void Noise2d::on_filter_currentIndexChanged(int index) {
 
 
 
-void Noise2d::on_size_textChanged(QString text) {
+void Noise2d::on_size_valueChanged(int val) {
         NodeItem::Value value = node->getValue();
         NodeItem::Value::Noise2d n2d = value.asNoise2d();
-        n2d.width = text.toInt();
+        n2d.width = val;
         value.setNoise2d (n2d);
         node->setValue (value);
 }
 
 
 
-void Noise2d::on_seed_textChanged(QString text) {
+void Noise2d::on_seed_valueChanged(int val) {
         NodeItem::Value value = node->getValue();
         NodeItem::Value::Noise2d n2d = value.asNoise2d();
-        n2d.seed = text.toInt();
+        n2d.seed = val;
         value.setNoise2d (n2d);
         node->setValue (value);
 }

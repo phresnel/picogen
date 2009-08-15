@@ -1,3 +1,23 @@
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Copyright (C) 2009  Sebastian Mach (*1983)
+// * mail: phresnel/at/gmail/dot/com
+// * http://phresnel.org
+// * http://picogen.org
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #include "qtquatscheditor.hh"
 #include "layerednoise2d.hh"
 #include "ui_layerednoise2d.h"
@@ -33,8 +53,8 @@ LayeredNoise2d::LayeredNoise2d(NodeItem *node_, QWidget *parent) :
         m_ui->depth->setValue(value.asLayeredNoise2d().depth);
         on_depth_valueChanged(value.asLayeredNoise2d().depth);
 
-        m_ui->seed->setText(QString::number(value.asLayeredNoise2d().seed));
-        on_seed_textChanged(QString::number(value.asLayeredNoise2d().seed));
+        m_ui->seed->setValue(value.asLayeredNoise2d().seed);
+        on_seed_valueChanged(value.asLayeredNoise2d().seed);
 }
 
 
@@ -92,10 +112,10 @@ void LayeredNoise2d::on_depth_valueChanged(int val) {
 
 
 
-void LayeredNoise2d::on_seed_textChanged(QString text) {
+void LayeredNoise2d::on_seed_valueChanged(int val) {
         NodeItem::Value value = node->getValue();
         NodeItem::Value::LayeredNoise2d n2d = value.asLayeredNoise2d();
-        n2d.seed = text.toInt();
+        n2d.seed = val;
         value.setLayeredNoise2d (n2d);
         node->setValue (value);
 }
