@@ -34,13 +34,26 @@ EditorScene::EditorScene (QtQuatschEditor *editor)
 void EditorScene::dropEvent (QGraphicsSceneDragDropEvent*) {
         if (0 != currentNodeItem) {
                 // TODO that's plain ugly
-                currentNodeItem->addChild()->setType (
-                        (NodeItem::Type)editor
-                         ->ui
-                         ->nodeTypesTreeWidget
-                         ->currentItem()
-                         ->data(0, Qt::UserRole).toInt()
-                );
+                switch (dropType) {
+                case SetType:
+                        currentNodeItem->setType (
+                                (NodeItem::Type)editor
+                                 ->ui
+                                 ->nodeTypesTreeWidget
+                                 ->currentItem()
+                                 ->data(0, Qt::UserRole).toInt()
+                        );
+                        break;
+                case AddChild:
+                        currentNodeItem->addChild()->setType (
+                                (NodeItem::Type)editor
+                                 ->ui
+                                 ->nodeTypesTreeWidget
+                                 ->currentItem()
+                                 ->data(0, Qt::UserRole).toInt()
+                        );
+                        break;
+                };
         }
         currentNodeItem = 0;
 }
@@ -50,10 +63,51 @@ void EditorScene::dragEnterEvent(QGraphicsSceneDragDropEvent*) {
 
 void EditorScene::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
         // TODO smells on the hardcode
+        const QPointF C = e->scenePos();
         if (e->source()->objectName().toStdString()=="nodeTypesTreeWidget"){
                 QGraphicsItem *graphicsItem =
-                                editor->editorScene->itemAt (e->scenePos());
+                                editor->editorScene->itemAt (C);
                 currentNodeItem = (NodeItem*)graphicsItem;
+
+                if (0 != currentNodeItem) {
+                        dropType = SetType;
+                        currentNodeItem->highlight();
+                } else {
+                        NodeItem *nearest = 0;
+                        qreal nearestDist = -1;
+
+                        typedef QList<QGraphicsItem*> ItemList;
+                        ItemList items = editor->editorScene->items();
+
+                        for (ItemList::iterator it = items.begin();
+                             it != items.end();
+                             ++it
+                        ) {
+                                NodeItem* item = dynamic_cast<NodeItem*>(*it);
+                                if (0 != item) {
+
+                                        const QRectF bb = item->sceneBoundingRect();
+                                        const QPointF diff = bb.center() - C;
+                                        const qreal dist = sqrtf (
+                                                diff.x()*diff.x()+
+                                                diff.y()*diff.y()
+                                        );
+
+                                        if (nearestDist < 0.0f
+                                          || dist < nearestDist) {
+                                                nearestDist = dist;
+                                                nearest = item;
+                                        }
+                                }
+                        }
+
+                        if (0 != nearest) {
+                                dropType = AddChild;
+                                currentNodeItem = nearest;
+                                currentNodeItem->highlight();
+                        }
+
+                }
         } else {
                 currentNodeItem = 0;
         }

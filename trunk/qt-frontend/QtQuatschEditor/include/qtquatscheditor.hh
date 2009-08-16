@@ -139,6 +139,12 @@ public:
 private:
         QtQuatschEditor *editor;
         NodeItem *currentNodeItem;
+
+        enum DropType {
+                SetType,
+                AddChild
+        };
+        DropType dropType;
 };
 
 

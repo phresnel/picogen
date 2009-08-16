@@ -216,6 +216,7 @@ public:
         void doLayout();
 
         void select();
+        void highlight (bool clearOthers=true);
 
         Value getValue () const;
         void setValue (Value val);
@@ -270,6 +271,7 @@ private:
 
         QString title;
         Type type;
+        bool isHighlighted;
 
         void afterAnimationStep (qreal step);
         float doLayout (float const base_x, float const base_y);
