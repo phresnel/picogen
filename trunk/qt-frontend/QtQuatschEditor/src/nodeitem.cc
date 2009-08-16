@@ -536,14 +536,22 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 
 
+void NodeItem::select() {
+        if (!isSelected()) {
+                scene()->clearSelection();
+                setSelected (true);
+        }
+}
+
+
+
 void NodeItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         if (event->button() != Qt::LeftButton) {
                 event->ignore();
                 return;
         }
         setCursor(Qt::ClosedHandCursor);
-        scene()->clearSelection();
-        setSelected (true);
+        select();
 }
 
 

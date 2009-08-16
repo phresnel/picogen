@@ -48,6 +48,7 @@ namespace Ui
 //class GLWidget ;
 //#include "../glwidget.h"
 class GLGraphicsScene;
+class EditorScene;
 class QtQuatschEditor : public QWidget, public UpdateHeightmapMixin
 {
         Q_OBJECT
@@ -69,6 +70,7 @@ private:
         NodeItem *rootNode;
         QWidget *currentPropertyWidget;
         GLGraphicsScene *glScene;
+        EditorScene *editorScene;
 
         void displayPropertyWindow ();
         void updateHeightmap (NodeItem *node);
@@ -91,6 +93,8 @@ private:
         {}
 
         std::map<NodeItem::Type, NodeItemDescriptor> descriptors;*/
+
+        friend class EditorScene;
 
 
 private slots:
@@ -121,6 +125,20 @@ public:
         void setCurrentNode (NodeItem *);
 private:
         NodeItem *currentNode;
+};
+
+
+class EditorScene : public QGraphicsScene {
+        Q_OBJECT
+public:
+        EditorScene (QtQuatschEditor *editor) ;
+        void dropEvent (QGraphicsSceneDragDropEvent*);
+        void dragEnterEvent(QGraphicsSceneDragDropEvent*);
+        void dragMoveEvent(QGraphicsSceneDragDropEvent*);
+        void dragLeaveEvent(QGraphicsSceneDragDropEvent*);
+private:
+        QtQuatschEditor *editor;
+        NodeItem *currentNodeItem;
 };
 
 

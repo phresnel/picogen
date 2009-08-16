@@ -26,6 +26,45 @@
 
 #include <QComboBox>
 
+
+EditorScene::EditorScene (QtQuatschEditor *editor)
+: QGraphicsScene (editor), editor(editor), currentNodeItem (0) {
+}
+
+void EditorScene::dropEvent (QGraphicsSceneDragDropEvent*) {
+        if (0 != currentNodeItem) {
+                // TODO that's plain ugly
+                currentNodeItem->addChild()->setType (
+                        (NodeItem::Type)editor
+                         ->ui
+                         ->nodeTypesTreeWidget
+                         ->currentItem()
+                         ->data(0, Qt::UserRole).toInt()
+                );
+        }
+        currentNodeItem = 0;
+}
+
+void EditorScene::dragEnterEvent(QGraphicsSceneDragDropEvent*) {
+}
+
+void EditorScene::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
+        // TODO smells on the hardcode
+        if (e->source()->objectName().toStdString()=="nodeTypesTreeWidget"){
+                QGraphicsItem *graphicsItem =
+                                editor->editorScene->itemAt (e->scenePos());
+                currentNodeItem = (NodeItem*)graphicsItem;
+        } else {
+                currentNodeItem = 0;
+        }
+}
+
+void EditorScene::dragLeaveEvent(QGraphicsSceneDragDropEvent*) {
+        currentNodeItem = 0;
+}
+
+
+
 GLGraphicsScene::GLGraphicsScene (QWidget *parent)
 : QGraphicsScene (parent), currentNode(0) {
 }
@@ -66,6 +105,43 @@ void GLGraphicsScene::setCurrentNode (NodeItem *node) {
 }
 
 
+namespace {
+struct node_t {
+        QString text;
+        QString icon;
+        NodeItem::Type type;
+
+        node_t (QString text, QString icon, NodeItem::Type type)
+        : text(text), icon(icon), type(type)
+        {}
+};
+void addCategory (QTreeWidget *tree, QString text, QString icon, std::vector<node_t> items) {
+
+        QTreeWidgetItem *cat = new QTreeWidgetItem ();
+
+        cat->setText(0, text);
+        cat->setIcon (0, QIcon (icon));
+        cat->setFlags (Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+        tree->addTopLevelItem (cat);
+
+        for (std::vector<node_t>::const_iterator it=items.begin();
+             it!=items.end();
+             ++it
+        ) {
+                QTreeWidgetItem *item = new QTreeWidgetItem();
+                item->setText (0, it->text);
+                item->setIcon (0, QIcon(it->icon));
+                item->setData (0, Qt::UserRole, QVariant(it->type));
+                item->setFlags (Qt::ItemIsSelectable
+                              | Qt::ItemIsEnabled
+                              | Qt::ItemIsDragEnabled);
+                cat->addChild(item);
+        }
+}
+
+}
+
 QtQuatschEditor::QtQuatschEditor(QWidget *parent)
     : QWidget(parent), ui(new Ui::QtQuatschEditor)
     , currentPropertyWidget (0)
@@ -94,19 +170,23 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
 
         // Graph Editor
         {
-                QGraphicsScene *scene = new QGraphicsScene (this);
-                scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-                ui->graphicsView->setScene(scene);
+                //QGraphicsScene *scene = new QGraphicsScene (this);
+                editorScene = new EditorScene (this);
+                editorScene->setItemIndexMethod(QGraphicsScene::NoIndex);
+                ui->graphicsView->setScene(editorScene);
                 ui->graphicsView->setRenderHint(QPainter::Antialiasing);
 
-                QObject::connect(scene, SIGNAL(selectionChanged()),
+                QObject::connect(editorScene, SIGNAL(selectionChanged()),
                   this, SLOT(on_graphicsScene_selectionChanged()));
 
-                this->rootNode = new NodeItem (scene, this, 0, 0);
+                /*QObject::connect(ui->graphicsView, SIGNAL(dropEvent(QGraphicsSceneDragDropEvent*)),
+                  this, SLOT(on_graphicsScene_dropEvent(QDropEvent*)));*/
+
+                this->rootNode = new NodeItem (editorScene, this, 0, 0);
 
                 rootNode->doLayout();
 
-                QRectF rect = scene->itemsBoundingRect();
+                QRectF rect = editorScene->itemsBoundingRect();
                 ui->graphicsView->setSceneRect(rect);
                 ui->graphicsView->show();
         }
@@ -125,6 +205,40 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
         {
                 heightmap = QPixmap (256,256);
                 ui->heightmapLabel->setPixmap(heightmap);
+        }
+
+        // Node Types Tree Widget
+        {
+                QTreeWidget *t = ui->nodeTypesTreeWidget;
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("Parameter", ":/aggregate/parameter", NodeItem::Parameter));
+                        items.push_back(node_t ("User Constant", ":/aggregate/userconstant", NodeItem::UserConstant));
+                        items.push_back(node_t ("Predefined Constant", ":/aggregate/predefinedconstant", NodeItem::PredefinedConstant));
+                        addCategory(t, "Terminal", ":/aggregate/terminal", items);
+                }
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("Addition", ":/aggregate/addition", NodeItem::Addition ));
+                        items.push_back(node_t ("Subtraction", ":/aggregate/subtraction", NodeItem::Subtraction ));
+                        items.push_back(node_t ("Multiplication", ":/aggregate/multiplication", NodeItem::Multiplication ));
+                        items.push_back(node_t ("Division", ":/aggregate/division", NodeItem::Division ));
+                        items.push_back(node_t ("Exponentiate", ":/aggregate/exponentiate", NodeItem::Exponentiate ));
+                        items.push_back(node_t ("Minimize", ":/aggregate/minimize", NodeItem::Minimize ));
+                        items.push_back(node_t ("Maximize", ":/aggregate/maximize", NodeItem::Maximize ));
+                        items.push_back(node_t ("Negate", ":/aggregate/negate", NodeItem::Negate ));
+
+                        addCategory(t, "Basic", ":/aggregate/multiplication", items);
+                }
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("Noise", ":/aggregate/noise", NodeItem::Noise2d));
+                        items.push_back(node_t ("Layer-Noise", ":/aggregate/layernoise", NodeItem::LayeredNoise2d));
+                        addCategory(t, "Complex", ":/aggregate/complex", items);
+                }
         }
 
         on_graphicsScene_selectionChanged();

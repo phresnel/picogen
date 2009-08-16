@@ -215,6 +215,8 @@ public:
         NodeItem* insertRightSibling ();
         void doLayout();
 
+        void select();
+
         Value getValue () const;
         void setValue (Value val);
         void updateHeightmap ();
