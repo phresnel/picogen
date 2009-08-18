@@ -22,6 +22,7 @@
 #define QTQUATSCHEDITOR_HH
 
 #include "kallisto/common.hh"
+#include "redshift/include/tuple.hh"
 
 #include <QtGui/QWidget>
 #include <QtGui>
@@ -49,8 +50,11 @@ namespace Ui
 //#include "../glwidget.h"
 class GLGraphicsScene;
 class EditorScene;
-class QtQuatschEditor : public QWidget, public UpdateHeightmapMixin
-{
+class QtQuatschEditor;
+
+
+
+class QtQuatschEditor : public QWidget, public UpdateHeightmapMixin {
         Q_OBJECT
 
 public:
@@ -75,6 +79,16 @@ private:
         void displayPropertyWindow ();
         void updateHeightmap (NodeItem *node);
         void drawHeightmap3d (QImage const &heightmap);
+
+
+        enum DropType {
+                SetType,
+                AddChild,
+                InsertLeftSibling,
+                InsertRightSibling
+        };
+        redshift::tuple<NodeItem *, QtQuatschEditor::DropType>
+                findDropNode (QPointF const &point) const;
 
         QPixmap heightmap;
 
@@ -115,6 +129,8 @@ private slots:
 };
 
 
+
+
 class GLGraphicsScene : public QGraphicsScene {
         Q_OBJECT
 public:
@@ -128,6 +144,7 @@ private:
 };
 
 
+
 class EditorScene : public QGraphicsScene {
         Q_OBJECT
 public:
@@ -137,15 +154,9 @@ public:
         void dragMoveEvent(QGraphicsSceneDragDropEvent*);
         void dragLeaveEvent(QGraphicsSceneDragDropEvent*);
 private:
+        QtQuatschEditor::DropType dropType;
         QtQuatschEditor *editor;
         NodeItem *currentNodeItem;
-
-        enum DropType {
-                SetType,
-                AddChild
-        };
-        DropType dropType;
 };
-
 
 #endif // QTQUATSCHEDITOR_HH

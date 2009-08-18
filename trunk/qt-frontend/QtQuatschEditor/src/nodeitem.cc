@@ -432,40 +432,35 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 }
         }
 
-        if (isHighlighted) {
-                {
-                        const QColor col = painter->pen().color().toRgb();
-                        const int
-                                r_ = col.red()+col.red()/2,
-                                r = r_<0?0:r_>255?255:r_,
-                                g_ = col.green()+col.green()/2,
-                                g = g_<0?0:g_>255?255:g_,
-                                b_ = col.blue()+col.blue()/2,
-                                b = b_<0?0:b_>255?255:b_
-                        ;
-                        painter->setPen(QPen(QColor(r,g,b), 2));
-                }
-                {
-                        const QColor col = painter->brush().color().toRgb();
-                        const int
-                                r_ = col.red()+col.red()/4,
-                                r = r_<0?0:r_>255?255:r_,
-                                g_ = col.green()+col.green()/4,
-                                g = g_<0?0:g_>255?255:g_,
-                                b_ = col.blue()+col.blue()/4,
-                                b = b_<0?0:b_>255?255:b_
-                        ;
-                        painter->setBrush(QBrush(QColor(r,g,b)));
-                }
-        }
-
         painter->drawRoundedRect(this->boundingRect(), 5.0, 5.0);
-        painter->setPen(QPen(Qt::white, 2));
-
         painter->drawPixmap(
             boundingRect().width() - static_cast<float>(pixmap.width()*0.5f),
             boundingRect().height()*0.5-static_cast<float>(pixmap.height()/2),
             pixmap);
+
+
+        if (isHighlighted) {
+                painter->setPen(QPen(Qt::white, 2));
+                painter->setBrush(QBrush(QColor(192,192,240)));
+
+                QRectF rect = this->boundingRect();
+                switch (highlightRegion) {
+                case Complete:
+                        break;
+                case Right:
+                        rect.setLeft(rect.right()-10.0f);
+                        break;
+                case Top:
+                        rect.setBottom(rect.top()+10.0f);
+                        break;
+                case Bottom:
+                        rect.setTop(rect.bottom()-10.0f);
+                        break;
+                };
+                painter->drawRoundedRect(rect,5.0f,5.0f);
+        }
+
+        painter->setPen(QPen(Qt::white, 2));
 
         painter->drawText(0,10,title);
 
@@ -573,7 +568,7 @@ void NodeItem::select() {
 
 
 
-void NodeItem::highlight (bool clearOthers) {
+void NodeItem::highlight(HighlightRegion region, bool clearOthers) {
         if (clearOthers) {
                 typedef QList<QGraphicsItem*> ItemList;
                 ItemList items = scene()->items();
@@ -589,6 +584,28 @@ void NodeItem::highlight (bool clearOthers) {
                 }
         }
         isHighlighted = true;
+        highlightRegion = region;
+        scene()->invalidate();
+}
+
+
+
+void NodeItem::clearHighlight (bool clearOthers) {
+        if (clearOthers) {
+                typedef QList<QGraphicsItem*> ItemList;
+                ItemList items = scene()->items();
+
+                for (ItemList::iterator it = items.begin();
+                     it != items.end();
+                     ++it
+                ) {
+                        NodeItem *item = dynamic_cast<NodeItem*>(*it);
+                        if (0 != item) {
+                                item->isHighlighted = false;
+                        }
+                }
+        }
+        isHighlighted = false;
         scene()->invalidate();
 }
 

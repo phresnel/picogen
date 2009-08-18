@@ -25,7 +25,6 @@
 #include <list>
 #include <QtGui>
 
-
 class UpdateHeightmapMixin {
 public:
         virtual void updateHeightmap () = 0;
@@ -216,7 +215,15 @@ public:
         void doLayout();
 
         void select();
-        void highlight (bool clearOthers=true);
+
+        enum HighlightRegion {
+                Complete,
+                Top,
+                Bottom,
+                Right
+        };
+        void highlight (HighlightRegion, bool clearOthers=true);
+        void clearHighlight (bool clearOthers=true);
 
         Value getValue () const;
         void setValue (Value val);
@@ -272,6 +279,7 @@ private:
         QString title;
         Type type;
         bool isHighlighted;
+        HighlightRegion highlightRegion;
 
         void afterAnimationStep (qreal step);
         float doLayout (float const base_x, float const base_y);
