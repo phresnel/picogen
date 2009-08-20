@@ -85,7 +85,7 @@ public:
                         uint32_t seed;
                         uint32_t width;
 
-                        Noise2d () : filter(Nearest), seed(42), width(16) {}
+                        Noise2d () : filter(Cosine), seed(42), width(16) {}
                         Noise2d (Noise2d const&val)
                         : filter(val.filter)
                         , seed (val.seed)
@@ -108,7 +108,7 @@ public:
                         uint32_t width;
                         uint32_t depth;
 
-                        LayeredNoise2d () : filter(Nearest), seed(42), width(16), depth(4) {}
+                        LayeredNoise2d () : filter(Cosine), seed(42), width(16), depth(4) {}
                         LayeredNoise2d (LayeredNoise2d const&val)
                         : filter(val.filter)
                         , seed (val.seed)
@@ -232,6 +232,8 @@ public:
 
         int getMinimumParameterCount () const ;
         int getMaximumParameterCount () const ;
+        bool hasDefaultParameters () const ;
+        QString getDefaultParameters () const;
 
         bool isChildCountOkay () const ;
         int getMissingChildrenCount () const ;
@@ -277,7 +279,6 @@ private:
         //QWidget *propertyWidget;
 
         QString title;
-        Type type;
         bool isHighlighted;
         HighlightRegion highlightRegion;
 
@@ -290,6 +291,8 @@ private:
 
         // relatives
         NodeItem *parent, *root;
+
+        Type type;
 
 
         UpdateHeightmapMixin *updateHeightmapMixin;

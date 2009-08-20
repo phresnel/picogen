@@ -61,6 +61,7 @@ void EditorScene::dropEvent (QGraphicsSceneDragDropEvent*) {
                  ->data(0, Qt::UserRole).toInt()
         );
 
+        currentNodeItem->select();
         currentNodeItem->clearHighlight();
         currentNodeItem = 0;
 }
@@ -388,6 +389,31 @@ void QtQuatschEditor::wheelEvent(QWheelEvent* wheel) {
 
 
 
+void QtQuatschEditor::on_swapWith3dPreview_clicked() {
+        /*QWidget *ob = ui->graphicsView->parentWidget();
+        ui->graphicsView->setParent(ui->heightmapView->parentWidget());
+        ui->heightmapView->setParent(ob);*/
+        /*QGraphicsScene *tmp = ui->graphicsView->scene();
+        ui->graphicsView->setScene(ui->heightmapView->scene());
+        ui->heightmapView->setScene(tmp);*/
+        /*QLayout *tmp = ui->graphicsView->layout();
+        ui->graphicsView->setLayout(ui->heightmapView->layout());
+        ui->heightmapView->setLayout(tmp);*/
+        /*QLayoutItem *tmp = ui->previewLayout->itemAt(0);
+        ui->previewLayout->rem*/
+        /*
+        QLayoutItem *a = ui->previewFrame->layout()->itemAt(0);
+        QLayoutItem *b = ui->editorFrame->layout()->itemAt(0);
+
+        ui->previewFrame->layout()->removeItem(a);
+        ui->editorFrame->layout()->removeItem(b);
+        ui->previewFrame->layout()->addItem(b);
+        ui->editorFrame->layout()->addItem(a);*/
+        //ui->previewFrame->set
+}
+
+
+
 void QtQuatschEditor::on_addNodeButton_clicked() {
         QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
 
@@ -482,6 +508,8 @@ void QtQuatschEditor::updateHeightmap () {
         QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
         if (1 == selected.size()) {
                 updateHeightmap (dynamic_cast<NodeItem*> (selected [0]));
+        } else {
+                updateHeightmap (0);
         }
 }
 

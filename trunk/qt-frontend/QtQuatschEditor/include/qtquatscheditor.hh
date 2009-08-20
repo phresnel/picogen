@@ -112,6 +112,7 @@ private:
 
 
 private slots:
+        void on_swapWith3dPreview_clicked();
         void on_asRightSiblingsChildButton_clicked();
         void on_asLeftSiblingsChildButton_clicked();
         void on_asParentsSiblingButton_clicked();

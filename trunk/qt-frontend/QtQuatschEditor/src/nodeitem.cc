@@ -29,7 +29,9 @@ NodeItem::NodeItem(
 )
 : /*nodeItemEvents(*this),*/ parent(parent_)
 , root(root_)
-, updateHeightmapMixin (updateHeightmapMixin_) {
+, type(Undefined)
+, updateHeightmapMixin (updateHeightmapMixin_)
+{
         scene->addItem (this);
 
         QGraphicsItemAnimation::setItem (this);
@@ -41,9 +43,10 @@ NodeItem::NodeItem(
         setToolTip("foobar!");
         setCursor(Qt::OpenHandCursor);
 
-        setFlag(QGraphicsItem::ItemIsSelectable, true);
+        setFlag (QGraphicsItem::ItemIsSelectable, true);
 
-        setType (Undefined, true);
+        setType (type, true);
+        clearHighlight();
 
 
         quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
@@ -379,6 +382,7 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 break;
         };
         //pixmap = pixmap.scaledToHeight(32);
+
         scene()->invalidate();
 }
 
@@ -424,6 +428,9 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                                 errorMessage = "needs "
                                         + QString::number(missingChildrenCount)
                                         + " more children";
+                        }
+                        if (hasDefaultParameters()) {
+                                errorMessage += " (or 0 for default)";
                         }
                 } else if (getType() == Undefined) {
                         errorMessage = "yet undefined!";
@@ -560,10 +567,8 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 
 void NodeItem::select() {
-        if (!isSelected()) {
-                scene()->clearSelection();
-                setSelected (true);
-        }
+        scene()->clearSelection();
+        setSelected (true);
 }
 
 
@@ -770,8 +775,10 @@ void NodeItem::setValue (NodeItem::Value val) {
 
 
 void NodeItem::updateHeightmap () {
-        updateHeightmapMixin->updateHeightmap();
-        scene()->invalidate();
+        if (updateHeightmapMixin)
+                updateHeightmapMixin->updateHeightmap();
+        if (scene())
+                scene()->invalidate();
 }
 
 
@@ -838,6 +845,66 @@ bool NodeItem::isAggregate () const {
         case LayeredNoise2d:
         case MultiplyWithPi:
                 return true;
+        };
+        throw NodeException ("switch() in NodeItem::isAggregate() is incomplete");
+}
+
+
+
+bool NodeItem::hasDefaultParameters () const {
+        switch (getType()) {
+        case PredefinedConstant:
+        case UserConstant:
+        case Parameter:
+        case Undefined:
+        case Addition:
+        case Subtraction:
+        case Multiplication:
+        case Division:
+        case Exponentiate:
+        case Minimize:
+        case Maximize:
+        case Negate:
+        case Lerp:
+        case Inverse:
+        case Sine:
+        case Cosine:
+        case MultiplyWithPi:
+                return false;
+
+        case Noise2d:
+        case LayeredNoise2d:
+                return true;
+        };
+        throw NodeException ("switch() in NodeItem::isAggregate() is incomplete");
+}
+
+
+
+QString NodeItem::getDefaultParameters () const {
+        switch (getType()) {
+        case PredefinedConstant:
+        case UserConstant:
+        case Parameter:
+        case Undefined:
+        case Addition:
+        case Subtraction:
+        case Multiplication:
+        case Division:
+        case Exponentiate:
+        case Minimize:
+        case Maximize:
+        case Negate:
+        case Lerp:
+        case Inverse:
+        case Sine:
+        case Cosine:
+        case MultiplyWithPi:
+                return false;
+
+        case Noise2d:
+        case LayeredNoise2d:
+                return "x y";
         };
         throw NodeException ("switch() in NodeItem::isAggregate() is incomplete");
 }
@@ -925,6 +992,8 @@ int NodeItem::getParameterCount (bool getMinCount) const {
 bool NodeItem::isChildCountOkay () const {
         if (isTerminal() && children.size() == 0)
                 return true;
+        if (hasDefaultParameters() && children.size() == 0)
+                return true;
         if (isAggregate()) {
                 const int
                         minpc = getMinimumParameterCount(),
@@ -959,10 +1028,15 @@ bool NodeItem::areChildrenCompilable () const {
 int NodeItem::getMissingChildrenCount () const {
         if (isAggregate()) {
                 const int cs = static_cast<int>(children.size());
+
+                if (hasDefaultParameters() && cs == 0)
+                        return 0;
+
                 if (-1 != getMinimumParameterCount()
                 &&  cs < getMinimumParameterCount()) {
                         return getMinimumParameterCount() - cs;
                 }
+
                 if (-1 != getMaximumParameterCount()
                 && cs > getMaximumParameterCount()) {
                         return getMaximumParameterCount() - cs;
@@ -1084,7 +1158,9 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                 goto aggregate;
         aggregate:
 
-                for (std::list<NodeItem*>::const_iterator it=children.begin();
+                if (hasDefaultParameters() && children.size() == 0) {
+                       tmp += getDefaultParameters();
+                } else for (std::list<NodeItem*>::const_iterator it=children.begin();
                      it != children.end();
                      ++it
                 ) {

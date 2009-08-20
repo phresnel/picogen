@@ -99,47 +99,8 @@
    <locale language="English" country="UnitedKingdom"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="1">
-    <widget class="QGraphicsView" name="graphicsView">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="styleSheet">
-      <string>QGraphicsView {
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
-             stop:0 rgb(108, 128, 108), 
-             stop:1 rgb(118, 118, 118));
-     border: 2px solid gray;
-     border-radius: 5px;
-     margin-top: 1ex; /* leave space at the top for the title */
- }
-</string>
-     </property>
-     <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
-     </property>
-     <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
-     </property>
-     <property name="renderHints">
-      <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
-     </property>
-     <property name="dragMode">
-      <enum>QGraphicsView::ScrollHandDrag</enum>
-     </property>
-     <property name="transformationAnchor">
-      <enum>QGraphicsView::AnchorUnderMouse</enum>
-     </property>
-     <property name="resizeAnchor">
-      <enum>QGraphicsView::AnchorUnderMouse</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="7" rowspan="2">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item row="1" column="8" rowspan="3">
+    <layout class="QVBoxLayout" name="editorLayout_">
      <property name="sizeConstraint">
       <enum>QLayout::SetMaximumSize</enum>
      </property>
@@ -620,7 +581,7 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="1">
+   <item row="3" column="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="heightmapLabel">
@@ -669,7 +630,7 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0" rowspan="2">
+   <item row="1" column="0" rowspan="3">
     <widget class="QScrollArea" name="scrollArea_2">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
@@ -752,6 +713,45 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="1" column="2" rowspan="2">
+    <widget class="QGraphicsView" name="graphicsView">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string>QGraphicsView {
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
+             stop:0 rgb(108, 128, 108), 
+             stop:1 rgb(118, 118, 118));
+     border: 2px solid gray;
+     border-radius: 5px;
+     margin-top: 1ex; /* leave space at the top for the title */
+ }
+</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="renderHints">
+      <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
+     </property>
+     <property name="dragMode">
+      <enum>QGraphicsView::ScrollHandDrag</enum>
+     </property>
+     <property name="transformationAnchor">
+      <enum>QGraphicsView::AnchorUnderMouse</enum>
+     </property>
+     <property name="resizeAnchor">
+      <enum>QGraphicsView::AnchorUnderMouse</enum>
+     </property>
     </widget>
    </item>
   </layout>
