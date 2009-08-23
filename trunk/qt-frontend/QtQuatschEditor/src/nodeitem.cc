@@ -472,6 +472,34 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 title = "Lerp";
                 pixmap.load(":/aggregate/lerp.n");
                 break;
+        case NodeItem::And:
+                title = "And";
+                pixmap.load(":/aggregate/and.n");
+                break;
+        case NodeItem::Or:
+                title = "Or";
+                pixmap.load(":/aggregate/or.n");
+                break;
+        case NodeItem::Not:
+                title = "Not";
+                pixmap.load(":/aggregate/not.n");
+                break;
+        case NodeItem::LessThan:
+                title = "LessThan";
+                pixmap.load(":/aggregate/lessthan.n");
+                break;
+        case NodeItem::LessThanOrEqual:
+                title = "LessThanOrEqual";
+                pixmap.load(":/aggregate/lessthanorequal.n");
+                break;
+        case NodeItem::GreaterThan:
+                title = "GreaterThan";
+                pixmap.load(":/aggregate/greaterthan.n");
+                break;
+        case NodeItem::GreaterThanOrEqual:
+                title = "GreaterThanOrEqual";
+                pixmap.load(":/aggregate/greaterthanorequal.n");
+                break;
         case Inverse:
                 title = "1 / ...";
                 pixmap.load(":/aggregate/inverse.n");
@@ -646,6 +674,34 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         case Lerp:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40,"h = (1-f)*x + f*y");
+                break;
+        case NodeItem::And:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "And");
+                break;
+        case NodeItem::Or:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "Or");
+                break;
+        case NodeItem::Not:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "Not");
+                break;
+        case NodeItem::LessThan:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "x<y<...");
+                break;
+        case NodeItem::LessThanOrEqual:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "x<=y<= ...");
+                break;
+        case NodeItem::GreaterThan:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "x>y>...");
+                break;
+        case NodeItem::GreaterThanOrEqual:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "x>=y>=...");
                 break;
         case Inverse:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
@@ -1040,6 +1096,13 @@ bool NodeItem::isTerminal () const {
         case Maximize:
         case Negate:
         case Lerp:
+        case NodeItem::And:
+        case NodeItem::Or:
+        case NodeItem::Not:
+        case NodeItem::LessThan:
+        case NodeItem::LessThanOrEqual:
+        case NodeItem::GreaterThan:
+        case NodeItem::GreaterThanOrEqual:
         case Inverse:
         case Sine:
         case Cosine:
@@ -1071,6 +1134,13 @@ bool NodeItem::isAggregate () const {
         case Maximize:
         case Negate:
         case Lerp:
+        case And:
+        case Or:
+        case Not:
+        case LessThan:
+        case LessThanOrEqual:
+        case GreaterThan:
+        case GreaterThanOrEqual:
         case Inverse:
         case Sine:
         case Cosine:
@@ -1099,6 +1169,13 @@ bool NodeItem::hasDefaultParameters () const {
         case Maximize:
         case Negate:
         case Lerp:
+        case And:
+        case Or:
+        case Not:
+        case LessThan:
+        case LessThanOrEqual:
+        case GreaterThan:
+        case GreaterThanOrEqual:
         case Inverse:
         case Sine:
         case Cosine:
@@ -1129,6 +1206,13 @@ QString NodeItem::getDefaultParameters () const {
         case Maximize:
         case Negate:
         case Lerp:
+        case And:
+        case Or:
+        case Not:
+        case LessThan:
+        case LessThanOrEqual:
+        case GreaterThan:
+        case GreaterThanOrEqual:
         case Inverse:
         case Sine:
         case Cosine:
@@ -1193,6 +1277,28 @@ int NodeItem::getParameterCount (bool getMinCount) const {
                 else return 1;
 
         case Lerp:
+                if (getMinCount) return 2;
+                else return -1;
+
+        case And:
+                if (getMinCount) return 2;
+                else return -1;
+        case Or:
+                if (getMinCount) return 2;
+                else return -1;
+        case Not:
+                if (getMinCount) return 1;
+                else return 1;
+        case LessThan:
+                if (getMinCount) return 2;
+                else return -1;
+        case LessThanOrEqual:
+                if (getMinCount) return 2;
+                else return -1;
+        case GreaterThan:
+                if (getMinCount) return 2;
+                else return -1;
+        case GreaterThanOrEqual:
                 if (getMinCount) return 2;
                 else return -1;
 
@@ -1347,6 +1453,28 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
 
         case Lerp:
                 tmp = indent + "( lerp \n";
+                goto aggregate;
+
+        case And:
+                tmp = indent + "( and \n";
+                goto aggregate;
+        case Or:
+                tmp = indent + "( or \n";
+                goto aggregate;
+        case Not:
+                tmp = indent + "( not \n";
+                goto aggregate;
+        case LessThan:
+                tmp = indent + "( < \n";
+                goto aggregate;
+        case LessThanOrEqual:
+                tmp = indent + "( <= \n";
+                goto aggregate;
+        case GreaterThan:
+                tmp = indent + "( > \n";
+                goto aggregate;
+        case GreaterThanOrEqual:
+                tmp = indent + "( >= \n";
                 goto aggregate;
 
         case Inverse:

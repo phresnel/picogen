@@ -497,6 +497,41 @@
           </item>
           <item>
            <property name="text">
+            <string>And</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Or</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Not</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Less-Than (&lt;)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Less-Than-Or-Equal (&lt;=)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Greater-Than (&gt;)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Greater-Than-Or-Equal (&gt;=)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>Inverse</string>
            </property>
           </item>

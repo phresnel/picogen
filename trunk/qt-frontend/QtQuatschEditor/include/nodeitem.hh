@@ -180,15 +180,21 @@ public:
                 Maximize,
                 Negate,
 
-                // and or not
-                //And,
-                //Or,
-                //Not,
-
                 // lerp
                 Lerp,
 
+                // and or not
+                And,
+                Or,
+                Not,
+
                 // < <= > >= = !=
+                LessThan,
+                LessThanOrEqual,
+                GreaterThan,
+                GreaterThanOrEqual,
+                //Equal,
+                //NotEqual,
 
                 // [] ]] ][ [[
 

@@ -67,6 +67,15 @@ void EditorScene::dropEvent (QGraphicsSceneDragDropEvent*) {
 }
 
 void EditorScene::dragEnterEvent(QGraphicsSceneDragDropEvent*) {
+        QList<QGraphicsItem*> selected =
+                        editor->ui->graphicsView->scene()->selectedItems();
+        for (QList<QGraphicsItem*>::iterator it = selected.begin();
+             it != selected.end();
+             ++it
+        ) {
+                if (*it != (QGraphicsItem*)this)
+                        (*it)->setSelected (false);
+        }
 }
 
 void EditorScene::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
@@ -275,8 +284,35 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
                         items.push_back(node_t ("Minimize", ":/aggregate/minimize", NodeItem::Minimize ));
                         items.push_back(node_t ("Maximize", ":/aggregate/maximize", NodeItem::Maximize ));
                         items.push_back(node_t ("Negate", ":/aggregate/negate", NodeItem::Negate ));
+                        items.push_back(node_t ("Lerp", ":/aggregate/lerp", NodeItem::Lerp));
 
                         addCategory(t, "Basic", ":/aggregate/multiplication", items);
+                }
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("Inverse", ":/aggregate/inverse", NodeItem::Inverse));
+                        items.push_back(node_t ("Sine", ":/aggregate/sine", NodeItem::Sine));
+                        items.push_back(node_t ("Cosine", ":/aggregate/cosine", NodeItem::Cosine));
+
+                        addCategory(t, "Non-Linear", ":/aggregate/cosine", items);
+                }
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("And", ":/aggregate/and", NodeItem::And));
+                        items.push_back(node_t ("Or", ":/aggregate/or", NodeItem::Or));
+                        items.push_back(node_t ("Not", ":/aggregate/not", NodeItem::Not));
+                        addCategory(t, "Boolean", ":/aggregate/boolean", items);
+                }
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("Less-Than", ":/aggregate/lessthan", NodeItem::LessThan));
+                        items.push_back(node_t ("Less-Than-Or-Equal", ":/aggregate/lessthanorequal", NodeItem::LessThanOrEqual));
+                        items.push_back(node_t ("Greater-Than", ":/aggregate/greaterthan", NodeItem::GreaterThan));
+                        items.push_back(node_t ("Greater-Than-Or-Equal", ":/aggregate/greaterthanorequal", NodeItem::GreaterThanOrEqual));
+                        addCategory(t, "Relation (Comparison)", ":/aggregate/relation", items);
                 }
 
                 {
@@ -670,6 +706,20 @@ void QtQuatschEditor::displayPropertyWindow() {
                                 "<p>As an extension for your convenience, lerp also works with only two operands, "
                                 "in which case lerp will always select the 2nd operand."
                         );*/
+                        break;
+                case NodeItem::And:
+                        break;
+                case NodeItem::Or:
+                        break;
+                case NodeItem::Not:
+                        break;
+                case NodeItem::LessThan:
+                        break;
+                case NodeItem::LessThanOrEqual:
+                        break;
+                case NodeItem::GreaterThan:
+                        break;
+                case NodeItem::GreaterThanOrEqual:
                         break;
                 case NodeItem::Inverse:
                         break;
