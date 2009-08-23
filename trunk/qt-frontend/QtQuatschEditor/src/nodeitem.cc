@@ -24,6 +24,7 @@
 NodeItem::NodeItem(
         QGraphicsScene *scene,
         UpdateHeightmapMixin *updateHeightmapMixin_,
+        FindDropNodeMixin *findDropNodeMixin_,
         NodeItem *parent_,
         NodeItem *root_
 )
@@ -31,6 +32,7 @@ NodeItem::NodeItem(
 , root(root_)
 , type(Undefined)
 , updateHeightmapMixin (updateHeightmapMixin_)
+, findDropNodeMixin (findDropNodeMixin_)
 {
         scene->addItem (this);
 
@@ -44,48 +46,34 @@ NodeItem::NodeItem(
         setCursor(Qt::OpenHandCursor);
 
         setFlag (QGraphicsItem::ItemIsSelectable, true);
+        //setFlag (QGraphicsItem::ItemIsMovable, true);
 
         setType (type, true);
         clearHighlight();
 
 
-        quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
-                new quatsch::CreateConfigurableFunction <
-                        quatsch :: configurable_functions :: Noise2d <Function, Compiler>,
-                        Function
-                >
-        );
-        quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoiseDesc (
-                new quatsch::CreateConfigurableFunction <
-                        quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,
-                        Function
-                >
-        );
+        typedef quatsch::ICreateConfigurableFunction<Function> ccf;
+        typedef ccf::ConfigurableFunctionDescriptionPtr ccf_ptr;
+
+        ccf_ptr
+                noiseDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch::configurable_functions::Noise2d <
+                                        Function, Compiler>,
+                                Function
+                        >
+                ),
+                layeredNoiseDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch::configurable_functions::LayeredNoise2d<
+                                        Function, Compiler>,
+                                Function
+                        >
+                )
+        ;
 
         addfuns.addSymbol ("Noise2d", noiseDesc);
         addfuns.addSymbol ("LayeredNoise2d", layeredNoiseDesc);
-
-        // create form elems
-        /*
-        layout = new QGridLayout;
-
-        form = new QWidget;
-        form->setLayout(layout);
-
-        addChildNodeButton = new QPushButton;
-        layout->addWidget(addChildNodeButton, 1, 3);
-
-        addLeftSiblingNodeButton = new QPushButton;
-        layout->addWidget(addLeftSiblingNodeButton, 0, 2);
-
-        addRightSiblingNodeButton = new QPushButton;
-        layout->addWidget(addRightSiblingNodeButton, 2, 2);
-
-        graphicsProxyWidget = scene->addWidget(form);
-        graphicsProxyWidget->setZValue(2.0);
-
-        QObject::connect(addChildNodeButton, SIGNAL(clicked(bool)),
-             &nodeItemEvents, SLOT(on_addChildNodeButton_pressed()));*/
 }
 
 
@@ -121,19 +109,140 @@ void NodeItem::die () {
 
 
 
+void NodeItem::asChildOf (NodeItem *newParent) {
+        if (newParent == parent) {
+                doLayout();
+                return;
+        }
+
+        parent->children.remove(this);
+        newParent->children.push_back(this);
+
+        for (std::list<EdgeItem*>::iterator it=parent->edges.begin();
+             it!=parent->edges.end();
+             ++it
+        ) {
+                if ((*it)->isConnectedTo(parent)
+                 && (*it)->isConnectedTo(this)
+                ) {
+                        parent->edges.remove(*it);
+                        delete *it;
+                        break;
+                }
+        }
+
+        parent = newParent;
+
+        parent->edges.push_back(new EdgeItem (parent, this));
+        scene()->addItem(parent->edges.back());
+
+        doLayout();
+}
+
+
+
+void NodeItem::asLeftSiblingOf(NodeItem *sibl) {
+
+        /*if (sibl->parent == parent) {
+                moveUp();
+                return;
+        }*/
+
+        NodeItem *newParent = sibl->parent;
+        if (newParent == 0)
+                return;
+
+        parent->children.remove(this);
+        std::list<NodeItem*>::iterator insertPos =
+                find (newParent->children.begin(),
+                      newParent->children.end(),
+                      sibl);
+
+        newParent->children.insert(insertPos, this);
+
+
+        for (std::list<EdgeItem*>::iterator it=parent->edges.begin();
+             it!=parent->edges.end();
+             ++it
+        ) {
+                if ((*it)->isConnectedTo(parent)
+                 && (*it)->isConnectedTo(this)
+                ) {
+                        parent->edges.remove(*it);
+                        delete *it;
+                        break;
+                }
+        }
+
+        parent = newParent;
+
+        parent->edges.push_back(new EdgeItem (parent, this));
+        scene()->addItem(parent->edges.back());
+
+        doLayout();
+}
+
+
+
+void NodeItem::asRightSiblingOf(NodeItem *sibl) {
+
+        /*if (sibl->parent == parent) {
+                moveDown();
+                return;
+        }*/
+
+        NodeItem *newParent = sibl->parent;
+        if (newParent == 0)
+                return;
+
+        parent->children.remove(this);
+        std::list<NodeItem*>::iterator insertPos =
+                ++find (newParent->children.begin(),
+                      newParent->children.end(),
+                      sibl);
+
+        newParent->children.insert(insertPos, this);
+
+        for (std::list<EdgeItem*>::iterator it=parent->edges.begin();
+             it!=parent->edges.end();
+             ++it
+        ) {
+                if ((*it)->isConnectedTo(parent)
+                 && (*it)->isConnectedTo(this)
+                ) {
+                        parent->edges.remove(*it);
+                        delete *it;
+                        break;
+                }
+        }
+
+        parent = newParent;
+
+        parent->edges.push_back(new EdgeItem (parent, this));
+        scene()->addItem(parent->edges.back());
+
+        doLayout();
+}
+
+
+
 void NodeItem::moveUp () {
         if (0 != parent) {
                 std::list<NodeItem*>::iterator a =
-                        find (parent->children.begin(), parent->children.end(), this);
+                        find (parent->children.begin(),
+                              parent->children.end(),
+                              this);
                 std::list<NodeItem*>::iterator b =
-                        --find (parent->children.begin(), parent->children.end(), this);
+                        --find (parent->children.begin(),
+                                parent->children.end(),
+                                this);
                 if (b != parent->children.end()) {
                         NodeItem *tmp = *a;
                         *a = *b;
                         *b = tmp;
-                        doLayout();
                 }
         }
+        doLayout();
 }
 
 
@@ -141,16 +250,20 @@ void NodeItem::moveUp () {
 void NodeItem::moveDown () {
         if (0 != parent) {
                 std::list<NodeItem*>::iterator a =
-                        find (parent->children.begin(), parent->children.end(), this);
+                        find (parent->children.begin(),
+                              parent->children.end(),
+                              this);
                 std::list<NodeItem*>::iterator b =
-                        ++find (parent->children.begin(), parent->children.end(), this);
+                        ++find (parent->children.begin(),
+                                parent->children.end(),
+                                this);
                 if (b != parent->children.end()) {
                         NodeItem *tmp = *a;
                         *a = *b;
                         *b = tmp;
-                        doLayout();
                 }
         }
+        doLayout();
 }
 
 
@@ -199,7 +312,9 @@ void NodeItem::asLeftSiblingsChild () {
                         parent->children.remove(this);
                         (*leftSibling)->children.push_back(this);
 
-                        for (std::list<EdgeItem*>::iterator it=parent->edges.begin();
+                        typedef std::list<EdgeItem*>::iterator edge_item_it;
+
+                        for (edge_item_it it=parent->edges.begin();
                              it!=parent->edges.end();
                              ++it
                         ) {
@@ -212,7 +327,8 @@ void NodeItem::asLeftSiblingsChild () {
                                 }
                         }
 
-                        (*leftSibling)->edges.push_back(new EdgeItem ((*leftSibling), this));
+                        (*leftSibling)->edges.push_back(
+                                        new EdgeItem ((*leftSibling), this));
                         scene()->addItem((*leftSibling)->edges.back());
 
                         parent = *leftSibling;
@@ -233,7 +349,8 @@ void NodeItem::asRightSiblingsChild () {
                         parent->children.remove(this);
                         (*leftSibling)->children.push_back(this);
 
-                        for (std::list<EdgeItem*>::iterator it=parent->edges.begin();
+                        typedef std::list<EdgeItem*>::iterator ei_it;
+                        for (ei_it it=parent->edges.begin();
                              it!=parent->edges.end();
                              ++it
                         ) {
@@ -246,7 +363,8 @@ void NodeItem::asRightSiblingsChild () {
                                 }
                         }
 
-                        (*leftSibling)->edges.push_back(new EdgeItem ((*leftSibling), this));
+                        (*leftSibling)->edges.push_back(
+                                        new EdgeItem ((*leftSibling), this));
                         scene()->addItem((*leftSibling)->edges.back());
 
                         parent = *leftSibling;
@@ -567,8 +685,17 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 
 void NodeItem::select() {
-        scene()->clearSelection();
         setSelected (true);
+
+        // clear all selections but our own
+        QList<QGraphicsItem*> selected = scene()->selectedItems();
+        for (QList<QGraphicsItem*>::iterator it = selected.begin();
+             it != selected.end();
+             ++it
+        ) {
+                if (*it != (QGraphicsItem*)this)
+                        (*it)->setSelected (false);
+        }
 }
 
 
@@ -617,19 +744,49 @@ void NodeItem::clearHighlight (bool clearOthers) {
 
 
 void NodeItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-        if (event->button() != Qt::LeftButton) {
+        if (event->button() == Qt::LeftButton) {
+                setCursor(Qt::ClosedHandCursor);
+                select();
+                dragMouseCenterOffset = pos() - event->scenePos();
+        } else {
                 event->ignore();
-                return;
         }
-        setCursor(Qt::ClosedHandCursor);
-        select();
 }
 
 
 
 void NodeItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-        Q_UNUSED(event)
+        using redshift::tuple;
+        using redshift::get;
+
         setCursor(Qt::ClosedHandCursor);
+
+        // all but root node are draggable
+        if (0 != parent) {
+                move ((event->scenePos() + dragMouseCenterOffset) - scenePos());
+                tuple<NodeItem*,DropType> drop =
+                                findDropNodeMixin->findDropNode(
+                                      event->scenePos(),
+                                      this);
+
+                NodeItem *item = get<0>(drop);
+                DropType type = get<1>(drop);
+
+                if (0 != item) switch (type) {
+                case SetType:
+                        item->highlight (Complete, true);
+                        break;
+                case AddChild:
+                        item->highlight (Right, true);
+                        break;
+                case InsertLeftSibling:
+                        item->highlight (Top, true);
+                        break;
+                case InsertRightSibling:
+                        item->highlight (Bottom, true);
+                        break;
+                };
+        }
         scene()->invalidate();
 }
 
@@ -638,7 +795,58 @@ void NodeItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 void NodeItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
         Q_UNUSED(event)
         setCursor(Qt::OpenHandCursor);
+
+        clearHighlight(true);
+
+        if (0 != parent) {
+                using redshift::tuple;
+                using redshift::get;
+
+                tuple<NodeItem*,DropType> drop =
+                                findDropNodeMixin->findDropNode(
+                                      event->scenePos(),
+                                      this);
+
+                NodeItem *item = get<0>(drop);
+                DropType type = get<1>(drop);
+
+                if (0 != item) switch (type) {
+                case SetType:
+                        //std::cout << "none" << std::endl;
+                        doLayout();
+                        break;
+                case AddChild:
+                        //std::cout << "add child" << std::endl;
+                        asChildOf (item);
+                        break;
+                case InsertLeftSibling:
+                        //std::cout << "as left sibl" << std::endl;
+                        asLeftSiblingOf (item);
+                        break;
+                case InsertRightSibling:
+                        //std::cout << "as right sibl" << std::endl;
+                        asRightSiblingOf (item);
+                        break;
+                };
+        }
+
         scene()->invalidate();
+}
+
+
+
+void NodeItem::updateEdgeItems () {
+        for (std::list<EdgeItem*>::iterator it = edges.begin();
+             it != edges.end();
+             ++it)
+                (*it)->update();
+
+        if (0 != parent) {
+                for (std::list<EdgeItem*>::iterator it = parent->edges.begin();
+                     it != parent->edges.end();
+                     ++it)
+                        (*it)->update();
+        }
 }
 
 
@@ -649,7 +857,9 @@ NodeItem* NodeItem::addChild (NodeItem *sibling, bool after, QPointF pos) {
             !after
               ? std::find (children.begin(), children.end(), sibling)
               : ++std::find (children.begin(), children.end(), sibling),
-            new NodeItem(scene(), updateHeightmapMixin, this, parent == 0 ? this: root)
+            new NodeItem(scene(),
+                         updateHeightmapMixin, findDropNodeMixin,
+                         this, parent == 0 ? this: root)
         );
         if (pos != QPointF())
                 newItem->setPos (pos);
@@ -681,6 +891,29 @@ NodeItem* NodeItem::insertRightSibling () {
 
 
 
+void NodeItem::move (QPointF const &ofs) {
+        move (ofs.x(), ofs.y());
+}
+
+
+
+void NodeItem::move (float ofs_x, float ofs_y) {
+        using std::list;
+        setPos (scenePos() + QPointF (ofs_x, ofs_y));
+        updateEdgeItems();
+        QRectF rect = scene()->itemsBoundingRect();
+        scene()->views()[0]->setSceneRect(rect);
+
+        for (list<NodeItem*>::iterator it=children.begin();
+             it != children.end();
+             ++it
+        ) {
+                (*it)->move (ofs_x, ofs_y);
+        }
+}
+
+
+
 void NodeItem::doLayout() {
         if (0==parent) {
                 doLayout(0.0f, 0.0f);
@@ -699,7 +932,7 @@ float NodeItem::doLayout (float const base_x, float const base_y) {
                 width = boundingRect().width(),
                 height = boundingRect().height(),
                 e_x = 70.00f,
-                e_y = 40.00f
+                e_y = 60.00f
         ;
 
         std::vector<float> yankees;

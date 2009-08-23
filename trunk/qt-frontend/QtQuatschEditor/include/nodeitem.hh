@@ -21,16 +21,34 @@
 #ifndef NODEITEM_HH
 #define NODEITEM_HH
 
+#include "kallisto/common.hh"
+#include "redshift/include/tuple.hh"
+
 #include <jux_gen.hh>
 #include <list>
 #include <QtGui>
+
+class EdgeItem;
+class NodeItem;
 
 class UpdateHeightmapMixin {
 public:
         virtual void updateHeightmap () = 0;
 };
 
-class EdgeItem;
+enum DropType {
+        SetType,
+        AddChild,
+        InsertLeftSibling,
+        InsertRightSibling
+};
+
+class FindDropNodeMixin {
+public:
+        virtual redshift::tuple<NodeItem *, DropType>
+          findDropNode (QPointF const &point, NodeItem *exclude=0) const = 0;
+};
+
 class NodeItem : public QGraphicsItem, QGraphicsItemAnimation {
 public:
         class Value {
@@ -195,13 +213,14 @@ public:
                 MultiplyWithPi
         };
 
+
         Type getType() const ;
         void setType(Type, bool forceReInit = false) ;
 
         bool isRootItem () const ;
 
         //NodeItem(NodeItem const &rhs) ;
-        NodeItem(QGraphicsScene *scene, UpdateHeightmapMixin *updateHeightmapMixin, NodeItem *parent, NodeItem *root);
+        NodeItem(QGraphicsScene *scene, UpdateHeightmapMixin *updateHeightmapMixin, FindDropNodeMixin *findDropNodeMixin, NodeItem *parent, NodeItem *root);
         virtual ~NodeItem();
 
         //NodeItem &operator = (NodeItem const &rhs) ;
@@ -248,6 +267,9 @@ public:
         void asParentsSibling () ;
         void asLeftSiblingsChild () ;
         void asRightSiblingsChild () ;
+        void asLeftSiblingOf (NodeItem *sibl);
+        void asRightSiblingOf (NodeItem *sibl);
+        void asChildOf (NodeItem *sibl);
         void die () ;
         void swap (NodeItem &rhs) ;
 
@@ -266,7 +288,7 @@ protected:
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-
+        QPointF dragMouseCenterOffset;
         bool enableAutoUpdateHeightmap;
 
         Compiler::ConfigurableFunctionsMap addfuns;
@@ -284,34 +306,18 @@ private:
 
         void afterAnimationStep (qreal step);
         float doLayout (float const base_x, float const base_y);
+        void move (float ofs_x, float ofs_y);
+        void move (QPointF const &ofs);
+        void updateEdgeItems ();
 
         std::list<NodeItem*> children;
         std::list<EdgeItem*> edges;
         QTimeLine timer;
-
-        // relatives
         NodeItem *parent, *root;
-
         Type type;
-
-
         UpdateHeightmapMixin *updateHeightmapMixin;
-
-
+        FindDropNodeMixin *findDropNodeMixin;
         QPixmap pixmap;
-
-        // buttonsbbb
-        /*
-        QWidget *form;
-        QGridLayout *layout;
-        QPushButton *addChildNodeButton;
-        QPushButton *addLeftSiblingNodeButton;
-        QPushButton *addRightSiblingNodeButton;
-        QGraphicsProxyWidget *graphicsProxyWidget;
-
-        friend class NodeItemEventsGlue;
-        NodeItemEventsGlue nodeItemEvents;*/
-
 
         class NodeException: public std::exception {
         public:

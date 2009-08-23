@@ -54,7 +54,11 @@ class QtQuatschEditor;
 
 
 
-class QtQuatschEditor : public QWidget, public UpdateHeightmapMixin {
+class QtQuatschEditor
+: public QWidget
+, public UpdateHeightmapMixin
+, public FindDropNodeMixin
+{
         Q_OBJECT
 
 public:
@@ -81,14 +85,8 @@ private:
         void drawHeightmap3d (QImage const &heightmap);
 
 
-        enum DropType {
-                SetType,
-                AddChild,
-                InsertLeftSibling,
-                InsertRightSibling
-        };
-        redshift::tuple<NodeItem *, QtQuatschEditor::DropType>
-                findDropNode (QPointF const &point) const;
+        redshift::tuple<NodeItem *, DropType>
+                findDropNode (QPointF const &point, NodeItem *exclude) const;
 
         QPixmap heightmap;
 
@@ -155,7 +153,7 @@ public:
         void dragMoveEvent(QGraphicsSceneDragDropEvent*);
         void dragLeaveEvent(QGraphicsSceneDragDropEvent*);
 private:
-        QtQuatschEditor::DropType dropType;
+        DropType dropType;
         QtQuatschEditor *editor;
         NodeItem *currentNodeItem;
 };

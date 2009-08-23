@@ -38,16 +38,16 @@ void EditorScene::dropEvent (QGraphicsSceneDragDropEvent*) {
 
         NodeItem *child;
         switch (dropType) {
-        case QtQuatschEditor::SetType:
+        case SetType:
                 child = currentNodeItem;
                 break;
-        case QtQuatschEditor::AddChild:
+        case AddChild:
                 child = currentNodeItem->addChild();
                 break;
-        case QtQuatschEditor::InsertLeftSibling:
+        case InsertLeftSibling:
                 child = currentNodeItem->insertLeftSibling();
                 break;
-        case QtQuatschEditor::InsertRightSibling:
+        case InsertRightSibling:
                 child = currentNodeItem->insertRightSibling();
                 break;
         };
@@ -76,23 +76,23 @@ void EditorScene::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
         // TODO smells on the hardcode
         const QPointF C = e->scenePos();
         if (e->source()->objectName().toStdString()=="nodeTypesTreeWidget"){
-                tuple<NodeItem*, QtQuatschEditor::DropType>
-                        nearest = editor->findDropNode(C);
+                tuple<NodeItem*, DropType>
+                        nearest = editor->findDropNode(C,0);
                 if (0 != get<0>(nearest)) {
                         dropType = get<1>(nearest);
                         currentNodeItem = get<0>(nearest);
 
                         switch (get<1>(nearest)) {
-                        case QtQuatschEditor::AddChild:
+                        case AddChild:
                                 currentNodeItem->highlight(NodeItem::Right);
                                 break;
-                        case QtQuatschEditor::InsertLeftSibling:
+                        case InsertLeftSibling:
                                 currentNodeItem->highlight(NodeItem::Top);
                                 break;
-                        case QtQuatschEditor::InsertRightSibling:
+                        case InsertRightSibling:
                                 currentNodeItem->highlight(NodeItem::Bottom);
                                 break;
-                        case QtQuatschEditor::SetType:
+                        case SetType:
                                 currentNodeItem->highlight(NodeItem::Complete);
                                 break;
                         };
@@ -228,7 +228,7 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
                 /*QObject::connect(ui->graphicsView, SIGNAL(dropEvent(QGraphicsSceneDragDropEvent*)),
                   this, SLOT(on_graphicsScene_dropEvent(QDropEvent*)));*/
 
-                this->rootNode = new NodeItem (editorScene, this, 0, 0);
+                this->rootNode = new NodeItem (editorScene, this, this, 0, 0);
 
                 rootNode->doLayout();
 
@@ -298,14 +298,14 @@ QtQuatschEditor::~QtQuatschEditor() {
 
 
 
-redshift::tuple<NodeItem *, QtQuatschEditor::DropType>
- QtQuatschEditor::findDropNode (QPointF const &C)
+redshift::tuple<NodeItem *, DropType>
+ QtQuatschEditor::findDropNode (QPointF const &C, NodeItem *exclude)
  const {
         using redshift::make_tuple;
 
         QGraphicsItem *graphicsItem = editorScene->itemAt (C);
         NodeItem* nearest = dynamic_cast<NodeItem*>(graphicsItem);
-        if (0 != nearest) {
+        if (0 != nearest && nearest != exclude) {
                 return make_tuple (nearest, SetType);
         }
 
@@ -318,7 +318,10 @@ redshift::tuple<NodeItem *, QtQuatschEditor::DropType>
              ++it
         ) {
                 NodeItem* item = dynamic_cast<NodeItem*>(*it);
-                if (0 != item && C.x() >= item->sceneBoundingRect().left()) {
+                if (0 != item
+                    && item != exclude
+                    && C.x() >= item->sceneBoundingRect().left()
+                ) {
                         const QRectF bb = item->sceneBoundingRect();
                         const QPointF diff = bb.center() - C;
                         const qreal dist = sqrtf (
