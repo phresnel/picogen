@@ -280,7 +280,7 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
                         items.push_back(node_t ("Subtraction", ":/aggregate/subtraction", NodeItem::Subtraction ));
                         items.push_back(node_t ("Multiplication", ":/aggregate/multiplication", NodeItem::Multiplication ));
                         items.push_back(node_t ("Division", ":/aggregate/division", NodeItem::Division ));
-                        items.push_back(node_t ("Exponentiate", ":/aggregate/exponentiate", NodeItem::Exponentiate ));
+                        items.push_back(node_t ("Absolute", ":/aggregate/absolute", NodeItem::Absolute));
                         items.push_back(node_t ("Minimize", ":/aggregate/minimize", NodeItem::Minimize ));
                         items.push_back(node_t ("Maximize", ":/aggregate/maximize", NodeItem::Maximize ));
                         items.push_back(node_t ("Negate", ":/aggregate/negate", NodeItem::Negate ));
@@ -291,11 +291,28 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("Inverse", ":/aggregate/inverse", NodeItem::Inverse));
                         items.push_back(node_t ("Sine", ":/aggregate/sine", NodeItem::Sine));
                         items.push_back(node_t ("Cosine", ":/aggregate/cosine", NodeItem::Cosine));
 
+                        items.push_back(node_t ("Exponentiate (x^y)", ":/aggregate/exponentiate", NodeItem::Exponentiate ));
+                        items.push_back(node_t ("Exponentiate (exp(x))", ":/aggregate/exp", NodeItem::Exp));
+                        items.push_back(node_t ("SquareRoot", ":/aggregate/sqrt", NodeItem::Sqrt));
+
+                        items.push_back(node_t ("Inverse", ":/aggregate/inverse", NodeItem::Inverse));
+
+                        items.push_back(node_t ("Logarithm", ":/aggregate/log", NodeItem::Log));
+                        items.push_back(node_t ("Logarithm_10", ":/aggregate/log10", NodeItem::Log10));
+
                         addCategory(t, "Non-Linear", ":/aggregate/cosine", items);
+                }
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("Floor", ":/aggregate/floor", NodeItem::Floor));
+                        items.push_back(node_t ("Truncate", ":/aggregate/truncate", NodeItem::Truncate));
+                        items.push_back(node_t ("Fractional", ":/aggregate/fractional", NodeItem::Fractional));
+
+                        addCategory(t, "Fractions & Integers", ":/aggregate/cosine", items);
                 }
 
                 {
@@ -303,16 +320,18 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
                         items.push_back(node_t ("And", ":/aggregate/and", NodeItem::And));
                         items.push_back(node_t ("Or", ":/aggregate/or", NodeItem::Or));
                         items.push_back(node_t ("Not", ":/aggregate/not", NodeItem::Not));
-                        addCategory(t, "Boolean", ":/aggregate/boolean", items);
-                }
 
-                {
-                        std::vector<node_t> items;
                         items.push_back(node_t ("Less-Than", ":/aggregate/lessthan", NodeItem::LessThan));
                         items.push_back(node_t ("Less-Than-Or-Equal", ":/aggregate/lessthanorequal", NodeItem::LessThanOrEqual));
                         items.push_back(node_t ("Greater-Than", ":/aggregate/greaterthan", NodeItem::GreaterThan));
                         items.push_back(node_t ("Greater-Than-Or-Equal", ":/aggregate/greaterthanorequal", NodeItem::GreaterThanOrEqual));
-                        addCategory(t, "Relation (Comparison)", ":/aggregate/relation", items);
+                        addCategory(t, "Relation & Logical", ":/aggregate/relation", items);
+                }
+
+                {
+                        std::vector<node_t> items;
+                        items.push_back(node_t ("If-Then-Else", ":/aggregate/ifthenelse", NodeItem::IfThenElse));
+                        addCategory(t, "Control Flow", ":/aggregate/controlflow", items);
                 }
 
                 {
@@ -726,6 +745,27 @@ void QtQuatschEditor::displayPropertyWindow() {
                 case NodeItem::Sine:
                         break;
                 case NodeItem::Cosine:
+                        break;
+
+                case NodeItem::Floor:
+                        break;
+                case NodeItem::Absolute:
+                        break;
+                case NodeItem::Truncate:
+                        break;
+                case NodeItem::Fractional:
+                        break;
+
+                case NodeItem::Sqrt:
+                        break;
+                case NodeItem::Log:
+                        break;
+                case NodeItem::Log10:
+                        break;
+                case NodeItem::Exp:
+                        break;
+
+                case NodeItem::IfThenElse:
                         break;
 
                 case NodeItem::Noise2d:

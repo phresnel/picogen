@@ -547,7 +547,52 @@
           </item>
           <item>
            <property name="text">
+            <string>Floor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Absolute</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Truncation</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Fractional</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sqrt</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Log</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Log10</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Exp</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>Noise</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>IfThenElse</string>
            </property>
           </item>
           <item>

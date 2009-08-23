@@ -204,12 +204,21 @@ public:
                 Cosine,
 
                 // floor abs trunc frac
+                Floor,
+                Absolute,
+                Truncate,
+                Fractional,
 
                 // sqrt log log10 exp
+                Sqrt,
+                Log,
+                Log10,
+                Exp,
 
                 // delta
 
                 // if
+                IfThenElse,
 
                 // [configurable]
                 Noise2d,

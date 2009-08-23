@@ -453,7 +453,7 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 pixmap.load(":/aggregate/division.n");
                 break;
         case Exponentiate:
-                title = "Exponentiate";
+                title = "Exponentiate (x^y)";
                 pixmap.load(":/aggregate/exponentiate.n");
                 break;
         case Minimize:
@@ -511,6 +511,45 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
         case Cosine:
                 title = "cos(...)";
                 pixmap.load(":/aggregate/cosine.n");
+                break;
+
+        case Floor:
+                title = "floor";
+                pixmap.load(":/aggregate/floor.n");
+                break;
+        case Absolute:
+                title = "absolute";
+                pixmap.load(":/aggregate/absolute.n");
+                break;
+        case Truncate:
+                title = "truncate";
+                pixmap.load(":/aggregate/truncate.n");
+                break;
+        case Fractional:
+                title = "fractional";
+                pixmap.load(":/aggregate/fractional.n");
+                break;
+
+        case NodeItem::Sqrt:
+                title = "fractional";
+                pixmap.load(":/aggregate/sqrt.n");
+                break;
+        case NodeItem::Log:
+                title = "Logarithm";
+                pixmap.load(":/aggregate/log.n");
+                break;
+        case NodeItem::Log10:
+                title = "Logarithm_10";
+                pixmap.load(":/aggregate/log10.n");
+                break;
+        case NodeItem::Exp:
+                title = "Exponentiate (exp(x))";
+                pixmap.load(":/aggregate/exp.n");
+                break;
+
+        case IfThenElse:
+                title = "IfThenElse";
+                pixmap.load(":/aggregate/ifthenelse.n");
                 break;
 
         case Noise2d:
@@ -714,6 +753,45 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         case Cosine:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
                 painter->drawText(12,40,"cos(...)");
+                break;
+
+        case Floor:
+                painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
+                painter->drawText(10,40, "floor(x)");
+                break;
+        case Absolute:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"abs(x)");
+                break;
+        case Truncate:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"trunc(x)");
+                break;
+        case Fractional:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"frac(x)");
+                break;
+
+        case NodeItem::Sqrt:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"sqrt(x)");
+                break;
+        case NodeItem::Log:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"log(x)");
+                break;
+        case NodeItem::Log10:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"log_10(x)");
+                break;
+        case NodeItem::Exp:
+                painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
+                painter->drawText(12,40,"exp(x)");
+                break;
+
+        case IfThenElse:
+                painter->setFont(QFont(QFont().family(), 7, QFont::Black, true));
+                painter->drawText(12,40,"if(x) then(y) else(z)");
                 break;
 
         case Noise2d:
@@ -1096,16 +1174,25 @@ bool NodeItem::isTerminal () const {
         case Maximize:
         case Negate:
         case Lerp:
-        case NodeItem::And:
-        case NodeItem::Or:
-        case NodeItem::Not:
-        case NodeItem::LessThan:
-        case NodeItem::LessThanOrEqual:
-        case NodeItem::GreaterThan:
-        case NodeItem::GreaterThanOrEqual:
+        case And:
+        case Or:
+        case Not:
+        case LessThan:
+        case LessThanOrEqual:
+        case GreaterThan:
+        case GreaterThanOrEqual:
         case Inverse:
         case Sine:
         case Cosine:
+        case Floor:
+        case Absolute:
+        case Truncate:
+        case Fractional:
+        case Sqrt:
+        case Log:
+        case Log10:
+        case Exp:
+        case IfThenElse:
         case Noise2d:
         case LayeredNoise2d:
         case MultiplyWithPi:
@@ -1144,6 +1231,15 @@ bool NodeItem::isAggregate () const {
         case Inverse:
         case Sine:
         case Cosine:
+        case Floor:
+        case Absolute:
+        case Truncate:
+        case Fractional:
+        case Sqrt:
+        case Log:
+        case Log10:
+        case Exp:
+        case IfThenElse:
         case Noise2d:
         case LayeredNoise2d:
         case MultiplyWithPi:
@@ -1179,6 +1275,15 @@ bool NodeItem::hasDefaultParameters () const {
         case Inverse:
         case Sine:
         case Cosine:
+        case Floor:
+        case Absolute:
+        case Truncate:
+        case Fractional:
+        case Sqrt:
+        case Log:
+        case Log10:
+        case Exp:
+        case IfThenElse:
         case MultiplyWithPi:
                 return false;
 
@@ -1217,6 +1322,15 @@ QString NodeItem::getDefaultParameters () const {
         case Sine:
         case Cosine:
         case MultiplyWithPi:
+        case Floor:
+        case Absolute:
+        case Truncate:
+        case Fractional:
+        case NodeItem::Sqrt:
+        case NodeItem::Log:
+        case NodeItem::Log10:
+        case NodeItem::Exp:
+        case IfThenElse:
                 return false;
 
         case Noise2d:
@@ -1311,6 +1425,36 @@ int NodeItem::getParameterCount (bool getMinCount) const {
         case Cosine:
                 if (getMinCount) return 1;
                 else return 1;
+
+        case Floor:
+                if (getMinCount) return 1;
+                else return 1;
+        case Absolute:
+                if (getMinCount) return 1;
+                else return 1;
+        case Truncate:
+                if (getMinCount) return 1;
+                else return 1;
+        case Fractional:
+                if (getMinCount) return 1;
+                else return 1;
+
+        case Sqrt:
+                if (getMinCount) return 1;
+                else return 1;
+        case Log:
+                if (getMinCount) return 1;
+                else return 1;
+        case Log10:
+                if (getMinCount) return 1;
+                else return 1;
+        case Exp:
+                if (getMinCount) return 1;
+                else return 1;
+
+        case IfThenElse:
+                if (getMinCount) return 3;
+                else return 3;
 
         case Noise2d:
                 if (getMinCount) return 2;
@@ -1487,6 +1631,36 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                 tmp = indent + "( cos\n";
                 goto aggregate;
 
+        case Floor:
+                tmp = indent + "( floor\n";
+                goto aggregate;
+        case Absolute:
+                tmp = indent + "( abs\n";
+                goto aggregate;
+        case Truncate:
+                tmp = indent + "( trunc\n";
+                goto aggregate;
+        case Fractional:
+                tmp = indent + "( frac\n";
+                goto aggregate;
+
+        case NodeItem::Sqrt:
+                tmp = indent + "( sqrt\n";
+                goto aggregate;
+        case NodeItem::Log:
+                tmp = indent + "( log\n";
+                goto aggregate;
+        case NodeItem::Log10:
+                tmp = indent + "( log10\n";
+                goto aggregate;
+        case NodeItem::Exp:
+                tmp = indent + "( exp\n";
+                goto aggregate;
+
+        case IfThenElse:
+                tmp = indent + "(if \n";
+                goto aggregate;
+
         case Noise2d:
                 tmp = indent + "( [Noise2d " +
                       "frequency{" + QString::number(value.asNoise2d().width) + "} " +
@@ -1520,7 +1694,7 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
         aggregate:
 
                 if (hasDefaultParameters() && children.size() == 0) {
-                       tmp += getDefaultParameters();
+                       tmp += indent + getDefaultParameters();
                 } else for (std::list<NodeItem*>::const_iterator it=children.begin();
                      it != children.end();
                      ++it
