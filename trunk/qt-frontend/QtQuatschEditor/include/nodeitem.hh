@@ -57,12 +57,21 @@ public:
                         Pi, e
                 };
 
+                enum ScaleOffsetMode {
+                        disable,
+                        scale_offset,
+                        offset_scale
+                };
+
                 Value ()
                 : predefinedConstant (Pi)
                 , floatConstant (0.0f)
                 , parameter ("x")
                 , noise2d ()
                 , layeredNoise2d ()
+                , scaleOffsetMode (disable)
+                , scale (1.0f)
+                , offset (0.0f)
                 {}
 
                 Value &operator = (Value const &val) {
@@ -71,15 +80,21 @@ public:
                         parameter = val.parameter;
                         noise2d = val.noise2d;
                         layeredNoise2d = val.layeredNoise2d;
+                        scaleOffsetMode = val.scaleOffsetMode;
+                        scale = val.scale;
+                        offset = val.offset;
                         return *this;
                 }
 
                 Value (Value const &val)
-                :predefinedConstant (val.predefinedConstant)
-                ,floatConstant (val.floatConstant)
-                ,parameter (val.parameter)
-                ,noise2d (val.noise2d)
-                ,layeredNoise2d (val.layeredNoise2d)
+                : predefinedConstant (val.predefinedConstant)
+                , floatConstant (val.floatConstant)
+                , parameter (val.parameter)
+                , noise2d (val.noise2d)
+                , layeredNoise2d (val.layeredNoise2d)
+                , scaleOffsetMode (val.scaleOffsetMode)
+                , scale (val.scale)
+                , offset (val.offset)
                 {
                 }
 
@@ -153,12 +168,34 @@ public:
                         this->layeredNoise2d = layeredNoise2d;
                 }
 
+                double getScale () const {
+                        return scale;
+                }
+                void setScale (double scale) {
+                        this->scale = scale;
+                }
+                double getOffset () const {
+                        return offset;
+                }
+                void setOffset (double offset) {
+                        this->offset = offset;
+                }
+                ScaleOffsetMode getScaleOffsetMode () const {
+                        return scaleOffsetMode;
+                }
+                void setScaleOffsetMode (ScaleOffsetMode som) {
+                        scaleOffsetMode = som;
+                }
+
         private:
                 PredefinedConstant predefinedConstant;
                 double floatConstant;
                 std::string parameter;
                 Noise2d noise2d;
                 LayeredNoise2d layeredNoise2d;
+
+                ScaleOffsetMode scaleOffsetMode;
+                double scale, offset;
         };
 
 
@@ -304,6 +341,8 @@ protected:
 
 private:
         QPointF dragMouseCenterOffset;
+        QPoint mouseStartDragScreenPos;
+        bool isDragging;
         bool enableAutoUpdateHeightmap;
 
         Compiler::ConfigurableFunctionsMap addfuns;

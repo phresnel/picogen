@@ -527,6 +527,21 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 const NodeItem::Type type = node->getType();
                 ui->typeCombo->setCurrentIndex (type);
 
+                const NodeItem::Value value = node->getValue();
+                switch (value.getScaleOffsetMode()) {
+                case NodeItem::Value::disable:
+                        ui->scaleOffsetMode->setCurrentIndex(0);
+                        break;
+                case NodeItem::Value::offset_scale:
+                        ui->scaleOffsetMode->setCurrentIndex(1);
+                        break;
+                case NodeItem::Value::scale_offset:
+                        ui->scaleOffsetMode->setCurrentIndex(2);
+                        break;
+                };
+                ui->scale->setValue(value.getScale());
+                ui->offset->setValue(value.getOffset());
+
                 if (node->isRootItem()) {
                         ui->insertLeftSiblingButton->setEnabled (false);
                         ui->insertRightSiblingButton->setEnabled (false);
@@ -607,6 +622,68 @@ void QtQuatschEditor::on_typeCombo_currentIndexChanged(int index) {
                         return;
 
                 node->setType(static_cast<NodeItem::Type>(index));
+                updateHeightmap();
+        }
+        displayPropertyWindow();
+}
+
+
+
+void QtQuatschEditor::on_scaleOffsetMode_currentIndexChanged(int index) {
+        QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
+        if (1 == selected.size()) {
+                NodeItem* node = dynamic_cast<NodeItem*> (selected [0]);
+                if (0 == node)
+                        return;
+
+                NodeItem::Value val = node->getValue();
+                switch (index) {
+                case 0:
+                        val.setScaleOffsetMode(NodeItem::Value::disable);
+                        break;
+                case 1:
+                        val.setScaleOffsetMode(NodeItem::Value::offset_scale);
+                        break;
+                case 2:
+                        val.setScaleOffsetMode(NodeItem::Value::scale_offset);
+                        break;
+                };
+
+                node->setValue(val);
+                updateHeightmap();
+        }
+        displayPropertyWindow();
+}
+
+
+
+void QtQuatschEditor::on_offset_valueChanged(double offset) {
+        QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
+        if (1 == selected.size()) {
+                NodeItem* node = dynamic_cast<NodeItem*> (selected [0]);
+                if (0 == node)
+                        return;
+
+                NodeItem::Value val = node->getValue();
+                val.setOffset(offset);
+                node->setValue(val);
+                updateHeightmap();
+        }
+        displayPropertyWindow();
+}
+
+
+
+void QtQuatschEditor::on_scale_valueChanged(double scale) {
+        QList<QGraphicsItem*> selected = ui->graphicsView->scene()->selectedItems();
+        if (1 == selected.size()) {
+                NodeItem* node = dynamic_cast<NodeItem*> (selected [0]);
+                if (0 == node)
+                        return;
+
+                NodeItem::Value val = node->getValue();
+                val.setScale(scale);
+                node->setValue(val);
                 updateHeightmap();
         }
         displayPropertyWindow();

@@ -388,219 +388,323 @@
          <enum>QLayout::SetMinimumSize</enum>
         </property>
         <item>
-         <widget class="QComboBox" name="typeCombo">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+         <layout class="QFormLayout" name="formLayout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
           </property>
-          <property name="frame">
-           <bool>true</bool>
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
           </property>
-          <item>
-           <property name="text">
-            <string>Undefined</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/error</normaloff>:/aggregate/error</iconset>
-           </property>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="scaleOffsetMode">
+            <item>
+             <property name="text">
+              <string>Disable</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Offset, scale</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Scale, offset</string>
+             </property>
+            </item>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>Parameter</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/parameter</normaloff>:/aggregate/parameter</iconset>
-           </property>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="scale">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-100000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>User Constant</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/user-constant</normaloff>:/aggregate/user-constant</iconset>
-           </property>
+          <item row="3" column="1">
+           <widget class="QDoubleSpinBox" name="offset">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-100000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>Predefined Constant</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/predefined-constant</normaloff>:/aggregate/predefined-constant</iconset>
-           </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>Addition</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/addition</normaloff>:/aggregate/addition</iconset>
-           </property>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Scale/Offset</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>Subtraction</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/subtraction</normaloff>:/aggregate/subtraction</iconset>
-           </property>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Scale</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>Multiplication</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/multiplication</normaloff>:/aggregate/multiplication</iconset>
-           </property>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Offset</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>Division</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/aggregate/division</normaloff>:/aggregate/division</iconset>
-           </property>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="typeCombo">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>Undefined</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/error</normaloff>:/aggregate/error</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Parameter</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/parameter</normaloff>:/aggregate/parameter</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>User Constant</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/user-constant</normaloff>:/aggregate/user-constant</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Predefined Constant</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/predefined-constant</normaloff>:/aggregate/predefined-constant</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Addition</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/addition</normaloff>:/aggregate/addition</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Subtraction</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/subtraction</normaloff>:/aggregate/subtraction</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Multiplication</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/multiplication</normaloff>:/aggregate/multiplication</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Division</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../resources/icons.qrc">
+               <normaloff>:/aggregate/division</normaloff>:/aggregate/division</iconset>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Exponentiate</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Minimum</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Maximum</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Negative</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Lerp</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>And</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Or</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Not</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Less-Than (&lt;)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Less-Than-Or-Equal (&lt;=)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Greater-Than (&gt;)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Greater-Than-Or-Equal (&gt;=)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Inverse</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Sine</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cosine</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Floor</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Absolute</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Truncation</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Fractional</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Sqrt</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Log</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Log10</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Exp</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Noise</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>IfThenElse</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Layer-Noise</string>
+             </property>
+            </item>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>Exponentiate</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Minimum</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Maximum</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Negative</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Lerp</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>And</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Or</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Not</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Less-Than (&lt;)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Less-Than-Or-Equal (&lt;=)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Greater-Than (&gt;)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Greater-Than-Or-Equal (&gt;=)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Inverse</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Sine</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Cosine</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Floor</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Absolute</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Truncation</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Fractional</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Sqrt</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Log</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Log10</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Exp</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Noise</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>IfThenElse</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Layer-Noise</string>
-           </property>
-          </item>
-         </widget>
+         </layout>
         </item>
         <item>
          <widget class="QLabel" name="helpText">

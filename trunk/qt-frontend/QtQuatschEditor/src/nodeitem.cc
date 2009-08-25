@@ -790,7 +790,7 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 break;
 
         case IfThenElse:
-                painter->setFont(QFont(QFont().family(), 7, QFont::Black, true));
+                painter->setFont(QFont(QFont().family(), 12, QFont::Black, true));
                 painter->drawText(12,40,"if(x) then(y) else(z)");
                 break;
 
@@ -882,6 +882,8 @@ void NodeItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
                 setCursor(Qt::ClosedHandCursor);
                 select();
                 dragMouseCenterOffset = pos() - event->scenePos();
+                mouseStartDragScreenPos = event->screenPos();
+                isDragging = false;
         } else {
                 event->ignore();
         }
@@ -895,8 +897,17 @@ void NodeItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 
         setCursor(Qt::ClosedHandCursor);
 
+        const QPoint
+                currentScreenPos = event->screenPos(),
+                mouseMoveScreenSize = currentScreenPos - mouseStartDragScreenPos
+        ;
+        if (sqrtf (powf (mouseMoveScreenSize.x(),2.0f) +
+                   powf (mouseMoveScreenSize.y(),2.0f))
+            > 20.0f)
+                isDragging = true;
+
         // all but root node are draggable
-        if (0 != parent) {
+        if (isDragging && 0 != parent) {
                 move ((event->scenePos() + dragMouseCenterOffset) - scenePos());
                 tuple<NodeItem*,DropType> drop =
                                 findDropNodeMixin->findDropNode(
@@ -932,7 +943,7 @@ void NodeItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
         clearHighlight(true);
 
-        if (0 != parent) {
+        if (isDragging && 0 != parent) {
                 using redshift::tuple;
                 using redshift::get;
 
@@ -1554,18 +1565,35 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
 
         QString tmp;
 
+        QString prefix = "";
+        QString postfix = "";
+        switch (value.getScaleOffsetMode()) {
+        case Value::disable:
+                break;
+        case Value::scale_offset:
+                prefix = "(+ " + QString::number(value.getOffset())
+                       + " (* " + QString::number(value.getScale()) + " ";
+                postfix = "))";
+                break;
+        case Value::offset_scale:
+                prefix = "(* " + QString::number(value.getScale())
+                       + " (+ " + QString::number(value.getOffset()) + " ";
+                postfix = "))";
+                break;
+        };
+
         switch (getType()) {
         case PredefinedConstant:
                 switch (value.asPredefinedConstant()) {
-                case Value::Pi: return indent + "3.1415926535897932385/*pi*/\n";
-                case Value::e:  return indent + "2.7182818284590452355/*e*/\n";
+                case Value::Pi: return indent + prefix + "3.1415926535897932385/*pi*/" + postfix + "\n";
+                case Value::e:  return indent + prefix + "2.7182818284590452355/*e*/" + postfix + "\n";
                 };
 
         case UserConstant:
-                return indent + QString::number(value.asFloatConstant()) + "\n";
+                return indent + prefix + QString::number(value.asFloatConstant()) + postfix + "\n";
 
         case Parameter:
-                return indent + QString::fromStdString(value.asParameter()) + "\n";
+                return indent + prefix + QString::fromStdString(value.asParameter()) + postfix + "\n";
 
         case Undefined:
 
@@ -1703,7 +1731,7 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                 }
 
                 tmp += indent + ")\n";
-                return tmp;
+                return prefix + tmp + postfix;
         };
         return "<err>";
         throw NodeException ("switch() in NodeItem::genJuxCode() is incomplete");

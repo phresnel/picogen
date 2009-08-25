@@ -110,6 +110,9 @@ private:
 
 
 private slots:
+        void on_offset_valueChanged(double );
+        void on_scale_valueChanged(double );
+        void on_scaleOffsetMode_currentIndexChanged(int index);
         void on_swapWith3dPreview_clicked();
         void on_asRightSiblingsChildButton_clicked();
         void on_asLeftSiblingsChildButton_clicked();
