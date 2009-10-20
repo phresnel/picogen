@@ -23,10 +23,10 @@
 #include "userconstant.hh"
 #include "ui_userconstant.h"
 
-UserConstant::UserConstant(NodeItem *node_, QWidget *parent) :
-    QWidget(parent),
-    m_ui(new Ui::UserConstant),
-    node (node_)
+UserConstantUi::UserConstantUi(NodeItem *node_, QWidget *parent)
+: QWidget(parent)
+, m_ui(new Ui::UserConstant)
+, node (node_)
 {
         m_ui->setupUi(this);
 
@@ -38,11 +38,11 @@ UserConstant::UserConstant(NodeItem *node_, QWidget *parent) :
         node->updateHeightmap();
 }
 
-UserConstant::~UserConstant() {
+UserConstantUi::~UserConstantUi() {
         delete m_ui;
 }
 
-void UserConstant::changeEvent(QEvent *e) {
+void UserConstantUi::changeEvent(QEvent *e) {
         QWidget::changeEvent(e);
         switch (e->type()) {
         case QEvent::LanguageChange:
@@ -53,8 +53,8 @@ void UserConstant::changeEvent(QEvent *e) {
         }
 }
 
-void UserConstant::on_doubleSpinBox_valueChanged(double f) {
-        NodeItem::Value val = node->getValue();
+void UserConstantUi::on_doubleSpinBox_valueChanged(double f) {
+        NodeItemValue val = node->getValue();
         val.setFloatConstant(f);
         node->setValue (val);
 }

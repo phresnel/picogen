@@ -40,6 +40,11 @@
 
 #include <instantpreview.hh>
 
+#include <iostream>
+#include <fstream>
+
+#include <actuarius/actuarius.hh>
+
 namespace Ui
 {
     class QtQuatschEditor;
@@ -110,6 +115,8 @@ private:
 
 
 private slots:
+        void on_pushButton_clicked();
+        void on_pushButton_2_clicked();
         void on_offset_valueChanged(double );
         void on_scale_valueChanged(double );
         void on_scaleOffsetMode_currentIndexChanged(int index);

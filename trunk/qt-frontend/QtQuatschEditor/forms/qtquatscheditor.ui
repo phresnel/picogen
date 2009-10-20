@@ -689,12 +689,12 @@
             </item>
             <item>
              <property name="text">
-              <string>Noise</string>
+              <string>IfThenElse</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>IfThenElse</string>
+              <string>Noise</string>
              </property>
             </item>
             <item>
@@ -841,6 +841,20 @@
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QTreeWidget" name="nodeTypesTreeWidget">
          <property name="sizePolicy">

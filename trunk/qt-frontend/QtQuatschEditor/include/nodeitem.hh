@@ -23,6 +23,8 @@
 
 #include "kallisto/common.hh"
 #include "redshift/include/tuple.hh"
+#include "actuarius/actuarius.hh"
+#include "../../common/include/nodeitemvalue.hh"
 
 #include <jux_gen.hh>
 #include <list>
@@ -49,225 +51,17 @@ public:
           findDropNode (QPointF const &point, NodeItem *exclude=0) const = 0;
 };
 
+
+
+
+struct SerializableNodeItem;
 class NodeItem : public QGraphicsItem, QGraphicsItemAnimation {
 public:
-        class Value {
-        public:
-                enum PredefinedConstant {
-                        Pi, e
-                };
-
-                enum ScaleOffsetMode {
-                        disable,
-                        scale_offset,
-                        offset_scale
-                };
-
-                Value ()
-                : predefinedConstant (Pi)
-                , floatConstant (0.0f)
-                , parameter ("x")
-                , noise2d ()
-                , layeredNoise2d ()
-                , scaleOffsetMode (disable)
-                , scale (1.0f)
-                , offset (0.0f)
-                {}
-
-                Value &operator = (Value const &val) {
-                        predefinedConstant = val.predefinedConstant;
-                        floatConstant = val.floatConstant;
-                        parameter = val.parameter;
-                        noise2d = val.noise2d;
-                        layeredNoise2d = val.layeredNoise2d;
-                        scaleOffsetMode = val.scaleOffsetMode;
-                        scale = val.scale;
-                        offset = val.offset;
-                        return *this;
-                }
-
-                Value (Value const &val)
-                : predefinedConstant (val.predefinedConstant)
-                , floatConstant (val.floatConstant)
-                , parameter (val.parameter)
-                , noise2d (val.noise2d)
-                , layeredNoise2d (val.layeredNoise2d)
-                , scaleOffsetMode (val.scaleOffsetMode)
-                , scale (val.scale)
-                , offset (val.offset)
-                {
-                }
-
-                PredefinedConstant asPredefinedConstant () const
-                { return predefinedConstant; }
-
-                void setPredefinedConstant (PredefinedConstant val)
-                { predefinedConstant = val; }
-
-                float asFloatConstant () const { return floatConstant; }
-                void setFloatConstant (float val) { floatConstant = val; }
-
-                std::string asParameter () const { return parameter; }
-                void setParameter (std::string p) { parameter = p; }
 
 
-                struct Noise2d {
-                        enum Filter { Nearest, Bilinear, Cosine };
 
-                        Filter filter;
-                        uint32_t seed;
-                        uint32_t width;
-
-                        Noise2d () : filter(Cosine), seed(42), width(16) {}
-                        Noise2d (Noise2d const&val)
-                        : filter(val.filter)
-                        , seed (val.seed)
-                        , width (val.width)
-                        {}
-
-                        Noise2d &operator = (Noise2d const &val) {
-                                filter = val.filter;
-                                seed = val.seed;
-                                width = val.width;
-                                return *this;
-                        }
-                };
-
-                struct LayeredNoise2d {
-                        enum Filter { Nearest, Bilinear, Cosine };
-
-                        Filter filter;
-                        uint32_t seed;
-                        uint32_t width;
-                        uint32_t depth;
-
-                        LayeredNoise2d () : filter(Cosine), seed(42), width(16), depth(4) {}
-                        LayeredNoise2d (LayeredNoise2d const&val)
-                        : filter(val.filter)
-                        , seed (val.seed)
-                        , width (val.width)
-                        , depth (val.depth)
-                        {}
-
-                        LayeredNoise2d &operator = (LayeredNoise2d const &val) {
-                                filter = val.filter;
-                                seed = val.seed;
-                                width = val.width;
-                                depth = val.depth;
-                                return *this;
-                        }
-                };
-
-                Noise2d asNoise2d () const { return noise2d; }
-                void setNoise2d (Noise2d const &noise2d) {
-                        this->noise2d = noise2d;
-                }
-
-                LayeredNoise2d asLayeredNoise2d () const { return layeredNoise2d; }
-                void setLayeredNoise2d (LayeredNoise2d const &layeredNoise2d) {
-                        this->layeredNoise2d = layeredNoise2d;
-                }
-
-                double getScale () const {
-                        return scale;
-                }
-                void setScale (double scale) {
-                        this->scale = scale;
-                }
-                double getOffset () const {
-                        return offset;
-                }
-                void setOffset (double offset) {
-                        this->offset = offset;
-                }
-                ScaleOffsetMode getScaleOffsetMode () const {
-                        return scaleOffsetMode;
-                }
-                void setScaleOffsetMode (ScaleOffsetMode som) {
-                        scaleOffsetMode = som;
-                }
-
-        private:
-                PredefinedConstant predefinedConstant;
-                double floatConstant;
-                std::string parameter;
-                Noise2d noise2d;
-                LayeredNoise2d layeredNoise2d;
-
-                ScaleOffsetMode scaleOffsetMode;
-                double scale, offset;
-        };
-
-
-        enum Type {
-                Undefined,
-                Parameter,
-                UserConstant,
-                PredefinedConstant,
-
-                // +-*/
-                Addition,
-                Subtraction,
-                Multiplication,
-                Division,
-
-                // ^ min max neg
-                Exponentiate,
-                Minimize,
-                Maximize,
-                Negate,
-
-                // lerp
-                Lerp,
-
-                // and or not
-                And,
-                Or,
-                Not,
-
-                // < <= > >= = !=
-                LessThan,
-                LessThanOrEqual,
-                GreaterThan,
-                GreaterThanOrEqual,
-                //Equal,
-                //NotEqual,
-
-                // [] ]] ][ [[
-
-                // inv sin cos
-                Inverse,
-                Sine,
-                Cosine,
-
-                // floor abs trunc frac
-                Floor,
-                Absolute,
-                Truncate,
-                Fractional,
-
-                // sqrt log log10 exp
-                Sqrt,
-                Log,
-                Log10,
-                Exp,
-
-                // delta
-
-                // if
-                IfThenElse,
-
-                // [configurable]
-                Noise2d,
-                LayeredNoise2d,
-
-                // mulpi
-                MultiplyWithPi
-        };
-
-
-        Type getType() const ;
-        void setType(Type, bool forceReInit = false) ;
+        NodeItemType getType() const ;
+        void setType(NodeItemType, bool forceReInit = false) ;
 
         bool isRootItem () const ;
 
@@ -275,7 +69,8 @@ public:
         NodeItem(QGraphicsScene *scene, UpdateHeightmapMixin *updateHeightmapMixin, FindDropNodeMixin *findDropNodeMixin, NodeItem *parent, NodeItem *root);
         virtual ~NodeItem();
 
-        //NodeItem &operator = (NodeItem const &rhs) ;
+        NodeItem &operator = (NodeItem const &rhs) ;
+        NodeItem (NodeItem const &rhs) ;
 
         QRectF boundingRect() const;
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -296,9 +91,10 @@ public:
         void highlight (HighlightRegion, bool clearOthers=true);
         void clearHighlight (bool clearOthers=true);
 
-        Value getValue () const;
-        void setValue (Value val);
+        NodeItemValue getValue () const;
+        void setValue (NodeItemValue val);
         void updateHeightmap ();
+        void updateTitle();
         void setEnableAutoUpdateHeightmap (bool enable);
 
         int getMinimumParameterCount () const ;
@@ -323,6 +119,7 @@ public:
         void asRightSiblingOf (NodeItem *sibl);
         void asChildOf (NodeItem *sibl);
         void die () ;
+        void killChildren () ;
         void swap (NodeItem &rhs) ;
 
         QString genJuxCode () const {
@@ -351,7 +148,7 @@ private:
 
         int getParameterCount (bool getMinCount) const ;
 
-        Value value;
+        NodeItemValue value;
         //QWidget *propertyWidget;
 
         QString title;
@@ -368,7 +165,7 @@ private:
         std::list<EdgeItem*> edges;
         QTimeLine timer;
         NodeItem *parent, *root;
-        Type type;
+        NodeItemType type;
         UpdateHeightmapMixin *updateHeightmapMixin;
         FindDropNodeMixin *findDropNodeMixin;
         QPixmap pixmap;
@@ -384,10 +181,99 @@ private:
                 std::string msg;
         };
 
+        friend struct SerializableNodeItem;
+public:
+        void serialize (std::string name, std::ostream &out);
+        void deserialize (std::string name, std::istream &in);
+
 
 private:
         void on_addChildNodeButton_pressed ();
 };
+
+
+
+struct SerializableNodeItem {
+
+        NodeItemValue value;
+        NodeItemType type;
+        std::vector<SerializableNodeItem> children;
+private:
+        NodeItem *n;
+public:
+
+        SerializableNodeItem () : n(0) {}
+
+        SerializableNodeItem (SerializableNodeItem const & sni)
+        : value(sni.value)
+        , type(sni.type)
+        , children(sni.children)
+        , n(0)
+        {}
+
+        SerializableNodeItem & operator = (SerializableNodeItem const & sni) {
+                value = sni.value;
+                type = sni.type;
+                children = sni.children;
+                n = 0;
+                return *this;
+        }
+
+        SerializableNodeItem (NodeItem &n)
+        : value(n.value)
+        , type(n.type)
+        , n(&n)
+        {}
+        //SerializableNodeItem (SerializableNodeItem &s) : n (s.n) {}
+
+private:
+
+        void initNode (NodeItem *node) {
+                node->killChildren();
+
+                // init node
+                node->setType (type);
+                node->setValue (value);
+
+                // init children
+                for (std::vector<SerializableNodeItem>::iterator
+                        it=children.begin();
+                        it!=children.end();
+                        ++it
+                ) {
+                        NodeItem *kid = node->addChild();
+                        it->initNode (kid);
+                }
+        }
+
+public:
+
+        template<typename Archive>
+        void serialize (Archive &arch) {
+                using actuarius::pack;
+                extern const actuarius::Enum<NodeItemType> NodeItemTypeNames;
+
+                if (Archive::serialize && 0!=n) {
+                        for (std::list<NodeItem*>::iterator
+                                it=n->children.begin();
+                                it!=n->children.end();
+                                ++it
+                        ) {
+                                children.push_back(SerializableNodeItem (**it));
+                        }
+                }
+
+                arch & pack ("type", NodeItemTypeNames, type);
+                arch & pack ("value", value);
+                arch & pack ("children", children);
+
+                if (Archive::deserialize && 0!=n) {
+                        initNode (n);
+                }
+        }
+};
+
+
 
 
 #endif // NODEITEM_HH

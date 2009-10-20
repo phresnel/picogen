@@ -23,7 +23,7 @@
 #include "ui_predefinedconstant.h"
 
 
-PredefinedConstant::PredefinedConstant(NodeItem *node_, QWidget *parent) :
+PredefinedConstantUi::PredefinedConstantUi(NodeItem *node_, QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::PredefinedConstant),
     node (node_)
@@ -33,8 +33,8 @@ PredefinedConstant::PredefinedConstant(NodeItem *node_, QWidget *parent) :
         node->setEnableAutoUpdateHeightmap(false);
 
         switch (node->getValue().asPredefinedConstant()) {
-        case NodeItem::Value::Pi: m_ui->comboBox->setCurrentIndex(0); break;
-        case NodeItem::Value::e: m_ui->comboBox->setCurrentIndex(1); break;
+        case NodeItemValue::Pi: m_ui->comboBox->setCurrentIndex(0); break;
+        case NodeItemValue::e: m_ui->comboBox->setCurrentIndex(1); break;
         };
         on_comboBox_currentIndexChanged (m_ui->comboBox->currentIndex());
 
@@ -44,13 +44,13 @@ PredefinedConstant::PredefinedConstant(NodeItem *node_, QWidget *parent) :
 
 
 
-PredefinedConstant::~PredefinedConstant() {
+PredefinedConstantUi::~PredefinedConstantUi() {
         delete m_ui;
 }
 
 
 
-void PredefinedConstant::changeEvent(QEvent *e) {
+void PredefinedConstantUi::changeEvent(QEvent *e) {
         QWidget::changeEvent(e);
         switch (e->type()) {
         case QEvent::LanguageChange:
@@ -61,15 +61,15 @@ void PredefinedConstant::changeEvent(QEvent *e) {
         }
 }
 
-void PredefinedConstant::on_comboBox_currentIndexChanged(int index) {
-        NodeItem::Value val = node->getValue();
+void PredefinedConstantUi::on_comboBox_currentIndexChanged(int index) {
+        NodeItemValue val = node->getValue();
         switch (index) {
         case 0:
-                val.setPredefinedConstant(NodeItem::Value::Pi);
+                val.setPredefinedConstant(NodeItemValue::Pi);
                 m_ui->valueLabel->setText("3.14159265...");
                 break;
         case 1:
-                val.setPredefinedConstant(NodeItem::Value::e);
+                val.setPredefinedConstant(NodeItemValue::e);
                 m_ui->valueLabel->setText("2.71828183...");
                 break;
         };

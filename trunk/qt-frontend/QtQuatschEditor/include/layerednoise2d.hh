@@ -29,12 +29,12 @@ namespace Ui {
     class LayeredNoise2d;
 }
 
-class LayeredNoise2d : public QWidget {
+class LayeredNoise2dUi : public QWidget {
     Q_OBJECT
-    Q_DISABLE_COPY(LayeredNoise2d)
+    Q_DISABLE_COPY(LayeredNoise2dUi)
 public:
-    explicit LayeredNoise2d(NodeItem *node_, QWidget *parent = 0);
-    virtual ~LayeredNoise2d();
+    explicit LayeredNoise2dUi(NodeItem *node_, QWidget *parent = 0);
+    virtual ~LayeredNoise2dUi();
 
 protected:
     virtual void changeEvent(QEvent *e);

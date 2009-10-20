@@ -30,12 +30,12 @@ namespace Ui {
 
 class NodeItem;
 
-class Parameter : public QWidget {
+class ParameterUi : public QWidget {
     Q_OBJECT
-    Q_DISABLE_COPY(Parameter)
+    Q_DISABLE_COPY(ParameterUi)
 public:
-    explicit Parameter(NodeItem *node, QWidget *parent = 0);
-    virtual ~Parameter();
+    explicit ParameterUi(NodeItem *node, QWidget *parent = 0);
+    virtual ~ParameterUi();
 
 protected:
     virtual void changeEvent(QEvent *e);

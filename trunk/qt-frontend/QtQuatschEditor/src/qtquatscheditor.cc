@@ -54,7 +54,7 @@ void EditorScene::dropEvent (QGraphicsSceneDragDropEvent*) {
 
         // TODO that's plain ugly
         child->setType (
-                (NodeItem::Type)editor
+                (NodeItemType)editor
                  ->ui
                  ->nodeTypesTreeWidget
                  ->currentItem()
@@ -163,9 +163,9 @@ namespace {
 struct node_t {
         QString text;
         QString icon;
-        NodeItem::Type type;
+        NodeItemType type;
 
-        node_t (QString text, QString icon, NodeItem::Type type)
+        node_t (QString text, QString icon, NodeItemType type)
         : text(text), icon(icon), type(type)
         {}
 };
@@ -268,76 +268,76 @@ QtQuatschEditor::QtQuatschEditor(QWidget *parent)
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("Parameter", ":/aggregate/parameter", NodeItem::Parameter));
-                        items.push_back(node_t ("User Constant", ":/aggregate/userconstant", NodeItem::UserConstant));
-                        items.push_back(node_t ("Predefined Constant", ":/aggregate/predefinedconstant", NodeItem::PredefinedConstant));
+                        items.push_back(node_t ("Parameter", ":/aggregate/parameter", Parameter));
+                        items.push_back(node_t ("User Constant", ":/aggregate/userconstant", UserConstant));
+                        items.push_back(node_t ("Predefined Constant", ":/aggregate/predefinedconstant", PredefinedConstant));
                         addCategory(t, "Terminal", ":/aggregate/terminal", items);
                 }
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("Addition", ":/aggregate/addition", NodeItem::Addition ));
-                        items.push_back(node_t ("Subtraction", ":/aggregate/subtraction", NodeItem::Subtraction ));
-                        items.push_back(node_t ("Multiplication", ":/aggregate/multiplication", NodeItem::Multiplication ));
-                        items.push_back(node_t ("Division", ":/aggregate/division", NodeItem::Division ));
-                        items.push_back(node_t ("Absolute", ":/aggregate/absolute", NodeItem::Absolute));
-                        items.push_back(node_t ("Minimize", ":/aggregate/minimize", NodeItem::Minimize ));
-                        items.push_back(node_t ("Maximize", ":/aggregate/maximize", NodeItem::Maximize ));
-                        items.push_back(node_t ("Negate", ":/aggregate/negate", NodeItem::Negate ));
-                        items.push_back(node_t ("Lerp", ":/aggregate/lerp", NodeItem::Lerp));
+                        items.push_back(node_t ("Addition", ":/aggregate/addition", Addition ));
+                        items.push_back(node_t ("Subtraction", ":/aggregate/subtraction", Subtraction ));
+                        items.push_back(node_t ("Multiplication", ":/aggregate/multiplication", Multiplication ));
+                        items.push_back(node_t ("Division", ":/aggregate/division", Division ));
+                        items.push_back(node_t ("Absolute", ":/aggregate/absolute", Absolute));
+                        items.push_back(node_t ("Minimize", ":/aggregate/minimize", Minimize ));
+                        items.push_back(node_t ("Maximize", ":/aggregate/maximize", Maximize ));
+                        items.push_back(node_t ("Negate", ":/aggregate/negate", Negate ));
+                        items.push_back(node_t ("Lerp", ":/aggregate/lerp", Lerp));
 
                         addCategory(t, "Basic", ":/aggregate/multiplication", items);
                 }
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("Sine", ":/aggregate/sine", NodeItem::Sine));
-                        items.push_back(node_t ("Cosine", ":/aggregate/cosine", NodeItem::Cosine));
+                        items.push_back(node_t ("Sine", ":/aggregate/sine", Sine));
+                        items.push_back(node_t ("Cosine", ":/aggregate/cosine", Cosine));
 
-                        items.push_back(node_t ("Exponentiate (x^y)", ":/aggregate/exponentiate", NodeItem::Exponentiate ));
-                        items.push_back(node_t ("Exponentiate (exp(x))", ":/aggregate/exp", NodeItem::Exp));
-                        items.push_back(node_t ("SquareRoot", ":/aggregate/sqrt", NodeItem::Sqrt));
+                        items.push_back(node_t ("Exponentiate (x^y)", ":/aggregate/exponentiate", Exponentiate ));
+                        items.push_back(node_t ("Exponentiate (exp(x))", ":/aggregate/exp", Exp));
+                        items.push_back(node_t ("SquareRoot", ":/aggregate/sqrt", Sqrt));
 
-                        items.push_back(node_t ("Inverse", ":/aggregate/inverse", NodeItem::Inverse));
+                        items.push_back(node_t ("Inverse", ":/aggregate/inverse", Inverse));
 
-                        items.push_back(node_t ("Logarithm", ":/aggregate/log", NodeItem::Log));
-                        items.push_back(node_t ("Logarithm_10", ":/aggregate/log10", NodeItem::Log10));
+                        items.push_back(node_t ("Logarithm", ":/aggregate/log", Log));
+                        items.push_back(node_t ("Logarithm_10", ":/aggregate/log10", Log10));
 
                         addCategory(t, "Non-Linear", ":/aggregate/cosine", items);
                 }
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("Floor", ":/aggregate/floor", NodeItem::Floor));
-                        items.push_back(node_t ("Truncate", ":/aggregate/truncate", NodeItem::Truncate));
-                        items.push_back(node_t ("Fractional", ":/aggregate/fractional", NodeItem::Fractional));
+                        items.push_back(node_t ("Floor", ":/aggregate/floor", Floor));
+                        items.push_back(node_t ("Truncate", ":/aggregate/truncate", Truncate));
+                        items.push_back(node_t ("Fractional", ":/aggregate/fractional", Fractional));
 
                         addCategory(t, "Fractions & Integers", ":/aggregate/cosine", items);
                 }
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("And", ":/aggregate/and", NodeItem::And));
-                        items.push_back(node_t ("Or", ":/aggregate/or", NodeItem::Or));
-                        items.push_back(node_t ("Not", ":/aggregate/not", NodeItem::Not));
+                        items.push_back(node_t ("And", ":/aggregate/and", And));
+                        items.push_back(node_t ("Or", ":/aggregate/or", Or));
+                        items.push_back(node_t ("Not", ":/aggregate/not", Not));
 
-                        items.push_back(node_t ("Less-Than", ":/aggregate/lessthan", NodeItem::LessThan));
-                        items.push_back(node_t ("Less-Than-Or-Equal", ":/aggregate/lessthanorequal", NodeItem::LessThanOrEqual));
-                        items.push_back(node_t ("Greater-Than", ":/aggregate/greaterthan", NodeItem::GreaterThan));
-                        items.push_back(node_t ("Greater-Than-Or-Equal", ":/aggregate/greaterthanorequal", NodeItem::GreaterThanOrEqual));
+                        items.push_back(node_t ("Less-Than", ":/aggregate/lessthan", LessThan));
+                        items.push_back(node_t ("Less-Than-Or-Equal", ":/aggregate/lessthanorequal", LessThanOrEqual));
+                        items.push_back(node_t ("Greater-Than", ":/aggregate/greaterthan", GreaterThan));
+                        items.push_back(node_t ("Greater-Than-Or-Equal", ":/aggregate/greaterthanorequal", GreaterThanOrEqual));
                         addCategory(t, "Relation & Logical", ":/aggregate/relation", items);
                 }
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("If-Then-Else", ":/aggregate/ifthenelse", NodeItem::IfThenElse));
+                        items.push_back(node_t ("If-Then-Else", ":/aggregate/ifthenelse", IfThenElse));
                         addCategory(t, "Control Flow", ":/aggregate/controlflow", items);
                 }
 
                 {
                         std::vector<node_t> items;
-                        items.push_back(node_t ("Noise", ":/aggregate/noise", NodeItem::Noise2d));
-                        items.push_back(node_t ("Layer-Noise", ":/aggregate/layernoise", NodeItem::LayeredNoise2d));
+                        items.push_back(node_t ("Noise", ":/aggregate/noise", Noise2d));
+                        items.push_back(node_t ("Layer-Noise", ":/aggregate/layernoise", LayeredNoise2d));
                         addCategory(t, "Complex", ":/aggregate/complex", items);
                 }
         }
@@ -524,18 +524,18 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 if (0 == node)
                         return;
 
-                const NodeItem::Type type = node->getType();
+                const NodeItemType type = node->getType();
                 ui->typeCombo->setCurrentIndex (type);
 
-                const NodeItem::Value value = node->getValue();
+                const NodeItemValue value = node->getValue();
                 switch (value.getScaleOffsetMode()) {
-                case NodeItem::Value::disable:
+                case NodeItemValue::disable:
                         ui->scaleOffsetMode->setCurrentIndex(0);
                         break;
-                case NodeItem::Value::offset_scale:
+                case NodeItemValue::offset_scale:
                         ui->scaleOffsetMode->setCurrentIndex(1);
                         break;
-                case NodeItem::Value::scale_offset:
+                case NodeItemValue::scale_offset:
                         ui->scaleOffsetMode->setCurrentIndex(2);
                         break;
                 };
@@ -621,7 +621,7 @@ void QtQuatschEditor::on_typeCombo_currentIndexChanged(int index) {
                 if (0 == node)
                         return;
 
-                node->setType(static_cast<NodeItem::Type>(index));
+                node->setType(static_cast<NodeItemType>(index));
                 updateHeightmap();
         }
         displayPropertyWindow();
@@ -636,16 +636,16 @@ void QtQuatschEditor::on_scaleOffsetMode_currentIndexChanged(int index) {
                 if (0 == node)
                         return;
 
-                NodeItem::Value val = node->getValue();
+                NodeItemValue val = node->getValue();
                 switch (index) {
                 case 0:
-                        val.setScaleOffsetMode(NodeItem::Value::disable);
+                        val.setScaleOffsetMode(NodeItemValue::disable);
                         break;
                 case 1:
-                        val.setScaleOffsetMode(NodeItem::Value::offset_scale);
+                        val.setScaleOffsetMode(NodeItemValue::offset_scale);
                         break;
                 case 2:
-                        val.setScaleOffsetMode(NodeItem::Value::scale_offset);
+                        val.setScaleOffsetMode(NodeItemValue::scale_offset);
                         break;
                 };
 
@@ -664,7 +664,7 @@ void QtQuatschEditor::on_offset_valueChanged(double offset) {
                 if (0 == node)
                         return;
 
-                NodeItem::Value val = node->getValue();
+                NodeItemValue val = node->getValue();
                 val.setOffset(offset);
                 node->setValue(val);
                 updateHeightmap();
@@ -681,7 +681,7 @@ void QtQuatschEditor::on_scale_valueChanged(double scale) {
                 if (0 == node)
                         return;
 
-                NodeItem::Value val = node->getValue();
+                NodeItemValue val = node->getValue();
                 val.setScale(scale);
                 node->setValue(val);
                 updateHeightmap();
@@ -748,46 +748,46 @@ void QtQuatschEditor::displayPropertyWindow() {
                         return;
 
                 switch (node->getType()) {
-                case NodeItem::Undefined:
+                case Undefined:
                         break;
-                case NodeItem::PredefinedConstant:
-                        currentPropertyWidget = new PredefinedConstant(node);
+                case PredefinedConstant:
+                        currentPropertyWidget = new PredefinedConstantUi(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
                         ui->helpText->setText("Use one of the predefined constants.");
                         break;
-                case NodeItem::Parameter:
-                        currentPropertyWidget = new Parameter(node);
+                case Parameter:
+                        currentPropertyWidget = new ParameterUi(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
                         break;
-                case NodeItem::UserConstant:
-                        currentPropertyWidget = new UserConstant(node);
+                case UserConstant:
+                        currentPropertyWidget = new UserConstantUi(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
                         ui->helpText->setText("Enter a custom value.");
                         break;
-                case NodeItem::Addition:
+                case Addition:
                         ui->helpText->setText("Sums up the values of its child nodes.");
                         break;
-                case NodeItem::Subtraction:
+                case Subtraction:
                         ui->helpText->setText("Like Addition, but subtracts all values instead, beginning at the top most child.");
                         break;
-                case NodeItem::Multiplication:
+                case Multiplication:
                         break;
-                case NodeItem::Division:
+                case Division:
                         break;
-                case NodeItem::Exponentiate:
+                case Exponentiate:
                         ui->helpText->setText(
                                 "Raises the first operand to the power of the second: <big>x<sup>y</sup></big> <br>"
                                 "<strong>Note:</strong> This function accepts arbitrarily many "
                                 "operands, raising the 1st operand to the power of the 2nd to the power of the 3rd, etc."
                         );
                         break;
-                case NodeItem::Minimize:
+                case Minimize:
                         break;
-                case NodeItem::Maximize:
+                case Maximize:
                         break;
-                case NodeItem::Negate:
+                case Negate:
                         break;
-                case NodeItem::Lerp:
+                case Lerp:
                         /*ui->helpText->setText(
                                 "Performs a linear interpolation between the 2nd, 3rd, n'th child. "
                                 "The <strong>1st</strong> child defines which of the other children "
@@ -803,58 +803,58 @@ void QtQuatschEditor::displayPropertyWindow() {
                                 "in which case lerp will always select the 2nd operand."
                         );*/
                         break;
-                case NodeItem::And:
+                case And:
                         break;
-                case NodeItem::Or:
+                case Or:
                         break;
-                case NodeItem::Not:
+                case Not:
                         break;
-                case NodeItem::LessThan:
+                case LessThan:
                         break;
-                case NodeItem::LessThanOrEqual:
+                case LessThanOrEqual:
                         break;
-                case NodeItem::GreaterThan:
+                case GreaterThan:
                         break;
-                case NodeItem::GreaterThanOrEqual:
+                case GreaterThanOrEqual:
                         break;
-                case NodeItem::Inverse:
+                case Inverse:
                         break;
-                case NodeItem::Sine:
+                case Sine:
                         break;
-                case NodeItem::Cosine:
-                        break;
-
-                case NodeItem::Floor:
-                        break;
-                case NodeItem::Absolute:
-                        break;
-                case NodeItem::Truncate:
-                        break;
-                case NodeItem::Fractional:
+                case Cosine:
                         break;
 
-                case NodeItem::Sqrt:
+                case Floor:
                         break;
-                case NodeItem::Log:
+                case Absolute:
                         break;
-                case NodeItem::Log10:
+                case Truncate:
                         break;
-                case NodeItem::Exp:
-                        break;
-
-                case NodeItem::IfThenElse:
+                case Fractional:
                         break;
 
-                case NodeItem::Noise2d:
-                        currentPropertyWidget = new Noise2d(node);
+                case Sqrt:
+                        break;
+                case Log:
+                        break;
+                case Log10:
+                        break;
+                case Exp:
+                        break;
+
+                case IfThenElse:
+                        break;
+
+                case Noise2d:
+                        currentPropertyWidget = new Noise2dUi(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
                         break;
-                case NodeItem::LayeredNoise2d:
-                        currentPropertyWidget = new LayeredNoise2d(node);
+                case LayeredNoise2d:
+                        currentPropertyWidget = new LayeredNoise2dUi(node);
                         ui->nodePropertiesLayout->addWidget(currentPropertyWidget);
                         break;
 
-                case NodeItem::MultiplyWithPi:
+                case MultiplyWithPi:
                         break;
                 };
                 this->repaint();
@@ -934,4 +934,26 @@ void QtQuatschEditor::on_asRightSiblingsChildButton_clicked() {
 
 void QtQuatschEditor::drawHeightmap3d (QImage const &/*heightmap*/) {
         ui->heightmapView->repaint();
+}
+
+
+
+void QtQuatschEditor::on_pushButton_clicked() {
+        /*using namespace actuarius;
+        std::ofstream os ("~/Desktop/qtquatschser.txt");
+        OArchive(os) & pack ("heightmap", *this->rootNode);*/
+        std::ofstream os ("/home/smach/Desktop/qtquatschser.txt");
+        if (0 != rootNode)
+                rootNode->serialize ("heightmap", os);
+}
+
+
+
+void QtQuatschEditor::on_pushButton_2_clicked() {
+        /*using namespace actuarius;
+        std::ofstream os ("~/Desktop/qtquatschser.txt");
+        OArchive(os) & pack ("heightmap", *this->rootNode);*/
+        std::ifstream os ("/home/smach/Desktop/qtquatschser.txt");
+        if (0 != rootNode)
+                rootNode->deserialize ("heightmap", os);
 }

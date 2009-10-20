@@ -28,7 +28,8 @@ HEADERS += ../include/qtquatscheditor.hh \
     ../include/jux_gen.hh \
     ../include/noise2d.hh \
     ../include/nodelist.hh \
-    ../include/layerednoise2d.hh
+    ../include/layerednoise2d.hh \
+    ../../common/include/nodeitemvalue.hh
 FORMS += ../forms/qtquatscheditor.ui \
     ../forms/userconstant.ui \
     ../forms/predefinedconstant.ui \

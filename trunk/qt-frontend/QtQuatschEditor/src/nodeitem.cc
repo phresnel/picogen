@@ -77,6 +77,36 @@ NodeItem::NodeItem(
 }
 
 
+/*
+NodeItem &NodeItem::operator = (NodeItem const &rhs) {
+        return *this;
+}
+
+
+
+NodeItem::NodeItem (NodeItem const &rhs)
+: addfuns(rhs.addfuns)
+, QGraphicsItem (rhs)
+{
+        rhs.scene()->addItem (this);
+
+        QGraphicsItemAnimation::setItem (this);
+        QGraphicsItemAnimation::setTimeLine(&timer);
+        timer.setFrameRange(0, 1000);
+
+        setZValue(1.0f);
+        //setCacheMode (QGraphicsItem::DeviceCoordinateCache);
+        setToolTip("foobar!");
+        setCursor(Qt::OpenHandCursor);
+
+        setFlag (QGraphicsItem::ItemIsSelectable, true);
+        //setFlag (QGraphicsItem::ItemIsMovable, true);
+
+        setType (type, true);
+        clearHighlight();
+}*/
+
+
 
 NodeItem::~NodeItem () {
         scene()->removeItem(this);
@@ -375,6 +405,18 @@ void NodeItem::asRightSiblingsChild () {
 
 
 
+void NodeItem::killChildren () {
+        //int i = 0;
+        while (children.size() > 0) {
+                //std::cout << i++ << std::endl;
+                remove (*children.begin());
+        }
+        //std::cout << "-------" << std::endl;
+        //std::cout << children.size() << std::endl;
+}
+
+
+
 void NodeItem::remove (NodeItem *node) {
         for (std::list<EdgeItem*>::iterator it=edges.begin();
              it!=edges.end();
@@ -386,7 +428,6 @@ void NodeItem::remove (NodeItem *node) {
                         break;
                 }
         }
-
         children.remove(node);
         delete node;
 
@@ -407,17 +448,23 @@ bool NodeItem::isRootItem () const {
 
 
 
-NodeItem::Type NodeItem::getType() const {
+NodeItemType NodeItem::getType() const {
         return type;
 }
 
 
 
-void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
+void NodeItem::setType(NodeItemType type, bool forceReInit) {
         if (!forceReInit && type == this->type)
                 return;
         this->type = type;
+        updateTitle();
+        scene()->invalidate();
+}
 
+
+
+void NodeItem::updateTitle() {
         QImage tmp;
         switch (type) {
         case Undefined:
@@ -472,31 +519,31 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 title = "Lerp";
                 pixmap.load(":/aggregate/lerp.n");
                 break;
-        case NodeItem::And:
+        case And:
                 title = "And";
                 pixmap.load(":/aggregate/and.n");
                 break;
-        case NodeItem::Or:
+        case Or:
                 title = "Or";
                 pixmap.load(":/aggregate/or.n");
                 break;
-        case NodeItem::Not:
+        case Not:
                 title = "Not";
                 pixmap.load(":/aggregate/not.n");
                 break;
-        case NodeItem::LessThan:
+        case LessThan:
                 title = "LessThan";
                 pixmap.load(":/aggregate/lessthan.n");
                 break;
-        case NodeItem::LessThanOrEqual:
+        case LessThanOrEqual:
                 title = "LessThanOrEqual";
                 pixmap.load(":/aggregate/lessthanorequal.n");
                 break;
-        case NodeItem::GreaterThan:
+        case GreaterThan:
                 title = "GreaterThan";
                 pixmap.load(":/aggregate/greaterthan.n");
                 break;
-        case NodeItem::GreaterThanOrEqual:
+        case GreaterThanOrEqual:
                 title = "GreaterThanOrEqual";
                 pixmap.load(":/aggregate/greaterthanorequal.n");
                 break;
@@ -530,19 +577,19 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 pixmap.load(":/aggregate/fractional.n");
                 break;
 
-        case NodeItem::Sqrt:
+        case Sqrt:
                 title = "fractional";
                 pixmap.load(":/aggregate/sqrt.n");
                 break;
-        case NodeItem::Log:
+        case Log:
                 title = "Logarithm";
                 pixmap.load(":/aggregate/log.n");
                 break;
-        case NodeItem::Log10:
+        case Log10:
                 title = "Logarithm_10";
                 pixmap.load(":/aggregate/log10.n");
                 break;
-        case NodeItem::Exp:
+        case Exp:
                 title = "Exponentiate (exp(x))";
                 pixmap.load(":/aggregate/exp.n");
                 break;
@@ -567,8 +614,6 @@ void NodeItem::setType(NodeItem::Type type, bool forceReInit) {
                 break;
         };
         //pixmap = pixmap.scaledToHeight(32);
-
-        scene()->invalidate();
 }
 
 
@@ -600,10 +645,10 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 // Prepare some error message. only 1 at a time to not confuse
                 // the user.
                 const int missingChildrenCount = getMissingChildrenCount();
-                if (!areChildrenCompilable()) {
+                if (isTerminal() && children.size() != 0) {
+                        errorMessage = "no children allowed!";
+                } else if (!areChildrenCompilable()) {
                         errorMessage = "error in children!";
-                } else if (isTerminal() && children.size() != 0) {
-                        errorMessage = "this type -> no children!";
                 } else if (isAggregate() && missingChildrenCount != 0) {
                         if (missingChildrenCount < 0) {
                                 errorMessage = "has "
@@ -664,8 +709,8 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         case PredefinedConstant:
                 painter->setFont(QFont(QFont().family(), 17, QFont::Black, true));
                 switch (value.asPredefinedConstant()) {
-                case Value::Pi: painter->drawText (10,40,"Pi = 3.141..."); break;
-                case Value::e: painter->drawText (10,40,"e = 2.718..."); break;
+                case NodeItemValue::Pi: painter->drawText (10,40,"Pi = 3.141..."); break;
+                case NodeItemValue::e: painter->drawText (10,40,"e = 2.718..."); break;
                 };
                 break;
         case Parameter:
@@ -714,31 +759,31 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40,"h = (1-f)*x + f*y");
                 break;
-        case NodeItem::And:
+        case And:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40, "And");
                 break;
-        case NodeItem::Or:
+        case Or:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40, "Or");
                 break;
-        case NodeItem::Not:
+        case Not:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40, "Not");
                 break;
-        case NodeItem::LessThan:
+        case LessThan:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40, "x<y<...");
                 break;
-        case NodeItem::LessThanOrEqual:
+        case LessThanOrEqual:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40, "x<=y<= ...");
                 break;
-        case NodeItem::GreaterThan:
+        case GreaterThan:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40, "x>y>...");
                 break;
-        case NodeItem::GreaterThanOrEqual:
+        case GreaterThanOrEqual:
                 painter->setFont(QFont(QFont().family(), 15, QFont::Black, true));
                 painter->drawText(10,40, "x>=y>=...");
                 break;
@@ -772,19 +817,19 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 painter->drawText(12,40,"frac(x)");
                 break;
 
-        case NodeItem::Sqrt:
+        case Sqrt:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
                 painter->drawText(12,40,"sqrt(x)");
                 break;
-        case NodeItem::Log:
+        case Log:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
                 painter->drawText(12,40,"log(x)");
                 break;
-        case NodeItem::Log10:
+        case Log10:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
                 painter->drawText(12,40,"log_10(x)");
                 break;
-        case NodeItem::Exp:
+        case Exp:
                 painter->setFont(QFont(QFont().family(), 20, QFont::Black, true));
                 painter->drawText(12,40,"exp(x)");
                 break;
@@ -1067,12 +1112,14 @@ void NodeItem::doLayout() {
                 scene()->invalidate();
         } else {
                 root->doLayout ();
+                updateTitle();
         }
 }
 
 
 
 float NodeItem::doLayout (float const base_x, float const base_y) {
+        updateTitle();
         const float
                 width = boundingRect().width(),
                 height = boundingRect().height(),
@@ -1132,7 +1179,7 @@ void NodeItem::afterAnimationStep (qreal step) {
 
 
 
-NodeItem::Value NodeItem::getValue () const {
+NodeItemValue NodeItem::getValue () const {
         /*std::cout << "getValue:\nfilter: " << value.asNoise2d().filter << std::endl;
         std::cout << "seed:   " << value.asNoise2d().seed << std::endl;
         std::cout << "width:  " << value.asNoise2d().width << std::endl;*/
@@ -1141,7 +1188,7 @@ NodeItem::Value NodeItem::getValue () const {
 
 
 
-void NodeItem::setValue (NodeItem::Value val) {
+void NodeItem::setValue (NodeItemValue val) {
         value = val;
         /*std::cout << "setValue:\nfilter: " << value.asNoise2d().filter << std::endl;
         std::cout << "seed:   " << value.asNoise2d().seed << std::endl;
@@ -1337,10 +1384,10 @@ QString NodeItem::getDefaultParameters () const {
         case Absolute:
         case Truncate:
         case Fractional:
-        case NodeItem::Sqrt:
-        case NodeItem::Log:
-        case NodeItem::Log10:
-        case NodeItem::Exp:
+        case Sqrt:
+        case Log:
+        case Log10:
+        case Exp:
         case IfThenElse:
                 return false;
 
@@ -1568,14 +1615,14 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
         QString prefix = "";
         QString postfix = "";
         switch (value.getScaleOffsetMode()) {
-        case Value::disable:
+        case NodeItemValue::disable:
                 break;
-        case Value::scale_offset:
+        case NodeItemValue::scale_offset:
                 prefix = "(+ " + QString::number(value.getOffset())
                        + " (* " + QString::number(value.getScale()) + " ";
                 postfix = "))";
                 break;
-        case Value::offset_scale:
+        case NodeItemValue::offset_scale:
                 prefix = "(* " + QString::number(value.getScale())
                        + " (+ " + QString::number(value.getOffset()) + " ";
                 postfix = "))";
@@ -1585,8 +1632,8 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
         switch (getType()) {
         case PredefinedConstant:
                 switch (value.asPredefinedConstant()) {
-                case Value::Pi: return indent + prefix + "3.1415926535897932385/*pi*/" + postfix + "\n";
-                case Value::e:  return indent + prefix + "2.7182818284590452355/*e*/" + postfix + "\n";
+                case NodeItemValue::Pi: return indent + prefix + "3.1415926535897932385/*pi*/" + postfix + "\n";
+                case NodeItemValue::e:  return indent + prefix + "2.7182818284590452355/*e*/" + postfix + "\n";
                 };
 
         case UserConstant:
@@ -1672,16 +1719,16 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                 tmp = indent + "( frac\n";
                 goto aggregate;
 
-        case NodeItem::Sqrt:
+        case Sqrt:
                 tmp = indent + "( sqrt\n";
                 goto aggregate;
-        case NodeItem::Log:
+        case Log:
                 tmp = indent + "( log\n";
                 goto aggregate;
-        case NodeItem::Log10:
+        case Log10:
                 tmp = indent + "( log10\n";
                 goto aggregate;
-        case NodeItem::Exp:
+        case Exp:
                 tmp = indent + "( exp\n";
                 goto aggregate;
 
@@ -1694,9 +1741,9 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                       "frequency{" + QString::number(value.asNoise2d().width) + "} " +
                       "seed{" + QString::number(value.asNoise2d().seed) + "}";
                 switch (value.asNoise2d().filter) {
-                case Value::Noise2d::Nearest: tmp += "filter{nearest}"; break;
-                case Value::Noise2d::Bilinear: tmp += "filter{bilinear}"; break;
-                case Value::Noise2d::Cosine: tmp += "filter{cosine}"; break;
+                case NodeItemValue::Noise2d::Nearest: tmp += "filter{nearest}"; break;
+                case NodeItemValue::Noise2d::Bilinear: tmp += "filter{bilinear}"; break;
+                case NodeItemValue::Noise2d::Cosine: tmp += "filter{cosine}"; break;
                 };
                 tmp += "] \n";
                 goto aggregate;
@@ -1708,9 +1755,9 @@ QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
                       "layercount{" + QString::number(value.asLayeredNoise2d().depth) + "}"
                 ;
                 switch (value.asLayeredNoise2d().filter) {
-                case Value::LayeredNoise2d::Nearest: tmp += "filter{nearest}"; break;
-                case Value::LayeredNoise2d::Bilinear: tmp += "filter{bilinear}"; break;
-                case Value::LayeredNoise2d::Cosine: tmp += "filter{cosine}"; break;
+                case NodeItemValue::LayeredNoise2d::Nearest: tmp += "filter{nearest}"; break;
+                case NodeItemValue::LayeredNoise2d::Bilinear: tmp += "filter{bilinear}"; break;
+                case NodeItemValue::LayeredNoise2d::Cosine: tmp += "filter{cosine}"; break;
                 };
                 tmp += "] \n";
                 goto aggregate;
@@ -1781,4 +1828,139 @@ QImage NodeItem::genHeightmap (int w, int h) const {
         }
 
         return q;
+}
+
+
+const actuarius::Enum<NodeItemType> NodeItemTypeNames =
+        (actuarius::Nvp<NodeItemType>(Undefined,"Undefined")
+        |actuarius::Nvp<NodeItemType>(Parameter,"Parameter")
+        |actuarius::Nvp<NodeItemType>(UserConstant,"UserConstant")
+        |actuarius::Nvp<NodeItemType>(PredefinedConstant,"PredefinedConstant")
+
+        // +-*/
+        |actuarius::Nvp<NodeItemType>(Addition,"Addition")
+        |actuarius::Nvp<NodeItemType>(Subtraction,"Subtraction")
+        |actuarius::Nvp<NodeItemType>(Multiplication,"Multiplication")
+        |actuarius::Nvp<NodeItemType>(Division,"Division")
+
+        // ^ min max neg
+        |actuarius::Nvp<NodeItemType>(Exponentiate,"Exponentiate")
+        |actuarius::Nvp<NodeItemType>(Minimize,"Minimize")
+        |actuarius::Nvp<NodeItemType>(Maximize,"Maximize")
+        |actuarius::Nvp<NodeItemType>(Negate,"Negate")
+
+        // lerp
+        |actuarius::Nvp<NodeItemType>(Lerp,"Lerp")
+
+        // and or not
+        |actuarius::Nvp<NodeItemType>(And,"And")
+        |actuarius::Nvp<NodeItemType>(Or,"Or")
+        |actuarius::Nvp<NodeItemType>(Not,"Not")
+
+        // < <= > >= = !=
+        |actuarius::Nvp<NodeItemType>(LessThan,"LessThan")
+        |actuarius::Nvp<NodeItemType>(LessThanOrEqual,"LessThanOrEqual")
+        |actuarius::Nvp<NodeItemType>(GreaterThan,"GreaterThan")
+        |actuarius::Nvp<NodeItemType>(GreaterThanOrEqual,"GreaterThanOrEqual")
+        //Equal,
+        //NotEqual,
+
+        // [] ]] ][ [[
+
+        // inv sin cos
+        |actuarius::Nvp<NodeItemType>(Inverse,"Inverse")
+        |actuarius::Nvp<NodeItemType>(Sine,"Sine")
+        |actuarius::Nvp<NodeItemType>(Cosine,"Cosine")
+
+        // floor abs trunc frac
+        |actuarius::Nvp<NodeItemType>(Floor,"Floor")
+        |actuarius::Nvp<NodeItemType>(Absolute,"Absolute")
+        |actuarius::Nvp<NodeItemType>(Truncate,"Truncate")
+        |actuarius::Nvp<NodeItemType>(Fractional,"Fractional")
+
+        // sqrt log log10 exp
+        |actuarius::Nvp<NodeItemType>(Sqrt,"Sqrt")
+        |actuarius::Nvp<NodeItemType>(Log,"Log")
+        |actuarius::Nvp<NodeItemType>(Log10,"Log10")
+        |actuarius::Nvp<NodeItemType>(Exp,"Exp")
+
+        // delta
+
+        // if
+        |actuarius::Nvp<NodeItemType>(IfThenElse,"IfThenElse")
+
+        // [configurable]
+        |actuarius::Nvp<NodeItemType>(Noise2d,"Noise2d")
+        |actuarius::Nvp<NodeItemType>(LayeredNoise2d,"LayeredNoise2d")
+
+        // mulpi
+        |actuarius::Nvp<NodeItemType>(MultiplyWithPi,"MultiplyWithPi")
+);
+
+
+
+/*
+struct SerializableNodeitem {
+        NodeItem::Type type;
+        NodeItemValue value;
+
+        template<typename Archive>
+        void serialize (Archive &arch) {
+                using actuarius::pack;
+
+                arch & pack ("type", NodeItemTypeNames, type);
+                arch & pack ("value", value);
+        }
+};
+
+template<typename Archive>
+void NodeItem::serialize (Archive &arch) {
+        using actuarius::pack;
+        //arch
+
+
+        arch & pack ("type", NodeItemTypeNames, type);
+        arch & pack ("value", value);
+
+        // TODO: write small SerializableNodeItem class or so
+        if (Archive::serialize) {
+                for (std::list<NodeItem*>::iterator it=this->children.begin();
+                        it!=this->children.end();
+                        ++it
+                ) {
+
+                }
+        }
+        std::vector <NodeItem> ser_children;
+        for (std::list<NodeItem*>::iterator it=this->children.begin();
+             it!=this->children.end();
+             ++it
+        ) {
+                ser_children.push_back(**it);
+        }
+
+        arch & pack ("children", ser_children);
+
+}
+*/
+
+
+void NodeItem::serialize (std::string name, std::ostream &os) {
+        using namespace actuarius;
+        SerializableNodeItem sni(*this);
+        OArchive(os) & pack (name.c_str(), sni);
+}
+
+
+
+void NodeItem::deserialize (std::string name, std::istream &is) {
+        using namespace actuarius;
+
+        SerializableNodeItem sni(*this);
+        IArchive(is) & pack (name.c_str(), sni);
+        doLayout();
+
+        // hacked
+        select();
+        setSelected(false);
 }

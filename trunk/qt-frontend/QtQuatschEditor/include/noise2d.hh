@@ -29,12 +29,12 @@ namespace Ui {
     class Noise2d;
 }
 
-class Noise2d : public QWidget {
+class Noise2dUi : public QWidget {
     Q_OBJECT
-    Q_DISABLE_COPY(Noise2d)
+    Q_DISABLE_COPY(Noise2dUi)
 public:
-    explicit Noise2d(NodeItem *node_, QWidget *parent = 0);
-    virtual ~Noise2d();
+    explicit Noise2dUi(NodeItem *node_, QWidget *parent = 0);
+    virtual ~Noise2dUi();
 
 protected:
     virtual void changeEvent(QEvent *e);

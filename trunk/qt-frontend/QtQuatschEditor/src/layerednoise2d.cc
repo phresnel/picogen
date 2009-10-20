@@ -23,25 +23,25 @@
 #include "ui_layerednoise2d.h"
 
 
-LayeredNoise2d::LayeredNoise2d(NodeItem *node_, QWidget *parent) :
+LayeredNoise2dUi::LayeredNoise2dUi(NodeItem *node_, QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::LayeredNoise2d),
     node(node_)
 {
         m_ui->setupUi(this);
-        NodeItem::Value value = node->getValue();
+        NodeItemValue value = node->getValue();
 
         node->setEnableAutoUpdateHeightmap(false);
         switch (value.asLayeredNoise2d().filter) {
-        case NodeItem::Value::LayeredNoise2d::Nearest:
+        case NodeItemValue::LayeredNoise2d::Nearest:
                 m_ui->filter->setCurrentIndex(0);
                 on_filter_currentIndexChanged(0);
                 break;
-        case NodeItem::Value::LayeredNoise2d::Bilinear:
+        case NodeItemValue::LayeredNoise2d::Bilinear:
                 m_ui->filter->setCurrentIndex(1);
                 on_filter_currentIndexChanged(1);
                 break;
-        case NodeItem::Value::LayeredNoise2d::Cosine:
+        case NodeItemValue::LayeredNoise2d::Cosine:
                 on_filter_currentIndexChanged(2);
                 m_ui->filter->setCurrentIndex(2);
                 break;
@@ -63,13 +63,13 @@ LayeredNoise2d::LayeredNoise2d(NodeItem *node_, QWidget *parent) :
 
 
 
-LayeredNoise2d::~LayeredNoise2d() {
+LayeredNoise2dUi::~LayeredNoise2dUi() {
         delete m_ui;
 }
 
 
 
-void LayeredNoise2d::changeEvent(QEvent *e) {
+void LayeredNoise2dUi::changeEvent(QEvent *e) {
         QWidget::changeEvent(e);
         switch (e->type()) {
         case QEvent::LanguageChange:
@@ -82,13 +82,13 @@ void LayeredNoise2d::changeEvent(QEvent *e) {
 
 
 
-void LayeredNoise2d::on_filter_currentIndexChanged(int index) {
-        NodeItem::Value value = node->getValue();
-        NodeItem::Value::LayeredNoise2d n2d = value.asLayeredNoise2d();
+void LayeredNoise2dUi::on_filter_currentIndexChanged(int index) {
+        NodeItemValue value = node->getValue();
+        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         switch (index) {
-        case 0: n2d.filter = NodeItem::Value::LayeredNoise2d::Nearest; break;
-        case 1: n2d.filter = NodeItem::Value::LayeredNoise2d::Bilinear; break;
-        case 2: n2d.filter = NodeItem::Value::LayeredNoise2d::Cosine; break;
+        case 0: n2d.filter = NodeItemValue::LayeredNoise2d::Nearest; break;
+        case 1: n2d.filter = NodeItemValue::LayeredNoise2d::Bilinear; break;
+        case 2: n2d.filter = NodeItemValue::LayeredNoise2d::Cosine; break;
         };
         value.setLayeredNoise2d (n2d);
         node->setValue (value);
@@ -96,9 +96,9 @@ void LayeredNoise2d::on_filter_currentIndexChanged(int index) {
 
 
 
-void LayeredNoise2d::on_size_valueChanged(int val) {
-        NodeItem::Value value = node->getValue();
-        NodeItem::Value::LayeredNoise2d n2d = value.asLayeredNoise2d();
+void LayeredNoise2dUi::on_size_valueChanged(int val) {
+        NodeItemValue value = node->getValue();
+        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         n2d.width = val;
         value.setLayeredNoise2d (n2d);
         node->setValue (value);
@@ -106,9 +106,9 @@ void LayeredNoise2d::on_size_valueChanged(int val) {
 
 
 
-void LayeredNoise2d::on_depth_valueChanged(int val) {
-        NodeItem::Value value = node->getValue();
-        NodeItem::Value::LayeredNoise2d n2d = value.asLayeredNoise2d();
+void LayeredNoise2dUi::on_depth_valueChanged(int val) {
+        NodeItemValue value = node->getValue();
+        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         n2d.depth = val;
         value.setLayeredNoise2d (n2d);
         node->setValue (value);
@@ -116,9 +116,9 @@ void LayeredNoise2d::on_depth_valueChanged(int val) {
 
 
 
-void LayeredNoise2d::on_seed_valueChanged(int val) {
-        NodeItem::Value value = node->getValue();
-        NodeItem::Value::LayeredNoise2d n2d = value.asLayeredNoise2d();
+void LayeredNoise2dUi::on_seed_valueChanged(int val) {
+        NodeItemValue value = node->getValue();
+        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         n2d.seed = val;
         value.setLayeredNoise2d (n2d);
         node->setValue (value);

@@ -29,12 +29,12 @@ namespace Ui {
 
 class NodeItem;
 
-class PredefinedConstant : public QWidget {
+class PredefinedConstantUi : public QWidget {
         Q_OBJECT
-        Q_DISABLE_COPY(PredefinedConstant)
+        Q_DISABLE_COPY(PredefinedConstantUi)
 public:
-        explicit PredefinedConstant(NodeItem *node, QWidget *parent = 0);
-        virtual ~PredefinedConstant();
+        explicit PredefinedConstantUi(NodeItem *node, QWidget *parent = 0);
+        virtual ~PredefinedConstantUi();
 
 protected:
         virtual void changeEvent(QEvent *e);

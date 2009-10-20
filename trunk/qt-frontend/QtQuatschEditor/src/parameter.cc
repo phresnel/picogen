@@ -23,7 +23,7 @@
 #include "ui_parameter.h"
 
 
-Parameter::Parameter(NodeItem *node_, QWidget *parent) :
+ParameterUi::ParameterUi(NodeItem *node_, QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::Parameter),
     node(node_)
@@ -32,7 +32,7 @@ Parameter::Parameter(NodeItem *node_, QWidget *parent) :
 
     node->setEnableAutoUpdateHeightmap(false);
 
-    const NodeItem::Value val = node->getValue();
+    const NodeItemValue val = node->getValue();
     const std::string name = val.asParameter();
     if ("x" == name) {
             m_ui->comboBox->setCurrentIndex(0);
@@ -48,13 +48,13 @@ Parameter::Parameter(NodeItem *node_, QWidget *parent) :
 
 
 
-Parameter::~Parameter() {
+ParameterUi::~ParameterUi() {
     delete m_ui;
 }
 
 
 
-void Parameter::changeEvent(QEvent *e) {
+void ParameterUi::changeEvent(QEvent *e) {
         QWidget::changeEvent(e);
         switch (e->type()) {
         case QEvent::LanguageChange:
@@ -67,9 +67,9 @@ void Parameter::changeEvent(QEvent *e) {
 
 
 
-void Parameter::on_comboBox_currentIndexChanged(int index) {
+void ParameterUi::on_comboBox_currentIndexChanged(int index) {
 
-        NodeItem::Value val = node->getValue();
+        NodeItemValue val = node->getValue();
 
         switch (index) {
         case 0:

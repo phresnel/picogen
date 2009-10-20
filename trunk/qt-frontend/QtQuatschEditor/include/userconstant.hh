@@ -29,12 +29,12 @@ namespace Ui {
 
 class NodeItem;
 
-class UserConstant : public QWidget {
+class UserConstantUi : public QWidget {
         Q_OBJECT
-        Q_DISABLE_COPY(UserConstant)
+        Q_DISABLE_COPY(UserConstantUi)
 public:
-        explicit UserConstant(NodeItem *node, QWidget *parent = 0);
-        virtual ~UserConstant();
+        explicit UserConstantUi(NodeItem *node, QWidget *parent = 0);
+        virtual ~UserConstantUi();
 
 protected:
         virtual void changeEvent(QEvent *e);
