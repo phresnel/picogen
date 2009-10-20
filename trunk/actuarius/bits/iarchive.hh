@@ -30,6 +30,9 @@ namespace actuarius {
 class IArchive {
         typedef std::string::iterator iterator_t;
 public:
+        
+        enum { serialize = 0, deserialize = 1 };
+
         IArchive (std::istream &in)
         : content("")
         {

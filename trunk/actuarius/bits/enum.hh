@@ -31,7 +31,7 @@
 #include <iostream>
 namespace actuarius {
 
-        
+
 //-----------------------------------------------------------------------------
 // Name value pair
 //-----------------------------------------------------------------------------
@@ -41,30 +41,31 @@ public:
         Nvp (const char *name_, T value_)
         : name_ (name_), value_ (value_)
         {}
-                
+
         Nvp (T value_, const char *name_)
         : name_ (name_), value_ (value_)
         {}
-                
+
         Nvp (Nvp const &rhs)
         : name_ (rhs.name_), value_ (rhs.value_)
         {}
-                
+
         Nvp& operator = (Nvp const &rhs) {
                 name_ = rhs.name_;
                 value_ = rhs.value_;
+                return *this;
         }
-        
+
         std::string name() const {
                 return name_;
         }
-        
+
         T value() const {
                 return value_;
         }
-        
+
 private:
-        Nvp ();        
+        Nvp ();
 
         std::string name_;
         T value_;
@@ -77,7 +78,7 @@ private:
 //-----------------------------------------------------------------------------
 template <typename T>
 std::vector<Nvp<T> > operator | (
-        Nvp<T> const & lhs, 
+        Nvp<T> const & lhs,
         Nvp<T> const & rhs
 ) {
         std::vector<Nvp<T> > ret;
@@ -90,7 +91,7 @@ std::vector<Nvp<T> > operator | (
 
 template <typename T>
 std::vector<Nvp<T> > operator | (
-        std::vector<Nvp<T> > const & lhs, 
+        std::vector<Nvp<T> > const & lhs,
         Nvp<T> const & rhs
 ) {
         std::vector<Nvp<T> > ret (lhs);
@@ -108,14 +109,14 @@ class Enum {
 public:
         Enum () {
         }
-        
+
         Enum (std::vector<Nvp<T> > const & list) {
                 std::set<T> values;
                 typedef std::vector<Nvp<T> > V;
                 for (typename V::const_iterator it = list.begin();
                      it != list.end();
                      ++it
-                ) {                        
+                ) {
                         if (values.count(it->value()) > 0) {
                                 throw std::invalid_argument (
                                         std::string ("actuarius::Enum requires"
@@ -126,27 +127,27 @@ public:
                                 );
                         }
                         values.insert (it->value());
-                        
+
                         name2value [it->name()] = it->value();
                         value2name [it->value()] = it->name();
                 }
         }
-        
+
         Enum (Nvp<T> const & rhs) {
                 name2value [rhs.name] = rhs.value();
         }
-        
-        Enum (Enum const &rhs) 
+
+        Enum (Enum const &rhs)
         : name2value (rhs.name2value)
         , value2name (rhs.value2name)
         {}
-                
+
         Enum & operator = (Enum const &rhs) {
                 name2value = rhs.name2value;
                 value2name = rhs.value2name;
                 return *this;
         }
-        
+
         T operator [] (const char* name) const {
                 if (!exists (name)) {
                         std::stringstream ss;
@@ -161,9 +162,9 @@ public:
                 }
                 return name2value.find (name)->second;
         }
-        
+
         std::string operator [] (T value) const {
-                if (!exists (value)) {                        
+                if (!exists (value)) {
                         std::stringstream ss;
                         ss << "enum-value of " << value
                            << " not found. "
@@ -176,15 +177,15 @@ public:
                 }
                 return value2name.find (value)->second;
         }
-        
+
         bool exists (std::string name) const {
                 return name2value.find(name) != name2value.end();
         }
-        
+
         bool exists (T value) const {
                 return value2name.find(value) != value2name.end();
         }
-        
+
         void debug_listAllKeys () const {
                 for (typename std::map<std::string, T>::const_iterator it = name2value.begin();
                      it != name2value.end();

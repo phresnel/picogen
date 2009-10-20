@@ -29,6 +29,8 @@
 namespace actuarius {
 class OArchive {
 public:
+        enum { serialize = 1, deserialize = 0 };
+
         OArchive (std::ostream &out) 
         : indendation(0), out(out)
         {

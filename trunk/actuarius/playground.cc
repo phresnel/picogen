@@ -101,16 +101,19 @@ struct Bar {
         }
         
         template<typename Arch>
-        void serialize (Arch &arch) {
-                using actuarius::pack;
-                arch & pack ("some_int", some_int);
-                arch & pack ("pi", pi);
-                arch & pack ("foo", foo, fooNames);
-                arch & pack ("child", children);
-                //arch /*& comment("array of foo") */
-                arch & pack ("foooos", foooos, fooNames);
-        }
+        void serialize (Arch &arch);
 };
+
+template<typename Arch>
+void Bar::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack ("some_int", some_int);
+        arch & pack ("pi", pi);
+        arch & pack ("foo", foo, fooNames);
+        arch & pack ("child", children);
+        //arch /*& comment("array of foo") */
+        arch & pack ("foooos", foooos, fooNames);
+}
 
 
 int main () {        
