@@ -141,9 +141,9 @@ public:
         }
         
         float_t rand () {
-                return static_cast<T>(min)
+                return static_cast<float_t>(min)
                         + (rand_() / maxf)
-                        * static_cast<T>(max-min);
+                        * static_cast<float_t>(max-min);
         }
         
         operator float_t () {
