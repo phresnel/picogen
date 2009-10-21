@@ -31,19 +31,19 @@ Noise2dUi::Noise2dUi(NodeItem *node_, QWidget *parent) :
     node(node_)
 {
         m_ui->setupUi(this);
-        NodeItemValue value = node->getValue();
+        QuatschNodeValue value = node->getValue();
 
         node->setEnableAutoUpdateHeightmap(false);
         switch (value.asNoise2d().filter) {
-        case NodeItemValue::Noise2d::Nearest:
+        case QuatschNodeValue::Noise2d::Nearest:
                 m_ui->filter->setCurrentIndex(0);
                 on_filter_currentIndexChanged(0);
                 break;
-        case NodeItemValue::Noise2d::Bilinear:
+        case QuatschNodeValue::Noise2d::Bilinear:
                 m_ui->filter->setCurrentIndex(1);
                 on_filter_currentIndexChanged(1);
                 break;
-        case NodeItemValue::Noise2d::Cosine:
+        case QuatschNodeValue::Noise2d::Cosine:
                 on_filter_currentIndexChanged(2);
                 m_ui->filter->setCurrentIndex(2);
                 break;
@@ -82,12 +82,12 @@ void Noise2dUi::changeEvent(QEvent *e) {
 
 
 void Noise2dUi::on_filter_currentIndexChanged(int index) {
-        NodeItemValue value = node->getValue();
-        NodeItemValue::Noise2d n2d = value.asNoise2d();
+        QuatschNodeValue value = node->getValue();
+        QuatschNodeValue::Noise2d n2d = value.asNoise2d();
         switch (index) {
-        case 0: n2d.filter = NodeItemValue::Noise2d::Nearest; break;
-        case 1: n2d.filter = NodeItemValue::Noise2d::Bilinear; break;
-        case 2: n2d.filter = NodeItemValue::Noise2d::Cosine; break;
+        case 0: n2d.filter = QuatschNodeValue::Noise2d::Nearest; break;
+        case 1: n2d.filter = QuatschNodeValue::Noise2d::Bilinear; break;
+        case 2: n2d.filter = QuatschNodeValue::Noise2d::Cosine; break;
         };
         value.setNoise2d (n2d);
         node->setValue (value);
@@ -96,8 +96,8 @@ void Noise2dUi::on_filter_currentIndexChanged(int index) {
 
 
 void Noise2dUi::on_size_valueChanged(int val) {
-        NodeItemValue value = node->getValue();
-        NodeItemValue::Noise2d n2d = value.asNoise2d();
+        QuatschNodeValue value = node->getValue();
+        QuatschNodeValue::Noise2d n2d = value.asNoise2d();
         n2d.width = val;
         value.setNoise2d (n2d);
         node->setValue (value);
@@ -106,8 +106,8 @@ void Noise2dUi::on_size_valueChanged(int val) {
 
 
 void Noise2dUi::on_seed_valueChanged(int val) {
-        NodeItemValue value = node->getValue();
-        NodeItemValue::Noise2d n2d = value.asNoise2d();
+        QuatschNodeValue value = node->getValue();
+        QuatschNodeValue::Noise2d n2d = value.asNoise2d();
         n2d.seed = val;
         value.setNoise2d (n2d);
         node->setValue (value);

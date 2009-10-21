@@ -54,7 +54,7 @@ void EditorScene::dropEvent (QGraphicsSceneDragDropEvent*) {
 
         // TODO that's plain ugly
         child->setType (
-                (NodeItemType)editor
+                (QuatschNodeType)editor
                  ->ui
                  ->nodeTypesTreeWidget
                  ->currentItem()
@@ -163,9 +163,9 @@ namespace {
 struct node_t {
         QString text;
         QString icon;
-        NodeItemType type;
+        QuatschNodeType type;
 
-        node_t (QString text, QString icon, NodeItemType type)
+        node_t (QString text, QString icon, QuatschNodeType type)
         : text(text), icon(icon), type(type)
         {}
 };
@@ -524,18 +524,18 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 if (0 == node)
                         return;
 
-                const NodeItemType type = node->getType();
+                const QuatschNodeType type = node->getType();
                 ui->typeCombo->setCurrentIndex (type);
 
-                const NodeItemValue value = node->getValue();
+                const QuatschNodeValue value = node->getValue();
                 switch (value.getScaleOffsetMode()) {
-                case NodeItemValue::disable:
+                case QuatschNodeValue::disable:
                         ui->scaleOffsetMode->setCurrentIndex(0);
                         break;
-                case NodeItemValue::offset_scale:
+                case QuatschNodeValue::offset_scale:
                         ui->scaleOffsetMode->setCurrentIndex(1);
                         break;
-                case NodeItemValue::scale_offset:
+                case QuatschNodeValue::scale_offset:
                         ui->scaleOffsetMode->setCurrentIndex(2);
                         break;
                 };
@@ -593,7 +593,7 @@ void QtQuatschEditor::updateHeightmap (NodeItem *node) {
                 node = rootNode;
         }
 
-        if (node->isCompilable()) {
+        if (QuatschNode(*node).isCompilable()) {
                 QImage q = node->genHeightmap(256,256);
                 heightmap = QPixmap::fromImage(q);
                 ui->heightmapLabel->setPixmap (heightmap);
@@ -621,7 +621,7 @@ void QtQuatschEditor::on_typeCombo_currentIndexChanged(int index) {
                 if (0 == node)
                         return;
 
-                node->setType(static_cast<NodeItemType>(index));
+                node->setType(static_cast<QuatschNodeType>(index));
                 updateHeightmap();
         }
         displayPropertyWindow();
@@ -636,16 +636,16 @@ void QtQuatschEditor::on_scaleOffsetMode_currentIndexChanged(int index) {
                 if (0 == node)
                         return;
 
-                NodeItemValue val = node->getValue();
+                QuatschNodeValue val = node->getValue();
                 switch (index) {
                 case 0:
-                        val.setScaleOffsetMode(NodeItemValue::disable);
+                        val.setScaleOffsetMode(QuatschNodeValue::disable);
                         break;
                 case 1:
-                        val.setScaleOffsetMode(NodeItemValue::offset_scale);
+                        val.setScaleOffsetMode(QuatschNodeValue::offset_scale);
                         break;
                 case 2:
-                        val.setScaleOffsetMode(NodeItemValue::scale_offset);
+                        val.setScaleOffsetMode(QuatschNodeValue::scale_offset);
                         break;
                 };
 
@@ -664,7 +664,7 @@ void QtQuatschEditor::on_offset_valueChanged(double offset) {
                 if (0 == node)
                         return;
 
-                NodeItemValue val = node->getValue();
+                QuatschNodeValue val = node->getValue();
                 val.setOffset(offset);
                 node->setValue(val);
                 updateHeightmap();
@@ -681,7 +681,7 @@ void QtQuatschEditor::on_scale_valueChanged(double scale) {
                 if (0 == node)
                         return;
 
-                NodeItemValue val = node->getValue();
+                QuatschNodeValue val = node->getValue();
                 val.setScale(scale);
                 node->setValue(val);
                 updateHeightmap();

@@ -18,14 +18,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef NODEITEM_HH_INCLUDED_20091020
-#define NODEITEM_HH_INCLUDED_20091020
+// TODO: this file should not be part of Qt-picogen
+
+#ifndef QuatschNode_HH_INCLUDED_20091020
+#define QuatschNode_HH_INCLUDED_20091020
+
+#include <string>
 
 #include "kallisto/common.hh"
 #include "redshift/include/tuple.hh"
 #include "actuarius/actuarius.hh"
 
-enum NodeItemType {
+enum QuatschNodeType {
         Undefined,
         Parameter,
         UserConstant,
@@ -91,7 +95,7 @@ enum NodeItemType {
         MultiplyWithPi
 };
 
-class NodeItemValue {
+class QuatschNodeValue {
 public:
         enum PredefinedConstant {
                 Pi, e
@@ -103,7 +107,7 @@ public:
                 offset_scale
         };
 
-        NodeItemValue ()
+        QuatschNodeValue ()
         : predefinedConstant (Pi)
         , floatConstant (0.0f)
         , parameter ("x")
@@ -114,7 +118,7 @@ public:
         , offset (0.0f)
         {}
 
-        NodeItemValue &operator = (NodeItemValue const &val) {
+        QuatschNodeValue &operator = (QuatschNodeValue const &val) {
                 predefinedConstant = val.predefinedConstant;
                 floatConstant = val.floatConstant;
                 parameter = val.parameter;
@@ -126,7 +130,7 @@ public:
                 return *this;
         }
 
-        NodeItemValue (NodeItemValue const &val)
+        QuatschNodeValue (QuatschNodeValue const &val)
         : predefinedConstant (val.predefinedConstant)
         , floatConstant (val.floatConstant)
         , parameter (val.parameter)
@@ -302,4 +306,188 @@ private:
         double scale, offset;
 };
 
-#endif // NODEITEM_HH_INCLUDED_20091020
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Copyright (C) 2009  Sebastian Mach (*1983)
+// * mail: phresnel/at/gmail/dot/com
+// * http://phresnel.org
+// * http://picogen.org
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#ifndef JUX_GEN_HH_INCLUDED_20091021
+#define JUX_GEN_HH_INCLUDED_20091021
+
+#include "kallisto/common.hh"
+#include "quatsch/quatsch.hh"
+#include "quatsch/frontend/jux.hh"
+#include "quatsch/backend/est/backend.hh"
+
+#include "quatsch/configurable-functions/noise2ddef.hh"
+#include "quatsch/configurable-functions/layerednoise2ddef.hh"
+
+#include <string>
+
+//-----
+typedef quatsch::backend::est::Backend <float, const float *> backend_t;
+
+typedef backend_t::Function Function;
+typedef backend_t::FunctionPtr FunctionPtr;
+typedef backend_t::scalar_t scalar_t;
+typedef backend_t::parameters_t parameters_t;
+
+typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
+//-----
+
+
+class JuxGeneratorState {
+public:
+        JuxGeneratorState () : indendation(0) {}
+
+        std::string getIndendationString () const {
+                std::string ret;
+                for (int i=0; i<indendation; ++i)
+                        ret += "    ";
+                return ret;
+        }
+
+
+        friend class Frame;
+        class Frame {
+        public:
+                ~Frame () { --*indent; }
+                Frame (Frame const &f) : indent(f.indent) {}
+                Frame & operator = (Frame const &f) {
+                        indent = f.indent;
+                        return *this;
+                }
+        private:
+                friend class JuxGeneratorState;
+                int *indent;
+                Frame (int *indent_) : indent(indent_) { ++*indent; }
+                Frame () ;
+        };
+        Frame getFrame () { return Frame (&indendation); }
+private:
+        int indendation;
+};
+
+
+#endif // JUX_GEN_HH_INCLUDED_20091021
+
+
+
+
+struct QuatschNode {
+        QuatschNodeValue value;
+        QuatschNodeType type;
+        std::vector<QuatschNode> children;
+
+
+        class NodeException: public std::exception {
+        public:
+                NodeException (std::string msg_) : msg(msg_) {}
+                virtual ~NodeException() throw() {}
+                const char* what() const throw() {
+                        return msg.c_str();
+                }
+        private:
+                std::string msg;
+        };
+
+public:
+
+
+        QuatschNode () {}
+
+
+
+        QuatschNode (QuatschNode const & sni)
+        : value(sni.value)
+        , type(sni.type)
+        , children(sni.children)
+        {}
+
+
+
+        QuatschNode & operator = (QuatschNode const & sni) {
+                value = sni.value;
+                type = sni.type;
+                children = sni.children;
+                return *this;
+        }
+
+
+
+        template <typename T>
+        QuatschNode (T const &n)
+        : value(n.value)
+        , type(n.type)
+        {
+                for (typename std::list<T*>::const_iterator
+                        it=n.children.begin();
+                        it!=n.children.end();
+                        ++it
+                ) {
+                        children.push_back(QuatschNode (**it));
+                }
+        }
+
+
+
+        template<typename Archive>
+        void serialize (Archive &arch) {
+                using actuarius::pack;
+                extern const actuarius::Enum<QuatschNodeType> QuatschNodeTypeNames;
+
+                if (Archive::deserialize) {
+                        children.clear();
+                }
+
+                arch & pack ("type", QuatschNodeTypeNames, type);
+                arch & pack ("value", value);
+                arch & pack ("children", children);
+        }
+
+
+
+private:
+        template <typename T> static std::string number (T num) {
+                std::stringstream ss;
+                ss << num;
+                return ss.str();
+        }
+public:
+        std::string genJuxCode (JuxGeneratorState &state) const;
+        bool hasDefaultParameters () const;
+        std::string getDefaultParameters () const;
+        int getMinimumParameterCount () const;
+        int getMaximumParameterCount () const;
+private:
+        int getParameterCount (bool getMinCount) const;
+public:
+        bool isTerminal () const ;
+        bool isAggregate () const ;
+        bool isChildCountOkay () const;
+        bool areChildrenCompilable () const;
+        int getMissingChildrenCount () const;
+        bool isCompilable () const;
+
+};
+
+
+#endif // QuatschNode_HH_INCLUDED_20091020

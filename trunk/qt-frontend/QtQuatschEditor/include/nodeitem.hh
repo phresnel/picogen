@@ -24,9 +24,8 @@
 #include "kallisto/common.hh"
 #include "redshift/include/tuple.hh"
 #include "actuarius/actuarius.hh"
-#include "../../common/include/nodeitemvalue.hh"
+#include "../../common/include/quatschnode.hh"
 
-#include <jux_gen.hh>
 #include <list>
 #include <QtGui>
 
@@ -54,14 +53,11 @@ public:
 
 
 
-struct SerializableNodeItem;
+struct QuatschNode;
 class NodeItem : public QGraphicsItem, QGraphicsItemAnimation {
 public:
-
-
-
-        NodeItemType getType() const ;
-        void setType(NodeItemType, bool forceReInit = false) ;
+        QuatschNodeType getType() const ;
+        void setType(QuatschNodeType, bool forceReInit = false) ;
 
         bool isRootItem () const ;
 
@@ -91,24 +87,11 @@ public:
         void highlight (HighlightRegion, bool clearOthers=true);
         void clearHighlight (bool clearOthers=true);
 
-        NodeItemValue getValue () const;
-        void setValue (NodeItemValue val);
+        QuatschNodeValue getValue () const;
+        void setValue (QuatschNodeValue val);
         void updateHeightmap ();
         void updateTitle();
         void setEnableAutoUpdateHeightmap (bool enable);
-
-        int getMinimumParameterCount () const ;
-        int getMaximumParameterCount () const ;
-        bool hasDefaultParameters () const ;
-        QString getDefaultParameters () const;
-
-        bool isChildCountOkay () const ;
-        int getMissingChildrenCount () const ;
-
-        bool isTerminal () const ;
-        bool isAggregate () const ;
-        bool isCompilable () const ;
-        bool areChildrenCompilable () const ;
 
         void moveUp() ;
         void moveDown() ;
@@ -126,10 +109,16 @@ public:
                 JuxGeneratorState state;
                 return genJuxCode (state);
         }
-        QString genJuxCode (JuxGeneratorState &state) const ;
+        QString genJuxCode (JuxGeneratorState &state) const {
+                QuatschNode qn (*this);
+                return QString::fromStdString(qn.genJuxCode(state));
+        }
 
         QImage genHeightmap (int w, int h) const ;
         Compiler::FunctionPtr genQuatsch () const ;
+
+
+        NodeItem & operator = (QuatschNode const &rhs);
 
 protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -142,30 +131,27 @@ private:
         bool isDragging;
         bool enableAutoUpdateHeightmap;
 
-        Compiler::ConfigurableFunctionsMap addfuns;
-
         void remove (NodeItem *node) ;
-
-        int getParameterCount (bool getMinCount) const ;
-
-        NodeItemValue value;
-        //QWidget *propertyWidget;
-
-        QString title;
-        bool isHighlighted;
-        HighlightRegion highlightRegion;
-
         void afterAnimationStep (qreal step);
         float doLayout (float const base_x, float const base_y);
         void move (float ofs_x, float ofs_y);
         void move (QPointF const &ofs);
         void updateEdgeItems ();
 
+        Compiler::ConfigurableFunctionsMap addfuns;
+
+        QuatschNodeValue value;
+        //QWidget *propertyWidget;
+
+        QString title;
+        bool isHighlighted;
+        HighlightRegion highlightRegion;
+
         std::list<NodeItem*> children;
         std::list<EdgeItem*> edges;
         QTimeLine timer;
         NodeItem *parent, *root;
-        NodeItemType type;
+        QuatschNodeType type;
         UpdateHeightmapMixin *updateHeightmapMixin;
         FindDropNodeMixin *findDropNodeMixin;
         QPixmap pixmap;
@@ -181,7 +167,7 @@ private:
                 std::string msg;
         };
 
-        friend struct SerializableNodeItem;
+        friend struct QuatschNode;
 public:
         void serialize (std::string name, std::ostream &out);
         void deserialize (std::string name, std::istream &in);
@@ -189,88 +175,6 @@ public:
 
 private:
         void on_addChildNodeButton_pressed ();
-};
-
-
-
-struct SerializableNodeItem {
-
-        NodeItemValue value;
-        NodeItemType type;
-        std::vector<SerializableNodeItem> children;
-private:
-        NodeItem *n;
-public:
-
-        SerializableNodeItem () : n(0) {}
-
-        SerializableNodeItem (SerializableNodeItem const & sni)
-        : value(sni.value)
-        , type(sni.type)
-        , children(sni.children)
-        , n(0)
-        {}
-
-        SerializableNodeItem & operator = (SerializableNodeItem const & sni) {
-                value = sni.value;
-                type = sni.type;
-                children = sni.children;
-                n = 0;
-                return *this;
-        }
-
-        SerializableNodeItem (NodeItem &n)
-        : value(n.value)
-        , type(n.type)
-        , n(&n)
-        {}
-        //SerializableNodeItem (SerializableNodeItem &s) : n (s.n) {}
-
-private:
-
-        void initNode (NodeItem *node) {
-                node->killChildren();
-
-                // init node
-                node->setType (type);
-                node->setValue (value);
-
-                // init children
-                for (std::vector<SerializableNodeItem>::iterator
-                        it=children.begin();
-                        it!=children.end();
-                        ++it
-                ) {
-                        NodeItem *kid = node->addChild();
-                        it->initNode (kid);
-                }
-        }
-
-public:
-
-        template<typename Archive>
-        void serialize (Archive &arch) {
-                using actuarius::pack;
-                extern const actuarius::Enum<NodeItemType> NodeItemTypeNames;
-
-                if (Archive::serialize && 0!=n) {
-                        for (std::list<NodeItem*>::iterator
-                                it=n->children.begin();
-                                it!=n->children.end();
-                                ++it
-                        ) {
-                                children.push_back(SerializableNodeItem (**it));
-                        }
-                }
-
-                arch & pack ("type", NodeItemTypeNames, type);
-                arch & pack ("value", value);
-                arch & pack ("children", children);
-
-                if (Archive::deserialize && 0!=n) {
-                        initNode (n);
-                }
-        }
 };
 
 

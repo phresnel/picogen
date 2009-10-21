@@ -29,19 +29,19 @@ LayeredNoise2dUi::LayeredNoise2dUi(NodeItem *node_, QWidget *parent) :
     node(node_)
 {
         m_ui->setupUi(this);
-        NodeItemValue value = node->getValue();
+        QuatschNodeValue value = node->getValue();
 
         node->setEnableAutoUpdateHeightmap(false);
         switch (value.asLayeredNoise2d().filter) {
-        case NodeItemValue::LayeredNoise2d::Nearest:
+        case QuatschNodeValue::LayeredNoise2d::Nearest:
                 m_ui->filter->setCurrentIndex(0);
                 on_filter_currentIndexChanged(0);
                 break;
-        case NodeItemValue::LayeredNoise2d::Bilinear:
+        case QuatschNodeValue::LayeredNoise2d::Bilinear:
                 m_ui->filter->setCurrentIndex(1);
                 on_filter_currentIndexChanged(1);
                 break;
-        case NodeItemValue::LayeredNoise2d::Cosine:
+        case QuatschNodeValue::LayeredNoise2d::Cosine:
                 on_filter_currentIndexChanged(2);
                 m_ui->filter->setCurrentIndex(2);
                 break;
@@ -83,12 +83,12 @@ void LayeredNoise2dUi::changeEvent(QEvent *e) {
 
 
 void LayeredNoise2dUi::on_filter_currentIndexChanged(int index) {
-        NodeItemValue value = node->getValue();
-        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
+        QuatschNodeValue value = node->getValue();
+        QuatschNodeValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         switch (index) {
-        case 0: n2d.filter = NodeItemValue::LayeredNoise2d::Nearest; break;
-        case 1: n2d.filter = NodeItemValue::LayeredNoise2d::Bilinear; break;
-        case 2: n2d.filter = NodeItemValue::LayeredNoise2d::Cosine; break;
+        case 0: n2d.filter = QuatschNodeValue::LayeredNoise2d::Nearest; break;
+        case 1: n2d.filter = QuatschNodeValue::LayeredNoise2d::Bilinear; break;
+        case 2: n2d.filter = QuatschNodeValue::LayeredNoise2d::Cosine; break;
         };
         value.setLayeredNoise2d (n2d);
         node->setValue (value);
@@ -97,8 +97,8 @@ void LayeredNoise2dUi::on_filter_currentIndexChanged(int index) {
 
 
 void LayeredNoise2dUi::on_size_valueChanged(int val) {
-        NodeItemValue value = node->getValue();
-        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
+        QuatschNodeValue value = node->getValue();
+        QuatschNodeValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         n2d.width = val;
         value.setLayeredNoise2d (n2d);
         node->setValue (value);
@@ -107,8 +107,8 @@ void LayeredNoise2dUi::on_size_valueChanged(int val) {
 
 
 void LayeredNoise2dUi::on_depth_valueChanged(int val) {
-        NodeItemValue value = node->getValue();
-        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
+        QuatschNodeValue value = node->getValue();
+        QuatschNodeValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         n2d.depth = val;
         value.setLayeredNoise2d (n2d);
         node->setValue (value);
@@ -117,8 +117,8 @@ void LayeredNoise2dUi::on_depth_valueChanged(int val) {
 
 
 void LayeredNoise2dUi::on_seed_valueChanged(int val) {
-        NodeItemValue value = node->getValue();
-        NodeItemValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
+        QuatschNodeValue value = node->getValue();
+        QuatschNodeValue::LayeredNoise2d n2d = value.asLayeredNoise2d();
         n2d.seed = val;
         value.setLayeredNoise2d (n2d);
         node->setValue (value);

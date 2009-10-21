@@ -448,13 +448,13 @@ bool NodeItem::isRootItem () const {
 
 
 
-NodeItemType NodeItem::getType() const {
+QuatschNodeType NodeItem::getType() const {
         return type;
 }
 
 
 
-void NodeItem::setType(NodeItemType type, bool forceReInit) {
+void NodeItem::setType(QuatschNodeType type, bool forceReInit) {
         if (!forceReInit && type == this->type)
                 return;
         this->type = type;
@@ -623,7 +623,7 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         Q_UNUSED(widget);
 
         QString errorMessage;
-        const bool isCompilable = this->isCompilable();
+        const bool isCompilable = QuatschNode(*this).isCompilable();
         if (isCompilable) {
                 if (isSelected()) {
                         painter->setPen(QPen(QBrush(QColor(190,250,150)), 2));
@@ -644,12 +644,13 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
                 // Prepare some error message. only 1 at a time to not confuse
                 // the user.
-                const int missingChildrenCount = getMissingChildrenCount();
-                if (isTerminal() && children.size() != 0) {
+                QuatschNode qn(*this);
+                const int missingChildrenCount = qn.getMissingChildrenCount();
+                if (qn.isTerminal() && children.size() != 0) {
                         errorMessage = "no children allowed!";
-                } else if (!areChildrenCompilable()) {
+                } else if (!qn.areChildrenCompilable()) {
                         errorMessage = "error in children!";
-                } else if (isAggregate() && missingChildrenCount != 0) {
+                } else if (qn.isAggregate() && missingChildrenCount != 0) {
                         if (missingChildrenCount < 0) {
                                 errorMessage = "has "
                                         + QString::number(-missingChildrenCount)
@@ -659,7 +660,7 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                                         + QString::number(missingChildrenCount)
                                         + " more children";
                         }
-                        if (hasDefaultParameters()) {
+                        if (qn.hasDefaultParameters()) {
                                 errorMessage += " (or 0 for default)";
                         }
                 } else if (getType() == Undefined) {
@@ -709,8 +710,8 @@ void NodeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         case PredefinedConstant:
                 painter->setFont(QFont(QFont().family(), 17, QFont::Black, true));
                 switch (value.asPredefinedConstant()) {
-                case NodeItemValue::Pi: painter->drawText (10,40,"Pi = 3.141..."); break;
-                case NodeItemValue::e: painter->drawText (10,40,"e = 2.718..."); break;
+                case QuatschNodeValue::Pi: painter->drawText (10,40,"Pi = 3.141..."); break;
+                case QuatschNodeValue::e: painter->drawText (10,40,"e = 2.718..."); break;
                 };
                 break;
         case Parameter:
@@ -1179,7 +1180,7 @@ void NodeItem::afterAnimationStep (qreal step) {
 
 
 
-NodeItemValue NodeItem::getValue () const {
+QuatschNodeValue NodeItem::getValue () const {
         /*std::cout << "getValue:\nfilter: " << value.asNoise2d().filter << std::endl;
         std::cout << "seed:   " << value.asNoise2d().seed << std::endl;
         std::cout << "width:  " << value.asNoise2d().width << std::endl;*/
@@ -1188,7 +1189,7 @@ NodeItemValue NodeItem::getValue () const {
 
 
 
-void NodeItem::setValue (NodeItemValue val) {
+void NodeItem::setValue (QuatschNodeValue val) {
         value = val;
         /*std::cout << "setValue:\nfilter: " << value.asNoise2d().filter << std::endl;
         std::cout << "seed:   " << value.asNoise2d().seed << std::endl;
@@ -1214,574 +1215,11 @@ void NodeItem::setEnableAutoUpdateHeightmap (bool enable) {
 
 
 
-bool NodeItem::isTerminal () const {
-        // Note: isTerminal() is not necessarily !isAggregate(), in case getType() is Undefined
-        switch (getType()) {
-        case PredefinedConstant:
-        case UserConstant:
-        case Parameter:
-                return true;
-
-        case Undefined:
-        case Addition:
-        case Subtraction:
-        case Multiplication:
-        case Division:
-        case Exponentiate:
-        case Minimize:
-        case Maximize:
-        case Negate:
-        case Lerp:
-        case And:
-        case Or:
-        case Not:
-        case LessThan:
-        case LessThanOrEqual:
-        case GreaterThan:
-        case GreaterThanOrEqual:
-        case Inverse:
-        case Sine:
-        case Cosine:
-        case Floor:
-        case Absolute:
-        case Truncate:
-        case Fractional:
-        case Sqrt:
-        case Log:
-        case Log10:
-        case Exp:
-        case IfThenElse:
-        case Noise2d:
-        case LayeredNoise2d:
-        case MultiplyWithPi:
-                return false;
-        };
-        throw NodeException ("switch() in NodeItem::isTerminal() is incomplete");
-}
-
-
-
-bool NodeItem::isAggregate () const {
-        // Note: isTerminal() is not necessarily !isAggregate(), in case getType() is Undefined
-        switch (getType()) {
-        case PredefinedConstant:
-        case UserConstant:
-        case Parameter:
-        case Undefined:
-                return false;
-
-        case Addition:
-        case Subtraction:
-        case Multiplication:
-        case Division:
-        case Exponentiate:
-        case Minimize:
-        case Maximize:
-        case Negate:
-        case Lerp:
-        case And:
-        case Or:
-        case Not:
-        case LessThan:
-        case LessThanOrEqual:
-        case GreaterThan:
-        case GreaterThanOrEqual:
-        case Inverse:
-        case Sine:
-        case Cosine:
-        case Floor:
-        case Absolute:
-        case Truncate:
-        case Fractional:
-        case Sqrt:
-        case Log:
-        case Log10:
-        case Exp:
-        case IfThenElse:
-        case Noise2d:
-        case LayeredNoise2d:
-        case MultiplyWithPi:
-                return true;
-        };
-        throw NodeException ("switch() in NodeItem::isAggregate() is incomplete");
-}
-
-
-
-bool NodeItem::hasDefaultParameters () const {
-        switch (getType()) {
-        case PredefinedConstant:
-        case UserConstant:
-        case Parameter:
-        case Undefined:
-        case Addition:
-        case Subtraction:
-        case Multiplication:
-        case Division:
-        case Exponentiate:
-        case Minimize:
-        case Maximize:
-        case Negate:
-        case Lerp:
-        case And:
-        case Or:
-        case Not:
-        case LessThan:
-        case LessThanOrEqual:
-        case GreaterThan:
-        case GreaterThanOrEqual:
-        case Inverse:
-        case Sine:
-        case Cosine:
-        case Floor:
-        case Absolute:
-        case Truncate:
-        case Fractional:
-        case Sqrt:
-        case Log:
-        case Log10:
-        case Exp:
-        case IfThenElse:
-        case MultiplyWithPi:
-                return false;
-
-        case Noise2d:
-        case LayeredNoise2d:
-                return true;
-        };
-        throw NodeException ("switch() in NodeItem::isAggregate() is incomplete");
-}
-
-
-
-QString NodeItem::getDefaultParameters () const {
-        switch (getType()) {
-        case PredefinedConstant:
-        case UserConstant:
-        case Parameter:
-        case Undefined:
-        case Addition:
-        case Subtraction:
-        case Multiplication:
-        case Division:
-        case Exponentiate:
-        case Minimize:
-        case Maximize:
-        case Negate:
-        case Lerp:
-        case And:
-        case Or:
-        case Not:
-        case LessThan:
-        case LessThanOrEqual:
-        case GreaterThan:
-        case GreaterThanOrEqual:
-        case Inverse:
-        case Sine:
-        case Cosine:
-        case MultiplyWithPi:
-        case Floor:
-        case Absolute:
-        case Truncate:
-        case Fractional:
-        case Sqrt:
-        case Log:
-        case Log10:
-        case Exp:
-        case IfThenElse:
-                return false;
-
-        case Noise2d:
-        case LayeredNoise2d:
-                return "x y";
-        };
-        throw NodeException ("switch() in NodeItem::isAggregate() is incomplete");
-}
-
-
-
-int NodeItem::getMinimumParameterCount () const {
-        return getParameterCount (true);
-}
-
-
-
-int NodeItem::getMaximumParameterCount () const {
-        return getParameterCount (false);
-}
-
-
-
-int NodeItem::getParameterCount (bool getMinCount) const {
-        switch (getType()) {
-        case PredefinedConstant:
-        case UserConstant:
-        case Parameter:
-                return 0;
-
-        case Undefined:
-                return -1;
-
-        case Addition:
-                if (getMinCount) return 2;
-                else return -1;
-        case Subtraction:
-                if (getMinCount) return 2;
-                else return -1;
-        case Multiplication:
-                if (getMinCount) return 2;
-                else return -1;
-        case Division:
-                if (getMinCount) return 2;
-                else return -1;
-
-        case Exponentiate:
-                if (getMinCount) return 2;
-                else return -1;
-        case Minimize:
-                if (getMinCount) return 1;
-                else return -1;
-        case Maximize:
-                if (getMinCount) return 1;
-                else return -1;
-        case Negate:
-                if (getMinCount) return 1;
-                else return 1;
-
-        case Lerp:
-                if (getMinCount) return 2;
-                else return -1;
-
-        case And:
-                if (getMinCount) return 2;
-                else return -1;
-        case Or:
-                if (getMinCount) return 2;
-                else return -1;
-        case Not:
-                if (getMinCount) return 1;
-                else return 1;
-        case LessThan:
-                if (getMinCount) return 2;
-                else return -1;
-        case LessThanOrEqual:
-                if (getMinCount) return 2;
-                else return -1;
-        case GreaterThan:
-                if (getMinCount) return 2;
-                else return -1;
-        case GreaterThanOrEqual:
-                if (getMinCount) return 2;
-                else return -1;
-
-        case Inverse:
-                if (getMinCount) return 1;
-                else return 1;
-        case Sine:
-                if (getMinCount) return 1;
-                else return 1;
-        case Cosine:
-                if (getMinCount) return 1;
-                else return 1;
-
-        case Floor:
-                if (getMinCount) return 1;
-                else return 1;
-        case Absolute:
-                if (getMinCount) return 1;
-                else return 1;
-        case Truncate:
-                if (getMinCount) return 1;
-                else return 1;
-        case Fractional:
-                if (getMinCount) return 1;
-                else return 1;
-
-        case Sqrt:
-                if (getMinCount) return 1;
-                else return 1;
-        case Log:
-                if (getMinCount) return 1;
-                else return 1;
-        case Log10:
-                if (getMinCount) return 1;
-                else return 1;
-        case Exp:
-                if (getMinCount) return 1;
-                else return 1;
-
-        case IfThenElse:
-                if (getMinCount) return 3;
-                else return 3;
-
-        case Noise2d:
-                if (getMinCount) return 2;
-                else return 2;
-        case LayeredNoise2d:
-                if (getMinCount) return 2;
-                else return 2;
-
-        case MultiplyWithPi:
-                if (getMinCount) return 1;
-                else return 1;
-        };
-        throw NodeException ("switch() in NodeItem::getParameterCount() is incomplete");
-}
-
-
-
-bool NodeItem::isChildCountOkay () const {
-        if (isTerminal() && children.size() == 0)
-                return true;
-        if (hasDefaultParameters() && children.size() == 0)
-                return true;
-        if (isAggregate()) {
-                const int
-                        minpc = getMinimumParameterCount(),
-                        maxpc = getMaximumParameterCount(),
-                        cc = children.size(),
-                        min_ok = (minpc == -1) || (cc >= minpc),
-                        max_ok = (maxpc == -1) || (cc <= maxpc),
-                        both_ok = min_ok && max_ok
-                ;
-                if (both_ok)
-                        return true;
-        }
-        return false;
-}
-
-
-
-bool NodeItem::areChildrenCompilable () const {
-        using std::list;
-        for (list<NodeItem*>::const_iterator it=children.begin();
-             it!=children.end();
-             ++it)
-        {
-                if (!(*it)->isCompilable())
-                        return false;
-        }
-        return true;
-}
-
-
-
-int NodeItem::getMissingChildrenCount () const {
-        if (isAggregate()) {
-                const int cs = static_cast<int>(children.size());
-
-                if (hasDefaultParameters() && cs == 0)
-                        return 0;
-
-                if (-1 != getMinimumParameterCount()
-                &&  cs < getMinimumParameterCount()) {
-                        return getMinimumParameterCount() - cs;
-                }
-
-                if (-1 != getMaximumParameterCount()
-                && cs > getMaximumParameterCount()) {
-                        return getMaximumParameterCount() - cs;
-                }
-        }
-        return 0;
-}
-
-
-
-bool NodeItem::isCompilable () const {
-        if (isChildCountOkay() && areChildrenCompilable())
-                return true;
-        return false;
-}
-
-
-
 /*void NodeItemEventsGlue::on_addChildNodeButton_pressed() {
         self.on_addChildNodeButton_pressed ();
 }*/
 void NodeItem::on_addChildNodeButton_pressed() {
         addChild();
-}
-
-
-
-QString NodeItem::genJuxCode (JuxGeneratorState &state) const {
-        //return "([Noise2d frequency{10} filter{nearest} seed{41}] x y)";
-        JuxGeneratorState::Frame frame = state.getFrame();
-        const QString indent = state.getIndendationString();
-
-        QString tmp;
-
-        QString prefix = "";
-        QString postfix = "";
-        switch (value.getScaleOffsetMode()) {
-        case NodeItemValue::disable:
-                break;
-        case NodeItemValue::scale_offset:
-                prefix = "(+ " + QString::number(value.getOffset())
-                       + " (* " + QString::number(value.getScale()) + " ";
-                postfix = "))";
-                break;
-        case NodeItemValue::offset_scale:
-                prefix = "(* " + QString::number(value.getScale())
-                       + " (+ " + QString::number(value.getOffset()) + " ";
-                postfix = "))";
-                break;
-        };
-
-        switch (getType()) {
-        case PredefinedConstant:
-                switch (value.asPredefinedConstant()) {
-                case NodeItemValue::Pi: return indent + prefix + "3.1415926535897932385/*pi*/" + postfix + "\n";
-                case NodeItemValue::e:  return indent + prefix + "2.7182818284590452355/*e*/" + postfix + "\n";
-                };
-
-        case UserConstant:
-                return indent + prefix + QString::number(value.asFloatConstant()) + postfix + "\n";
-
-        case Parameter:
-                return indent + prefix + QString::fromStdString(value.asParameter()) + postfix + "\n";
-
-        case Undefined:
-
-        case Addition:
-                tmp = indent + "( +\n";
-                goto aggregate;
-        case Subtraction:
-                tmp = indent + "( -\n";
-                goto aggregate;
-        case Multiplication:
-                tmp = indent + "( *\n";
-                goto aggregate;
-        case Division:
-                tmp = indent + "( /\n";
-                goto aggregate;
-
-        case Exponentiate:
-                tmp = indent + "( ^ \n";
-                goto aggregate;
-        case Minimize:
-                tmp = indent + "( min \n";
-                goto aggregate;
-        case Maximize:
-                tmp = indent + "( max \n";
-                goto aggregate;
-        case Negate:
-                tmp = indent + "( neg \n";
-                goto aggregate;
-
-        case Lerp:
-                tmp = indent + "( lerp \n";
-                goto aggregate;
-
-        case And:
-                tmp = indent + "( and \n";
-                goto aggregate;
-        case Or:
-                tmp = indent + "( or \n";
-                goto aggregate;
-        case Not:
-                tmp = indent + "( not \n";
-                goto aggregate;
-        case LessThan:
-                tmp = indent + "( < \n";
-                goto aggregate;
-        case LessThanOrEqual:
-                tmp = indent + "( <= \n";
-                goto aggregate;
-        case GreaterThan:
-                tmp = indent + "( > \n";
-                goto aggregate;
-        case GreaterThanOrEqual:
-                tmp = indent + "( >= \n";
-                goto aggregate;
-
-        case Inverse:
-                tmp = indent + "( inv\n";
-                goto aggregate;
-        case Sine:
-                tmp = indent + "( sin\n";
-                goto aggregate;
-        case Cosine:
-                tmp = indent + "( cos\n";
-                goto aggregate;
-
-        case Floor:
-                tmp = indent + "( floor\n";
-                goto aggregate;
-        case Absolute:
-                tmp = indent + "( abs\n";
-                goto aggregate;
-        case Truncate:
-                tmp = indent + "( trunc\n";
-                goto aggregate;
-        case Fractional:
-                tmp = indent + "( frac\n";
-                goto aggregate;
-
-        case Sqrt:
-                tmp = indent + "( sqrt\n";
-                goto aggregate;
-        case Log:
-                tmp = indent + "( log\n";
-                goto aggregate;
-        case Log10:
-                tmp = indent + "( log10\n";
-                goto aggregate;
-        case Exp:
-                tmp = indent + "( exp\n";
-                goto aggregate;
-
-        case IfThenElse:
-                tmp = indent + "(if \n";
-                goto aggregate;
-
-        case Noise2d:
-                tmp = indent + "( [Noise2d " +
-                      "frequency{" + QString::number(value.asNoise2d().width) + "} " +
-                      "seed{" + QString::number(value.asNoise2d().seed) + "}";
-                switch (value.asNoise2d().filter) {
-                case NodeItemValue::Noise2d::Nearest: tmp += "filter{nearest}"; break;
-                case NodeItemValue::Noise2d::Bilinear: tmp += "filter{bilinear}"; break;
-                case NodeItemValue::Noise2d::Cosine: tmp += "filter{cosine}"; break;
-                };
-                tmp += "] \n";
-                goto aggregate;
-        case LayeredNoise2d:
-                tmp = indent + "( [LayeredNoise2d " +
-                      "frequency{" + QString::number(value.asLayeredNoise2d().width) + "} " +
-                      "seed{" + QString::number(value.asLayeredNoise2d().seed) + "}"
-                      "persistence{0.5}" // + QString::number(value.asNoise2d().seed) + "}"
-                      "layercount{" + QString::number(value.asLayeredNoise2d().depth) + "}"
-                ;
-                switch (value.asLayeredNoise2d().filter) {
-                case NodeItemValue::LayeredNoise2d::Nearest: tmp += "filter{nearest}"; break;
-                case NodeItemValue::LayeredNoise2d::Bilinear: tmp += "filter{bilinear}"; break;
-                case NodeItemValue::LayeredNoise2d::Cosine: tmp += "filter{cosine}"; break;
-                };
-                tmp += "] \n";
-                goto aggregate;
-
-        case MultiplyWithPi:
-                tmp = indent + "( *\n"
-                    + indent + indent + "3.1415926535897932385/*pi*/\n";
-                goto aggregate;
-        aggregate:
-
-                if (hasDefaultParameters() && children.size() == 0) {
-                       tmp += indent + getDefaultParameters();
-                } else for (std::list<NodeItem*>::const_iterator it=children.begin();
-                     it != children.end();
-                     ++it
-                ) {
-                        tmp += (*it)->genJuxCode (state);
-                }
-
-                tmp += indent + ")\n";
-                return prefix + tmp + postfix;
-        };
-        return "<err>";
-        throw NodeException ("switch() in NodeItem::genJuxCode() is incomplete");
 }
 
 
@@ -1831,84 +1269,84 @@ QImage NodeItem::genHeightmap (int w, int h) const {
 }
 
 
-const actuarius::Enum<NodeItemType> NodeItemTypeNames =
-        (actuarius::Nvp<NodeItemType>(Undefined,"Undefined")
-        |actuarius::Nvp<NodeItemType>(Parameter,"Parameter")
-        |actuarius::Nvp<NodeItemType>(UserConstant,"UserConstant")
-        |actuarius::Nvp<NodeItemType>(PredefinedConstant,"PredefinedConstant")
+const actuarius::Enum<QuatschNodeType> QuatschNodeTypeNames =
+        (actuarius::Nvp<QuatschNodeType>(Undefined,"Undefined")
+        |actuarius::Nvp<QuatschNodeType>(Parameter,"Parameter")
+        |actuarius::Nvp<QuatschNodeType>(UserConstant,"UserConstant")
+        |actuarius::Nvp<QuatschNodeType>(PredefinedConstant,"PredefinedConstant")
 
         // +-*/
-        |actuarius::Nvp<NodeItemType>(Addition,"Addition")
-        |actuarius::Nvp<NodeItemType>(Subtraction,"Subtraction")
-        |actuarius::Nvp<NodeItemType>(Multiplication,"Multiplication")
-        |actuarius::Nvp<NodeItemType>(Division,"Division")
+        |actuarius::Nvp<QuatschNodeType>(Addition,"Addition")
+        |actuarius::Nvp<QuatschNodeType>(Subtraction,"Subtraction")
+        |actuarius::Nvp<QuatschNodeType>(Multiplication,"Multiplication")
+        |actuarius::Nvp<QuatschNodeType>(Division,"Division")
 
         // ^ min max neg
-        |actuarius::Nvp<NodeItemType>(Exponentiate,"Exponentiate")
-        |actuarius::Nvp<NodeItemType>(Minimize,"Minimize")
-        |actuarius::Nvp<NodeItemType>(Maximize,"Maximize")
-        |actuarius::Nvp<NodeItemType>(Negate,"Negate")
+        |actuarius::Nvp<QuatschNodeType>(Exponentiate,"Exponentiate")
+        |actuarius::Nvp<QuatschNodeType>(Minimize,"Minimize")
+        |actuarius::Nvp<QuatschNodeType>(Maximize,"Maximize")
+        |actuarius::Nvp<QuatschNodeType>(Negate,"Negate")
 
         // lerp
-        |actuarius::Nvp<NodeItemType>(Lerp,"Lerp")
+        |actuarius::Nvp<QuatschNodeType>(Lerp,"Lerp")
 
         // and or not
-        |actuarius::Nvp<NodeItemType>(And,"And")
-        |actuarius::Nvp<NodeItemType>(Or,"Or")
-        |actuarius::Nvp<NodeItemType>(Not,"Not")
+        |actuarius::Nvp<QuatschNodeType>(And,"And")
+        |actuarius::Nvp<QuatschNodeType>(Or,"Or")
+        |actuarius::Nvp<QuatschNodeType>(Not,"Not")
 
         // < <= > >= = !=
-        |actuarius::Nvp<NodeItemType>(LessThan,"LessThan")
-        |actuarius::Nvp<NodeItemType>(LessThanOrEqual,"LessThanOrEqual")
-        |actuarius::Nvp<NodeItemType>(GreaterThan,"GreaterThan")
-        |actuarius::Nvp<NodeItemType>(GreaterThanOrEqual,"GreaterThanOrEqual")
+        |actuarius::Nvp<QuatschNodeType>(LessThan,"LessThan")
+        |actuarius::Nvp<QuatschNodeType>(LessThanOrEqual,"LessThanOrEqual")
+        |actuarius::Nvp<QuatschNodeType>(GreaterThan,"GreaterThan")
+        |actuarius::Nvp<QuatschNodeType>(GreaterThanOrEqual,"GreaterThanOrEqual")
         //Equal,
         //NotEqual,
 
         // [] ]] ][ [[
 
         // inv sin cos
-        |actuarius::Nvp<NodeItemType>(Inverse,"Inverse")
-        |actuarius::Nvp<NodeItemType>(Sine,"Sine")
-        |actuarius::Nvp<NodeItemType>(Cosine,"Cosine")
+        |actuarius::Nvp<QuatschNodeType>(Inverse,"Inverse")
+        |actuarius::Nvp<QuatschNodeType>(Sine,"Sine")
+        |actuarius::Nvp<QuatschNodeType>(Cosine,"Cosine")
 
         // floor abs trunc frac
-        |actuarius::Nvp<NodeItemType>(Floor,"Floor")
-        |actuarius::Nvp<NodeItemType>(Absolute,"Absolute")
-        |actuarius::Nvp<NodeItemType>(Truncate,"Truncate")
-        |actuarius::Nvp<NodeItemType>(Fractional,"Fractional")
+        |actuarius::Nvp<QuatschNodeType>(Floor,"Floor")
+        |actuarius::Nvp<QuatschNodeType>(Absolute,"Absolute")
+        |actuarius::Nvp<QuatschNodeType>(Truncate,"Truncate")
+        |actuarius::Nvp<QuatschNodeType>(Fractional,"Fractional")
 
         // sqrt log log10 exp
-        |actuarius::Nvp<NodeItemType>(Sqrt,"Sqrt")
-        |actuarius::Nvp<NodeItemType>(Log,"Log")
-        |actuarius::Nvp<NodeItemType>(Log10,"Log10")
-        |actuarius::Nvp<NodeItemType>(Exp,"Exp")
+        |actuarius::Nvp<QuatschNodeType>(Sqrt,"Sqrt")
+        |actuarius::Nvp<QuatschNodeType>(Log,"Log")
+        |actuarius::Nvp<QuatschNodeType>(Log10,"Log10")
+        |actuarius::Nvp<QuatschNodeType>(Exp,"Exp")
 
         // delta
 
         // if
-        |actuarius::Nvp<NodeItemType>(IfThenElse,"IfThenElse")
+        |actuarius::Nvp<QuatschNodeType>(IfThenElse,"IfThenElse")
 
         // [configurable]
-        |actuarius::Nvp<NodeItemType>(Noise2d,"Noise2d")
-        |actuarius::Nvp<NodeItemType>(LayeredNoise2d,"LayeredNoise2d")
+        |actuarius::Nvp<QuatschNodeType>(Noise2d,"Noise2d")
+        |actuarius::Nvp<QuatschNodeType>(LayeredNoise2d,"LayeredNoise2d")
 
         // mulpi
-        |actuarius::Nvp<NodeItemType>(MultiplyWithPi,"MultiplyWithPi")
+        |actuarius::Nvp<QuatschNodeType>(MultiplyWithPi,"MultiplyWithPi")
 );
 
 
 
 /*
-struct SerializableNodeitem {
+struct QuatschNode {
         NodeItem::Type type;
-        NodeItemValue value;
+        QuatschNodeValue value;
 
         template<typename Archive>
         void serialize (Archive &arch) {
                 using actuarius::pack;
 
-                arch & pack ("type", NodeItemTypeNames, type);
+                arch & pack ("type", QuatschNodeTypeNames, type);
                 arch & pack ("value", value);
         }
 };
@@ -1919,10 +1357,10 @@ void NodeItem::serialize (Archive &arch) {
         //arch
 
 
-        arch & pack ("type", NodeItemTypeNames, type);
+        arch & pack ("type", QuatschNodeTypeNames, type);
         arch & pack ("value", value);
 
-        // TODO: write small SerializableNodeItem class or so
+        // TODO: write small QuatschNode class or so
         if (Archive::serialize) {
                 for (std::list<NodeItem*>::iterator it=this->children.begin();
                         it!=this->children.end();
@@ -1947,7 +1385,7 @@ void NodeItem::serialize (Archive &arch) {
 
 void NodeItem::serialize (std::string name, std::ostream &os) {
         using namespace actuarius;
-        SerializableNodeItem sni(*this);
+        QuatschNode sni(*this);
         OArchive(os) & pack (name.c_str(), sni);
 }
 
@@ -1956,11 +1394,33 @@ void NodeItem::serialize (std::string name, std::ostream &os) {
 void NodeItem::deserialize (std::string name, std::istream &is) {
         using namespace actuarius;
 
-        SerializableNodeItem sni(*this);
+        QuatschNode sni(*this);
         IArchive(is) & pack (name.c_str(), sni);
+        *this = sni;
         doLayout();
 
         // hacked
         select();
         setSelected(false);
+}
+
+
+
+NodeItem & NodeItem::operator = (QuatschNode const &rhs) {
+        killChildren();
+
+        // init node
+        setType (rhs.type);
+        setValue (rhs.value);
+
+        // init children
+        for (std::vector<QuatschNode>::const_iterator
+                it=rhs.children.begin();
+                it!=rhs.children.end();
+                ++it
+        ) {
+                NodeItem *kid = addChild();
+                *kid = *it;
+        }
+        return *this;
 }

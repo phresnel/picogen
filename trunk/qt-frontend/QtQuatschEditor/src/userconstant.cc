@@ -54,7 +54,7 @@ void UserConstantUi::changeEvent(QEvent *e) {
 }
 
 void UserConstantUi::on_doubleSpinBox_valueChanged(double f) {
-        NodeItemValue val = node->getValue();
+        QuatschNodeValue val = node->getValue();
         val.setFloatConstant(f);
         node->setValue (val);
 }

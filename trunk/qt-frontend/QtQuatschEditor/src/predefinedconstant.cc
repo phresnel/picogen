@@ -33,8 +33,8 @@ PredefinedConstantUi::PredefinedConstantUi(NodeItem *node_, QWidget *parent) :
         node->setEnableAutoUpdateHeightmap(false);
 
         switch (node->getValue().asPredefinedConstant()) {
-        case NodeItemValue::Pi: m_ui->comboBox->setCurrentIndex(0); break;
-        case NodeItemValue::e: m_ui->comboBox->setCurrentIndex(1); break;
+        case QuatschNodeValue::Pi: m_ui->comboBox->setCurrentIndex(0); break;
+        case QuatschNodeValue::e: m_ui->comboBox->setCurrentIndex(1); break;
         };
         on_comboBox_currentIndexChanged (m_ui->comboBox->currentIndex());
 
@@ -62,14 +62,14 @@ void PredefinedConstantUi::changeEvent(QEvent *e) {
 }
 
 void PredefinedConstantUi::on_comboBox_currentIndexChanged(int index) {
-        NodeItemValue val = node->getValue();
+        QuatschNodeValue val = node->getValue();
         switch (index) {
         case 0:
-                val.setPredefinedConstant(NodeItemValue::Pi);
+                val.setPredefinedConstant(QuatschNodeValue::Pi);
                 m_ui->valueLabel->setText("3.14159265...");
                 break;
         case 1:
-                val.setPredefinedConstant(NodeItemValue::e);
+                val.setPredefinedConstant(QuatschNodeValue::e);
                 m_ui->valueLabel->setText("2.71828183...");
                 break;
         };

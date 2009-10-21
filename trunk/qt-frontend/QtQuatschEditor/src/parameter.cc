@@ -32,7 +32,7 @@ ParameterUi::ParameterUi(NodeItem *node_, QWidget *parent) :
 
     node->setEnableAutoUpdateHeightmap(false);
 
-    const NodeItemValue val = node->getValue();
+    const QuatschNodeValue val = node->getValue();
     const std::string name = val.asParameter();
     if ("x" == name) {
             m_ui->comboBox->setCurrentIndex(0);
@@ -69,7 +69,7 @@ void ParameterUi::changeEvent(QEvent *e) {
 
 void ParameterUi::on_comboBox_currentIndexChanged(int index) {
 
-        NodeItemValue val = node->getValue();
+        QuatschNodeValue val = node->getValue();
 
         switch (index) {
         case 0:
