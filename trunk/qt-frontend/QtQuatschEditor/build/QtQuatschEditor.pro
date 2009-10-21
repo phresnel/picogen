@@ -17,7 +17,6 @@ SOURCES += ../src/main.cpp \
     ../src/nodeitem.cc \
     ../src/edgeitem.cc \
     ../src/noise2d.cc \
-    ../src/nodelist.cc \
     ../src/layerednoise2d.cc \
     ../../common/src/quatschnode.cc
 HEADERS += ../include/qtquatscheditor.hh \
@@ -27,7 +26,6 @@ HEADERS += ../include/qtquatscheditor.hh \
     ../include/nodeitem.hh \
     ../include/edgeitem.hh \
     ../include/noise2d.hh \
-    ../include/nodelist.hh \
     ../include/layerednoise2d.hh \
     ../../common/include/quatschnode.hh
 FORMS += ../forms/qtquatscheditor.ui \
@@ -35,6 +33,5 @@ FORMS += ../forms/qtquatscheditor.ui \
     ../forms/predefinedconstant.ui \
     ../forms/parameter.ui \
     ../forms/noise2d.ui \
-    ../forms/nodelist.ui \
     ../forms/layerednoise2d.ui
 RESOURCES += ../resources/icons.qrc
