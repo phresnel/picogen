@@ -30,7 +30,7 @@ Compiler::FunctionPtr QuatschNode::genQuatsch () const {
         JuxGeneratorState state;
         Compiler::FunctionPtr fun (Compiler::compile (
                 "x;y",
-                genJuxCode (state).toStdString(),
+                genJuxCode (state),
                 addfuns,
                 std::cerr
         ));
