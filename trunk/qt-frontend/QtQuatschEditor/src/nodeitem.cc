@@ -50,30 +50,6 @@ NodeItem::NodeItem(
 
         setType (type, true);
         clearHighlight();
-
-
-        typedef quatsch::ICreateConfigurableFunction<Function> ccf;
-        typedef ccf::ConfigurableFunctionDescriptionPtr ccf_ptr;
-
-        ccf_ptr
-                noiseDesc (
-                        new quatsch::CreateConfigurableFunction <
-                                quatsch::configurable_functions::Noise2d <
-                                        Function, Compiler>,
-                                Function
-                        >
-                ),
-                layeredNoiseDesc (
-                        new quatsch::CreateConfigurableFunction <
-                                quatsch::configurable_functions::LayeredNoise2d<
-                                        Function, Compiler>,
-                                Function
-                        >
-                )
-        ;
-
-        addfuns.addSymbol ("Noise2d", noiseDesc);
-        addfuns.addSymbol ("LayeredNoise2d", layeredNoiseDesc);
 }
 
 
@@ -1225,14 +1201,7 @@ void NodeItem::on_addChildNodeButton_pressed() {
 
 
 Compiler::FunctionPtr NodeItem::genQuatsch () const {
-        JuxGeneratorState state;
-        Compiler::FunctionPtr fun (Compiler::compile (
-                "x;y",
-                genJuxCode (state).toStdString(),
-                addfuns,
-                std::cerr
-        ));
-        return fun;
+        return QuatschNode (*this).genQuatsch();
 }
 
 

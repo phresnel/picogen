@@ -24,6 +24,21 @@
 #include "../include/quatschnode.hh"
 
 
+
+
+Compiler::FunctionPtr QuatschNode::genQuatsch () const {
+        JuxGeneratorState state;
+        Compiler::FunctionPtr fun (Compiler::compile (
+                "x;y",
+                genJuxCode (state).toStdString(),
+                addfuns,
+                std::cerr
+        ));
+        return fun;
+}
+
+
+
 std::string QuatschNode::genJuxCode (JuxGeneratorState &state) const {
         //return "([Noise2d frequency{10} filter{nearest} seed{41}] x y)";
         JuxGeneratorState::Frame frame = state.getFrame();

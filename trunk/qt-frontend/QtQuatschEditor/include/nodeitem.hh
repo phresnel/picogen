@@ -113,11 +113,9 @@ public:
                 QuatschNode qn (*this);
                 return QString::fromStdString(qn.genJuxCode(state));
         }
-
-        QImage genHeightmap (int w, int h) const ;
         Compiler::FunctionPtr genQuatsch () const ;
 
-
+        QImage genHeightmap (int w, int h) const ;
         NodeItem & operator = (QuatschNode const &rhs);
 
 protected:
@@ -137,8 +135,6 @@ private:
         void move (float ofs_x, float ofs_y);
         void move (QPointF const &ofs);
         void updateEdgeItems ();
-
-        Compiler::ConfigurableFunctionsMap addfuns;
 
         QuatschNodeValue value;
         //QWidget *propertyWidget;

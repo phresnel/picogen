@@ -26,7 +26,6 @@ HEADERS += ../include/qtquatscheditor.hh \
     ../include/parameter.hh \
     ../include/nodeitem.hh \
     ../include/edgeitem.hh \
-    ../include/jux_gen.hh \
     ../include/noise2d.hh \
     ../include/nodelist.hh \
     ../include/layerednoise2d.hh \
