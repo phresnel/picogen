@@ -43,7 +43,7 @@ namespace redshift {
         };
 
         typedef float real_t;
-        typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;        
+        typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
         //typedef float fixed_point_t; //<-- lasttime I checked, floats where
                                        // at only roughly 70% of runtime
                                        // compared to int
@@ -65,19 +65,19 @@ namespace redshift {
         typedef kallisto::Ray   <Point,Vector>          Ray;
         typedef kallisto::RayDifferential<Point,Vector> RayDifferential;
         typedef kallisto::OrthonormalBasis<Vector>      OrthonormalBasis;
-        
+
         using kallisto::intersect;
         using kallisto::vector_cast;
         using kallisto::scalar_cast;
-        
+
         template <typename T> inline T min (T const &lhs, T const &rhs) {
-                return lhs < rhs ? lhs : rhs; 
+                return lhs < rhs ? lhs : rhs;
         }
-        
+
         template <typename T> inline T max (T const &lhs, T const &rhs) {
-                return lhs > rhs ? lhs : rhs; 
+                return lhs > rhs ? lhs : rhs;
         }
-        
+
 }
 
 #include "basictypes/rgb.hh"
@@ -93,53 +93,70 @@ namespace redshift {
         namespace static_config {
                 enum { debug = 0 }; // should be set by #define macro
         }
-        
+
         namespace constants {
-        
+
                 // TODO clean up epsilon value
                 template <typename> struct epsilon_value;
                 template <> struct epsilon_value<float> {
-                        static float const value; 
+                        static float const value;
                 };
                 template <> struct epsilon_value<double> {
-                        static double const value; 
+                        static double const value;
                 };
                 template <> struct epsilon_value<long double> {
-                        static long double const value; 
+                        static long double const value;
                 };
-                
-                
+
+
                 // TODO clean up infinity value
                 template <typename> struct infinity_value;
                 template <> struct infinity_value<float> {
-                        static float const value; 
+                        static float const value;
                 };
                 template <> struct infinity_value<double> {
-                        static double const value; 
+                        static double const value;
                 };
                 template <> struct infinity_value<long double> {
-                        static long double const value; 
-                };                
-                
+                        static long double const value;
+                };
+
+
+                // TODO clean up pi value
+                template <typename> struct pi_value;
+                template <> struct pi_value<float> {
+                        static float const value;
+                };
+                template <> struct pi_value<double> {
+                        static double const value;
+                };
+                template <> struct pi_value<long double> {
+                        static long double const value;
+                };
+
+
                 extern real_t const epsilon;
-                extern real_t const infinity;                
- 
+                extern real_t const pi;
+                extern real_t const infinity;
+
                 template<typename T> inline T km2m (T const &v) {
                         return T(1000) * v;
                 }
-                
+
                 extern real_t const earth_radius_m;
                 extern real_t const sun_radius_m;
                 extern real_t const jupiter_radius_m;
-                
+
                 extern real_t const zero;
                 extern real_t const one;
-                extern real_t const two;                
+                extern real_t const two;
         }
 }
 
 #include "smart_ptr.hh"
 #include "tuple.hh"
 #include "optional.hh"
+
+#include "../../skylab/include/preetham.hh"
 
 #endif // SETUP_HH_INCLUDED_20090303

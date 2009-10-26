@@ -73,9 +73,9 @@ namespace kallisto {
                 }
 
         public: // Friend injections.
-                
+
         };
-        
+
         // vector = point - point
         // Left for reference: Below thing is useless, as ADL won't
         // take the return value into account:

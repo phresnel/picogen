@@ -528,6 +528,9 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                 ui->typeCombo->setCurrentIndex (type);
 
                 const QuatschNodeValue value = node->getValue();
+
+                ui->scale->setValue(value.getScale());
+                ui->offset->setValue(value.getOffset());
                 switch (value.getScaleOffsetMode()) {
                 case QuatschNodeValue::disable:
                         ui->scaleOffsetMode->setCurrentIndex(0);
@@ -539,8 +542,10 @@ void QtQuatschEditor::on_graphicsScene_selectionChanged() {
                         ui->scaleOffsetMode->setCurrentIndex(2);
                         break;
                 };
-                ui->scale->setValue(value.getScale());
-                ui->offset->setValue(value.getOffset());
+                // CurrentIndexChanged() seems to not be called
+                // by Qt upon setCurrentIndex().
+                on_scaleOffsetMode_currentIndexChanged(
+                                ui->scaleOffsetMode->currentIndex());
 
                 if (node->isRootItem()) {
                         ui->insertLeftSiblingButton->setEnabled (false);
@@ -640,12 +645,18 @@ void QtQuatschEditor::on_scaleOffsetMode_currentIndexChanged(int index) {
                 switch (index) {
                 case 0:
                         val.setScaleOffsetMode(QuatschNodeValue::disable);
+                        ui->scale->setEnabled(false);
+                        ui->offset->setEnabled(false);
                         break;
                 case 1:
                         val.setScaleOffsetMode(QuatschNodeValue::offset_scale);
+                        ui->scale->setEnabled(true);
+                        ui->offset->setEnabled(true);
                         break;
                 case 2:
                         val.setScaleOffsetMode(QuatschNodeValue::scale_offset);
+                        ui->scale->setEnabled(true);
+                        ui->offset->setEnabled(true);
                         break;
                 };
 
