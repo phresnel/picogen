@@ -119,11 +119,11 @@ Preetham::Preetham() :
 
 
 void Preetham::setSunDirection (Vector3d pw) {
-        Vector3d w = normalize(-pw);
+        const Vector3d w = normalize(-pw);
         m_sunDirection = -w;
 
         m_sunTheta = acos (m_sunDirection.y);
-        m_sunPhi   = atan2 (m_sunDirection.x,m_sunDirection.z);
+        m_sunPhi   = atan2 (m_sunDirection.z,m_sunDirection.x);
 }
 
 
