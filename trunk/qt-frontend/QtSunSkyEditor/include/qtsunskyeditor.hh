@@ -18,16 +18,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #ifndef QTSUNSKYEDITOR_HH
 #define QTSUNSKYEDITOR_HH
 
+
+
+#include "kallisto/common.hh"
 #include <QWidget>
+#include <QImage>
+#include <QMouseEvent>
+#include "ui_qtsunskyeditor.h"
+#include "redshift.hh"
+
+
 
 namespace Ui {
         class qtsunskyeditor;
 }
+
+
 
 class QtSunSkyEditor : public QWidget {
         Q_OBJECT
@@ -39,10 +48,12 @@ protected:
         void changeEvent(QEvent *e);
         void resizeEvent (QResizeEvent*);
 
-private:
-        Ui::qtsunskyeditor *ui;
+        void mouseMoveEvent(QMouseEvent*);
+        void mousePressEvent(QMouseEvent*);
 
-        void redraw();
+private:
+        void redraw(bool drawCross=false, float crossU=0, float crossV=0);
+
 
         struct rgbf {
                 rgbf(){}
@@ -50,6 +61,18 @@ private:
                 float r,g,b;
         };
         rgbf computeColor (float u, float v) const;
+
+        redshift::optional<redshift::Vector>
+                screenToHemisphere (float u, float v) const;
+        redshift::Vector screenToHemisphereSat (float u, float v) const;
+
+
+        Ui::qtsunskyeditor *ui;
+        redshift::background::Preetham preetham;
+
+private slots:
+        void on_turbiditySpinBox_valueChanged(double );
+        void on_turbidityDial_sliderMoved(int position);
 };
 
 #endif // QTSUNSKYEDITOR_HH

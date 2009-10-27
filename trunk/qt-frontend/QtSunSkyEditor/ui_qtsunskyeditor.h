@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'qtsunskyeditor.ui'
 **
-** Created: Mon Oct 26 08:06:40 2009
+** Created: Tue Oct 27 09:54:06 2009
 **      by: Qt User Interface Compiler version 4.6.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -15,11 +15,12 @@
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
 #include <QtGui/QDial>
+#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QFormLayout>
 #include <QtGui/QGridLayout>
 #include <QtGui/QGroupBox>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
-#include <QtGui/QSpacerItem>
 #include <QtGui/QSpinBox>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
@@ -31,21 +32,23 @@ class Ui_qtsunskyeditor
 public:
     QGridLayout *gridLayout;
     QLabel *previewScreen;
-    QGroupBox *groupBox;
-    QVBoxLayout *verticalLayout;
-    QDial *dial;
-    QSpinBox *spinBox;
+    QVBoxLayout *verticalLayout_3;
+    QGroupBox *groupBox_3;
+    QFormLayout *formLayout;
+    QLabel *label;
+    QSpinBox *previewResolution;
+    QGroupBox *groupBox_4;
+    QVBoxLayout *verticalLayout_4;
     QGroupBox *groupBox_2;
     QVBoxLayout *verticalLayout_2;
-    QDial *dial_2;
-    QSpinBox *spinBox_2;
-    QSpacerItem *verticalSpacer;
+    QDial *turbidityDial;
+    QDoubleSpinBox *turbiditySpinBox;
 
     void setupUi(QWidget *qtsunskyeditor)
     {
         if (qtsunskyeditor->objectName().isEmpty())
             qtsunskyeditor->setObjectName(QString::fromUtf8("qtsunskyeditor"));
-        qtsunskyeditor->resize(496, 300);
+        qtsunskyeditor->resize(550, 421);
         qtsunskyeditor->setStyleSheet(QString::fromUtf8("QWidget {\n"
 "	background-color: rgb(90, 90, 90);\n"
 "	color: rgb(255,255,255);\n"
@@ -84,6 +87,11 @@ public:
 "	color: rgb(255, 193, 100);\n"
 ""
                         "}\n"
+"QGroupBox > QGroupBox::title {\n"
+"	subcontrol-origin: margin;\n"
+"	subcontrol-position: top center; /* position at the top center */\n"
+"	color: rgb(200, 160, 90);\n"
+"}\n"
 "QGraphicsView, #previewScreen {\n"
 "	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,\n"
 "             stop:0 rgb(108, 128, 108), \n"
@@ -109,71 +117,87 @@ public:
 
         gridLayout->addWidget(previewScreen, 0, 0, 3, 1);
 
-        groupBox = new QGroupBox(qtsunskyeditor);
-        groupBox->setObjectName(QString::fromUtf8("groupBox"));
+        verticalLayout_3 = new QVBoxLayout();
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        groupBox_3 = new QGroupBox(qtsunskyeditor);
+        groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
         QSizePolicy sizePolicy1(QSizePolicy::Maximum, QSizePolicy::Maximum);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(groupBox->sizePolicy().hasHeightForWidth());
-        groupBox->setSizePolicy(sizePolicy1);
-        verticalLayout = new QVBoxLayout(groupBox);
-        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        verticalLayout->setSizeConstraint(QLayout::SetMaximumSize);
-        dial = new QDial(groupBox);
-        dial->setObjectName(QString::fromUtf8("dial"));
-        sizePolicy1.setHeightForWidth(dial->sizePolicy().hasHeightForWidth());
-        dial->setSizePolicy(sizePolicy1);
-        dial->setStyleSheet(QString::fromUtf8(""));
-        dial->setMaximum(360);
-        dial->setTracking(true);
-        dial->setInvertedAppearance(false);
-        dial->setInvertedControls(false);
-        dial->setWrapping(true);
-        dial->setNotchesVisible(true);
+        sizePolicy1.setHeightForWidth(groupBox_3->sizePolicy().hasHeightForWidth());
+        groupBox_3->setSizePolicy(sizePolicy1);
+        formLayout = new QFormLayout(groupBox_3);
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+        label = new QLabel(groupBox_3);
+        label->setObjectName(QString::fromUtf8("label"));
 
-        verticalLayout->addWidget(dial);
+        formLayout->setWidget(0, QFormLayout::LabelRole, label);
 
-        spinBox = new QSpinBox(groupBox);
-        spinBox->setObjectName(QString::fromUtf8("spinBox"));
-        spinBox->setMaximum(360);
+        previewResolution = new QSpinBox(groupBox_3);
+        previewResolution->setObjectName(QString::fromUtf8("previewResolution"));
+        QSizePolicy sizePolicy2(QSizePolicy::Maximum, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(previewResolution->sizePolicy().hasHeightForWidth());
+        previewResolution->setSizePolicy(sizePolicy2);
+        previewResolution->setMinimum(1);
+        previewResolution->setMaximum(4);
 
-        verticalLayout->addWidget(spinBox);
+        formLayout->setWidget(0, QFormLayout::FieldRole, previewResolution);
 
 
-        gridLayout->addWidget(groupBox, 0, 1, 1, 1);
+        verticalLayout_3->addWidget(groupBox_3);
 
-        groupBox_2 = new QGroupBox(qtsunskyeditor);
+        groupBox_4 = new QGroupBox(qtsunskyeditor);
+        groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
+        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Maximum);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
+        groupBox_4->setSizePolicy(sizePolicy3);
+        verticalLayout_4 = new QVBoxLayout(groupBox_4);
+        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        groupBox_2 = new QGroupBox(groupBox_4);
         groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
-        sizePolicy1.setHeightForWidth(groupBox_2->sizePolicy().hasHeightForWidth());
-        groupBox_2->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(groupBox_2->sizePolicy().hasHeightForWidth());
+        groupBox_2->setSizePolicy(sizePolicy4);
+        groupBox_2->setFlat(false);
+        groupBox_2->setCheckable(false);
         verticalLayout_2 = new QVBoxLayout(groupBox_2);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        dial_2 = new QDial(groupBox_2);
-        dial_2->setObjectName(QString::fromUtf8("dial_2"));
-        dial_2->setMaximum(90);
-        dial_2->setNotchesVisible(true);
+        turbidityDial = new QDial(groupBox_2);
+        turbidityDial->setObjectName(QString::fromUtf8("turbidityDial"));
+        turbidityDial->setMinimum(165);
+        turbidityDial->setMaximum(4000);
+        turbidityDial->setNotchTarget(37);
+        turbidityDial->setNotchesVisible(true);
 
-        verticalLayout_2->addWidget(dial_2);
+        verticalLayout_2->addWidget(turbidityDial);
 
-        spinBox_2 = new QSpinBox(groupBox_2);
-        spinBox_2->setObjectName(QString::fromUtf8("spinBox_2"));
-        spinBox_2->setMaximum(90);
+        turbiditySpinBox = new QDoubleSpinBox(groupBox_2);
+        turbiditySpinBox->setObjectName(QString::fromUtf8("turbiditySpinBox"));
+        turbiditySpinBox->setMinimum(1.65);
+        turbiditySpinBox->setMaximum(40);
+        turbiditySpinBox->setSingleStep(0.01);
+        turbiditySpinBox->setValue(2.2);
 
-        verticalLayout_2->addWidget(spinBox_2);
+        verticalLayout_2->addWidget(turbiditySpinBox);
 
 
-        gridLayout->addWidget(groupBox_2, 1, 1, 1, 1);
+        verticalLayout_4->addWidget(groupBox_2);
 
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        gridLayout->addItem(verticalSpacer, 2, 1, 1, 1);
+        verticalLayout_3->addWidget(groupBox_4);
+
+
+        gridLayout->addLayout(verticalLayout_3, 0, 1, 1, 1);
 
 
         retranslateUi(qtsunskyeditor);
-        QObject::connect(dial, SIGNAL(valueChanged(int)), spinBox, SLOT(setValue(int)));
-        QObject::connect(spinBox, SIGNAL(valueChanged(int)), dial, SLOT(setValue(int)));
-        QObject::connect(dial_2, SIGNAL(valueChanged(int)), spinBox_2, SLOT(setValue(int)));
-        QObject::connect(spinBox_2, SIGNAL(valueChanged(int)), dial_2, SLOT(setValue(int)));
 
         QMetaObject::connectSlotsByName(qtsunskyeditor);
     } // setupUi
@@ -182,8 +206,10 @@ public:
     {
         qtsunskyeditor->setWindowTitle(QApplication::translate("qtsunskyeditor", "QtSunSkyEditor", 0, QApplication::UnicodeUTF8));
         previewScreen->setText(QString());
-        groupBox->setTitle(QApplication::translate("qtsunskyeditor", "Yaw", 0, QApplication::UnicodeUTF8));
-        groupBox_2->setTitle(QApplication::translate("qtsunskyeditor", "Pitch", 0, QApplication::UnicodeUTF8));
+        groupBox_3->setTitle(QApplication::translate("qtsunskyeditor", "Preview Options", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("qtsunskyeditor", "Preview Resolution", 0, QApplication::UnicodeUTF8));
+        groupBox_4->setTitle(QApplication::translate("qtsunskyeditor", "Sun/Sky-Settings", 0, QApplication::UnicodeUTF8));
+        groupBox_2->setTitle(QApplication::translate("qtsunskyeditor", "Turbidity", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

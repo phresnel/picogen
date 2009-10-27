@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-//#include "kallisto/common.hh"
+#include "kallisto/common.hh"
 #include <QtGui/QApplication>
 #include "include/qtsunskyeditor.hh"
 
