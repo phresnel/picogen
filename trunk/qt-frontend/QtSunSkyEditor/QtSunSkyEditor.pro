@@ -1,3 +1,8 @@
+
+LIBS += -lgomp
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
+
 INCLUDEPATH += ../include/ \
     ../../ \
     ../../instant-preview/open-gl/include/ \
@@ -10,3 +15,5 @@ SOURCES += src/qtsunskyeditor.cc \
     ../../skylab/src/preetham.cc \
     ../../redshift/src/constants.cc
 FORMS += forms/qtsunskyeditor.ui
+RESOURCES += ../QtQuatschEditor/resources/icons.qrc
+

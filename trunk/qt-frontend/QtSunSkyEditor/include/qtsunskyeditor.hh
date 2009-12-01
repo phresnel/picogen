@@ -50,9 +50,11 @@ protected:
 
         void mouseMoveEvent(QMouseEvent*);
         void mousePressEvent(QMouseEvent*);
+        void wheelEvent(QWheelEvent*);
 
 private:
         void redraw(bool drawCross=false, float crossU=0, float crossV=0);
+        void updatePreethamSettings();
 
 
         struct rgbf {
@@ -71,8 +73,13 @@ private:
         redshift::background::Preetham preetham;
 
 private slots:
+        void on_previewResolution_valueChanged(int );
         void on_turbiditySpinBox_valueChanged(double );
-        void on_turbidityDial_sliderMoved(int position);
+        void on_turbidityDial_valueChanged(int position);
+        void on_sunIntensitySpinBox_valueChanged(double );
+        void on_sunIntensityDial_valueChanged(int position);
+        void on_atmosphereIntensitySpinBox_valueChanged(double );
+        void on_atmosphereIntensityDial_valueChanged(int position);
 };
 
 #endif // QTSUNSKYEDITOR_HH
