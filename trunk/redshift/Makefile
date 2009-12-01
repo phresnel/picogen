@@ -26,7 +26,7 @@ BINDIR := ./bin
 #------------------------------------------------------------------------------
 KALLISTOBASE := -I../
 #SFMLINCLUDE := -I../externs/SFML/include
-INCLUDEDIRS  := $(KALLISTOBASE) 
+INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 
 #------------------------------------------------------------------------------
 # libs
@@ -39,6 +39,7 @@ LIBS   := $(SDLLIBS)
 # compiler flags
 #------------------------------------------------------------------------------
 COMPILE := ""
+CXXFLAGS += -D__STDC_LIMIT_MACROS
 ifeq ($(COMPILE), "FAST_COMPILE")
 else ifeq ($(COMPILE), "DEBUG")
         CXXFLAGS += -O0 -g
