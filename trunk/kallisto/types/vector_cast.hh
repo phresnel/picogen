@@ -50,7 +50,7 @@ namespace kallisto {
         template <typename lhs_t, typename rhs_t>
         inline lhs_t vector_cast (rhs_t const & rhs) {
                 return vector_cast_def<lhs_t, rhs_t>::cast (rhs);
-        }
+        }        
 }
 
 

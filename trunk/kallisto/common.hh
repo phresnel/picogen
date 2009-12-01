@@ -35,6 +35,7 @@
 #include <vector>
 
 #include <limits>
+#include <climits>
 
 #include "testing/static_assert.hh"
 #include "testing/unit_test.hh"
