@@ -247,6 +247,7 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 .PHONY: init-dir-tree
 init-dir-tree:
+	mkdir -p ./bin
 	mkdir -p $(LIBDIR)
 	mkdir -p $(OBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
