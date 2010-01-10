@@ -39,7 +39,7 @@ namespace redshift { namespace primitive {
 
 
 
-#include "booleanfield-impl.hh"
+#include "booleanfield-impl.cc"
 
 
 
