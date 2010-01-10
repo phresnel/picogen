@@ -56,9 +56,12 @@ namespace redshift {
 
 
         // Std-Types
-        typedef CartesianPoint  Point;
+        typedef CartesianPoint  Point;        
         typedef CartesianNormal Normal;
         typedef CartesianVector Vector;
+        
+        typedef kallisto::Vector<kallisto::CARTESIAN,
+                                fixed_point_t> PointCompatibleVector;
 
         typedef kallisto::BoundingBox<Point>            BoundingBox;
         typedef kallisto::Sphere<Point,real_t>          Sphere;

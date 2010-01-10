@@ -72,6 +72,15 @@ namespace kallisto {
                         return ret;
                 }
 
+                T operator [] (int index) const {
+                        switch (index) {
+                        case 0: return x;
+                        case 1: return y;
+                        case 2: return z;
+                        };
+                        throw std::out_of_range ("index out of range for Point<>::operator[]");
+                }
+
         public: // Friend injections.
 
         };

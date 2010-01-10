@@ -21,6 +21,8 @@
 #ifndef VECTOR_H__INCLUDED__20090210
 #define VECTOR_H__INCLUDED__20090210
 
+#include <stdexcept>
+
 namespace kallisto {
         template <coordinate_space_t SPACE, typename T> class vector_t ;
 
@@ -69,6 +71,15 @@ namespace kallisto {
                 operator vector_t<CARTESIAN, T> () const {
                         const vector_t<CARTESIAN, T> ret = { x, y, z };
                         return ret;
+                }
+
+                T operator [] (int index) const {
+                        switch (index) {
+                        case 0: return x;
+                        case 1: return y;
+                        case 2: return z;
+                        };
+                        throw std::out_of_range ("index out of range for Vector<>::operator[]");
                 }
                 
                 /*inline

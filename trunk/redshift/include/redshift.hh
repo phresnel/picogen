@@ -76,6 +76,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/primitive.hh"
 #include "primitives/closedsphere.hh"
 #include "primitives/heightmap.hh"
+#include "primitives/booleanfield.hh"
 
 // Cameras.
 #include "cameras/camera.hh"

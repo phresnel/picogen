@@ -1,6 +1,6 @@
 
 LIBS += -lgomp
-QMAKE_CXXFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -fopenmp -O3
 QMAKE_LFLAGS += -fopenmp
 
 INCLUDEPATH += ../include/ \

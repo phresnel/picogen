@@ -79,6 +79,7 @@ OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
 OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
+OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
@@ -151,11 +152,11 @@ $(BASICTYPESOBJDIR)/scene.o: ./src/basictypes/scene.cc
 
 $(BASICTYPESOBJDIR)/heightmap.o: ./src/basictypes/heightmap.cc
 	$(CXX) -o $@ $<
-	
+
 $(BASICTYPESOBJDIR)/differentialgeometry.o: \
                          ./src/basictypes/differentialgeometry.cc
 	$(CXX) -o $@ $<
-	
+
 $(BASICTYPESOBJDIR)/intersection.o: ./src/basictypes/intersection.cc
 	$(CXX) -o $@ $<
 
@@ -195,6 +196,10 @@ $(PRIMITIVESOBJDIR)/closedsphere.o: \
 
 $(PRIMITIVESOBJDIR)/heightmap.o: \
                      ./src/primitives/heightmap.cc
+	$(CXX) -o $@ $<
+
+$(PRIMITIVESOBJDIR)/booleanfield.o: \
+                     ./src/primitives/booleanfield.cc
 	$(CXX) -o $@ $<
 
 
@@ -247,7 +252,7 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 .PHONY: init-dir-tree
 init-dir-tree:
-	mkdir -p ./bin
+	mkdir -p ./bin  
 	mkdir -p $(LIBDIR)
 	mkdir -p $(OBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)

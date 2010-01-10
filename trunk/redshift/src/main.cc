@@ -190,7 +190,8 @@ void run() {
                                 scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(25)),
                         10.0)*/
-                new Heightmap (heightFunction, 1.5)
+                //new Heightmap (heightFunction, 1.5)
+                new BooleanField (heightFunction, 1.5)
         );
         
         Scene Scene (renderBuffer, camera, agg);

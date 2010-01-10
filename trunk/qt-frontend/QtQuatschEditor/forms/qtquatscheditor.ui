@@ -868,6 +868,9 @@ QGraphicsView, #heightmapLabel {
         <property name="uniformRowHeights">
          <bool>false</bool>
         </property>
+        <property name="sortingEnabled">
+         <bool>false</bool>
+        </property>
         <property name="animated">
          <bool>true</bool>
         </property>
