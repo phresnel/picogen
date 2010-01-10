@@ -21,11 +21,8 @@
 #ifndef TRANSPORT_HH_INCLUDED_20090110
 #define TRANSPORT_HH_INCLUDED_20090110
 
-#include "../../include/setup.hh"
-#include "../../include/basictypes/differentialgeometry.hh"
-#include "../../include/basictypes/intersection.hh"
-#include "../../include/shapes/shape.hh"
-#include "../../include/shapes/closedsphere.hh"
+#include "../setup.hh"
+#include "scene.hh"
 
 namespace redshift {
         class Integrator {

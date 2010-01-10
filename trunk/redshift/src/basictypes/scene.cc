@@ -42,6 +42,8 @@
 #include "../../include/basictypes/scene.hh"
 
 
+#include "../../include/integrators/direct-lighting.hh"
+
 namespace redshift {
 
 
@@ -73,8 +75,16 @@ inline bool Scene::doesIntersect (Sample const &sample) const {
 inline optional<Intersection> Scene::intersect (Sample const &sample) const {
         return aggregate->intersect (sample);
 }
-                                                
-                                                
+
+
+
+inline optional<Intersection> Scene::intersect(
+        RayDifferential const &ray
+) const {
+        return aggregate->intersect (ray);
+}
+
+
 
 inline tuple<real_t,Color> Scene::Li (Sample const & sample) const {
         /* PBRT:
@@ -84,17 +94,18 @@ inline tuple<real_t,Color> Scene::Li (Sample const & sample) const {
            return T * Lo + Lv
         */
         
+#if 0
         const optional<Intersection> I (intersect (sample));
         
         if (I) {                
                 return make_tuple (1.0, 
                         Color(
-                                I->getDistance()*0.05,
+                                /*I->getDistance()*0.05,
                                 I->getDistance()*0.025,
-                                I->getDistance()*0.0125
-                                /*i.getNormal().x+0.5,
-                                i.getNormal().y+0.5,
-                                i.getNormal().z+0.5*/
+                                I->getDistance()*0.0125*/
+                                I->getNormal().x+0.5,
+                                I->getNormal().y+0.5,
+                                I->getNormal().z+0.5
                         )
                 );                
         } else {
@@ -103,6 +114,9 @@ inline tuple<real_t,Color> Scene::Li (Sample const & sample) const {
                                  0.5+sample.primaryRay.direction.z);
                 return make_tuple (1.0, col);
         }
+#endif
+        DirectLighting dl;
+        return dl.Li (*this, sample.primaryRay, sample);
 }
 
 
@@ -118,20 +132,28 @@ void Scene::render (
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
         for (int y=renderTarget->getHeight()-1; y>=0; --y)
-         for (int x=0; x<renderTarget->getWidth(); ++x) {
+        for (int x=0; x<renderTarget->getWidth(); ++x) {
                 
                 Sample sample (
                         ImageCoordinates(static_cast<real_t>(x),
-                                            static_cast<real_t>(y)),
+                                         static_cast<real_t>(y)),
                         LensCoordinates(),
                         renderTarget
-                );                
+                );
+
+                //-------------------------------------------------------------
+                // 1) Generate Primary Ray.
+                //-------------------------------------------------------------
                 const tuple<real_t,RayDifferential>
                                           primo = camera->generateRay (sample);
                 const real_t & rayWeight (get<0>(primo));
                 sample.primaryRay = get<1>(primo); // Will be modified, hence
-                                                     // non-const non-ref.
+                                                   // non-const non-ref.
 
+
+                //-------------------------------------------------------------
+                // 2) Generate Ray Differential.
+                //-------------------------------------------------------------
                 sample.imageCoordinates.u++;
                 sample.primaryRay.rx = get<1>(camera->generateRay (sample));
                 sample.imageCoordinates.u--;
@@ -141,7 +163,11 @@ void Scene::render (
                 --sample.imageCoordinates.v;
                 
                 sample.primaryRay.hasDifferentials= true;
-               
+
+
+                //-------------------------------------------------------------
+                // 3) Evaluate Radiance Along Primary Ray.
+                //-------------------------------------------------------------
                 const tuple<real_t,Color> Ls_ (Li(sample));
                 const real_t Ls_alpha (get<0>(Ls_));
                 const Color Ls_color  (get<1>(Ls_));
@@ -149,13 +175,21 @@ void Scene::render (
                 
                 //PBRT:<issue warning if unexpected radiance value returned>
 
-                //PBRT:<add sample contribution to image> 28                
+
+                //-------------------------------------------------------------
+                // 4) PBRT:<add sample contribution to image> 28                
+                //-------------------------------------------------------------
                 lock->setPixel (x,y,finalColor);
                         /*Rgb (
                                 (float)x/(float)renderTarget->getWidth(),
                                 (float)y/(float)renderTarget->getHeight(), 
                                 0.5));*/
                 ++sampleNumber;
+
+
+                //-------------------------------------------------------------
+                // 5) Report Progress.
+                //-------------------------------------------------------------
                 reporter->report (lock, sampleNumber, totalNumberOfSamples);
 
                 ucp->tick();

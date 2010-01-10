@@ -34,6 +34,8 @@ namespace redshift {
                 
                 void render(interaction::ProgressReporter::ConstPtr, 
                           interaction::UserCommandProcessor::Ptr) const ;
+                inline optional<Intersection> intersect(
+                                        RayDifferential const &ray) const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
@@ -48,8 +50,6 @@ namespace redshift {
                 
                 inline optional<Intersection> intersect(
                                              Sample const &sample) const;
-                        
-                
 
                 //Scene scene;
                 shared_ptr<RenderTarget>         renderTarget;

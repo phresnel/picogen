@@ -31,19 +31,21 @@ namespace redshift { namespace primitive {
                 // Full fledged information including Normal, U/V, etc.
                 virtual optional<Intersection> intersect(
                                         RayDifferential const &ray) const = 0;
-                                        
-                
+                /*virtual optional<Intersection> intersect(
+                                        Ray const &ray) const = 0;*/
+
+
                 virtual bool doesIntersect (Sample const &sample) const {
                         return doesIntersect (sample.primaryRay);
                 }
-                
+
                 virtual optional<Intersection> intersect(
                                         Sample const &sample) const {
                         return intersect (sample.primaryRay);
                 }
-                                        
-                                        
-                
+
+
+
                 virtual ~Primitive () {}
         };
 } }
