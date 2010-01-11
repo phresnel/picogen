@@ -36,6 +36,8 @@ namespace redshift {
                           interaction::UserCommandProcessor::Ptr) const ;
                 inline optional<Intersection> intersect(
                                         RayDifferential const &ray) const;
+                inline bool doesIntersect (Sample const &sample) const;
+                inline bool doesIntersect (Ray const &ray) const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
@@ -45,8 +47,6 @@ namespace redshift {
                 
                 
                 inline tuple<real_t,Color> Li(Sample const&) const;
-                        
-                inline bool doesIntersect (Sample const &sample) const;
                 
                 inline optional<Intersection> intersect(
                                              Sample const &sample) const;

@@ -35,6 +35,7 @@ namespace redshift { namespace primitive {
                 ~BooleanField ();
                 
                 bool doesIntersect (RayDifferential const &ray) const;
+                bool doesIntersect (Ray const &ray) const;
 
                 optional<Intersection>
                         intersect(RayDifferential const &ray) const;

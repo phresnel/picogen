@@ -260,7 +260,7 @@ namespace impl {
                 
                 #elif 1
                 y += 3;
-                z -= 10;
+                z -= 20;
                 const bool a = y < -2 + (0.5f * sin(x*3) * sin(z*3));
                 const bool b = sqrt (x*x + (y)*(y) + z*z)<1.0f;
                 const bool c = (sqrt(pow (x+2.f, 2.f)+pow (z-2.f, 2.f))<3.f)

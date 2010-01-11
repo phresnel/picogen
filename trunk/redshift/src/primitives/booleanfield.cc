@@ -68,6 +68,18 @@ bool BooleanField::doesIntersect (RayDifferential const &ray_) const {
 
 
 
+bool BooleanField::doesIntersect (Ray const &ray_) const {
+        const Vector pos = vector_cast<Vector> (ray_.position);
+        const Vector dir = vector_cast<Vector> (ray_.direction);
+        impl::Ray ray = {
+                {pos.x, pos.y, pos.z},
+                {dir.x, dir.y, dir.z}
+        };
+        return impl->intersect (ray)>=0.f;
+}
+
+
+
 optional<Intersection>
  BooleanField::intersect(RayDifferential const &ray_) const {
 

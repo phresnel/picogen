@@ -56,6 +56,12 @@ bool ClosedSphere::doesIntersect (RayDifferential const &ray) const {
 
 
 
+bool ClosedSphere::doesIntersect (Ray const &ray) const {
+        return sphereData.doesIntersect (ray);
+}
+
+
+
 optional<Intersection>
  ClosedSphere::intersect(RayDifferential const &ray) const {
 

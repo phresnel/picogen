@@ -72,6 +72,12 @@ inline bool Scene::doesIntersect (Sample const &sample) const {
 
 
 
+inline bool Scene::doesIntersect (Ray const &ray) const {
+        return aggregate->doesIntersect (ray);
+}
+
+
+
 inline optional<Intersection> Scene::intersect (Sample const &sample) const {
         return aggregate->intersect (sample);
 }
@@ -93,28 +99,6 @@ inline tuple<real_t,Color> Scene::Li (Sample const & sample) const {
            Spectrum Lv = volumeIntegrator->Li (this,ray,sample,alpha)
            return T * Lo + Lv
         */
-        
-#if 0
-        const optional<Intersection> I (intersect (sample));
-        
-        if (I) {                
-                return make_tuple (1.0, 
-                        Color(
-                                /*I->getDistance()*0.05,
-                                I->getDistance()*0.025,
-                                I->getDistance()*0.0125*/
-                                I->getNormal().x+0.5,
-                                I->getNormal().y+0.5,
-                                I->getNormal().z+0.5
-                        )
-                );                
-        } else {
-                Color const col (0.5+sample.primaryRay.direction.x,
-                                 0.5+sample.primaryRay.direction.y,
-                                 0.5+sample.primaryRay.direction.z);
-                return make_tuple (1.0, col);
-        }
-#endif
         DirectLighting dl;
         return dl.Li (*this, sample.primaryRay, sample);
 }

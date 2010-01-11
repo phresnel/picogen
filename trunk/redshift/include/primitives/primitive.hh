@@ -27,6 +27,7 @@ namespace redshift { namespace primitive {
                 // If only the information is need whether the ray hits or not.
                 virtual bool doesIntersect (RayDifferential const &ray) 
                                                                      const = 0;
+                virtual bool doesIntersect (Ray const &ray) const = 0;
 
                 // Full fledged information including Normal, U/V, etc.
                 virtual optional<Intersection> intersect(

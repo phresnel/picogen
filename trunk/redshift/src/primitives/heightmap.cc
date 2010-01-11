@@ -73,6 +73,13 @@ bool Heightmap::doesIntersect (RayDifferential const &ray) const {
 
 
 
+bool Heightmap::doesIntersect (Ray const &ray) const {
+        // TODO shouldn't do full intersect()
+        return intersect (RayDifferential(ray.position, ray.direction));
+}
+
+
+
 optional<Intersection>
 Heightmap::intersect(RayDifferential const &ray) const {
         return intersect (ray, 0.0);

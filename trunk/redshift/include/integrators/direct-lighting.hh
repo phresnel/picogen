@@ -34,6 +34,20 @@ namespace redshift {
                         const optional<Intersection> I (
                                                 scene.intersect (raydiff));
                         if (I) {
+                                const DifferentialGeometry gd =
+                                        I->getDifferentialGeometry();
+                                const Vector sunDir (1,1,0);
+                                const Point poi = gd.getCenter();
+                                const Normal normal = gd.getNormal();
+                                const Ray ray (
+                                        poi+vector_cast<PointCompatibleVector>(normal*0.5f),
+                                        normalize(sunDir)
+                                );
+                                //std::cout << "eh" << std::flush;
+                                if (scene.doesIntersect (ray)) {
+                                        return make_tuple (1.0, Color(0.1,0.1,0.1));
+                                }
+
                                 return make_tuple (1.0, 
                                         Color(
                                                 /*I->getDistance()*0.05,
