@@ -199,7 +199,8 @@ $(PRIMITIVESOBJDIR)/heightmap.o: \
 	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/booleanfield.o: \
-                     ./src/primitives/booleanfield.cc
+                     ./src/primitives/booleanfield.cc \
+                     ./src/primitives/booleanfield-impl.cc
 	$(CXX) -o $@ $<
 
 
