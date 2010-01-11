@@ -36,27 +36,26 @@ namespace redshift {
                         if (I) {
                                 const DifferentialGeometry gd =
                                         I->getDifferentialGeometry();
-                                const Vector sunDir (1,1,0);
+                                const Vector sunDir = normalize(Vector(1,1,0));
                                 const Point poi = gd.getCenter();
                                 const Normal normal = gd.getNormal();
                                 const Ray ray (
-                                        poi+vector_cast<PointCompatibleVector>(normal*0.5f),
-                                        normalize(sunDir)
+                                        poi+vector_cast<PointCompatibleVector>(normal*0.1f),
+                                        sunDir
                                 );
                                 //std::cout << "eh" << std::flush;
                                 if (scene.doesIntersect (ray)) {
                                         return make_tuple (1.0, Color(0.1,0.1,0.1));
                                 }
+                                
+                                const real_t d = max(0.f,dot (sunDir,vector_cast<Vector>(normal)));
 
                                 return make_tuple (1.0, 
                                         Color(
-                                                /*I->getDistance()*0.05,
-                                                I->getDistance()*0.025,
-                                                I->getDistance()*0.0125*/
                                                 I->getNormal().x+0.5,
                                                 I->getNormal().y+0.5,
                                                 I->getNormal().z+0.5
-                                        )
+                                        ) * d
                                 );                
                         } else {
                                 Color const col (0.5+sample.primaryRay.direction.x,
