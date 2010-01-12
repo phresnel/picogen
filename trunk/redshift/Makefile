@@ -7,6 +7,7 @@ OBJDIR := ./obj
 
 ACCELERATORSOBJDIR  := $(OBJDIR)/accelerators
 APPOBJDIR           := $(OBJDIR)/app
+BACKGROUNDSOBJDIR   := $(OBJDIR)/backgrounds
 BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 CAMERASOBJDIR       := $(OBJDIR)/cameras
 INTERACTIONOBJDIR   := $(OBJDIR)/interaction
@@ -32,7 +33,7 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 # libs
 #------------------------------------------------------------------------------
 SDLLIBS := `sdl-config --static-libs`
-LIBS   := $(SDLLIBS)
+LIBS   := $(SDLLIBS) ../skylab/preetham.o
 
 
 #------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ CXXFLAGS += `sdl-config --cflags`
 
 LINK := g++ -s
 AR   := ar -rs 
-CXX  := g++ -c $(CXXFLAGS) $(LIBS)
+CXX  := g++ -c $(CXXFLAGS) $(LIBS) 
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
 AMALGAM := g++ $(CXXFLAGS) \
 	-combine -fwhole-program -funit-at-a-time -DAMALGAM \
@@ -69,6 +70,7 @@ OBJFILES :=
 # main.o is intentionally excluded, and must be included by main targets 
 OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
+OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
 OBJFILES += $(BASICTYPESOBJDIR)/heightmap.o
@@ -138,7 +140,16 @@ $(OBJDIR)/constants.o: ./src/constants.cc
 $(OBJDIR)/quatsch-integration.o: ./src/quatsch-integration.cc
 	$(CXX) -o $@ $<
 
-	                
+
+###############################################################################
+# backgrounds
+###############################################################################
+
+$(BACKGROUNDSOBJDIR)/preetham-adapter.o: \
+                     ./src/backgrounds/preetham-adapter.cc
+	$(CXX) -o $@ $<
+
+
 
 ###############################################################################
 # basictypes
@@ -258,6 +269,7 @@ init-dir-tree:
 	mkdir -p $(OBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
 	mkdir -p $(APPOBJDIR)
+	mkdir -p $(BACKGROUNDSOBJDIR)	
 	mkdir -p $(BASICTYPESOBJDIR)	
 	mkdir -p $(CAMERASOBJDIR)
 	mkdir -p $(INTERACTIONOBJDIR)
@@ -289,6 +301,7 @@ clean: init-dir-tree
 	rm -f $(OBJDIR)/*.a
 	rm -f $(ACCELERATORSOBJDIR)/*.o
 	rm -f $(APPOBJDIR)/*.o
+	rm -f $(BACKGROUNDSOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
 	rm -f $(CAMERASOBJDIR)/*.o
 	rm -f $(INTERACTIONOBJDIR)/*.o

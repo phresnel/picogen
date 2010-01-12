@@ -26,9 +26,10 @@
 #ifndef _PREETHAM_H
 #define _PREETHAM_H
 
-#include "redshift.hh"
+#include "setup.hh"
 
-namespace redshift { namespace background {
+namespace redshift { namespace background { // TODO: this will be confused
+                                // with redshift::backgrounds::Preetham !!
 class Preetham {
 private:
         typedef ::redshift::real_t    real;

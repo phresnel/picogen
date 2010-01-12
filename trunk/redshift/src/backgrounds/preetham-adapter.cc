@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2010  Sebastian Mach (*1983)
+// Copyright (C) 2009  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,23 +18,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef MONOCHROME_H_INCLUDED_20100112
-#define MONOCHROME_H_INCLUDED_20100112
+#include "../include/setup.hh"
+#include "../include/basictypes/background.hh"
+
+#ifdef AMALGAM
+#include "../../include/backgrounds/preetham-adapter.hh"
+#else
+#include "../include/backgrounds/preetham-adapter.hh"
+#endif
 
 namespace redshift { namespace backgrounds {
-        DefineFinalizer(Monochrome);
-        class Monochrome
-        : public Background
-        , DoFinalize (Monochrome)
-        {
-        public:
-                Monochrome (Color col) : color (col) {}
-                Color query (Ray const &ray) const {
-                        return color;
-                }
-        private:
-                Color color;
-        };
-} }
 
-#endif // MONOCHROME_H_INCLUDED_20100112
+PreethamAdapter::PreethamAdapter (
+        shared_ptr<redshift::background::Preetham> preetham
+) : preetham (preetham) {
+}
+
+Color PreethamAdapter::query (Ray const &ray) const {
+        return preetham->shade (ray)
+                + preetham->sunShade(ray);
+        //return Color::fromRgb (1,0.5,0.25);
+}
+
+} } // namespace redshift { namespace backgrounds {

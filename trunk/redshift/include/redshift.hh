@@ -81,6 +81,7 @@ namespace redshift{class RenderTarget;}
 // background/
 #include "backgrounds/visualise-direction.hh"
 #include "backgrounds/monochrome.hh"
+#include "backgrounds/preetham-adapter.hh"
 
 // Cameras.
 #include "cameras/camera.hh"

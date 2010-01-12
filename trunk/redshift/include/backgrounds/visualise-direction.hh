@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef VISUALISE_DIRECTION_H_INCLUDED_20090112
-#define VISUALISE_DIRECTION_H_INCLUDED_20090112
+#ifndef VISUALISE_DIRECTION_H_INCLUDED_20100112
+#define VISUALISE_DIRECTION_H_INCLUDED_20100112
 
 
 namespace redshift { namespace backgrounds {
@@ -39,4 +39,4 @@ namespace redshift { namespace backgrounds {
         };
 } }
 
-#endif // VISUALISE_DIRECTION_H_INCLUDED_20090112
+#endif // VISUALISE_DIRECTION_H_INCLUDED_20100112

@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2010  Sebastian Mach (*1983)
+// Copyright (C) 2009  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,23 +18,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef MONOCHROME_H_INCLUDED_20100112
-#define MONOCHROME_H_INCLUDED_20100112
+#ifndef PREETHAM_HH_INCLUDED_20100112
+#define PREETHAM_HH_INCLUDED_20100112
+
 
 namespace redshift { namespace backgrounds {
-        DefineFinalizer(Monochrome);
-        class Monochrome
+        DefineFinalizer(PreethamAdapter);
+        class PreethamAdapter
         : public Background
-        , DoFinalize (Monochrome)
+        , DoFinalize (PreethamAdapter)
         {
         public:
-                Monochrome (Color col) : color (col) {}
-                Color query (Ray const &ray) const {
-                        return color;
-                }
+                PreethamAdapter (shared_ptr<redshift::background::Preetham> preetham) ;
+                Color query (Ray const &ray) const;
         private:
-                Color color;
+                shared_ptr<redshift::background::Preetham> preetham;
         };
 } }
 
-#endif // MONOCHROME_H_INCLUDED_20100112
+#endif // PREETHAM_HH_INCLUDED_20100112
