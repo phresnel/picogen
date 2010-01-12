@@ -40,6 +40,10 @@ namespace redshift {
                         return Rgb (r, g, b);
                 }
 
+                static Rgb fromRgb (real_t r, real_t g, real_t b) {
+                        return Rgb(r,g,b);
+                }
+
                 void fromRgb (Rgb const & v) {
                         this->r = v.r;
                         this->g = v.g;

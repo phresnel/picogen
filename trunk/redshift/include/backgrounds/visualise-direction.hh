@@ -18,15 +18,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef BACKGROUND_H_INCLUDED_20090309
-#define BACKGROUND_H_INCLUDED_20090309
+#ifndef VISUALISE_DIRECTION_H_INCLUDED_20090112
+#define VISUALISE_DIRECTION_H_INCLUDED_20090112
 
 
-namespace redshift {
-        class Background {
+namespace redshift { namespace backgrounds {
+        DefineFinalizer(VisualiseDirection);
+        class VisualiseDirection
+        : public Background
+        , DoFinalize (VisualiseDirection)
+        {
         public:
-                virtual Color query (Ray const &ray) const = 0;
+                Color query (Ray const &ray) const {
+                        return Color::fromRgb(
+                                ray.direction.x+.5f,
+                                ray.direction.y+.5f,
+                                ray.direction.z+.5f
+                        );
+                }
         };
-}
+} }
 
-#endif // BACKGROUND_H_INCLUDED_20090301
+#endif // VISUALISE_DIRECTION_H_INCLUDED_20090112

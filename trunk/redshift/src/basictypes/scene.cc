@@ -51,11 +51,13 @@ namespace redshift {
 Scene::Scene (
         shared_ptr<RenderTarget> rt,
         shared_ptr<camera::Camera> cam,
-        shared_ptr<primitive::Primitive> prim_
+        shared_ptr<primitive::Primitive> prim_,
+        shared_ptr<Background> bg
 )
 : renderTarget(rt)
 , camera(cam)
 , aggregate (prim_)
+, background (bg)
 {
 }
 
@@ -63,6 +65,12 @@ Scene::Scene (
 
 Scene::~Scene () {                
 }       
+
+
+
+shared_ptr<Background> Scene::getBackground () const {
+        return background;
+}
 
 
 

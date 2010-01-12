@@ -18,15 +18,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef BACKGROUND_H_INCLUDED_20090309
-#define BACKGROUND_H_INCLUDED_20090309
+#ifndef MONOCHROME_H_INCLUDED_20090112
+#define MONOCHROME_H_INCLUDED_20090112
 
-
-namespace redshift {
-        class Background {
+namespace redshift { namespace backgrounds {
+        DefineFinalizer(Monochrome);
+        class Monochrome
+        : public Background
+        , DoFinalize (Monochrome)
+        {
         public:
-                virtual Color query (Ray const &ray) const = 0;
+                Monochrome (Color col) : color (col) {}
+                Color query (Ray const &ray) const {
+                        return color;
+                }
+        private:
+                Color color;
         };
-}
+} }
 
-#endif // BACKGROUND_H_INCLUDED_20090301
+#endif // MONOCHROME_H_INCLUDED_20090112

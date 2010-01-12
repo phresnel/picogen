@@ -28,8 +28,13 @@ namespace redshift {
         class Scene : DoFinalize(Scene) {
         public:        
                 
-                Scene(shared_ptr<RenderTarget>, shared_ptr<camera::Camera>,
-                                             shared_ptr<primitive::Primitive>);
+                Scene(
+                        shared_ptr<RenderTarget>,
+                        shared_ptr<camera::Camera>,
+                        shared_ptr<primitive::Primitive>,
+                        shared_ptr<Background> bg = shared_ptr<Background> (
+                                new backgrounds::VisualiseDirection())
+                );
                 ~Scene ();
                 
                 void render(interaction::ProgressReporter::ConstPtr, 
@@ -38,6 +43,7 @@ namespace redshift {
                                         RayDifferential const &ray) const;
                 inline bool doesIntersect (Sample const &sample) const;
                 inline bool doesIntersect (Ray const &ray) const;
+                inline shared_ptr<Background> getBackground () const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
@@ -55,6 +61,7 @@ namespace redshift {
                 shared_ptr<RenderTarget>         renderTarget;
                 shared_ptr<camera::Camera>       camera;
                 shared_ptr<primitive::Primitive> aggregate;
+                shared_ptr<Background>           background;
         };
 }
 

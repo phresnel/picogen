@@ -40,28 +40,32 @@ namespace redshift {
                                 const Point poi = gd.getCenter();
                                 const Normal normal = gd.getNormal();
                                 const Ray ray (
-                                        poi+vector_cast<PointCompatibleVector>(normal*0.1f),
+                                        poi+vector_cast<PointCompatibleVector>(
+                                                                normal*0.1f),
                                         sunDir
                                 );
                                 //std::cout << "eh" << std::flush;
                                 if (scene.doesIntersect (ray)) {
-                                        return make_tuple (1.0, Color(0.1,0.1,0.1));
+                                        return make_tuple (
+                                                1.0, 
+                                                Color(0.1,0.1,0.1));
                                 }
                                 
-                                const real_t d = max(0.f,dot (sunDir,vector_cast<Vector>(normal)));
+                                const real_t d = max(
+                                      0.f,
+                                      dot(sunDir,vector_cast<Vector>(normal)));
 
-                                return make_tuple (1.0, 
+                                return make_tuple (
+                                        1.0,
                                         Color(
                                                 I->getNormal().x+0.5,
                                                 I->getNormal().y+0.5,
                                                 I->getNormal().z+0.5
                                         ) * d
-                                );                
+                                );
                         } else {
-                                Color const col (0.5+sample.primaryRay.direction.x,
-                                                 0.5+sample.primaryRay.direction.y,
-                                                 0.5+sample.primaryRay.direction.z);
-                                return make_tuple (1.0, col);
+                                return make_tuple (1.0,
+                                        scene.getBackground()->query(raydiff));
                         }
                 }
         };

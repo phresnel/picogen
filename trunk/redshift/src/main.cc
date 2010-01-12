@@ -194,7 +194,12 @@ void run() {
                 new BooleanField (heightFunction, 1.5)
         );
         
-        Scene Scene (renderBuffer, camera, agg);
+        Scene Scene (
+                renderBuffer, 
+                camera, 
+                agg,
+                shared_ptr<Background> (new backgrounds::Monochrome (Color::fromRgb (1,.7,.7)))
+        );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
         

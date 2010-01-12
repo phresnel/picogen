@@ -78,6 +78,10 @@ namespace redshift{class RenderTarget;}
 #include "primitives/heightmap.hh"
 #include "primitives/booleanfield.hh"
 
+// background/
+#include "backgrounds/visualise-direction.hh"
+#include "backgrounds/monochrome.hh"
+
 // Cameras.
 #include "cameras/camera.hh"
 
