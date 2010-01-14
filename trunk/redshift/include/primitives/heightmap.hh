@@ -23,18 +23,6 @@
 
 #include "../setup.hh"
 #include "../basictypes/height-function.hh"
-/*#include "../basictypes/differentialgeometry.hh"
-#include "../basictypes/intersection.hh"
-
-#include "../coordinates/uvcoordinates.hh"
-#include "../coordinates/lenscoordinates.hh"
-#include "../coordinates/imagecoordinates.hh"
-
-#include "../rendertargets/rendertargetlock.hh"
-#include "../rendertargets/rendertarget.hh"
-#include "../basictypes/sample.hh"
-*/
-
 #include "../primitives/primitive.hh"
 #include "../rendertargets/rendertarget.hh"
 

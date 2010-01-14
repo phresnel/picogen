@@ -18,15 +18,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "SDL.h"
+#include "../../include/rendertargets/sdlrendertarget.hh"
 #include <stdexcept>
 #include <sstream>
-
-#include "../../include/setup.hh"
-#include "../../include/rendertargets/rendertargetlock.hh"
-#include "../../include/rendertargets/rendertarget.hh"
-#include "../../include/rendertargets/sdlrendertarget.hh"
-#include "../../include/smart_ptr.hh"
 
 namespace redshift {
 

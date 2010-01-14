@@ -18,14 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "../../include/rendertargets/colorrendertarget.hh"
+
 #include <stdexcept>
 #include <sstream>
-
-#include "../../include/setup.hh"
-#include "../../include/rendertargets/rendertargetlock.hh"
-#include "../../include/rendertargets/rendertarget.hh"
-#include "../../include/rendertargets/colorrendertarget.hh"
-#include "../../include/smart_ptr.hh"
 
 namespace redshift {
 

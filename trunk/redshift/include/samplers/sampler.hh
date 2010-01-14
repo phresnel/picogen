@@ -21,6 +21,10 @@
 #ifndef SAMPLER_H_INCLUDED_20090311
 #define SAMPLER_H_INCLUDED_20090311
 
+#include "../setup.hh"
+#include "../basictypes/sample.hh"
+#include "../basictypes/rectangle.hh"
+
 namespace redshift {
         class Sampler {
         public:                

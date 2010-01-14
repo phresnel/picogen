@@ -21,6 +21,10 @@
 #ifndef SDLRENDERTARGET_HH_INCLUDED_20090307
 #define SDLRENDERTARGET_HH_INCLUDED_20090307
 
+#include "../setup.hh"
+#include "../rendertargets/rendertarget.hh"
+#include "SDL.h"
+
 namespace redshift {
 
         DefineFinalizer(SdlRenderTarget);

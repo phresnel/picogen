@@ -21,6 +21,9 @@
 #ifndef COLORRENDERTARGET_HH_INCLUDED_20090307
 #define COLORRENDERTARGET_HH_INCLUDED_20090307
 
+#include "../setup.hh"
+#include "../rendertargets/rendertarget.hh"
+
 namespace redshift {
 
         DefineFinalizer(ColorRenderTarget);
