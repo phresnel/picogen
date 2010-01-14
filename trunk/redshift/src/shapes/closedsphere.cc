@@ -19,9 +19,6 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "../../include/setup.hh"
-#include "../../include/basictypes/differentialgeometry.hh"
-#include "../../include/shapes/shape.hh"
 #include "../../include/shapes/closedsphere.hh"
 
 
