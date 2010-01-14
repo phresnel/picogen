@@ -21,6 +21,7 @@
 #ifndef BACKGROUND_H_INCLUDED_20090309
 #define BACKGROUND_H_INCLUDED_20090309
 
+#include "../setup.hh"
 
 namespace redshift {
         class Background {

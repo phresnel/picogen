@@ -26,7 +26,7 @@
 #ifndef _PREETHAM_H
 #define _PREETHAM_H
 
-#include "setup.hh"
+#include "../../redshift/include/setup.hh"
 
 namespace redshift { namespace background { // TODO: this will be confused
                                 // with redshift::backgrounds::Preetham !!

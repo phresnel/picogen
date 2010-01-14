@@ -21,6 +21,9 @@
 #include "../../include/setup.hh"
 #include "../../include/tuple.hh"
 
+#include "../../include/basictypes/background.hh"
+#include "../../include/backgrounds/visualise-direction.hh"
+
 #include "../../include/coordinates/uvcoordinates.hh"
 #include "../../include/coordinates/lenscoordinates.hh"
 #include "../../include/coordinates/imagecoordinates.hh"

@@ -33,6 +33,8 @@
 
 #include "../../include/primitives/primitive.hh"
 
+#include "../../include/primitives/heightmap.hh"
+
 #include "../../include/primitives/booleanfield.hh"
 
 namespace redshift { namespace primitive {

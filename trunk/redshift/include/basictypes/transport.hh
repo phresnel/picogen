@@ -21,10 +21,10 @@
 #ifndef TRANSPORT_HH_INCLUDED_20090110
 #define TRANSPORT_HH_INCLUDED_20090110
 
-#include "../setup.hh"
-#include "scene.hh"
-
 namespace redshift {
+        class Scene;
+        class Sample;
+
         class Integrator {
         public:
                 virtual tuple<real_t,Color> Li (

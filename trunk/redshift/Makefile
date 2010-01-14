@@ -10,6 +10,7 @@ APPOBJDIR           := $(OBJDIR)/app
 BACKGROUNDSOBJDIR   := $(OBJDIR)/backgrounds
 BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 CAMERASOBJDIR       := $(OBJDIR)/cameras
+INTEGRATORSOBJDIR   := $(OBJDIR)/integrators
 INTERACTIONOBJDIR   := $(OBJDIR)/interaction
 PRIMITIVESOBJDIR    := $(OBJDIR)/primitives
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
@@ -78,6 +79,7 @@ OBJFILES += $(BASICTYPESOBJDIR)/differentialgeometry.o
 OBJFILES += $(BASICTYPESOBJDIR)/intersection.o
 OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
+OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
 OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
@@ -87,7 +89,6 @@ OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/colorrendertarget.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/sdlrendertarget.o
-
 
 ###############################################################################
 ## MAIN TARGETS ###############################################################
@@ -182,6 +183,14 @@ $(SAMPLERSOBJDIR)/sampler.o: \
 	$(CXX) -o $@ $<
 
 
+###############################################################################
+# integrators
+###############################################################################
+
+$(INTEGRATORSOBJDIR)/direct-lighting.o: \
+                     ./src/integrators/direct-lighting.cc
+	$(CXX) -o $@ $<
+
 
 ###############################################################################
 # interaction
@@ -272,6 +281,7 @@ init-dir-tree:
 	mkdir -p $(BACKGROUNDSOBJDIR)	
 	mkdir -p $(BASICTYPESOBJDIR)	
 	mkdir -p $(CAMERASOBJDIR)
+	mkdir -p $(INTEGRATORSOBJDIR)
 	mkdir -p $(INTERACTIONOBJDIR)
 	mkdir -p $(PRIMITIVESOBJDIR)
 	mkdir -p $(RENDERTARGETSOBJDIR)
@@ -304,6 +314,7 @@ clean: init-dir-tree
 	rm -f $(BACKGROUNDSOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
 	rm -f $(CAMERASOBJDIR)/*.o
+	rm -f $(INTEGRATORSOBJDIR)/*.o
 	rm -f $(INTERACTIONOBJDIR)/*.o
 	rm -f $(OBJDIR)/*.o	
 	rm -f $(PRIMITIVESOBJDIR)/*.o

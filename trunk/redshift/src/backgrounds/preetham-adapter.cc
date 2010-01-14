@@ -18,14 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../include/setup.hh"
-#include "../include/basictypes/background.hh"
-
-#ifdef AMALGAM
 #include "../../include/backgrounds/preetham-adapter.hh"
-#else
-#include "../include/backgrounds/preetham-adapter.hh"
-#endif
 
 namespace redshift { namespace backgrounds {
 

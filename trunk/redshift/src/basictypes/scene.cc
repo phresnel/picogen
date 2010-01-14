@@ -20,6 +20,8 @@
 
 #include "../../include/setup.hh"
 
+#include "../../include/basictypes/transport.hh"
+
 #include "../../include/basictypes/background.hh"
 #include "../../include/basictypes/differentialgeometry.hh"
 #include "../../include/basictypes/intersection.hh"
@@ -39,10 +41,10 @@
 #include "../../include/interaction/progressreporter.hh"
 #include "../../include/interaction/usercommandprocessor.hh"
 
-#include "../../include/basictypes/scene.hh"
-
-
 #include "../../include/integrators/direct-lighting.hh"
+#include "../../include/backgrounds/visualise-direction.hh"
+
+#include "../../include/basictypes/scene.hh"
 
 namespace redshift {
 
@@ -74,25 +76,25 @@ shared_ptr<Background> Scene::getBackground () const {
 
 
 
-inline bool Scene::doesIntersect (Sample const &sample) const {
+bool Scene::doesIntersect (Sample const &sample) const {
         return aggregate->doesIntersect (sample);
 }
 
 
 
-inline bool Scene::doesIntersect (Ray const &ray) const {
+bool Scene::doesIntersect (Ray const &ray) const {
         return aggregate->doesIntersect (ray);
 }
 
 
 
-inline optional<Intersection> Scene::intersect (Sample const &sample) const {
+optional<Intersection> Scene::intersect (Sample const &sample) const {
         return aggregate->intersect (sample);
 }
 
 
 
-inline optional<Intersection> Scene::intersect(
+optional<Intersection> Scene::intersect(
         RayDifferential const &ray
 ) const {
         return aggregate->intersect (ray);
@@ -100,7 +102,7 @@ inline optional<Intersection> Scene::intersect(
 
 
 
-inline tuple<real_t,Color> Scene::Li (Sample const & sample) const {
+tuple<real_t,Color> Scene::Li (Sample const & sample) const {
         /* PBRT:
            Spectrum Lo = surfaceIntegrator->Li (this, ray, sample, alpha)
            Spectrum T = volumeIntegrator->Transmittance (this,ray,sample,alpha)

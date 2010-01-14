@@ -21,6 +21,7 @@
 #ifndef PREETHAM_HH_INCLUDED_20100112
 #define PREETHAM_HH_INCLUDED_20100112
 
+#include "../basictypes/background.hh"
 
 namespace redshift { namespace backgrounds {
         DefineFinalizer(PreethamAdapter);

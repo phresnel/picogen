@@ -195,10 +195,10 @@ void run() {
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(0,0.1,1));
+        preetham->setSunDirection(Vector(1,1,0));
         preetham->setTurbidity(2.2f);
         preetham->setSunColor(redshift::Color(1,1,1));
-        preetham->setColorFilter(redshift::Color(.1,.1,.1));
+        preetham->setColorFilter(redshift::Color(.3,.3,.3));
         preetham->invalidate();
         
         Scene Scene (
@@ -218,9 +218,9 @@ void run() {
         Scene.render(reporter, commandProcessor);
         copy (renderBuffer, screenBuffer);
         screenBuffer->flip(); 
-        
-        //commandProcessor->waitForQuit();
-        
+
+        while (!commandProcessor->userWantsToQuit())
+                commandProcessor->tick();
 }
 
 #ifdef PICOGENLIB
