@@ -22,6 +22,7 @@
 #define RENDERTARGET_HH_INCLUDED_20090306
 
 #include <stdexcept>
+#include "rendertargetlock.hh"
 
 namespace redshift {
         class RenderTarget {

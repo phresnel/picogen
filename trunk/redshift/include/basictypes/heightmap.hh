@@ -20,6 +20,12 @@
 
 #ifndef HEIGHTMAPRENDERER_HH_INCLUDED_20090426
 #define HEIGHTMAPRENDERER_HH_INCLUDED_20090426
+
+#include "../setup.hh"
+#include "height-function.hh"
+#include "../rendertargets/rendertarget.hh"
+#include "../interaction/usercommandprocessor.hh"
+#include "../interaction/progressreporter.hh"
         
 namespace redshift {
         
@@ -29,7 +35,7 @@ namespace redshift {
         public:        
                 
                 HeightmapRenderer(shared_ptr<RenderTarget>, 
-                                  shared_ptr<primitive::HeightFunction>);
+                                  shared_ptr<HeightFunction>);
                 ~HeightmapRenderer ();
                 
                 void render(interaction::ProgressReporter::ConstPtr, 
@@ -41,8 +47,8 @@ namespace redshift {
                 HeightmapRenderer & operator= (HeightmapRenderer const &);
                 HeightmapRenderer();                
                 
-                shared_ptr<RenderTarget>         renderTarget;
-                shared_ptr<primitive::HeightFunction> function;
+                shared_ptr<RenderTarget>    renderTarget;
+                shared_ptr<HeightFunction>  function;
         };
 }
 

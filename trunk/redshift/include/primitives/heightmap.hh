@@ -23,15 +23,6 @@
 
 namespace redshift { namespace primitive {
 
-class HeightFunction {
-public:
-        virtual 
-         real_t operator ()
-           (real_t const &u, real_t const &v)
-         const = 0;
-};
-
-
 
 DefineFinalizer(Heightmap);
 class Heightmap
