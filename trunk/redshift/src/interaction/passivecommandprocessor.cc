@@ -18,10 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/setup.hh"
-#include "../../include/interaction/usercommandprocessor.hh"
-#include "../../include/interaction/passivecommandprocessor.hh"
 
+#include "../../include/interaction/passivecommandprocessor.hh"
 
 
 namespace redshift { namespace interaction {

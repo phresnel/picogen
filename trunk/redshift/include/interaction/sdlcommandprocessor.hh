@@ -21,6 +21,9 @@
 #ifndef SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
 #define SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
 
+#include "../setup.hh"
+#include "../interaction/usercommandprocessor.hh"
+
 namespace redshift { namespace interaction {
 
         DefineFinalizer(SdlCommandProcessor);

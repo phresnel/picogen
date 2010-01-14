@@ -18,12 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "../../include/interaction/sdlcommandprocessor.hh"
+
 #include <SDL.h>
 #include <ctime>
-
-#include "../../include/setup.hh"
-#include "../../include/interaction/usercommandprocessor.hh"
-#include "../../include/interaction/sdlcommandprocessor.hh"
 
 namespace redshift { namespace interaction {
 

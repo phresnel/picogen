@@ -21,6 +21,9 @@
 #ifndef PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404
 #define PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404
 
+#include "../setup.hh"
+#include "../interaction/usercommandprocessor.hh"
+
 namespace redshift { namespace interaction {
         
         DefineFinalizer(PassiveCommandProcessor);
