@@ -21,8 +21,13 @@
 #ifndef PINHOLE_HH_INCLUDED_20090312
 #define PINHOLE_HH_INCLUDED_20090312
 
+#include "../setup.hh"
+#include "../basictypes/sample.hh"
+#include "../rendertargets/rendertarget.hh"
+#include "../cameras/camera.hh"
+
 namespace redshift { namespace camera {        
-        
+
         DefineFinalizer(Pinhole);
 
         class Pinhole : public Camera, DoFinalize(Pinhole) {

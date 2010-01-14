@@ -26,6 +26,8 @@
 #include "../coordinates/lenscoordinates.hh"
 #include "../coordinates/imagecoordinates.hh"
 
+namespace redshift { class RenderTarget; }
+
 namespace redshift {
         
         class Sample {
