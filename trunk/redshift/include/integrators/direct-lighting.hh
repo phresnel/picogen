@@ -34,6 +34,8 @@ namespace redshift {
                         const RayDifferential &raydiff,
                         const Sample &sample
                 ) const ;
+        private:
+                mutable MersenneTwister<float,0,1> diffuseRng;
         };
 }
 

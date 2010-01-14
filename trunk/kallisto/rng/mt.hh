@@ -23,10 +23,11 @@
 #define RANDOM_HH_INCLUDED_20090725
 
 #include <boost/random.hpp>
+#include <boost/tuple/tuple.hpp>
 
 namespace kallisto { namespace random {
-        
 
+using boost::tuple;
 
 // as name says
 template <typename T> struct make_int_if_float {
@@ -148,6 +149,26 @@ public:
         
         operator float_t () {
                 return rand();
+        }
+
+        tuple<float_t,float_t> uniform_disk () {
+                float_t x,y;
+                do {
+                        x = (static_cast<float_t>(min)
+                            + (rand_() / maxf)
+                            ) * 2 - 1 ;
+                        y = (static_cast<float_t>(min)
+                            + (rand_() / maxf)
+                            ) * 2 - 1 ;
+                } while (x*x+y*y > 1);
+                return make_tuple(x,y);
+        }
+
+        tuple<float_t,float_t,float_t> cosine_hemisphere () {
+                const tuple<float_t,float_t> r2 = uniform_disk();
+                const float_t x = get<0>(r2);
+                const float_t z = get<1>(r2);
+                return make_tuple(x, std::sqrt(1-x*x-z*z), z);
         }
 
 private:

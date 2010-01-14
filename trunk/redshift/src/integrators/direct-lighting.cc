@@ -33,34 +33,65 @@ tuple<real_t,Color> DirectLighting::Li (
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
                 const Vector sunDir = normalize(Vector(1,1,0));
-                const Point poi = gd.getCenter();
                 const Normal normal = gd.getNormal();
-                const Ray ray (
-                        poi+vector_cast<PointCompatibleVector>(
-                                                normal*0.1f),
-                        sunDir
-                );
+                const Point poi = gd.getCenter()+
+                        vector_cast<PointCompatibleVector>(normal*0.1f);
+                const Ray ray (poi,sunDir);
+                const shared_ptr<Background> bg (scene.getBackground());
                 //std::cout << "eh" << std::flush;
-                if (scene.doesIntersect (ray)) {
+                /*const Color skyColor = bg->hasFastDiffuseQuery()
+                                ? bg->diffuseQuery (poi, normal)
+                                : Color(5,0,0);*/
+
+                // crap begin
+                Color sum = Color::fromRgb (0,0,0);
+                int numSamples;
+                {
+                        Ray ray;
+                        ray.position = poi;
+
+                        for (numSamples = 0; numSamples < 30; ++numSamples) {
+                                const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
+                                const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
+                        
+                                const real_t &sx = get<0>(sphere);
+                                const real_t &sy = get<1>(sphere);
+                                const real_t &sz = get<2>(sphere);
+                                const Vector &X = get<0>(cs);
+                                const Vector &Y = get<1>(cs);
+                                const Vector &Z = get<2>(cs);
+                                const Vector d = X * sx + Y * sy + Z * sz;
+                                ray.direction = d;
+                                if (!scene.doesIntersect(ray)) {
+                                        sum = sum + bg->query (ray);
+                                }
+                        }
+                }
+                const Color skyColor = (sum * constants::inv_pi * (1./numSamples)) * 2; // TODO: de-hack
+                // crap end
+                
+                const Color surfaceColor = Color(
+                                1,//I->getNormal().x+0.5,
+                                1,//I->getNormal().y+0.5,
+                                1//I->getNormal().z+0.5
+                        );
+
+
+                if (scene.doesIntersect (ray)) { // TODO: de-hack
                         return make_tuple (
                                 1.0, 
-                                Color(0.1,0.1,0.1));
+                                multiplyComponents(skyColor,surfaceColor)
+                        );
                 }
                 
                 const real_t d = max(
                       0.f,
                       dot(sunDir,vector_cast<Vector>(normal)));
-                
-                Color skyCol (10,10,10);
 
                 return make_tuple (
                         1.0,
-                        skyCol
-                        + Color(
-                                I->getNormal().x+0.5,
-                                I->getNormal().y+0.5,
-                                I->getNormal().z+0.5
-                        ) * d
+                        multiplyComponents(skyColor,surfaceColor)
+                        + surfaceColor*d * 0.5 // TODO: de-hack
                 );
         } else {
                 return make_tuple (1.0,

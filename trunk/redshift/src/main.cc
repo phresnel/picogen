@@ -174,7 +174,7 @@ void run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 256;
+        int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));

@@ -33,4 +33,33 @@ Color PreethamAdapter::query (Ray const &ray) const {
         //return Color::fromRgb (1,0.5,0.25);
 }
 
+Color PreethamAdapter::diffuseQuery (
+        Point const &poi, Normal const &normal
+) const {
+        Color sum = Color::fromRgb (0,0,0);
+        Ray ray;
+        ray.position = poi;
+
+        int numSamples;
+        for (numSamples = 0; numSamples < 10; ++numSamples) {
+                const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
+                const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
+        
+                const real_t &sx = get<0>(sphere);
+                const real_t &sy = get<1>(sphere);
+                const real_t &sz = get<2>(sphere);
+                const Vector &X = get<0>(cs);
+                const Vector &Y = get<1>(cs);
+                const Vector &Z = get<2>(cs);
+                const Vector d = X * sx + Y * sy + Z * sz;
+                if (d.y > 0) {
+                        ray.direction = d;
+                        sum = sum + query (ray);
+                }
+        }
+        return sum * (1./numSamples);
+
+        return query (Ray(poi, vector_cast<Vector>(normal)));
+}
+
 } } // namespace redshift { namespace backgrounds {

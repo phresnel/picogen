@@ -27,6 +27,12 @@ namespace redshift {
         class Background {
         public:
                 virtual Color query (Ray const &ray) const = 0;
+                virtual bool hasFastDiffuseQuery () const {
+                        return false;
+                }
+                virtual Color diffuseQuery(Point const&, Normal const&) const {
+                        return Color(0,0,0);
+                }
         };
 }
 
