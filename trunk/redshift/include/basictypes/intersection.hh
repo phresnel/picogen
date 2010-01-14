@@ -21,6 +21,10 @@
 #ifndef INTERSECTION_H_INCLUDED_20090301
 #define INTERSECTION_H_INCLUDED_20090301
 
+#include "../setup.hh"
+#include "../basictypes/differentialgeometry.hh"
+
+
 namespace redshift { namespace primitive { class Primitive; } }
 
 namespace redshift {
