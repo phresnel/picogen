@@ -31,12 +31,14 @@
 #include "../../include/rendertargets/colorrendertarget.hh"
 #include "../../include/cameras/pinhole.hh"
 #include "../../include/interaction/sdlcommandprocessor.hh"
+#include "../../include/basictypes/height-function.hh"
 #else
 #include "../include/redshift.hh"
 #include "../include/rendertargets/sdlrendertarget.hh"
 #include "../include/rendertargets/colorrendertarget.hh"
 #include "../include/cameras/pinhole.hh"
 #include "../include/interaction/sdlcommandprocessor.hh"
+#include "../include/basictypes/height-function.hh"
 #endif
 
 
@@ -109,7 +111,7 @@ private:
 #endif
 
 namespace redshift {
-class QuatschHeightFunction : public redshift::primitive::HeightFunction {
+class QuatschHeightFunction : public redshift::HeightFunction {
 private:
         // quatsch
         typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
@@ -153,7 +155,7 @@ public:
 } // namespace redshift
 
 
-class HeightFunction : public redshift::primitive::HeightFunction {
+class HeightFunction : public redshift::HeightFunction {
         typedef redshift::real_t real_t;
         typedef redshift::fixed_point_t fixed_point_t;
         real_t operator ()
@@ -177,9 +179,9 @@ void run() {
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));
         
-        shared_ptr<primitive::HeightFunction> heightFunction;
+        shared_ptr<redshift::HeightFunction> heightFunction;
         try {
-                heightFunction = shared_ptr<primitive::HeightFunction> (
+                heightFunction = shared_ptr<redshift::HeightFunction> (
                                       new ::redshift::QuatschHeightFunction());
         } catch (...) { // TODO (!!!)
         }
