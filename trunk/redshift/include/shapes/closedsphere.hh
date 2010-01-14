@@ -21,6 +21,10 @@
 #ifndef CLOSEDSPHERE_H_INCLUDED_20090301
 #define CLOSEDSPHERE_H_INCLUDED_20090301
 
+#include "../setup.hh"
+#include "../basictypes/intersection.hh"
+#include "shape.hh"
+
 namespace redshift { namespace shape {
         DefineFinalizer(ClosedSphere); 
         

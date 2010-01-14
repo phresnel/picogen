@@ -21,6 +21,12 @@
 #ifndef PRIMITIVE_CLOSEDSPHERE_H_INCLUDED_20090313
 #define PRIMITIVE_CLOSEDSPHERE_H_INCLUDED_20090313
 
+#include "../setup.hh"
+#include "../basictypes/intersection.hh"
+#include "../shapes/closedsphere.hh"
+#include "../primitives/primitive.hh"
+
+
 namespace redshift { namespace primitive {
         
         DefineFinalizer(ClosedSphere);

@@ -18,23 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/setup.hh"
-#include "../../include/basictypes/differentialgeometry.hh"
-#include "../../include/basictypes/intersection.hh"
-#include "../../include/shapes/shape.hh"
-#include "../../include/shapes/closedsphere.hh"
-
-#include "../../include/coordinates/uvcoordinates.hh"
-#include "../../include/coordinates/imagecoordinates.hh"
-#include "../../include/coordinates/lenscoordinates.hh"
-#include "../../include/rendertargets/rendertargetlock.hh"
-#include "../../include/rendertargets/rendertarget.hh"
-#include "../../include/basictypes/sample.hh"
-
-#include "../../include/primitives/primitive.hh"
-
-#include "../../include/primitives/heightmap.hh"
-
 #include "../../include/primitives/booleanfield.hh"
 
 namespace redshift { namespace primitive {

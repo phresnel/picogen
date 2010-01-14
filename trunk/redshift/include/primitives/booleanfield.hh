@@ -21,6 +21,10 @@
 #ifndef PRIMITIVE_BOOLEANFIELD_H_INCLUDED_20100109
 #define PRIMITIVE_BOOLEANFIELD_H_INCLUDED_20100109
 
+#include "../setup.hh"
+#include "../basictypes/height-function.hh"
+#include "primitive.hh"
+
 namespace redshift { namespace primitive {
         
         DefineFinalizer(BooleanField);
