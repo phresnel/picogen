@@ -21,6 +21,11 @@
 #ifndef SAMPLE_HH_INCLUDED_20090310
 #define SAMPLE_HH_INCLUDED_20090310
 
+#include "../setup.hh"
+#include "../coordinates/uvcoordinates.hh"
+#include "../coordinates/lenscoordinates.hh"
+#include "../coordinates/imagecoordinates.hh"
+
 namespace redshift {
         
         class Sample {

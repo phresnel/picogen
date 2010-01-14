@@ -21,6 +21,10 @@
 #ifndef PRIMITIVE_H_INCLUDED_20090301
 #define PRIMITIVE_H_INCLUDED_20090301
 
+#include "../setup.hh"
+#include "../basictypes/intersection.hh"
+#include "../basictypes/sample.hh"
+
 namespace redshift { namespace primitive {
         class Primitive : public enable_shared_from_this<Primitive> {
         public:

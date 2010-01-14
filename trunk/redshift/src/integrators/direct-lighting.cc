@@ -18,33 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/setup.hh"
-
-#include "../../include/basictypes/background.hh"
-#include "../../include/backgrounds/visualise-direction.hh"
-
-#include "../../include/basictypes/differentialgeometry.hh"
-#include "../../include/basictypes/intersection.hh"
-#include "../../include/coordinates/uvcoordinates.hh"
-#include "../../include/coordinates/lenscoordinates.hh"
-#include "../../include/coordinates/imagecoordinates.hh"
-
-#include "../../include/rendertargets/rendertargetlock.hh"
-#include "../../include/rendertargets/rendertarget.hh"
-
-#include "../../include/basictypes/sample.hh"
-
-#include "../../include/cameras/camera.hh"
-
-#include "../../include/primitives/primitive.hh"
-
-#include "../../include/interaction/progressreporter.hh"
-#include "../../include/interaction/usercommandprocessor.hh"
-
-#include "../../include/basictypes/scene.hh"
-
 #include "../../include/integrators/direct-lighting.hh"
-
 
 namespace redshift {
 

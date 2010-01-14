@@ -21,6 +21,9 @@
 #ifndef DIRECTLIGHTING_HH_INCLUDED_20090110
 #define DIRECTLIGHTING_HH_INCLUDED_20090110
 
+#include "../setup.hh"
+#include "../basictypes/scene.hh"
+#include "../basictypes/sample.hh"
 #include "../basictypes/transport.hh"
 
 namespace redshift {

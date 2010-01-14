@@ -20,7 +20,19 @@
 
 #ifndef SCENE_HH_INCLUDED_20090303
 #define SCENE_HH_INCLUDED_20090303
-        
+
+#include "../setup.hh"
+#include "../rendertargets/rendertarget.hh"
+#include "../cameras/camera.hh"
+#include "../basictypes/sample.hh"
+#include "../primitives/primitive.hh"
+#include "../basictypes/background.hh"
+#include "../basictypes/intersection.hh"
+
+#include "../interaction/progressreporter.hh"
+#include "../interaction/usercommandprocessor.hh"
+
+
 namespace redshift {
         
         DefineFinalizer(Scene);
@@ -32,18 +44,17 @@ namespace redshift {
                         shared_ptr<RenderTarget>,
                         shared_ptr<camera::Camera>,
                         shared_ptr<primitive::Primitive>,
-                        shared_ptr<Background> bg = shared_ptr<Background> (
-                                new backgrounds::VisualiseDirection())
+                        shared_ptr<Background> bg 
                 );
                 ~Scene ();
                 
                 void render(interaction::ProgressReporter::ConstPtr, 
                           interaction::UserCommandProcessor::Ptr) const ;
-                inline optional<Intersection> intersect(
+                optional<Intersection> intersect(
                                         RayDifferential const &ray) const;
-                inline bool doesIntersect (Sample const &sample) const;
-                inline bool doesIntersect (Ray const &ray) const;
-                inline shared_ptr<Background> getBackground () const;
+                bool doesIntersect (Sample const &sample) const;
+                bool doesIntersect (Ray const &ray) const;
+                shared_ptr<Background> getBackground () const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
