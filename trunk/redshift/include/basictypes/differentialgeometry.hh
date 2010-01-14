@@ -21,6 +21,8 @@
 #ifndef DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
 #define DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
 
+#include "../setup.hh"
+
 namespace redshift {
 
         DefineFinalizer(DifferentialGeometry);
