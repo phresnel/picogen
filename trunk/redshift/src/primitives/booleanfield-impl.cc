@@ -18,7 +18,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-namespace impl {        
+namespace impl {  
+
+        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;   
+        typedef backend_t::Function Function;
+        typedef backend_t::FunctionPtr FunctionPtr;
+        typedef backend_t::scalar_t scalar_t;
+        typedef backend_t::parameters_t parameters_t;
+        typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
+
+        Compiler::ConfigurableFunctionsMap addfuns() {
+                using namespace redshift;
+                
+                
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,  
+                                Function
+                        >
+                );
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoise2dDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,  
+                                Function
+                        >
+                );
+                
+                Compiler::ConfigurableFunctionsMap addfuns;
+                addfuns.addSymbol ("Noise2d", noiseDesc);
+                addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
+                return addfuns;
+        }
+
         struct Rgb {
                 float r,g,b;
         };
@@ -238,7 +269,9 @@ namespace impl {
         }*/
 
         inline bool fun (float x, float y, float z) {
-                #if 0
+                #if 1
+                y+=5;
+                z -= 500;
                 using namespace redshift;
                 typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
             
@@ -252,13 +285,22 @@ namespace impl {
                 static Compiler::FunctionPtr fun (Compiler::compile (std::string("x;y"), 
                         //std::string("([LayeredNoise2d frequency{1.0} filter{cosine} layercount{5} seed{41} persistence{0.52}] x y)"), 
                         std::string(
-                                "([LayeredNoise2d frequency{1.0} filter{cosine} layercount{4} seed{41} persistence{0.5}] x y)"
+                                /*"(* 5 (- 1 (abs "
+                                "([LayeredNoise2d frequency{0.5} filter{bilinear} layercount{4} seed{45} persistence{0.5}] "
+                                " ([LayeredNoise2d frequency{0.5} filter{bilinear} layercount{4} seed{41} persistence{0.5}] x y) "
+                                " ([LayeredNoise2d frequency{0.5} filter{bilinear} layercount{4} seed{41} persistence{0.5}] x y) "
+                                ")"
+                                ")))"*/
+                                "(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{9} persistence{0.54} levelEvaluationFunction{(abs h)}] "
+                                "  (+ x (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                                "  (+ x (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                                ")))"
                         ), 
                         addfuns(), std::cerr));
-                const real_t p[] = { x, z };
+                const real_t p[] = { .001*x, .001*z };
                 return y < (*fun)(p);
                 
-                #elif 1
+                #elif 0
                 y += 3;
                 z -= 15;
                 const bool a = y < -2 + (0.5f * sin(x*3) * sin(z*3));
@@ -266,6 +308,26 @@ namespace impl {
                 const bool c = (sqrt(pow (x+2.f, 2.f)+pow (z-2.f, 2.f))<3.f)
                                 & (y>2.0f) & (y<2.2f);
                 const bool d = (sqrt(pow (x+2.f, 2.f)+pow (z-2.f, 2.f))<1.f)
+                                & (y<2.0f);
+
+                return a | b | c | d;
+                #elif 1
+                y += 1;
+                z -= 10;
+                const bool a = y < -2 + (0.5f * sin(x*3) * sin(z*3));
+                const bool b = sqrt (x*x + (y)*(y) + z*z)<1.0f;
+                
+                const bool c = (sqrt(pow (x+2, 2.f)+pow (z-2, 2.f))<3.f)
+                                & (y>2.0f) & (y<2.2f);
+                                
+
+                const float xxx = x+2;
+                const float zzz = z-2;
+                const float sintmp = sin(4*y);
+                const float costmp = cos(4*y);
+                const float xx = xxx+0.25f*sintmp;
+                const float zz = zzz+0.25f*costmp;
+                const bool d = (sqrt(pow (xx, 2.f)+pow (zz, 2.f))<1.f)
                                 & (y<2.0f);
 
                 return a | b | c | d;
@@ -374,7 +436,7 @@ namespace impl {
                                         }
                                 }
                         } else*/ {
-                                const int count = (500+10*size.x*size.y*size.z)/6;
+                                const int count = min (1000.f, (500+10*size.x*size.y*size.z)/6);
                                 const bool ref = fun (c.x, c.y, c.z);
                                 for (int i=0; i<count; ++i) {
                                         #warning tbh i am unsure why *2.f gives good results
@@ -629,7 +691,7 @@ namespace impl {
                         Ray const &ray, float distance,
                         Vector const & ruo, Vector const & rvo
                 ) const {
-                        const float l = 0.001f, sl = l * 0.1f;
+                        const float l = 0.001f, sl = l * 0.1f; // 0.1
                         const Ray
                                 ru = {(ray.position+ruo*l), ray.direction},
                                 rv = {(ray.position+rvo*l), ray.direction}

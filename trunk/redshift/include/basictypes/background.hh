@@ -30,8 +30,16 @@ namespace redshift {
                 virtual bool hasFastDiffuseQuery () const {
                         return false;
                 }
+                virtual bool hasAtmosphereShade () const {
+                        return false;
+                }
                 virtual Color diffuseQuery(Point const&, Normal const&) const {
-                        return Color(0,0,0);
+                        return Color::fromRgb(0,0,0);
+                }
+                virtual Color atmosphereShade (
+                        Color const &, Ray const &, real_t
+                ) const {
+                        return Color::fromRgb(0,0,0);
                 }
         };
 }

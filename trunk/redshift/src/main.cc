@@ -174,11 +174,11 @@ void run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 512;
+        int const width = 256;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));
-        
+
         shared_ptr<redshift::HeightFunction> heightFunction;
         try {
                 heightFunction = shared_ptr<redshift::HeightFunction> (
@@ -197,10 +197,11 @@ void run() {
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(1,1,0));
-        preetham->setTurbidity(2.2f);
-        preetham->setSunColor(redshift::Color(1,1,1));
+        preetham->setSunDirection(Vector(4,1,4));
+        preetham->setTurbidity(2.0f);
+        preetham->setSunColor(redshift::Color(.9,.7,.5)*10);
         preetham->setColorFilter(redshift::Color(.3,.3,.3));
+        preetham->enableFogHack (true, 0.005f, 1500);
         preetham->invalidate();
         
         Scene Scene (
@@ -208,6 +209,8 @@ void run() {
                 camera, 
                 agg,
                 shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham))
+                //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
+                //shared_ptr<Background>(new backgrounds::VisualiseDirection())
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));

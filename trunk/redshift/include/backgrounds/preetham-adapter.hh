@@ -34,6 +34,10 @@ namespace redshift { namespace backgrounds {
                 Color query (Ray const &ray) const;
                 bool hasFastDiffuseQuery () const { return true; }
                 Color diffuseQuery (Point const&, Normal const&) const ;
+                Color atmosphereShade (
+                        Color const &, Ray const &, real_t
+                ) const;
+                bool hasAtmosphereShade () const { return true; }
         private:
                 shared_ptr<redshift::background::Preetham> preetham;
                 mutable MersenneTwister<float,0,1> diffuseRng;

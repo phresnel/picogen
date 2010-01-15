@@ -20,6 +20,15 @@
 
 #include "../../include/primitives/booleanfield.hh"
 
+
+#include "quatsch/quatsch.hh"
+#include "quatsch/frontend/jux.hh"
+#include "quatsch/backend/est/backend.hh"
+
+#include "quatsch/configurable-functions/noise2ddef.hh"
+#include "quatsch/configurable-functions/layerednoise2ddef.hh"
+
+
 namespace redshift { namespace primitive {
 
 
@@ -29,7 +38,7 @@ namespace redshift { namespace primitive {
 
 
 BooleanField::BooleanField (shared_ptr<HeightFunction const> fun, real_t detail) 
-: impl (new impl::BooleanFieldImpl(100))
+: impl (new impl::BooleanFieldImpl(500))
 {
 }
 

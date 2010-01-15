@@ -42,7 +42,7 @@ tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
         RayDifferential ray;        
         ray.direction.x = -0.5 + sample.imageCoordinates.u * invFilmWidth;
         ray.direction.y =  0.5 - sample.imageCoordinates.v * invFilmHeight;
-        ray.direction.z = 1.0;
+        ray.direction.z = 0.5;
         ray.direction = normalize (ray.direction);
         ray.position = Point ();
         ray.minT = constants::epsilon;

@@ -32,7 +32,7 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(1,1,0));
+                const Vector sunDir = normalize(Vector(4,1,4));
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normal*0.1f);
@@ -45,29 +45,30 @@ tuple<real_t,Color> DirectLighting::Li (
 
                 // crap begin
                 Color sum = Color::fromRgb (0,0,0);
-                int numSamples;
+                int numSamples = 1;
                 {
                         Ray ray;
                         ray.position = poi;
 
-                        for (numSamples = 0; numSamples < 30; ++numSamples) {
+                        // BETTER USE AMBIENT OCCLUSION FACTOR. THIS IS KINDA SLOW!
+                        const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
+                        const Vector &X = get<0>(cs);
+                        const Vector &Y = get<1>(cs);
+                        const Vector &Z = get<2>(cs);
+                        const int maxNumSamples = 100;
+                        for (numSamples = 0; numSamples < maxNumSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
-                                const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
-                        
                                 const real_t &sx = get<0>(sphere);
                                 const real_t &sy = get<1>(sphere);
-                                const real_t &sz = get<2>(sphere);
-                                const Vector &X = get<0>(cs);
-                                const Vector &Y = get<1>(cs);
-                                const Vector &Z = get<2>(cs);
+                                const real_t &sz = get<2>(sphere);                                
                                 const Vector d = X * sx + Y * sy + Z * sz;
                                 ray.direction = d;
-                                if (!scene.doesIntersect(ray)) {
+                                if (d.y>0) {//true || !scene.doesIntersect(ray)) {
                                         sum = sum + bg->query (ray);
                                 }
                         }
                 }
-                const Color skyColor = (sum * constants::inv_pi * (1./numSamples)) * 2; // TODO: de-hack
+                const Color skyColor = (sum /** constants::inv_pi **/ * (1./numSamples));// * 2; // TODO: de-hack
                 // crap end
                 
                 const Color surfaceColor = Color(
@@ -76,23 +77,19 @@ tuple<real_t,Color> DirectLighting::Li (
                                 1//I->getNormal().z+0.5
                         );
 
+                Color ret = multiplyComponents(skyColor,surfaceColor);
 
                 if (scene.doesIntersect (ray)) { // TODO: de-hack
-                        return make_tuple (
-                                1.0, 
-                                multiplyComponents(skyColor,surfaceColor)
-                        );
+                } else {
+                        const real_t d = max(
+                                0.f,
+                                dot(sunDir,vector_cast<Vector>(normal)));
+                        ret = ret + surfaceColor*d;// * 0.5; // TODO: de-hack                        
                 }
                 
-                const real_t d = max(
-                      0.f,
-                      dot(sunDir,vector_cast<Vector>(normal)));
-
-                return make_tuple (
-                        1.0,
-                        multiplyComponents(skyColor,surfaceColor)
-                        + surfaceColor*d * 0.5 // TODO: de-hack
-                );
+                if (bg->hasAtmosphereShade())
+                        ret = bg->atmosphereShade (ret, ray, gd.getDistance());
+                return make_tuple(1.0f, ret);
         } else {
                 return make_tuple (1.0,
                         scene.getBackground()->query(raydiff));

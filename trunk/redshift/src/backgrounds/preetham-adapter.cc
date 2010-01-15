@@ -62,4 +62,10 @@ Color PreethamAdapter::diffuseQuery (
         return query (Ray(poi, vector_cast<Vector>(normal)));
 }
 
+Color PreethamAdapter::atmosphereShade (
+        Color const &color, Ray const &ray, real_t distance
+) const {
+        return preetham->atmosphereShade (color,ray,distance);
+}
+
 } } // namespace redshift { namespace backgrounds {

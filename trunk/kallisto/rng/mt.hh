@@ -152,7 +152,7 @@ public:
         }
 
         tuple<float_t,float_t> uniform_disk () {
-                float_t x,y;
+                /*float_t x,y;
                 do {
                         x = (static_cast<float_t>(min)
                             + (rand_() / maxf)
@@ -160,6 +160,12 @@ public:
                         y = (static_cast<float_t>(min)
                             + (rand_() / maxf)
                             ) * 2 - 1 ;
+                } while (x*x+y*y > 1);
+                return make_tuple(x,y);*/
+                float_t x,y;
+                do {
+                        x = 2*(rand_() / maxf)-1;
+                        y = 2*(rand_() / maxf)-1;
                 } while (x*x+y*y > 1);
                 return make_tuple(x,y);
         }
