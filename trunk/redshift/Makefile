@@ -85,6 +85,7 @@ OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
+OBJFILES += $(PRIMITIVESOBJDIR)/lazyquadtree.o
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/colorrendertarget.o
@@ -216,6 +217,10 @@ $(PRIMITIVESOBJDIR)/closedsphere.o: \
 
 $(PRIMITIVESOBJDIR)/heightmap.o: \
                      ./src/primitives/heightmap.cc
+	$(CXX) -o $@ $<
+
+$(PRIMITIVESOBJDIR)/lazyquadtree.o: \
+                     ./src/primitives/lazyquadtree.cc
 	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/booleanfield.o: \

@@ -77,6 +77,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/closedsphere.hh"
 #include "primitives/heightmap.hh"
 #include "primitives/booleanfield.hh"
+#include "primitives/lazyquadtree.hh"
 
 // background/
 #include "backgrounds/visualise-direction.hh"
