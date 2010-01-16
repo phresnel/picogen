@@ -70,6 +70,7 @@ namespace redshift {
         typedef kallisto::OrthonormalBasis<Vector>      OrthonormalBasis;
 
         using kallisto::intersect;
+        using kallisto::does_intersect;
         using kallisto::vector_cast;
         using kallisto::scalar_cast;
 

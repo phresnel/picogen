@@ -28,6 +28,8 @@
 
 namespace redshift { namespace primitive {
         
+        class LazyQuadtreeImpl;
+        
         DefineFinalizer(LazyQuadtree);
         
         class LazyQuadtree
@@ -35,7 +37,7 @@ namespace redshift { namespace primitive {
                 , DoFinalize(LazyQuadtree)
         {
         public:
-                LazyQuadtree(shared_ptr<HeightFunction const> fun, real_t detail);
+                LazyQuadtree(shared_ptr<HeightFunction const> fun, real_t size);
                 ~LazyQuadtree ();
                 
                 bool doesIntersect (RayDifferential const &ray) const;
@@ -44,11 +46,13 @@ namespace redshift { namespace primitive {
                 optional<Intersection>
                         intersect(RayDifferential const &ray) const;
                 
-        private:                
+        private:
 
                 LazyQuadtree();
                 LazyQuadtree(LazyQuadtree const&);
                 LazyQuadtree &operator = (LazyQuadtree const&);
+
+                shared_ptr<LazyQuadtreeImpl> impl;
         };
 } }
 
