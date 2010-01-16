@@ -109,26 +109,43 @@ private:
 #include "../../quatsch/frontend/jux.hh"
 #include "../../quatsch/backend/est/backend.hh"
 #endif
+#include "quatsch/configurable-functions/noise2ddef.hh"
+#include "quatsch/configurable-functions/layerednoise2ddef.hh"
 
 namespace redshift {
 class QuatschHeightFunction : public redshift::HeightFunction {
 private:
         // quatsch
-        typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
-    
+        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;   
         typedef backend_t::Function Function;
         typedef backend_t::FunctionPtr FunctionPtr;
         typedef backend_t::scalar_t scalar_t;
         typedef backend_t::parameters_t parameters_t;
-
         typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
+        typedef Compiler::ConfigurableFunctionsMap FunctionSet;
         
-        struct FunctionSet {
-                Compiler::ConfigurableFunctionsMap cfm;
-                operator Compiler::ConfigurableFunctionsMap () {
-                        return cfm;
-                }
-        };
+        static Compiler::ConfigurableFunctionsMap addfuns() {
+                using namespace redshift;
+                
+                
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,  
+                                Function
+                        >
+                );
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoise2dDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,  
+                                Function
+                        >
+                );
+                
+                Compiler::ConfigurableFunctionsMap addfuns;
+                addfuns.addSymbol ("Noise2d", noiseDesc);
+                addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
+                return addfuns;
+        }
         
         FunctionSet functionSet;
         Compiler::FunctionPtr fun;
@@ -139,14 +156,20 @@ public:
          (real_t const & u, real_t const & v) const {
                 //real_t const d = sqrt (u*u + v*v);
                 const real_t p [] = { u, v };
-                return (*fun) (p);
+                return (*fun) (p) - 20;
         }
         
         
         QuatschHeightFunction ()
-        : fun (Compiler::compile (
+        : functionSet(addfuns())
+        , fun (Compiler::compile (
                 "x;y",
-                "(- (* (sin (* x 0.7)) (sin(* y 0.7)) ) 4)", 
+                //"(* (sin (* x 0.7)) (sin(* y 0.7)) )", 
+                /*"(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{4} persistence{0.54} levelEvaluationFunction{(abs h)}] "
+                "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                ")))"*/
+                "(* 20 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.025} layercount{9} persistence{0.54} levelEvaluationFunction{(abs h)}] x y))))",
                 functionSet,
                 errors))
         {
@@ -197,11 +220,11 @@ void run() {
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(1,1,0));
+        preetham->setSunDirection(Vector(2,1,0));
         preetham->setTurbidity(2.0f);
-        preetham->setSunColor(redshift::Color(.9,.7,.5)*10);
-        preetham->setColorFilter(redshift::Color(.3,.3,.3));
-        preetham->enableFogHack (false, 0.005f, 1500);
+        preetham->setSunColor(redshift::Color(.9,.7,.5)*.1);
+        preetham->setColorFilter(redshift::Color(.2,.2,.2));
+        preetham->enableFogHack (true, 0.005f, 150000);
         preetham->invalidate();
         
         Scene Scene (
@@ -224,8 +247,8 @@ void run() {
         copy (renderBuffer, screenBuffer);
         screenBuffer->flip(); 
 
-        /*while (!commandProcessor->userWantsToQuit())
-                commandProcessor->tick();*/
+        while (!commandProcessor->userWantsToQuit())
+                commandProcessor->tick();
 }
 
 #ifdef PICOGENLIB

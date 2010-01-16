@@ -32,7 +32,7 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(1,1,0));
+                const Vector sunDir = normalize(Vector(2,1,0));
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normal*0.1f);
@@ -46,7 +46,7 @@ tuple<real_t,Color> DirectLighting::Li (
                 // crap begin
                 Color sum = Color::fromRgb (0,0,0);
                 int numSamples = 1;
-                if (0) {
+                if (1) {
                         Ray ray;
                         ray.position = poi;
 
@@ -55,7 +55,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int maxNumSamples = 100;
+                        const int maxNumSamples = 10;
                         for (numSamples = 0; numSamples < maxNumSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
@@ -68,7 +68,7 @@ tuple<real_t,Color> DirectLighting::Li (
                                 }
                         }
                 }
-                const Color skyColor = (sum /** constants::inv_pi **/ * (1./numSamples));// * 2; // TODO: de-hack
+                const Color skyColor = (sum /** constants::inv_pi*/ * (1./numSamples));// * 2; // TODO: de-hack
                 // crap end
                 
                 const Color surfaceColor = Color(
