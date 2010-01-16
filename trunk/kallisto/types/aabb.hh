@@ -30,6 +30,8 @@ namespace kallisto {
 namespace kallisto {
         template <typename point_t> class BoundingBox {
         public:
+                typedef typename 
+                traits::get_scalar_type<point_t>::type scalar_t;
         
                 // Use max() instead of infinity() to allow for integer types. 
                 BoundingBox ()
@@ -66,33 +68,30 @@ namespace kallisto {
                 }
 
 
-                
+
                 point_t getMinimum () const { return minimum; }
                 point_t getMaximum () const { return maximum; }
-                
-                
-                
+
+
+
                 typename traits::get_scalar_type<point_t>::type
                         getMinimumX () const { return minimum.x; }
                 typename traits::get_scalar_type<point_t>::type
                         getMinimumY () const { return minimum.y; }
                 typename traits::get_scalar_type<point_t>::type
                         getMinimumZ () const { return minimum.z; }
-                
-                
-                
+
+
+
                 typename traits::get_scalar_type<point_t>::type
                         getMaximumX () const { return maximum.x; }
                 typename traits::get_scalar_type<point_t>::type
                         getMaximumY () const { return maximum.y; }
                 typename traits::get_scalar_type<point_t>::type
                         getMaximumZ () const { return maximum.z; }
-                
-        
-        private:
-                typedef typename
-                               traits::get_scalar_type<point_t>::type scalar_t;
 
+
+        private:
                 point_t minimum, maximum;               
                 
         };
@@ -187,9 +186,9 @@ namespace kallisto {
 
                 return diff.x * diff.y * diff.z;
         }
-        
-        
-        
+
+
+
         template <
                 bool do_normalize_ray_direction,
                 typename point_t,
@@ -207,7 +206,7 @@ namespace kallisto {
         ) {
                 typedef
                     typename traits::get_scalar_type<direction_t>::type real_t;
-                    
+
                 Ray<point_t, direction_t> ray;
                 if (do_normalize_ray_direction) {
                         ray.position = ray_.position;
@@ -215,55 +214,123 @@ namespace kallisto {
                 } else {
                         ray = ray_;
                 }
-                        
+
                 //TODO    
                 real_t t0 = 0;//ray.minT;
-                real_t t1 = 100;//ray.maxT;
-                
+                real_t t1 = 1000000;//ray.maxT;
+
                 // X
                 {
                         real_t i = real_t(1) / ray.direction.x;
                         real_t near = scalar_cast<real_t>(box.getMinimumX() - ray.position.x) * i;
                         real_t far  = scalar_cast<real_t>(box.getMaximumX() - ray.position.x) * i;
-                        
+
                         if (near > far) swap (near, far);
-                        
+
                         t0 = near > t0 ? near : t0;
                         t1 = far < t1 ? far : t1;
-                        
+
                         if (t0 > t1) return false;
                 }
-                
+
                 // Y
                 {
                         real_t i = real_t(1) / ray.direction.y;
                         real_t near = scalar_cast<real_t>(box.getMinimumY() - ray.position.y) * i;
                         real_t far  = scalar_cast<real_t>(box.getMaximumY() - ray.position.y) * i;
-                        
+
                         if (near > far) swap (near, far);
-                        
+
                         t0 = near > t0 ? near : t0;
                         t1 = far < t1 ? far : t1;
-                        
+
                         if (t0 > t1) return false;
                 }
-                
+
                 // Z
                 {
                         real_t i = real_t(1) / ray.direction.z;
                         real_t near = scalar_cast<real_t>(box.getMinimumZ() - ray.position.z) * i;
                         real_t far  = scalar_cast<real_t>(box.getMaximumZ() - ray.position.z) * i;
-                        
+
                         if (near > far) swap (near, far);
-                        
+
                         t0 = near > t0 ? near : t0;
                         t1 = far < t1 ? far : t1;
-                        
+
                         if (t0 > t1) return false;
                 }
-//                std::cout<<t0<<"::"<<t1<<std::endl;
-//                std::cout<<ray.minT<<".."<<ray.maxT<<std::endl;
                 return make_tuple (t0, t1);
+        }
+
+        template <
+                bool do_normalize_ray_direction,
+                typename point_t,
+                typename direction_t
+        > inline
+        bool
+        does_intersect (
+                Ray<point_t, direction_t> const & ray_,
+                BoundingBox<point_t> const & box
+        ) {
+                typedef
+                    typename traits::get_scalar_type<direction_t>::type real_t;
+
+                Ray<point_t, direction_t> ray;
+                if (do_normalize_ray_direction) {
+                        ray.position = ray_.position;
+                        ray.direction = normalize (ray_.direction);
+                } else {
+                        ray = ray_;
+                }
+
+                //TODO
+                real_t t0 = 0;//ray.minT;
+                real_t t1 = 1000000;//ray.maxT;
+
+                // X
+                {
+                        real_t i = real_t(1) / ray.direction.x;
+                        real_t near = scalar_cast<real_t>(box.getMinimumX() - ray.position.x) * i;
+                        real_t far  = scalar_cast<real_t>(box.getMaximumX() - ray.position.x) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return false;
+                }
+
+                // Y
+                {
+                        real_t i = real_t(1) / ray.direction.y;
+                        real_t near = scalar_cast<real_t>(box.getMinimumY() - ray.position.y) * i;
+                        real_t far  = scalar_cast<real_t>(box.getMaximumY() - ray.position.y) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return false;
+                }
+
+                // Z
+                {
+                        real_t i = real_t(1) / ray.direction.z;
+                        real_t near = scalar_cast<real_t>(box.getMinimumZ() - ray.position.z) * i;
+                        real_t far  = scalar_cast<real_t>(box.getMaximumZ() - ray.position.z) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return false;
+                }
+
+                return t0<t1;
         }        
   
 }
