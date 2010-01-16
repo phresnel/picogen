@@ -174,7 +174,7 @@ void run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 256;
+        int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
         shared_ptr<Camera> camera (new Pinhole(renderBuffer));
@@ -192,16 +192,16 @@ void run() {
                                 scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(25)),
                         10.0)*/
-                //new Heightmap (heightFunction, 1.5)
-                new BooleanField (heightFunction, 1.5)
+                new Heightmap (heightFunction, 1.5)
+                //new BooleanField (heightFunction, 1.5)
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(4,1,4));
+        preetham->setSunDirection(Vector(1,1,0));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(.9,.7,.5)*10);
         preetham->setColorFilter(redshift::Color(.3,.3,.3));
-        preetham->enableFogHack (true, 0.005f, 1500);
+        preetham->enableFogHack (false, 0.005f, 1500);
         preetham->invalidate();
         
         Scene Scene (
@@ -224,8 +224,8 @@ void run() {
         copy (renderBuffer, screenBuffer);
         screenBuffer->flip(); 
 
-        while (!commandProcessor->userWantsToQuit())
-                commandProcessor->tick();
+        /*while (!commandProcessor->userWantsToQuit())
+                commandProcessor->tick();*/
 }
 
 #ifdef PICOGENLIB

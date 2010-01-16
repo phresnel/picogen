@@ -108,6 +108,15 @@ namespace impl {
         float operator * (Vector const & lhs, Vector const & rhs) {
                 return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
         }
+        
+        Vector operator - (Vector const & lhs, Vector const & rhs) {
+                const Vector ret = {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z}; 
+                return ret;
+        }
+        Vector operator + (Vector const & lhs, Vector const & rhs) {
+                const Vector ret = {lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z}; 
+                return ret;
+        }
 
         Vector normalize (Vector const & vec) {
                 return vec * (1.f/length(vec));
@@ -269,8 +278,8 @@ namespace impl {
         }*/
 
         inline bool fun (float x, float y, float z) {
-                #if 1
-                y+=5;
+                #if 0
+                y+=450;
                 z -= 500;
                 using namespace redshift;
                 typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
@@ -292,13 +301,13 @@ namespace impl {
                                 ")"
                                 ")))"*/
                                 "(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{9} persistence{0.54} levelEvaluationFunction{(abs h)}] "
-                                "  (+ x (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
-                                "  (+ x (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                                "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                                "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                                 ")))"
                         ), 
                         addfuns(), std::cerr));
-                const real_t p[] = { .001*x, .001*z };
-                return y < (*fun)(p);
+                const real_t p[] = { .0025*x, .0025*z };
+                return y < 600*(*fun)(p);
                 
                 #elif 0
                 y += 3;
@@ -400,12 +409,13 @@ namespace impl {
 
                 mutable kallisto::random::MersenneTwister<float, 0, 1> mt;
                 
-                float size;
-                float rsize;
+                /*float size;
+                float rsize;*/
+                Vector size, rsize, center;
                 
                 //size_t sampleGridSize = 128;
                 //bool sampleGrid[sampleGridSize*sampleGridSize*sampleGridSize];
-                inline bool is_empty (Point const &c, Vector const &size) const {
+                inline bool is_empty (Point const &c, Vector const &size, Point const &watcher) const {
                         /*const float 
                                 left   = (c.x - size.x * .5f) * rsize + .5f,
                                 right  = (c.x + size.x * .5f) * rsize + .5f,
@@ -436,14 +446,19 @@ namespace impl {
                                         }
                                 }
                         } else*/ {
-                                const int count = min (1000.f, (500+10*size.x*size.y*size.z)/6);
+                                const int count = min (
+                                        1000.f, 
+                                        ((500+10*size.x*size.y*size.z)/6)
+                                        #warning make this customizable
+                                        // / (1+length (watcher-c))
+                                );
                                 const bool ref = fun (c.x, c.y, c.z);
                                 for (int i=0; i<count; ++i) {
                                         #warning tbh i am unsure why *2.f gives good results
                                         const float s[] = {
-                                                mt.rand()*2-1,
-                                                mt.rand()*2-1,
-                                                mt.rand()*2-1
+                                                mt.rand()*1.5f-.75f,
+                                                mt.rand()*1.5f-.75f,
+                                                mt.rand()*1.5f-.75f
                                         };
                                         if (ref!=fun (c.x + size.x * s[0], c.y + size.y * s[1], c.z + size.z * s[2])) return false;
                                         if (ref!=fun (c.x + size.x * s[0], c.y + size.y * s[2], c.z + size.z * s[1])) return false;
@@ -539,18 +554,18 @@ namespace impl {
                                 int axis,
                                 BooleanFieldImpl const &field
                         ) const {
-                                const float step = .0125f;
+                                const float step = .0125f * (1 + length (ray.position-c)/10);
 
                                 if (tnear > tfar)
                                         return -1;
                                 if (uninit == state)
-                                        state = field.is_empty (c, size) ? empty : nonempty;
+                                        state = field.is_empty (c, size, ray.position) ? empty : nonempty;
                                 if (empty == state)
                                         return -1;
                                 if (nonempty_leaf != state) {
                                         if (0 == children) {                                        
                                                 if (queryCount >= 20) {
-                                                        const float min = step * 5;
+                                                        const float min = (step * 5);// * (1+length (ray.position-c));
                                                         if ((size.x>min)|(size.y>min)|(size.z>min)) {
                                                                 children = new Node[2];
                                                         } else {
@@ -647,18 +662,59 @@ namespace impl {
         public:
                 BooleanFieldImpl (float size)
                 : /*sampleGridSize(128), sampleGrid(new Sample[sampleGridSize*sampleGridSize*sampleGridSize])*/
-                 size(size), rsize(1.f/size)
-                , root ()
+                 //size(size), rsize(1.f/size)
+                 root ()
                 {
-                        //init_grid();
+                        Vector mins = {size/2,size/2,size/2}, maxs = {-size/2,-size/2,-size/2};
+                        if (0) {
+                                std::cerr << "determining bounding box\n";
+                                const int count = min (50000.f, (5000+10*size*size*size)/6);
+                                const bool refmin = fun (mins.x,mins.y,mins.z);
+                                const bool refmax = fun (maxs.x,maxs.y,maxs.z);
+                                for (int i=0; i<count; ++i) {
+                                        #warning tbh i am unsure why *2.f gives good results
+                                        const float s[] = {
+                                                size*(mt.rand()-.5),
+                                                size*(mt.rand()-.5),
+                                                size*(mt.rand()-.5)
+                                        };
+                                        const bool f = fun (s[0], s[1], s[2]);
+                                        if (refmin==f) {
+                                                if (s[0]<mins.x) mins.x = s[0];
+                                                if (s[1]<mins.y) mins.y = s[1];
+                                                if (s[2]<mins.z) mins.z = s[2];
+                                        }
+                                        if (refmax==f) {
+                                                if (s[0]>maxs.x) maxs.x = s[0];
+                                                if (s[1]>maxs.y) maxs.y = s[1];
+                                                if (s[2]>maxs.z) maxs.z = s[2];
+                                        }
+                                }
+                        } else {
+                                mins.x = mins.y = mins.z = -size/2;
+                                maxs.x = maxs.y = maxs.z = size/2;
+                        }
+                        const float epsilon = 1;
+                        this->size = maxs-mins;
+                        this->size.x += epsilon;
+                        this->size.y += epsilon;
+                        this->size.z += epsilon;
+                        this->center = (maxs+mins)*.5f;
+                        this->rsize.x = 1.f / this->size.x;
+                        this->rsize.y = 1.f / this->size.y;
+                        this->rsize.z = 1.f / this->size.z;
+                        std::cerr << "min={" << mins.x << "," << mins.y << "," << mins.z << "}\n";
+                        std::cerr << "max={" << maxs.x << "," << maxs.y << "," << maxs.z << "}\n";
+                        std::cerr << "size={" << this->size.x << "," << this->size.y << "," << this->size.z << "}\n";
+                        std::cerr << "center={" << this->center.x << "," << this->center.y << "," << this->center.z << "}\n";
                 }
                 
                 ~BooleanFieldImpl() {
                 }
 
                 float intersect (Ray const &ray) const {
-                        const Point c = {.0f,.0f,0.f};
-                        const Vector s = {size, size, size};
+                        const Point c = {center.x, center.y, center.z};
+                        const Vector s = {size.x, size.y, size.z};
                         float tnear, tfar;
                         const bool does = ray_box (ray, c, s, tnear, tfar);
                         /*if (tnear > 0 || tfar > 0)
