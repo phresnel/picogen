@@ -86,8 +86,7 @@ tuple<real_t,Color> Scene::Li (Sample const & sample) const {
            Spectrum Lv = volumeIntegrator->Li (this,ray,sample,alpha)
            return T * Lo + Lv
         */
-        DirectLighting dl;
-        return dl.Li (*this, sample.primaryRay, sample);
+        return integrator->Li (*this, sample.primaryRay, sample);
 }
 
 

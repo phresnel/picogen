@@ -39,12 +39,12 @@ namespace redshift {
                                 
                                 return make_tuple (1.0, 
                                         Color(
-                                                I->getDistance()*0.05,
+                                                /*I->getDistance()*0.05,
                                                 I->getDistance()*0.025,
-                                                I->getDistance()*0.0125
-                                                /*I->getNormal().x+0.5,
+                                                I->getDistance()*0.0125*/
+                                                I->getNormal().x+0.5,
                                                 I->getNormal().y+0.5,
-                                                I->getNormal().z+0.5*/
+                                                I->getNormal().z+0.5
                                         )
                                 );                
                         } else {
