@@ -25,6 +25,213 @@
 // LazyQuadtreeImpl
 //#############################################################################
 namespace redshift { namespace primitive {
+
+
+namespace lazyquadtree {
+        struct Vertex {
+                real_t u,v;
+                real_t h;
+                Vertex (real_t u, real_t v, real_t h)
+                : u(u), v(v), h(h) {}
+                Vertex (Vertex &vtx)
+                : u(vtx.u), v(vtx.v), h(vtx.h) {}
+                Vertex & operator = (Vertex const &vtx) {
+                        u = vtx.u;
+                        v = vtx.v;
+                        h = vtx.h;
+                        return *this;
+                }
+                Vertex() {}
+        };
+        
+        
+                
+        static const real_t tri_eps = 0.00000001;
+        static int
+        raytri_intersect (
+            const Ray &ray,
+            const Vector &a, const Vector &b, const Vector &c,
+            real_t &t, real_t &u, real_t &v,
+            Normal &normal_
+        ) {
+            Vector vect0, vect1, nvect, normal;
+            real_t det, inv_det;
+
+
+            //SUB(vect0, b,a)
+            vect0 = b - a;
+
+            //SUB(vect1, c,a)
+            vect1 = c - a;
+
+            //CROSS(normal, vect0, vect1);
+            normal = cross (vect0, vect1);
+
+            /* orientation of the ray with respect to the triangle's normal,
+               also used to calculate output parameters*/
+            //det = - DOT(dir,normal);
+            det = -(ray.direction * normal);//-( p_ray->direction.x*normal->x + p_ray->direction.y*normal->y + p_ray->direction.z*normal->z );
+
+            //---------
+
+            /* if determinant is near zero, ray is parallel to the plane of triangle */
+            if (det > -tri_eps && det < tri_eps) return 0;
+
+            /* calculate vector from ray origin to a */
+            //SUB(vect0,a,orig);
+            vect0 = a - vector_cast<Vector>(ray.position);
+
+            /* normal vector used to calculate u and v parameters */
+            //CROSS(nvect,dir,vect0);
+            nvect = cross (ray.direction, vect0);
+
+            inv_det = 1.0 / det;
+            /* calculate vector from ray origin to b*/
+            //SUB(vect1,b,orig);
+            vect1 = b - vector_cast<Vector>(ray.position);
+
+            /* calculate v parameter and test bounds */
+            //*v = - DOT(vect1,nvect) * inv_det;
+            v = - (vect1*nvect*inv_det);
+
+            if (v < 0.0 || v > 1.0) return 0;
+
+            /* calculate vector from ray origin to c*/
+            //SUB(vect1,c,orig);
+            vect1 = c - vector_cast<Vector>(ray.position);
+
+            /* calculate v parameter and test bounds */
+            //*u = DOT(vect1,nvect) * inv_det;
+            u = vect1*nvect*inv_det;
+
+            if (u < 0.0 || u + v > 1.0) return 0;
+
+            /* calculate t, ray intersects triangle */
+            //*t = - DOT(vect0,normal) * inv_det;
+            t = - (vect0* normal * inv_det);
+
+            //---------
+
+            if (t < 0)
+                return 0;
+            normal_ = vector_cast<Normal>(normalize (normal));
+            if (ray.direction * normal > 0.0)
+                return -1;
+            return 1;
+        }
+
+
+
+        class Node {
+                BoundingBox aabb;
+                const HeightFunction &fun;
+                Node *children;
+                Vertex vertices[9];
+
+                Vertex &vertex (int u, int v) {
+                        return vertices[v*3+u];
+                }
+                const Vertex &vertex (int u, int v) const {
+                        return vertices[v*3+u];
+                }
+                
+                pair<real_t,Normal> intersect_triangle (
+                        Ray const & ray, 
+                        int u0,int v0, int u1,int v1, int u2,int v2
+                ) const {
+                        const Vertex & a_ = vertex(u0,v0);
+                        const Vertex & b_ = vertex(u1,v1);
+                        const Vertex & c_ = vertex(u2,v2);
+                        const Vector a (a_.u, a_.h, a_.v);
+                        const Vector b (b_.u, b_.h, b_.v);
+                        const Vector c (c_.u, c_.h, c_.v);
+                        
+                        real_t t=-1, u, v;
+                        Normal normal;
+                        const bool does_intersect = 
+                                0 != raytri_intersect (
+                                        ray,
+                                        a, b, c,
+                                        t, u, v,
+                                        normal
+                                );
+                        return make_pair(t, normal);
+                }
+        public:
+                Node (
+                        const BoundingBox &box,
+                        const HeightFunction &fun                        
+                )
+                : aabb(box)
+                , fun (fun)
+                {
+                        /*     0   1   2
+                            max_z    max_z
+                        2 min_x+---+---+max_x
+                               |   |   |
+                        1      +---c---+
+                               |   |   |
+                        0 min_x+---+---+max_x
+                           min_z    min_z
+                        */
+                        const real_t min_x = scalar_cast<real_t>(box.getMinimumX());
+                        const real_t max_x = scalar_cast<real_t>(box.getMaximumX());
+                        const real_t c_x   = (min_x + max_x / 2);
+                        const real_t min_z = scalar_cast<real_t>(box.getMinimumZ());
+                        const real_t max_z = scalar_cast<real_t>(box.getMaximumZ());
+                        const real_t c_z   = (min_z + max_z / 2);
+                        vertex(0,0) = Vertex (min_x, min_z, fun(min_x, min_z));
+                        vertex(1,0) = Vertex (c_x,   min_z, fun(c_x,   min_z));
+                        vertex(2,0) = Vertex (max_x, min_z, fun(max_x, min_z));
+                        vertex(0,1) = Vertex (min_x,   c_z, fun(min_x, c_z));
+                        vertex(1,1) = Vertex (c_x,     c_z, fun(c_x,   c_z));
+                        vertex(2,1) = Vertex (max_x,   c_z, fun(max_x, c_z));
+                        vertex(0,2) = Vertex (min_x, max_z, fun(min_x, max_z));
+                        vertex(1,2) = Vertex (c_x,   max_z, fun(c_x,   max_z));
+                        vertex(2,2) = Vertex (max_x, max_z, fun(max_x, max_z));
+
+                        // TODO: have refined bounding box and one with which we have been created
+                }
+
+                optional<DifferentialGeometry> intersect (Ray const &ray, real_t minT, real_t maxT) const {
+                        struct Triangle {
+                                Vertex &a, &b, &c;
+                        };
+                        pair<real_t,Normal> i;
+                        if (0 < (i = intersect_triangle (ray, 0,0, 0,1, 1,1)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        if (0 < (i = intersect_triangle (ray, 0,0, 1,1, 1,0)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        if (0 < (i = intersect_triangle (ray, 1,0, 1,1, 2,1)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        if (0 < (i = intersect_triangle (ray, 1,0, 2,1, 2,0)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        if (0 < (i = intersect_triangle (ray, 0,1, 0,2, 1,2)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        if (0 < (i = intersect_triangle (ray, 0,1, 1,2, 1,1)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        if (0 < (i = intersect_triangle (ray, 1,1, 1,2, 2,2)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        if (0 < (i = intersect_triangle (ray, 1,1, 2,2, 2,1)).first)
+                                return DifferentialGeometry(
+                                        i.first,ray(i.first),i.second);
+                        return false;
+                }
+        };
+}
+
+
+
+
+
+
 class LazyQuadtreeImpl {
 public:
         LazyQuadtreeImpl (
@@ -32,13 +239,17 @@ public:
                 real_t size
         )
         : fun(fun)
-        {
-                initBB (size,min(1000.f,(size*size*size)/100));
-        }
+        , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
+        , primaryNode(primaryBB, *fun.get())
+        {}
+
+
 
         bool doesIntersect (Ray const &ray) const {
                 return does_intersect<false> (ray, primaryBB);
         }
+
+
 
         optional<DifferentialGeometry> intersect (Ray const &ray) const {
                 const optional<tuple<real_t,real_t> > i = 
@@ -48,16 +259,25 @@ public:
                 const real_t minT = get<0>(*i);
                 const real_t maxT = get<1>(*i);
 
-                return DifferentialGeometry(
+                /*return DifferentialGeometry(
                         minT,
                         ray(minT),
                         Normal(0,1,0)
-                );
+                );*/
+                return primaryNode.intersect (ray, minT, maxT);
         }
+
+
+
 private:
+
         shared_ptr<HeightFunction const> fun;
         BoundingBox primaryBB;
-        void initBB(const real_t size, const int numSamples) {
+        lazyquadtree::Node primaryNode;
+
+
+
+        BoundingBox initBB(const real_t size, const int numSamples) const {
                 real_t minh = 10000000.0f , maxh = -10000000.0f;
                 MersenneTwister<real_t,0,1> mt (4654641);
                 const real_t size05 = size/2;
@@ -70,7 +290,7 @@ private:
                         if (h < minh) minh = h;
                         if (h > maxh) maxh = h;
                 }
-                primaryBB = BoundingBox (
+                return BoundingBox (
                         Point(
                                 scalar_cast<BoundingBox::scalar_t>(-size05),
                                 scalar_cast<BoundingBox::scalar_t>(minh),
@@ -88,10 +308,15 @@ private:
 
 
 
+
+
+
 //#############################################################################
 // LazyQuadtree
 //#############################################################################
 namespace redshift { namespace primitive {
+
+
 
 LazyQuadtree::LazyQuadtree (shared_ptr<HeightFunction const> fun, real_t size)
 : impl (new LazyQuadtreeImpl (fun, size)) {

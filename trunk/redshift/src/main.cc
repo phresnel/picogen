@@ -170,6 +170,7 @@ public:
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                 ")))"*/
                 "(* 20 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.025} layercount{9} persistence{0.54} levelEvaluationFunction{(abs h)}] x y))))",
+                //"(* x 0.1)",
                 functionSet,
                 errors))
         {
@@ -200,7 +201,7 @@ void run() {
         int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,0,-15))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         try {
@@ -216,12 +217,12 @@ void run() {
                                 scalar_cast<fixed_point_t>(25)),
                         10.0)*/
                 //new Heightmap (heightFunction, 1.5)
-                new LazyQuadtree (heightFunction, 500)
+                new LazyQuadtree (heightFunction, 10)
                 //new BooleanField (heightFunction, 1.5)
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(2,1,0));
+        preetham->setSunDirection(Vector(0,1,0));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(.9,.7,.5)*.1);
         preetham->setColorFilter(redshift::Color(.2,.2,.2));
@@ -232,9 +233,10 @@ void run() {
                 renderBuffer, 
                 camera, 
                 agg,
-                shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham))
+                shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
+                shared_ptr<Integrator> (new ShowSurfaceNormals())
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));

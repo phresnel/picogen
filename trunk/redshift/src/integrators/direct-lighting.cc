@@ -32,7 +32,7 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(2,1,0));
+                const Vector sunDir = normalize(Vector(0,1,0));
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normal*0.1f);
