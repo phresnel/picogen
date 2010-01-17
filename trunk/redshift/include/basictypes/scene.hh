@@ -24,10 +24,11 @@
 #include "../setup.hh"
 #include "../rendertargets/rendertarget.hh"
 #include "../cameras/camera.hh"
-#include "../basictypes/sample.hh"
+#include "sample.hh"
 #include "../primitives/primitive.hh"
-#include "../basictypes/background.hh"
-#include "../basictypes/intersection.hh"
+#include "background.hh"
+#include "intersection.hh"
+#include "transport.hh"
 
 #include "../interaction/progressreporter.hh"
 #include "../interaction/usercommandprocessor.hh"
@@ -44,7 +45,8 @@ namespace redshift {
                         shared_ptr<RenderTarget>,
                         shared_ptr<camera::Camera>,
                         shared_ptr<primitive::Primitive>,
-                        shared_ptr<Background> bg 
+                        shared_ptr<Background> bg ,
+                        shared_ptr<Integrator> integrator
                 );
                 ~Scene ();
                 
@@ -73,6 +75,7 @@ namespace redshift {
                 shared_ptr<camera::Camera>       camera;
                 shared_ptr<primitive::Primitive> aggregate;
                 shared_ptr<Background>           background;
+                shared_ptr<Integrator>           integrator;
         };
 }
 

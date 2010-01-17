@@ -88,8 +88,14 @@ namespace redshift{class RenderTarget;}
 #include "cameras/camera.hh"
 
 // basictypes/
+#include "basictypes/transport.hh"
 #include "basictypes/scene.hh"
 #include "basictypes/heightmap.hh"
+
+// integrators/
+#include "integrators/visualize-distance.hh"
+#include "integrators/show-surface-normals.hh"
+#include "integrators/direct-lighting.hh"
 
 
 #endif // REDSHIFT_H_INCLUDED_20090223

@@ -29,12 +29,14 @@ Scene::Scene (
         shared_ptr<RenderTarget> rt,
         shared_ptr<camera::Camera> cam,
         shared_ptr<primitive::Primitive> prim_,
-        shared_ptr<Background> bg
+        shared_ptr<Background> bg,
+        shared_ptr<Integrator> integrator
 )
 : renderTarget(rt)
 , camera(cam)
 , aggregate (prim_)
 , background (bg)
+, integrator(integrator)
 {
 }
 

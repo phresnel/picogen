@@ -22,6 +22,7 @@
 #define SETUP_HH_INCLUDED_20090303
 
 #include "../../kallisto/common.hh"
+#include <utility>
 
 #define DefineFinalizer(x) \
         class x##Finalize { \
@@ -83,6 +84,9 @@ namespace redshift {
         }
 
         using kallisto::random::MersenneTwister;
+        
+        using std::pair;
+        using std::make_pair;
 }
 
 #include "basictypes/rgb.hh"

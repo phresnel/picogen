@@ -18,13 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef DIRECTLIGHTING_HH_INCLUDED_20090110
-#define DIRECTLIGHTING_HH_INCLUDED_20090110
+#ifndef SHOWSURFACENORMALS_HH_INCLUDED_20090110
+#define SHOWSURFACENORMALS_HH_INCLUDED_20090110
 
 #include "../basictypes/transport.hh"
 
 namespace redshift {
-        class DirectLighting : Integrator {
+        class ShowSurfaceNormals : public Integrator {
         public:
                 virtual tuple<real_t,Color> Li (
                         const Scene &scene, 
@@ -57,4 +57,4 @@ namespace redshift {
         };
 }
 
-#endif // DIRECTLIGHTING_HH_INCLUDED_20090110
+#endif // SHOWSURFACENORMALS_HH_INCLUDED_20090110
