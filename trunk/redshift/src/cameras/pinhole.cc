@@ -24,10 +24,11 @@ namespace redshift { namespace camera {
 
 
 
-Pinhole::Pinhole (shared_ptr<RenderTarget> film_)
+Pinhole::Pinhole (shared_ptr<RenderTarget> film_, Point position)
 : film(film_)
 , invFilmWidth(constants::one/static_cast<real_t>(film->getWidth()))
 , invFilmHeight(constants::one/static_cast<real_t>(film->getHeight()))
+, position(position)
 {
 }
 
@@ -44,7 +45,7 @@ tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
         ray.direction.y =  0.5 - sample.imageCoordinates.v * invFilmHeight;
         ray.direction.z = 0.5;
         ray.direction = normalize (ray.direction);
-        ray.position = Point ();
+        ray.position = position;
         ray.minT = constants::epsilon;
         ray.maxT = constants::infinity;
         return make_tuple (1.0, ray);
