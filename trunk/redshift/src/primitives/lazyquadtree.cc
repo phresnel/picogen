@@ -125,8 +125,10 @@ namespace lazyquadtree {
         class Node {
                 BoundingBox aabb;
                 const HeightFunction &fun;
-                Node *children;
+                mutable Node *children[4];
                 Vertex vertices[9];
+                const int maxRecursion; // When 0, max recursion is reached.
+                real_t center_x, center_z;
 
                 Vertex &vertex (int u, int v) {
                         return vertices[v*3+u];
@@ -157,14 +159,71 @@ namespace lazyquadtree {
                                 );
                         return make_pair(t, normal);
                 }
+
+                void create_child (int index) const {
+                        const real_t left  = scalar_cast<real_t> (aabb.getMinimumX());
+                        const real_t right = scalar_cast<real_t> (aabb.getMaximumX());
+                        const real_t front = scalar_cast<real_t> (aabb.getMinimumZ());
+                        const real_t back  = scalar_cast<real_t> (aabb.getMaximumZ());
+                        const real_t bottom= scalar_cast<real_t> (aabb.getMinimumY());
+                        const real_t top   = scalar_cast<real_t> (aabb.getMaximumY());
+                        switch (index) {
+                        case 0:
+                                children[0] = new Node (
+                                        BoundingBox(
+                                         vector_cast<Point>(Vector(left, bottom, front)),
+                                         vector_cast<Point>(Vector(center_x, top, center_z))
+                                        ),
+                                        fun,
+                                        maxRecursion-1
+                                );
+                                break;
+                        case 1:
+                                children[1] = new Node (
+                                        BoundingBox(
+                                                vector_cast<Point>(Vector(center_x, bottom, front)),
+                                                vector_cast<Point>(Vector(right, top, center_z))
+                                        ),
+                                        fun,
+                                        maxRecursion-1
+                                );
+                                break;
+                        case 2:
+                                children[2] = new Node (
+                                        BoundingBox(
+                                                vector_cast<Point>(Vector(left, bottom, center_z)),
+                                                vector_cast<Point>(Vector(center_x, top, back))
+                                        ),
+                                        fun,
+                                        maxRecursion-1
+                                );
+                                break;
+                        case 3:
+                                children[3] = new Node (
+                                        BoundingBox(
+                                                vector_cast<Point>(Vector(center_x, bottom, center_z)),
+                                                vector_cast<Point>(Vector(right, top, back))
+                                        ),
+                                        fun,
+                                        maxRecursion-1
+                                );
+                                break;
+                        };
+                }
         public:
                 Node (
                         const BoundingBox &box,
-                        const HeightFunction &fun                        
+                        const HeightFunction &fun,
+                        const int maxRecursion
                 )
                 : aabb(box)
                 , fun (fun)
+                , maxRecursion(maxRecursion)
                 {
+                        for (int i=0; i<4; ++i) {
+                                children[i] = 0;
+                        }
+
                         /*     0   1   2
                             max_z    max_z
                         2 min_x+---+---+max_x
@@ -189,41 +248,135 @@ namespace lazyquadtree {
                         vertex(0,2) = Vertex (min_x, max_z, fun(min_x, max_z));
                         vertex(1,2) = Vertex (c_x,   max_z, fun(c_x,   max_z));
                         vertex(2,2) = Vertex (max_x, max_z, fun(max_x, max_z));
+                        
+                        center_x = c_x;
+                        center_z = c_z;
 
                         // TODO: have refined bounding box and one with which we have been created
+                }
+                
+                ~Node () {
+                        for (int i=0; i<4; ++i) {
+                                if (children[i])
+                                        delete children[i];
+                        }
                 }
 
                 optional<DifferentialGeometry> intersect (Ray const &ray, real_t minT, real_t maxT) const {
                         struct Triangle {
                                 Vertex &a, &b, &c;
                         };
-                        pair<real_t,Normal> i;
-                        if (0 < (i = intersect_triangle (ray, 0,0, 0,1, 1,1)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
-                        if (0 < (i = intersect_triangle (ray, 0,0, 1,1, 1,0)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
-                        if (0 < (i = intersect_triangle (ray, 1,0, 1,1, 2,1)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
-                        if (0 < (i = intersect_triangle (ray, 1,0, 2,1, 2,0)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
-                        if (0 < (i = intersect_triangle (ray, 0,1, 0,2, 1,2)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
-                        if (0 < (i = intersect_triangle (ray, 0,1, 1,2, 1,1)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
-                        if (0 < (i = intersect_triangle (ray, 1,1, 1,2, 2,2)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
-                        if (0 < (i = intersect_triangle (ray, 1,1, 2,2, 2,1)).first)
-                                return DifferentialGeometry(
-                                        i.first,ray(i.first),i.second);
+                        if (maxRecursion == 0) {
+                                pair<real_t,Normal> i;
+                                if (0 < (i = intersect_triangle (ray, 0,0, 0,1, 1,1)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                if (0 < (i = intersect_triangle (ray, 0,0, 1,1, 1,0)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                if (0 < (i = intersect_triangle (ray, 1,0, 1,1, 2,1)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                if (0 < (i = intersect_triangle (ray, 1,0, 2,1, 2,0)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                if (0 < (i = intersect_triangle (ray, 0,1, 0,2, 1,2)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                if (0 < (i = intersect_triangle (ray, 0,1, 1,2, 1,1)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                if (0 < (i = intersect_triangle (ray, 1,1, 1,2, 2,2)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                if (0 < (i = intersect_triangle (ray, 1,1, 2,2, 2,1)).first)
+                                        return DifferentialGeometry(
+                                                i.first,ray(i.first),i.second);
+                                return false;
+                        }
+                        // Find out which one to traverse.
+                        const bool d_right = ray.direction.x > 0;
+                        const bool d_up    = ray.direction.z > 0;
+                        const real_t d_x = (center_x - scalar_cast<real_t>(ray.position.x)) / ray.direction.x;
+                        const real_t d_z = (center_z - scalar_cast<real_t>(ray.position.z)) / ray.direction.z;
+                        const bool upper_three = d_x > d_z;
+
+                        // +----+----+
+                        // | 2  | 3  |
+                        // -----+-----
+                        // | 0  | 1  |
+                        // +----+----+
+                        
+                        if (d_right & d_up) {
+                                if (upper_three) {
+                                        // 0, 2, 3
+                                        if (!children[0]) create_child (0);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[0]->intersect(ray, minT, d_z))
+                                                return dg;
+                                        if (!children[2]) create_child (2);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[2]->intersect(ray, d_z, d_x))
+                                                return dg;
+                                        if (!children[3]) create_child (3);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[3]->intersect(ray, d_x, maxT))
+                                                return dg;
+                                        return false;
+                                } else {
+                                        // 0, 1, 3
+                                        if (!children[0]) create_child (0);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[0]->intersect(ray, minT, d_x))
+                                                return dg;
+                                        if (!children[1]) create_child (1);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[1]->intersect(ray, d_x, d_z))
+                                                return dg;
+                                        if (!children[3]) create_child (3);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[3]->intersect(ray, d_z, maxT))
+                                                return dg;
+                                        return false;
+                                }
+                        }
+                        if (!d_right & d_up) {
+                                if (upper_three) {
+                                        // 1, 3, 2
+                                        if (!children[1]) create_child (1);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[1]->intersect(ray, minT, d_z))
+                                                return dg;
+                                        if (!children[3]) create_child (3);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[3]->intersect(ray, d_z, d_x))
+                                                return dg;
+                                        if (!children[2]) create_child (2);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[2]->intersect(ray, d_x, maxT))
+                                                return dg;
+                                        return false;
+                                } else {
+                                        // 1, 0, 2
+                                        if (!children[1]) create_child (1);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[1]->intersect(ray, minT, d_x))
+                                                return dg;
+                                        if (!children[0]) create_child (0);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[0]->intersect(ray, d_x, d_z))
+                                                return dg;
+                                        if (!children[2]) create_child (2);
+                                        if (optional<DifferentialGeometry> dg = 
+                                                children[2]->intersect(ray, d_z, maxT))
+                                                return dg;
+                                        return false;
+                                }
+                        }
+                        // TODO: implement other cases
+
                         return false;
-                }
+                }                
         };
 }
 
@@ -240,7 +393,7 @@ public:
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
-        , primaryNode(primaryBB, *fun.get())
+        , primaryNode(primaryBB, *fun.get(),2)
         {}
 
 
