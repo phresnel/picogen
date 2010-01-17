@@ -27,7 +27,7 @@
 #include "../basictypes/transport.hh"
 
 namespace redshift {
-        class DirectLighting : Integrator {
+        class DirectLighting : public Integrator {
         public:
                 virtual tuple<real_t,Color> Li (
                         const Scene &scene, 

@@ -164,12 +164,12 @@ public:
         : functionSet(addfuns())
         , fun (Compiler::compile (
                 "x;y",
-                //"(* (sin (* x 0.7)) (sin(* y 0.7)) )", 
+                //"(* 0.5 (* (sin (* x 2.0)) (sin(* y 2.0)) ))", 
                 /*"(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{4} persistence{0.54} levelEvaluationFunction{(abs h)}] "
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                 ")))"*/
-                "(* 20 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.025} layercount{9} persistence{0.54} levelEvaluationFunction{(abs h)}] x y))))",
+                "(* 70 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.0125} layercount{9} persistence{0.54} levelEvaluationFunction{(abs h)}] x y))))",
                 //"(* x 0.1)",
                 functionSet,
                 errors))
@@ -201,7 +201,7 @@ void run() {
         int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,0,-15))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,35,-200))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         try {
@@ -217,16 +217,16 @@ void run() {
                                 scalar_cast<fixed_point_t>(25)),
                         10.0)*/
                 //new Heightmap (heightFunction, 1.5)
-                new LazyQuadtree (heightFunction, 10)
+                new LazyQuadtree (heightFunction, 400)
                 //new BooleanField (heightFunction, 1.5)
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(0,1,0));
+        preetham->setSunDirection(Vector(4,1,10));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(.9,.7,.5)*.1);
-        preetham->setColorFilter(redshift::Color(.2,.2,.2));
-        preetham->enableFogHack (true, 0.005f, 150000);
+        preetham->setColorFilter(redshift::Color(.3,.2,.1));
+        preetham->enableFogHack (true, 0.00125f, 150000);
         preetham->invalidate();
         
         Scene Scene (
@@ -236,7 +236,7 @@ void run() {
                 shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                shared_ptr<Integrator> (new ShowSurfaceNormals())
+                shared_ptr<Integrator> (new DirectLighting())
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));

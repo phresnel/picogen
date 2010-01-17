@@ -32,7 +32,7 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(0,1,0));
+                const Vector sunDir = normalize(Vector(4,1,10));
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normal*0.1f);
@@ -55,7 +55,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int maxNumSamples = 10;
+                        const int maxNumSamples = 100;
                         for (numSamples = 0; numSamples < maxNumSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);

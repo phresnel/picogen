@@ -111,7 +111,9 @@ namespace lazyquadtree {
             t = - (vect0* normal * inv_det);
 
             //---------
-
+            // pretty crappy but sometimes useful wireframe mode
+            /*if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9))
+                    return 0;*/
             if (t < 0)
                 return 0;
             normal_ = vector_cast<Normal>(normalize (normal));
@@ -235,10 +237,10 @@ namespace lazyquadtree {
                         */
                         const real_t min_x = scalar_cast<real_t>(box.getMinimumX());
                         const real_t max_x = scalar_cast<real_t>(box.getMaximumX());
-                        const real_t c_x   = (min_x + max_x / 2);
+                        const real_t c_x   = (min_x + max_x) / 2;
                         const real_t min_z = scalar_cast<real_t>(box.getMinimumZ());
                         const real_t max_z = scalar_cast<real_t>(box.getMaximumZ());
-                        const real_t c_z   = (min_z + max_z / 2);
+                        const real_t c_z   = (min_z + max_z) / 2;
                         vertex(0,0) = Vertex (min_x, min_z, fun(min_x, min_z));
                         vertex(1,0) = Vertex (c_x,   min_z, fun(c_x,   min_z));
                         vertex(2,0) = Vertex (max_x, min_z, fun(max_x, min_z));
@@ -295,8 +297,8 @@ namespace lazyquadtree {
                                 return false;
                         }
                         // Find out which one to traverse.
-                        const bool d_right = ray.direction.x > 0;
-                        const bool d_up    = ray.direction.z > 0;
+                        const bool d_right = ray.direction.x >= 0;
+                        const bool d_up    = ray.direction.z >= 0;
                         const real_t d_x = (center_x - scalar_cast<real_t>(ray.position.x)) / ray.direction.x;
                         const real_t d_z = (center_z - scalar_cast<real_t>(ray.position.z)) / ray.direction.z;
                         const bool upper_three = d_x > d_z;
@@ -310,66 +312,90 @@ namespace lazyquadtree {
                         if (d_right & d_up) {
                                 if (upper_three) {
                                         // 0, 2, 3
+                                        if (minT<=d_z) {
                                         if (!children[0]) create_child (0);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[0]->intersect(ray, minT, d_z))
                                                 return dg;
+                                        }
+                                        if (d_z<=d_x) {
                                         if (!children[2]) create_child (2);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[2]->intersect(ray, d_z, d_x))
                                                 return dg;
+                                        }
+                                        if (d_x<=maxT) {
                                         if (!children[3]) create_child (3);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[3]->intersect(ray, d_x, maxT))
                                                 return dg;
+                                        }
                                         return false;
                                 } else {
                                         // 0, 1, 3
+                                        if (minT<=d_x){
                                         if (!children[0]) create_child (0);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[0]->intersect(ray, minT, d_x))
                                                 return dg;
+                                        }
+                                        if (d_x<=d_z){
                                         if (!children[1]) create_child (1);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[1]->intersect(ray, d_x, d_z))
                                                 return dg;
+                                        }
+                                        if (d_z<=maxT) {
                                         if (!children[3]) create_child (3);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[3]->intersect(ray, d_z, maxT))
                                                 return dg;
+                                        }
                                         return false;
                                 }
                         }
                         if (!d_right & d_up) {
                                 if (upper_three) {
                                         // 1, 3, 2
+                                        if (minT<=d_z) {
                                         if (!children[1]) create_child (1);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[1]->intersect(ray, minT, d_z))
                                                 return dg;
+                                        }
+                                        if (d_z<=d_x) {
                                         if (!children[3]) create_child (3);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[3]->intersect(ray, d_z, d_x))
                                                 return dg;
+                                        }
+                                        if (d_x<=maxT) {
                                         if (!children[2]) create_child (2);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[2]->intersect(ray, d_x, maxT))
                                                 return dg;
+                                        }
                                         return false;
                                 } else {
                                         // 1, 0, 2
+                                        if (minT<=d_x) {
                                         if (!children[1]) create_child (1);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[1]->intersect(ray, minT, d_x))
                                                 return dg;
+                                        }
+                                        if (d_x<=d_z) {
                                         if (!children[0]) create_child (0);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[0]->intersect(ray, d_x, d_z))
                                                 return dg;
+                                        }
+                                        if (d_z<=maxT) {
                                         if (!children[2]) create_child (2);
                                         if (optional<DifferentialGeometry> dg = 
                                                 children[2]->intersect(ray, d_z, maxT))
                                                 return dg;
+                                        }
                                         return false;
                                 }
                         }
@@ -393,13 +419,14 @@ public:
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
-        , primaryNode(primaryBB, *fun.get(),2)
+        , primaryNode(primaryBB, *fun.get(),13)
         {}
 
 
 
         bool doesIntersect (Ray const &ray) const {
-                return does_intersect<false> (ray, primaryBB);
+                //return does_intersect<false> (ray, primaryBB);
+                return intersect(ray);
         }
 
 
