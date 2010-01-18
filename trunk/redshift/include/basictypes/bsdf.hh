@@ -40,10 +40,11 @@ public:
                 reflection
         };
         enum Specular {
-                specular                
+                specular,
+                diffuse
         };
 
-        virtual tuple<Color,Vector> sample_f (
+        virtual optional<tuple<Color,Vector> > sample_f (
                 const Vector &in, Reflection, Specular) const = 0;
         virtual Color f (const Vector &out, const Vector &in) const = 0;
         // HasShadingGeometry(), pbrt 10.1, p. 464
@@ -71,11 +72,18 @@ namespace bsdf {
                 , color (color_ * (1.f/constants::pi))
                 {}
 
-                virtual tuple<Color,Vector> sample_f (
+                virtual optional<tuple<Color,Vector> > sample_f (
                         const Vector &in, 
                         Reflection refl, Specular spec
                 ) const {
-                        return make_tuple(color,in);
+                        switch (refl) {
+                        case reflection:
+                                switch (spec) {
+                                case specular: return false;
+                                case diffuse: return false;
+                                };
+                        };
+                        return false;
                 }
 
                 virtual Color f (const Vector &out, const Vector &in) const {
