@@ -45,7 +45,9 @@ namespace redshift { namespace primitive {
 
                 optional<Intersection>
                         intersect(RayDifferential const &ray) const;
-                
+
+                shared_ptr<Bsdf> getBsdf(
+                        const DifferentialGeometry & dgGeom) const;
         private:
 
                 LazyQuadtree();

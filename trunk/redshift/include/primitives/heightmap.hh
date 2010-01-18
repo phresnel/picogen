@@ -43,7 +43,15 @@ public:
 
         optional<Intersection> intersect(RayDifferential const &ray) const;
         optional<Intersection> intersect(Sample const &sample) const;
-        
+
+        shared_ptr<Bsdf> LazyQuadtree::getBsdf(
+                const DifferentialGeometry & dgGeom
+        ) const {
+                return shared_ptr<Bsdf> (new bsdf::Lambertian (
+                        dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0)
+                ));
+        }
+
 private:
         // forbid
         Heightmap();

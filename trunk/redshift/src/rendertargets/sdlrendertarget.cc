@@ -66,7 +66,15 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                 Uint32 &bufp = static_cast<Uint32*>(display.display->pixels)
                                           [y * (display.display->pitch/4) + x];
                 
-                Rgb const  rgb = saturate (color.toRgb(), 0.0, 1.0);
+                Rgb toRgb = Rgb (color.toRgb());
+                //>>> What is this for??
+                    /*if ( toRgb.r > 0.0031308 ) toRgb.r = 1.055 * ( pow(toRgb.r,(1/2.4) ) ) - 0.055;
+                    else                 toRgb.r = 12.92 * toRgb.r;
+                    if ( toRgb.g > 0.0031308 ) toRgb.g = 1.055 * ( pow(toRgb.g,(1/2.4) ) ) - 0.055;
+                    else                 toRgb.g = 12.92 * toRgb.g;
+                    if ( toRgb.b > 0.0031308 ) toRgb.b = 1.055 * ( pow(toRgb.b,(1/2.4) ) ) - 0.055;
+                    else                 toRgb.b = 12.92 * toRgb.b;*/
+                Rgb const  rgb = saturate (toRgb, 0.0, 1.0);
                 bufp = SDL_MapRGB(display.display->format,
                                 (unsigned char)(255.0*rgb.r),
                                 (unsigned char)(255.0*rgb.g),

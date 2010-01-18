@@ -419,7 +419,7 @@ public:
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
-        , primaryNode(primaryBB, *fun.get(),13)
+        , primaryNode(primaryBB, *fun.get(),4)
         {}
 
 
@@ -537,6 +537,14 @@ optional<Intersection>
                 shared_from_this(),
                 *dg
         );
+}
+
+
+
+shared_ptr<Bsdf> LazyQuadtree::getBsdf(
+        const DifferentialGeometry & dgGeom
+) const {
+        return shared_ptr<Bsdf> (new bsdf::Lambertian (dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0)));
 }
 
 

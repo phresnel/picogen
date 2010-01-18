@@ -24,6 +24,7 @@
 #include "../setup.hh"
 #include "../basictypes/intersection.hh"
 #include "../basictypes/sample.hh"
+#include "../basictypes/bsdf.hh"
 
 namespace redshift { namespace primitive {
         class Primitive : public enable_shared_from_this<Primitive> {
@@ -50,6 +51,8 @@ namespace redshift { namespace primitive {
                 }
 
 
+                virtual shared_ptr<Bsdf> getBsdf(
+                        const DifferentialGeometry & dgGeom) const = 0;
 
                 virtual ~Primitive () {}
         };

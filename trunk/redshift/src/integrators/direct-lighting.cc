@@ -32,7 +32,7 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(4,1,10));
+                const Vector sunDir = normalize(Vector(9,1,3));
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normal*0.1f);
@@ -43,6 +43,7 @@ tuple<real_t,Color> DirectLighting::Li (
                                 ? bg->diffuseQuery (poi, normal)
                                 : Color(5,0,0);*/
 
+                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 // crap begin
                 Color sum = Color::fromRgb (0,0,0);
                 int numSamples = 1;
@@ -55,7 +56,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int maxNumSamples = 100;
+                        const int maxNumSamples = 10;
                         for (numSamples = 0; numSamples < maxNumSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
@@ -63,19 +64,22 @@ tuple<real_t,Color> DirectLighting::Li (
                                 const real_t &sz = get<2>(sphere);                                
                                 const Vector d = X * sx + Y * sy + Z * sz;
                                 ray.direction = d;
-                                if (d.y>0) {//true || !scene.doesIntersect(ray)) {
+                                if (d.y>0) {// && !scene.doesIntersect(ray)) {
                                         sum = sum + bg->query (ray);
                                 }
                         }
                 }
                 const Color skyColor = (sum /** constants::inv_pi*/ * (1./numSamples));// * 2; // TODO: de-hack
                 // crap end
+                //----------------------------------------------------------------------------
                 
-                const Color surfaceColor = Color(
+                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
+                /*const Color surfaceColor = Color(
                                 1,//I->getNormal().x+0.5,
                                 1,//I->getNormal().y+0.5,
                                 1//I->getNormal().z+0.5
-                        );
+                        );*/
+                const Color surfaceColor = bsdf->f(ray.direction, sunDir);
 
                 Color ret = multiplyComponents(skyColor,surfaceColor);
 

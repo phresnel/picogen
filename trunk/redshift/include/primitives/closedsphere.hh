@@ -44,6 +44,14 @@ namespace redshift { namespace primitive {
 
                 optional<Intersection>
                         intersect(RayDifferential const &ray) const;
+        
+                shared_ptr<Bsdf> LazyQuadtree::getBsdf(
+                        const DifferentialGeometry & dgGeom
+                ) const {
+                        return shared_ptr<Bsdf> (new bsdf::Lambertian (
+                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0)
+                        ));
+                }
                 
         private:
                 shape::ClosedSphere sphereData;

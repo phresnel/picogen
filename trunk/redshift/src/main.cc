@@ -168,8 +168,8 @@ public:
                 /*"(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{4} persistence{0.54} levelEvaluationFunction{(abs h)}] "
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
-                ")))"*/
-                "(* 70 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.0125} layercount{9} persistence{0.54} levelEvaluationFunction{(abs h)}] x y))))",
+                ")))",*/
+                "(* 35 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.0125} layercount{6} persistence{0.58} levelEvaluationFunction{(abs h)}] x y))) 4 ))",
                 //"(* x 0.1)",
                 functionSet,
                 errors))
@@ -201,7 +201,7 @@ void run() {
         int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,35,-200))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,1,-200))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         try {
@@ -222,11 +222,11 @@ void run() {
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(4,1,10));
+        preetham->setSunDirection(Vector(9,1,3));
         preetham->setTurbidity(2.0f);
-        preetham->setSunColor(redshift::Color(.9,.7,.5)*.1);
-        preetham->setColorFilter(redshift::Color(.3,.2,.1));
-        preetham->enableFogHack (true, 0.00125f, 150000);
+        preetham->setSunColor(redshift::Color(.9,.9,.9)*.1*1.0);
+        preetham->setColorFilter(redshift::Color(.33,.33,.36)*1.0);
+        preetham->enableFogHack (true, 0.0004f, 150000);
         preetham->invalidate();
         
         Scene Scene (
