@@ -59,40 +59,6 @@ private:
         DifferentialGeometry const &shadingDG;
         Normal const &trueNormal;        
 };
-
-namespace bsdf {
-        class Lambertian : public Bsdf {
-        public:
-                Lambertian (
-                        DifferentialGeometry const &shadingDG_, 
-                        Normal const &trueNormal_,
-                        Color const &color_
-                )        
-                : Bsdf (shadingDG_, trueNormal_)
-                , color (color_ * (1.f/constants::pi))
-                {}
-
-                virtual optional<tuple<Color,Vector> > sample_f (
-                        const Vector &in, 
-                        Reflection refl, Specular spec
-                ) const {
-                        switch (refl) {
-                        case reflection:
-                                switch (spec) {
-                                case specular: return false;
-                                case diffuse: return false;
-                                };
-                        };
-                        return false;
-                }
-
-                virtual Color f (const Vector &out, const Vector &in) const {
-                        return color;
-                }
-        private:
-                Color const color;
-        };
-}
 }
 
 #endif // BSDF_HH_INCLUDED_20100118

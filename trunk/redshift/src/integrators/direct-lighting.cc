@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -42,6 +42,8 @@ tuple<real_t,Color> DirectLighting::Li (
                 /*const Color skyColor = bg->hasFastDiffuseQuery()
                                 ? bg->diffuseQuery (poi, normal)
                                 : Color(5,0,0);*/
+                
+                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
 
                 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 // crap begin
@@ -56,39 +58,39 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int maxNumSamples = 10;
+                        const int maxNumSamples = 2;
                         for (numSamples = 0; numSamples < maxNumSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
                                 const real_t &sy = get<1>(sphere);
-                                const real_t &sz = get<2>(sphere);                                
-                                const Vector d = X * sx + Y * sy + Z * sz;
-                                ray.direction = d;
-                                if (d.y>0) {// && !scene.doesIntersect(ray)) {
-                                        sum = sum + bg->query (ray);
+                                const real_t &sz = get<2>(sphere);
+                                tuple<Color,Vector> rrr = make_tuple(Color(1,1,1), Vector(sx,sy,sz));
+
+                                optional<tuple<Color,Vector> > v_ = bsdf->sample_f (ray.direction, Bsdf::reflection, Bsdf::diffuse);
+                                if (v_) {
+                                        tuple<Color,Vector> v = *v_;
+                                        const Vector d = X * get<1>(v).x + Y * get<1>(v).y + Z * get<1>(v).z; // TODO: where to do this transform?
+                                        ray.direction = d;
+                                        if (d.y>0) {// && !scene.doesIntersect(ray)) {
+                                                sum = sum + bg->query (ray);
+                                        }
                                 }
                         }
                 }
-                const Color skyColor = (sum /** constants::inv_pi*/ * (1./numSamples));// * 2; // TODO: de-hack
+                const Color surfaceSkyColor = (sum * (1./numSamples));
                 // crap end
                 //----------------------------------------------------------------------------
-                
-                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
-                /*const Color surfaceColor = Color(
-                                1,//I->getNormal().x+0.5,
-                                1,//I->getNormal().y+0.5,
-                                1//I->getNormal().z+0.5
-                        );*/
+
                 const Color surfaceColor = bsdf->f(ray.direction, sunDir);
 
-                Color ret = multiplyComponents(skyColor,surfaceColor);
+                Color ret = surfaceSkyColor;
 
-                if (scene.doesIntersect (ray)) { // TODO: de-hack
+                if (scene.doesIntersect (ray)) {
                 } else {
                         const real_t d = max(
                                 0.f,
                                 dot(sunDir,vector_cast<Vector>(normal)));
-                        ret = ret + surfaceColor*d;// * 0.5; // TODO: de-hack                        
+                        ret = ret + surfaceColor*d;
                 }
                 
                 if (bg->hasAtmosphereShade())

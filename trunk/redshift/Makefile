@@ -12,6 +12,7 @@ BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 CAMERASOBJDIR       := $(OBJDIR)/cameras
 INTEGRATORSOBJDIR   := $(OBJDIR)/integrators
 INTERACTIONOBJDIR   := $(OBJDIR)/interaction
+MATERIALOBJDIR      := $(OBJDIR)/material
 PRIMITIVESOBJDIR    := $(OBJDIR)/primitives
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
@@ -82,6 +83,7 @@ OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
 OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
+OBJFILES += $(MATERIALOBJDIR)/lambertian.o
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
@@ -264,6 +266,15 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 
 
 ###############################################################################
+# materials
+###############################################################################
+
+$(MATERIALOBJDIR)/lambertian.o: ./src/material/lambertian.cc
+	$(CXX) -o $@ $<
+
+
+
+###############################################################################
 # accelerators
 ###############################################################################
 
@@ -288,6 +299,7 @@ init-dir-tree:
 	mkdir -p $(CAMERASOBJDIR)
 	mkdir -p $(INTEGRATORSOBJDIR)
 	mkdir -p $(INTERACTIONOBJDIR)
+	mkdir -p $(MATERIALOBJDIR)
 	mkdir -p $(PRIMITIVESOBJDIR)
 	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SAMPLERSOBJDIR)
@@ -319,6 +331,7 @@ clean: init-dir-tree
 	rm -f $(BACKGROUNDSOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
 	rm -f $(CAMERASOBJDIR)/*.o
+	rm -f $(MATERIALOBJDIR)/*.o
 	rm -f $(INTEGRATORSOBJDIR)/*.o
 	rm -f $(INTERACTIONOBJDIR)/*.o
 	rm -f $(OBJDIR)/*.o	

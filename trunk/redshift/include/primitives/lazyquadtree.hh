@@ -55,6 +55,7 @@ namespace redshift { namespace primitive {
                 LazyQuadtree &operator = (LazyQuadtree const&);
 
                 shared_ptr<LazyQuadtreeImpl> impl;
+                shared_ptr<MersenneTwister<real_t,0,1> > mt;
         };
 } }
 

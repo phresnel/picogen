@@ -24,6 +24,7 @@
 #include "../setup.hh"
 #include "../basictypes/height-function.hh"
 #include "primitive.hh"
+#include "../material/lambertian.hh"
 
 namespace redshift { namespace primitive {
         
@@ -48,7 +49,7 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom
                 ) const {
                         return shared_ptr<Bsdf> (new bsdf::Lambertian (
-                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0)
+                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0), mt
                         ));
                 }
 
@@ -58,6 +59,7 @@ namespace redshift { namespace primitive {
                 BooleanField &operator = (BooleanField const&);
         
                 impl::BooleanFieldImpl *impl;
+                shared_ptr<MersenneTwister<real_t,0,1> > mt;
         };
 } }
 

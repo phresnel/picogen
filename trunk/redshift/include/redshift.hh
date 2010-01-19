@@ -98,5 +98,8 @@ namespace redshift{class RenderTarget;}
 #include "integrators/show-surface-normals.hh"
 #include "integrators/direct-lighting.hh"
 
+// material/
+#include "material/lambertian.hh"
+
 
 #endif // REDSHIFT_H_INCLUDED_20090223

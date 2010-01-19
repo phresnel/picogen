@@ -25,6 +25,7 @@
 #include "../basictypes/height-function.hh"
 #include "../primitives/primitive.hh"
 #include "../rendertargets/rendertarget.hh"
+#include "../material/lambertian.hh"
 
 namespace redshift { namespace primitive {
 
@@ -48,7 +49,7 @@ public:
                 const DifferentialGeometry & dgGeom
         ) const {
                 return shared_ptr<Bsdf> (new bsdf::Lambertian (
-                        dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0)
+                        dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0), mt
                 ));
         }
 
@@ -66,6 +67,7 @@ private:
         shared_ptr<HeightFunction const> function;
         real_t detail;
         BoundingBox boundingBox;
+        shared_ptr<MersenneTwister<real_t,0,1> > mt;
 };
 
 } }

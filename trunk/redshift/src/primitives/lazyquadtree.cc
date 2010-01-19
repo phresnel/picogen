@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/primitives/lazyquadtree.hh"
-
+#include "../../include/material/lambertian.hh"
 
 //#############################################################################
 // LazyQuadtreeImpl
@@ -499,7 +499,9 @@ namespace redshift { namespace primitive {
 
 
 LazyQuadtree::LazyQuadtree (shared_ptr<HeightFunction const> fun, real_t size)
-: impl (new LazyQuadtreeImpl (fun, size)) {
+: impl (new LazyQuadtreeImpl (fun, size))
+, mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
+{
 }
 
 
@@ -544,7 +546,12 @@ optional<Intersection>
 shared_ptr<Bsdf> LazyQuadtree::getBsdf(
         const DifferentialGeometry & dgGeom
 ) const {
-        return shared_ptr<Bsdf> (new bsdf::Lambertian (dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0)));
+        return shared_ptr<Bsdf> (new bsdf::Lambertian (
+                dgGeom, 
+                dgGeom.getNormal(), 
+                Color::fromRgb(1,1,1), 
+                mt
+        ));
 }
 
 

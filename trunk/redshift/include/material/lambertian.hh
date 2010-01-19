@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,26 +18,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef DIRECTLIGHTING_HH_INCLUDED_20090110
-#define DIRECTLIGHTING_HH_INCLUDED_20090110
+#ifndef LAMBERTIAN_HH_INCLUDED_20100119
+#define LAMBERTIAN_HH_INCLUDED_20100119
 
 #include "../setup.hh"
-#include "../basictypes/scene.hh"
-#include "../basictypes/sample.hh"
-#include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
-namespace redshift {
-        class DirectLighting : public Integrator {
+namespace redshift { namespace bsdf {
+        class Lambertian : public Bsdf {
         public:
-                virtual tuple<real_t,Color> Li (
-                        const Scene &scene, 
-                        const RayDifferential &raydiff,
-                        const Sample &sample
-                ) const ;
-        private:
-                mutable MersenneTwister<float,0,1> diffuseRng;
-        };
-}
+                Lambertian (
+                        DifferentialGeometry const &shadingDG_, 
+                        Normal const &trueNormal_,
+                        Color const &color_,
+                        shared_ptr<MersenneTwister<real_t,0,1> > mt
+                );
 
-#endif // DIRECTLIGHTING_HH_INCLUDED_20090110
+                virtual optional<tuple<Color,Vector> > sample_f (
+                        const Vector &in, 
+                        Reflection refl, Specular spec
+                ) const;
+
+                virtual Color f (const Vector &out, const Vector &in) const;
+        private:
+                Color const color;
+                shared_ptr<MersenneTwister<real_t,0,1> > mt;
+        };
+} }
+
+#endif // LAMBERTIAN_HH_INCLUDED_20100119
