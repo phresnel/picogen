@@ -156,11 +156,11 @@ public:
          (real_t const & u, real_t const & v) const {
                 //real_t const d = sqrt (u*u + v*v);
                 const real_t p [] = { u, v };
-                return (*fun) (p) - 20;
+                return (*fun) (p);
         }
         
         
-        QuatschHeightFunction ()
+        QuatschHeightFunction (const std::string code)
         : functionSet(addfuns())
         , fun (Compiler::compile (
                 "x;y",
@@ -169,7 +169,7 @@ public:
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                 ")))",*/
-                "(* 35 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.0125} layercount{6} persistence{0.58} levelEvaluationFunction{(abs h)}] x y))) 4 ))",
+                code,
                 //"(* x 0.1)",
                 functionSet,
                 errors))
@@ -201,12 +201,22 @@ void run() {
         int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,1,-200))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,20,-200))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
+        shared_ptr<redshift::HeightFunction> distortHeightFunction;
         try {
                 heightFunction = shared_ptr<redshift::HeightFunction> (
-                                      new ::redshift::QuatschHeightFunction());
+                        new ::redshift::QuatschHeightFunction(
+                                "(* 35 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.0125} layercount{6} persistence{0.58} levelEvaluationFunction{(abs h)}] x y))) 4 ))"
+                ));
+                distortHeightFunction = shared_ptr<redshift::HeightFunction> (
+                        new ::redshift::QuatschHeightFunction(
+                                "(+ 1.0 (* 0.75 ([LayeredNoise2d filter{bilinear} seed{13} frequency{1} layercount{8} persistence{0.6}] x y)))"
+                ));
+                /*for (int i=0; i<50; ++i) {
+                        std::cout << (*distortHeightFunction)(rand()/(RAND_MAX+1.f),rand()/(RAND_MAX+1.f)) << std::endl;
+                }*/
         } catch (...) { // TODO (!!!)
         }
         
@@ -217,7 +227,7 @@ void run() {
                                 scalar_cast<fixed_point_t>(25)),
                         10.0)*/
                 //new Heightmap (heightFunction, 1.5)
-                new LazyQuadtree (heightFunction, 400)
+                new LazyQuadtree (heightFunction, 400, distortHeightFunction)
                 //new BooleanField (heightFunction, 1.5)
         );
 

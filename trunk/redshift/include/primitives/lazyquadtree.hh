@@ -37,7 +37,10 @@ namespace redshift { namespace primitive {
                 , DoFinalize(LazyQuadtree)
         {
         public:
-                LazyQuadtree(shared_ptr<HeightFunction const> fun, real_t size);
+                LazyQuadtree(
+                        shared_ptr<HeightFunction const> fun, real_t size,
+                        shared_ptr<HeightFunction const> distortionFun
+                );
                 ~LazyQuadtree ();
                 
                 bool doesIntersect (RayDifferential const &ray) const;
@@ -56,6 +59,7 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<LazyQuadtreeImpl> impl;
                 shared_ptr<MersenneTwister<real_t,0,1> > mt;
+                shared_ptr<HeightFunction const> distortionFun;
         };
 } }
 

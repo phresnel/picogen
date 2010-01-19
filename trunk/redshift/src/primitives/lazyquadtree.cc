@@ -309,24 +309,26 @@ namespace lazyquadtree {
                         // | 0  | 1  |
                         // +----+----+
                         
+                        // Oh, wasteful. Need to refactor seriously. At the minimal least it should 
+                        // be in an extra function to take less cache.
                         if (d_right & d_up) {
                                 if (upper_three) {
                                         // 0, 2, 3
                                         if (minT<=d_z) {
                                         if (!children[0]) create_child (0);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[0]->intersect(ray, minT, d_z))
                                                 return dg;
                                         }
                                         if (d_z<=d_x) {
                                         if (!children[2]) create_child (2);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[2]->intersect(ray, d_z, d_x))
                                                 return dg;
                                         }
                                         if (d_x<=maxT) {
                                         if (!children[3]) create_child (3);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[3]->intersect(ray, d_x, maxT))
                                                 return dg;
                                         }
@@ -335,19 +337,19 @@ namespace lazyquadtree {
                                         // 0, 1, 3
                                         if (minT<=d_x){
                                         if (!children[0]) create_child (0);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[0]->intersect(ray, minT, d_x))
                                                 return dg;
                                         }
                                         if (d_x<=d_z){
                                         if (!children[1]) create_child (1);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[1]->intersect(ray, d_x, d_z))
                                                 return dg;
                                         }
                                         if (d_z<=maxT) {
                                         if (!children[3]) create_child (3);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[3]->intersect(ray, d_z, maxT))
                                                 return dg;
                                         }
@@ -359,19 +361,19 @@ namespace lazyquadtree {
                                         // 1, 3, 2
                                         if (minT<=d_z) {
                                         if (!children[1]) create_child (1);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[1]->intersect(ray, minT, d_z))
                                                 return dg;
                                         }
                                         if (d_z<=d_x) {
                                         if (!children[3]) create_child (3);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[3]->intersect(ray, d_z, d_x))
                                                 return dg;
                                         }
                                         if (d_x<=maxT) {
                                         if (!children[2]) create_child (2);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[2]->intersect(ray, d_x, maxT))
                                                 return dg;
                                         }
@@ -380,19 +382,19 @@ namespace lazyquadtree {
                                         // 1, 0, 2
                                         if (minT<=d_x) {
                                         if (!children[1]) create_child (1);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[1]->intersect(ray, minT, d_x))
                                                 return dg;
                                         }
                                         if (d_x<=d_z) {
                                         if (!children[0]) create_child (0);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[0]->intersect(ray, d_x, d_z))
                                                 return dg;
                                         }
                                         if (d_z<=maxT) {
                                         if (!children[2]) create_child (2);
-                                        if (optional<DifferentialGeometry> dg = 
+                                        if (optional<DifferentialGeometry> dg =
                                                 children[2]->intersect(ray, d_z, maxT))
                                                 return dg;
                                         }
@@ -400,6 +402,96 @@ namespace lazyquadtree {
                                 }
                         }
                         // TODO: implement other cases
+                        if (d_right & !d_up) {
+                                if (upper_three) {
+                                        // 2, 0, 1
+                                        if (minT<=d_z) {
+                                        if (!children[2]) create_child (2);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[2]->intersect(ray, minT, d_z))
+                                                return dg;
+                                        }
+                                        if (d_z<=d_x) {
+                                        if (!children[0]) create_child (0);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[0]->intersect(ray, d_z, d_x))
+                                                return dg;
+                                        }
+                                        if (d_x<=maxT) {
+                                        if (!children[1]) create_child (1);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[1]->intersect(ray, d_x, maxT))
+                                                return dg;
+                                        }
+                                        return false;
+                                } else {
+                                        // 2, 3, 1
+                                        if (minT<=d_x){
+                                        if (!children[2]) create_child (2);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[2]->intersect(ray, minT, d_x))
+                                                return dg;
+                                        }
+                                        if (d_x<=d_z){
+                                        if (!children[3]) create_child (3);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[3]->intersect(ray, d_x, d_z))
+                                                return dg;
+                                        }
+                                        if (d_z<=maxT) {
+                                        if (!children[1]) create_child (1);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[1]->intersect(ray, d_z, maxT))
+                                                return dg;
+                                        }
+                                        return false;
+                                }
+                        }
+                        if (!d_right & !d_up) {
+                                if (upper_three) {
+                                        // 3, 1, 0
+                                        if (minT<=d_z) {
+                                        if (!children[3]) create_child (3);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[3]->intersect(ray, minT, d_z))
+                                                return dg;
+                                        }
+                                        if (d_z<=d_x) {
+                                        if (!children[1]) create_child (1);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[1]->intersect(ray, d_z, d_x))
+                                                return dg;
+                                        }
+                                        if (d_x<=maxT) {
+                                        if (!children[0]) create_child (0);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[0]->intersect(ray, d_x, maxT))
+                                                return dg;
+                                        }
+                                        return false;
+                                } else {
+                                        // 3, 2, 0
+                                        if (minT<=d_x) {
+                                        if (!children[3]) create_child (3);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[3]->intersect(ray, minT, d_x))
+                                                return dg;
+                                        }
+                                        if (d_x<=d_z) {
+                                        if (!children[2]) create_child (2);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[2]->intersect(ray, d_x, d_z))
+                                                return dg;
+                                        }
+                                        if (d_z<=maxT) {
+                                        if (!children[0]) create_child (0);
+                                        if (optional<DifferentialGeometry> dg =
+                                                children[0]->intersect(ray, d_z, maxT))
+                                                return dg;
+                                        }
+                                        return false;
+                                }
+                        }
 
                         return false;
                 }                
@@ -415,11 +507,13 @@ class LazyQuadtreeImpl {
 public:
         LazyQuadtreeImpl (
                 shared_ptr<HeightFunction const> fun,
-                real_t size
+                real_t size,
+                shared_ptr<HeightFunction const> distortionFun_
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
-        , primaryNode(primaryBB, *fun.get(),4)
+        , primaryNode(primaryBB, *fun.get(),6)
+        , distortionFun(distortionFun_)
         {}
 
 
@@ -444,7 +538,19 @@ public:
                         ray(minT),
                         Normal(0,1,0)
                 );*/
-                return primaryNode.intersect (ray, minT, maxT);
+                const optional<DifferentialGeometry> dg_ = primaryNode.intersect (ray, minT, maxT);
+                if (!dg_) return false;
+                const DifferentialGeometry dg =*dg_;
+
+                const real_t f = dg.getNormal().y;/* * (*distortionFun)(
+                        scalar_cast<real_t>(dg.getCenter().x), 
+                        scalar_cast<real_t>(dg.getCenter().z)
+                );*/
+                return DifferentialGeometry(
+                        dg.getDistance(),
+                        dg.getCenter(),
+                        normalize(Normal(dg.getNormal().x,f,dg.getNormal().z))
+                );
         }
 
 
@@ -454,6 +560,7 @@ private:
         shared_ptr<HeightFunction const> fun;
         BoundingBox primaryBB;
         lazyquadtree::Node primaryNode;
+        shared_ptr<HeightFunction const> distortionFun;
 
 
 
@@ -498,9 +605,14 @@ namespace redshift { namespace primitive {
 
 
 
-LazyQuadtree::LazyQuadtree (shared_ptr<HeightFunction const> fun, real_t size)
-: impl (new LazyQuadtreeImpl (fun, size))
+LazyQuadtree::LazyQuadtree (
+        shared_ptr<HeightFunction const> fun,
+        real_t size,
+        shared_ptr<HeightFunction const> distortionFun_
+)
+: impl (new LazyQuadtreeImpl (fun, size, distortionFun_))
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
+, distortionFun(distortionFun_)
 {
 }
 
@@ -533,7 +645,7 @@ optional<Intersection>
         } else {
                 return false;
         }*/
-        const optional<DifferentialGeometry> dg = impl->intersect (ray);
+        const optional<DifferentialGeometry> dg =impl->intersect (ray);
         if (!dg) return false;
         return Intersection (
                 shared_from_this(),
@@ -550,7 +662,8 @@ shared_ptr<Bsdf> LazyQuadtree::getBsdf(
                 dgGeom, 
                 dgGeom.getNormal(), 
                 Color::fromRgb(1,1,1), 
-                mt
+                mt/*,
+                distortionFun*/
         ));
 }
 

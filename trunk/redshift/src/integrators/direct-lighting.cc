@@ -58,30 +58,28 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int maxNumSamples = 2;
+                        const int maxNumSamples = 0;
                         for (numSamples = 0; numSamples < maxNumSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
                                 const real_t &sy = get<1>(sphere);
                                 const real_t &sz = get<2>(sphere);
-                                tuple<Color,Vector> rrr = make_tuple(Color(1,1,1), Vector(sx,sy,sz));
-
                                 optional<tuple<Color,Vector> > v_ = bsdf->sample_f (ray.direction, Bsdf::reflection, Bsdf::diffuse);
                                 if (v_) {
                                         tuple<Color,Vector> v = *v_;
                                         const Vector d = X * get<1>(v).x + Y * get<1>(v).y + Z * get<1>(v).z; // TODO: where to do this transform?
                                         ray.direction = d;
                                         if (d.y>0) {// && !scene.doesIntersect(ray)) {
-                                                sum = sum + bg->query (ray);
+                                                sum = sum + multiplyComponents(bg->query (ray), get<0>(v));
                                         }
                                 }
                         }
                 }
-                const Color surfaceSkyColor = (sum * (1./numSamples));
+                const Color surfaceSkyColor = numSamples==0 ? Color(0.3,0.3,0.3) : (sum * (1./numSamples)) * constants::pi; // TODO: is this correct?
                 // crap end
                 //----------------------------------------------------------------------------
 
-                const Color surfaceColor = bsdf->f(ray.direction, sunDir);
+                const Color surfaceColor = bsdf->f(ray.direction, sunDir) * constants::pi; // TODO: is this correct?
 
                 Color ret = surfaceSkyColor;
 
