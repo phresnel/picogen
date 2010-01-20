@@ -56,7 +56,7 @@ optional<Intersection>
  HorizonPlane::intersect(RayDifferential const &ray) const {
         if (!doesIntersect (ray))
                 return false;
-        const real_t d = (scalar_cast<real_t>(ray.position.y) - height)
+        const real_t d = (height - scalar_cast<real_t>(ray.position.y))
                        / ray.direction.y;
         if (d<0)
                 return false;
