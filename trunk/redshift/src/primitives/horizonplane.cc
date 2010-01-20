@@ -60,12 +60,22 @@ optional<Intersection>
                        / ray.direction.y;
         if (d<0)
                 return false;
+
+        const Point poi = ray(d);
+        const Vector voi = vector_cast<Vector>(poi);
+        
+        const real_t s = 0.01f;
+        const Vector a (0, (*fun)(voi.x,voi.z), 0);
+        const Vector u = normalize (Vector(s, (*fun)(voi.x+s,voi.z), 0) - a);
+        const Vector v = normalize (Vector(0, (*fun)(voi.x,voi.z+s), s) - a);
+        const Normal N = vector_cast<Normal>(cross (u,v));
+        
         return Intersection(
                 shared_from_this(),
                 DifferentialGeometry (
                         d,
-                        ray(d),
-                        Normal(0,1,0)
+                        poi,
+                        N//normalize(Normal(0,(*fun)(voi.x,voi.z)+1,0))
                 )
         );
 }

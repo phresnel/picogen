@@ -201,18 +201,18 @@ void run() {
         int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,20,-200))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,40,-270))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
         try {
                 heightFunction = shared_ptr<redshift::HeightFunction> (
                         new ::redshift::QuatschHeightFunction(
-                                "(* 35 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.0125} layercount{6} persistence{0.58} levelEvaluationFunction{(abs h)}] x y))) 4 ))"
+                                "(* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.001} layercount{6} persistence{0.58} levelEvaluationFunction{(abs h)}] x y))) 4 ))"
                 ));
                 distortHeightFunction = shared_ptr<redshift::HeightFunction> (
                         new ::redshift::QuatschHeightFunction(
-                                "(+ 1.0 (* 0.75 ([LayeredNoise2d filter{bilinear} seed{13} frequency{1} layercount{8} persistence{0.6}] x y)))"
+                                "(* 0.2 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.01} layercount{8} persistence{0.6}] x y))"
                 ));
                 /*for (int i=0; i<50; ++i) {
                         std::cout << (*distortHeightFunction)(rand()/(RAND_MAX+1.f),rand()/(RAND_MAX+1.f)) << std::endl;
@@ -222,16 +222,16 @@ void run() {
         
         primitive::List *list = new List;
         list->add (shared_ptr<primitive::Primitive> (
-                new LazyQuadtree (heightFunction, 400, distortHeightFunction)));
+                new LazyQuadtree (heightFunction, 4000, distortHeightFunction)));
         list->add (shared_ptr<primitive::Primitive> (
-                new HorizonPlane (10, distortHeightFunction)));
+                new HorizonPlane (25, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(1,1,3));
+        preetham->setSunDirection(Vector(4,1,3));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(.9,.9,.9)*.1*1.0);
-        preetham->setColorFilter(redshift::Color(.33,.33,.36)*0.7);
+        preetham->setColorFilter(redshift::Color(.33,.33,.33)*0.7);
         preetham->enableFogHack (false, 0.004f, 150000);
         preetham->invalidate();
         

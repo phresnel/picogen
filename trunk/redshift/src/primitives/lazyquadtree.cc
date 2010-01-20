@@ -512,7 +512,7 @@ public:
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
-        , primaryNode(primaryBB, *fun.get(),9)
+        , primaryNode(primaryBB, *fun.get(),4)
         , distortionFun(distortionFun_)
         {}
 

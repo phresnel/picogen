@@ -36,6 +36,13 @@ namespace redshift {
                         const Sample &sample
                 ) const ;
         private:
+                tuple<real_t,Color> Li (
+                        const Scene &scene, 
+                        const RayDifferential &raydiff,
+                        const Sample &sample,
+                        const bool doMirror
+                ) const ;
+
                 mutable MersenneTwister<float,0,1> diffuseRng;
         };
 }

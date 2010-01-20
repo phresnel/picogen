@@ -52,6 +52,12 @@ namespace kallisto {
                 , hasDifferentials(false)
                 , rx(), ry()
                 {}
+
+                RayDifferential (Ray<point_t, direction_t> const & ray)
+                : Ray<point_t, direction_t> (ray)
+                , hasDifferentials(false)
+                , rx(), ry()
+                {}
         };
 }
 

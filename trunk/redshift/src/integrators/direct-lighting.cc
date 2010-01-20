@@ -25,17 +25,18 @@ namespace redshift {
 tuple<real_t,Color> DirectLighting::Li (
         const Scene &scene, 
         const RayDifferential &raydiff,
-        const Sample &sample
+        const Sample &sample,
+        const bool doMirror
 ) const {
         const optional<Intersection> I (
                                 scene.intersect (raydiff));
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(1,1,3));
+                const Vector sunDir = normalize(Vector(4,1,3));
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
-                        vector_cast<PointCompatibleVector>(normal*0.1f);
+                        vector_cast<PointCompatibleVector>(normal*0.001f);
                 const Ray ray (poi,sunDir);
                 const shared_ptr<Background> bg (scene.getBackground());
                 //std::cout << "eh" << std::flush;
@@ -78,7 +79,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         }
                 }
                 // spec
-                if (bsdf->hasAny (Bsdf::reflection, Bsdf::specular)) {
+                /*if (bsdf->hasAny (Bsdf::reflection, Bsdf::specular)) {
                         Ray ray (poi, raydiff.direction);
                         const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
                                 ray.direction, Bsdf::reflection, Bsdf::specular);
@@ -87,7 +88,18 @@ tuple<real_t,Color> DirectLighting::Li (
                                 ray.direction = get<1>(v);
                                 spec = spec + multiplyComponents(bg->query (ray), get<0>(v));
                         }
+                }*/
+                if (doMirror && bsdf->hasAny (Bsdf::reflection, Bsdf::specular)) {
+                        Ray ray (poi, raydiff.direction);
+                        const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
+                                ray.direction, Bsdf::reflection, Bsdf::specular);
+                        if (v_) {
+                                const tuple<Color,Vector> v = *v_;
+                                ray.direction = get<1>(v);
+                                spec = spec + get<1> (Li (scene, RayDifferential(ray), sample, false));
+                        }
                 }
+
                 const Color surfaceSkyColor = spec + (
                         numSamples==0
                         ? Color(0.3,0.3,0.3)
@@ -116,6 +128,16 @@ tuple<real_t,Color> DirectLighting::Li (
                 return make_tuple (1.0,
                         scene.getBackground()->query(raydiff)); // TODO: atmosphere shade
         }
+}
+
+
+
+tuple<real_t,Color> DirectLighting::Li (
+        const Scene &scene, 
+        const RayDifferential &raydiff,
+        const Sample &sample
+) const {
+        return Li(scene, raydiff, sample, true);
 }
 
 }
