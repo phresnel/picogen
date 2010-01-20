@@ -18,20 +18,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef LAMBERTIAN_HH_INCLUDED_20100119
-#define LAMBERTIAN_HH_INCLUDED_20100119
+#ifndef MIRROR_HH_INCLUDED_20100119
+#define MIRROR_HH_INCLUDED_20100119
 
 #include "../setup.hh"
 #include "../basictypes/bsdf.hh"
 
 namespace redshift { namespace bsdf {
-        class Lambertian : public Bsdf {
+        class Mirror : public Bsdf {
         public:
-                Lambertian (
+                Mirror (
                         DifferentialGeometry const &shadingDG_, 
                         Normal const &trueNormal_,
-                        Color const &color_,
-                        shared_ptr<MersenneTwister<real_t,0,1> > mt
+                        Color const &color_
                 );
 
                 virtual optional<tuple<Color,Vector> > sample_f (
@@ -42,13 +41,12 @@ namespace redshift { namespace bsdf {
                 virtual Color f (const Vector &out, const Vector &in) const;
 
                 virtual bool hasAny (Reflection ref, Specular spec) const {
-                        if (ref==reflection && spec==diffuse)
+                        if (ref==reflection && spec==specular)
                                 return true;
                         return false;
                 }
         private:
                 Color const color;
-                shared_ptr<MersenneTwister<real_t,0,1> > mt;
         };
 } }
 

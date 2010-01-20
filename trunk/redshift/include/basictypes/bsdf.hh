@@ -36,6 +36,8 @@ public:
         , trueNormal(trueNormal_)
         {}
 
+        virtual ~Bsdf () {}
+
         enum Reflection {
                 reflection
         };
@@ -43,6 +45,7 @@ public:
                 specular,
                 diffuse
         };
+        virtual bool hasAny (Reflection, Specular) const = 0;
 
         virtual optional<tuple<Color,Vector> > sample_f (
                 const Vector &in, Reflection, Specular) const = 0;
@@ -55,9 +58,11 @@ public:
         Normal getTrueNormal () const {
                 return trueNormal;
         }
-private:
-        DifferentialGeometry const &shadingDG;
-        Normal const &trueNormal;        
+
+
+protected:
+        DifferentialGeometry const shadingDG;
+        Normal const trueNormal;
 };
 }
 

@@ -32,7 +32,7 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(9,1,3));
+                const Vector sunDir = normalize(Vector(1,1,3));
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normal*0.1f);
@@ -48,8 +48,10 @@ tuple<real_t,Color> DirectLighting::Li (
                 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 // crap begin
                 Color sum = Color::fromRgb (0,0,0);
+                Color spec = Color::fromRgb (0,0,0);
                 int numSamples = 1;
-                if (1) {
+                // diffuse
+                if (bsdf->hasAny (Bsdf::reflection, Bsdf::diffuse)) {
                         Ray ray;
                         ray.position = poi;
 
@@ -58,24 +60,39 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int maxNumSamples = 0;
-                        for (numSamples = 0; numSamples < maxNumSamples; ++numSamples) {
+                        const int numDiffuseSamples = 10;
+                        if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
                                 const real_t &sy = get<1>(sphere);
                                 const real_t &sz = get<2>(sphere);
                                 optional<tuple<Color,Vector> > v_ = bsdf->sample_f (ray.direction, Bsdf::reflection, Bsdf::diffuse);
                                 if (v_) {
-                                        tuple<Color,Vector> v = *v_;
+                                        const tuple<Color,Vector> v = *v_;
                                         const Vector d = X * get<1>(v).x + Y * get<1>(v).y + Z * get<1>(v).z; // TODO: where to do this transform?
                                         ray.direction = d;
-                                        if (d.y>0) {// && !scene.doesIntersect(ray)) {
+                                        if (d.y>0) {
                                                 sum = sum + multiplyComponents(bg->query (ray), get<0>(v));
                                         }
                                 }
                         }
                 }
-                const Color surfaceSkyColor = numSamples==0 ? Color(0.3,0.3,0.3) : (sum * (1./numSamples)) * constants::pi; // TODO: is this correct?
+                // spec
+                if (bsdf->hasAny (Bsdf::reflection, Bsdf::specular)) {
+                        Ray ray (poi, raydiff.direction);
+                        const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
+                                ray.direction, Bsdf::reflection, Bsdf::specular);
+                        if (v_) {
+                                const tuple<Color,Vector> v = *v_;
+                                ray.direction = get<1>(v);
+                                spec = spec + multiplyComponents(bg->query (ray), get<0>(v));
+                        }
+                }
+                const Color surfaceSkyColor = spec + (
+                        numSamples==0
+                        ? Color(0.3,0.3,0.3)
+                        : (sum * (1./numSamples)) * constants::pi
+                ); // TODO: is this correct?
                 // crap end
                 //----------------------------------------------------------------------------
 
@@ -96,7 +113,7 @@ tuple<real_t,Color> DirectLighting::Li (
                 return make_tuple(1.0f, ret);
         } else {
                 return make_tuple (1.0,
-                        scene.getBackground()->query(raydiff));
+                        scene.getBackground()->query(raydiff)); // TODO: atmosphere shade
         }
 }
 

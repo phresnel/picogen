@@ -201,7 +201,7 @@ void run() {
         int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,20,-200))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,1,-200))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -233,11 +233,11 @@ void run() {
         );
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(9,1,3));
+        preetham->setSunDirection(Vector(1,1,3));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(.9,.9,.9)*.1*1.0);
-        preetham->setColorFilter(redshift::Color(.33,.33,.36)*1.0);
-        preetham->enableFogHack (true, 0.0004f, 150000);
+        preetham->setColorFilter(redshift::Color(.33,.33,.36)*0.7);
+        preetham->enableFogHack (false, 0.004f, 150000);
         preetham->invalidate();
         
         Scene Scene (

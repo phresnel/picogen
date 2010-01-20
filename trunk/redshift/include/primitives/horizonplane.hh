@@ -24,7 +24,7 @@
 #include "../setup.hh"
 #include "../basictypes/intersection.hh"
 #include "../primitives/primitive.hh"
-#include "../material/lambertian.hh"
+#include "../material/mirror.hh"
 #include "../basictypes/height-function.hh"
 
 namespace redshift { namespace primitive {
@@ -48,8 +48,8 @@ namespace redshift { namespace primitive {
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom
                 ) const {
-                        return shared_ptr<Bsdf> (new bsdf::Lambertian (
-                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,1,1), mt
+                        return shared_ptr<Bsdf> (new bsdf::Mirror (
+                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,1,1)/*, mt*/
                         ));
                 }
                 

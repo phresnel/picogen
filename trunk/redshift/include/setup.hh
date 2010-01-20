@@ -183,6 +183,12 @@ namespace redshift {
                 const Vector v3 = cross(normalD, v2);
                 return make_tuple (v2, normalD, v3);
         }
+
+        inline Vector reflect (const Vector &in, const Normal &n) {
+                const real_t f = dot(vector_cast<Vector>(n),in) * 2.f;
+                return in - vector_cast<Vector>(n*f);
+        }
+
 }
 
 #include "../../skylab/include/preetham.hh"

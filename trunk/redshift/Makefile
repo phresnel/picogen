@@ -84,6 +84,7 @@ OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
 OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(MATERIALOBJDIR)/lambertian.o
+OBJFILES += $(MATERIALOBJDIR)/mirror.o
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
@@ -275,6 +276,9 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 ###############################################################################
 
 $(MATERIALOBJDIR)/lambertian.o: ./src/material/lambertian.cc
+	$(CXX) -o $@ $<
+
+$(MATERIALOBJDIR)/mirror.o: ./src/material/mirror.cc
 	$(CXX) -o $@ $<
 
 
