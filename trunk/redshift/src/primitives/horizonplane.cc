@@ -58,6 +58,8 @@ optional<Intersection>
                 return false;
         const real_t d = (scalar_cast<real_t>(ray.position.y) - height)
                        / ray.direction.y;
+        if (d<0)
+                return false;
         return Intersection(
                 shared_from_this(),
                 DifferentialGeometry (
