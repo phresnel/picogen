@@ -79,6 +79,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/booleanfield.hh"
 #include "primitives/lazyquadtree.hh"
 #include "primitives/horizonplane.hh"
+#include "primitives/list.hh"
 
 // background/
 #include "backgrounds/visualise-direction.hh"

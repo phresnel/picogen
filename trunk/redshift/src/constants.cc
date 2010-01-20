@@ -31,9 +31,14 @@ namespace redshift { namespace constants {
         double const epsilon_value<double>::value = 0.01;
         long double const epsilon_value<long double>::value = 0.01L;
 
+        // TODO: use infinity
         float const infinity_value<float>::value = 10000000.0f;
         double const infinity_value<double>::value = 10000000.0;
         long double const infinity_value<long double>::value = 10000000.0L;
+
+        float const real_max_value<float>::value = 10000000.0f;
+        double const real_max_value<double>::value = 10000000.0;
+        long double const real_max_value<long double>::value = 10000000.0L;
 
         float const pi_value<float>::value = 3.141592654f;
         double const pi_value<double>::value = 3.141592654;
@@ -43,6 +48,7 @@ namespace redshift { namespace constants {
         real_t const infinity = infinity_value<real_t>::value;
         real_t const pi = pi_value<real_t>::value;
         real_t const inv_pi = 1. / pi_value<real_t>::value;
+        real_t const real_max = real_max_value<real_t>::value;
 
         real_t const earth_radius_m   = static_cast<real_t>(km2m (12756.0));
         real_t const sun_radius_m = static_cast<real_t>(km2m (1.392 * 10.0e9));

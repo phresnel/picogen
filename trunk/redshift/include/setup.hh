@@ -130,6 +130,17 @@ namespace redshift {
                         static long double const value;
                 };
 
+                template <typename> struct real_max_value;
+                template <> struct real_max_value<float> {
+                        static float const value;
+                };
+                template <> struct real_max_value<double> {
+                        static double const value;
+                };
+                template <> struct real_max_value<long double> {
+                        static long double const value;
+                };
+
 
                 // TODO clean up pi value
                 template <typename> struct pi_value;
@@ -145,6 +156,7 @@ namespace redshift {
 
 
                 extern real_t const epsilon;
+                extern real_t const real_max;
                 extern real_t const pi;
                 extern real_t const inv_pi;
                 extern real_t const infinity;

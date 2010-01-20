@@ -90,6 +90,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
 OBJFILES += $(PRIMITIVESOBJDIR)/lazyquadtree.o
 OBJFILES += $(PRIMITIVESOBJDIR)/horizonplane.o
+OBJFILES += $(PRIMITIVESOBJDIR)/list.o
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/colorrendertarget.o
@@ -229,6 +230,10 @@ $(PRIMITIVESOBJDIR)/lazyquadtree.o: \
         
 $(PRIMITIVESOBJDIR)/horizonplane.o: \
                      ./src/primitives/horizonplane.cc
+	$(CXX) -o $@ $<
+
+$(PRIMITIVESOBJDIR)/list.o: \
+                     ./src/primitives/list.cc
 	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/booleanfield.o: \

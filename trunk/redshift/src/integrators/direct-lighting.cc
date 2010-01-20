@@ -101,13 +101,14 @@ tuple<real_t,Color> DirectLighting::Li (
                 Color ret = surfaceSkyColor;
 
                 if (scene.doesIntersect (ray)) {
+                        
                 } else {
                         const real_t d = max(
                                 0.f,
                                 dot(sunDir,vector_cast<Vector>(normal)));
                         ret = ret + surfaceColor*d;
                 }
-                
+
                 if (bg->hasAtmosphereShade())
                         ret = bg->atmosphereShade (ret, ray, gd.getDistance());
                 return make_tuple(1.0f, ret);

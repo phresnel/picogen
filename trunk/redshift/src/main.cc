@@ -201,7 +201,7 @@ void run() {
         int const width = 512;
         int const height = width;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,1,-200))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(30,30,-200))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -220,17 +220,24 @@ void run() {
         } catch (...) { // TODO (!!!)
         }
         
+        /*
         shared_ptr<primitive::Primitive> agg (
-                /*new primitive::ClosedSphere(
+                new primitive::ClosedSphere(
                         Point(scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(0),
                                 scalar_cast<fixed_point_t>(25)),
-                        10.0)*/
+                        10.0)
                 //new Heightmap (heightFunction, 1.5)
                 //new LazyQuadtree (heightFunction, 400, distortHeightFunction)
-                new HorizonPlane (0, distortHeightFunction)
+                
                 //new BooleanField (heightFunction, 1.5)
         );
+        */
+        
+        primitive::List *list = new List;
+        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 400, distortHeightFunction)));
+        list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (-50, distortHeightFunction)));
+        shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
         preetham->setSunDirection(Vector(1,1,3));
