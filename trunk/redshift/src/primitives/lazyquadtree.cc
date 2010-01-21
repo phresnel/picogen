@@ -127,7 +127,7 @@ namespace lazyquadtree {
         class Node {
                 BoundingBox aabb;
                 mutable Node *parent;
-                real_t min_h, max_h;
+                mutable real_t min_h, max_h;
                 const HeightFunction &fun;
                 mutable Node *children[4];
                 Vertex vertices[9];
@@ -217,6 +217,7 @@ namespace lazyquadtree {
                                 );
                                 break;
                         };
+                        refineBoundingBox();
                 }
 
                 optional<DifferentialGeometry> traverse (Ray const &ray, int child, real_t t0, real_t t1) const {
@@ -229,15 +230,52 @@ namespace lazyquadtree {
                         return false;
                 }
 
-                void refineBoundingBox (real_t min_h, real_t max_h) {
-                        /*const bool update_min = min_h < this->min_h;
-                        const bool update_max = max_h > this->max_h;
-                        if (!(update_min | update_max)) 
-                                return;
-                        if (update_min) this->min_h = min_h;
-                        if (update_max) this->max_h = max_h;
-                        if (0!=parent) parent->refineBoundingBox(this->min_h,this->max_h);*/
-                        
+                void initBoundingBox () {
+                        min_h = constants::real_max;
+                        max_h = -constants::real_max;
+
+                        for (int u=0; u<=2; ++u)                        
+                        for (int v=0; v<=2; ++v) {
+                                const real_t h = vertex(u,v).h;
+                                if (h < min_h) min_h = h;
+                                if (h > max_h) max_h = h;
+                        }
+                        aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
+                        aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));
+                }
+
+                void refineBoundingBox () const {
+                        const real_t eps = 0.00001f;
+                        const real_t ex_min = min_h;
+                        const real_t ex_max = max_h;
+                        min_h = constants::real_max;
+                        max_h = -constants::real_max;
+                        if (0 == maxRecursion) {                                
+                                /*for (int u=0; u<=2; ++u)
+                                for (int v=0; v<=2; ++v) {
+                                        const real_t h = vertex(u,v).h;
+                                        if (h < min_h) min_h = h;
+                                        if (h > max_h) max_h = h;
+                                }
+                                aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
+                                aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));*/
+                        } else {
+                                for (int i=0; i<4; ++i) {
+                                        if (!children[i]) continue;
+                                        if (children[i]->min_h < min_h)
+                                                min_h = children[i]->min_h;
+                                        if (children[i]->max_h > max_h)
+                                                max_h = children[i]->max_h;
+                                }
+                        }
+
+                        const real_t diff_min = (ex_min-min_h);
+                        const real_t diff_max = (ex_max-max_h);
+                        const bool a = diff_min>-eps && diff_min<eps;                        
+                        const bool b = diff_max>-eps && diff_max<eps;                        
+                        if (a & b & !!parent) {
+                                parent->refineBoundingBox();
+                        }
                 }
         public:
                 Node (
@@ -283,29 +321,12 @@ namespace lazyquadtree {
                         center_x = c_x;
                         center_z = c_z;
 
-                        // refine bounding box height
-                        if (maxRecursion == 0) {
-                                min_h = constants::real_max;
-                                max_h = -constants::real_max;
-                                for (int u=0; u<=2; ++u)
-                                for (int v=0; v<=2; ++v) {
-                                        const real_t h = vertex(u,v).h;
-                                        if (h < min_h) min_h = h;
-                                        if (h > max_h) max_h = h;
-                                }
-                                aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
-                                aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));
-                                parent->refineBoundingBox (min_h, max_h);
-                        } else {
-                                min_h = scalar_cast<real_t>(aabb.getMinimumY());
-                                max_h = scalar_cast<real_t>(aabb.getMaximumY());
-                        }
+                        initBoundingBox();
                 }
                 
                 ~Node () {
                         for (int i=0; i<4; ++i) {
-                                if (children[i])
-                                        delete children[i];
+                                delete children[i];
                         }
                 }
 
@@ -322,8 +343,6 @@ namespace lazyquadtree {
                            |((min_h > this->max_h) & (max_h > this->max_h))
                         )
                                 return false;
-                        /*if (!does_intersect<false>(ray,aabb))
-                                return false;*/
 
                         if (maxRecursion == 0) {
                                 pair<real_t,Normal> i;
