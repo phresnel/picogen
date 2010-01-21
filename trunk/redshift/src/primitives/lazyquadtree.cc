@@ -126,6 +126,7 @@ namespace lazyquadtree {
 
         class Node {
                 BoundingBox aabb;
+                real_t min_h, max_h;
                 const HeightFunction &fun;
                 mutable Node *children[4];
                 Vertex vertices[9];
@@ -149,7 +150,7 @@ namespace lazyquadtree {
                         const Vector a (a_.u, a_.h, a_.v);
                         const Vector b (b_.u, b_.h, b_.v);
                         const Vector c (c_.u, c_.h, c_.v);
-                        
+
                         real_t t=-1, u, v;
                         Normal normal;
                         const bool does_intersect = 
@@ -264,7 +265,19 @@ namespace lazyquadtree {
                         center_x = c_x;
                         center_z = c_z;
 
-                        // TODO: have refined bounding box and one with which we have been created
+                        // refine bounding box height
+                        /*min_h = constants::real_max;
+                        max_h = -constants::real_max;
+                        for (int u=0; u<2; ++u)
+                        for (int v=0; v<2; ++v) {
+                                const real_t h = vertex(u,v).h;
+                                if (h < min_h) min_h = h;
+                                if (h > max_h) max_h = h;
+                        }
+                        aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
+                        aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));*/
+                        min_h = scalar_cast<real_t>(aabb.getMinimumY());
+                        max_h = scalar_cast<real_t>(aabb.getMaximumY());
                 }
                 
                 ~Node () {
@@ -278,6 +291,18 @@ namespace lazyquadtree {
                         struct Triangle {
                                 Vertex &a, &b, &c;
                         };
+                        // We can assume minT and maxT to be a correct interval on the xz plane.
+                        // But we got to check for vertical intersection now.
+                        /*const real_t p_h = scalar_cast<real_t>(ray.position.y);
+                        const real_t min_h = p_h + minT * ray.direction.y;
+                        const real_t max_h = p_h + maxT * ray.direction.y;
+                        if (((min_h < this->min_h) & (max_h < this->min_h))
+                           |((min_h > this->max_h) & (max_h > this->max_h))
+                        )
+                                return false;*/
+                        /*if (!does_intersect<false>(ray,aabb))
+                                return false;*/
+
                         if (maxRecursion == 0) {
                                 pair<real_t,Normal> i;
                                 if (0 < (i = intersect_triangle (ray, 0,0, 0,1, 1,1)).first)
@@ -318,72 +343,68 @@ namespace lazyquadtree {
                         // -----+-----
                         // | 0  | 1  |
                         // +----+----+
-                        
-                        // Oh, wasteful. Need to refactor seriously. At the minimal least it should 
-                        // be in an extra function to take less cache.
-                        optional<DifferentialGeometry> dg;
+
+                        struct {
+                                int child;
+                                real_t t0, t1;
+                        } t[3];
                         if (d_right & d_up) {
                                 if (upper_three) {
                                         // 0, 2, 3
-                                        if (dg = traverse (ray, 0, minT, d_z)) return dg;
-                                        if (dg = traverse (ray, 2, d_z, d_x)) return dg;
-                                        if (dg = traverse (ray, 3, d_x, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 0; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 2; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 3; t[2].t0 = d_x;  t[2].t1 = maxT;
                                 } else {
                                         // 0, 1, 3
-                                        if (dg = traverse (ray, 0, minT, d_x)) return dg;
-                                        if (dg = traverse (ray, 1, d_x, d_z)) return dg;
-                                        if (dg = traverse (ray, 3, d_z, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 0; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 1; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 3; t[2].t0 = d_z;  t[2].t1 = maxT;
                                 }
                         }
                         if (!d_right & d_up) {
                                 if (upper_three) {
                                         // 1, 3, 2
-                                        if (dg = traverse (ray, 1, minT, d_z)) return dg;
-                                        if (dg = traverse (ray, 3, d_z, d_x)) return dg;
-                                        if (dg = traverse (ray, 2, d_x, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 1; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 3; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 2; t[2].t0 = d_x;  t[2].t1 = maxT;
                                 } else {
                                         // 1, 0, 2
-                                        if (dg = traverse (ray, 1, minT, d_x)) return dg;
-                                        if (dg = traverse (ray, 0, d_x, d_z)) return dg;
-                                        if (dg = traverse (ray, 2, d_z, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 1; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 0; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 2; t[2].t0 = d_z;  t[2].t1 = maxT;
                                 }
                         }
                         // TODO: implement other cases
                         if (d_right & !d_up) {
                                 if (upper_three) {
                                         // 2, 0, 1
-                                        if (dg = traverse (ray, 2, minT, d_z)) return dg;
-                                        if (dg = traverse (ray, 0, d_z, d_x)) return dg;
-                                        if (dg = traverse (ray, 1, d_x, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 2; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 0; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 1; t[2].t0 = d_x;  t[2].t1 = maxT;
                                 } else {
                                         // 2, 3, 1
-                                        if (dg = traverse (ray, 2, minT, d_x)) return dg;
-                                        if (dg = traverse (ray, 3, d_x, d_z)) return dg;
-                                        if (dg = traverse (ray, 1, d_z, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 2; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 3; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 1; t[2].t0 = d_z;  t[2].t1 = maxT;                                        
                                 }
                         }
                         if (!d_right & !d_up) {
                                 if (upper_three) {
                                         // 3, 1, 0
-                                        if (dg = traverse (ray, 3, minT, d_z)) return dg;
-                                        if (dg = traverse (ray, 1, d_z, d_x)) return dg;
-                                        if (dg = traverse (ray, 0, d_x, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 3; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 1; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 0; t[2].t0 = d_x;  t[2].t1 = maxT;
                                 } else {
                                         // 3, 2, 0
-                                        if (dg = traverse (ray, 3, minT, d_x)) return dg;
-                                        if (dg = traverse (ray, 2, d_x, d_z)) return dg;
-                                        if (dg = traverse (ray, 0, d_z, maxT)) return dg;
-                                        return false;
+                                        t[0].child = 3; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 2; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 0; t[2].t0 = d_z;  t[2].t1 = maxT;
                                 }
                         }
-
+                        optional<DifferentialGeometry> dg;
+                        for (int i=0; i<3; ++i)
+                                if (dg = traverse (ray, t[i].child, t[i].t0, t[i].t1))
+                                        return dg;
                         return false;
                 }                
         };
