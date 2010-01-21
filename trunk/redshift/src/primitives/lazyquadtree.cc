@@ -126,6 +126,7 @@ namespace lazyquadtree {
 
         class Node {
                 BoundingBox aabb;
+                mutable Node *parent;
                 real_t min_h, max_h;
                 const HeightFunction &fun;
                 mutable Node *children[4];
@@ -178,7 +179,8 @@ namespace lazyquadtree {
                                          vector_cast<Point>(Vector(center_x, top, center_z))
                                         ),
                                         fun,
-                                        maxRecursion-1
+                                        maxRecursion-1,
+                                        const_cast<Node*>(this)
                                 );
                                 break;
                         case 1:
@@ -188,7 +190,8 @@ namespace lazyquadtree {
                                                 vector_cast<Point>(Vector(right, top, center_z))
                                         ),
                                         fun,
-                                        maxRecursion-1
+                                        maxRecursion-1,
+                                        const_cast<Node*>(this)
                                 );
                                 break;
                         case 2:
@@ -198,7 +201,8 @@ namespace lazyquadtree {
                                                 vector_cast<Point>(Vector(center_x, top, back))
                                         ),
                                         fun,
-                                        maxRecursion-1
+                                        maxRecursion-1,
+                                        const_cast<Node*>(this)
                                 );
                                 break;
                         case 3:
@@ -208,7 +212,8 @@ namespace lazyquadtree {
                                                 vector_cast<Point>(Vector(right, top, back))
                                         ),
                                         fun,
-                                        maxRecursion-1
+                                        maxRecursion-1,
+                                        const_cast<Node*>(this)
                                 );
                                 break;
                         };
@@ -223,15 +228,28 @@ namespace lazyquadtree {
                         }
                         return false;
                 }
+
+                void refineBoundingBox (real_t min_h, real_t max_h) {
+                        /*const bool update_min = min_h < this->min_h;
+                        const bool update_max = max_h > this->max_h;
+                        if (!(update_min | update_max)) 
+                                return;
+                        if (update_min) this->min_h = min_h;
+                        if (update_max) this->max_h = max_h;
+                        if (0!=parent) parent->refineBoundingBox(this->min_h,this->max_h);*/
+                        
+                }
         public:
                 Node (
                         const BoundingBox &box,
                         const HeightFunction &fun,
-                        const int maxRecursion
+                        const int maxRecursion_,
+                        Node *parent_
                 )
                 : aabb(box)
+                , parent(parent_)
                 , fun (fun)
-                , maxRecursion(maxRecursion)
+                , maxRecursion(maxRecursion_)                
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -266,18 +284,22 @@ namespace lazyquadtree {
                         center_z = c_z;
 
                         // refine bounding box height
-                        /*min_h = constants::real_max;
-                        max_h = -constants::real_max;
-                        for (int u=0; u<2; ++u)
-                        for (int v=0; v<2; ++v) {
-                                const real_t h = vertex(u,v).h;
-                                if (h < min_h) min_h = h;
-                                if (h > max_h) max_h = h;
+                        if (maxRecursion == 0) {
+                                min_h = constants::real_max;
+                                max_h = -constants::real_max;
+                                for (int u=0; u<=2; ++u)
+                                for (int v=0; v<=2; ++v) {
+                                        const real_t h = vertex(u,v).h;
+                                        if (h < min_h) min_h = h;
+                                        if (h > max_h) max_h = h;
+                                }
+                                aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
+                                aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));
+                                parent->refineBoundingBox (min_h, max_h);
+                        } else {
+                                min_h = scalar_cast<real_t>(aabb.getMinimumY());
+                                max_h = scalar_cast<real_t>(aabb.getMaximumY());
                         }
-                        aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
-                        aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));*/
-                        min_h = scalar_cast<real_t>(aabb.getMinimumY());
-                        max_h = scalar_cast<real_t>(aabb.getMaximumY());
                 }
                 
                 ~Node () {
@@ -293,13 +315,13 @@ namespace lazyquadtree {
                         };
                         // We can assume minT and maxT to be a correct interval on the xz plane.
                         // But we got to check for vertical intersection now.
-                        /*const real_t p_h = scalar_cast<real_t>(ray.position.y);
+                        const real_t p_h = scalar_cast<real_t>(ray.position.y);
                         const real_t min_h = p_h + minT * ray.direction.y;
                         const real_t max_h = p_h + maxT * ray.direction.y;
                         if (((min_h < this->min_h) & (max_h < this->min_h))
                            |((min_h > this->max_h) & (max_h > this->max_h))
                         )
-                                return false;*/
+                                return false;
                         /*if (!does_intersect<false>(ray,aabb))
                                 return false;*/
 
@@ -424,7 +446,7 @@ public:
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
-        , primaryNode(primaryBB, *fun.get(),4)
+        , primaryNode(primaryBB, *fun.get(),4,0)
         , distortionFun(distortionFun_)
         {}
 
