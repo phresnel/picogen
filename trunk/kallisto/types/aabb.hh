@@ -72,23 +72,20 @@ namespace kallisto {
                 point_t getMinimum () const { return minimum; }
                 point_t getMaximum () const { return maximum; }
 
+                scalar_t getMinimumX () const { return minimum.x; }
+                scalar_t getMinimumY () const { return minimum.y; }
+                scalar_t getMinimumZ () const { return minimum.z; }
 
+                scalar_t getMaximumX () const { return maximum.x; }
+                scalar_t getMaximumY () const { return maximum.y; }
+                scalar_t getMaximumZ () const { return maximum.z; }
 
-                typename traits::get_scalar_type<point_t>::type
-                        getMinimumX () const { return minimum.x; }
-                typename traits::get_scalar_type<point_t>::type
-                        getMinimumY () const { return minimum.y; }
-                typename traits::get_scalar_type<point_t>::type
-                        getMinimumZ () const { return minimum.z; }
-
-
-
-                typename traits::get_scalar_type<point_t>::type
-                        getMaximumX () const { return maximum.x; }
-                typename traits::get_scalar_type<point_t>::type
-                        getMaximumY () const { return maximum.y; }
-                typename traits::get_scalar_type<point_t>::type
-                        getMaximumZ () const { return maximum.z; }
+                void setMinimumX (scalar_t v) { maximum.x = v; }
+                void setMinimumY (scalar_t v) { maximum.y = v; }
+                void setMinimumZ (scalar_t v) { maximum.z = v; }
+                void setMaximumX (scalar_t v) { maximum.x = v; }
+                void setMaximumY (scalar_t v) { maximum.y = v; }
+                void setMaximumZ (scalar_t v) { maximum.z = v; }
 
 
         private:
