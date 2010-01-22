@@ -133,6 +133,8 @@ namespace lazyquadtree {
                 Vertex vertices[9];
                 const int maxRecursion; // When 0, max recursion is reached.
                 real_t center_x, center_z;
+                const bool isLeaf;
+                mutable int initializedChildCount;
 
                 Vertex &vertex (int u, int v) {
                         return vertices[v*3+u];
@@ -182,6 +184,7 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
+                                ++initializedChildCount;
                                 break;
                         case 1:
                                 children[1] = new Node (
@@ -193,6 +196,7 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
+                                ++initializedChildCount;
                                 break;
                         case 2:
                                 children[2] = new Node (
@@ -204,6 +208,7 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
+                                ++initializedChildCount;
                                 break;
                         case 3:
                                 children[3] = new Node (
@@ -215,14 +220,15 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
+                                ++initializedChildCount;
                                 break;
                         };
-                        refineBoundingBox();
                 }
 
                 optional<DifferentialGeometry> traverse (Ray const &ray, int child, real_t t0, real_t t1) const {
                         if (t0<=t1) {
-                                if (!children[child]) create_child (child);
+                                if (!children[child])
+                                        create_child (child); 
                                 if (optional<DifferentialGeometry> dg =
                                         children[child]->intersect(ray, t0, t1))
                                         return dg;
@@ -231,51 +237,41 @@ namespace lazyquadtree {
                 }
 
                 void initBoundingBox () {
-                        min_h = constants::real_max;
-                        max_h = -constants::real_max;
+                        if (!isLeaf) {
+                                //return;
+                                min_h = scalar_cast<real_t>(aabb.getMinimumY());
+                                max_h = scalar_cast<real_t>(aabb.getMaximumY());
+                        } else {
+                                min_h = constants::real_max;
+                                max_h = -constants::real_max;
 
-                        for (int u=0; u<=2; ++u)                        
-                        for (int v=0; v<=2; ++v) {
-                                const real_t h = vertex(u,v).h;
-                                if (h < min_h) min_h = h;
-                                if (h > max_h) max_h = h;
-                        }
-                        aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
-                        aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));
-                }
-
-                void refineBoundingBox () const {
-                        const real_t eps = 0.00001f;
-                        const real_t ex_min = min_h;
-                        const real_t ex_max = max_h;
-                        min_h = constants::real_max;
-                        max_h = -constants::real_max;
-                        if (0 == maxRecursion) {                                
-                                /*for (int u=0; u<=2; ++u)
+                                for (int u=0; u<=2; ++u)                        
                                 for (int v=0; v<=2; ++v) {
                                         const real_t h = vertex(u,v).h;
                                         if (h < min_h) min_h = h;
                                         if (h > max_h) max_h = h;
                                 }
                                 aabb.setMinimumY(scalar_cast<BoundingBox::scalar_t>(min_h));
-                                aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));*/
-                        } else {
-                                for (int i=0; i<4; ++i) {
-                                        if (!children[i]) continue;
-                                        if (children[i]->min_h < min_h)
-                                                min_h = children[i]->min_h;
-                                        if (children[i]->max_h > max_h)
-                                                max_h = children[i]->max_h;
-                                }
+                                aabb.setMaximumY(scalar_cast<BoundingBox::scalar_t>(max_h));
                         }
+                }
 
-                        const real_t diff_min = (ex_min-min_h);
-                        const real_t diff_max = (ex_max-max_h);
-                        const bool a = diff_min>-eps && diff_min<eps;                        
-                        const bool b = diff_max>-eps && diff_max<eps;                        
-                        if (a & b & !!parent) {
-                                parent->refineBoundingBox();
+                void refineBoundingBox () const {
+                        //return;
+                        if (initializedChildCount < 4)
+                                return;
+
+                        min_h = constants::real_max;
+                        max_h = -constants::real_max;
+                        
+                        for (int i=0; i<4; ++i) {
+                                if (!children[i]) continue;
+                                if (children[i]->min_h < min_h)
+                                        min_h = children[i]->min_h;
+                                if (children[i]->max_h > max_h)
+                                        max_h = children[i]->max_h;
                         }
+                        if (parent) parent->refineBoundingBox();
                 }
         public:
                 Node (
@@ -287,7 +283,9 @@ namespace lazyquadtree {
                 : aabb(box)
                 , parent(parent_)
                 , fun (fun)
-                , maxRecursion(maxRecursion_)                
+                , maxRecursion(maxRecursion_)
+                , isLeaf (0 == maxRecursion_)
+                , initializedChildCount(0)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -319,9 +317,12 @@ namespace lazyquadtree {
                         vertex(2,2) = Vertex (max_x, max_z, fun(max_x, max_z));
                         
                         center_x = c_x;
-                        center_z = c_z;
-
+                        center_z = c_z;                        
+                        
                         initBoundingBox();
+                        if (isLeaf) {
+                                refineBoundingBox();
+                        }
                 }
                 
                 ~Node () {
@@ -445,8 +446,8 @@ namespace lazyquadtree {
                         optional<DifferentialGeometry> dg;
                         for (int i=0; i<3; ++i)
                                 if (dg = traverse (ray, t[i].child, t[i].t0, t[i].t1))
-                                        return dg;
-                        return false;
+                                        break;                        
+                        return dg;
                 }                
         };
 }
@@ -465,7 +466,10 @@ public:
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
-        , primaryNode(primaryBB, *fun.get(),4,0)
+        , primaryNode(primaryBB, *fun.get(),12,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+                                // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
+                                // horizonPlane y 25
+                                // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
         , distortionFun(distortionFun_)
         {}
 

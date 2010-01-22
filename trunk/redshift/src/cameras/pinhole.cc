@@ -28,6 +28,7 @@ Pinhole::Pinhole (shared_ptr<RenderTarget> film_, Point position)
 : film(film_)
 , invFilmWidth(constants::one/static_cast<real_t>(film->getWidth()))
 , invFilmHeight(constants::one/static_cast<real_t>(film->getHeight()))
+, aspect (static_cast<real_t>(film->getWidth()) / film->getHeight())
 , position(position)
 {
 }
@@ -41,7 +42,8 @@ Pinhole::~Pinhole() {
 #include <iostream>
 tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{        
         RayDifferential ray;        
-        ray.direction.x = -0.5 + sample.imageCoordinates.u * invFilmWidth;
+        // TODO: need aspect ratio parameter
+        ray.direction.x = (-0.5 + sample.imageCoordinates.u * invFilmWidth)*aspect;
         ray.direction.y =  0.5 - sample.imageCoordinates.v * invFilmHeight;
         ray.direction.z = 0.5;
         ray.direction = normalize (ray.direction);

@@ -44,6 +44,7 @@ namespace redshift { namespace camera {
                 shared_ptr<RenderTarget> film;
                 real_t invFilmWidth;
                 real_t invFilmHeight;
+                real_t aspect;
                 Point position;
         };
 } }

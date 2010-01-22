@@ -33,18 +33,13 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                const Vector sunDir = normalize(Vector(4,1,3));
+                
+                
+                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
+                const shared_ptr<Background> bg (scene.getBackground());
                 const Normal normal = gd.getNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normal*0.001f);
-                const Ray ray (poi,sunDir);
-                const shared_ptr<Background> bg (scene.getBackground());
-                //std::cout << "eh" << std::flush;
-                /*const Color skyColor = bg->hasFastDiffuseQuery()
-                                ? bg->diffuseQuery (poi, normal)
-                                : Color(5,0,0);*/
-                
-                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
 
                 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 // crap begin
@@ -61,7 +56,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int numDiffuseSamples = 10;
+                        const int numDiffuseSamples = 30;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
@@ -108,21 +103,27 @@ tuple<real_t,Color> DirectLighting::Li (
                 // crap end
                 //----------------------------------------------------------------------------
 
-                const Color surfaceColor = bsdf->f(ray.direction, sunDir) * constants::pi; // TODO: is this correct?
-
                 Color ret = surfaceSkyColor;
 
-                if (scene.doesIntersect (ray)) {
-                        
-                } else {
-                        const real_t d = max(
-                                0.f,
-                                dot(sunDir,vector_cast<Vector>(normal)));
-                        ret = ret + surfaceColor*d;
+                if (bg->hasSun()) {
+                        const Vector sunDir = bg->getSunDirection();
+                        const Ray ray (poi,sunDir);
+                        const Color surfaceColor = bsdf->f(ray.direction, sunDir)/* * constants::pi*/; // TODO: is this correct?
+                        //std::cout << "eh" << std::flush;
+                        /*const Color skyColor = bg->hasFastDiffuseQuery()
+                                        ? bg->diffuseQuery (poi, normal)
+                                        : Color(5,0,0);*/
+                                
+                        if (!scene.doesIntersect (ray)) {
+                                const real_t d = max(
+                                        0.f,
+                                        dot(sunDir,vector_cast<Vector>(normal)));
+                                ret = ret + multiplyComponents(surfaceColor,bg->querySun(ray))*d;
+                        }
                 }
 
                 if (bg->hasAtmosphereShade())
-                        ret = bg->atmosphereShade (ret, ray, gd.getDistance());
+                        ret = bg->atmosphereShade (ret, raydiff, gd.getDistance());
                 return make_tuple(1.0f, ret);
         } else {
                 return make_tuple (1.0,

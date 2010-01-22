@@ -28,8 +28,8 @@ PreethamAdapter::PreethamAdapter (
 }
 
 Color PreethamAdapter::query (Ray const &ray) const {
-        return preetham->shade (ray)
-                + preetham->sunShade(ray);
+        return preetham->shade (ray);
+                //+ preetham->sunShade(ray);
         //return Color::fromRgb (1,0.5,0.25);
 }
 

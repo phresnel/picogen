@@ -196,23 +196,29 @@ void run() {
         using namespace redshift::interaction;
         using namespace redshift::primitive;
 
+        const clock_t begin = clock();
+
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 512;
-        int const height = width;
+        int const width = 1680;
+        int const height = width/3;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,40,-270))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,330,-4900))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
         try {
                 heightFunction = shared_ptr<redshift::HeightFunction> (
                         new ::redshift::QuatschHeightFunction(
-                                "(* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.001} layercount{6} persistence{0.58} levelEvaluationFunction{(abs h)}] x y))) 4 ))"
+                                //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
+                /* benchmark */
+//"(* 500 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
+"(if (< y -4600) -500 (+ -1100 (* 2200 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{4} frequency{0.00025} layercount{8} persistence{0.5} levelEvaluationFunction{(abs h)}] (+ 100000 x) (+ 100000 y)))))))"
+//                "(* 300 (sin (* 0.01 x)) (sin (* 0.01 y)))"
                 ));
                 distortHeightFunction = shared_ptr<redshift::HeightFunction> (
                         new ::redshift::QuatschHeightFunction(
-                                "(* 0.2 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.01} layercount{8} persistence{0.6}] x y))"
+                                "(* 0.2 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.005} layercount{10} persistence{0.63}] x (* 3 y)))"
                 ));
                 /*for (int i=0; i<50; ++i) {
                         std::cout << (*distortHeightFunction)(rand()/(RAND_MAX+1.f),rand()/(RAND_MAX+1.f)) << std::endl;
@@ -221,18 +227,16 @@ void run() {
         }
         
         primitive::List *list = new List;
-        list->add (shared_ptr<primitive::Primitive> (
-                new LazyQuadtree (heightFunction, 4000, distortHeightFunction)));
-        list->add (shared_ptr<primitive::Primitive> (
-                new HorizonPlane (25, distortHeightFunction)));
+        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction)));
+        list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (300, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(4,1,3));
-        preetham->setTurbidity(2.0f);
-        preetham->setSunColor(redshift::Color(.9,.9,.9)*.1*1.0);
+        preetham->setSunDirection(Vector(-4,4,8));
+        preetham->setTurbidity(2.1f);
+        preetham->setSunColor(redshift::Color(3,2,1)*1.0);
         preetham->setColorFilter(redshift::Color(.33,.33,.33)*0.7);
-        preetham->enableFogHack (false, 0.004f, 150000);
+        preetham->enableFogHack (true, 0.00036f, 150000);
         preetham->invalidate();
         
         Scene Scene (
@@ -242,7 +246,7 @@ void run() {
                 shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                shared_ptr<Integrator> (new DirectLighting())
+                shared_ptr<Integrator> (new DirectLighting()) // shared_ptr<Integrator> (new ShowSurfaceNormals())
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
@@ -255,6 +259,12 @@ void run() {
         Scene.render(reporter, commandProcessor);
         copy (renderBuffer, screenBuffer);
         screenBuffer->flip(); 
+
+        const clock_t end = clock();
+        const float t = (end - begin) / static_cast<float>(CLOCKS_PER_SEC);
+        std::stringstream ss;
+        ss << "t:" << t;
+        SDL_WM_SetCaption(ss.str().c_str(), "picogen:redshift");
 
         while (!commandProcessor->userWantsToQuit())
                 commandProcessor->tick();

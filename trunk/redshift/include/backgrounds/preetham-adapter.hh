@@ -38,6 +38,11 @@ namespace redshift { namespace backgrounds {
                         Color const &, Ray const &, real_t
                 ) const;
                 bool hasAtmosphereShade () const { return true; }
+
+                // TODO: refactor the sun functions into a PreethamSunAdapter
+                bool hasSun () const { return true; }
+                Vector getSunDirection () const { return preetham->getSunDirection(); }
+                Color querySun (Ray const &ray) { return preetham->sunShade (ray); }
         private:
                 shared_ptr<redshift::background::Preetham> preetham;
                 mutable MersenneTwister<float,0,1> diffuseRng;
