@@ -39,7 +39,20 @@ Pinhole::~Pinhole() {
 }
 
 
-#include <iostream>
+
+bool Pinhole::hasCommonCenter () const {
+        return true;
+}
+
+
+
+Point Pinhole::getCommonCenter () const {
+        return position;
+}
+
+
+
+//#include <iostream>
 tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{        
         RayDifferential ray;        
         // TODO: need aspect ratio parameter

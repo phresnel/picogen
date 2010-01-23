@@ -56,7 +56,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int numDiffuseSamples = 30;
+                        const int numDiffuseSamples = 0;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);

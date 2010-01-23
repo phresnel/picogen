@@ -38,7 +38,8 @@ namespace redshift { namespace camera {
                 
                 inline tuple<float,RayDifferential>
                            generateRay(Sample const &) const;                           
-                
+                bool hasCommonCenter () const ;
+                Point getCommonCenter () const ;
                 
         private:                
                 shared_ptr<RenderTarget> film;

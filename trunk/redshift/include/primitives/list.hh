@@ -24,9 +24,9 @@
 #include "../primitives/aggregate.hh"
 
 namespace redshift { namespace primitive {
-        
+
         DefineFinalizer(List);
-        
+
         class List
                 : public Aggregate
                 , DoFinalize(List)
@@ -34,7 +34,7 @@ namespace redshift { namespace primitive {
         public:
                 List();
                 ~List ();
-                
+
                 bool doesIntersect (RayDifferential const &ray) const ;
                 bool doesIntersect (Ray const &ray) const ;
 
@@ -42,6 +42,7 @@ namespace redshift { namespace primitive {
                                         RayDifferential const &ray) const ;
 
                 void add (shared_ptr<Primitive> primitive) ;
+                void prepare (const Scene &scene);
         private:
                 List(List const&);
                 List &operator = (List const&);

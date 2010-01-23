@@ -26,11 +26,15 @@
 #include "../basictypes/sample.hh"
 #include "../basictypes/bsdf.hh"
 
+
+namespace redshift {
+        class Scene;
+}
 namespace redshift { namespace primitive {
         class Primitive : public enable_shared_from_this<Primitive> {
         public:
                 // If only the information is need whether the ray hits or not.
-                virtual bool doesIntersect (RayDifferential const &ray) 
+                virtual bool doesIntersect (RayDifferential const &ray)
                                                                      const = 0;
                 virtual bool doesIntersect (Ray const &ray) const = 0;
 
@@ -53,6 +57,8 @@ namespace redshift { namespace primitive {
 
                 virtual shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom) const = 0;
+
+                virtual void prepare (const Scene &scene) {}
 
                 virtual ~Primitive () {}
         };

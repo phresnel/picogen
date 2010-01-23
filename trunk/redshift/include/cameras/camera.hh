@@ -27,6 +27,9 @@
 namespace redshift { namespace camera {
         class Camera {
         public:
+                virtual bool hasCommonCenter () const = 0;
+                virtual Point getCommonCenter () const = 0;
+
                 virtual tuple<real_t,RayDifferential>
                                 generateRay (Sample const &) const = 0;
                 virtual ~Camera () {}

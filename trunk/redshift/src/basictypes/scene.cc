@@ -53,6 +53,12 @@ shared_ptr<Background> Scene::getBackground () const {
 
 
 
+shared_ptr<camera::Camera> Scene::getCamera () const {
+        return camera;
+}
+
+
+
 bool Scene::doesIntersect (Sample const &sample) const {
         return aggregate->doesIntersect (sample);
 }
@@ -104,7 +110,7 @@ void Scene::render (
         for (int y=renderTarget->getHeight()-1; y>=0; --y)
         for (int x=0; x<renderTarget->getWidth(); ++x) {
                 Color accu = Color::fromRgb(0,0,0);
-                const int numSamples = 5;
+                const int numSamples = 1;
                 for (int i=0; i<numSamples; ++i) {
                         Sample sample (
                                 ImageCoordinates(static_cast<real_t>(x)+(rand()/(1.f+RAND_MAX)),
@@ -133,7 +139,7 @@ void Scene::render (
                         ++sample.imageCoordinates.v;
                         sample.primaryRay.ry = get<1>(camera->generateRay (sample));
                         --sample.imageCoordinates.v;
-                        
+
                         sample.primaryRay.hasDifferentials= true;
 
 

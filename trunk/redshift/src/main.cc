@@ -45,25 +45,25 @@
 
 namespace redshift { namespace interaction {
 class RenderTargetCopyingReporter : public ProgressReporter {
-public:        
-        
+public:
+
         RenderTargetCopyingReporter (
                 RenderTarget::Ptr src,
                 RenderTarget::Ptr target_
-        ) 
+        )
         : source (src), target (target_), lastTime (clock())
         {}
-        
-        
-        
-        void report (RenderTarget::ReadLockPtr sourcel, 
-                                              int completed, int total) const {                                              
+
+
+
+        void report (RenderTarget::ReadLockPtr sourcel,
+                                              int completed, int total) const {
 
                 clock_t const curr = clock();
                 if (curr - lastTime < (CLOCKS_PER_SEC/2))
                         return;
                 lastTime = clock();
-                
+
                 real_t const finished = static_cast<real_t>(completed)
                                           / static_cast<real_t>(total);
                 /*
@@ -71,29 +71,29 @@ public:
                         cout << real_t(100)*(finished) << "%"
                              << endl;
                 } else {
-                        cout << completed << endl; 
+                        cout << completed << endl;
                 }
                 */
                 copy (source, sourcel, target);
                 target->flip();
         }
-        
-        
-        
+
+
+
         void reportDone () const {
                 redshift::copy (source, target);
                 target->flip();
-        }        
-        
+        }
+
 private:
         RenderTargetCopyingReporter();
         RenderTargetCopyingReporter(RenderTargetCopyingReporter const &);
         RenderTargetCopyingReporter &
                         operator = (RenderTargetCopyingReporter const &);
-        
+
         RenderTarget::ConstPtr source;
         RenderTarget::Ptr target;
-        
+
         mutable clock_t lastTime;
 };
 
@@ -116,37 +116,37 @@ namespace redshift {
 class QuatschHeightFunction : public redshift::HeightFunction {
 private:
         // quatsch
-        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;   
+        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;
         typedef backend_t::Function Function;
         typedef backend_t::FunctionPtr FunctionPtr;
         typedef backend_t::scalar_t scalar_t;
         typedef backend_t::parameters_t parameters_t;
         typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
         typedef Compiler::ConfigurableFunctionsMap FunctionSet;
-        
+
         static Compiler::ConfigurableFunctionsMap addfuns() {
                 using namespace redshift;
-                
-                
+
+
                 quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
                         new quatsch::CreateConfigurableFunction <
-                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,  
+                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,
                                 Function
                         >
                 );
                 quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoise2dDesc (
                         new quatsch::CreateConfigurableFunction <
-                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,  
+                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,
                                 Function
                         >
                 );
-                
+
                 Compiler::ConfigurableFunctionsMap addfuns;
                 addfuns.addSymbol ("Noise2d", noiseDesc);
                 addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
                 return addfuns;
         }
-        
+
         FunctionSet functionSet;
         Compiler::FunctionPtr fun;
         std::stringstream errors;
@@ -158,13 +158,13 @@ public:
                 const real_t p [] = { u, v };
                 return (*fun) (p);
         }
-        
-        
+
+
         QuatschHeightFunction (const std::string code)
         : functionSet(addfuns())
         , fun (Compiler::compile (
                 "x;y",
-                //"(* 0.5 (* (sin (* x 2.0)) (sin(* y 2.0)) ))", 
+                //"(* 0.5 (* (sin (* x 2.0)) (sin(* y 2.0)) ))",
                 /*"(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{4} persistence{0.54} levelEvaluationFunction{(abs h)}] "
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
@@ -174,7 +174,7 @@ public:
                 functionSet,
                 errors))
         {
-        }                
+        }
 };
 } // namespace redshift
 
@@ -200,9 +200,9 @@ void run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 1680;
-        int const height = width/3;
-        RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));        
+        int const width = 800;
+        int const height = width/1;
+        RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
         shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,330,-4900))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
@@ -212,9 +212,9 @@ void run() {
                         new ::redshift::QuatschHeightFunction(
                                 //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                 /* benchmark */
-//"(* 500 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
-"(if (< y -4600) -500 (+ -1100 (* 2200 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{4} frequency{0.00025} layercount{8} persistence{0.5} levelEvaluationFunction{(abs h)}] (+ 100000 x) (+ 100000 y)))))))"
-//                "(* 300 (sin (* 0.01 x)) (sin (* 0.01 y)))"
+"(* 1 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
+//"(+ -1100 (* 2200 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{4} frequency{0.00025} layercount{8} persistence{0.5} levelEvaluationFunction{(abs h)}] (+ 100000 x) (+ 100000 y))))))"
+//                "(* 3 (sin (* 0.01 x)) (sin (* 0.01 y)))"
                 ));
                 distortHeightFunction = shared_ptr<redshift::HeightFunction> (
                         new ::redshift::QuatschHeightFunction(
@@ -225,40 +225,40 @@ void run() {
                 }*/
         } catch (...) { // TODO (!!!)
         }
-        
+
         primitive::List *list = new List;
         list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction)));
-        list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (300, distortHeightFunction)));
+        //list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (300, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(-4,4,8));
+        preetham->setSunDirection(Vector(-4,1,8));
         preetham->setTurbidity(2.1f);
         preetham->setSunColor(redshift::Color(3,2,1)*1.0);
         preetham->setColorFilter(redshift::Color(.33,.33,.33)*0.7);
-        preetham->enableFogHack (true, 0.00036f, 150000);
+        preetham->enableFogHack (true, 0.0004f, 150000);
         preetham->invalidate();
-        
+
         Scene Scene (
-                renderBuffer, 
-                camera, 
+                renderBuffer,
+                camera,
                 agg,
                 shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                shared_ptr<Integrator> (new DirectLighting()) // shared_ptr<Integrator> (new ShowSurfaceNormals())
+                shared_ptr<Integrator> (new DirectLighting()) //*/ shared_ptr<Integrator> (new ShowSurfaceNormals())
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
-        
+
         UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
 
         ProgressReporter::Ptr reporter (
-                  new RenderTargetCopyingReporter(renderBuffer, screenBuffer));        
-        
+                  new RenderTargetCopyingReporter(renderBuffer, screenBuffer));
+
         Scene.render(reporter, commandProcessor);
         copy (renderBuffer, screenBuffer);
-        screenBuffer->flip(); 
+        screenBuffer->flip();
 
         const clock_t end = clock();
         const float t = (end - begin) / static_cast<float>(CLOCKS_PER_SEC);
@@ -277,7 +277,7 @@ int main (int, char*[])
 #endif
 {
         using namespace redshift;
-        
+
         try {
                 // Initialize SDL video.
                 if (SDL_Init (SDL_INIT_VIDEO) < 0) {
@@ -286,17 +286,17 @@ int main (int, char*[])
                         throw std::runtime_error (ss.str());
                 }
                 atexit(SDL_Quit);
-        
+
                 run();
 
         } catch (std::runtime_error &ex) {
-                std::cerr << "Caught runtime error: " 
+                std::cerr << "Caught runtime error: "
                           << ex.what()
                           << std::endl;
         } catch (std::exception &ex) {
-                std::cerr << "Caught general exception: " 
+                std::cerr << "Caught general exception: "
                           << ex.what()
                           << std::endl;
-        } 
+        }
         return 0;
 }

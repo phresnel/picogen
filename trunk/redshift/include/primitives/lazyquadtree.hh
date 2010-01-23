@@ -25,6 +25,7 @@
 #include "../basictypes/intersection.hh"
 #include "../primitives/primitive.hh"
 #include "../basictypes/height-function.hh"
+#include "../basictypes/scene.hh"
 
 namespace redshift { namespace primitive {
         
@@ -51,6 +52,8 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom) const;
+
+                void prepare (const Scene &scene) ;
         private:
 
                 LazyQuadtree();

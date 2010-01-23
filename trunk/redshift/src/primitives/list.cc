@@ -24,7 +24,7 @@ namespace redshift { namespace primitive {
 
 
 
-List::List () 
+List::List ()
 {
 }
 
@@ -37,7 +37,7 @@ List::~List () {
 
 bool List::doesIntersect (RayDifferential const &ray) const {
         optional<Intersection> tmp;
-        for (Primitives::const_iterator it=primitives.begin(); 
+        for (Primitives::const_iterator it=primitives.begin();
                 it!=primitives.end(); ++it
         ) {
                 if ((*it)->doesIntersect (ray)) {
@@ -51,7 +51,7 @@ bool List::doesIntersect (RayDifferential const &ray) const {
 
 bool List::doesIntersect (Ray const &ray) const {
         optional<Intersection> tmp;
-        for (Primitives::const_iterator it=primitives.begin(); 
+        for (Primitives::const_iterator it=primitives.begin();
                 it!=primitives.end(); ++it
         ) {
                 if ((*it)->doesIntersect (ray)) {
@@ -66,10 +66,10 @@ bool List::doesIntersect (Ray const &ray) const {
 optional<Intersection> List::intersect(RayDifferential const &ray) const {
         real_t nearest = constants::real_max, tmp;
         optional<Intersection> nearestI, tmpI;
-        for (Primitives::const_iterator it=primitives.begin(); 
+        for (Primitives::const_iterator it=primitives.begin();
                 it!=primitives.end(); ++it
         ) {
-                if ((tmpI=(*it)->intersect (ray)) 
+                if ((tmpI=(*it)->intersect (ray))
                    && (tmp=tmpI->getDistance()) < nearest
                 ) {
                         nearest = tmp;
@@ -84,4 +84,17 @@ optional<Intersection> List::intersect(RayDifferential const &ray) const {
 void List::add (shared_ptr<Primitive> primitive) {
         primitives.push_back (primitive);
 }
+
+
+
+void List::prepare (const Scene &scene) {
+        for (Primitives::const_iterator it=primitives.begin();
+                it!=primitives.end(); ++it
+        ) {
+                (*it)->prepare (scene);
+        }
+}
+
+
+
 } }

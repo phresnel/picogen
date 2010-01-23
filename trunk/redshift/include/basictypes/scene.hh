@@ -57,6 +57,7 @@ namespace redshift {
                 bool doesIntersect (Sample const &sample) const;
                 bool doesIntersect (Ray const &ray) const;
                 shared_ptr<Background> getBackground () const;
+                shared_ptr<camera::Camera> getCamera () const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
