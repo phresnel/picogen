@@ -203,7 +203,7 @@ void run() {
         int const width = 800;
         int const height = width/1;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,330,-4900))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,330,0))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -212,7 +212,7 @@ void run() {
                         new ::redshift::QuatschHeightFunction(
                                 //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                 /* benchmark */
-"(* 100 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
+"(* 400 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
 //"(+ -1100 (* 2200 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{4} frequency{0.00025} layercount{8} persistence{0.5} levelEvaluationFunction{(abs h)}] (+ 100000 x) (+ 100000 y))))))"
 //                "(* 3 (sin (* 0.01 x)) (sin (* 0.01 y)))"
                 ));

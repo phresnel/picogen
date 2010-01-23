@@ -112,7 +112,7 @@ namespace lazyquadtree {
 
             //---------
             // pretty crappy but sometimes useful wireframe mode
-            if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
+            //if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
 
             if (t < 0)
                 return 0;
@@ -130,12 +130,12 @@ namespace lazyquadtree {
                 mutable real_t min_h, max_h;
                 const HeightFunction &fun;
                 mutable Node *children[4];
-                Vector vertices[9];
-                const unsigned char vertexCount;
+                Vector *vertices;
+                unsigned char vertexCount;
                 const int maxRecursion; // When 0, max recursion is reached.
                 real_t center_x, center_z;
                 real_t diagonal;
-                const bool isLeaf;
+                bool isLeaf;
                 mutable int initializedChildCount;
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
 
@@ -249,12 +249,16 @@ namespace lazyquadtree {
                 }
 
                 void initBoundingBox () {
-                        if (!isLeaf) {
-                                //return;
-                                min_h = aabb.getMinimumY();
-                                max_h = aabb.getMaximumY();
-                                diagonal = length (aabb.getMaximum()-aabb.getMinimum());
-                        } else {
+                        //return;
+                        min_h = aabb.getMinimumY();
+                        max_h = aabb.getMaximumY();
+                        //diagonal = length (aabb.getMaximum()-aabb.getMinimum());
+                        diagonal = std::sqrt(aabb.getWidth()*aabb.getWidth()
+                                 + aabb.getDepth()*aabb.getDepth());
+                }
+
+                void refineBoundingBox () {
+                        if (isLeaf) {
                                 min_h = constants::real_max;
                                 max_h = -constants::real_max;
 
@@ -263,26 +267,20 @@ namespace lazyquadtree {
                                         if (h < min_h) min_h = h;
                                         if (h > max_h) max_h = h;
                                 }
-                                aabb.setMinimumY(min_h);
-                                aabb.setMaximumY(max_h);
-                                diagonal = length (aabb.getMaximum()-aabb.getMinimum());
-                        }
-                }
+                        } else {
+                                if (initializedChildCount < 4)
+                                        return;
 
-                void refineBoundingBox () {
-                        //return;
-                        if (initializedChildCount < 4)
-                                return;
+                                min_h = constants::real_max;
+                                max_h = -constants::real_max;
 
-                        min_h = constants::real_max;
-                        max_h = -constants::real_max;
-
-                        for (int i=0; i<4; ++i) {
-                                if (!children[i]) continue;
-                                if (children[i]->min_h < min_h)
-                                        min_h = children[i]->min_h;
-                                if (children[i]->max_h > max_h)
-                                        max_h = children[i]->max_h;
+                                for (int i=0; i<4; ++i) {
+                                        if (!children[i]) continue;
+                                        if (children[i]->min_h < min_h)
+                                                min_h = children[i]->min_h;
+                                        if (children[i]->max_h > max_h)
+                                                max_h = children[i]->max_h;
+                                }
                         }
                         aabb.setMinimumY(min_h);
                         aabb.setMaximumY(max_h);
@@ -299,35 +297,13 @@ namespace lazyquadtree {
                 : aabb(box)
                 , parent(parent_)
                 , fun (fun)
-                , vertexCount(6)
+                , vertices(0)
+                , vertexCount(0)
                 , maxRecursion(maxRecursion_)
-                , isLeaf (0 == maxRecursion_)
                 , initializedChildCount(0)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
-                        }
-
-                        const real_t min_x = box.getMinimumX();
-                        const real_t max_x = box.getMaximumX();
-                        const real_t c_x   = (min_x + max_x) / 2;
-                        const real_t min_z = box.getMinimumZ();
-                        const real_t max_z = box.getMaximumZ();
-                        const real_t c_z   = (min_z + max_z) / 2;
-
-                        vertices[0] = Vector (c_x,   fun(c_x,     c_z),  c_z);
-                        vertices[1] = Vector (min_x, fun(min_x, max_z), max_z);
-                        vertices[2] = Vector (max_x, fun(max_x, max_z), max_z);
-                        vertices[3] = Vector (max_x, fun(max_x, min_z), min_z);
-                        vertices[4] = Vector (min_x, fun(min_x, min_z), min_z);
-                        vertices[5] = vertices[1];
-
-                        center_x = c_x;
-                        center_z = c_z;
-
-                        initBoundingBox();
-                        if (isLeaf) {
-                                refineBoundingBox();
                         }
                 }
 
@@ -337,20 +313,81 @@ namespace lazyquadtree {
                         } else {
                                 prepare (vector_cast<PointF>(scene.getCamera()->getCommonCenter()));
                         }
-                        for (int i=0; i<4; ++i) {
-                                if (children[i])
-                                        children[i]->prepare (scene);
-                        }
                 }
 
+                static bool isALeaf (real_t diagonal, real_t cx, real_t cz, PointF const &cameraPosition) {
+                        // Using maxRecursion and some reasoning about the camera position
+                        // in relation to (cx,cz), we should be able to take the case of
+                        // maxRecursion for neighbour nodes into account.
+                        const real_t d = (length(PointF(cx,0,cz)-cameraPosition));
+                        if (((diagonal/(1+d))<0.1)) {
+                                return true;
+                        } else {
+                                return false;
+                        }
+
+                }
                 void prepare (PointF const & cameraPosition) {
                         this->cameraPosition = cameraPosition;
+
+                        // If we once re-use an existing quadtree, we should
+                        // also save the original bounding box, as LOD's must be
+                        // recalculated
+                        initBoundingBox();
+
+                        const real_t min_x = aabb.getMinimumX();
+                        const real_t max_x = aabb.getMaximumX();
+                        const real_t c_x   = (min_x + max_x) / 2;
+                        const real_t min_z = aabb.getMinimumZ();
+                        const real_t max_z = aabb.getMaximumZ();
+                        const real_t c_z   = (min_z + max_z) / 2;
+                        center_x = c_x;
+                        center_z = c_z;
+
+                        isLeaf = (maxRecursion==0) || isALeaf (this->diagonal, center_x, center_z, cameraPosition);
+
+                        const int a = !isALeaf (this->diagonal, center_x, center_z+aabb.getDepth(), cameraPosition);
+                        const int b = !isALeaf (this->diagonal, center_x+aabb.getWidth(), center_z, cameraPosition);
+                        const int c = !isALeaf (this->diagonal, center_x, center_z-aabb.getDepth(), cameraPosition);
+                        const int d = !isALeaf (this->diagonal, center_x-aabb.getWidth(), center_z, cameraPosition);
+
+
+                        delete [] vertices;
+                        vertexCount = 0;
+                        if (isLeaf) {
+                                vertexCount = 6 + a+ b+ c+ d;
+                                int i=0;
+                                vertices = new Vector[vertexCount];
+                                vertices[i++] = Vector (c_x,   fun(c_x,     c_z),  c_z); // 0
+
+                                vertices[i++] = Vector (min_x, fun(min_x, max_z), max_z);  // 1
+                                if (a) vertices[i++] = Vector (c_x, fun(c_x, max_z), max_z);
+                                vertices[i++] = Vector (max_x, fun(max_x, max_z), max_z); // 2
+                                if (b) vertices[i++] = Vector (max_x, fun(max_x, c_z), c_z);
+                                vertices[i++] = Vector (max_x, fun(max_x, min_z), min_z); // 3
+                                if (c) vertices[i++] = Vector (c_x, fun(c_x, min_z), min_z);
+                                vertices[i++] = Vector (min_x, fun(min_x, min_z), min_z); // 4
+                                if (d) vertices[i++] = Vector (min_x, fun(min_x, c_z), c_z);
+                                vertices[i++] = vertices[1]; // 5
+                        }
+
+
+                        if (isLeaf) {
+                                refineBoundingBox();
+                        }
+
+
+                        for (int i=0; i<4; ++i) {
+                                if (children[i]) children[i]->prepare (cameraPosition);
+                        }
+
                 }
 
                 ~Node () {
                         for (int i=0; i<4; ++i) {
                                 delete children[i];
                         }
+                        delete [] vertices;
                 }
 
                 optional<DifferentialGeometry> intersect (
@@ -372,34 +409,10 @@ namespace lazyquadtree {
                            |((min_h > this->max_h) & (max_h > this->max_h)))
                                 return false;
 
-                        bool expand = (maxRecursion!=0);//?(ray.hasDifferentials):(false);
-
-                        //--------------------------------------------------------------------------
-                        // LOD calculation
-                        //--------------------------------------------------------------------------
-                        const real_t d = (length(PointF(center_x,0,center_z)-cameraPosition));
-                        if ((this->diagonal/(1+d))<0.01) {
-                                expand = false;
-                        }
-                        /*
-                        // This yields really fine results, but is not really applicable
-                        // for secondary rays, which don't have differentials.
-                        if (ray.hasDifferentials) {
-                                const Point B = ray.rx(minT);
-                                const Point C = ray.ry(minT);
-                                const PointCompatibleVector diagonal_ = B-C;
-                                const Vector diagonal = vector_cast<Vector> (diagonal_);
-                                const real_t mag = length(diagonal);
-                                if (mag > (this->diagonal * 0.01)) {
-                                        expand = false;
-                                        //std::cout << "." << std::flush;//mag << "/" << this->diagonal << std::endl;
-                                }
-                        }
-                        */
-                        // --
-                        if (!expand) {
+                        if (isLeaf) {
                                 return intersectLeaf (ray);
                         }
+
                         // Find out which one to traverse.
                         const bool d_right = ray.direction.x >= 0;
                         const bool d_up    = ray.direction.z >= 0;
@@ -496,7 +509,7 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , primaryNode(primaryBB, *fun.get(),10,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+        , primaryNode(primaryBB, *fun.get(),11,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
