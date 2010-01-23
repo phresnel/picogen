@@ -112,7 +112,7 @@ namespace lazyquadtree {
 
             //---------
             // pretty crappy but sometimes useful wireframe mode
-            if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
+            //if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
             if (t < 0)
                 return 0;
             normal_ = vector_cast<Normal>(normalize (normal));
@@ -374,7 +374,7 @@ namespace lazyquadtree {
                         // LOD calculation
                         //--------------------------------------------------------------------------
                         const real_t d = (length(PointF(center_x,0,center_z)-cameraPosition));
-                        if ((this->diagonal/(1+d))<1) {
+                        if ((this->diagonal/(1+d))<0.1) {
                                 expand = false;
                         }
                         /*
@@ -394,31 +394,42 @@ namespace lazyquadtree {
                         */
                         // --
                         if (!expand) {
-                                pair<real_t,Normal> i;
-                                if (0 < (i = intersect_triangle (ray, 0,0, 0,1, 1,1)).first)
+                                pair<real_t,Normal> i, nearest=make_pair(constants::real_max, Normal());
+                                i = intersect_triangle (ray, 0,0, 0,1, 1,1);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                i = intersect_triangle (ray, 0,0, 1,1, 1,0);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                i = intersect_triangle (ray, 1,0, 1,1, 2,1);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                i = intersect_triangle (ray, 1,0, 2,1, 2,0);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                i = intersect_triangle (ray, 0,1, 0,2, 1,2);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                i = intersect_triangle (ray, 0,1, 1,2, 1,1);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                i = intersect_triangle (ray, 1,1, 1,2, 2,2);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                i = intersect_triangle (ray, 1,1, 2,2, 2,1);
+                                if ((0 < i.first) & (i.first<nearest.first))
+                                        nearest = i;
+
+                                if (nearest.first < constants::real_max)
                                         return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
-                                if (0 < (i = intersect_triangle (ray, 0,0, 1,1, 1,0)).first)
-                                        return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
-                                if (0 < (i = intersect_triangle (ray, 1,0, 1,1, 2,1)).first)
-                                        return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
-                                if (0 < (i = intersect_triangle (ray, 1,0, 2,1, 2,0)).first)
-                                        return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
-                                if (0 < (i = intersect_triangle (ray, 0,1, 0,2, 1,2)).first)
-                                        return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
-                                if (0 < (i = intersect_triangle (ray, 0,1, 1,2, 1,1)).first)
-                                        return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
-                                if (0 < (i = intersect_triangle (ray, 1,1, 1,2, 2,2)).first)
-                                        return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
-                                if (0 < (i = intersect_triangle (ray, 1,1, 2,2, 2,1)).first)
-                                        return DifferentialGeometry(
-                                                i.first,ray(i.first),i.second);
+                                                nearest.first,ray(nearest.first),nearest.second);
                                 return false;
                         }
                         // Find out which one to traverse.
@@ -517,7 +528,7 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , primaryNode(primaryBB, *fun.get(),8,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+        , primaryNode(primaryBB, *fun.get(),12,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));

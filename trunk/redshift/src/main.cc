@@ -212,7 +212,7 @@ void run() {
                         new ::redshift::QuatschHeightFunction(
                                 //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                 /* benchmark */
-"(* 1 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
+"(* 100 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
 //"(+ -1100 (* 2200 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{4} frequency{0.00025} layercount{8} persistence{0.5} levelEvaluationFunction{(abs h)}] (+ 100000 x) (+ 100000 y))))))"
 //                "(* 3 (sin (* 0.01 x)) (sin (* 0.01 y)))"
                 ));
