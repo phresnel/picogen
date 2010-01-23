@@ -130,7 +130,7 @@ namespace lazyquadtree {
                 mutable real_t min_h, max_h;
                 const HeightFunction &fun;
                 mutable Node *children[4];
-                Vertex vertices[9];
+                Vector vertices[9];
                 const unsigned char vertexCount;
                 const int maxRecursion; // When 0, max recursion is reached.
                 real_t center_x, center_z;
@@ -139,24 +139,13 @@ namespace lazyquadtree {
                 mutable int initializedChildCount;
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
 
-                /*Vertex &vertex (int u, int v) {
-                        return vertices[v*3+u];
-                }
-                const Vertex &vertex (int u, int v) const {
-                        return vertices[v*3+u];
-                }*/
 
                 pair<real_t,Normal> intersect_triangle (
                         Ray const & ray,
-                        int u0,int v0, int u1,int v1, int u2,int v2
+                        const Vector &a,
+                        const Vector &b,
+                        const Vector &c
                 ) const {
-                        const Vertex & a_ = vertices[u0+v0*3];
-                        const Vertex & b_ = vertices[u1+v1*3];
-                        const Vertex & c_ = vertices[u2+v2*3];
-                        const Vector a (a_.u, a_.h, a_.v);
-                        const Vector b (b_.u, b_.h, b_.v);
-                        const Vector c (c_.u, c_.h, c_.v);
-
                         real_t t=-1, u, v;
                         Normal normal;
                         const bool does_intersect =
@@ -244,39 +233,15 @@ namespace lazyquadtree {
                 }
 
                 optional<DifferentialGeometry> intersectLeaf (RayDifferential const &ray) const {
-                        pair<real_t,Normal> i, nearest=make_pair(constants::real_max, Normal());
-                        i = intersect_triangle (ray, 0,0, 0,1, 1,1);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
-                        i = intersect_triangle (ray, 0,0, 1,1, 1,0);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
-                        i = intersect_triangle (ray, 1,0, 1,1, 2,1);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
-                        i = intersect_triangle (ray, 1,0, 2,1, 2,0);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
-                        i = intersect_triangle (ray, 0,1, 0,2, 1,2);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
-                        i = intersect_triangle (ray, 0,1, 1,2, 1,1);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
-                        i = intersect_triangle (ray, 1,1, 1,2, 2,2);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
-                        i = intersect_triangle (ray, 1,1, 2,2, 2,1);
-                        if ((0 < i.first) & (i.first<nearest.first))
-                                nearest = i;
-
+                        pair<real_t,Normal> tmp, nearest=make_pair(constants::real_max, Normal());
+                        const Vector &A = vertices[0];
+                        for (int i=1; i<vertexCount-1; ++i) {
+                                const Vector &B = vertices[i];
+                                const Vector &C = vertices[1+i];
+                                tmp = intersect_triangle (ray, A, B, C);
+                                if ((0 < tmp.first)  & (tmp.first < nearest.first))
+                                        nearest = tmp;
+                        }
                         if (nearest.first < constants::real_max)
                                 return DifferentialGeometry(
                                         nearest.first,ray(nearest.first),nearest.second);
@@ -294,7 +259,7 @@ namespace lazyquadtree {
                                 max_h = -constants::real_max;
 
                                 for (int i=0; i<vertexCount; ++i) {
-                                        const real_t h = vertices[i].h;
+                                        const real_t h = vertices[i].y;
                                         if (h < min_h) min_h = h;
                                         if (h > max_h) max_h = h;
                                 }
@@ -334,7 +299,7 @@ namespace lazyquadtree {
                 : aabb(box)
                 , parent(parent_)
                 , fun (fun)
-                , vertexCount(9)
+                , vertexCount(6)
                 , maxRecursion(maxRecursion_)
                 , isLeaf (0 == maxRecursion_)
                 , initializedChildCount(0)
@@ -343,30 +308,19 @@ namespace lazyquadtree {
                                 children[i] = 0;
                         }
 
-                        /*     0   1   2
-                            max_z    max_z
-                        2 min_x+---+---+max_x
-                               |   |   |
-                        1      +---c---+
-                               |   |   |
-                        0 min_x+---+---+max_x
-                           min_z    min_z
-                        */
                         const real_t min_x = box.getMinimumX();
                         const real_t max_x = box.getMaximumX();
                         const real_t c_x   = (min_x + max_x) / 2;
                         const real_t min_z = box.getMinimumZ();
                         const real_t max_z = box.getMaximumZ();
                         const real_t c_z   = (min_z + max_z) / 2;
-                        vertices[0+0*3] = Vertex (min_x, min_z, fun(min_x, min_z));
-                        vertices[1+0*3] = Vertex (c_x,   min_z, fun(c_x,   min_z));
-                        vertices[2+0*3] = Vertex (max_x, min_z, fun(max_x, min_z));
-                        vertices[0+1*3] = Vertex (min_x,   c_z, fun(min_x, c_z));
-                        vertices[1+1*3] = Vertex (c_x,     c_z, fun(c_x,   c_z));
-                        vertices[2+1*3] = Vertex (max_x,   c_z, fun(max_x, c_z));
-                        vertices[0+2*3] = Vertex (min_x, max_z, fun(min_x, max_z));
-                        vertices[1+2*3] = Vertex (c_x,   max_z, fun(c_x,   max_z));
-                        vertices[2+2*3] = Vertex (max_x, max_z, fun(max_x, max_z));
+
+                        vertices[0] = Vector (c_x,   fun(c_x,     c_z),  c_z);
+                        vertices[1] = Vector (min_x, fun(min_x, max_z), max_z);
+                        vertices[2] = Vector (max_x, fun(max_x, max_z), max_z);
+                        vertices[3] = Vector (max_x, fun(max_x, min_z), min_z);
+                        vertices[4] = Vector (min_x, fun(min_x, min_z), min_z);
+                        vertices[5] = vertices[1];
 
                         center_x = c_x;
                         center_z = c_z;
@@ -424,7 +378,7 @@ namespace lazyquadtree {
                         // LOD calculation
                         //--------------------------------------------------------------------------
                         const real_t d = (length(PointF(center_x,0,center_z)-cameraPosition));
-                        if ((this->diagonal/(1+d))<1.0) {
+                        if ((this->diagonal/(1+d))<0.01) {
                                 expand = false;
                         }
                         /*
@@ -542,7 +496,7 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , primaryNode(primaryBB, *fun.get(),7,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+        , primaryNode(primaryBB, *fun.get(),10,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
