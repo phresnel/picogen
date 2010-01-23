@@ -369,29 +369,29 @@ namespace lazyquadtree {
                                 return false;
 
                         bool expand = (maxRecursion!=0);//?(ray.hasDifferentials):(false);
+
+                        //--------------------------------------------------------------------------
                         // LOD calculation
+                        //--------------------------------------------------------------------------
                         const real_t d = (length(PointF(center_x,0,center_z)-cameraPosition));
-                        if ((this->diagonal/(1+(d)))<.1) {
+                        if ((this->diagonal/(1+d))<1) {
                                 expand = false;
                         }
-                        #if 0
+                        /*
+                        // This yields really fine results, but is not really applicable
+                        // for secondary rays, which don't have differentials.
                         if (ray.hasDifferentials) {
-                                /*const Point A = ray(minT);
-                                const Point B = ray.rx(minT);
-                                const Point C = ray.ry(minT);
-                                const real_t width = length (vector_cast<Vector>(B-A));
-                                const real_t height = length (vector_cast<Vector>(C-A));*/
                                 const Point B = ray.rx(minT);
                                 const Point C = ray.ry(minT);
                                 const PointCompatibleVector diagonal_ = B-C;
                                 const Vector diagonal = vector_cast<Vector> (diagonal_);
                                 const real_t mag = length(diagonal);
-                                if (mag > (this->diagonal * 0.1)) {
+                                if (mag > (this->diagonal * 0.01)) {
                                         expand = false;
                                         //std::cout << "." << std::flush;//mag << "/" << this->diagonal << std::endl;
                                 }
                         }
-                        #endif
+                        */
                         // --
                         if (!expand) {
                                 pair<real_t,Normal> i;

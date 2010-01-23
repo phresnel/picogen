@@ -42,8 +42,8 @@ Scene::Scene (
 
 
 
-Scene::~Scene () {                
-}       
+Scene::~Scene () {
+}
 
 
 
@@ -100,11 +100,13 @@ tuple<real_t,Color> Scene::Li (Sample const & sample) const {
 void Scene::render (
         interaction::ProgressReporter::ConstPtr reporter,
         interaction::UserCommandProcessor::Ptr ucp
-        
+
 ) const {
         const real_t totalNumberOfSamples = static_cast<real_t>
                 (renderTarget->getWidth() * renderTarget->getHeight());
         real_t sampleNumber = 0;
+
+        aggregate->prepare(*this);
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
         for (int y=renderTarget->getHeight()-1; y>=0; --y)
@@ -155,12 +157,12 @@ void Scene::render (
                 }
 
                 //-------------------------------------------------------------
-                // 4) PBRT:<add sample contribution to image> 28                
+                // 4) PBRT:<add sample contribution to image> 28
                 //-------------------------------------------------------------
                 lock->setPixel (x,y,accu*(1.f/numSamples));
                         /*Rgb (
                                 (float)x/(float)renderTarget->getWidth(),
-                                (float)y/(float)renderTarget->getHeight(), 
+                                (float)y/(float)renderTarget->getHeight(),
                                 0.5));*/
                 ++sampleNumber;
 

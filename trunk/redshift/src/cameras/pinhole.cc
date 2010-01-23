@@ -53,8 +53,8 @@ Point Pinhole::getCommonCenter () const {
 
 
 //#include <iostream>
-tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{        
-        RayDifferential ray;        
+tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
+        RayDifferential ray;
         // TODO: need aspect ratio parameter
         ray.direction.x = (-0.5 + sample.imageCoordinates.u * invFilmWidth)*aspect;
         ray.direction.y =  0.5 - sample.imageCoordinates.v * invFilmHeight;
@@ -68,4 +68,4 @@ tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
 
 
 
-} } // namespace redshift::pinhole 
+} } // namespace redshift::pinhole
