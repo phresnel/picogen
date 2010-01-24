@@ -20,6 +20,7 @@
 
 #include "../../include/basictypes/scene.hh"
 #include "../../include/integrators/direct-lighting.hh"
+#include <omp.h>
 
 namespace redshift {
 
@@ -102,76 +103,76 @@ void Scene::render (
         interaction::UserCommandProcessor::Ptr ucp
 
 ) const {
+
+        const int numAASamples = 8;
         const real_t totalNumberOfSamples = static_cast<real_t>
-                (renderTarget->getWidth() * renderTarget->getHeight());
+                (renderTarget->getWidth() * renderTarget->getHeight() * numAASamples);
         real_t sampleNumber = 0;
 
         aggregate->prepare(*this);
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
-        for (int y=renderTarget->getHeight()-1; y>=0; --y)
-        for (int x=0; x<renderTarget->getWidth(); ++x) {
-                Color accu = Color::fromRgb(0,0,0);
-                const int numSamples = 1;
-                for (int i=0; i<numSamples; ++i) {
-                        Sample sample (
-                                ImageCoordinates(static_cast<real_t>(x)+(rand()/(1.f+RAND_MAX)),
-                                                 static_cast<real_t>(y)+(rand()/(1.f+RAND_MAX))),
-                                LensCoordinates(),
-                                renderTarget
-                        );
+        for (int y=renderTarget->getHeight()-1; y>=0; --y) {
+                //#pragma omp parallel for schedule(dynamic)
+                for (int x=0; x<renderTarget->getWidth(); ++x) {
+                        Color accu = Color::fromRgb(0,0,0);
+                        for (int i=0; i<numAASamples; ++i) {
+                                Sample sample (
+                                        ImageCoordinates(static_cast<real_t>(x)+(rand()/(1.f+RAND_MAX)),
+                                                         static_cast<real_t>(y)+(rand()/(1.f+RAND_MAX))),
+                                        LensCoordinates(),
+                                        renderTarget
+                                );
+
+                                //-------------------------------------------------------------
+                                // 1) Generate Primary Ray.
+                                //-------------------------------------------------------------
+                                const tuple<real_t,RayDifferential>
+                                                          primo = camera->generateRay (sample);
+                                const real_t & rayWeight (get<0>(primo));
+                                sample.primaryRay = get<1>(primo); // Will be modified, hence
+                                                                   // non-const non-ref.
+
+
+                                //-------------------------------------------------------------
+                                // 2) Generate Ray Differential.
+                                //-------------------------------------------------------------
+                                sample.imageCoordinates.u++;
+                                sample.primaryRay.rx = get<1>(camera->generateRay (sample));
+                                sample.imageCoordinates.u--;
+
+                                ++sample.imageCoordinates.v;
+                                sample.primaryRay.ry = get<1>(camera->generateRay (sample));
+                                --sample.imageCoordinates.v;
+
+                                sample.primaryRay.hasDifferentials= true;
+
+
+                                //-------------------------------------------------------------
+                                // 3) Evaluate Radiance Along Primary Ray.
+                                //-------------------------------------------------------------
+                                const tuple<real_t,Color> Ls_ (Li(sample));
+                                const real_t Ls_alpha (get<0>(Ls_));
+                                const Color Ls_color  (get<1>(Ls_));
+                                const Color finalColor = rayWeight * Ls_color;
+                                accu = accu + finalColor;
+                                //PBRT:<issue warning if unexpected radiance value returned>
+                        }
 
                         //-------------------------------------------------------------
-                        // 1) Generate Primary Ray.
+                        // 4) PBRT:<add sample contribution to image> 28
                         //-------------------------------------------------------------
-                        const tuple<real_t,RayDifferential>
-                                                  primo = camera->generateRay (sample);
-                        const real_t & rayWeight (get<0>(primo));
-                        sample.primaryRay = get<1>(primo); // Will be modified, hence
-                                                           // non-const non-ref.
+                        lock->setPixel (x,y,accu*(1.f/numAASamples));
+                        ++sampleNumber;
 
 
                         //-------------------------------------------------------------
-                        // 2) Generate Ray Differential.
+                        // 5) Report Progress.
                         //-------------------------------------------------------------
-                        sample.imageCoordinates.u++;
-                        sample.primaryRay.rx = get<1>(camera->generateRay (sample));
-                        sample.imageCoordinates.u--;
-
-                        ++sample.imageCoordinates.v;
-                        sample.primaryRay.ry = get<1>(camera->generateRay (sample));
-                        --sample.imageCoordinates.v;
-
-                        sample.primaryRay.hasDifferentials= true;
-
-
-                        //-------------------------------------------------------------
-                        // 3) Evaluate Radiance Along Primary Ray.
-                        //-------------------------------------------------------------
-                        const tuple<real_t,Color> Ls_ (Li(sample));
-                        const real_t Ls_alpha (get<0>(Ls_));
-                        const Color Ls_color  (get<1>(Ls_));
-                        const Color finalColor = rayWeight * Ls_color;
-                        accu = accu + finalColor;
-                        //PBRT:<issue warning if unexpected radiance value returned>
+                        //reporter->report (lock, sampleNumber, totalNumberOfSamples);
+                        //ucp->tick();
                 }
-
-                //-------------------------------------------------------------
-                // 4) PBRT:<add sample contribution to image> 28
-                //-------------------------------------------------------------
-                lock->setPixel (x,y,accu*(1.f/numSamples));
-                        /*Rgb (
-                                (float)x/(float)renderTarget->getWidth(),
-                                (float)y/(float)renderTarget->getHeight(),
-                                0.5));*/
-                ++sampleNumber;
-
-
-                //-------------------------------------------------------------
-                // 5) Report Progress.
-                //-------------------------------------------------------------
                 reporter->report (lock, sampleNumber, totalNumberOfSamples);
-
                 ucp->tick();
                 if (ucp->userWantsToQuit()) {
                         break;

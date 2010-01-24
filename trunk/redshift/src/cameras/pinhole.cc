@@ -58,7 +58,7 @@ tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
         // TODO: need aspect ratio parameter
         ray.direction.x = (-0.5 + sample.imageCoordinates.u * invFilmWidth)*aspect;
         ray.direction.y =  0.5 - sample.imageCoordinates.v * invFilmHeight;
-        ray.direction.z = 0.5;
+        ray.direction.z = 1.0;
         ray.direction = normalize (ray.direction);
         ray.position = position;
         ray.minT = constants::epsilon;

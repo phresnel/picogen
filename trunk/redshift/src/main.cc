@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <SDL.h>
+#include <omp.h>
 
 #include <cstdlib>
 #include <stdexcept>
@@ -196,14 +197,14 @@ void run() {
         using namespace redshift::interaction;
         using namespace redshift::primitive;
 
-        const clock_t begin = clock();
+        const double begin = omp_get_wtime();
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 800;
-        int const height = width/1;
+        int const width = 1680/4;
+        int const height = width/3;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,330,0))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(500,40,-5000))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -212,13 +213,14 @@ void run() {
                         new ::redshift::QuatschHeightFunction(
                                 //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                 /* benchmark */
-"(* 400 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
+//"(* 800 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.0005} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
+"(* 2400 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.0005} layercount{12} persistence{0.45}] x y))"
 //"(+ -1100 (* 2200 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{4} frequency{0.00025} layercount{8} persistence{0.5} levelEvaluationFunction{(abs h)}] (+ 100000 x) (+ 100000 y))))))"
 //                "(* 3 (sin (* 0.01 x)) (sin (* 0.01 y)))"
                 ));
                 distortHeightFunction = shared_ptr<redshift::HeightFunction> (
                         new ::redshift::QuatschHeightFunction(
-                                "(* 0.2 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.005} layercount{10} persistence{0.63}] x (* 3 y)))"
+                                "(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))"
                 ));
                 /*for (int i=0; i<50; ++i) {
                         std::cout << (*distortHeightFunction)(rand()/(RAND_MAX+1.f),rand()/(RAND_MAX+1.f)) << std::endl;
@@ -228,15 +230,15 @@ void run() {
 
         primitive::List *list = new List;
         list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction)));
-        //list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (300, distortHeightFunction)));
+        //list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (0, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(-4,1,8));
-        preetham->setTurbidity(2.1f);
-        preetham->setSunColor(redshift::Color(3,2,1)*1.0);
-        preetham->setColorFilter(redshift::Color(.33,.33,.33)*0.7);
-        preetham->enableFogHack (true, 0.0004f, 150000);
+        preetham->setSunDirection(Vector(-4,4,9));
+        preetham->setTurbidity(2.0f);
+        preetham->setSunColor(redshift::Color(1,1,1)*3.0);
+        preetham->setColorFilter(redshift::Color(1,1.0,1.0)*0.2);
+        preetham->enableFogHack (true, 0.00025f, 150000);
         preetham->invalidate();
 
         Scene Scene (
@@ -260,8 +262,8 @@ void run() {
         copy (renderBuffer, screenBuffer);
         screenBuffer->flip();
 
-        const clock_t end = clock();
-        const float t = (end - begin) / static_cast<float>(CLOCKS_PER_SEC);
+        const double end = omp_get_wtime();
+        const double t = (end - begin);
         std::stringstream ss;
         ss << "t:" << t;
         SDL_WM_SetCaption(ss.str().c_str(), "picogen:redshift");

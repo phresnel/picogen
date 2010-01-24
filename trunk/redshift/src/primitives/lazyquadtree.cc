@@ -21,6 +21,8 @@
 #include "../../include/primitives/lazyquadtree.hh"
 #include "../../include/material/lambertian.hh"
 
+#include <omp.h>
+
 //#############################################################################
 // LazyQuadtreeImpl
 //#############################################################################
@@ -28,6 +30,35 @@ namespace redshift { namespace primitive {
 
 
 namespace lazyquadtree {
+        struct Mutex {
+                Mutex() { omp_init_lock(&lock); }
+                ~Mutex() { omp_destroy_lock(&lock); }
+                void Lock() { omp_set_lock(&lock); }
+                void Unlock() { omp_unset_lock(&lock); }
+
+                bool Test () {
+                        return !!omp_test_lock (&lock);
+                }
+
+                Mutex(const Mutex& ) { omp_init_lock(&lock); }
+                Mutex& operator= (const Mutex& ) { return *this; }
+        public:
+                omp_lock_t lock;
+        };
+        struct ScopedLock {
+                explicit ScopedLock(Mutex& m) : mut(m), locked(true) { mut.Lock(); }
+                ~ScopedLock() { Unlock(); }
+                void Unlock() { if(!locked) return; locked=false; mut.Unlock(); }
+                void LockAgain() { if(locked) return; mut.Lock(); locked=true; }
+        private:
+                Mutex& mut;
+                bool locked;
+        private:
+                void operator=(const ScopedLock&);
+                ScopedLock(const ScopedLock&);
+        };
+
+
         struct Vertex {
                 real_t u,v;
                 real_t h;
@@ -138,6 +169,7 @@ namespace lazyquadtree {
                 bool isLeaf;
                 mutable int initializedChildCount;
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
+                mutable Mutex mute[4];
 
 
                 pair<real_t,Normal> intersect_triangle (
@@ -159,15 +191,22 @@ namespace lazyquadtree {
                 }
 
                 void create_child (int index) const {
+
+                        ScopedLock sl (mute[index]);
+
                         const real_t left  = aabb.getMinimumX();
                         const real_t right = aabb.getMaximumX();
                         const real_t front = aabb.getMinimumZ();
                         const real_t back  = aabb.getMaximumZ();
                         const real_t bottom= aabb.getMinimumY();
                         const real_t top   = aabb.getMaximumY();
+
+                        if (children[index])
+                                return;
+                        Node *tmp;
                         switch (index) {
                         case 0:
-                                children[0] = new Node (
+                                tmp = new Node (
                                         BoundingBoxF(
                                          PointF(left, bottom, front),
                                          PointF(center_x, top, center_z)
@@ -176,11 +215,9 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
-                                children[0]->prepare(cameraPosition);
-                                ++initializedChildCount;
                                 break;
                         case 1:
-                                children[1] = new Node (
+                                tmp = new Node (
                                         BoundingBoxF(
                                                 PointF(center_x, bottom, front),
                                                 PointF(right, top, center_z)
@@ -189,11 +226,9 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
-                                children[1]->prepare(cameraPosition);
-                                ++initializedChildCount;
                                 break;
                         case 2:
-                                children[2] = new Node (
+                                tmp = new Node (
                                         BoundingBoxF(
                                                 PointF(left, bottom, center_z),
                                                 PointF(center_x, top, back)
@@ -202,11 +237,9 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
-                                children[2]->prepare(cameraPosition);
-                                ++initializedChildCount;
                                 break;
                         case 3:
-                                children[3] = new Node (
+                                tmp = new Node (
                                         BoundingBoxF(
                                                 PointF(center_x, bottom, center_z),
                                                 PointF(right, top, back)
@@ -215,16 +248,18 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this)
                                 );
-                                children[3]->prepare(cameraPosition);
-                                ++initializedChildCount;
                                 break;
                         };
+                        tmp->prepare(cameraPosition);
+                        children[index] = tmp;
+                        ++initializedChildCount;
                 }
 
                 optional<DifferentialGeometry> traverse (RayDifferential const &ray, int child, real_t t0, real_t t1) const {
                         if (t0<=t1) {
-                                if (!children[child])
-                                        create_child (child);
+                                if (!children[child]) {
+                                        create_child (child); // assumed to be safe upon multiple calls
+                                }
                                 if (optional<DifferentialGeometry> dg =
                                         children[child]->intersect(ray, t0, t1))
                                         return dg;
@@ -302,9 +337,19 @@ namespace lazyquadtree {
                 , maxRecursion(maxRecursion_)
                 , initializedChildCount(0)
                 {
+                        /*if (maxRecursion == 8)
+                                std::cout << "heya" << std::endl;*/
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
                         }
+                        //std::cout << &createLock << ":";
+                }
+
+                ~Node () {
+                        for (int i=0; i<4; ++i) {
+                                delete children[i];
+                        }
+                        delete [] vertices;
                 }
 
                 void prepare (Scene const &scene) {
@@ -320,7 +365,7 @@ namespace lazyquadtree {
                         // in relation to (cx,cz), we should be able to take the case of
                         // maxRecursion for neighbour nodes into account.
                         const real_t d = (length(PointF(cx,0,cz)-cameraPosition));
-                        if (((diagonal/(1+d))<0.1)) {
+                        if (((diagonal/(1+d))<0.0025)) {
                                 return true;
                         } else {
                                 return false;
@@ -328,6 +373,7 @@ namespace lazyquadtree {
 
                 }
                 void prepare (PointF const & cameraPosition) {
+
                         this->cameraPosition = cameraPosition;
 
                         // If we once re-use an existing quadtree, we should
@@ -352,6 +398,8 @@ namespace lazyquadtree {
                         const int d = !isALeaf (this->diagonal, center_x-aabb.getWidth(), center_z, cameraPosition);
 
 
+                        // Upon re-using LazyQuadtree, deletion shall only happen when the state of isLeaf
+                        // changes.
                         delete [] vertices;
                         vertexCount = 0;
                         if (isLeaf) {
@@ -376,18 +424,10 @@ namespace lazyquadtree {
                                 refineBoundingBox();
                         }
 
-
                         for (int i=0; i<4; ++i) {
                                 if (children[i]) children[i]->prepare (cameraPosition);
                         }
 
-                }
-
-                ~Node () {
-                        for (int i=0; i<4; ++i) {
-                                delete children[i];
-                        }
-                        delete [] vertices;
                 }
 
                 optional<DifferentialGeometry> intersect (
@@ -484,9 +524,15 @@ namespace lazyquadtree {
                                 }
                         }
                         optional<DifferentialGeometry> dg;
-                        for (int i=0; i<3; ++i)
-                                if (dg = traverse (ray, t[i].child, t[i].t0, t[i].t1))
-                                        break;
+
+                        {
+                                for (int i=0; i<3; ++i) {
+                                        dg = traverse (ray, t[i].child, t[i].t0, t[i].t1);
+                                        if (dg) {
+                                                break;
+                                        }
+                                }
+                        }
                         return dg;
                 }
         };
@@ -509,7 +555,7 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , primaryNode(primaryBB, *fun.get(),11,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+        , primaryNode(primaryBB, *fun.get(),14,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
@@ -539,24 +585,7 @@ public:
                 const real_t minT = get<0>(*i);
                 const real_t maxT = get<1>(*i);
 
-                /*return DifferentialGeometry(
-                        minT,
-                        ray(minT),
-                        Normal(0,1,0)
-                );*/
-                const optional<DifferentialGeometry> dg_ = primaryNode.intersect (ray, minT, maxT);
-                if (!dg_) return false;
-                const DifferentialGeometry dg =*dg_;
-
-                const real_t f = dg.getNormal().y;/* * (*distortionFun)(
-                        scalar_cast<real_t>(dg.getCenter().x),
-                        scalar_cast<real_t>(dg.getCenter().z)
-                );*/
-                return DifferentialGeometry(
-                        dg.getDistance(),
-                        dg.getCenter(),
-                        normalize(Normal(dg.getNormal().x,f,dg.getNormal().z))
-                );
+                return primaryNode.intersect (ray, minT, maxT);
         }
 
 
@@ -643,7 +672,8 @@ optional<Intersection>
         } else {
                 return false;
         }*/
-        const optional<DifferentialGeometry> dg =impl->intersect (ray);
+        const optional<DifferentialGeometry> dg = impl->intersect (ray);
+
         if (!dg) return false;
         return Intersection (
                 shared_from_this(),

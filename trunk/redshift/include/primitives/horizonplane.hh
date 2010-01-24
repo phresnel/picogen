@@ -28,31 +28,31 @@
 #include "../basictypes/height-function.hh"
 
 namespace redshift { namespace primitive {
-        
+
         DefineFinalizer(HorizonPlane);
-        
+
         class HorizonPlane
-                : public Primitive                
+                : public Primitive
                 , DoFinalize(HorizonPlane)
         {
         public:
                 HorizonPlane(real_t height, shared_ptr<HeightFunction const> fun);
                 ~HorizonPlane ();
-                
+
                 bool doesIntersect (RayDifferential const &ray) const;
                 bool doesIntersect (Ray const &ray) const;
 
                 optional<Intersection>
                         intersect(RayDifferential const &ray) const;
-        
+
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom
                 ) const {
                         return shared_ptr<Bsdf> (new bsdf::Mirror (
-                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,1,1)/*, mt*/
+                                dgGeom, Normal(0,1,0), Color::fromRgb(1,1,1)
                         ));
                 }
-                
+
         private:
                 HorizonPlane();
                 HorizonPlane(HorizonPlane const&);

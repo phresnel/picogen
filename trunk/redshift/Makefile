@@ -51,6 +51,7 @@ else
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
 	CXXFLAGS += -ffast-math -march=native -fassociative-math
 	CXXFLAGS += -mfpmath=sse
+        CXXFLAGS += -fopenmp
 endif
 
 CXXFLAGS += -Wall -Wno-unused -pedantic
@@ -58,9 +59,9 @@ CXXFLAGS += -Wall -Wno-unused -pedantic
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s
-AR   := ar -rs 
-CXX  := g++ -c $(CXXFLAGS) $(LIBS) 
+LINK := g++ -s -fopenmp
+AR   := ar -rs
+CXX  := g++ -c $(CXXFLAGS) $(LIBS)
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
 AMALGAM := g++ $(CXXFLAGS) \
 	-combine -fwhole-program -funit-at-a-time -DAMALGAM \
@@ -69,7 +70,7 @@ AMALGAM := g++ $(CXXFLAGS) \
 
 
 OBJFILES :=
-# main.o is intentionally excluded, and must be included by main targets 
+# main.o is intentionally excluded, and must be included by main targets
 OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
@@ -110,19 +111,19 @@ redshift: init-dir-tree redshift_
 redshift_: $(OBJDIR)/main.o $(OBJFILES)
 	$(LINK) -o $(BINDIR)/redshift $^ $(LIBS)
 
-	
+
 
 .PHONY: lib
 lib: init-dir-tree lib_
 
-lib_: $(OBJDIR)/lib-main.o $(OBJFILES)                
+lib_: $(OBJDIR)/lib-main.o $(OBJFILES)
 	$(AR) -o $(LIBDIR)/libpicogen.a $^
 
 
 
-amalgam: init-dir-tree obtain-amalgam	
+amalgam: init-dir-tree obtain-amalgam
 	$(AMALGAM) -o ./bin/redshift-amalgam tmp/amalgam/amalgam.cc
-	
+
 obtain-amalgam: init-dir-tree
 	cat special/amalgam-files | xargs cat > tmp/amalgam/amalgam.cc
 
@@ -135,11 +136,11 @@ obtain-amalgam: init-dir-tree
 
 $(OBJDIR)/main.o: ./src/main.cc
 	$(CXX) -o $@ $<
-	
+
 $(OBJDIR)/lib-main.o: ./src/main.cc
 	$(CXX) -DPICOGENLIB -o $@ $<
- 
-	
+
+
 $(OBJDIR)/constants.o: ./src/constants.cc
 	$(CXX) -o $@ $<
 
@@ -227,7 +228,7 @@ $(PRIMITIVESOBJDIR)/heightmap.o: \
 $(PRIMITIVESOBJDIR)/lazyquadtree.o: \
                      ./src/primitives/lazyquadtree.cc
 	$(CXX) -o $@ $<
-        
+
 $(PRIMITIVESOBJDIR)/horizonplane.o: \
                      ./src/primitives/horizonplane.cc
 	$(CXX) -o $@ $<
@@ -264,7 +265,7 @@ $(RENDERTARGETSOBJDIR)/sdlrendertarget.o: \
 $(RENDERTARGETSOBJDIR)/colorrendertarget.o: \
                      ./src/rendertargets/colorrendertarget.cc
 	$(CXX) -o $@ $<
-	
+
 
 
 ###############################################################################
@@ -303,13 +304,13 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 .PHONY: init-dir-tree
 init-dir-tree:
-	mkdir -p ./bin  
+	mkdir -p ./bin
 	mkdir -p $(LIBDIR)
 	mkdir -p $(OBJDIR)
 	mkdir -p $(ACCELERATORSOBJDIR)
 	mkdir -p $(APPOBJDIR)
-	mkdir -p $(BACKGROUNDSOBJDIR)	
-	mkdir -p $(BASICTYPESOBJDIR)	
+	mkdir -p $(BACKGROUNDSOBJDIR)
+	mkdir -p $(BASICTYPESOBJDIR)
 	mkdir -p $(CAMERASOBJDIR)
 	mkdir -p $(INTEGRATORSOBJDIR)
 	mkdir -p $(INTERACTIONOBJDIR)
@@ -317,7 +318,7 @@ init-dir-tree:
 	mkdir -p $(PRIMITIVESOBJDIR)
 	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SAMPLERSOBJDIR)
-	mkdir -p $(SHAPEOBJDIR)		
+	mkdir -p $(SHAPEOBJDIR)
 	mkdir -p ./tmp/amalgam
 
 ###############################################################################
@@ -326,7 +327,7 @@ init-dir-tree:
 
 # do apply only when you know what you do!
 .PHONY: disintegrate
-disintegrate: 
+disintegrate:
 	rm -r ./obj/*
 	rm -r ./bin/*
 	rm -r ./tmp/*
@@ -336,7 +337,7 @@ disintegrate:
 .PHONY: clean
 clean: init-dir-tree
 	rm -f ./tmp/amalgam/amalgam.cc
-	rm -f ./bin/redshift 
+	rm -f ./bin/redshift
 	rm -f ./bin/redshift-amalgam
 	rm -f $(LIBDIR)/*.a
 	rm -f $(OBJDIR)/*.a
@@ -348,10 +349,10 @@ clean: init-dir-tree
 	rm -f $(MATERIALOBJDIR)/*.o
 	rm -f $(INTEGRATORSOBJDIR)/*.o
 	rm -f $(INTERACTIONOBJDIR)/*.o
-	rm -f $(OBJDIR)/*.o	
+	rm -f $(OBJDIR)/*.o
 	rm -f $(PRIMITIVESOBJDIR)/*.o
 	rm -f $(RENDERTARGETSOBJDIR)/*.o
 	rm -f $(SAMPLERSOBJDIR)/*.o
-	rm -f $(SHAPEOBJDIR)/*.o		
+	rm -f $(SHAPEOBJDIR)/*.o
 
 

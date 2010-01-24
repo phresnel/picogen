@@ -25,10 +25,10 @@ namespace redshift { namespace bsdf {
 
 
 Mirror::Mirror (
-        DifferentialGeometry const &shadingDG_, 
+        DifferentialGeometry const &shadingDG_,
         Normal const &trueNormal_,
         Color const &color_
-)        
+)
 : Bsdf (shadingDG_, trueNormal_)
 , color (color_)
 {}
@@ -36,16 +36,16 @@ Mirror::Mirror (
 
 
 optional<tuple<Color,Vector> > Mirror::sample_f (
-        const Vector &in, 
+        const Vector &in,
         Reflection refl, Specular spec
 ) const {
         switch (refl) {
-        case reflection:                                
+        case reflection:
                 switch (spec) {
-                case specular: 
+                case specular:
                         return make_tuple(
                                 color,
-                                reflect (in, trueNormal)
+                                reflect (in, shadingDG.getNormal())
                         );;
                 case diffuse: return false;
                 };
