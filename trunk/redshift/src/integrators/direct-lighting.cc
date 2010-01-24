@@ -23,7 +23,7 @@
 namespace redshift {
 
 tuple<real_t,Color> DirectLighting::Li (
-        const Scene &scene, 
+        const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
         const bool doMirror
@@ -33,8 +33,8 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd =
                         I->getDifferentialGeometry();
-                
-                
+
+
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
                 const shared_ptr<Background> bg (scene.getBackground());
                 const Normal normal = gd.getNormal();
@@ -56,7 +56,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int numDiffuseSamples = 0;
+                        const int numDiffuseSamples = 30;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
@@ -113,7 +113,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         /*const Color skyColor = bg->hasFastDiffuseQuery()
                                         ? bg->diffuseQuery (poi, normal)
                                         : Color(5,0,0);*/
-                                
+
                         if (!scene.doesIntersect (ray)) {
                                 const real_t d = max(
                                         0.f,
@@ -134,7 +134,7 @@ tuple<real_t,Color> DirectLighting::Li (
 
 
 tuple<real_t,Color> DirectLighting::Li (
-        const Scene &scene, 
+        const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample
 ) const {
