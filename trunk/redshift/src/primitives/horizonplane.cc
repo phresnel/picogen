@@ -24,7 +24,7 @@ namespace redshift { namespace primitive {
 
 
 
-HorizonPlane::HorizonPlane (real_t height_, shared_ptr<HeightFunction const> heightFunction) 
+HorizonPlane::HorizonPlane (real_t height_, shared_ptr<HeightFunction const> heightFunction)
 : mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 , fun (heightFunction)
 , height(height_)
@@ -39,15 +39,13 @@ HorizonPlane::~HorizonPlane () {
 
 
 bool HorizonPlane::doesIntersect (RayDifferential const &ray) const {
-        return ((ray.direction.y<0) & (scalar_cast<real_t>(ray.position.y)>0))
-                | ((ray.direction.y>0) & (scalar_cast<real_t>(ray.position.y)<0));
+        return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
 }
 
 
 
 bool HorizonPlane::doesIntersect (Ray const &ray) const {
-        return ((ray.direction.y<0) & (scalar_cast<real_t>(ray.position.y)>0))
-                | ((ray.direction.y>0) & (scalar_cast<real_t>(ray.position.y)<0));
+        return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
 }
 
 
@@ -58,24 +56,29 @@ optional<Intersection>
                 return false;
         const real_t d = (height - scalar_cast<real_t>(ray.position.y))
                        / ray.direction.y;
-        if (d<0)
-                return false;
 
         const Point poi = ray(d);
         const Vector voi = vector_cast<Vector>(poi);
-        
-        const real_t s = 0.01f;
-        const Vector a (0, (*fun)(voi.x,voi.z), 0);
-        const Vector u = normalize (Vector(s, (*fun)(voi.x+s,voi.z), 0) - a);
-        const Vector v = normalize (Vector(0, (*fun)(voi.x,voi.z+s), s) - a);
-        const Normal N = vector_cast<Normal>(cross (u,v));
-        
+
+        // For some reason I fail to see in this dull moment, I had to flip
+        // u x v with v x u.
+        const real_t s = 0.001f;
+        const real_t h =  (*fun)(voi.x,voi.z);
+        const Vector u = normalize (Vector(s, (*fun)(voi.x+s,voi.z) - h, 0));
+        const Vector v = normalize (Vector(0, (*fun)(voi.x,voi.z+s) - h, s));
+        //const Normal N = Normal(0,scalar_cast<real_t>(ray.position.y)>height?1:-1,0);//vector_cast<Normal>(cross (u,v));
+        const Normal N =
+                scalar_cast<real_t>(ray.position.y)>height
+                ? vector_cast<Normal>(cross (v,u))
+                : vector_cast<Normal>(cross (u,v))
+        ;
+
         return Intersection(
                 shared_from_this(),
                 DifferentialGeometry (
                         d,
                         poi,
-                        N//normalize(Normal(0,(*fun)(voi.x,voi.z)+1,0))
+                        N
                 )
         );
 }
