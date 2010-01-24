@@ -30,10 +30,10 @@ namespace kallisto {
 namespace kallisto {
         template <typename point_t> class BoundingBox {
         public:
-                typedef typename 
+                typedef typename
                 traits::get_scalar_type<point_t>::type scalar_t;
-        
-                // Use max() instead of infinity() to allow for integer types. 
+
+                // Use max() instead of infinity() to allow for integer types.
                 BoundingBox ()
                 : minimum (
                         traits::numeric_limits<scalar_t>::max(),
@@ -45,17 +45,17 @@ namespace kallisto {
                         -traits::numeric_limits<scalar_t>::max())
                 {
                 }
-                
-                
-                
-                BoundingBox (point_t const & p) 
-                : minimum (p), maximum (p) 
+
+
+
+                BoundingBox (point_t const & p)
+                : minimum (p), maximum (p)
                 {
                 }
-                
-                
-                
-                BoundingBox (point_t const & a, point_t const & b) 
+
+
+
+                BoundingBox (point_t const & a, point_t const & b)
                 : minimum (
                         min (a.x, b.x),
                         min (a.y, b.y),
@@ -80,6 +80,10 @@ namespace kallisto {
                 scalar_t getMaximumY () const { return maximum.y; }
                 scalar_t getMaximumZ () const { return maximum.z; }
 
+                scalar_t getWidth ()  const { return maximum.x - minimum.x; }
+                scalar_t getHeight () const { return maximum.y - minimum.y; }
+                scalar_t getDepth ()  const { return maximum.z - minimum.z; }
+
                 void setMinimumX (scalar_t v) { maximum.x = v; }
                 void setMinimumY (scalar_t v) { maximum.y = v; }
                 void setMinimumZ (scalar_t v) { maximum.z = v; }
@@ -89,15 +93,15 @@ namespace kallisto {
 
 
         private:
-                point_t minimum, maximum;               
-                
+                point_t minimum, maximum;
+
         };
-        
-        
+
+
 
         template <typename point_t> inline
-        BoundingBox<point_t> merge ( // <-- "union" was already occupied. 
-                BoundingBox<point_t> const &box, 
+        BoundingBox<point_t> merge ( // <-- "union" was already occupied.
+                BoundingBox<point_t> const &box,
                 point_t const & p
         ) {
                 return BoundingBox<point_t> (
@@ -113,12 +117,12 @@ namespace kallisto {
                         )
                 );
         }
-        
-        
-        
+
+
+
         template <typename point_t> inline
-        BoundingBox<point_t> merge ( // <-- "union" was already occupied. 
-                BoundingBox<point_t> const &l, 
+        BoundingBox<point_t> merge ( // <-- "union" was already occupied.
+                BoundingBox<point_t> const &l,
                 BoundingBox<point_t> const &r
         ) {
                 return BoundingBox<point_t> (
@@ -134,12 +138,12 @@ namespace kallisto {
                         )
                 );
         }
-        
-        
-        
+
+
+
         template <typename point_t> inline
         bool overlap (
-                BoundingBox<point_t> const &l, 
+                BoundingBox<point_t> const &l,
                 BoundingBox<point_t> const &r
         ) {
                 const bool x  = (l.getMaximumX() >= r.getMinimumX())
@@ -150,12 +154,12 @@ namespace kallisto {
                               & (l.getMinimumZ() <= r.getMaximumZ());
                 return x & y & z;
         }
-        
-        
-        
+
+
+
         template <typename point_t> inline
         bool inside (
-                BoundingBox<point_t> const &box, 
+                BoundingBox<point_t> const &box,
                 point_t const &point
         ) {
                 const bool x  = (point.x >= box.getMinimumX())
@@ -166,12 +170,12 @@ namespace kallisto {
                               & (point.z <= box.getMaximumZ());
                 return x & y & z;
         }
-        
-        
-        
+
+
+
         template <typename point_t> inline
         traits::get_scalar_type<point_t> volume (
-                BoundingBox<point_t> const &box 
+                BoundingBox<point_t> const &box
         ) {
                 typedef vector_t <CARTESIAN, traits::get_scalar_type<point_t> >
                         vec_t;
@@ -212,7 +216,7 @@ namespace kallisto {
                         ray = ray_;
                 }
 
-                //TODO    
+                //TODO
                 real_t t0 = 0;//ray.minT;
                 real_t t1 = 1000000;//ray.maxT;
 
@@ -328,8 +332,8 @@ namespace kallisto {
                 }
 
                 return t0<t1;
-        }        
-  
+        }
+
 }
 
 namespace kallisto { namespace unit_test {
