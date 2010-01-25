@@ -104,16 +104,26 @@ void Scene::render (
 
 ) const {
 
-        const int numAASamples = 8;
+        const int numAASamples = 1;
         const real_t totalNumberOfSamples = static_cast<real_t>
                 (renderTarget->getWidth() * renderTarget->getHeight() * numAASamples);
         real_t sampleNumber = 0;
 
         aggregate->prepare(*this);
 
+        // non-portable thread id visualisation
+        const Color threadCol[] = {
+                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
+                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
+                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
+                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f)
+        };
+
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
         for (int y=renderTarget->getHeight()-1; y>=0; --y) {
-                //#pragma omp parallel for schedule(dynamic)
+                #pragma omp parallel for \
+                        schedule(dynamic) \
+                        reduction(+:sampleNumber)
                 for (int x=0; x<renderTarget->getWidth(); ++x) {
                         Color accu = Color::fromRgb(0,0,0);
                         for (int i=0; i<numAASamples; ++i) {
@@ -162,6 +172,9 @@ void Scene::render (
                         //-------------------------------------------------------------
                         // 4) PBRT:<add sample contribution to image> 28
                         //-------------------------------------------------------------
+                        if (0) {
+                                accu = multiplyComponents (accu, threadCol[omp_get_thread_num()]);
+                        }
                         lock->setPixel (x,y,accu*(1.f/numAASamples));
                         ++sampleNumber;
 
@@ -169,11 +182,12 @@ void Scene::render (
                         //-------------------------------------------------------------
                         // 5) Report Progress.
                         //-------------------------------------------------------------
-                        //reporter->report (lock, sampleNumber, totalNumberOfSamples);
-                        //ucp->tick();
                 }
-                reporter->report (lock, sampleNumber, totalNumberOfSamples);
-                ucp->tick();
+                #pragma omp master
+                {
+                        reporter->report (lock, sampleNumber, totalNumberOfSamples);
+                        ucp->tick();
+                }
                 if (ucp->userWantsToQuit()) {
                         break;
                 }
