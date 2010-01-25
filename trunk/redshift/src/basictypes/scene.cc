@@ -190,6 +190,8 @@ void Scene::render (
                         ucp->tick();
                         userWantsToQuit = ucp->userWantsToQuit();
                 }
+                if (userWantsToQuit)
+                        break;
         }
         reporter->reportDone ();
 }
