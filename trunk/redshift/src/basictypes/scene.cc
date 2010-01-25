@@ -183,13 +183,12 @@ void Scene::render (
                         // 5) Report Progress.
                         //-------------------------------------------------------------
                 }
+                bool userWantsToQuit = false;
                 #pragma omp master
                 {
                         reporter->report (lock, sampleNumber, totalNumberOfSamples);
                         ucp->tick();
-                }
-                if (ucp->userWantsToQuit()) {
-                        break;
+                        userWantsToQuit = ucp->userWantsToQuit();
                 }
         }
         reporter->reportDone ();
