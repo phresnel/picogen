@@ -35,6 +35,11 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////
+// Include micro classes.
+///////////////////////////////////////////////////////////////////////////////
+#include "basictypes/stopwatch.hh"
+
+///////////////////////////////////////////////////////////////////////////////
 // Assimilate kallisto-types and define some convenience types.
 ///////////////////////////////////////////////////////////////////////////////
 namespace redshift {
@@ -63,7 +68,7 @@ namespace redshift {
         typedef CartesianPointF PointF;
         typedef CartesianNormal Normal;
         typedef CartesianVector Vector;
-        
+
         typedef kallisto::Vector<kallisto::CARTESIAN,
                                 fixed_point_t> PointCompatibleVector;
 
@@ -88,7 +93,7 @@ namespace redshift {
         }
 
         using kallisto::random::MersenneTwister;
-        
+
         using std::pair;
         using std::make_pair;
 }
@@ -194,7 +199,7 @@ namespace redshift {
                 } else {
                         const real_t invLen = 1 / sqrt(normal.y*normal.y + normal.z*normal.z);
                         v2 = Vector (0, normal.z * invLen, -normal.y * invLen);
-                }                
+                }
                 const Vector normalD = vector_cast<Vector>(normal);
                 const Vector v3 = cross(normalD, v2);
                 return make_tuple (v2, normalD, v3);
@@ -204,7 +209,6 @@ namespace redshift {
                 const real_t f = dot(vector_cast<Vector>(n),in) * 2.f;
                 return in - vector_cast<Vector>(n*f);
         }
-
 }
 
 #include "../../skylab/include/preetham.hh"
