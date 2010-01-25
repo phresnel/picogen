@@ -21,24 +21,21 @@
 #include "../../include/interaction/sdlcommandprocessor.hh"
 
 #include <SDL.h>
-#include <ctime>
 
 namespace redshift { namespace interaction {
 
 
 
-SdlCommandProcessor::SdlCommandProcessor () 
+SdlCommandProcessor::SdlCommandProcessor ()
 : quit(false)
-, lastTime (clock())
 {}
 
 
 
 void SdlCommandProcessor::tick () {
-        clock_t const curr = clock();
-        if (curr - lastTime < (CLOCKS_PER_SEC/10))
+        if (lastTime()<0.1)
                 return;
-        lastTime = clock();
+        lastTime.restart();
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
                 // check for messages
@@ -51,7 +48,7 @@ void SdlCommandProcessor::tick () {
                 case SDL_QUIT:
                         quit = true;
                         break;
-                                        
+
                 }
         }
 }

@@ -32,14 +32,14 @@ namespace redshift { namespace interaction {
         public:
                 SdlCommandProcessor () ;
 
-                void tick () ;                
-                bool userWantsToQuit () const ;                
-                
+                void tick () ;
+                bool userWantsToQuit () const ;
+
         private:
                 bool quit;
-                clock_t lastTime;
+                StopWatch lastTime;
 
-                SdlCommandProcessor (SdlCommandProcessor const &);        
+                SdlCommandProcessor (SdlCommandProcessor const &);
                 SdlCommandProcessor & operator = (SdlCommandProcessor const &);
         };
 } }
