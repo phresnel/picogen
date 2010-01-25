@@ -555,7 +555,11 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , primaryNode(primaryBB, *fun.get(),14,0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+        , primaryNode(
+                primaryBB,
+                *fun.get(),
+                9,//14,
+                0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
@@ -585,7 +589,8 @@ public:
                 const real_t minT = get<0>(*i);
                 const real_t maxT = get<1>(*i);
 
-                return primaryNode.intersect (ray, minT, maxT);
+                const optional<DifferentialGeometry> dg = primaryNode.intersect (ray, minT, maxT);
+                return dg;
         }
 
 
@@ -640,6 +645,7 @@ LazyQuadtree::LazyQuadtree (
 : impl (new LazyQuadtreeImpl (fun, size, distortionFun_))
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 , distortionFun(distortionFun_)
+, heightFun(fun)
 {
 }
 
@@ -675,10 +681,39 @@ optional<Intersection>
         const optional<DifferentialGeometry> dg = impl->intersect (ray);
 
         if (!dg) return false;
-        return Intersection (
-                shared_from_this(),
-                *dg
-        );
+
+        if (0) {
+                return Intersection (
+                        shared_from_this(),
+                        *dg
+                );
+        } else {
+                // Use height function as normal map.
+
+                const Point poi = dg->getCenter();
+                const Vector voi = vector_cast<Vector>(poi);
+
+                // For some reason I fail to see in this dull moment, I had to flip
+                // u x v with v x u.
+                const real_t s = 0.001f;
+                const real_t h =  (*heightFun)(voi.x,voi.z);
+                const Vector u = normalize (Vector(s, (*heightFun)(voi.x+s,voi.z) - h, 0));
+                const Vector v = normalize (Vector(0, (*heightFun)(voi.x,voi.z+s) - h, s));
+                //const Normal N = Normal(0,scalar_cast<real_t>(ray.position.y)>height?1:-1,0);//vector_cast<Normal>(cross (u,v));
+                const Normal N =
+                        /*scalar_cast<real_t>(ray.position.y)>height
+                        ? */vector_cast<Normal>(cross (v,u))
+                        //: vector_cast<Normal>(cross (u,v))
+                ;
+                return Intersection (
+                        shared_from_this(),
+                        DifferentialGeometry (
+                                dg->getDistance(),
+                                dg->getCenter(),
+                                N
+                        )
+                );
+        }
 }
 
 

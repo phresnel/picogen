@@ -28,13 +28,13 @@
 #include "../basictypes/scene.hh"
 
 namespace redshift { namespace primitive {
-        
+
         class LazyQuadtreeImpl;
-        
+
         DefineFinalizer(LazyQuadtree);
-        
+
         class LazyQuadtree
-                : public Primitive                
+                : public Primitive
                 , DoFinalize(LazyQuadtree)
         {
         public:
@@ -43,7 +43,7 @@ namespace redshift { namespace primitive {
                         shared_ptr<HeightFunction const> distortionFun
                 );
                 ~LazyQuadtree ();
-                
+
                 bool doesIntersect (RayDifferential const &ray) const;
                 bool doesIntersect (Ray const &ray) const;
 
@@ -63,6 +63,7 @@ namespace redshift { namespace primitive {
                 shared_ptr<LazyQuadtreeImpl> impl;
                 shared_ptr<MersenneTwister<real_t,0,1> > mt;
                 shared_ptr<HeightFunction const> distortionFun;
+                shared_ptr<HeightFunction const> heightFun;
         };
 } }
 
