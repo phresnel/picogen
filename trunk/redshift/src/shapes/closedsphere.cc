@@ -26,7 +26,7 @@ namespace redshift { namespace shape {
 
 
 
-ClosedSphere::ClosedSphere (Point const & center, real_t radius) 
+ClosedSphere::ClosedSphere (Point const & center, real_t radius)
 : sphereData(center, radius) {
 }
 
@@ -49,10 +49,10 @@ optional<DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const {
         }
 
         const Point  poi = ray (*d);
-        const Normal normal = 
+        const Normal normal =
                      normalize (vector_cast<Normal> (poi - sphereData.center));
-        
-        return DifferentialGeometry (*d, poi, normal);
+
+        return DifferentialGeometry (*d, poi, normal, normal);
 }
 
 

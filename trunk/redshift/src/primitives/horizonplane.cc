@@ -78,7 +78,8 @@ optional<Intersection>
                 DifferentialGeometry (
                         d,
                         poi,
-                        N
+                        N, // shading
+                        Normal(0,1,0) // geometric
                 )
         );
 }

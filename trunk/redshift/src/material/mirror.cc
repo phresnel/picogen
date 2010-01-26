@@ -26,10 +26,9 @@ namespace redshift { namespace bsdf {
 
 Mirror::Mirror (
         DifferentialGeometry const &shadingDG_,
-        Normal const &trueNormal_,
         Color const &color_
 )
-: Bsdf (shadingDG_, trueNormal_)
+: Bsdf (shadingDG_)
 , color (color_)
 {}
 

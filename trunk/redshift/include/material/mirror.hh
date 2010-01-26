@@ -28,13 +28,12 @@ namespace redshift { namespace bsdf {
         class Mirror : public Bsdf {
         public:
                 Mirror (
-                        DifferentialGeometry const &shadingDG_, 
-                        Normal const &trueNormal_,
+                        DifferentialGeometry const &shadingDG_,
                         Color const &color_
                 );
 
                 virtual optional<tuple<Color,Vector> > sample_f (
-                        const Vector &in, 
+                        const Vector &in,
                         Reflection refl, Specular spec
                 ) const;
 

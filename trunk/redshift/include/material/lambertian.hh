@@ -28,14 +28,13 @@ namespace redshift { namespace bsdf {
         class Lambertian : public Bsdf {
         public:
                 Lambertian (
-                        DifferentialGeometry const &shadingDG_, 
-                        Normal const &trueNormal_,
+                        DifferentialGeometry const &shadingDG_,
                         Color const &color_,
                         shared_ptr<MersenneTwister<real_t,0,1> > mt
                 );
 
                 virtual optional<tuple<Color,Vector> > sample_f (
-                        const Vector &in, 
+                        const Vector &in,
                         Reflection refl, Specular spec
                 ) const;
 

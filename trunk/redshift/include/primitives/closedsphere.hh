@@ -28,31 +28,31 @@
 #include "../material/lambertian.hh"
 
 namespace redshift { namespace primitive {
-        
+
         DefineFinalizer(ClosedSphere);
-        
+
         class ClosedSphere
-                : public Primitive                
+                : public Primitive
                 , DoFinalize(ClosedSphere)
         {
         public:
                 ClosedSphere(Point const & center, real_t radius);
                 ~ClosedSphere ();
-                
+
                 bool doesIntersect (RayDifferential const &ray) const;
                 bool doesIntersect (Ray const &ray) const;
 
                 optional<Intersection>
                         intersect(RayDifferential const &ray) const;
-        
+
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom
                 ) const {
                         return shared_ptr<Bsdf> (new bsdf::Lambertian (
-                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0), mt
+                                dgGeom, Color::fromRgb(1,0,0), mt
                         ));
                 }
-                
+
         private:
                 shape::ClosedSphere sphereData;
 

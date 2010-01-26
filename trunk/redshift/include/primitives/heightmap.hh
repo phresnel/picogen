@@ -38,7 +38,7 @@ class Heightmap
 public:
         Heightmap(shared_ptr<HeightFunction const> fun, real_t detail);
         ~Heightmap ();
-        
+
         bool doesIntersect (RayDifferential const &ray) const;
         bool doesIntersect (Ray const &ray) const;
 
@@ -49,7 +49,7 @@ public:
                 const DifferentialGeometry & dgGeom
         ) const {
                 return shared_ptr<Bsdf> (new bsdf::Lambertian (
-                        dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0), mt
+                        dgGeom, Color::fromRgb(1,0,0), mt
                 ));
         }
 
@@ -58,12 +58,12 @@ private:
         Heightmap();
         Heightmap(Heightmap const&);
         Heightmap &operator = (Heightmap const&);
-        
+
         // .
         optional<Intersection> intersect(RayDifferential const &,real_t) const;
-        
+
         // data
-        mutable std::vector<real_t> depthBuffer;                
+        mutable std::vector<real_t> depthBuffer;
         shared_ptr<HeightFunction const> function;
         real_t detail;
         BoundingBox boundingBox;

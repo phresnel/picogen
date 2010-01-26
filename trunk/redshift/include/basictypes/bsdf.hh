@@ -28,12 +28,10 @@ namespace redshift {
 class Bsdf {
 public:
         Bsdf (
-                DifferentialGeometry const &shadingDG_, 
-                Normal const &trueNormal_
+                DifferentialGeometry const &shadingDG_
                 // PBRT adds a refraction index parameter, see 10.1, p. 462
-        )        
+        )
         : shadingDG(shadingDG_)
-        , trueNormal(trueNormal_)
         {}
 
         virtual ~Bsdf () {}
@@ -55,14 +53,21 @@ public:
         DifferentialGeometry getShadingDifferentialGeometry () const {
                 return shadingDG;
         }
+        __attribute__((deprecated))
         Normal getTrueNormal () const {
-                return trueNormal;
+                return getGeometricNormal();
+        }
+        Normal getGeometricNormal () const {
+                return shadingDG.getGeometricNormal();
+        }
+
+        Normal getShadingNormal () const {
+                return shadingDG.getShadingNormal();
         }
 
 
 protected:
         DifferentialGeometry const shadingDG;
-        Normal const trueNormal;
 };
 }
 

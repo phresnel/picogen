@@ -37,7 +37,7 @@ namespace redshift { namespace primitive {
 
 
 
-BooleanField::BooleanField (shared_ptr<HeightFunction const> fun, real_t detail) 
+BooleanField::BooleanField (shared_ptr<HeightFunction const> fun, real_t detail)
 : impl (new impl::BooleanFieldImpl(1500))
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 {
@@ -85,7 +85,7 @@ optional<Intersection>
 
         const bool                  & does (get<0>(i));
         const DifferentialGeometry  & dg   (get<1>(i));
-        
+
 
         Intersection iret = Intersection(
                 shared_from_this(),
@@ -94,9 +94,9 @@ optional<Intersection>
         return make_tuple (does, iret);
         */
          /*
-        optional<DifferentialGeometry> 
+        optional<DifferentialGeometry>
                        i(sphereData.intersect(ray));
-        if (i) { 
+        if (i) {
                 return Intersection (shared_from_this(), *i);
         } else {
                 return false;
@@ -112,7 +112,7 @@ optional<Intersection>
                 return false;
         const impl::Vector n = impl->normal (ray, t);
         const impl::Point poi = ray * t;
-        
+
         // convert to redshift
         const real_t rt = static_cast<real_t> (t);
         const Normal rn (n.x, n.y, n.z);
@@ -121,8 +121,8 @@ optional<Intersection>
         );*/
 
         return Intersection (
-                shared_from_this(), 
-                DifferentialGeometry (rt, ray_(rt), rn)
+                shared_from_this(),
+                DifferentialGeometry (rt, ray_(rt), rn, rn)
         );
 }
 

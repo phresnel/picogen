@@ -26,13 +26,13 @@ namespace redshift {
 
 
 struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
-        
+
         redshift::SdlRenderTarget const & display;
-        
+
         SdlRenderTargetLock (redshift::SdlRenderTarget const & display_)
         : display (display_)
         {
-                if (SDL_MUSTLOCK (display.display) && 
+                if (SDL_MUSTLOCK (display.display) &&
                         SDL_LockSurface (display.display)<0) {
                         std::stringstream ss;
                         ss << "Failed to lock display in SdlRenderTarget::"
@@ -44,7 +44,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
         ~SdlRenderTargetLock () {
                 if (SDL_MUSTLOCK (display.display))
-                        SDL_UnlockSurface (display.display);                        
+                        SDL_UnlockSurface (display.display);
         }
 
         void setPixel (int x, int y, redshift::Color const &color) {
@@ -56,16 +56,16 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                                 ss << "Invalid coordinates passed to "
                                    << "ColorRenderTargetLock: "
                                    << '(' << x << ',' << y << ')'
-                                   << ", but resolution is " 
+                                   << ", but resolution is "
                                    << display.getWidth() << "x"
                                    << display.getHeight();
                                 throw std::out_of_range (ss.str());
                         }
                 }
-        
+
                 Uint32 &bufp = static_cast<Uint32*>(display.display->pixels)
                                           [y * (display.display->pitch/4) + x];
-                
+
                 Rgb toRgb = Rgb (color.toRgb());
                 //>>> What is this for??
                     /*if ( toRgb.r > 0.0031308 ) toRgb.r = 1.055 * ( pow(toRgb.r,(1/2.4) ) ) - 0.055;
@@ -91,7 +91,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                                 ss << "Invalid coordinates passed to "
                                    << "ColorRenderTargetLock: "
                                    << '(' << x << ',' << y << ')'
-                                   << ", but resolution is " 
+                                   << ", but resolution is "
                                    << display.getWidth() << "x"
                                    << display.getHeight();
                                 throw std::out_of_range (ss.str());
@@ -108,11 +108,11 @@ SdlRenderTarget::SdlRenderTarget (int width_, int height_)
         using namespace std;
 
         // Create a new window.
-        display = SDL_SetVideoMode (width, height, 32, 
+        display = SDL_SetVideoMode (width, height, 32,
                                         SDL_HWSURFACE | SDL_DOUBLEBUF);
-        if (0 == display) {                        
+        if (0 == display) {
                 stringstream ss;
-                ss << "Unable to set video-mode to " 
+                ss << "Unable to set video-mode to "
                    << width << "x" << height << "x" << 32
                    << ": " << SDL_GetError();
                 throw runtime_error (ss.str());
@@ -122,6 +122,7 @@ SdlRenderTarget::SdlRenderTarget (int width_, int height_)
 
 
 SdlRenderTarget::~SdlRenderTarget() {
+        SDL_SaveBMP (display, "/home/smach/Desktop/tmp.bmp");
 }
 
 

@@ -49,7 +49,7 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom
                 ) const {
                         return shared_ptr<Bsdf> (new bsdf::Mirror (
-                                dgGeom, Normal(0,1,0), Color::fromRgb(1,1,1)
+                                dgGeom, Color::fromRgb(1,1,1)
                         ));
                 }
 

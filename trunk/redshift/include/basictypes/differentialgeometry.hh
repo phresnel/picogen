@@ -30,26 +30,30 @@ namespace redshift {
         class DifferentialGeometry : DoFinalize(DifferentialGeometry) {
         public:
                 DifferentialGeometry();
-                
+
                 DifferentialGeometry (
-                        real_t distance,                        
+                        real_t distance,
                         Point  const &center,
-                        Normal const &normal
+                        Normal const &shadingNormal,
+                        Normal const &geometricNormal
                 );
-                
+
                 DifferentialGeometry (DifferentialGeometry const &) ;
                 DifferentialGeometry& operator= (DifferentialGeometry const &);
-                
+
                 real_t getDistance() const ;
                 Point  getCenter() const ;
+
                 Normal getNormal() const ;
-               
-        
+                Normal getShadingNormal() const ;
+                Normal getGeometricNormal() const ;
+
+
         private:
-                
+
                 real_t distance;
                 Point  center;
-                Normal normal;                
+                Normal shadingNormal, geometricNormal;
         };
 }
 

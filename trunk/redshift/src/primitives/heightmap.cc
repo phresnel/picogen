@@ -24,7 +24,7 @@ namespace redshift { namespace primitive {
 
 
 
-Heightmap::Heightmap(shared_ptr<HeightFunction const> fun, real_t detail_) 
+Heightmap::Heightmap(shared_ptr<HeightFunction const> fun, real_t detail_)
 : function (fun), detail (detail_)
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 {
@@ -32,11 +32,11 @@ Heightmap::Heightmap(shared_ptr<HeightFunction const> fun, real_t detail_)
                 const real_t x = 4000*((real_t)rand() / (real_t)RAND_MAX-0.5);
                 const real_t z = 4000*((real_t)rand() / (real_t)RAND_MAX-0.5);
                 const real_t h = (*function) (x, z);
-                boundingBox = merge (boundingBox,  
+                boundingBox = merge (boundingBox,
                                      vector_cast<Point>(Vector(x,h,z)));
         }
         // TODO: add some epsilon to height (see 1024*1024 render for why)
-        
+
         /*boundingBox = BoundingBox (
                 Point(scalar_cast<fixed_point_t>(-100),
                         scalar_cast<fixed_point_t>(-10),
@@ -52,7 +52,7 @@ Heightmap::~Heightmap () {
 }
 
 
-                
+
 bool Heightmap::doesIntersect (RayDifferential const &ray) const {
         // TODO shouldn't do full intersect()
         return intersect (ray);
@@ -79,23 +79,23 @@ Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
 
         // ugly, get rid of that namespace qualify
         typedef kallisto::Point<kallisto::CARTESIAN,real_t> PointR;
-        
+
         // Early exit?
-        const optional<tuple<real_t,real_t> > B = 
+        const optional<tuple<real_t,real_t> > B =
                                 kallisto::intersect<true> (ray, boundingBox);
         if (!B) {
                 return false;
         }
-                
+
         if (get<0>(*B) > minT) {
-                minT = get<0>(*B); 
+                minT = get<0>(*B);
         }
         real_t maxT = get<1>(*B);
 //        std::cout << minT << ":" << maxT << std::endl;
-        
+
         real_t step;
         const real_t step_epsilon = 0.1;
-        
+
         if (ray.hasDifferentials) {
                 step = detail*
                         min(
@@ -111,17 +111,17 @@ Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
                         step = step_epsilon;
                 }
         }
-        
+
         // get initial sign
         const PointR first_ = vector_cast<PointR>(ray(0));
         const real_t first = (*function) (first_.x, first_.z);
         const real_t sign = first > 0;
-        
+
         // Note that in the for-condition, we add step to maxT, which is a hack
         // to prevent holes in the terrain for when the ray leaves the bounding
         // box at the bottom, without changing the sign first.
         for (real_t d = minT; d < maxT + step; d += step) {
-                
+
                 const Point curr = ray(d);
                 const PointR currr = vector_cast<PointR> (curr);
                 const real_t h = (*function) (currr.x, currr.z);
@@ -131,15 +131,15 @@ Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
                         const Vector
                                 u (s, (*function) (currr.x+s, currr.z)-h, 0.0),
                                 v (0.0, (*function) (currr.x, currr.z+s)-h, s);
-                        
+
                         const Normal n_ (vector_cast<Normal>(
                                           cross (normalize(u), normalize(v))));
 
                         const Normal n (sign ? n_ : -n_);
 
                         return Intersection (shared_from_this(),
-                                             DifferentialGeometry(d,curr,n));
-                }                
+                                             DifferentialGeometry(d,curr,n, n));
+                }
                 if (ray.hasDifferentials) {
                         step = detail*
                                 min(
@@ -151,9 +151,9 @@ Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
                         }
                 } else {
                         step += step * 0.05;
-                }                
+                }
         }
-        
+
         return false;
 }
 
@@ -171,20 +171,20 @@ optional<Intersection> Heightmap::intersect(Sample const &sample) const {
 
         if (depthBuffer.size() != width) {
                 depthBuffer.clear();
-                depthBuffer.resize (width);                
-                
+                depthBuffer.resize (width);
+
                 const optional<Intersection> t = intersect (sample.primaryRay);
-                
+
                 if(t)depthBuffer [u] = t->getDistance();
                 else depthBuffer [u] = constants::zero;
 
                 return t;
         } else {
-                const optional<Intersection> t = intersect (sample.primaryRay, 
+                const optional<Intersection> t = intersect (sample.primaryRay,
                                                             depthBuffer [u]);
                 if(t) depthBuffer [u] = t->getDistance();
                 return t;
-        }        
+        }
 }
 
 

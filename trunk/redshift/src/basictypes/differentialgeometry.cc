@@ -24,10 +24,11 @@ namespace redshift {
 
 
 
-DifferentialGeometry::DifferentialGeometry () 
+DifferentialGeometry::DifferentialGeometry ()
 : distance ()
 , center ()
-, normal ()
+, shadingNormal ()
+, geometricNormal ()
 {
 }
 
@@ -36,37 +37,41 @@ DifferentialGeometry::DifferentialGeometry ()
 DifferentialGeometry::DifferentialGeometry (
         real_t distance_,
         Point  const &center_,
-        Normal const &normal_        
-) 
+        Normal const &shadingNormal_,
+        Normal const &geometricNormal_
+)
 : distance (distance_)
 , center (center_)
-, normal (normal_)
+, shadingNormal (shadingNormal_)
+, geometricNormal (geometricNormal_)
 {
 }
 
 
 
 DifferentialGeometry::DifferentialGeometry (
-        DifferentialGeometry const &dg        
-) 
+        DifferentialGeometry const &dg
+)
 : distance (dg.distance)
 , center (dg.center)
-, normal (dg.normal)
+, geometricNormal (dg.geometricNormal)
+, shadingNormal (dg.shadingNormal)
 {
 }
 
 
 
-DifferentialGeometry& 
+DifferentialGeometry&
 DifferentialGeometry::operator= (DifferentialGeometry const &dg) {
         distance = dg.distance;
         center   = dg.center;
-        normal   = dg.normal;
+        shadingNormal   = dg.shadingNormal;
+        geometricNormal = dg.geometricNormal;
         return *this;
 }
 
 
- 
+
 real_t DifferentialGeometry::getDistance() const {
         return distance;
 }
@@ -80,9 +85,21 @@ Point  DifferentialGeometry::getCenter() const {
 
 
 Normal DifferentialGeometry::getNormal() const {
-        return normal;
+        return shadingNormal;
 }
-                
-                
-                
+
+
+
+Normal DifferentialGeometry::getShadingNormal () const {
+        return shadingNormal;
+}
+
+
+
+Normal DifferentialGeometry::getGeometricNormal () const {
+        return geometricNormal;
+}
+
+
+
 }

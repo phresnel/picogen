@@ -27,18 +27,18 @@
 #include "../material/lambertian.hh"
 
 namespace redshift { namespace primitive {
-        
+
         DefineFinalizer(BooleanField);
-        
+
         namespace impl { class BooleanFieldImpl; }
         class BooleanField
-                : public Primitive                
+                : public Primitive
                 , DoFinalize(BooleanField)
         {
         public:
                 BooleanField(shared_ptr<HeightFunction const> fun, real_t detail);
                 ~BooleanField ();
-                
+
                 bool doesIntersect (RayDifferential const &ray) const;
                 bool doesIntersect (Ray const &ray) const;
 
@@ -49,7 +49,7 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom
                 ) const {
                         return shared_ptr<Bsdf> (new bsdf::Lambertian (
-                                dgGeom, dgGeom.getNormal(), Color::fromRgb(1,0,0), mt
+                                dgGeom, Color::fromRgb(1,0,0), mt
                         ));
                 }
 
@@ -57,7 +57,7 @@ namespace redshift { namespace primitive {
                 BooleanField();
                 BooleanField(BooleanField const&);
                 BooleanField &operator = (BooleanField const&);
-        
+
                 impl::BooleanFieldImpl *impl;
                 shared_ptr<MersenneTwister<real_t,0,1> > mt;
         };

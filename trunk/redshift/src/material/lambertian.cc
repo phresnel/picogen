@@ -25,12 +25,11 @@ namespace redshift { namespace bsdf {
 
 
 Lambertian::Lambertian (
-        DifferentialGeometry const &shadingDG_, 
-        Normal const &trueNormal_,
+        DifferentialGeometry const &shadingDG_,
         Color const &color_,
         shared_ptr<MersenneTwister<real_t,0,1> > mt_
-)        
-: Bsdf (shadingDG_, trueNormal_)
+)
+: Bsdf (shadingDG_)
 , color (color_ * (1.f/constants::pi))
 , mt(mt_)
 {}
@@ -38,11 +37,11 @@ Lambertian::Lambertian (
 
 
 optional<tuple<Color,Vector> > Lambertian::sample_f (
-        const Vector &in, 
+        const Vector &in,
         Reflection refl, Specular spec
 ) const {
         switch (refl) {
-        case reflection:                                
+        case reflection:
                 switch (spec) {
                 case specular: return false;
                 case diffuse: {

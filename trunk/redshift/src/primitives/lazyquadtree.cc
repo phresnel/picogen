@@ -279,7 +279,7 @@ namespace lazyquadtree {
                         }
                         if (nearest.first < constants::real_max)
                                 return DifferentialGeometry(
-                                        nearest.first,ray(nearest.first),nearest.second);
+                                        nearest.first,ray(nearest.first),nearest.second, nearest.second);
                         return false;
                 }
 
@@ -558,7 +558,7 @@ public:
         , primaryNode(
                 primaryBB,
                 *fun.get(),
-                9,//14,
+                5,//14,
                 0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
@@ -710,7 +710,8 @@ optional<Intersection>
                         DifferentialGeometry (
                                 dg->getDistance(),
                                 dg->getCenter(),
-                                N
+                                N, // shading normal
+                                dg->getGeometricNormal() // geometric normal
                         )
                 );
         }
@@ -723,7 +724,6 @@ shared_ptr<Bsdf> LazyQuadtree::getBsdf(
 ) const {
         return shared_ptr<Bsdf> (new bsdf::Lambertian (
                 dgGeom,
-                dgGeom.getNormal(),
                 Color::fromRgb(1,1,1),
                 mt/*,
                 distortionFun*/
