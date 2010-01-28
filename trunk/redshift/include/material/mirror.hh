@@ -25,25 +25,17 @@
 #include "../basictypes/bsdf.hh"
 
 namespace redshift { namespace bsdf {
-        class Mirror : public Bsdf {
+        class Mirror : public Bxdf {
         public:
                 Mirror (
-                        DifferentialGeometry const &shadingDG_,
                         Color const &color_
                 );
 
                 virtual optional<tuple<Color,Vector> > sample_f (
-                        const Vector &in,
-                        Reflection refl, Specular spec
+                        const Vector &in
                 ) const;
 
                 virtual Color f (const Vector &out, const Vector &in) const;
-
-                virtual bool hasAny (Reflection ref, Specular spec) const {
-                        if (ref==reflection && spec==specular)
-                                return true;
-                        return false;
-                }
         private:
                 Color const color;
         };

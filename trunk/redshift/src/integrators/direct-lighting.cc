@@ -47,7 +47,7 @@ tuple<real_t,Color> DirectLighting::Li (
                 Color spec = Color::fromRgb (0,0,0);
                 int numSamples = 1;
                 // diffuse
-                if (bsdf->hasAny (Bsdf::reflection, Bsdf::diffuse)) {
+                if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         Ray ray;
                         ray.position = poi;
 
@@ -84,7 +84,7 @@ tuple<real_t,Color> DirectLighting::Li (
                                 spec = spec + multiplyComponents(bg->query (ray), get<0>(v));
                         }
                 }*/
-                if (doMirror && bsdf->hasAny (Bsdf::reflection, Bsdf::specular)) {
+                if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
                         Ray ray (poi, raydiff.direction);
                         const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
                                 ray.direction, Bsdf::reflection, Bsdf::specular);

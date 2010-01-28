@@ -722,12 +722,11 @@ optional<Intersection>
 shared_ptr<Bsdf> LazyQuadtree::getBsdf(
         const DifferentialGeometry & dgGeom
 ) const {
-        return shared_ptr<Bsdf> (new bsdf::Lambertian (
-                dgGeom,
-                Color::fromRgb(1,1,1),
-                mt/*,
-                distortionFun*/
+        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
+        bsdf->add (shared_ptr<Bxdf>(
+                new bsdf::Lambertian (Color::fromRgb(1,1,1), mt)
         ));
+        return bsdf;
 }
 
 

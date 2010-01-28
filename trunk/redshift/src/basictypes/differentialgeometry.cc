@@ -54,8 +54,8 @@ DifferentialGeometry::DifferentialGeometry (
 )
 : distance (dg.distance)
 , center (dg.center)
-, geometricNormal (dg.geometricNormal)
 , shadingNormal (dg.shadingNormal)
+, geometricNormal (dg.geometricNormal)
 {
 }
 

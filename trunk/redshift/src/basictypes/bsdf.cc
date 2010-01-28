@@ -18,30 +18,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef LAMBERTIAN_HH_INCLUDED_20100119
-#define LAMBERTIAN_HH_INCLUDED_20100119
+#include "../../include/basictypes/bsdf.hh"
 
-#include "../setup.hh"
-#include "../basictypes/bsdf.hh"
+namespace redshift {
 
-namespace redshift { namespace bsdf {
-        class Lambertian : public Bxdf {
-        public:
-                Lambertian (
-                        Color const &color_,
-                        shared_ptr<MersenneTwister<real_t,0,1> > mt
-                );
 
-                virtual optional<tuple<Color,Vector> > sample_f (
-                        const Vector &in
-                ) const;
+optional<tuple<Color,Vector> > Bsdf::sample_f (
+        const Vector &in, Reflection, Specular
+) const {
+        return false;
+}
 
-                virtual Color f (const Vector &out, const Vector &in) const;
 
-        private:
-                Color const color;
-                shared_ptr<MersenneTwister<real_t,0,1> > mt;
-        };
-} }
 
-#endif // LAMBERTIAN_HH_INCLUDED_20100119
+Color Bsdf::f (const Vector &out, const Vector &in) const {
+        return Color(1,0,0);
+}
+
+
+
+bool Bsdf::is (Bsdf::Reflection r, Bsdf::Specular s) const {
+        return false;
+}
+
+
+}

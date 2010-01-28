@@ -79,6 +79,7 @@ OBJFILES += $(BASICTYPESOBJDIR)/scene.o
 OBJFILES += $(BASICTYPESOBJDIR)/heightmap.o
 OBJFILES += $(BASICTYPESOBJDIR)/differentialgeometry.o
 OBJFILES += $(BASICTYPESOBJDIR)/intersection.o
+OBJFILES += $(BASICTYPESOBJDIR)/bsdf.o
 OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
@@ -177,6 +178,9 @@ $(BASICTYPESOBJDIR)/differentialgeometry.o: \
 	$(CXX) -o $@ $<
 
 $(BASICTYPESOBJDIR)/intersection.o: ./src/basictypes/intersection.cc
+	$(CXX) -o $@ $<
+
+$(BASICTYPESOBJDIR)/bsdf.o: ./src/basictypes/bsdf.cc
 	$(CXX) -o $@ $<
 
 
