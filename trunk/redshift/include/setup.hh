@@ -96,6 +96,35 @@ namespace redshift {
 
         using std::pair;
         using std::make_pair;
+
+
+        struct Mutex {
+                Mutex() { omp_init_lock(&lock); }
+                ~Mutex() { omp_destroy_lock(&lock); }
+                void Lock() { omp_set_lock(&lock); }
+                void Unlock() { omp_unset_lock(&lock); }
+
+                bool Test () {
+                        return !!omp_test_lock (&lock);
+                }
+
+                Mutex(const Mutex& ) { omp_init_lock(&lock); }
+                Mutex& operator= (const Mutex& ) { return *this; }
+        public:
+                omp_lock_t lock;
+        };
+        struct ScopedLock {
+                explicit ScopedLock(Mutex& m) : mut(m), locked(true) { mut.Lock(); }
+                ~ScopedLock() { Unlock(); }
+                void Unlock() { if(!locked) return; locked=false; mut.Unlock(); }
+                void LockAgain() { if(locked) return; mut.Lock(); locked=true; }
+        private:
+                Mutex& mut;
+                bool locked;
+        private:
+                void operator=(const ScopedLock&);
+                ScopedLock(const ScopedLock&);
+        };
 }
 
 #include "basictypes/rgb.hh"

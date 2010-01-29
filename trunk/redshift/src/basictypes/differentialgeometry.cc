@@ -25,15 +25,11 @@ namespace redshift {
 
 
 DifferentialGeometry::DifferentialGeometry ()
-: distance ()
-, center ()
-, shadingNormal ()
-, geometricNormal ()
 {
 }
 
 
-
+/*
 DifferentialGeometry::DifferentialGeometry (
         real_t distance_,
         Point  const &center_,
@@ -42,14 +38,34 @@ DifferentialGeometry::DifferentialGeometry (
 )
 : distance (distance_)
 , center (center_)
-, shadingNormal (shadingNormal_)
 , geometricNormal (geometricNormal_)
+, shadingNormal (shadingNormal_)
 {
-}
+        //std::cerr << "warning: old constructor call to DifferentialGeometry" << std::endl;
+}*/
 
 
 
 DifferentialGeometry::DifferentialGeometry (
+        real_t distance_,
+        Point  const &center_,
+        Normal const &geometricNormal_,
+        Vector const &dpdu_, Vector const &dpdv_,
+        Vector const &dndu_, Vector const &dndv_
+)
+: distance(distance_)
+, center(center_)
+, geometricNormal(geometricNormal_)
+, shadingNormal(vector_cast<Normal>(normalize (cross (dpdu_, dpdv_))))
+, dpdu(dpdu_), dpdv(dpdv_)
+, dndu(dpdu_), dndv(dpdv_)
+{
+        //std::cout << shadingNormal.x << ":" << shadingNormal.y << ":" << shadingNormal.z << "L" << length(shadingNormal) << "\n";
+}
+
+
+
+/*DifferentialGeometry::DifferentialGeometry (
         DifferentialGeometry const &dg
 )
 : distance (dg.distance)
@@ -68,7 +84,7 @@ DifferentialGeometry::operator= (DifferentialGeometry const &dg) {
         shadingNormal   = dg.shadingNormal;
         geometricNormal = dg.geometricNormal;
         return *this;
-}
+}*/
 
 
 
@@ -80,12 +96,6 @@ real_t DifferentialGeometry::getDistance() const {
 
 Point  DifferentialGeometry::getCenter() const {
         return center;
-}
-
-
-
-Normal DifferentialGeometry::getNormal() const {
-        return shadingNormal;
 }
 
 

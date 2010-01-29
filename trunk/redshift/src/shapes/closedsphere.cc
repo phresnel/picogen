@@ -51,8 +51,14 @@ optional<DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const {
         const Point  poi = ray (*d);
         const Normal normal =
                      normalize (vector_cast<Normal> (poi - sphereData.center));
+        #warning I guess this could be faster
+        const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
 
-        return DifferentialGeometry (*d, poi, normal, normal);
+        return DifferentialGeometry (
+                *d, poi,
+                normal,
+                get<0>(cs), get<2>(cs),
+                Vector(),Vector());
 }
 
 

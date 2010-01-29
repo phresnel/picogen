@@ -30,7 +30,7 @@ Lambertian::Lambertian (
         shared_ptr<MersenneTwister<real_t,0,1> > mt_
 )
 //: Bsdf (shadingDG_)
-: Bxdf (Bsdf::reflection, Bsdf::specular)
+: Bxdf (Bsdf::reflection, Bsdf::diffuse)
 , color (color_ * (1.f/constants::pi))
 , mt(mt_)
 {}

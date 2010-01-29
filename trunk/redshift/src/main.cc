@@ -202,7 +202,7 @@ void run() {
         int const width = 1680/2;
         int const height = width/3;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(2300,500,-5000))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,15,-5500))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -229,12 +229,13 @@ void run() {
         }
 
         primitive::List *list = new List;
+        list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,15,-5475)), 5)));
         list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction)));
-        list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (-505, distortHeightFunction)));
+        list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (10, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(-2,2,-0.5));
+        preetham->setSunDirection(Vector(-5,1,-0.5));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(2,1.5f,1)*3.0);
         preetham->setColorFilter(redshift::Color(1.4,1.2,1.0)*0.2);

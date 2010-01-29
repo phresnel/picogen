@@ -121,6 +121,7 @@ void Scene::render (
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
         for (int y=renderTarget->getHeight()-1; y>=0; --y) {
+                //#warning no multicore!
                 #pragma omp parallel for \
                         schedule(dynamic) \
                         reduction(+:sampleNumber)

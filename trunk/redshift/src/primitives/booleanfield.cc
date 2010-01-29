@@ -120,9 +120,14 @@ optional<Intersection>
                 vector_cast<Point>(Vector(poi.x, poi.y, poi.z))
         );*/
 
-        return Intersection (
-                shared_from_this(),
-                DifferentialGeometry (rt, ray_(rt), rn, rn)
+        #warning I guess this could be faster
+        const tuple<Vector,Vector,Vector> cs = coordinateSystem (rn);
+        return Intersection (shared_from_this(),
+                DifferentialGeometry(
+                        rt, ray_(rt), rn,
+                        get<0>(cs),get<2>(cs),
+                        Vector(), Vector()
+                )
         );
 }
 

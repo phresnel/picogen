@@ -37,9 +37,10 @@ tuple<real_t,Color> DirectLighting::Li (
 
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
                 const shared_ptr<Background> bg (scene.getBackground());
-                const Normal normal = gd.getNormal();
+                const Normal normalG = gd.getGeometricNormal();
+                const Normal normalS = gd.getShadingNormal();
                 const Point poi = gd.getCenter()+
-                        vector_cast<PointCompatibleVector>(normal*0.001f);
+                        vector_cast<PointCompatibleVector>(normalG*0.001f);
 
                 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 // crap begin
@@ -52,11 +53,11 @@ tuple<real_t,Color> DirectLighting::Li (
                         ray.position = poi;
 
                         // BETTER USE AMBIENT OCCLUSION FACTOR. THIS IS KINDA SLOW!
-                        const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
+                        const tuple<Vector,Vector,Vector> cs = coordinateSystem (normalS);
                         const Vector &X = get<0>(cs);
                         const Vector &Y = get<1>(cs);
                         const Vector &Z = get<2>(cs);
-                        const int numDiffuseSamples = 20;
+                        const int numDiffuseSamples = 100;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
                                 const real_t &sx = get<0>(sphere);
@@ -87,7 +88,7 @@ tuple<real_t,Color> DirectLighting::Li (
                 if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
                         Ray ray (poi, raydiff.direction);
                         const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
-                                ray.direction, Bsdf::reflection, Bsdf::specular);
+                                -ray.direction, Bsdf::reflection, Bsdf::specular);
                         if (v_) {
                                 const tuple<Color,Vector> v = *v_;
                                 ray.direction = get<1>(v);
@@ -105,10 +106,10 @@ tuple<real_t,Color> DirectLighting::Li (
 
                 Color ret = surfaceSkyColor;
 
-                if (bg->hasSun()) {
+                if (false && bg->hasSun()) {
                         const Vector sunDir = bg->getSunDirection();
                         const Ray ray (poi,sunDir);
-                        const Color surfaceColor = bsdf->f(ray.direction, sunDir)/* * constants::pi*/; // TODO: is this correct?
+                        const Color surfaceColor = bsdf->f(ray.direction, sunDir, Bsdf::reflection, Bsdf::diffuse)/* * constants::pi*/; // TODO: is this correct?
                         //std::cout << "eh" << std::flush;
                         /*const Color skyColor = bg->hasFastDiffuseQuery()
                                         ? bg->diffuseQuery (poi, normal)
@@ -117,7 +118,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         if (!scene.doesIntersect (ray)) {
                                 const real_t d = max(
                                         0.f,
-                                        dot(sunDir,vector_cast<Vector>(normal)));
+                                        dot(sunDir,vector_cast<Vector>(normalS)));
                                 ret = ret + multiplyComponents(surfaceColor,bg->querySun(ray))*d;
                         }
                 }

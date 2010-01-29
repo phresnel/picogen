@@ -30,34 +30,6 @@ namespace redshift { namespace primitive {
 
 
 namespace lazyquadtree {
-        struct Mutex {
-                Mutex() { omp_init_lock(&lock); }
-                ~Mutex() { omp_destroy_lock(&lock); }
-                void Lock() { omp_set_lock(&lock); }
-                void Unlock() { omp_unset_lock(&lock); }
-
-                bool Test () {
-                        return !!omp_test_lock (&lock);
-                }
-
-                Mutex(const Mutex& ) { omp_init_lock(&lock); }
-                Mutex& operator= (const Mutex& ) { return *this; }
-        public:
-                omp_lock_t lock;
-        };
-        struct ScopedLock {
-                explicit ScopedLock(Mutex& m) : mut(m), locked(true) { mut.Lock(); }
-                ~ScopedLock() { Unlock(); }
-                void Unlock() { if(!locked) return; locked=false; mut.Unlock(); }
-                void LockAgain() { if(locked) return; mut.Lock(); locked=true; }
-        private:
-                Mutex& mut;
-                bool locked;
-        private:
-                void operator=(const ScopedLock&);
-                ScopedLock(const ScopedLock&);
-        };
-
 
         struct Vertex {
                 real_t u,v;
@@ -255,19 +227,21 @@ namespace lazyquadtree {
                         ++initializedChildCount;
                 }
 
-                optional<DifferentialGeometry> traverse (RayDifferential const &ray, int child, real_t t0, real_t t1) const {
+                optional<pair<real_t,Normal> > traverse (RayDifferential const &ray, int child, real_t t0, real_t t1) const {
                         if (t0<=t1) {
                                 if (!children[child]) {
                                         create_child (child); // assumed to be safe upon multiple calls
                                 }
-                                if (optional<DifferentialGeometry> dg =
-                                        children[child]->intersect(ray, t0, t1))
+                                if (optional<pair<real_t,Normal> > dg =
+                                        children[child]->intersect(ray, t0, t1)
+                                ) {
                                         return dg;
+                                }
                         }
                         return false;
                 }
 
-                optional<DifferentialGeometry> intersectLeaf (RayDifferential const &ray) const {
+                optional<pair<real_t,Normal> > intersectLeaf (RayDifferential const &ray) const {
                         pair<real_t,Normal> tmp, nearest=make_pair(constants::real_max, Normal());
                         const Vector &A = vertices[0];
                         for (int i=1; i<vertexCount-1; ++i) {
@@ -277,9 +251,9 @@ namespace lazyquadtree {
                                 if ((0 < tmp.first)  & (tmp.first < nearest.first))
                                         nearest = tmp;
                         }
-                        if (nearest.first < constants::real_max)
-                                return DifferentialGeometry(
-                                        nearest.first,ray(nearest.first),nearest.second, nearest.second);
+                        if (nearest.first < constants::real_max) {
+                                return nearest;
+                        }
                         return false;
                 }
 
@@ -337,12 +311,9 @@ namespace lazyquadtree {
                 , maxRecursion(maxRecursion_)
                 , initializedChildCount(0)
                 {
-                        /*if (maxRecursion == 8)
-                                std::cout << "heya" << std::endl;*/
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
                         }
-                        //std::cout << &createLock << ":";
                 }
 
                 ~Node () {
@@ -430,7 +401,7 @@ namespace lazyquadtree {
 
                 }
 
-                optional<DifferentialGeometry> intersect (
+                optional<pair<real_t,Normal> > intersect (
                         RayDifferential const &ray,
                         real_t minT, real_t maxT
                 ) const {
@@ -523,7 +494,7 @@ namespace lazyquadtree {
                                         t[2].child = 0; t[2].t0 = d_z;  t[2].t1 = maxT;
                                 }
                         }
-                        optional<DifferentialGeometry> dg;
+                        optional<pair<real_t,Normal> > dg;
 
                         {
                                 for (int i=0; i<3; ++i) {
@@ -558,7 +529,7 @@ public:
         , primaryNode(
                 primaryBB,
                 *fun.get(),
-                5,//14,
+                8,//14,
                 0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
@@ -589,8 +560,29 @@ public:
                 const real_t minT = get<0>(*i);
                 const real_t maxT = get<1>(*i);
 
-                const optional<DifferentialGeometry> dg = primaryNode.intersect (ray, minT, maxT);
-                return dg;
+                const optional<pair<real_t,Normal> > dg = primaryNode.intersect (ray, minT, maxT);
+                if (!dg)
+                        return false;
+
+                // Use height function as normal map.
+
+                const Point poi = ray(dg->first);//dg->getCenter();
+                const Vector voi = vector_cast<Vector>(poi);
+
+                // For some reason I fail to see in this dull moment, I had to flip
+                // u x v with v x u.
+                const real_t s = 0.001f;
+                const real_t h =  (*fun)(voi.x,voi.z);
+                const Vector u = normalize (Vector(s, (*fun)(voi.x+s,voi.z) - h, 0));
+                const Vector v = normalize (Vector(0, (*fun)(voi.x,voi.z+s) - h, s));
+
+                return DifferentialGeometry (
+                        dg->first,
+                        poi,
+                        dg->second, // geometric normal
+                        v, u,// partial derivative of position
+                        Vector(), Vector()
+                );
         }
 
 
@@ -670,51 +662,13 @@ bool LazyQuadtree::doesIntersect (Ray const &ray) const {
 
 optional<Intersection>
  LazyQuadtree::intersect(RayDifferential const &ray) const {
-
-        /*optional<DifferentialGeometry>
-                       i(sphereData.intersect(ray));
-        if (i) {
-                return Intersection (shared_from_this(), *i);
-        } else {
+        optional<DifferentialGeometry> const dg = impl->intersect (ray);
+        if (!dg)
                 return false;
-        }*/
-        const optional<DifferentialGeometry> dg = impl->intersect (ray);
-
-        if (!dg) return false;
-
-        if (0) {
-                return Intersection (
-                        shared_from_this(),
-                        *dg
-                );
-        } else {
-                // Use height function as normal map.
-
-                const Point poi = dg->getCenter();
-                const Vector voi = vector_cast<Vector>(poi);
-
-                // For some reason I fail to see in this dull moment, I had to flip
-                // u x v with v x u.
-                const real_t s = 0.001f;
-                const real_t h =  (*heightFun)(voi.x,voi.z);
-                const Vector u = normalize (Vector(s, (*heightFun)(voi.x+s,voi.z) - h, 0));
-                const Vector v = normalize (Vector(0, (*heightFun)(voi.x,voi.z+s) - h, s));
-                //const Normal N = Normal(0,scalar_cast<real_t>(ray.position.y)>height?1:-1,0);//vector_cast<Normal>(cross (u,v));
-                const Normal N =
-                        /*scalar_cast<real_t>(ray.position.y)>height
-                        ? */vector_cast<Normal>(cross (v,u))
-                        //: vector_cast<Normal>(cross (u,v))
-                ;
-                return Intersection (
-                        shared_from_this(),
-                        DifferentialGeometry (
-                                dg->getDistance(),
-                                dg->getCenter(),
-                                N, // shading normal
-                                dg->getGeometricNormal() // geometric normal
-                        )
-                );
-        }
+        return Intersection (
+                shared_from_this(),
+                *dg
+        );
 }
 
 

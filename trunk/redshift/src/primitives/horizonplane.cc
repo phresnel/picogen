@@ -67,19 +67,22 @@ optional<Intersection>
         const Vector u = normalize (Vector(s, (*fun)(voi.x+s,voi.z) - h, 0));
         const Vector v = normalize (Vector(0, (*fun)(voi.x,voi.z+s) - h, s));
         //const Normal N = Normal(0,scalar_cast<real_t>(ray.position.y)>height?1:-1,0);//vector_cast<Normal>(cross (u,v));
-        const Normal N =
+        /*const Normal N =
                 scalar_cast<real_t>(ray.position.y)>height
                 ? vector_cast<Normal>(cross (v,u))
                 : vector_cast<Normal>(cross (u,v))
-        ;
+        ;*/
+
+        const bool isAbove = !(scalar_cast<real_t>(ray.position.y)>height);
 
         return Intersection(
                 shared_from_this(),
                 DifferentialGeometry (
                         d,
                         poi,
-                        N, // shading
-                        Normal(0,1,0) // geometric
+                        Normal(0,1,0),
+                        isAbove ? u : v, isAbove ? v : u,
+                        Vector(0,0,0), Vector(0,0,0)
                 )
         );
 }

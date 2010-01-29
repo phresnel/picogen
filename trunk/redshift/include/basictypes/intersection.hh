@@ -29,25 +29,26 @@ namespace redshift { namespace primitive { class Primitive; } }
 
 namespace redshift {
         DefineFinalizer(Intersection);
-        
+
         class Intersection : DoFinalize(Intersection) {
         public:
                 Intersection (
                         shared_ptr<redshift::primitive::Primitive const>,
                         DifferentialGeometry const &geom);
-                        
+
                 Intersection () ;
-                
-                Intersection (Intersection const &) ;                
-                Intersection & operator = (Intersection const &);                
-                
-                real_t getDistance() const ;                
-                Normal getNormal() const ;                
+
+                Intersection (Intersection const &) ;
+                Intersection & operator = (Intersection const &);
+
+                real_t getDistance() const ;
+                Normal getGeometricNormal() const ;
+                Normal getShadingNormal() const ;
                 DifferentialGeometry getDifferentialGeometry() const ;
-                
+
                 shared_ptr<primitive::Primitive const> getPrimitive () const ;
-                
-        private:               
+
+        private:
 
                 shared_ptr<primitive::Primitive const> primitive;
                 DifferentialGeometry differentialGeometry;

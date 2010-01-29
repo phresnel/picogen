@@ -137,8 +137,14 @@ Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
 
                         const Normal n (sign ? n_ : -n_);
 
+                        #warning I guess this could be faster
+                        const tuple<Vector,Vector,Vector> cs = coordinateSystem (n);
                         return Intersection (shared_from_this(),
-                                             DifferentialGeometry(d,curr,n, n));
+                                DifferentialGeometry(d,curr,n,
+                                        get<0>(cs),get<2>(cs),
+                                        Vector(), Vector()
+                                )
+                        );
                 }
                 if (ray.hasDifferentials) {
                         step = detail*

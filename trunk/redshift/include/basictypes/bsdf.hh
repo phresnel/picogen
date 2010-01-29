@@ -32,14 +32,13 @@ public:
         Bsdf (
                 DifferentialGeometry const &shadingDG_
                 // PBRT adds a refraction index parameter, see 10.1, p. 462
-        )
-        : shadingDG(shadingDG_)
-        {}
+        );
 
         virtual ~Bsdf () {}
 
         enum Reflection {
-                reflection = 1<<0
+                reflection = 1<<0,
+                transmission = 1<<1
         };
         enum Specular {
                 specular = 1<<0,
@@ -51,7 +50,8 @@ public:
                 const Vector &in, Reflection, Specular
         ) const;
 
-        Color f (const Vector &out, const Vector &in) const;
+        Color f (const Vector &out, const Vector &in,
+                Bsdf::Reflection r, Bsdf::Specular s) const;
         // HasShadingGeometry(), pbrt 10.1, p. 464
 
         DifferentialGeometry getShadingDifferentialGeometry () const {
@@ -77,9 +77,17 @@ public:
         }
 
         bool is (Bsdf::Reflection r, Bsdf::Specular s) const ;
-protected:
+
+private:
+        Vector worldToLocal (Vector const &v) const ;
+        Vector localToWorld (Vector const &v) const ;
         DifferentialGeometry const shadingDG;
         std::vector<shared_ptr<Bxdf> > bxdfs;
+
+        Normal geometricNormal, shadingNormal;
+        Vector s, t;
+
+        int numComponents (Bsdf::Reflection r, Bsdf::Specular s) const ;
 };
 
 

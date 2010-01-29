@@ -43,7 +43,7 @@ Intersection::Intersection (
 
 
 
-Intersection::Intersection (Intersection const &i) 
+Intersection::Intersection (Intersection const &i)
 : primitive(i.primitive)
 , differentialGeometry(i.differentialGeometry) {
 }
@@ -64,8 +64,14 @@ real_t Intersection::getDistance() const {
 
 
 
-Normal Intersection::getNormal() const {
-        return differentialGeometry.getNormal();
+Normal Intersection::getGeometricNormal() const {
+        return differentialGeometry.getGeometricNormal();
+}
+
+
+
+Normal Intersection::getShadingNormal() const {
+        return differentialGeometry.getShadingNormal();
 }
 
 

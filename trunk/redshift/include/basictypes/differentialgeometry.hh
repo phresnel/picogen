@@ -31,29 +31,46 @@ namespace redshift {
         public:
                 DifferentialGeometry();
 
+                /*__attribute__((deprecated))
                 DifferentialGeometry (
                         real_t distance,
                         Point  const &center,
                         Normal const &shadingNormal,
                         Normal const &geometricNormal
+                );*/
+
+                DifferentialGeometry (
+                        real_t distance,
+                        Point  const &center,
+                        Normal const &geometricNormal,
+                        Vector const &dpdu, Vector const &dpdv,
+                        Vector const &dndu, Vector const &dndv
                 );
 
-                DifferentialGeometry (DifferentialGeometry const &) ;
-                DifferentialGeometry& operator= (DifferentialGeometry const &);
+                /*DifferentialGeometry (DifferentialGeometry const &) ;
+                DifferentialGeometry& operator= (DifferentialGeometry const &);*/
 
                 real_t getDistance() const ;
                 Point  getCenter() const ;
 
-                Normal getNormal() const ;
                 Normal getShadingNormal() const ;
                 Normal getGeometricNormal() const ;
 
 
+                // D'oh, those names are braindead.
+                Vector get_dpdu() const { return dpdu; }
+                Vector get_dpdv() const { return dpdv; }
+                Vector get_dndu() const { return dpdu; }
+                Vector get_dndv() const { return dpdv; }
         private:
 
                 real_t distance;
                 Point  center;
-                Normal shadingNormal, geometricNormal;
+                Normal geometricNormal;
+                Normal shadingNormal;
+
+                Vector dpdu, dpdv; // partial derivative of position, PBRT: p.83
+                Vector dndu, dndv; // partial derivative of normal, PBRT: p.83
         };
 }
 

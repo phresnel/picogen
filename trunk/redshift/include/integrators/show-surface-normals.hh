@@ -27,7 +27,7 @@ namespace redshift {
         class ShowSurfaceNormals : public Integrator {
         public:
                 virtual tuple<real_t,Color> Li (
-                        const Scene &scene, 
+                        const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample
                 ) const {
@@ -35,18 +35,18 @@ namespace redshift {
                                                 scene.intersect (raydiff));
                         if (I) {
                                 //const Vector sunDir (1,1,0);
-                                
-                                
-                                return make_tuple (1.0, 
+
+
+                                return make_tuple (1.0,
                                         Color(
                                                 /*I->getDistance()*0.05,
                                                 I->getDistance()*0.025,
                                                 I->getDistance()*0.0125*/
-                                                I->getNormal().x+0.5,
-                                                I->getNormal().y+0.5,
-                                                I->getNormal().z+0.5
+                                                I->getShadingNormal().x+0.5,
+                                                I->getShadingNormal().y+0.5,
+                                                I->getShadingNormal().z+0.5
                                         )
-                                );                
+                                );
                         } else {
                                 Color const col (0.5+sample.primaryRay.direction.x,
                                                  0.5+sample.primaryRay.direction.y,
