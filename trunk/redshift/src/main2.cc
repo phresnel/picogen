@@ -24,7 +24,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Maths.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#include <kallisto/common.hh>
+#include "../../kallisto/common.hh"
 
 namespace kallisto {
         template <typename int_t, unsigned int FRACT_BITS>

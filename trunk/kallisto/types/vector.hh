@@ -81,7 +81,7 @@ namespace kallisto {
                         };
                         throw std::out_of_range ("index out of range for Vector<>::operator[]");
                 }
-                
+
                 /*inline
                 T operator* (Vector const & rhs) {
                         return this->x*rhs.x + this->y*rhs.y + this->z*rhs.z;
@@ -90,7 +90,7 @@ namespace kallisto {
                 inline T lengthSq () {
                         return *this * *this;
                 }
-                
+
                 inline T length () {
                         return kallisto::sqrt (this->lengthSq ());
                 }*/
@@ -99,8 +99,8 @@ namespace kallisto {
                 // quite some, that were much nicer to read), but that
                 // doesn't work without many using directives over namespaces.
         };
-        
-        
+
+
         template <typename T> inline
         Vector <CARTESIAN,T> operator- (Vector <CARTESIAN,T> const & rhs) {
                 return Vector <CARTESIAN,T> (-rhs.x, -rhs.y, -rhs.z);
@@ -112,7 +112,7 @@ namespace kallisto {
         }
 
         template <typename T> inline
-        Vector <CARTESIAN,T> operator+ (Vector <CARTESIAN,T> const & lhs, 
+        Vector <CARTESIAN,T> operator+ (Vector <CARTESIAN,T> const & lhs,
                                             Vector <CARTESIAN,T> const & rhs) {
                 return Vector<CARTESIAN,T>(lhs.x+rhs.x, lhs.y+rhs.y,
                                                                   lhs.z+rhs.z);
@@ -126,13 +126,13 @@ namespace kallisto {
         }
 
         template <typename T> inline
-        T operator* (Vector <CARTESIAN,T> const & lhs, 
+        T operator* (Vector <CARTESIAN,T> const & lhs,
                                             Vector <CARTESIAN,T> const & rhs) {
                 return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
         }
-        
+
         template <typename T> inline
-        Vector<CARTESIAN,T> cross (Vector <CARTESIAN,T> const & lhs, 
+        Vector<CARTESIAN,T> cross (Vector <CARTESIAN,T> const & lhs,
                                             Vector <CARTESIAN,T> const & rhs) {
                 return Vector<CARTESIAN,T>(
                         lhs.y*rhs.z - lhs.z*rhs.y,
@@ -152,7 +152,7 @@ namespace kallisto {
         }
 
         template <typename T> inline
-        Vector <CARTESIAN,T> operator* (Vector <CARTESIAN,T> const & lhs, 
+        Vector <CARTESIAN,T> operator* (Vector <CARTESIAN,T> const & lhs,
                                                                T const & rhs) {
                 return Vector <CARTESIAN,T> (lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
         }
@@ -180,7 +180,7 @@ namespace kallisto {
                 return kallisto::sqrt (lengthSq (v));
         }
 
-        //template <typename T> inline T normalize (T const & v);        
+        //template <typename T> inline T normalize (T const & v);
         template <coordinate_space_t SPACE, typename T> inline
         Vector <SPACE,T> normalize (Vector <SPACE,T> const & v) {
                 return v / length (v);

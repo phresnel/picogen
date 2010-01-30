@@ -18,7 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <SDL.h>
+#ifdef __MINGW32__
+ #include <SDL/SDL.h>
+#else
+ #include <SDL.h>
+#endif
 #include <omp.h>
 
 #include <cstdlib>
@@ -108,8 +112,8 @@ private:
 #include "../../quatsch/frontend/jux.hh"
 #include "../../quatsch/backend/est/backend.hh"
 #endif
-#include "quatsch/configurable-functions/noise2ddef.hh"
-#include "quatsch/configurable-functions/layerednoise2ddef.hh"
+#include "../../quatsch/configurable-functions/noise2ddef.hh"
+#include "../../quatsch/configurable-functions/layerednoise2ddef.hh"
 
 namespace redshift {
 class QuatschHeightFunction : public redshift::HeightFunction {
@@ -238,8 +242,8 @@ void run() {
         preetham->setSunDirection(Vector(-5,1,-0.5));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(2,1.5f,1)*3.0);
-        preetham->setColorFilter(redshift::Color(1.4,1.2,1.0)*0.2);
-        preetham->enableFogHack (true, 0.00025f, 150000);
+        preetham->setColorFilter(redshift::Color(1.4,1.2,1.0)*0.02);
+        preetham->enableFogHack (false, 0.00025f, 150000);
         preetham->invalidate();
 
         Scene Scene (

@@ -23,7 +23,11 @@
 
 #include "../setup.hh"
 #include "../rendertargets/rendertarget.hh"
-#include "SDL.h"
+#ifdef __MINGW32__
+ #include <SDL/SDL.h>
+#else
+ #include <SDL.h>
+#endif
 
 namespace redshift {
 
@@ -36,21 +40,21 @@ namespace redshift {
                 ~SdlRenderTarget();
                 shared_ptr<RenderTargetLock> lock ();
                 shared_ptr<RenderTargetLock const> lock () const;
-                void flip();        
-                int getWidth() const;        
+                void flip();
+                int getWidth() const;
                 int getHeight() const;
 
-        private:         
+        private:
                 int width, height;
                 SDL_Surface *display;
-                
+
                 class SdlRenderTargetLock;
                 friend class SdlRenderTargetLock;
 
                 // disable
                 SdlRenderTarget() ;
                 SdlRenderTarget(SdlRenderTarget const&) ;
-                SdlRenderTarget & operator = (SdlRenderTarget const &) ;                                
+                SdlRenderTarget & operator = (SdlRenderTarget const &) ;
         };
 
 } // namespace redshift

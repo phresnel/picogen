@@ -26,7 +26,7 @@
 
 #include <boost/shared_array.hpp>
 //#include <picogen/picogen.h>
-#include "kallisto/common.hh"
+#include "../../kallisto/common.hh"
 
 #include "../quatsch.hh"
 #include "../frontend/jux.hh"
@@ -50,7 +50,7 @@ namespace quatsch {  namespace configurable_functions {
                 }
 
         private:
-                typedef FUNCTION function_t;            
+                typedef FUNCTION function_t;
                 typedef typename function_t::FunctionPtr  FunctionPtr;
                 typedef typename function_t::scalar_t     scalar_t;
                 typedef typename function_t::parameters_t parameters_t;
@@ -86,12 +86,12 @@ namespace quatsch {  namespace configurable_functions {
                         ::std::map<std::string,std::string>&static_parameters,
                         ::std::vector <FunctionPtr> &runtime_parameters
                 );
-        
+
                 static ::std::string const & name () {
-                        static const ::std::string name ("LayeredNoise2d"); 
+                        static const ::std::string name ("LayeredNoise2d");
                         return name;
                 }
-            
+
                 static unsigned int parameterCount () {
                         return 2;
                 }

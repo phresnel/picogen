@@ -28,7 +28,19 @@
 #include <vector>
 #include <sstream>
 
-#include <boost/spirit/iterator/position_iterator.hpp>
+#include <boost/version.hpp>
+#if BOOST_VERSION < 103800
+ #include <boost/spirit/core.hpp>
+ #include <boost/spirit/utility.hpp>
+ #include <boost/spirit/iterator/position_iterator.hpp>
+ #include <boost/spirit/symbols/symbols.hpp>
+#else
+ #define BOOST_SPIRIT_USE_OLD_NAMESPACE
+ #include <boost/spirit/include/classic_core.hpp>
+ #include <boost/spirit/include/classic_utility.hpp>
+ #include <boost/spirit/include/classic_position_iterator.hpp>
+ #include <boost/spirit/include/classic_symbols.hpp>
+#endif
 
 #include "../../utility/symboltable.hh"
 #include "../../utility/sourcecodeposition.hh"
@@ -112,8 +124,8 @@ private:
         // Don not confuse with functions, in which user defined functions are
         // stored!
         ::std::vector < ::std::string> operators;
-        
-        
+
+
 
         struct ConfigurableCallDescriptor {
                 ::boost::shared_ptr <ICreateConfigurableFunction> creator;
@@ -127,9 +139,9 @@ private:
                 {
                 }
         };
-        
-        
-        
+
+
+
         ::std::vector <ConfigurableCallDescriptor> configurableCallDescriptors;
         ::std::vector < ::std::vector <FunctionPtr> > operands;
 

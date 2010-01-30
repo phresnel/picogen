@@ -45,13 +45,13 @@ COMPILE := ""
 CXXFLAGS += -D__STDC_LIMIT_MACROS
 ifeq ($(COMPILE), "FAST_COMPILE")
 else ifeq ($(COMPILE), "DEBUG")
-        CXXFLAGS += -O0 -g
+	CXXFLAGS += -O0 -g
 else
 	CXXFLAGS += -O3 -march=native
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
 	CXXFLAGS += -ffast-math -march=native -fassociative-math
 	CXXFLAGS += -mfpmath=sse
-        CXXFLAGS += -fopenmp
+	CXXFLAGS += -fopenmp
 endif
 
 CXXFLAGS += -Wall -Wno-unused -pedantic

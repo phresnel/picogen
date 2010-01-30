@@ -21,12 +21,12 @@
 #include "../../include/primitives/booleanfield.hh"
 
 
-#include "quatsch/quatsch.hh"
-#include "quatsch/frontend/jux.hh"
-#include "quatsch/backend/est/backend.hh"
+#include "../../../quatsch/quatsch.hh"
+#include "../../../quatsch/frontend/jux.hh"
+#include "../../../quatsch/backend/est/backend.hh"
 
-#include "quatsch/configurable-functions/noise2ddef.hh"
-#include "quatsch/configurable-functions/layerednoise2ddef.hh"
+#include "../../../quatsch/configurable-functions/noise2ddef.hh"
+#include "../../../quatsch/configurable-functions/layerednoise2ddef.hh"
 
 
 namespace redshift { namespace primitive {

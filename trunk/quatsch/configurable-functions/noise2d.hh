@@ -26,7 +26,7 @@
 
 #include <boost/shared_array.hpp>
 //#include <picogen/picogen.h>
-#include "kallisto/common.hh"
+#include "../../kallisto/common.hh"
 
 #include <map>
 #include <vector>
@@ -34,7 +34,7 @@
 
 
 namespace quatsch {  namespace configurable_functions {
-            
+
         template <typename FUNCTION, typename COMPILER>
         class Noise2d : public FUNCTION {
                 template <typename RT, typename T> static RT floor (const T &v) {
@@ -47,7 +47,7 @@ namespace quatsch {  namespace configurable_functions {
                         return (RT)(int)(v<0 ? v-1 : v);
                 }
         private:
-                typedef FUNCTION function_t;            
+                typedef FUNCTION function_t;
                 typedef typename function_t::FunctionPtr  FunctionPtr;
                 typedef typename function_t::scalar_t     scalar_t;
                 typedef typename function_t::parameters_t parameters_t;
@@ -72,18 +72,18 @@ namespace quatsch {  namespace configurable_functions {
                 scalar_t frequency;
 
                 scalar_t operator () (
-                        scalar_t x, scalar_t y, 
-                        scalar_t domainScale, scalar_t rangeScale, 
+                        scalar_t x, scalar_t y,
+                        scalar_t domainScale, scalar_t rangeScale,
                         unsigned int depth
                 ) const;
 
         public:
-            
+
                 static ::std::string const & name () {
-                        static const ::std::string name ("Noise2d"); 
+                        static const ::std::string name ("Noise2d");
                         return name;
                 }
-            
+
                 static unsigned int parameterCount () {
                         return 2;
                 }
@@ -91,7 +91,7 @@ namespace quatsch {  namespace configurable_functions {
                 Noise2d (::std::map<std::string,std::string>&static_parameters,
                               ::std::vector <FunctionPtr> &runtime_parameters
                 );
-            
+
                 virtual ~Noise2d();
                 virtual scalar_t operator () (const parameters_t &) const;
         };

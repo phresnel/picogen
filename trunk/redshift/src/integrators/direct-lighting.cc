@@ -106,7 +106,7 @@ tuple<real_t,Color> DirectLighting::Li (
 
                 Color ret = surfaceSkyColor;
 
-                if (false && bg->hasSun()) {
+                if (bg->hasSun()) {
                         const Vector sunDir = bg->getSunDirection();
                         const Ray ray (poi,sunDir);
                         const Color surfaceColor = bsdf->f(ray.direction, sunDir, Bsdf::reflection, Bsdf::diffuse)/* * constants::pi*/; // TODO: is this correct?

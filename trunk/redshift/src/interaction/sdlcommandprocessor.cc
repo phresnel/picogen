@@ -20,7 +20,11 @@
 
 #include "../../include/interaction/sdlcommandprocessor.hh"
 
-#include <SDL.h>
+#ifdef __MINGW32__
+ #include <SDL/SDL.h>
+#else
+ #include <SDL.h>
+#endif
 
 namespace redshift { namespace interaction {
 
