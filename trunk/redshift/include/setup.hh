@@ -49,8 +49,8 @@ namespace redshift {
         };
 
         typedef float real_t;
-        typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
-        //typedef float fixed_point_t; //<-- lasttime I checked, floats where
+        //typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
+        typedef float fixed_point_t; //<-- lasttime I checked, floats where
                                        // at only roughly 70% of runtime
                                        // compared to int
 
