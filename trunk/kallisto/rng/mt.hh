@@ -55,7 +55,7 @@ STATIC_ASSERT((sizeof(make_int_if_float<double>::type)==sizeof(int64_t)));
 // note: mt19937 is typedefed as mersenne_twister<uint32_t,...>, hence we can
 //       only use uint32 as the seed at the moment
 template <
-        typename T, 
+        typename T,
         typename make_int_if_float<T>::type min,
         typename make_int_if_float<T>::type max,
         bool isFloat=kallisto::traits::is_float<T>::value
@@ -73,53 +73,53 @@ public:
         , dist (min, max)
         , rand_ (rng, dist) {
         }
-        
+
         MersenneTwister ()
         : rng()
         , dist (min, max)
         , rand_ (rng, dist) {
         }
-        
+
         void seed (uint32_t seed) {
                 rng.seed (seed);
         }
-        
+
         T rand () {
                 return rand_();
         }
-        
+
         operator T () {
                 return rand();
         }
 
-private:        
+private:
         boost::mt19937 rng;
         typedef boost::uniform_int<T> dist_t;
 
         dist_t dist;
         boost::variate_generator<
-                boost::mt19937&, 
+                boost::mt19937&,
                 dist_t
         > rand_;
 };
 
 
 template <
-        typename T, 
+        typename T,
         typename make_int_if_float<T>::type min,
         typename make_int_if_float<T>::type max
 >
-class MersenneTwister<T,min,max,true> {        
+class MersenneTwister<T,min,max,true> {
         typedef T float_t;
 
         // boost.random seems to have problems with uint64_t ...
-        //typedef typename 
+        //typedef typename
         //  kallisto::traits::equal_sized_uint<float_t>::type uint32_t uint_t;
         //typedef typename make_int_if_float<T>::type uint_t;
         typedef typename make_int_if_float<T>::type uint_t;
-        typedef typename 
-          kallisto::traits::bigger_float<float_t>::type bigger_float_t;        
-        
+        typedef typename
+          kallisto::traits::bigger_float<float_t>::type bigger_float_t;
+
 public:
 
         STATIC_ASSERT(min <= max);
@@ -136,20 +136,17 @@ public:
         , dist (0, maxf)
         , rand_ (rng, dist) {
         }
-        
+
         void seed (uint_t seed) {
                 rng.seed (seed);
         }
-        
+
         float_t rand () {
                 return static_cast<float_t>(min)
                         + (rand_() / maxf)
                         * static_cast<float_t>(max-min);
         }
-        
-        operator float_t () {
-                return rand();
-        }
+
 
         tuple<float_t,float_t> uniform_disk () {
                 /*float_t x,y;
@@ -184,7 +181,7 @@ private:
 
         dist_t dist;
         boost::variate_generator<
-                boost::mt19937&, 
+                boost::mt19937&,
                 dist_t
         > rand_;
 };
