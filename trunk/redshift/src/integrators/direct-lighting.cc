@@ -41,7 +41,7 @@ tuple<real_t,Color> DirectLighting::Li (
         const Normal normalG = gd.getGeometricNormal();
         const Normal normalS = gd.getShadingNormal();
         const Point poi = gd.getCenter()+
-                vector_cast<PointCompatibleVector>(normalG*0.001f);
+                vector_cast<PointCompatibleVector>(normalG*0.1f);
 
         //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         // crap begin
@@ -52,7 +52,7 @@ tuple<real_t,Color> DirectLighting::Li (
         if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                 Ray ray;
                 ray.position = poi;
-                const int numDiffuseSamples = 10;
+                const int numDiffuseSamples = 50;
                 if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                         optional<tuple<Color,Vector> > v_ = bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
                         if (v_) {
