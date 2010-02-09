@@ -216,23 +216,9 @@ namespace redshift {
 #include "smart_ptr.hh"
 #include "tuple.hh"
 #include "optional.hh"
-
 namespace redshift {
-        inline tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal) {
-                using std::fabs;
-                using std::sqrt;
-                Vector v2;
-                if (std::fabs(normal.x) > std::fabs(normal.y)) {
-                        const real_t invLen = 1 / sqrt(normal.x*normal.x + normal.z*normal.z);
-                        v2 = Vector (-normal.z * invLen, 0, normal.x * invLen);
-                } else {
-                        const real_t invLen = 1 / sqrt(normal.y*normal.y + normal.z*normal.z);
-                        v2 = Vector (0, normal.z * invLen, -normal.y * invLen);
-                }
-                const Vector normalD = vector_cast<Vector>(normal);
-                const Vector v3 = cross(normalD, v2);
-                return make_tuple (v2, normalD, v3);
-        }
+
+        extern tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal_);
 
         inline Vector reflect (const Vector &in, const Normal &n) {
                 const real_t f = dot(vector_cast<Vector>(n),in) * 2.f;

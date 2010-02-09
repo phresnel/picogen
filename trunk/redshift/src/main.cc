@@ -193,6 +193,51 @@ class HeightFunction : public redshift::HeightFunction {
 };
 
 
+namespace redshift {
+MersenneTwister<float,0,1> mt;
+tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal_) {
+        using std::fabs;
+        using std::sqrt;
+
+
+        /*inline void CoordinateSystem(const Vector &v1, Vector *v2, Vector *v3) {
+            if (fabsf(v1.x) > fabsf(v1.y)) {
+                float invLen = 1.f / sqrtf(v1.x*v1.x + v1.z*v1.z);
+                *v2 = Vector(-v1.z * invLen, 0.f, v1.x * invLen);
+            }
+            else {
+                float invLen = 1.f / sqrtf(v1.y*v1.y + v1.z*v1.z);
+                *v2 = Vector(0.f, v1.z * invLen, -v1.y * invLen);
+            }
+            *v3 = Cross(v1, *v2);
+        }*/
+        const Vector normal (vector_cast<Vector> (normal_));
+        const real_t invLen = 1.f / sqrtf(normal.x*normal.x + normal.z*normal.z);
+        const Vector v2 (-normal.z*invLen, 0.f, normal.x*invLen);
+        const Vector v3 (cross (normal, v2));
+        return make_tuple (v2, normal, v3);
+
+        #if 0
+        const Vector rand (normal_.y, normal_.z, normal_.x);
+        /*const Vector rand (normalize(Vector(
+                mt.rand(),
+                mt.rand(),
+                mt.rand()
+        )));*/
+
+        const Vector normal (vector_cast<Vector> (normal_));
+        const Vector a (cross (normal, rand));
+        const Vector b (cross (normal, a));
+
+        return make_tuple (
+                b,
+                normal,
+                a
+        );
+        #endif
+}
+}
+
 void run() {
         using namespace redshift;
         using namespace redshift::camera;
@@ -239,10 +284,10 @@ void run() {
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(-5,1,-0.5));
+        preetham->setSunDirection(Vector(-5,0,0));
         preetham->setTurbidity(2.0f);
         preetham->setSunColor(redshift::Color(2,1.5f,1)*3.0);
-        preetham->setColorFilter(redshift::Color(1.4,1.2,1.0)*0.02);
+        preetham->setColorFilter(redshift::Color(1.4,1.2,1.0)*0.06);
         preetham->enableFogHack (false, 0.00025f, 150000);
         preetham->invalidate();
 
