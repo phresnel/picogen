@@ -218,7 +218,21 @@ namespace redshift {
 #include "optional.hh"
 namespace redshift {
 
-        extern tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal_);
+        inline tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal_) {
+                using std::fabs; using std::sqrt;
+
+                const Vector normal (vector_cast<Vector> (normal_));
+                Vector v2;
+                if (fabs (normal.x) > fabs (normal.y)) {
+                        const real_t invLen = 1.f / sqrtf(normal.x*normal.x + normal.z*normal.z);
+                        v2 = Vector (-normal.z*invLen, 0.f, normal.x*invLen);
+                } else {
+                        const real_t invLen = 1.f / sqrtf(normal.y*normal.y + normal.z*normal.z);
+                        v2 = Vector (0.f, normal.z*invLen, -normal.y*invLen);
+                }
+                const Vector v3 (cross (normal, v2));
+                return make_tuple (v2, normal, v3);
+        }
 
         inline Vector reflect (const Vector &in, const Normal &n) {
                 const real_t f = dot(vector_cast<Vector>(n),in) * 2.f;

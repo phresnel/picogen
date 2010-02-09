@@ -51,19 +51,10 @@ tuple<real_t,Color> DirectLighting::Li (
                 if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         Ray ray;
                         ray.position = poi;
-
-                        // BETTER USE AMBIENT OCCLUSION FACTOR. THIS IS KINDA SLOW!
-                        const tuple<Vector,Vector,Vector> cs = coordinateSystem (normalS);
-                        const Vector &X = get<0>(cs);
-                        const Vector &Y = get<1>(cs);
-                        const Vector &Z = get<2>(cs);
                         const int numDiffuseSamples = 50;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 optional<tuple<Color,Vector> > v_ = bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
                                 if (v_) {
-                                        /*const tuple<Color,Vector> v = *v_;
-                                        const Vector d = X * get<1>(v).x + Y * get<1>(v).y + Z * get<1>(v).z; // TODO: where to do this transform?
-                                        */
                                         ray.direction = get<1>(*v_);
                                         if (ray.direction.y>0) {
                                                 sum = sum + multiplyComponents(bg->query (ray), get<0>(*v_));
