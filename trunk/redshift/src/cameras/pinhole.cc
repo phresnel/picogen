@@ -61,8 +61,8 @@ tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
         ray.direction.z = 1.0;
         ray.direction = normalize (ray.direction);
         ray.position = position;
-        //ray.minT = constants::epsilon;
-        //ray.maxT = constants::infinity;
+        ray.minT = constants::epsilon;
+        ray.maxT = constants::infinity;
         return make_tuple (1.0, ray);
 }
 

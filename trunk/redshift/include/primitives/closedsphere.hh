@@ -26,7 +26,6 @@
 #include "../shapes/closedsphere.hh"
 #include "../primitives/primitive.hh"
 #include "../material/lambertian.hh"
-#include "../material/mirror.hh"
 
 namespace redshift { namespace primitive {
 
@@ -50,8 +49,7 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom
                 ) const {
                         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color::fromRgb(1,1,1), mt)));
-                        //bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror (Color::fromRgb(1,1,1))));
+                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color::fromRgb(1,0,0), mt)));
                         return bsdf;
                 }
 

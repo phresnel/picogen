@@ -24,7 +24,7 @@ namespace redshift { namespace primitive {
 
 
 
-ClosedSphere::ClosedSphere (Point const & center, real_t radius)
+ClosedSphere::ClosedSphere (Point const & center, real_t radius) 
 : sphereData (center, radius)
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 {
@@ -51,8 +51,25 @@ bool ClosedSphere::doesIntersect (Ray const &ray) const {
 
 optional<Intersection>
  ClosedSphere::intersect(RayDifferential const &ray) const {
-        const optional<DifferentialGeometry> i(sphereData.intersect(ray));
-        if (i) {
+
+        /*
+        tuple<bool const,DifferentialGeometry const>
+                       i(sphereData.intersect(ray));
+
+
+        const bool                  & does (get<0>(i));
+        const DifferentialGeometry  & dg   (get<1>(i));
+        
+
+        Intersection iret = Intersection(
+                shared_from_this(),
+                dg);
+
+        return make_tuple (does, iret);
+        */
+        optional<DifferentialGeometry> 
+                       i(sphereData.intersect(ray));
+        if (i) { 
                 return Intersection (shared_from_this(), *i);
         } else {
                 return false;

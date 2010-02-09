@@ -522,14 +522,14 @@ public:
                 shared_ptr<HeightFunction const> distortionFun_
         )
         : fun(fun)
-        , primaryBB(initBB (size,min(1000.f,(size*size*size)/1)))
+        , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
         , primaryNode(
                 primaryBB,
                 *fun.get(),
-                12,//14,
+                8,//14,
                 0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25

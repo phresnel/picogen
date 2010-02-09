@@ -49,8 +49,8 @@ namespace redshift {
         };
 
         typedef float real_t;
-        //typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
-        typedef float fixed_point_t; //<-- lasttime I checked, floats where
+        typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
+        //typedef float fixed_point_t; //<-- lasttime I checked, floats where
                                        // at only roughly 70% of runtime
                                        // compared to int
 
@@ -216,22 +216,22 @@ namespace redshift {
 #include "smart_ptr.hh"
 #include "tuple.hh"
 #include "optional.hh"
+
 namespace redshift {
-
-        inline tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal_) {
-                using std::fabs; using std::sqrt;
-
-                const Vector normal (vector_cast<Vector> (normal_));
+        inline tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal) {
+                using std::fabs;
+                using std::sqrt;
                 Vector v2;
-                if (fabs (normal.x) > fabs (normal.y)) {
-                        const real_t invLen = 1.f / sqrtf(normal.x*normal.x + normal.z*normal.z);
-                        v2 = Vector (-normal.z*invLen, 0.f, normal.x*invLen);
+                if (std::fabs(normal.x) > std::fabs(normal.y)) {
+                        const real_t invLen = 1 / sqrt(normal.x*normal.x + normal.z*normal.z);
+                        v2 = Vector (-normal.z * invLen, 0, normal.x * invLen);
                 } else {
-                        const real_t invLen = 1.f / sqrtf(normal.y*normal.y + normal.z*normal.z);
-                        v2 = Vector (0.f, normal.z*invLen, -normal.y*invLen);
+                        const real_t invLen = 1 / sqrt(normal.y*normal.y + normal.z*normal.z);
+                        v2 = Vector (0, normal.z * invLen, -normal.y * invLen);
                 }
-                const Vector v3 (cross (normal, v2));
-                return make_tuple (v2, normal, v3);
+                const Vector normalD = vector_cast<Vector>(normal);
+                const Vector v3 = cross(normalD, v2);
+                return make_tuple (v2, normalD, v3);
         }
 
         inline Vector reflect (const Vector &in, const Normal &n) {

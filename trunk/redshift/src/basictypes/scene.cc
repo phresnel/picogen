@@ -104,7 +104,7 @@ void Scene::render (
 
 ) const {
 
-        const int numAASamples = 20;
+        const int numAASamples = 1;
         const real_t totalNumberOfSamples = static_cast<real_t>
                 (renderTarget->getWidth() * renderTarget->getHeight() * numAASamples);
         real_t sampleNumber = 0;
