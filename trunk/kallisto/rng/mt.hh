@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// See also test/gen-test-mersenne-twister.cc for some history.
 
 #ifndef RANDOM_HH_INCLUDED_20090725
 #define RANDOM_HH_INCLUDED_20090725
@@ -54,6 +55,7 @@ STATIC_ASSERT((sizeof(make_int_if_float<double>::type)==sizeof(int64_t)));
 // wrappers
 // note: mt19937 is typedefed as mersenne_twister<uint32_t,...>, hence we can
 //       only use uint32 as the seed at the moment
+
 template <
         typename T,
         typename make_int_if_float<T>::type min,
@@ -61,8 +63,10 @@ template <
         bool isFloat=kallisto::traits::is_float<T>::value
 > class MersenneTwister;
 
+
 template <typename T, T min, T max>
 class MersenneTwister<T,min,max,false> {
+        typedef typename make_int_if_float<T>::type uint_t;
 public:
         STATIC_ASSERT((int_cmp_le<T, traits::integer_limits<T>::min, min>::value));
         STATIC_ASSERT((int_cmp_le<T, max, traits::integer_limits<T>::max>::value));
@@ -71,24 +75,26 @@ public:
         MersenneTwister (uint32_t seed)
         : rng(seed)
         , dist (min, max)
-        , rand_ (rng, dist) {
+        , rand_ (rng, dist)
+        {
         }
 
         MersenneTwister ()
         : rng()
         , dist (min, max)
-        , rand_ (rng, dist) {
+        , rand_ (rng, dist)
+        {
         }
 
         void seed (uint32_t seed) {
-                rng.seed (seed);
+                rand_.seed (seed);
         }
 
         T rand () {
                 return rand_();
         }
 
-        operator T () {
+        T operator () () {
                 return rand();
         }
 
@@ -104,6 +110,7 @@ private:
 };
 
 
+
 template <
         typename T,
         typename make_int_if_float<T>::type min,
@@ -111,11 +118,6 @@ template <
 >
 class MersenneTwister<T,min,max,true> {
         typedef T float_t;
-
-        // boost.random seems to have problems with uint64_t ...
-        //typedef typename
-        //  kallisto::traits::equal_sized_uint<float_t>::type uint32_t uint_t;
-        //typedef typename make_int_if_float<T>::type uint_t;
         typedef typename make_int_if_float<T>::type uint_t;
         typedef typename
           kallisto::traits::bigger_float<float_t>::type bigger_float_t;
@@ -125,20 +127,18 @@ public:
         STATIC_ASSERT(min <= max);
 
         MersenneTwister (uint32_t seed)
-        : rng(seed)
-        , maxf(std::numeric_limits<uint_t>::max())
-        , dist (0, maxf)
-        , rand_ (rng, dist) {
+        : rand_(seed)
+        , maxf(std::numeric_limits<uint32_t>::max())
+        {
         }
         MersenneTwister ()
-        : rng()
-        , maxf(std::numeric_limits<uint_t>::max())
-        , dist (0, maxf)
-        , rand_ (rng, dist) {
+        : rand_()
+        , maxf(std::numeric_limits<uint32_t>::max())
+        {
         }
 
-        void seed (uint_t seed) {
-                rng.seed (seed);
+        void seed (uint32_t seed) {
+                rand_.seed (seed);
         }
 
         float_t rand () {
@@ -147,6 +147,9 @@ public:
                         * static_cast<float_t>(max-min);
         }
 
+        float_t operator () () {
+                return rand();
+        }
 
         tuple<float_t,float_t> uniform_disk () {
                 /*float_t x,y;
@@ -175,6 +178,7 @@ public:
         }
 
 private:
+        /*
         boost::mt19937 rng;
         const bigger_float_t maxf;
         typedef boost::uniform_int<uint_t> dist_t;
@@ -184,7 +188,11 @@ private:
                 boost::mt19937&,
                 dist_t
         > rand_;
+        */
+        boost::mt19937 rand_;
+        const bigger_float_t maxf;
 };
+
 
 } }
 

@@ -18,6 +18,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// History:
+// 1st incident:
+//  * http://old.nabble.com/boost::random:-get-same-number-sequences-32-64-bit--td27394450.html
+//  * somewhere between boost 1.35 and 1.41, uniform_int received some fixes
+//    that invalidated the random number sequences.
+//  * I then got rid of uniform_int in the float specialization, making
+//    the float specialization portable
+
 
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
@@ -50,36 +58,36 @@ template <> struct is_float<double> { enum { value = true }; };
 
 // Typename -> name of type as string
 template <typename T> struct Typename;
-template <> struct Typename<uint8_t> { 
+template <> struct Typename<uint8_t> {
         static const char* name () { return "uint8_t"; }
 };
-template <> struct Typename<uint16_t> { 
+template <> struct Typename<uint16_t> {
         static const char* name () { return "uint16_t"; }
 };
-template <> struct Typename<uint32_t> { 
+template <> struct Typename<uint32_t> {
         static const char* name () { return "uint32_t"; }
 };
-template <> struct Typename<uint64_t> { 
+template <> struct Typename<uint64_t> {
         static const char* name () { return "uint64_t"; }
 };
 
-template <> struct Typename<int8_t> { 
+template <> struct Typename<int8_t> {
         static const char* name () { return "int8_t"; }
 };
-template <> struct Typename<int16_t> { 
+template <> struct Typename<int16_t> {
         static const char* name () { return "int16_t"; }
 };
-template <> struct Typename<int32_t> { 
+template <> struct Typename<int32_t> {
         static const char* name () { return "int32_t"; }
 };
-template <> struct Typename<int64_t> { 
+template <> struct Typename<int64_t> {
         static const char* name () { return "int64_t"; }
 };
 
-template <> struct Typename<float> { 
+template <> struct Typename<float> {
         static const char* name () { return "float"; }
 };
-template <> struct Typename<double> { 
+template <> struct Typename<double> {
         static const char* name () { return "double"; }
 };
 
@@ -87,33 +95,55 @@ template <> struct Typename<double> {
 #define MAKE_STRING(T) Typename<T>::name()
 
 
-// when T is char, it would get printed as ascii through cout, not as value
+// when T is char, it would get printed as ascii through cout, not as value,
+// hence the overloads on [u]int8_t below.
 template <typename T> T printable (T value) {
         return value;
 }
 int printable (int8_t value) { return value; }
 int printable (uint8_t value) { return value; }
 
+std::string printable (int64_t value) {
+        std::stringstream ss;
+        if (value < 0) {
+                ss << "-";
+                value = -value;
+        }
+        do {
+                ss << (value%10);
+                value /= 10;
+        } while (value);
+        return ss.str();
+}
+std::string printable (uint64_t value) {
+        std::stringstream ss;
+        do {
+                ss << (value%10);
+                value /= 10;
+        } while (value);
+        return ss.str();
+}
+
 
 
 // dump a compilable rng test
 template <
-        typename T, 
-        typename kallisto::random::make_int_if_float<T>::type min, 
+        typename T,
+        typename kallisto::random::make_int_if_float<T>::type min,
         typename kallisto::random::make_int_if_float<T>::type max
 >
 void dump (uint32_t seed, size_t num) {
         using kallisto::random::MersenneTwister;
-        typedef typename 
+        typedef typename
                 kallisto::random::make_int_if_float<T>::type IFF;
         MersenneTwister<T, min, max> mt (seed);
-        
+
         std::string id;
         {
                 std::stringstream tmp;
                 tmp
-                        << MAKE_STRING(T) 
-                        << "__seed" << printable(seed)        
+                        << MAKE_STRING(T)
+                        << "__seed" << printable(seed)
                         << "__size" << printable(num);
                 if (kallisto::int_cmp_le<IFF,0,min>::value) {
                         tmp << "__min" << printable(min);
@@ -128,11 +158,11 @@ void dump (uint32_t seed, size_t num) {
                 tmp >> id;
         }
         std::cout
-                << "\nconst size_t check_" 
+                << "\nconst size_t check_"
                 << id << " = " << printable(num)
                 << ";\n";
         std::cout
-                << "const " << MAKE_STRING(T) 
+                << "const " << MAKE_STRING(T)
                 << " " << id
                 << " [" << num << "] = {";
         for (size_t i=0; i<num; ++i) {
@@ -147,7 +177,7 @@ void dump (uint32_t seed, size_t num) {
                                 << (is_signed<T>::value ? "" : "U" )
                                 << (is_long<T>::value ? "L" : "" );
                 };
-                std::cout << ((i+1)!=num?",":"");                        
+                std::cout << ((i+1)!=num?",":"");
         }
         std::cout << "\n};\n";
         std::cout
@@ -169,7 +199,7 @@ void dump (uint32_t seed, size_t num) {
         std::cout
                 << "> "
                 << "doTest" << id
-                << " (" << num << ", " 
+                << " (" << num << ", "
                 << id << ", "
                 << printable(seed)
                 << ")"
@@ -190,9 +220,9 @@ void printTestSuite () {
         "//  mail: com.gmail.phresnel , for nice mail swap \"com\" and \"phresnel\" \n"
         "//   web: http://picogen.org , http://phresnel.org \n"
         "///////////////////////////////////////////////////////////////////////////////\n"
-        "// file generated at " 
+        "// file generated at "
         ;
-        
+
         {
                 time_t rawtime;
                 struct tm * timeinfo;
@@ -205,11 +235,11 @@ void printTestSuite () {
                 std::cout << tmp;
         }
 
-        std::cout << 
+        std::cout <<
         "\n"
         "// generator compiled at " __DATE__ " " __TIME__ "\\n\n"
         ;
-        
+
         std::cout <<
         "///////////////////////////////////////////////////////////////////////////////\n"
         "#define __STDC_LIMIT_MACROS\n"
@@ -236,7 +266,7 @@ void printTestSuite () {
         "template <typename T> bool cmp (T lhs, T rhs) {\n"
         "        return cmp_<T>()(lhs,rhs);\n"
         "}\n"
-        "\n"       
+        "\n"
         "// helpers to print types nicely\n"
         "template <typename T> struct Typename;\n"
         "template <> struct Typename<uint8_t> { static const char* name () { return \"uint8_t\"; } };\n"
@@ -256,7 +286,7 @@ void printTestSuite () {
         "        return value;\n"
         "}\n"
         "int printable (int8_t value) { return value; }\n"
-        "int printable (uint8_t value) { return value; }\n"        
+        "int printable (uint8_t value) { return value; }\n"
         "\n"
         "// validator\n"
         "template <\n"
@@ -305,9 +335,9 @@ void printTestSuite () {
         "\n"
         "int main () {\n"
         "        std::cout << \"random number generation regression tests\\n\";\n"
-        "        std::cout << \"file generated at " 
+        "        std::cout << \"file generated at "
         ;
-        
+
         {
                 time_t rawtime;
                 struct tm * timeinfo;
@@ -321,65 +351,66 @@ void printTestSuite () {
         }
 
         std::cout << "\\n\";\n";
-        std::cout << 
+        std::cout <<
         "        std::cout << \"generator compiled at " __DATE__ " " __TIME__ "\\n\";\n"
         "}\n\n";
 }
 
 
 
-int main () {        
-        
-        printTestSuite ();        
+int main () {
+
+        printTestSuite ();
 
         // charge!
-        
-        dump<uint32_t, 0, 255> (0, 32);        
+
+        dump<uint32_t, 0, 255> (0, 32);
         dump<uint32_t, 0, 255> (1, 32);
         dump<uint32_t, 0, 255> (2, 32);
-        
+
         dump<int32_t, 0, 255> (0, 32);
         dump<int32_t, 0, 255> (1, 32);
         dump<int32_t, 0, 255> (2, 32);
 
-        dump<uint8_t, 0, 1> (122, 32);        
+        dump<uint8_t, 0, 1> (122, 32);
         dump<uint8_t, 100, 101> (125, 32);
         dump<uint8_t, 150, 255> (11, 32);
-        
-        dump<uint16_t, 0, 1> (1111, 32);        
+
+        dump<uint16_t, 0, 1> (1111, 32);
         dump<uint16_t, 0, 0xFFFF> (2222, 32);
         dump<uint16_t, 150, 155> (12154, 32);
-        
-        dump<uint32_t, 10, 11> (115611, 32);        
+
+        dump<uint32_t, 10, 11> (115611, 32);
         dump<uint32_t, 0, 0xFFFFFFFF> (256222, 32);
         dump<uint32_t, 0, 64> (1215564, 32);
-        
-        dump<uint64_t, 0, 2> (1111, 32);        
-        dump<uint64_t, 0, 0xFFFFFFFFFFFFFFFFUL> (0x321321, 32);
-        dump<uint64_t, 0xFFFFFFFFFFFFFFFEUL, 0xFFFFFFFFFFFFFFFFUL> (5465464, 32);
-        
-        dump<int8_t, 0, 1> (122, 32);        
+
+        dump<uint64_t, 0, 2> (1111, 32);
+
+        dump<uint64_t, 0, 0xFFFFFFFFFFFFFFFFULL> (0x321321, 32);
+        dump<uint64_t, 0xFFFFFFFFFFFFFFFEULL, 0xFFFFFFFFFFFFFFFFULL> (5465464, 32);
+
+        dump<int8_t, 0, 1> (122, 32);
         dump<int8_t, 100, 101> (125, 32);
         dump<int8_t, 150, 255> (11, 32);
-        
+
         dump<int16_t, 0, 1> (1111, 32);
         dump<int16_t, 0, 32767> (2222, 32);
         dump<int16_t, 150, 155> (12154, 32);
-        
-        dump<int32_t, 10, 11> (115611, 32);        
+
+        dump<int32_t, 10, 11> (115611, 32);
         dump<int32_t, 0, kallisto::traits::integer_limits<int32_t>::max> (256222, 32);
         dump<int32_t, 0, 64> (1215564, 32);
-        
-        dump<int64_t, 0, 2> (1111, 32);        
+
+        dump<int64_t, 0, 2> (1111, 32);
         dump<int64_t, 0, kallisto::traits::integer_limits<int64_t>::max> (0x3155454L, 32);
-        dump<int64_t, 0xFFFFFFFFFFFFFFFEL, 0xFFFFFFFFFFFFFFFFL> (1211234L, 32);
-        
+        dump<int64_t, 0xFFFFFFFFFFFFFFFELL, 0xFFFFFFFFFFFFFFFFLL> (1211234L, 32);
+
         dump<float,0,1> (12345534, 32);
         dump<float,0,10> (12341111, 32);
         dump<float,0,255> (0, 32);
         dump<float,0,255> (1, 32);
         dump<float,0,255> (2, 32);
-        
+
         dump<double,0,1> (12345534, 32);
         dump<double,0,10> (12341111, 32);
         dump<double,0,255> (0, 32);
