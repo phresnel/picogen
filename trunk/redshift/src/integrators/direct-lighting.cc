@@ -28,13 +28,9 @@ tuple<real_t,Color> DirectLighting::Li (
         const Sample &sample,
         const bool doMirror
 ) const {
-        const optional<Intersection> I (
-                                scene.intersect (raydiff));
+        const optional<Intersection> I (scene.intersect (raydiff));
         if (I) {
-                const DifferentialGeometry gd =
-                        I->getDifferentialGeometry();
-
-
+                const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
                 const shared_ptr<Background> bg (scene.getBackground());
                 const Normal normalG = gd.getGeometricNormal();
@@ -51,7 +47,7 @@ tuple<real_t,Color> DirectLighting::Li (
                 if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         Ray ray;
                         ray.position = poi;
-                        const int numDiffuseSamples = 50;
+                        const int numDiffuseSamples = 10;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 optional<tuple<Color,Vector> > v_ = bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
                                 if (v_) {
@@ -63,16 +59,6 @@ tuple<real_t,Color> DirectLighting::Li (
                         }
                 }
                 // spec
-                /*if (bsdf->hasAny (Bsdf::reflection, Bsdf::specular)) {
-                        Ray ray (poi, raydiff.direction);
-                        const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
-                                ray.direction, Bsdf::reflection, Bsdf::specular);
-                        if (v_) {
-                                const tuple<Color,Vector> v = *v_;
-                                ray.direction = get<1>(v);
-                                spec = spec + multiplyComponents(bg->query (ray), get<0>(v));
-                        }
-                }*/
                 if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
                         Ray ray (poi, raydiff.direction);
                         const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
@@ -80,6 +66,9 @@ tuple<real_t,Color> DirectLighting::Li (
                         if (v_) {
                                 const tuple<Color,Vector> v = *v_;
                                 ray.direction = get<1>(v);
+
+                                // TODO: don't the speheres intersect because
+                                //  of something with raydiffs, or the lack therof?
                                 spec = spec + get<1> (Li (scene, RayDifferential(ray), sample, false));
                         }
                 }
@@ -94,7 +83,7 @@ tuple<real_t,Color> DirectLighting::Li (
 
                 Color ret = surfaceSkyColor;
 
-                if (false && bg->hasSun()) {
+                if (bg->hasSun()) {
                         const Vector sunDir = bg->getSunDirection();
                         const Ray ray (poi,sunDir);
                         const Color surfaceColor = bsdf->f(ray.direction, sunDir, Bsdf::reflection, Bsdf::diffuse)/* * constants::pi*/; // TODO: is this correct?

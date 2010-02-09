@@ -32,9 +32,9 @@
 #endif
 
 
-
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 #include "../common.hh"
 
@@ -113,7 +113,9 @@ std::string printable (int64_t value) {
                 ss << (value%10);
                 value /= 10;
         } while (value);
-        return ss.str();
+        std::string ret = ss.str();
+        reverse (ret.begin(), ret.end());
+        return ret;
 }
 std::string printable (uint64_t value) {
         std::stringstream ss;
@@ -121,7 +123,9 @@ std::string printable (uint64_t value) {
                 ss << (value%10);
                 value /= 10;
         } while (value);
-        return ss.str();
+        std::string ret = ss.str();
+        reverse (ret.begin(), ret.end());
+        return ret;
 }
 
 

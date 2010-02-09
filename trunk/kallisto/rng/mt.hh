@@ -26,6 +26,7 @@
 #include <boost/random.hpp>
 #include <boost/tuple/tuple.hpp>
 
+
 namespace kallisto { namespace random {
 
 using boost::tuple;
@@ -117,6 +118,7 @@ template <
         typename make_int_if_float<T>::type max
 >
 class MersenneTwister<T,min,max,true> {
+        typedef boost::mt19937 mt19937;
         typedef T float_t;
         typedef typename make_int_if_float<T>::type uint_t;
         typedef typename
@@ -128,7 +130,7 @@ public:
 
         MersenneTwister (uint32_t seed)
         : rand_(seed)
-        , maxf(std::numeric_limits<uint32_t>::max())
+        , maxf(rand_.max()-rand_.min())
         {
         }
         MersenneTwister ()
@@ -143,7 +145,7 @@ public:
 
         float_t rand () {
                 return static_cast<float_t>(min)
-                        + (rand_() / maxf)
+                        + (rand_() / maxf - rand_.min())
                         * static_cast<float_t>(max-min);
         }
 
