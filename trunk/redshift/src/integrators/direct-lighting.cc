@@ -22,7 +22,7 @@
 
 namespace redshift {
 
-tuple<real_t,Color> DirectLighting::Li (
+tuple<real_t,Color,real_t> DirectLighting::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -127,16 +127,18 @@ tuple<real_t,Color> DirectLighting::Li (
 
                 if (bg->hasAtmosphereShade())
                         ret = bg->atmosphereShade (ret, raydiff, gd.getDistance());
-                return make_tuple(1.0f, ret);
+                return make_tuple(1.0f, ret, gd.getDistance());
         } else {
                 return make_tuple (1.0,
-                        scene.getBackground()->query(raydiff)); // TODO: atmosphere shade
+                        scene.getBackground()->query(raydiff),
+                        constants::infinity
+                ); // TODO: atmosphere shade
         }
 }
 
 
 
-tuple<real_t,Color> DirectLighting::Li (
+tuple<real_t,Color,real_t> DirectLighting::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample

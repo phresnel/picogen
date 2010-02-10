@@ -26,7 +26,7 @@
 namespace redshift {
         class ShowSurfaceNormals : public Integrator {
         public:
-                virtual tuple<real_t,Color> Li (
+                virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample
@@ -45,13 +45,14 @@ namespace redshift {
                                                 I->getShadingNormal().x+0.5,
                                                 I->getShadingNormal().y+0.5,
                                                 I->getShadingNormal().z+0.5
-                                        )
+                                        ),
+                                        I->getDistance()
                                 );
                         } else {
                                 Color const col (0.5+sample.primaryRay.direction.x,
                                                  0.5+sample.primaryRay.direction.y,
                                                  0.5+sample.primaryRay.direction.z);
-                                return make_tuple (1.0, col);
+                                return make_tuple (1.0, col, constants::infinity);
                         }
                 }
         };

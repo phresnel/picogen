@@ -26,8 +26,8 @@
 namespace redshift {
         class VisualizeDistance : public Integrator {
         public:
-                virtual tuple<real_t,Color> Li (
-                        const Scene &scene, 
+                virtual tuple<real_t,Color,real_t> Li (
+                        const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample
                 ) const {
@@ -35,9 +35,9 @@ namespace redshift {
                                                 scene.intersect (raydiff));
                         if (I) {
                                 //const Vector sunDir (1,1,0);
-                                
-                                
-                                return make_tuple (1.0, 
+
+
+                                return make_tuple (1.0,
                                         Color(
                                                 I->getDistance()*0.05,
                                                 I->getDistance()*0.025,
@@ -45,13 +45,14 @@ namespace redshift {
                                                 /*I->getNormal().x+0.5,
                                                 I->getNormal().y+0.5,
                                                 I->getNormal().z+0.5*/
-                                        )
-                                );                
+                                        ),
+                                        I->getDistance()
+                                );
                         } else {
                                 Color const col (0.5+sample.primaryRay.direction.x,
                                                  0.5+sample.primaryRay.direction.y,
                                                  0.5+sample.primaryRay.direction.z);
-                                return make_tuple (1.0, col);
+                                return make_tuple (1.0, col,constants::infinity);
                         }
                 }
         };

@@ -98,6 +98,7 @@ namespace redshift {
         using std::make_pair;
 
 
+        // Should be in some lib.
         struct Mutex {
                 Mutex() { omp_init_lock(&lock); }
                 ~Mutex() { omp_destroy_lock(&lock); }
@@ -124,6 +125,24 @@ namespace redshift {
         private:
                 void operator=(const ScopedLock&);
                 ScopedLock(const ScopedLock&);
+        };
+
+        // Should be in kallisto.
+        class Interval {
+        public:
+                Interval (real_t min, real_t max)
+                : min_(min), max_(max)
+                {
+                        assert_valid();
+                }
+                void setMin (real_t min) { min_ = min; assert_valid(); }
+                void setMax (real_t max) { max_ = max; assert_valid(); }
+                real_t min() const { return min_; }
+                real_t max() const { return max_; }
+                real_t mag() const { return max_-min_; }
+        private:
+                void assert_valid() {}
+                real_t min_, max_;
         };
 }
 

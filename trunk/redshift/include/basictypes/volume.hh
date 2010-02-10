@@ -89,11 +89,18 @@ namespace redshift {
         };*/
 
         // VolumeIntegrator.
-        class VolumeIntegrator : public Integrator {
+        class VolumeIntegrator {
         public:
                 virtual ~VolumeIntegrator () {}
+                virtual tuple<real_t,Color> Li (
+                        const Scene &scene,
+                        const RayDifferential &raydiff,
+                        const Sample &sample,
+                        const Interval &interval
+                ) const = 0;
                 virtual tuple<real_t,Color> Transmittance(const Scene &scene,
-                        const Ray &ray, const Sample &sample
+                        const Ray &ray, const Sample &sample,
+                        const Interval &interval
                 ) const = 0;
         };
 }

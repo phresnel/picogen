@@ -28,7 +28,7 @@ namespace redshift {
         class Integrator {
         public:
                 virtual ~Integrator() {}
-                virtual tuple<real_t,Color> Li (
+                virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample

@@ -88,13 +88,17 @@ optional<Intersection> Scene::intersect(
 
 tuple<real_t,Color> Scene::Li (Sample const & sample) const {
         if (surfaceIntegrator && volumeIntegrator) {
+                const tuple<real_t,Color,real_t>
+                        Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample);
+                const Interval i (0, get<2>(Lo));
                 const tuple<real_t,Color>
-                        Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample),
-                        T  = volumeIntegrator->Transmittance (*this,sample.primaryRay,sample),
-                        Lv = volumeIntegrator->Li (*this,sample.primaryRay,sample);
+                        T  = volumeIntegrator->Transmittance (*this,sample.primaryRay,sample,i),
+                        Lv = volumeIntegrator->Li (*this,sample.primaryRay,sample,i);
                 return make_tuple (1.f, multiplyComponents (get<1>(T),get<1>(Lo)) + get<1>(Lv));
         } else {
-                return surfaceIntegrator->Li (*this, sample.primaryRay, sample);
+                const tuple<real_t,Color,real_t> ret =
+                        surfaceIntegrator->Li (*this, sample.primaryRay, sample);
+                return make_tuple(get<0>(ret),get<1>(ret));
         }
 }
 
