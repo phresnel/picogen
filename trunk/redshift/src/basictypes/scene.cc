@@ -87,12 +87,6 @@ optional<Intersection> Scene::intersect(
 
 
 tuple<real_t,Color> Scene::Li (Sample const & sample) const {
-        /* PBRT:
-           Spectrum Lo = surfaceIntegrator->Li (this, ray, sample, alpha)
-           Spectrum T = volumeIntegrator->Transmittance (this,ray,sample,alpha)
-           Spectrum Lv = volumeIntegrator->Li (this,ray,sample,alpha)
-           return T * Lo + Lv
-        */
         if (surfaceIntegrator && volumeIntegrator) {
                 const tuple<real_t,Color>
                         Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample),
@@ -108,11 +102,11 @@ tuple<real_t,Color> Scene::Li (Sample const & sample) const {
 
 void Scene::render (
         interaction::ProgressReporter::ConstPtr reporter,
-        interaction::UserCommandProcessor::Ptr ucp
-
+        interaction::UserCommandProcessor::Ptr ucp,
+        unsigned int numAASamples_
 ) const {
 
-        const int numAASamples = 5;
+        const int numAASamples = numAASamples_?numAASamples_:1;
         const real_t totalNumberOfSamples = static_cast<real_t>
                 (renderTarget->getWidth() * renderTarget->getHeight() * numAASamples);
         real_t sampleNumber = 0;

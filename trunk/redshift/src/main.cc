@@ -272,7 +272,7 @@ void run() {
         ProgressReporter::Ptr reporter (
                   new RenderTargetCopyingReporter(renderBuffer, screenBuffer));
 
-        Scene.render(reporter, commandProcessor);
+        Scene.render(reporter, commandProcessor,1);
         copy (renderBuffer, screenBuffer);
         screenBuffer->flip();
 

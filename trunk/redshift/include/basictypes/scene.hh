@@ -51,8 +51,11 @@ namespace redshift {
                 );
                 ~Scene ();
 
-                void render(interaction::ProgressReporter::ConstPtr,
-                          interaction::UserCommandProcessor::Ptr) const ;
+                void render(
+                        interaction::ProgressReporter::ConstPtr,
+                        interaction::UserCommandProcessor::Ptr,
+                        unsigned int samplePerPixel
+                ) const ;
                 optional<Intersection> intersect(
                                         RayDifferential const &ray) const;
                 bool doesIntersect (Sample const &sample) const;
