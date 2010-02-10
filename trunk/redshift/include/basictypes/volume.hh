@@ -22,12 +22,12 @@
 #define VOLUME_HH_INCLUDED_20100210
 
 #include "../setup.hh"
-#include "scene.hh"
-#include "sample.hh"
 #include "transport.hh"
 
 
 namespace redshift {
+        class Scene;
+        class Sample;
 
         // Phase functions.
         real_t PhaseIsotropic(const Vector &w, const Vector &wp);
