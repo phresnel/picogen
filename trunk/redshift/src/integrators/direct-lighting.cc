@@ -32,14 +32,14 @@ tuple<real_t,Color> DirectLighting::Li (
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
+                const real_t       distance = I->getDistance();
                 const shared_ptr<Background> bg (scene.getBackground());
                 const Normal normalG = gd.getGeometricNormal();
                 const Normal normalS = gd.getShadingNormal();
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normalG*0.001f);
 
-                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                // crap begin
+                //-- skylight begin -------------------------------------------
                 Color sum = Color::fromRgb (0,0,0);
                 Color spec = Color::fromRgb (0,0,0);
                 int numSamples = 1;
@@ -66,9 +66,6 @@ tuple<real_t,Color> DirectLighting::Li (
                         if (v_) {
                                 const tuple<Color,Vector> v = *v_;
                                 ray.direction = get<1>(v);
-
-                                // TODO: don't the speheres intersect because
-                                //  of something with raydiffs, or the lack therof?
                                 spec = spec + get<1> (Li (scene, RayDifferential(ray), sample, false));
                         }
                 }
@@ -78,8 +75,7 @@ tuple<real_t,Color> DirectLighting::Li (
                         ? Color(0.3,0.3,0.3)
                         : (sum * (1./numSamples)) * constants::pi
                 ); // TODO: is this correct?
-                // crap end
-                //----------------------------------------------------------------------------
+                //-------------------------------------------------------------
 
                 Color ret = surfaceSkyColor;
 
@@ -99,6 +95,35 @@ tuple<real_t,Color> DirectLighting::Li (
                                 ret = ret + multiplyComponents(surfaceColor,bg->querySun(ray))*d;
                         }
                 }
+
+                //-- atmospheric scattering -----------------------------------
+                if (true) {
+                        const Vector sunDir = bg->getSunDirection();
+                        const real_t step = 10.f;
+                        const Vector stepv = raydiff.direction * step;
+                        Vector sv = vector_cast<Vector>(raydiff(0));
+                        //const Color primaryColor = Color(0.5,0.5,0.5);//bg->query (raydiff);
+                        for (real_t s=0; s<distance; (s+=step), (sv=sv+stepv)) {
+                                Color C (Color::fromRgb(0,0,0));
+                                /*const int num = 3;
+                                for (int i=0; i<num; ++i) {
+                                        const tuple<real_t,real_t,real_t> s
+                                                = diffuseRng.uniform_sphere();
+                                        const Vector dir (get<0>(s),fabs(get<1>(s)),get<2>(s));
+                                        //C = C + bg->query (Ray (vector_cast<Point>(sv),dir));
+                                }
+                                C = C * (1.f / num);*/
+
+                                const Ray sunRay = Ray (vector_cast<Point>(sv),sunDir);
+                                if (!scene.doesIntersect (sunRay)) {
+                                        C = C + bg->querySun (sunRay);
+                                }
+
+                                ret = (ret * 0.99f)
+                                    + (C * 0.01f);
+                        }
+                }
+                //-------------------------------------------------------------
 
                 if (bg->hasAtmosphereShade())
                         ret = bg->atmosphereShade (ret, raydiff, gd.getDistance());
