@@ -60,8 +60,8 @@ namespace redshift{class RenderTarget;}
 #include "basictypes/differentialgeometry.hh"
 #include "basictypes/material.hh"
 #include "basictypes/intersection.hh"
-
 #include "basictypes/background.hh"
+#include "basictypes/volume.hh"
 
 // rendertargets/
 #include "rendertargets/rendertargetlock.hh"

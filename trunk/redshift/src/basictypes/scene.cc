@@ -31,13 +31,13 @@ Scene::Scene (
         shared_ptr<camera::Camera> cam,
         shared_ptr<primitive::Primitive> prim_,
         shared_ptr<Background> bg,
-        shared_ptr<Integrator> integrator
+        shared_ptr<Integrator> surfaceIntegrator
 )
 : renderTarget(rt)
 , camera(cam)
 , aggregate (prim_)
 , background (bg)
-, integrator(integrator)
+, surfaceIntegrator(surfaceIntegrator)
 {
 }
 
@@ -93,7 +93,15 @@ tuple<real_t,Color> Scene::Li (Sample const & sample) const {
            Spectrum Lv = volumeIntegrator->Li (this,ray,sample,alpha)
            return T * Lo + Lv
         */
-        return integrator->Li (*this, sample.primaryRay, sample);
+        if (surfaceIntegrator && volumeIntegrator) {
+                const tuple<real_t,Color>
+                        Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample),
+                        T  = volumeIntegrator->Transmittance (*this,sample.primaryRay,sample),
+                        Lv = volumeIntegrator->Li (*this,sample.primaryRay,sample);
+                return make_tuple (1.f, multiplyComponents (get<1>(T),get<1>(Lo)) + get<1>(Lv));
+        } else {
+                return surfaceIntegrator->Li (*this, sample.primaryRay, sample);
+        }
 }
 
 

@@ -29,18 +29,19 @@
 #include "background.hh"
 #include "intersection.hh"
 #include "transport.hh"
+#include "volume.hh"
 
 #include "../interaction/progressreporter.hh"
 #include "../interaction/usercommandprocessor.hh"
 
 
 namespace redshift {
-        
+
         DefineFinalizer(Scene);
-        
+
         class Scene : DoFinalize(Scene) {
-        public:        
-                
+        public:
+
                 Scene(
                         shared_ptr<RenderTarget>,
                         shared_ptr<camera::Camera>,
@@ -49,8 +50,8 @@ namespace redshift {
                         shared_ptr<Integrator> integrator
                 );
                 ~Scene ();
-                
-                void render(interaction::ProgressReporter::ConstPtr, 
+
+                void render(interaction::ProgressReporter::ConstPtr,
                           interaction::UserCommandProcessor::Ptr) const ;
                 optional<Intersection> intersect(
                                         RayDifferential const &ray) const;
@@ -64,10 +65,10 @@ namespace redshift {
                 Scene (Scene const &);
                 Scene & operator= (Scene const &);
                 Scene();
-                
-                
+
+
                 inline tuple<real_t,Color> Li(Sample const&) const;
-                
+
                 inline optional<Intersection> intersect(
                                              Sample const &sample) const;
 
@@ -76,7 +77,10 @@ namespace redshift {
                 shared_ptr<camera::Camera>       camera;
                 shared_ptr<primitive::Primitive> aggregate;
                 shared_ptr<Background>           background;
-                shared_ptr<Integrator>           integrator;
+                shared_ptr<Integrator>           surfaceIntegrator;
+
+                shared_ptr<VolumeRegion>         volume;
+                shared_ptr<VolumeIntegrator>     volumeIntegrator;
         };
 }
 

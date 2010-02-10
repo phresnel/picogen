@@ -97,7 +97,7 @@ tuple<real_t,Color> DirectLighting::Li (
                 }
 
                 //-- atmospheric scattering -----------------------------------
-                if (true) {
+                if (false) {
                         const Vector sunDir = bg->getSunDirection();
                         const real_t step = 10.f;
                         const Vector stepv = raydiff.direction * step;

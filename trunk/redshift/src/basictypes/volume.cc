@@ -54,4 +54,10 @@ real_t PhaseSchlick(const Vector &w,
 }
 
 
+// VolumeRegion.
+Color VolumeRegion::sigma_t(const Point &p, const Vector &w) const {
+	return sigma_a(p, w) + sigma_s(p, w);
+}
+
+
 }

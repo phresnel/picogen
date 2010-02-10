@@ -37,9 +37,11 @@ namespace redshift {
         real_t PhaseHG(const Vector &w, const Vector &wp, real_t g);
         real_t PhaseSchlick(const Vector &w, const Vector &wp, real_t g);
 
-        // VolumeRegion definition.
+        // VolumeRegion.
         class VolumeRegion {
         public:
+                virtual ~VolumeRegion () {}
+
                 virtual Color sigma_a (const Point &p, const Vector &w)const=0;
                 virtual Color sigma_s (const Point &p, const Vector &w)const=0;
 
@@ -48,10 +50,51 @@ namespace redshift {
                 virtual real_t p (const Point &p,
                                   const Vector &w_in,const Vector &w_out) = 0;
 
-                virtual Color sigma_t (const Point &p, const Vector &w)const=0;
+                virtual Color sigma_t (const Point &p, const Vector &w)const;
 
                 virtual Color Tau (const Ray &r,
                                    real_t step=1.f, real_t offset=.5f) const=0;
+        };
+
+        // DensityRegion.
+        /*
+        class COREDLL DensityRegion : public VolumeRegion {
+        public:
+                // DensityRegion Public Methods
+                DensityRegion(const Color &sig_a, const Color &sig_s,
+                        real_t g, const Color &Le, const Transform &VolumeToWorld);
+                virtual real_t Density(const Point &Pobj) const = 0;
+                Color sigma_a(const Point &p, const Vector &) const {
+                        return Density(WorldToVolume(p)) * sig_a;
+                }
+                Color sigma_s(const Point &p, const Vector &) const {
+                        return Density(WorldToVolume(p)) * sig_s;
+                }
+                Color sigma_t(const Point &p, const Vector &) const {
+                        return Density(WorldToVolume(p)) * (sig_a + sig_s);
+                }
+                Color Lve(const Point &p, const Vector &) const {
+                        return Density(WorldToVolume(p)) * le;
+                }
+                real_t p(const Point &p, const Vector &w,
+                                const Vector &wp) const {
+                        return PhaseHG(w, wp, g);
+                }
+                Color Tau(const Ray &r, real_t stepSize, real_t offset) const;
+        protected:
+                // DensityRegion Protected Data
+                Transform WorldToVolume;
+                Color sig_a, sig_s, le;
+                real_t g;
+        };*/
+
+        // VolumeIntegrator.
+        class VolumeIntegrator : public Integrator {
+        public:
+                virtual ~VolumeIntegrator () {}
+                virtual tuple<real_t,Color> Transmittance(const Scene &scene,
+                        const Ray &ray, const Sample &sample
+                ) const = 0;
         };
 }
 
