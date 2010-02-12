@@ -62,6 +62,9 @@ namespace redshift {
                 bool doesIntersect (Ray const &ray) const;
                 shared_ptr<Background> getBackground () const;
                 shared_ptr<camera::Camera> getCamera () const;
+                shared_ptr<VolumeRegion> getVolumeRegion () const;
+
+                tuple<real_t,Color> Li(Sample const&) const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
@@ -69,8 +72,6 @@ namespace redshift {
                 Scene & operator= (Scene const &);
                 Scene();
 
-
-                inline tuple<real_t,Color> Li(Sample const&) const;
 
                 inline optional<Intersection> intersect(
                                              Sample const &sample) const;
@@ -82,7 +83,7 @@ namespace redshift {
                 shared_ptr<Background>           background;
                 shared_ptr<Integrator>           surfaceIntegrator;
 
-                shared_ptr<VolumeRegion>         volume;
+                shared_ptr<VolumeRegion>         volumeRegion;
                 shared_ptr<VolumeIntegrator>     volumeIntegrator;
         };
 }

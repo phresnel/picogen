@@ -529,7 +529,7 @@ public:
         , primaryNode(
                 primaryBB,
                 *fun.get(),
-                7,//14,
+                9,//14,
                 0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25

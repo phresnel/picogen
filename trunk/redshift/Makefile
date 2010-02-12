@@ -17,6 +17,7 @@ PRIMITIVESOBJDIR    := $(OBJDIR)/primitives
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
 SAMPLERSOBJDIR      := $(OBJDIR)/samplers
+VOLUMESOBJDIR       := $(OBJDIR)/volume
 
 
 #------------------------------------------------------------------------------
@@ -84,6 +85,8 @@ OBJFILES += $(BASICTYPESOBJDIR)/volume.o
 OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
+OBJFILES += $(INTEGRATORSOBJDIR)/emission.o
+OBJFILES += $(INTEGRATORSOBJDIR)/single-scattering.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
 OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(MATERIALOBJDIR)/lambertian.o
@@ -98,6 +101,7 @@ OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/colorrendertarget.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/sdlrendertarget.o
+OBJFILES += $(VOLUMESOBJDIR)/homogeneous.o
 
 ###############################################################################
 ## MAIN TARGETS ###############################################################
@@ -206,6 +210,14 @@ $(INTEGRATORSOBJDIR)/direct-lighting.o: \
                      ./src/integrators/direct-lighting.cc
 	$(CXX) -o $@ $<
 
+$(INTEGRATORSOBJDIR)/emission.o: \
+                     ./src/integrators/emission.cc
+	$(CXX) -o $@ $<
+
+$(INTEGRATORSOBJDIR)/single-scattering.o: \
+                     ./src/integrators/single-scattering.cc
+	$(CXX) -o $@ $<
+
 
 ###############################################################################
 # interaction
@@ -307,6 +319,15 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 
 
 ###############################################################################
+# volumes
+###############################################################################
+
+$(VOLUMESOBJDIR)/homogeneous.o: ./src/volume/homegeneous.cc
+	$(CXX) -o $@ $<
+
+
+
+###############################################################################
 # initialize
 ###############################################################################
 
@@ -327,6 +348,7 @@ init-dir-tree:
 	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SAMPLERSOBJDIR)
 	mkdir -p $(SHAPEOBJDIR)
+	mkdir -p $(VOLUMESOBJDIR)
 	mkdir -p ./tmp/amalgam
 
 ###############################################################################
@@ -362,5 +384,6 @@ clean: init-dir-tree
 	rm -f $(RENDERTARGETSOBJDIR)/*.o
 	rm -f $(SAMPLERSOBJDIR)/*.o
 	rm -f $(SHAPEOBJDIR)/*.o
+	rm -f $(VOLUMESOBJDIR)/*.o
 
 

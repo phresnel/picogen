@@ -42,17 +42,32 @@ namespace redshift {
         public:
                 virtual ~VolumeRegion () {}
 
+                // Absorption:
+                //   Absorption cross section.
                 virtual Color sigma_a (const Point &p, const Vector &w)const=0;
-                virtual Color sigma_s (const Point &p, const Vector &w)const=0;
 
+
+
+                // Emission:
+                //   Change in radiance due to emmission.
                 virtual Color Lve (const Point &p,const Vector &w) const = 0;
 
-                virtual real_t p (const Point &p,
-                                  const Vector &w_in,const Vector &w_out) = 0;
 
+
+                // Scattering:
+                //   Out-Scattering Probability per Unit Distance.
+                virtual Color sigma_s (const Point &p, const Vector &w)const=0;
+
+                //   "Extinction" or "Attenuation": sigma_a+sigma_s
                 virtual Color sigma_t (const Point &p, const Vector &w)const;
 
-                virtual Color Tau (const Ray &r,
+
+                // Phase function.
+                virtual real_t p (const Point &p,
+                                  const Vector &w_in,const Vector &w_out
+                ) const = 0;
+
+                virtual Color Tau (const Ray &r, const Interval &i,
                                    real_t step=1.f, real_t offset=.5f) const=0;
         };
 

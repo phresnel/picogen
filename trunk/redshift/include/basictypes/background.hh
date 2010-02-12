@@ -26,11 +26,12 @@
 namespace redshift {
         class Background {
         public:
-                virtual Color query (Ray const &ray) const = 0;                
+                virtual Color query (Ray const &ray) const = 0;
 
                 // TODO: refactor the sun functions into a PreethamSunAdapter
                 virtual bool hasSun () const { return false; }
                 virtual Vector getSunDirection () const { return Vector(); }
+                virtual Color getSunColor () const { return Color(); }
                 virtual Color querySun (Ray const &ray) { return Color(); }
 
                 virtual bool hasFastDiffuseQuery () const {

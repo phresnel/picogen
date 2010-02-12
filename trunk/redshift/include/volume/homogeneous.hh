@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,33 +18,36 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef DIRECTLIGHTING_HH_INCLUDED_20090110
-#define DIRECTLIGHTING_HH_INCLUDED_20090110
+#ifndef HOMOGENEOUS_HH_INCLUDED_20100211
+#define HOMOGENEOUS_HH_INCLUDED_20100211
 
-#include "../setup.hh"
-#include "../basictypes/scene.hh"
-#include "../basictypes/sample.hh"
-#include "../basictypes/transport.hh"
-#include "../basictypes/bsdf.hh"
+#include "../basictypes/volume.hh"
 
-namespace redshift {
-        class DirectLighting : public Integrator {
+namespace redshift { namespace volume {
+
+        // VolumeRegion.
+        DefineFinalizer(Homogeneous);
+
+        class Homogeneous
+                : public VolumeRegion
+                , DoFinalize(Homogeneous)
+        {
         public:
-                virtual tuple<real_t,Color,real_t> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample
-                ) const ;
-        private:
-                tuple<real_t,Color,real_t> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample,
-                        const bool doMirror
-                ) const ;
 
-                mutable MersenneTwister<real_t,0,1> diffuseRng;
+                Color sigma_a (const Point &p, const Vector &w) const;
+                Color sigma_s (const Point &p, const Vector &w) const;
+
+                Color Lve (const Point &p,const Vector &w) const;
+
+                real_t p (const Point &p,
+                          const Vector &w_in,const Vector &w_out
+                ) const;
+
+                Color sigma_t (const Point &p, const Vector &w) const;
+
+                Color Tau (const Ray &r, const Interval &i,
+                           real_t step, real_t offset) const;
         };
-}
+} }
 
-#endif // DIRECTLIGHTING_HH_INCLUDED_20090110
+#endif // HOMOGENEOUS_HH_INCLUDED_20100211

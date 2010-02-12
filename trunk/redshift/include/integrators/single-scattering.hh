@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,33 +18,36 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef DIRECTLIGHTING_HH_INCLUDED_20090110
-#define DIRECTLIGHTING_HH_INCLUDED_20090110
+#ifndef SINGLE_SCATTERING_HH_INCLUDED_20100211
+#define SINGLE_SCATTERING_HH_INCLUDED_20100211
 
-#include "../setup.hh"
-#include "../basictypes/scene.hh"
-#include "../basictypes/sample.hh"
-#include "../basictypes/transport.hh"
-#include "../basictypes/bsdf.hh"
+#include "../basictypes/volume.hh"
 
 namespace redshift {
-        class DirectLighting : public Integrator {
+
+        // VolumeIntegrator.
+        DefineFinalizer (SingleScattering);
+        class SingleScattering
+                : public VolumeIntegrator
+                , DoFinalize(SingleScattering)
+        {
         public:
-                virtual tuple<real_t,Color,real_t> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample
-                ) const ;
-        private:
-                tuple<real_t,Color,real_t> Li (
+                SingleScattering (real_t stepSize);
+                tuple<real_t,Color> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
-                        const bool doMirror
+                        const Interval &interval
                 ) const ;
-
-                mutable MersenneTwister<real_t,0,1> diffuseRng;
+                tuple<real_t,Color> Transmittance(
+                        const Scene &scene,
+                        const Ray &ray, const Sample &sample,
+                        const Interval &interval
+                ) const ;
+        private:
+                mutable MersenneTwister<real_t,0,1> rng;
+                real_t stepSize;
         };
 }
 
-#endif // DIRECTLIGHTING_HH_INCLUDED_20090110
+#endif // EMISSION_HH_INCLUDED_20100211

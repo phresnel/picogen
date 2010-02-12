@@ -20,6 +20,11 @@
 
 #include "../../include/basictypes/scene.hh"
 #include "../../include/integrators/direct-lighting.hh"
+
+#include "../../include/integrators/emission.hh"
+#include "../../include/integrators/single-scattering.hh"
+
+#include "../../include/volume/homogeneous.hh"
 #include <omp.h>
 
 namespace redshift {
@@ -38,6 +43,8 @@ Scene::Scene (
 , aggregate (prim_)
 , background (bg)
 , surfaceIntegrator(surfaceIntegrator)
+, volumeRegion (new volume::Homogeneous())
+, volumeIntegrator(new SingleScattering(30.f))
 {
 }
 
@@ -56,6 +63,12 @@ shared_ptr<Background> Scene::getBackground () const {
 
 shared_ptr<camera::Camera> Scene::getCamera () const {
         return camera;
+}
+
+
+
+shared_ptr<VolumeRegion> Scene::getVolumeRegion () const {
+        return volumeRegion;
 }
 
 
@@ -90,11 +103,11 @@ tuple<real_t,Color> Scene::Li (Sample const & sample) const {
         if (surfaceIntegrator && volumeIntegrator) {
                 const tuple<real_t,Color,real_t>
                         Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample);
-                const Interval i (0, get<2>(Lo));
+                const Interval i (0, get<2>(Lo)>10000?10000:get<2>(Lo)); // TODO: quirk
                 const tuple<real_t,Color>
                         T  = volumeIntegrator->Transmittance (*this,sample.primaryRay,sample,i),
                         Lv = volumeIntegrator->Li (*this,sample.primaryRay,sample,i);
-                return make_tuple (1.f, multiplyComponents (get<1>(T),get<1>(Lo)) + get<1>(Lv));
+                return make_tuple (1.f, get<1>(T)*get<1>(Lo) + get<1>(Lv));
         } else {
                 const tuple<real_t,Color,real_t> ret =
                         surfaceIntegrator->Li (*this, sample.primaryRay, sample);

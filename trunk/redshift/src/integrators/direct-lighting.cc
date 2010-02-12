@@ -47,7 +47,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         Ray ray;
                         ray.position = poi;
-                        const int numDiffuseSamples = 10;
+                        const int numDiffuseSamples = 0;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 optional<tuple<Color,Vector> > v_ = bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
                                 if (v_) {
@@ -66,7 +66,9 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                         if (v_) {
                                 const tuple<Color,Vector> v = *v_;
                                 ray.direction = get<1>(v);
-                                spec = spec + get<1> (Li (scene, RayDifferential(ray), sample, false));
+                                Sample r = sample;
+                                r.primaryRay = ray;
+                                spec = spec + get<1> (scene.Li (r));
                         }
                 }
 

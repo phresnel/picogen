@@ -72,6 +72,10 @@ namespace redshift {
                 }
         };
 
+        inline Rgb exp (Rgb const &v) {
+                return Rgb (std::exp(v.r),std::exp(v.g),std::exp(v.b));
+        }
+
         inline Rgb saturate (Rgb const &v, real_t min, real_t max) {
                 return Rgb (
                         v.r<min ? min:v.r>max ? max:v.r,
@@ -104,12 +108,24 @@ namespace redshift {
                 );
         }
 
+        inline Rgb operator * (Rgb const&lhs, Rgb const&rhs) {
+                return Rgb (
+                        lhs.r * rhs.r,
+                        lhs.g * rhs.g,
+                        lhs.b * rhs.b
+                );
+        }
+
         inline Rgb operator + (Rgb const&lhs, Rgb const&rhs) {
                 return Rgb (
                         lhs.r + rhs.r,
                         lhs.g + rhs.g,
                         lhs.b + rhs.b
                 );
+        }
+
+        inline Rgb operator - (Rgb const&lhs) {
+                return Rgb (-lhs.r,-lhs.g,-lhs.b);
         }
 }
 
