@@ -22,6 +22,15 @@
 
 namespace redshift {
 
+
+
+DirectLighting::DirectLighting (unsigned int numAmbientSamples)
+: numAmbientSamples(numAmbientSamples)
+{
+}
+
+
+
 tuple<real_t,Color> DirectLighting::Li_VolumeOnly (
         const Scene &scene,
         const RayDifferential &raydiff,
@@ -31,6 +40,7 @@ tuple<real_t,Color> DirectLighting::Li_VolumeOnly (
                 1.0, scene.getBackground()->query(raydiff)
         );
 }
+
 
 
 tuple<real_t,Color,real_t> DirectLighting::Li (
@@ -58,9 +68,10 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
-                        const int numDiffuseSamples = 5;
-                        if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
-                                optional<tuple<Color,Vector> > v_ = bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
+                        if (numAmbientSamples>0)
+                        for (numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
+                                const optional<tuple<Color,Vector> > v_ =
+                                        bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
                                 if (v_) {
                                         ray.direction = get<1>(*v_);
                                         Sample s = sample;

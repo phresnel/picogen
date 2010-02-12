@@ -28,7 +28,8 @@
 #include "../basictypes/bsdf.hh"
 
 namespace redshift {
-        class DirectLighting : public Integrator {
+        DefineFinalizer(DirectLighting);
+        class DirectLighting : public Integrator, DoFinalize(DirectLighting) {
         public:
                 virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
@@ -40,6 +41,8 @@ namespace redshift {
                         const RayDifferential &raydiff,
                         const Sample &sample
                 ) const ;
+
+                DirectLighting (unsigned int numAmbientSamples=0);
         private:
                 tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
@@ -48,6 +51,7 @@ namespace redshift {
                         const bool doMirror
                 ) const ;
 
+                const int numAmbientSamples;
                 mutable MersenneTwister<real_t,0,1> diffuseRng;
         };
 }

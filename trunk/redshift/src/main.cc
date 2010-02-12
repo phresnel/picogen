@@ -263,7 +263,7 @@ void run() {
                 shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                shared_ptr<Integrator> (new DirectLighting()),
+                shared_ptr<Integrator> (new DirectLighting(5)),
                 shared_ptr<VolumeRegion> (new volume::Homogeneous (
                         Color::fromRgb(0.0001,0.00011,0.00012)*2.5, // absorption
                         Color::fromRgb(0.00015,0.00015,0.00015), // out scattering probability
