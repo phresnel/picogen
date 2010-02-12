@@ -24,7 +24,6 @@
 #include "../../include/integrators/emission.hh"
 #include "../../include/integrators/single-scattering.hh"
 
-#include "../../include/volume/homogeneous.hh"
 #include <omp.h>
 
 namespace redshift {
@@ -36,15 +35,17 @@ Scene::Scene (
         shared_ptr<camera::Camera> cam,
         shared_ptr<primitive::Primitive> prim_,
         shared_ptr<Background> bg,
-        shared_ptr<Integrator> surfaceIntegrator
+        shared_ptr<Integrator> surfaceIntegrator,
+        shared_ptr<VolumeRegion> volumeRegion_,
+        shared_ptr<VolumeIntegrator> volumeIntegrator_
 )
 : renderTarget(rt)
 , camera(cam)
 , aggregate (prim_)
 , background (bg)
 , surfaceIntegrator(surfaceIntegrator)
-, volumeRegion (new volume::Homogeneous())
-, volumeIntegrator(new SingleScattering(30.f))
+, volumeRegion (volumeRegion_)
+, volumeIntegrator(volumeIntegrator_)
 {
 }
 

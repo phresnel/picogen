@@ -47,7 +47,9 @@ namespace redshift {
                         shared_ptr<camera::Camera>,
                         shared_ptr<primitive::Primitive>,
                         shared_ptr<Background> bg ,
-                        shared_ptr<Integrator> integrator
+                        shared_ptr<Integrator> integrator,
+                        shared_ptr<VolumeRegion> volumeRegion,
+                        shared_ptr<VolumeIntegrator> volumeIntegrator
                 );
                 ~Scene ();
 

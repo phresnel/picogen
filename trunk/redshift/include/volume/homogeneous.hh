@@ -33,6 +33,12 @@ namespace redshift { namespace volume {
                 , DoFinalize(Homogeneous)
         {
         public:
+                Homogeneous (
+                        Color const & sigma_a,
+                        Color const & sigma_s,
+                        Color const & Lve
+                ) ;
+
 
                 Color sigma_a (const Point &p, const Vector &w) const;
                 Color sigma_s (const Point &p, const Vector &w) const;
@@ -47,6 +53,15 @@ namespace redshift { namespace volume {
 
                 Color Tau (const Ray &r, const Interval &i,
                            real_t step, real_t offset) const;
+
+        private:
+                Homogeneous ();
+                Homogeneous (Homogeneous const &);
+                Homogeneous& operator = (Homogeneous const &);
+
+                const Color sigma_a_;
+                const Color sigma_s_;
+                const Color Lve_;
         };
 } }
 

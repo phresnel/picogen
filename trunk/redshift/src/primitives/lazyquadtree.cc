@@ -529,7 +529,7 @@ public:
         , primaryNode(
                 primaryBB,
                 *fun.get(),
-                5,//14,
+                4,//14,
                 0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
@@ -678,7 +678,7 @@ shared_ptr<Bsdf> LazyQuadtree::getBsdf(
 ) const {
         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
         bsdf->add (shared_ptr<Bxdf>(
-                new bsdf::Lambertian (Color::fromRgb(1,1,1), mt)
+                new bsdf::Lambertian (Color::fromRgb(0.25,0.25,0.25), mt)
         ));
         return bsdf;
 }
