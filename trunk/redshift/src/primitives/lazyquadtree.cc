@@ -143,6 +143,8 @@ namespace lazyquadtree {
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
                 mutable Mutex mute[4];
 
+                const real_t lodFactor;
+
 
                 pair<real_t,Normal> intersect_triangle (
                         Ray const & ray,
@@ -185,7 +187,8 @@ namespace lazyquadtree {
                                         ),
                                         fun,
                                         maxRecursion-1,
-                                        const_cast<Node*>(this)
+                                        const_cast<Node*>(this),
+                                        lodFactor
                                 );
                                 break;
                         case 1:
@@ -196,7 +199,8 @@ namespace lazyquadtree {
                                         ),
                                         fun,
                                         maxRecursion-1,
-                                        const_cast<Node*>(this)
+                                        const_cast<Node*>(this),
+                                        lodFactor
                                 );
                                 break;
                         case 2:
@@ -207,7 +211,8 @@ namespace lazyquadtree {
                                         ),
                                         fun,
                                         maxRecursion-1,
-                                        const_cast<Node*>(this)
+                                        const_cast<Node*>(this),
+                                        lodFactor
                                 );
                                 break;
                         case 3:
@@ -218,7 +223,8 @@ namespace lazyquadtree {
                                         ),
                                         fun,
                                         maxRecursion-1,
-                                        const_cast<Node*>(this)
+                                        const_cast<Node*>(this),
+                                        lodFactor
                                 );
                                 break;
                         };
@@ -301,7 +307,8 @@ namespace lazyquadtree {
                         const BoundingBoxF &box,
                         const HeightFunction &fun,
                         const int maxRecursion_,
-                        Node *parent_
+                        Node *parent_,
+                        float lodFactor
                 )
                 : aabb(box)
                 , parent(parent_)
@@ -310,6 +317,7 @@ namespace lazyquadtree {
                 , vertexCount(0)
                 , maxRecursion(maxRecursion_)
                 , initializedChildCount(0)
+                , lodFactor(lodFactor)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -331,12 +339,12 @@ namespace lazyquadtree {
                         }
                 }
 
-                static bool isALeaf (real_t diagonal, real_t cx, real_t cz, PointF const &cameraPosition) {
+                bool isALeaf (real_t diagonal, real_t cx, real_t cz, PointF const &cameraPosition) {
                         // Using maxRecursion and some reasoning about the camera position
                         // in relation to (cx,cz), we should be able to take the case of
                         // maxRecursion for neighbour nodes into account.
                         const real_t d = (length(PointF(cx,0,cz)-cameraPosition));
-                        if (((diagonal/(1+d))<0.0025)) {
+                        if (((diagonal/(1+d))<lodFactor)) {
                                 return true;
                         } else {
                                 return false;
@@ -520,7 +528,8 @@ public:
                 shared_ptr<HeightFunction const> fun,
                 real_t size,
                 shared_ptr<HeightFunction const> distortionFun_,
-                unsigned int maxRecursion
+                unsigned int maxRecursion,
+                real_t lodFactor
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
@@ -531,7 +540,8 @@ public:
                 primaryBB,
                 *fun.get(),
                 maxRecursion,
-                0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+                0,
+                lodFactor) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
@@ -634,9 +644,10 @@ LazyQuadtree::LazyQuadtree (
         shared_ptr<HeightFunction const> fun,
         real_t size,
         shared_ptr<HeightFunction const> distortionFun_,
-        unsigned int maxRecursion
+        unsigned int maxRecursion,
+        real_t lodFactor
 )
-: impl (new LazyQuadtreeImpl (fun, size, distortionFun_, maxRecursion))
+: impl (new LazyQuadtreeImpl (fun, size, distortionFun_, maxRecursion, lodFactor))
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 , distortionFun(distortionFun_)
 , heightFun(fun)

@@ -244,7 +244,7 @@ void run() {
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,55,-5420)), 10)));
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,75,-5420)), 10)));*/
         //list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(610,5,-3850)), 10)));
-        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction, 5)));
+        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction, 7, 0.0025)));
         list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (0, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 

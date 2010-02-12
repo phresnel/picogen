@@ -41,7 +41,8 @@ namespace redshift { namespace primitive {
                 LazyQuadtree(
                         shared_ptr<HeightFunction const> fun, real_t size,
                         shared_ptr<HeightFunction const> distortionFun,
-                        unsigned int maxRecursion
+                        unsigned int maxRecursion,
+                        real_t lodFactor
                 );
                 ~LazyQuadtree ();
 
