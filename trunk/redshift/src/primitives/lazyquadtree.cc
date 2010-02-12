@@ -519,7 +519,8 @@ public:
         LazyQuadtreeImpl (
                 shared_ptr<HeightFunction const> fun,
                 real_t size,
-                shared_ptr<HeightFunction const> distortionFun_
+                shared_ptr<HeightFunction const> distortionFun_,
+                unsigned int maxRecursion
         )
         : fun(fun)
         , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
@@ -529,7 +530,7 @@ public:
         , primaryNode(
                 primaryBB,
                 *fun.get(),
-                4,//14,
+                maxRecursion,
                 0) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
@@ -632,9 +633,10 @@ namespace redshift { namespace primitive {
 LazyQuadtree::LazyQuadtree (
         shared_ptr<HeightFunction const> fun,
         real_t size,
-        shared_ptr<HeightFunction const> distortionFun_
+        shared_ptr<HeightFunction const> distortionFun_,
+        unsigned int maxRecursion
 )
-: impl (new LazyQuadtreeImpl (fun, size, distortionFun_))
+: impl (new LazyQuadtreeImpl (fun, size, distortionFun_, maxRecursion))
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 , distortionFun(distortionFun_)
 , heightFun(fun)
