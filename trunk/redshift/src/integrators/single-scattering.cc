@@ -103,7 +103,7 @@ tuple<real_t,Color> SingleScattering::Li (
                 if (!scene.doesIntersect (sunRay)) {
                         const tuple<real_t,Color> T_ = Transmittance(scene,sunRay,sample,Interval(0,6000));//TODO: quirk interval max
                         const Color T = get<1>(T_);
-                        const Color Ld = /*sunCol **/ Color::fromRgb(20,20,20)* T;
+                        const Color Ld = /*sunCol **/ Color::fromRgb(40,40,40)* T;
                         const real_t pdf = 1;
                         Lv = Lv + Tr * ss * vr->p(curr,w,-sunDir) * Ld * (1.f/pdf);
                 }

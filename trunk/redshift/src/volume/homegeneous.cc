@@ -28,6 +28,7 @@ namespace redshift { namespace volume {
 Color Homogeneous::sigma_a (const Point &p, const Vector &w) const {
         //return Color::fromRgb(0.0,0.0,0.0);
         return Color::fromRgb(0.0001,0.00011,0.00012);
+        return Color::fromRgb(1,1,1)*0.0006;
 }
 
 
@@ -44,6 +45,7 @@ Color Homogeneous::sigma_s (const Point &p, const Vector &w) const {
 Color Homogeneous::Lve (const Point &p,const Vector &w) const {
         //return Color::fromRgb(0,0,0);
         return Color::fromRgb(0.0002,0.00018,0.00015);
+        return Color::fromRgb(1,1,1)*0.0005;
 }
 
 

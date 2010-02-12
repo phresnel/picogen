@@ -65,6 +65,7 @@ namespace redshift {
                 shared_ptr<VolumeRegion> getVolumeRegion () const;
 
                 tuple<real_t,Color> Li(Sample const&) const;
+                tuple<real_t,Color> Li_VolumeOnly(Sample const&) const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead

@@ -200,15 +200,18 @@ void run() {
         using namespace redshift::interaction;
         using namespace redshift::primitive;
 
+        //- Config ------------------------------------------------------------
+        int const width = 1680/4;
+        int const height = width/3;
+        int const AA = 1;
+        //---------------------------------------------------------------------
+
         redshift::StopWatch stopWatch;
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 1680;
-        int const height = width/3;
-        int const AA = 4;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,500,-4900))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(300,50,-4700))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -245,14 +248,14 @@ void run() {
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,75,-5420)), 10)));*/
         //list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(610,5,-3850)), 10)));
         list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction)));
-        list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (0, distortHeightFunction)));
+        //list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (0, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(7.0,0.001,10.0));
+        preetham->setSunDirection(Vector(7.0,3.001,10.0));
         preetham->setTurbidity(2.0f);
-        preetham->setSunColor(redshift::Color(3,3,3)*1.5);
-        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.05);
+        preetham->setSunColor(redshift::Color(3,3,3)*3.25);
+        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
         preetham->enableFogHack (false, 0.00025f, 150000);
         preetham->invalidate();
 

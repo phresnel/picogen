@@ -55,7 +55,7 @@ else
 	CXXFLAGS += -fopenmp
 endif
 
-CXXFLAGS += -Wall -Wno-unused -pedantic
+CXXFLAGS += -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 # CXXFLAGS += -Wextra -Wshadow -pedantic
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`

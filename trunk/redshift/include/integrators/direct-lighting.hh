@@ -35,6 +35,11 @@ namespace redshift {
                         const RayDifferential &raydiff,
                         const Sample &sample
                 ) const ;
+                virtual tuple<real_t,Color> Li_VolumeOnly (
+                        const Scene &scene,
+                        const RayDifferential &raydiff,
+                        const Sample &sample
+                ) const ;
         private:
                 tuple<real_t,Color,real_t> Li (
                         const Scene &scene,

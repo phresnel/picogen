@@ -22,6 +22,17 @@
 
 namespace redshift {
 
+tuple<real_t,Color> DirectLighting::Li_VolumeOnly (
+        const Scene &scene,
+        const RayDifferential &raydiff,
+        const Sample &sample
+) const {
+        return make_tuple (
+                1.0, scene.getBackground()->query(raydiff)
+        );
+}
+
+
 tuple<real_t,Color,real_t> DirectLighting::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
@@ -45,15 +56,20 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 int numSamples = 1;
                 // diffuse
                 if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
-                        Ray ray;
+                        RayDifferential ray;
                         ray.position = poi;
-                        const int numDiffuseSamples = 0;
+                        const int numDiffuseSamples = 5;
                         if (numDiffuseSamples>0) for (numSamples = 0; numSamples < numDiffuseSamples; ++numSamples) {
                                 optional<tuple<Color,Vector> > v_ = bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
                                 if (v_) {
                                         ray.direction = get<1>(*v_);
-                                        if (ray.direction.y>0) {
-                                                sum = sum + multiplyComponents(bg->query (ray), get<0>(*v_));
+                                        Sample s = sample;
+                                        s.primaryRay = ray;
+                                        const tuple<real_t,Color> L = scene.Li_VolumeOnly(s);
+                                        /*if (ray.direction.y>0)*/ {
+                                                sum = sum +
+                                                        //bg->query (ray)  *  get<0>(*v_);
+                                                        get<1>(L)  *  get<0>(*v_);
                                         }
                                 }
                         }
@@ -134,7 +150,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 return make_tuple (1.0,
                         scene.getBackground()->query(raydiff),
                         constants::infinity
-                ); // TODO: atmosphere shade
+                );
         }
 }
 

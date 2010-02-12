@@ -33,6 +33,11 @@ namespace redshift {
                         const RayDifferential &raydiff,
                         const Sample &sample
                 ) const = 0;
+                virtual tuple<real_t,Color> Li_VolumeOnly (
+                        const Scene &scene,
+                        const RayDifferential &raydiff,
+                        const Sample &sample
+                ) const = 0;
         };
 }
 

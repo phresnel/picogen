@@ -73,8 +73,8 @@ tuple<real_t,Color> Emission::Li (
 
                 const Color stepTau =
                         vr->Tau(
-                                Ray(prev, normalize(vector_cast<Vector>(curr - prev))),
-                                Interval(0,1),
+                                Ray(prev, ray.direction),//normalize(vector_cast<Vector>(curr - prev))),
+                                Interval(0,step),
                                 .5f * stepSize,
                                 rng()
                         );
