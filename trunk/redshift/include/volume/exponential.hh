@@ -18,53 +18,43 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef HOMOGENEOUS_HH_INCLUDED_20100211
-#define HOMOGENEOUS_HH_INCLUDED_20100211
+#ifndef EXPONENTIAL_HH_INCLUDED_20100213
+#define EXPONENTIAL_HH_INCLUDED_20100213
 
 #include "../basictypes/volume.hh"
 
 namespace redshift { namespace volume {
 
         // VolumeRegion.
-        DefineFinalizer(Homogeneous);
+        DefineFinalizer(Exponential);
 
-        class Homogeneous
-                : public VolumeRegion
-                , DoFinalize(Homogeneous)
+        class Exponential
+                : public DensityRegion
+                , DoFinalize(Exponential)
         {
         public:
-                Homogeneous (
+                Exponential (
                         Color const & sigma_a,
                         Color const & sigma_s,
                         Color const & Lve,
-                        real_t henyeyGreensteinParameter
-                ) ;
+                        real_t henyeyGreensteinParameter,
+                        real_t baseFactor,
+                        real_t exponentFactor,
+                        Point  const & min,
+                        Vector const & up = Vector (0,1,0)
+                );
 
-
-                Color sigma_a (const Point &p, const Vector &w) const;
-                Color sigma_s (const Point &p, const Vector &w) const;
-
-                Color Lve (const Point &p,const Vector &w) const;
-
-                real_t p (const Point &p,
-                          const Vector &w_in,const Vector &w_out
-                ) const;
-
-                Color sigma_t (const Point &p, const Vector &w) const;
-
-                Color tau (const Ray &r, const Interval &i,
-                           real_t step, real_t offset) const;
+                real_t density(const Point &p) const;
 
         private:
-                Homogeneous ();
-                Homogeneous (Homogeneous const &);
-                Homogeneous& operator = (Homogeneous const &);
+                Exponential ();
+                Exponential (Exponential const &);
+                Exponential& operator = (Exponential const &);
 
-                const Color sigma_a_;
-                const Color sigma_s_;
-                const Color Lve_;
-                const real_t henyeyGreensteinParameter;
+                const real_t baseFactor, exponentFactor;
+                const Point min;
+                const Vector up;
         };
 } }
 
-#endif // HOMOGENEOUS_HH_INCLUDED_20100211
+#endif // EXPONENTIAL_HH_INCLUDED_20100213

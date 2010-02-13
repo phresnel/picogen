@@ -22,42 +22,28 @@
 
 namespace redshift {
 
-// Phase functions. (Direct transcription from PBRT.)
-real_t PhaseIsotropic(const Vector &, const Vector &) {
-	return 1.f / (4.f * constants::pi);
-}
-real_t PhaseRayleigh(const Vector &w, const Vector &wp) {
-	real_t costheta = dot(w, wp);
-	return  3.f/(16.f*constants::pi) * (1 + costheta * costheta);
-}
-real_t PhaseMieHazy(const Vector &w, const Vector &wp) {
-	real_t costheta = dot(w, wp);
-	return 9.f/(4.f*constants::pi) * powf(1.f + costheta*costheta, 8.f);
-}
-real_t PhaseMieMurky(const Vector &w, const Vector &wp) {
-	real_t costheta = dot(w, wp);
-	return 50.f/(4.f*constants::pi) * powf(1.f + costheta*costheta, 32.f);
-}
-
-real_t PhaseHG(const Vector &w, const Vector &wp, real_t g) {
-	real_t costheta = dot(w, wp);
-	return 1.f / (4.f * constants::pi) * (1.f - g*g) /
-		powf(1.f + g*g - 2.f * g * costheta, 1.5f);
-}
-
-real_t PhaseSchlick(const Vector &w,
-                   const Vector &wp, real_t g) {
-	real_t k = 1.55f * g - .55f * g * g * g;
-	real_t kcostheta = k * dot(w, wp);
-	return 1.f / (4.f * constants::pi) * (1.f - k*k) /
-		((1.f - kcostheta) * (1.f - kcostheta));
-}
-
-
 // VolumeRegion.
 Color VolumeRegion::sigma_t(const Point &p, const Vector &w) const {
 	return sigma_a(p, w) + sigma_s(p, w);
 }
 
+
+
+// DensityRegion.
+Color DensityRegion::tau (
+        const Ray &rn, const Interval &i,
+        real_t stepSize, real_t offset
+) const {
+        real_t t0=i.min(), t1=i.max();
+
+	Color tau = Color::fromRgb(0,0,0);
+
+	t0 += offset * stepSize;
+	while (t0 < t1) {
+		tau = tau + this->sigma_t(rn(t0), -rn.direction);
+		t0 += stepSize;
+	}
+	return tau * stepSize;
+}
 
 }

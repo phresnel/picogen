@@ -72,7 +72,7 @@ tuple<real_t,Color> Emission::Li (
 		curr = ray(t0);
 
                 const Color stepTau =
-                        vr->Tau(
+                        vr->tau(
                                 Ray(prev, ray.direction),//normalize(vector_cast<Vector>(curr - prev))),
                                 Interval(0,step),
                                 .5f * stepSize,
@@ -110,7 +110,7 @@ tuple<real_t,Color> Emission::Transmittance(
 		//sample ? sample->oneD[tauSampleOffset][0] :
 		//RandomFloat();
 	const Color tau =
-		scene.getVolumeRegion()->Tau(ray, interval, step, offset);
+		scene.getVolumeRegion()->tau(ray, interval, step, offset);
 	return make_tuple(1.f,exp(-tau));
 }
 

@@ -250,11 +250,11 @@ void run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 1680/4;
+        int const width = 1680;
         int const height = width/3;
-        int const AA = 1;
+        int const AA = 6;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,450,-4900))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,25,-4700))));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -266,8 +266,8 @@ void run() {
 //"(* 800 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.0005} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
 // dA: "(* 2400 ([LayeredNoise2d filter{cosine} seed{54} frequency{0.0005} layercount{14} persistence{0.5}] x y))"
 "(+ "
-"  (* 700 ([LayeredNoise2d filter{cosine} seed{57} frequency{0.001} layercount{5} persistence{0.5}] x y))"
-"  (* 50 ([LayeredNoise2d filter{cosine} seed{542} frequency{0.01} layercount{9} persistence{0.5}] x y))"
+"  (* 2000 ([LayeredNoise2d filter{cosine} seed{57} frequency{0.001} layercount{3} persistence{0.4}] x y))"
+"  (* 100 ([LayeredNoise2d filter{cosine} seed{542} frequency{0.01} layercount{9} persistence{0.53}] x y))"
 ") "
 
 //"(+ -1100 (* 2200 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{4} frequency{0.00025} layercount{8} persistence{0.5} levelEvaluationFunction{(abs h)}] (+ 100000 x) (+ 100000 y))))))"
@@ -290,17 +290,25 @@ void run() {
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,55,-5420)), 10)));
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,75,-5420)), 10)));*/
         //list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(610,5,-3850)), 10)));
-        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction, 5, 0.5*0.0025)));
+        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction, 10, 0.0025)));
         list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (0, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(7.0,0.001,10.0));
+        preetham->setSunDirection(Vector(-7.0,4.001,1.001));
         preetham->setTurbidity(2.0f);
-        preetham->setSunColor(redshift::Color(1,1,1)*60);
-        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.05);
+        preetham->setSunColor(redshift::Color(1.1,1,0.9)*7);
+        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
         preetham->enableFogHack (false, 0.00025f, 150000);
         preetham->invalidate();
+
+        /*
+                shared_ptr<VolumeRegion> (new volume::Homogeneous (
+                        Color::fromRgb(0.0001,0.00011,0.00012)*2.5, // absorption
+                        Color::fromRgb(0.00015,0.00015,0.00015), // out scattering probability
+                        Color::fromRgb(0.0002,0.00018,0.00015), // emission
+                        0.1,// Henyey Greenstein
+        */
 
         Scene Scene (
                 renderBuffer,
@@ -309,14 +317,15 @@ void run() {
                 shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                shared_ptr<Integrator> (new DirectLighting(5/*ambient samples*/)),
-                shared_ptr<VolumeRegion> (new volume::Homogeneous (
-                        Color::fromRgb(0.0001,0.00011,0.00012)*2.5, // absorption
-                        Color::fromRgb(0.00015,0.00015,0.00015), // out scattering probability
-                        Color::fromRgb(0.0002,0.00018,0.00015), // emission
-                        -0.5// Henyey Greenstein
+                shared_ptr<Integrator> (new DirectLighting(20/*ambient samples*/)),
+                shared_ptr<VolumeRegion> (new volume::Exponential (
+                        Color::fromRgb(1,1,0.8)*0.00025, // absorption
+                        Color::fromRgb(1,1,1)*0.00025, // out scattering probability
+                        Color::fromRgb(1,1,1)*0.0001, // emission
+                        0.0 // Henyey Greenstein
+                        , 1.f, 0.0075f, Point(0.f,0.f,0.f)
                 )),
-                shared_ptr<VolumeIntegrator> (new SingleScattering(100.f))
+                shared_ptr<VolumeIntegrator> (new SingleScattering(50.f))
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));

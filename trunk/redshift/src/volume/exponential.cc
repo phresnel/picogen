@@ -18,72 +18,37 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/volume/homogeneous.hh"
+#include "../../include/volume/exponential.hh"
+#include <cmath>
 
 
 namespace redshift { namespace volume {
 
 
 
-Homogeneous::Homogeneous (
+Exponential::Exponential (
         Color const & sigma_a,
         Color const & sigma_s,
         Color const & Lve,
-        real_t henyeyGreensteinParameter
+        real_t henyeyGreensteinParameter,
+        real_t baseFactor, real_t exponentFactor,
+        Point const & min,
+        Vector const & up
 )
-: sigma_a_(sigma_a)
-, sigma_s_(sigma_s)
-, Lve_(Lve)
-, henyeyGreensteinParameter(henyeyGreensteinParameter)
+: DensityRegion (sigma_a, sigma_s, Lve, henyeyGreensteinParameter)
+, baseFactor(baseFactor)
+, exponentFactor(exponentFactor)
+, min(min)
+, up(up)
 {
 }
 
 
 
-// absorption
-Color Homogeneous::sigma_a (const Point &p, const Vector &w) const {
-        return sigma_a_;
+real_t Exponential::density(const Point &p) const {
+        const real_t h = dot (vector_cast<Vector>(p-min), up);
+        return baseFactor * std::exp (-exponentFactor * h);
 }
-
-
-
-// out scattering probability
-Color Homogeneous::sigma_s (const Point &p, const Vector &w) const {
-        return sigma_s_;
-}
-
-
-
-// emission
-Color Homogeneous::Lve (const Point &p,const Vector &w) const {
-        return Lve_;
-}
-
-
-
-real_t Homogeneous::p (
-        const Point &p,
-        const Vector &w_in,
-        const Vector &w_out
-) const {
-        return phaseHG (w_in, w_out, henyeyGreensteinParameter);
-}
-
-
-
-Color Homogeneous::sigma_t (const Point &p, const Vector &w) const {
-        return sigma_a(p,w)+sigma_s(p,w);
-}
-
-
-
-Color Homogeneous::tau (
-        const Ray &r, const Interval &i,
-        real_t step, real_t offset
-) const {
-        return sigma_t(r.position,r.direction) * i.mag();
-}
-
 
 
 } }

@@ -74,7 +74,9 @@ OBJFILES :=
 # main.o is intentionally excluded, and must be included by main targets
 OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
+
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
+
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
 OBJFILES += $(BASICTYPESOBJDIR)/heightmap.o
@@ -82,26 +84,36 @@ OBJFILES += $(BASICTYPESOBJDIR)/differentialgeometry.o
 OBJFILES += $(BASICTYPESOBJDIR)/intersection.o
 OBJFILES += $(BASICTYPESOBJDIR)/bsdf.o
 OBJFILES += $(BASICTYPESOBJDIR)/volume.o
+
 OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
+
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
+
 OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
 OBJFILES += $(INTEGRATORSOBJDIR)/emission.o
 OBJFILES += $(INTEGRATORSOBJDIR)/single-scattering.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
 OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
+
 OBJFILES += $(MATERIALOBJDIR)/lambertian.o
 OBJFILES += $(MATERIALOBJDIR)/mirror.o
+
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
 OBJFILES += $(PRIMITIVESOBJDIR)/lazyquadtree.o
 OBJFILES += $(PRIMITIVESOBJDIR)/horizonplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/list.o
+
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
+
 OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
+
 OBJFILES += $(RENDERTARGETSOBJDIR)/colorrendertarget.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/sdlrendertarget.o
+
 OBJFILES += $(VOLUMESOBJDIR)/homogeneous.o
+OBJFILES += $(VOLUMESOBJDIR)/exponential.o
 
 ###############################################################################
 ## MAIN TARGETS ###############################################################
@@ -323,6 +335,9 @@ $(ACCELERATORSOBJDIR)/accelerators-bvh.o: ./src/accelerators/bvh.cc
 ###############################################################################
 
 $(VOLUMESOBJDIR)/homogeneous.o: ./src/volume/homegeneous.cc
+	$(CXX) -o $@ $<
+
+$(VOLUMESOBJDIR)/exponential.o: ./src/volume/exponential.cc
 	$(CXX) -o $@ $<
 
 

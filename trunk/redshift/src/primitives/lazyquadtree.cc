@@ -691,7 +691,7 @@ shared_ptr<Bsdf> LazyQuadtree::getBsdf(
 ) const {
         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
         bsdf->add (shared_ptr<Bxdf>(
-                new bsdf::Lambertian (Color::fromRgb(0.25,0.25,0.25), mt)
+                new bsdf::Lambertian (Color::fromRgb(0.5,0.25,0.125), mt)
         ));
         return bsdf;
 }

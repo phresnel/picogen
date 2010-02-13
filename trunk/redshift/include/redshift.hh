@@ -104,6 +104,7 @@ namespace redshift{class RenderTarget;}
 
 // volume/
 #include "volume/homogeneous.hh"
+#include "volume/exponential.hh"
 
 
 // material/
