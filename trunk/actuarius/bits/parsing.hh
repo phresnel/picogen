@@ -32,7 +32,7 @@
 // TODO kill unused function
 
 namespace actuarius { namespace detail {
-        
+
         // TODO is incomplete
         template <typename iterator_t>
         std::string
@@ -48,7 +48,7 @@ namespace actuarius { namespace detail {
                                 } else {
                                         throw std::invalid_argument (
                                         "invalid escape sequence found in '" +
-                                        std::string (begin, end) + "' at '" +                                        
+                                        std::string (begin, end) + "' at '" +
                                         std::string (it, end) + "'");
                                 }
                         }
@@ -57,16 +57,16 @@ namespace actuarius { namespace detail {
                 }
                 return ret;
         }
-        
+
         template <typename T>
         std::string
         unescape_nonstring_terminal (T const & val) {
                 return unescape_nonstring_terminal (val.begin(), val.end());
         }
-        
-        
-        
-        
+
+
+
+
         template <typename iterator_t>
         bool is_whitespace (iterator_t it) {
                 switch (*it) {
@@ -77,7 +77,7 @@ namespace actuarius { namespace detail {
                 default: return false;
                 };
         }
-        
+
         template <typename iterator_t>
         bool is_num (iterator_t it) {
                 switch (*it) {
@@ -94,7 +94,7 @@ namespace actuarius { namespace detail {
                 default: return false;
                 };
         }
-        
+
         template <typename iterator_t>
         bool is_alpha (iterator_t it) {
                 switch (*it) {
@@ -127,37 +127,37 @@ namespace actuarius { namespace detail {
                 default: return false;
                 };
         }
-        
+
         template <typename iterator_t>
         bool is_alphanum (iterator_t it) {
                 return is_alpha (it) || is_num (it);
         }
-        
+
         template <typename iterator_t>
         bool is_idchar (iterator_t it) {
-                return is_alphanum (it) || '_' == *it;
+                return is_alphanum (it) || '_' == *it || '-' == *it;
         }
-        
+
         template <typename iterator_t>
         bool is_open_brace (iterator_t it) {
                 return *it == '{';
         }
-        
+
         template <typename iterator_t>
         bool is_close_brace (iterator_t it) {
                 return *it == '}';
         }
-        
+
         template <typename iterator_t>
         bool is_colon (iterator_t it) {
                 return *it == ':';
         }
-        
+
         template <typename iterator_t>
         bool is_semicolon (iterator_t it) {
                 return *it == ';';
         }
-        
+
         template <typename iterator_t>
         bool is_open_block (iterator_t it) {
                 switch (*it) {
@@ -166,7 +166,7 @@ namespace actuarius { namespace detail {
                 default: return false;
                 };
         }
-        
+
         template <typename iterator_t>
         bool is_open_terminal (iterator_t it) {
                 switch (*it) {
@@ -175,7 +175,7 @@ namespace actuarius { namespace detail {
                 default: return false;
                 };
         }
-        
+
         template <typename iterator_t>
         bool is_valid_for_escape (iterator_t it) {
                 switch (*it) {
@@ -188,7 +188,7 @@ namespace actuarius { namespace detail {
                         return false;
                 };
         }
-        
+
         template <typename iterator_t>
         std::string parse_id (iterator_t &it, iterator_t end) {
                 std::string ret;
@@ -198,23 +198,23 @@ namespace actuarius { namespace detail {
                 }
                 return ret;
         }
-        
+
         template <typename iterator_t>
         void eat_whitespace (iterator_t &it, iterator_t end) {
-                while (it != end && is_whitespace (it)) {                        
+                while (it != end && is_whitespace (it)) {
                         ++it;
                 }
-        }        
+        }
 } }
 
 
 
 namespace actuarius { namespace detail {
-        
+
 template <typename iterator_t>
 match_t<iterator_t>
 identifier (iterator_t it, iterator_t end) {
-        
+
         if (is_idchar (it)) {
                 const iterator_t id_begin = it;
                 const std::string name = parse_id (it, end);
@@ -231,24 +231,24 @@ template <typename iterator_t>
 block_match_t<iterator_t>
 block (iterator_t it, iterator_t end) {
         const iterator_t block_begin = it;
-        
+
         // Parse Id.
         const match_t<iterator_t> id_match = identifier (it, end);
         if (!id_match)
                 return block_match_t<iterator_t>();
-        
-        
+
+
         // Forward and eat whitespace.
         it = id_match.end();
         eat_whitespace (it, end);
-        
+
 
         // Id must be followed by open-brace.
         if (!is_open_brace (it))
                 return block_match_t<iterator_t>();
         ++it; // after brace
 
-        
+
         // Parse whole block.
         const iterator_t content_begin = it;
         int balance = 1;
@@ -273,13 +273,13 @@ block (iterator_t it, iterator_t end) {
                                 throw std::invalid_argument (
                                 "invalid escape sequence found in '" +
                                 std::string (block_begin, end) + "' at '" +
-                                std::string (it, end) + "'");                                
+                                std::string (it, end) + "'");
                 }
                 ++it;
         }
         const iterator_t content_end = it-1; // before brace
-        
-        
+
+
         // Compose block_match.
         return block_match_t<iterator_t> (
                 id_match,
@@ -294,31 +294,31 @@ template <typename iterator_t>
 value_match_t<iterator_t>
 value (iterator_t it, iterator_t end) {
         const iterator_t begin = it;
-        
+
         // Parse Id.
         const match_t<iterator_t> id_match = identifier (it, end);
         if (!id_match)
                 return value_match_t<iterator_t>();
-        
-        
+
+
         // Forward and eat whitespace.
         it = id_match.end();
         eat_whitespace (it, end);
-        
+
 
         // Id must be followed by colon.
         if (!is_colon (it))
                 return value_match_t<iterator_t>();
         ++it; // after colon
 
-        
+
         // Parse whole value.
-        const iterator_t value_begin = it;        
+        const iterator_t value_begin = it;
         while (!is_semicolon (it)) {
                 if (it == end)
                         throw std::invalid_argument(
                         "reached end-of-file before reaching semicolon at '" +
-                        std::string (value_begin, end) + 
+                        std::string (value_begin, end) +
                         "'"
                         );
                 if ('\\' == *it) {
@@ -333,14 +333,14 @@ value (iterator_t it, iterator_t end) {
                                 throw std::invalid_argument (
                                 "invalid escape sequence found in '" +
                                 std::string (begin, end) + "' at '" +
-                                std::string (it, end) + "'");                                
+                                std::string (it, end) + "'");
                 }
                 ++it;
         }
 
         const iterator_t value_end = it;
-        
-        
+
+
         // Compose block_match.
         return value_match_t<iterator_t> (
                 id_match,
@@ -357,53 +357,53 @@ block_t<iterator_t>
         const iterator_t parse_begin = parent_block.content().begin();
         iterator_t       it  = parent_block.content().begin();
         const iterator_t end = parent_block.content().end();
-        
-        block_t<iterator_t> ret (parent_block);                
-        
+
+        block_t<iterator_t> ret (parent_block);
+
         eat_whitespace (it, end);
         while (it != end) {
-                
-                bool matchAny = false;                
+
+                bool matchAny = false;
 
                 if (!matchAny) {
                         const block_match_t<iterator_t> block_match = block (it, end);
                         if (block_match) {
                                 matchAny = true;
-                                
+
                                 //std::cout << "[[[" << std::string (block_match.id().begin(), block_match.id().end()) << "]]]\n";
                                 //std::cout << "<<<" << std::string (block_match.content.begin, block_match.content.end) << ">>>\n";
-                                
+
                                 it = block_match.behind_content();
-                                
+
                                 const block_t<iterator_t> block = parse (block_match);
                                 if (block)
                                         ret.add_child (block);
                         }
                 }
-                
+
                 if (!matchAny) {
                         const value_match_t<iterator_t> value_match = value (it, end);
                         if (value_match) {
                                 ret.add_value (value_match);
                                 matchAny = true;
-                                
+
                                 //std::cout << "(((" << std::string (value_match.id().begin(), value_match.id().end()) << ")))\n";
                                 //std::cout << "===" << std::string (value_match.value().begin(), value_match.value().end()) << "===\n";
-                                
+
                                 it = value_match.behind_value();
                         }
                 }
-                
+
                 if (!matchAny) {
                         throw std::invalid_argument (
                                 "unexpected character found in '" +
                                 std::string (parse_begin, end) + "' at '" +
                                 std::string (it, end) + "'");
                 }
-                
+
                 eat_whitespace (it, end);
         }
-        
+
         return ret;
 }
 } }
