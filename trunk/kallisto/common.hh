@@ -45,7 +45,6 @@
 
 #include "metamath/bitwise.hh"
 
-
 #include "traits/traits.hh"
 
 #include "traits/float_traits.hh"
@@ -53,6 +52,8 @@
 
 #include "types/fixed_point.hh"
 #include "traits/fixed_point_traits.hh"
+
+#include "types/scalar_cast.hh"
 
 #include "types/vector.hh"
 #include "traits/vector_traits.hh"
@@ -63,7 +64,6 @@
 #include "types/normal.hh"
 #include "traits/normal_traits.hh"
 
-#include "types/scalar_cast.hh"
 #include "types/vector_cast.hh"
 
 #include "types/proto_ray.hh"

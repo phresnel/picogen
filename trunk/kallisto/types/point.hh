@@ -60,6 +60,10 @@ namespace kallisto {
                 : x(x), y(y), z(z) {
                 }
 
+                template <typename S> Point (S const &x, S const &y, S const &z)
+                : x(scalar_cast<T>(x)), y(scalar_cast<T>(y)), z(scalar_cast<T>(z))
+                {}
+
                 inline Point & operator= (Point const &rhs) {
                         this->x = rhs.x;
                         this->y = rhs.y;
