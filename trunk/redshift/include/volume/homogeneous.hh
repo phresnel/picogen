@@ -36,7 +36,8 @@ namespace redshift { namespace volume {
                 Homogeneous (
                         Color const & sigma_a,
                         Color const & sigma_s,
-                        Color const & Lve
+                        Color const & Lve,
+                        real_t henyeyGreensteinParameter
                 ) ;
 
 
@@ -62,6 +63,7 @@ namespace redshift { namespace volume {
                 const Color sigma_a_;
                 const Color sigma_s_;
                 const Color Lve_;
+                const real_t henyeyGreensteinParameter;
         };
 } }
 

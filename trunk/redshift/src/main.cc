@@ -29,6 +29,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 #ifdef AMALGAM
 #include "../../include/redshift.hh"
@@ -45,6 +46,8 @@
 #include "../include/interaction/sdlcommandprocessor.hh"
 #include "../include/basictypes/height-function.hh"
 #endif
+
+#include "../../actuarius/actuarius.hh"
 
 
 
@@ -114,6 +117,7 @@ private:
 #endif
 #include "../../quatsch/configurable-functions/noise2ddef.hh"
 #include "../../quatsch/configurable-functions/layerednoise2ddef.hh"
+
 
 namespace redshift {
 class QuatschHeightFunction : public redshift::HeightFunction {
@@ -194,6 +198,48 @@ class HeightFunction : public redshift::HeightFunction {
 
 
 
+struct RedshiftJob {
+        // Data.
+        unsigned int redshiftVersion;
+        unsigned int width, height;
+        unsigned int samplesPerPixel;
+
+        // Serialization.
+        template<typename Arch>
+        void serialize (Arch &arch) {
+                using actuarius::pack;
+                arch & pack ("redshift-version", redshiftVersion);
+                arch & pack ("width", width);
+                arch & pack ("height", height);
+                arch & pack ("samples-per-pixel", samplesPerPixel);
+        }
+};
+
+
+void doActuariusTest () {
+        using namespace actuarius;
+        if (true) {
+                std::ofstream os ("in.txt");
+
+                RedshiftJob job;
+                //job.redshiftVersion = (0<<24)|(3);
+                job.width = 1024;
+                job.height = 768;
+                job.samplesPerPixel = 3;
+                OArchive(os) & pack ("redshift-job", job);
+
+        }
+        {
+                std::ifstream is ("in.txt");
+                RedshiftJob job = {0};
+                IArchive(is) & pack ("redshift-job", job);
+                std::cout << job.width << "x" << job.height << "x" << job.samplesPerPixel << std::endl;
+        }
+}
+
+
+
+
 void run() {
         using namespace redshift;
         using namespace redshift::camera;
@@ -204,7 +250,7 @@ void run() {
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 1680/5;
+        int const width = 1680/4;
         int const height = width/3;
         int const AA = 1;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
@@ -244,7 +290,7 @@ void run() {
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,55,-5420)), 10)));
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,75,-5420)), 10)));*/
         //list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(610,5,-3850)), 10)));
-        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction, 7, 0.0025)));
+        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction, 5, 0.5*0.0025)));
         list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (0, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
@@ -263,11 +309,12 @@ void run() {
                 shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                shared_ptr<Integrator> (new DirectLighting(5)),
+                shared_ptr<Integrator> (new DirectLighting(5/*ambient samples*/)),
                 shared_ptr<VolumeRegion> (new volume::Homogeneous (
                         Color::fromRgb(0.0001,0.00011,0.00012)*2.5, // absorption
                         Color::fromRgb(0.00015,0.00015,0.00015), // out scattering probability
-                        Color::fromRgb(0.0002,0.00018,0.00015) // emission
+                        Color::fromRgb(0.0002,0.00018,0.00015), // emission
+                        -0.5// Henyey Greenstein
                 )),
                 shared_ptr<VolumeIntegrator> (new SingleScattering(100.f))
         );
@@ -299,6 +346,9 @@ int main (int, char*[])
 #endif
 {
         using namespace redshift;
+
+        /*doActuariusTest ();
+        return 0;*/
 
         try {
                 // Initialize SDL video.

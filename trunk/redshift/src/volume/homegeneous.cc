@@ -28,11 +28,13 @@ namespace redshift { namespace volume {
 Homogeneous::Homogeneous (
         Color const & sigma_a,
         Color const & sigma_s,
-        Color const & Lve
+        Color const & Lve,
+        real_t henyeyGreensteinParameter
 )
 : sigma_a_(sigma_a)
 , sigma_s_(sigma_s)
 , Lve_(Lve)
+, henyeyGreensteinParameter(henyeyGreensteinParameter)
 {
 }
 
@@ -64,7 +66,7 @@ real_t Homogeneous::p (
         const Vector &w_in,
         const Vector &w_out
 ) const {
-        return PhaseHG (w_in, w_out, 0.1f);
+        return PhaseHG (w_in, w_out, henyeyGreensteinParameter);
 }
 
 
