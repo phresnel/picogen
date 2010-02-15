@@ -33,7 +33,7 @@
 
 namespace actuarius { namespace detail {
 
-        // TODO is incomplete
+        // Note: For terminals, only ; and backslash must be escaped.
         template <typename iterator_t>
         inline std::string
         unescape_nonstring_terminal (iterator_t begin, iterator_t end) {
@@ -44,12 +44,6 @@ namespace actuarius { namespace detail {
                                 if(*(it+1) == ';') {
                                         ++it;
                                 } else if(*(it+1) == '\\') {
-                                        ++it;
-                                } else if(*(it+1) == '{') {
-                                        ++it;
-                                } else if(*(it+1) == '}') {
-                                        ++it;
-                                } else if(*(it+1) == ':') {
                                         ++it;
                                 } else {
                                         throw std::invalid_argument (
@@ -70,13 +64,14 @@ namespace actuarius { namespace detail {
                 return unescape_nonstring_terminal (val.begin(), val.end());
         }
 
+        // Note: For terminals, only ; and backslash must be escaped.
         template <typename iterator_t>
         inline std::string
         escape_terminal (iterator_t begin, iterator_t end) {
                 std::string ret;
                 iterator_t it = begin;
                 while (it != end) {
-                        if (*it == ';' || *it == '\\' || *it=='{' || *it=='}' || *it==':')
+                        if (*it == ';' || *it == '\\')
                                 ret += '\\';
                         ret += *it;
                         ++it;
