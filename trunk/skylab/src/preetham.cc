@@ -310,7 +310,10 @@ Color Preetham::shade (Ray in_ray) const {
 }
 
 Color Preetham::sunShade (Ray ray) const {
-        const real_t gamma = std::acos (dot(ray.direction,m_sunDirection));
+        const real_t d = dot(ray.direction,m_sunDirection);
+        const real_t gamma = std::acos (d>1.f?1.f:d); // it seems like in the mingw build, the dot product
+                                                      // sometimes is like 1.0000000000001 or so
+                                                      // in which case, gamma would then be nan
         if (std::fabs(gamma) < m_sunSolidAngle) {
                 return m_sunColor;
         } else if (m_enableSunFalloffHack) {
