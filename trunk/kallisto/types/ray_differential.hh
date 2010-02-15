@@ -58,6 +58,22 @@ namespace kallisto {
                 , hasDifferentials(false)
                 , rx(), ry()
                 {}
+                
+                RayDifferential (RayDifferential const & rhs)
+                : Ray<point_t, direction_t> (rhs)
+                , hasDifferentials(rhs.hasDifferentials)
+                , rx(rhs.rx)
+                , ry(rhs.ry)
+                {
+                }
+                
+                RayDifferential & operator = (RayDifferential const & rhs) {
+                        Ray<point_t, direction_t>::operator = (rhs);
+                        hasDifferentials = rhs.hasDifferentials;
+                        rx = rhs.rx;
+                        ry = rhs.ry;
+                        return *this;
+                }
         };
 }
 

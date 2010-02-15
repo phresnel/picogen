@@ -43,6 +43,16 @@ namespace kallisto {
                 ProtoRay (point_t const &pos, direction_t const &dir)
                 : position (pos), direction (dir)
                 {}
+                
+                ProtoRay (ProtoRay const &rhs) 
+                : position(rhs.position), direction(rhs.direction)
+                {}
+                
+                ProtoRay &operator = (ProtoRay const &rhs) {
+                        position = rhs.position;
+                        direction = rhs.direction;
+                        return *this;
+                }
 
                 /*template <typename T>
                 position_t

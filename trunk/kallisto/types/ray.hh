@@ -46,6 +46,17 @@ namespace kallisto {
                 Ray (point_t const &pos, direction_t const &dir)
                 : ProtoRay<point_t, direction_t>(pos, dir)//, minT(0), maxT(0)
                 {}
+                
+                Ray (Ray const &rhs)
+                : ProtoRay<point_t, direction_t>(rhs.position, rhs.direction)
+                {
+                }
+                
+                Ray & operator = (Ray const & rhs) {
+                        this->position = rhs.position;
+                        this->direction = rhs.direction;
+                        return *this;
+                }
 
                 point_t operator () (
                         typename traits::get_scalar_type<direction_t>::type f
