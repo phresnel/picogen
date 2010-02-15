@@ -32,6 +32,71 @@
 namespace quatsch {  namespace configurable_functions {
 
 
+namespace lnoise2d {
+        #include <stdint.h>
+        template <uint32_t m, uint32_t a, uint32_t c>
+        class LCG {
+        public:
+                uint32_t operator () () {
+                        return curr = ((uint64_t)(((uint64_t)a*curr)&0xFFFFFFFFUL) + c) % m;
+                }
+
+                void seed (uint32_t s) {
+                        curr = s;
+                }
+        private:
+                uint32_t curr;
+        };
+
+        template <uint32_t m, uint32_t a, uint32_t c>
+        class LCGf : private LCG<m,a,c> {
+        public:
+                float operator () () {
+                        return LCG<m,a,c>::operator()() * (1.f/(1.f+m));
+                }
+
+                void seed (uint32_t s) {
+                        LCG<m,a,c>::seed(s);
+                }
+        };
+        #if 0
+        #include <cstdlib>
+        #include <iostream>
+        void rngtest () {
+                LCGf<0xFFFFFFFFUL, 1103515245UL, 12345UL> mwcf;
+                mwcf.seed(1);
+                for (int i=0; i<10; ++i) {
+                        std::cout << mwcf () << std::endl;
+                }
+                /*
+                for seed 1:
+                1103527590
+                2524885223
+                662824084
+                3295386429
+                4182499122
+                2516284547
+                3655513600
+                2633739833
+                3210001534
+                267834847
+
+                0.256935
+                0.587871
+                0.154326
+                0.767267
+                0.973814
+                0.585868
+                0.851116
+                0.613215
+                0.747387
+                0.0623602
+                */
+        }
+        #endif
+
+}
+
 template <typename FUNCTION, typename COMPILER>
 LayeredNoise2d <FUNCTION, COMPILER> :: LayeredNoise2d (
         ::std::map<std::string,std::string>& static_parameters,
@@ -131,7 +196,8 @@ LayeredNoise2d <FUNCTION, COMPILER> :: LayeredNoise2d (
         {
                 using boost::shared_array;
                 using namespace kallisto;
-                random::MersenneTwister<scalar_t, 0, 1> mt (seed);
+                lnoise2d::LCGf<0xFFFFFFFFUL, 1103515245UL, 12345UL> mt;
+                mt.seed(seed);
 
                 const unsigned int offsetLutNumBits = 8;
                 offsetLutMask = 0;
@@ -149,8 +215,8 @@ LayeredNoise2d <FUNCTION, COMPILER> :: LayeredNoise2d (
                 rngLut    = boost::shared_array<scalar_t> (new scalar_t [offsetLutSize]);
 
                 for (unsigned int u=0; u<offsetLutSize; ++u) {
-                        offsetLut [u] = static_cast<unsigned int> ((mt.rand()) * static_cast<scalar_t> (offsetLutSize));
-                        rngLut    [u] = -0.5 + 1.0 * mt.rand();
+                        offsetLut [u] = static_cast<unsigned int> (mt() * static_cast<scalar_t> (offsetLutSize));
+                        rngLut    [u] = -0.5 + 1.0 * mt();
                 }
         }
 }

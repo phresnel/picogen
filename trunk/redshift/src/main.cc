@@ -261,12 +261,8 @@ void run() {
         try {
                 heightFunction = shared_ptr<redshift::HeightFunction> (
                         new ::redshift::QuatschHeightFunction(
-                                //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
-                /* benchmark */
-//"(* 800 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.0005} layercount{12} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))"
-// dA: "(* 2400 ([LayeredNoise2d filter{cosine} seed{54} frequency{0.0005} layercount{14} persistence{0.5}] x y))"
-"(+ "
-"  (* 2000 ([LayeredNoise2d filter{cosine} seed{57} frequency{0.001} layercount{3} persistence{0.4}] x y))"
+"(+"
+  "(* 2000 ([LayeredNoise2d filter{cosine} seed{57} frequency{0.001} layercount{3} persistence{0.4}] x y))"
 "  (* 100 ([LayeredNoise2d filter{cosine} seed{542} frequency{0.01} layercount{9} persistence{0.53}] x y))"
 ") "
 
