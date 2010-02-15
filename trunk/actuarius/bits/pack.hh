@@ -29,11 +29,11 @@ namespace actuarius {
         // Only convention is actually that the name of the entitity goes
         // left most.
         //---------------------------------------------------------------------
-        
+
         //---------------------------------------------------------------------
         // Scalar types.
         //---------------------------------------------------------------------
-        template <typename T> 
+        template <typename T>
         typename detail::disable_if<
                 detail::is_container_type<T>,
                 nrp<T>
@@ -41,8 +41,8 @@ namespace actuarius {
         pack (const char *name, T &value) {
                 return make_nrp (name, value);
         }
-        
-        template <typename T> 
+
+        template <typename T>
         typename detail::disable_if<
                 detail::is_container_type<T>,
                 nerp<T>
@@ -50,9 +50,9 @@ namespace actuarius {
         pack (const char *name, Enum<T> const & enumDesc, T &value) {
                 return make_nerp (name, enumDesc, value);
         }
-        
+
         // convenience overload.
-        template <typename T> 
+        template <typename T>
         typename detail::disable_if<
                 detail::is_container_type<T>,
                 nerp<T>
@@ -67,25 +67,25 @@ namespace actuarius {
         //---------------------------------------------------------------------
         // Container types.
         //---------------------------------------------------------------------
-        template <typename T> 
+        template <typename T>
         typename detail::enable_if<
                 detail::is_container_type<T>,
                 ncrp<T>
         >::type
-        pack (const char *name, T &value) {                
+        pack (const char *name, T &value) {
                 return make_ncrp (name, value);
         }
-        
 
 
-        template <typename T> 
+
+        template <typename T>
         typename detail::enable_if<
                 detail::is_container_type<T>,
                 necrp<T>
-        >::type        
+        >::type
         pack (
-                const char *name, 
-                Enum<typename T::value_type> const & enumDesc, 
+                const char *name,
+                Enum<typename T::value_type> const & enumDesc,
                 T &value
         ) {
                 return make_necrp (name, enumDesc, value);
@@ -94,19 +94,27 @@ namespace actuarius {
 
 
         // convenience overload
-        template <typename T> 
+        template <typename T>
         typename detail::enable_if<
                 detail::is_container_type<T>,
                 necrp<T>
-        >::type        
+        >::type
         pack (
-                const char *name, 
-                T &value, 
+                const char *name,
+                T &value,
                 Enum<typename T::value_type> const & enumDesc
         ) {
                 return make_necrp (name, enumDesc, value);
         }
         //--
+
+
+        //---------------------------------------------------------------------
+        // Special.
+        //---------------------------------------------------------------------
+        nrp<std::string> pack (const char* name, std::string &value) {
+                return make_nrp (name, value);
+        }
 }
 
 #endif // PACK_HH_INCLUDED_20090919
