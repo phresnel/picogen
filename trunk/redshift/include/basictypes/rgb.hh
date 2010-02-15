@@ -36,6 +36,13 @@ namespace redshift {
                 : r(rgb.r) , g(rgb.g), b(rgb.b)
                 {}
 
+                Rgb &operator = (Rgb const &rhs) {
+                        this->r = rhs.r;
+                        this->g = rhs.g;
+                        this->b = rhs.b;
+                        return *this;
+                }
+
                 Rgb toRgb () const {
                         return Rgb (r, g, b);
                 }
