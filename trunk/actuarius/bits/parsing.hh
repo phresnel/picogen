@@ -35,7 +35,7 @@ namespace actuarius { namespace detail {
 
         // TODO is incomplete
         template <typename iterator_t>
-        std::string
+        inline std::string
         unescape_nonstring_terminal (iterator_t begin, iterator_t end) {
                 std::string ret;
                 iterator_t it = begin;
@@ -44,6 +44,12 @@ namespace actuarius { namespace detail {
                                 if(*(it+1) == ';') {
                                         ++it;
                                 } else if(*(it+1) == '\\') {
+                                        ++it;
+                                } else if(*(it+1) == '{') {
+                                        ++it;
+                                } else if(*(it+1) == '}') {
+                                        ++it;
+                                } else if(*(it+1) == ':') {
                                         ++it;
                                 } else {
                                         throw std::invalid_argument (
@@ -59,16 +65,36 @@ namespace actuarius { namespace detail {
         }
 
         template <typename T>
-        std::string
+        inline std::string
         unescape_nonstring_terminal (T const & val) {
                 return unescape_nonstring_terminal (val.begin(), val.end());
+        }
+
+        template <typename iterator_t>
+        inline std::string
+        escape_terminal (iterator_t begin, iterator_t end) {
+                std::string ret;
+                iterator_t it = begin;
+                while (it != end) {
+                        if (*it == ';' || *it == '\\' || *it=='{' || *it=='}' || *it==':')
+                                ret += '\\';
+                        ret += *it;
+                        ++it;
+                }
+                return ret;
+        }
+
+        template <typename T>
+        inline std::string
+        ecape_terminal (T const & val) {
+                return escape_terminal (val.begin(), val.end());
         }
 
 
 
 
         template <typename iterator_t>
-        bool is_whitespace (iterator_t it) {
+        inline bool is_whitespace (iterator_t it) {
                 switch (*it) {
                 case ' ':
                 case '\t':
@@ -79,7 +105,7 @@ namespace actuarius { namespace detail {
         }
 
         template <typename iterator_t>
-        bool is_num (iterator_t it) {
+        inline bool is_num (iterator_t it) {
                 switch (*it) {
                 case '0':
                 case '1':
@@ -96,7 +122,7 @@ namespace actuarius { namespace detail {
         }
 
         template <typename iterator_t>
-        bool is_alpha (iterator_t it) {
+        inline bool is_alpha (iterator_t it) {
                 switch (*it) {
                 case 'a': case 'A':
                 case 'b': case 'B':
@@ -129,37 +155,37 @@ namespace actuarius { namespace detail {
         }
 
         template <typename iterator_t>
-        bool is_alphanum (iterator_t it) {
+        inline bool is_alphanum (iterator_t it) {
                 return is_alpha (it) || is_num (it);
         }
 
         template <typename iterator_t>
-        bool is_idchar (iterator_t it) {
+        inline bool is_idchar (iterator_t it) {
                 return is_alphanum (it) || '_' == *it || '-' == *it;
         }
 
         template <typename iterator_t>
-        bool is_open_brace (iterator_t it) {
+        inline bool is_open_brace (iterator_t it) {
                 return *it == '{';
         }
 
         template <typename iterator_t>
-        bool is_close_brace (iterator_t it) {
+        inline bool is_close_brace (iterator_t it) {
                 return *it == '}';
         }
 
         template <typename iterator_t>
-        bool is_colon (iterator_t it) {
+        inline bool is_colon (iterator_t it) {
                 return *it == ':';
         }
 
         template <typename iterator_t>
-        bool is_semicolon (iterator_t it) {
+        inline bool is_semicolon (iterator_t it) {
                 return *it == ';';
         }
 
         template <typename iterator_t>
-        bool is_open_block (iterator_t it) {
+        inline bool is_open_block (iterator_t it) {
                 switch (*it) {
                 case '{':
                 return true;
@@ -168,7 +194,7 @@ namespace actuarius { namespace detail {
         }
 
         template <typename iterator_t>
-        bool is_open_terminal (iterator_t it) {
+        inline bool is_open_terminal (iterator_t it) {
                 switch (*it) {
                 case ':':
                 return true;
@@ -183,6 +209,7 @@ namespace actuarius { namespace detail {
                 case ';':
                 case '{':
                 case '}':
+                case '\\':
                         return true;
                 default:
                         return false;
@@ -190,7 +217,7 @@ namespace actuarius { namespace detail {
         }
 
         template <typename iterator_t>
-        std::string parse_id (iterator_t &it, iterator_t end) {
+        inline std::string parse_id (iterator_t &it, iterator_t end) {
                 std::string ret;
                 while (it != end && is_idchar (it)) {
                         ret += *it;
@@ -200,7 +227,7 @@ namespace actuarius { namespace detail {
         }
 
         template <typename iterator_t>
-        void eat_whitespace (iterator_t &it, iterator_t end) {
+        inline void eat_whitespace (iterator_t &it, iterator_t end) {
                 while (it != end && is_whitespace (it)) {
                         ++it;
                 }
@@ -212,7 +239,7 @@ namespace actuarius { namespace detail {
 namespace actuarius { namespace detail {
 
 template <typename iterator_t>
-match_t<iterator_t>
+inline match_t<iterator_t>
 identifier (iterator_t it, iterator_t end) {
 
         if (is_idchar (it)) {
@@ -228,7 +255,7 @@ identifier (iterator_t it, iterator_t end) {
 
 
 template <typename iterator_t>
-block_match_t<iterator_t>
+inline block_match_t<iterator_t>
 block (iterator_t it, iterator_t end) {
         const iterator_t block_begin = it;
 
@@ -291,7 +318,7 @@ block (iterator_t it, iterator_t end) {
 
 
 template <typename iterator_t>
-value_match_t<iterator_t>
+inline value_match_t<iterator_t>
 value (iterator_t it, iterator_t end) {
         const iterator_t begin = it;
 
@@ -352,7 +379,7 @@ value (iterator_t it, iterator_t end) {
 
 template <typename iterator_t>
 //block_t parse (iterator_t it, iterator_t end) {
-block_t<iterator_t>
+inline block_t<iterator_t>
  parse (block_match_t<iterator_t> const & parent_block) {
         const iterator_t parse_begin = parent_block.content().begin();
         iterator_t       it  = parent_block.content().begin();

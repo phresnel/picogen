@@ -31,12 +31,12 @@ class OArchive {
 public:
         enum { serialize = 1, deserialize = 0 };
 
-        OArchive (std::ostream &out) 
+        OArchive (std::ostream &out)
         : indendation(0), out(out)
         {
                 path.push ("/");
         }
-        
+
         OArchive (OArchive const & oa)
         : indendation(oa.indendation), out (oa.out)
         {}
@@ -45,26 +45,26 @@ public:
                 out << indent() << "/* " << val.text << " */\n";
                 return *this;
         }
-        
+
         template <typename T>
         typename detail::disable_if<
-                detail::has_serialize_function<OArchive,T>, 
+                detail::has_serialize_function<OArchive,T>,
                 OArchive
         >::type &
         operator & (nrp<T> val) {
                 path.push (path.top() + val.name + "/");
                 //std::cout << path.top() << '\n';
-                
+
                 out << indent() << val.name << ":" << val.value << ";\n";
                 path.pop ();
                 return *this;
         }
-        
+
         template <typename T>
         OArchive &operator & (ncrp<T> val) {
                 path.push (path.top() + val.name + "/");
-                
-                for (typename T::iterator it = val.value.begin(); 
+
+                for (typename T::iterator it = val.value.begin();
                      it!=val.value.end();
                      ++it
                 ) {
@@ -73,12 +73,12 @@ public:
                 path.pop ();
                 return *this;
         }
-        
+
         template <typename T>
         OArchive &operator & (necrp<T> val) {
                 path.push (path.top() + val.name + "/");
-                
-                for (typename T::iterator it = val.value.begin(); 
+
+                for (typename T::iterator it = val.value.begin();
                      it!=val.value.end();
                      ++it
                 ) {
@@ -87,7 +87,7 @@ public:
                 path.pop ();
                 return *this;
         }
-        
+
         template <typename T>
         OArchive &operator & (nerp<T> val) {
                 path.push (path.top() + val.name + "/");
@@ -96,25 +96,35 @@ public:
                 path.pop ();
                 return *this;
         }
-        
-        template <typename T> 
+
+        template <typename T>
         typename detail::enable_if<
-                detail::has_serialize_function<OArchive,T>, 
+                detail::has_serialize_function<OArchive,T>,
                 OArchive
         >::type&
         operator & (nrp<T> val) {
                 path.push (path.top() + val.name + "/");
                 //std::cout << path.top() << '\n';
-                
-                out << indent() << val.name << "{\n";                
-                ++indendation;                                
-                val.value.serialize (*this);                
+
+                out << indent() << val.name << "{\n";
+                ++indendation;
+                val.value.serialize (*this);
                 --indendation;
                 out << indent () << "}\n" << std::flush;
                 path.pop ();
                 return *this;
         }
-        
+
+        OArchive&
+        operator & (nrp<std::string> val) {
+                path.push (path.top() + val.name + "/");
+                //std::cout << path.top() << '\n';
+                using actuarius::detail::escape_terminal;
+                out << indent() << val.name << ":" << escape_terminal(val.value.begin(),val.value.end()) << ";\n";
+                path.pop ();
+                return *this;
+        }
+
 private:
         int indendation;
         std::ostream &out;
@@ -124,9 +134,9 @@ private:
                         ret += "    ";
                 return ret;
         }
-        
+
         std::stack<std::string> path;
-        
+
         OArchive & operator = (OArchive const & rhs);
 };
 }
