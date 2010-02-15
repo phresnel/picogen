@@ -276,7 +276,7 @@ void Preetham::invalidate() {
 
 
 real_t Preetham::perez (real_t Theta, real_t gamma, const real_t p[]) {
-        return (1.0 + p[0]*exp (p[1]/cos (Theta))) * (1.0 + p[2]*exp (p[3]*gamma) + p[4]*pow (cos (gamma),2.0));
+        return (1.0 + p[0]*std::exp (p[1]/std::cos (Theta))) * (1.0 + p[2]*std::exp (p[3]*gamma) + p[4]*std::pow (std::cos (gamma),2.0));
 }
 
 
@@ -309,20 +309,16 @@ Color Preetham::shade (Ray in_ray) const {
         return multiplyComponents (color, m_colorFilter);
 }
 
-
-
 Color Preetham::sunShade (Ray ray) const {
-        const real_t gamma = acos (ray.direction * m_sunDirection);//*/getAngleBetween( theta, phi, m_theta, m_phi );
-
-        if (gamma < m_sunSolidAngle) {
+        const real_t gamma = std::acos (dot(ray.direction,m_sunDirection));
+        if (std::fabs(gamma) < m_sunSolidAngle) {
                 return m_sunColor;
         } else if (m_enableSunFalloffHack) {
                 real_t f = gamma-m_sunSolidAngle;
-                const real_t i_ = (1/exp(m_falloffHackFactor [0] * f))+m_falloffHackFactor [1]*(1/exp(m_falloffHackFactor [2]*f));
+                const real_t i_ = (1/std::exp(m_falloffHackFactor [0] * f))+m_falloffHackFactor [1]*(1/std::exp(m_falloffHackFactor [2]*f));
                 const real_t i = i_ < 0.0 ? 0.0 : i_ > 1.0 ? 1.0 : i_;
                 return m_sunColor * i;
         }
-
         return Color (.0f, .0f, .0f);
 }
 
@@ -381,7 +377,7 @@ Color Preetham::atmosphereShade (Color src_color, Ray ray, real_t distance) cons
                 const Color sky_color = shade (ray);
                 const real_t distance_ = distance>m_fogHackSatDist?m_fogHackSatDist:distance;
                 //const real_t d = 1.0 / (1+m_fogHackFactor*distance_); // 0.00082 was a cool value for '2097'
-                const real_t d = 1.0 / exp (pow (m_fogHackFactor*distance_, 1));
+                const real_t d = 1.0 / std::exp (pow (m_fogHackFactor*distance_, 1));
                 return src_color*d + sky_color* (1-d);
         } else {
                 return src_color;
