@@ -37,6 +37,13 @@
 #include <limits>
 #include <climits>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/shared_array.hpp>
+namespace kallisto {
+        using boost::shared_ptr;
+        using boost::shared_array;
+}
+
 #include "testing/static_assert.hh"
 #include "testing/unit_test.hh"
 
@@ -83,6 +90,8 @@
 
 #include "types/sphere.hh"
 #include "traits/sphere_traits.hh"
+
+#include "types/transform.hh"
 
 #include "rng/mt.hh"
 

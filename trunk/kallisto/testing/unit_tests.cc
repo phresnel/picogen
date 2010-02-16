@@ -25,6 +25,7 @@ namespace kallisto { namespace unit_test {
         test_normal_t const test_normal_t::test;
         test_point_t const test_point_t::test;
         test_vector_t const test_vector_t::test;
+        test_transform_t const test_transform_t::test;
 
 	test_ray_t const test_ray_t::test;
 	test_proto_ray_t const test_proto_ray_t::test;
