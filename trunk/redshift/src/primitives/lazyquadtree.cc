@@ -527,7 +527,6 @@ public:
         LazyQuadtreeImpl (
                 shared_ptr<HeightFunction const> fun,
                 real_t size,
-                shared_ptr<HeightFunction const> distortionFun_,
                 unsigned int maxRecursion,
                 real_t lodFactor
         )
@@ -545,7 +544,6 @@ public:
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
-        , distortionFun(distortionFun_)
         {}
 
 
@@ -604,8 +602,6 @@ private:
         BoundingBoxF primaryBB;
         BoundingBox primaryFixpBB;
         lazyquadtree::Node primaryNode;
-        shared_ptr<HeightFunction const> distortionFun;
-
 
         BoundingBoxF initBB(const real_t size, const int numSamples) const {
                 real_t minh = 10000000.0f , maxh = -10000000.0f;
@@ -643,13 +639,11 @@ namespace redshift { namespace primitive {
 LazyQuadtree::LazyQuadtree (
         shared_ptr<HeightFunction const> fun,
         real_t size,
-        shared_ptr<HeightFunction const> distortionFun_,
         unsigned int maxRecursion,
         real_t lodFactor
 )
-: impl (new LazyQuadtreeImpl (fun, size, distortionFun_, maxRecursion, lodFactor))
+: impl (new LazyQuadtreeImpl (fun, size, maxRecursion, lodFactor))
 , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
-, distortionFun(distortionFun_)
 , heightFun(fun)
 {
 }
