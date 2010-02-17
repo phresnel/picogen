@@ -128,7 +128,25 @@ public:
         template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
         OArchive&
         operator & (npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> val) {
-                out << "yada nada\n";
+
+                path.push (path.top() + val.name + "/");
+
+                out << indent() << val.name << "{\n";
+                ++indendation;
+                for (typename CONT::iterator it = val.value.begin();
+                     it!=val.value.end();
+                     ++it
+                ) {
+                        out << indent() << val.enumDesc[(*it).*val.ptr] << "{\n";
+                        ++indendation;
+                        it->serialize (*this);
+                        --indendation;
+                        out << indent() << "}\n";
+                }
+                --indendation;
+                out << indent() << "}\n" << std::flush;
+                path.pop ();
+
                 return *this;
         }
 private:
