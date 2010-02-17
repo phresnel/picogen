@@ -112,8 +112,28 @@ namespace actuarius {
         //---------------------------------------------------------------------
         // Special.
         //---------------------------------------------------------------------
-        nrp<std::string> pack (const char* name, std::string &value) {
+        /*template <typename T>
+        typename detail::enable_if<
+                detail::identical<T,std::string>,
+                nrp<T>
+        >::type*/
+        nrp<std::string>
+        pack (const char* name, std::string &value) {
                 return make_nrp (name, value);
+        }
+
+
+
+        //---------------------------------------------------------------------
+        // Advice lists.
+        //---------------------------------------------------------------------
+        template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
+        npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> pack (
+                const char *name,
+                ADVICE_MEMBER CONT::value_type::* ptr,
+                Enum<ADVICE_TYPE> enumDesc, CONT &value
+        ) {
+                return make_npecrp(name, ptr, enumDesc, value);
         }
 }
 

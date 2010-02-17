@@ -125,6 +125,12 @@ public:
                 return *this;
         }
 
+        template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
+        OArchive&
+        operator & (npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> val) {
+                out << "yada nada\n";
+                return *this;
+        }
 private:
         int indendation;
         std::ostream &out;

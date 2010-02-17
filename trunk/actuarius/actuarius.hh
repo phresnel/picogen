@@ -26,6 +26,7 @@
 #include "bits/name_enum_ref_pair.hh"
 #include "bits/name_containerref_pair.hh"
 #include "bits/name_enum_containerref_pair.hh"
+#include "bits/name_ptr_enum_containerref_pair.hh"
 #include "bits/comment.hh"
 #include "bits/match_descriptors.hh"
 #include "bits/parsing.hh"
