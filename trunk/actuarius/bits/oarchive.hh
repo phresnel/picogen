@@ -61,6 +61,18 @@ public:
         }
 
         template <typename T>
+        typename detail::disable_if<
+                detail::has_serialize_function<OArchive,T>,
+                OArchive
+        >::type &
+        operator & (ref<T> val) {
+                path.push (path.top() + "?" + "/");
+                out << indent() << val.value << ";\n";
+                path.pop ();
+                return *this;
+        }
+
+        template <typename T>
         OArchive &operator & (ncrp<T> val) {
                 path.push (path.top() + val.name + "/");
 

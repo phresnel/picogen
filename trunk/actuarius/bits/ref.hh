@@ -18,28 +18,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef NAME_REF_PAIR_HH_INCLUDED_20090829
-#define NAME_REF_PAIR_HH_INCLUDED_20090829
+#ifndef REF_HH_INCLUDED_20100217
+#define REF_HH_INCLUDED_20100217
 
 namespace actuarius {
 
 //-----------------------------------------------------------------------------
 // nrp - name reference pair
 //-----------------------------------------------------------------------------
-template <typename T> struct nrp {
-        const char *name;
+template <typename T> struct ref {
         T &value;
 
-        nrp (const char *name, T &value) : name(name), value (value) {}
+        ref (T &value) : value (value) {}
 
 private:
-        nrp operator = (nrp const &) ;
+        ref operator = (ref const &) ;
 };
 
-template <typename T> nrp<T> make_nrp (const char *name, T &value) {
-        return nrp<T> (name, value);
+template <typename T> ref<T> make_ref (T &value) {
+        return ref<T> (value);
 }
 
 }
 
-#endif // NAME_REF_PAIR_HH_INCLUDED_20090829
+#endif // REF_HH_INCLUDED_20100217

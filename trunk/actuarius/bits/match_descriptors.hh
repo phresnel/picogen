@@ -143,6 +143,15 @@ namespace actuarius { namespace detail {
                 {}
 
 
+
+                value_match_t (
+                        match_t<iterator_t> value
+                )
+                : value_(value)
+                , success_ (true)
+                {}
+
+
                 value_match_t ()
                 : success_ (false)
                 {}
@@ -192,6 +201,7 @@ namespace actuarius { namespace detail {
                 match_t<iterator_t> value_;
                 bool success_;
         };
+
 
 
         template <typename iterator_t>
@@ -286,6 +296,23 @@ namespace actuarius { namespace detail {
                         return value_match_t<iterator_t>();
                 }
 
+                value_match_t<iterator_t> take_first_value() {
+                        if (values.size()) {
+                                value_match_t<iterator_t> ret = *values.begin();
+                                values.pop_front();
+                                return ret;
+                        }
+                        return value_match_t<iterator_t>();
+                }
+
+                bool take_first_value_or_child (
+                        value_match_t<iterator_t> &vm, block_t &block
+                ) {
+                        if (vm = take_first_value()) return true;
+                        if (block = take_first_child()) return true;
+                        return false;
+                }
+
                 void add_value (value_match_t<iterator_t> const &rhs) {
                         values.push_back (rhs);
                 }
@@ -316,8 +343,9 @@ namespace actuarius { namespace detail {
                         std::cout << id() << std::endl;
                         for (typename std::list <block_t>::iterator
                                 it = children.begin();
-                            it != children.end();
-                            ++it) {
+                                it != children.end();
+                                ++it
+                        ) {
                                 it->dump (r+1);
                         }
                         if (r == 0) {

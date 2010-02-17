@@ -22,6 +22,7 @@
 #define ACTUARIUS_HH_INCLUDED_20090919
 
 #include "bits/enum.hh"
+#include "bits/ref.hh"
 #include "bits/name_ref_pair.hh"
 #include "bits/name_enum_ref_pair.hh"
 #include "bits/name_containerref_pair.hh"

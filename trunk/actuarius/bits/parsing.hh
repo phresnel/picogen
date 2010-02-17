@@ -370,12 +370,53 @@ value (iterator_t it, iterator_t end) {
         );
 }
 
+template <typename iterator_t>
+inline value_match_t<iterator_t>
+anonymous_value (iterator_t it, iterator_t end) {
+        const iterator_t begin = it;
+
+        eat_whitespace (it, end);
+
+        // Parse whole value.
+        const iterator_t value_begin = it;
+        while (!is_semicolon (it)) {
+                if (it == end)
+                        throw std::invalid_argument(
+                        "reached end-of-file before reaching semicolon at '" +
+                        std::string (value_begin, end) +
+                        "'"
+                        );
+                if ('\\' == *it) {
+                        const iterator_t peek = it+1;
+                        if (peek == end)
+                                throw std::invalid_argument (
+                                "escape character ('\\') at end of file"
+                                );
+                        if (is_valid_for_escape (peek))
+                                ++it;
+                        else
+                                throw std::invalid_argument (
+                                "invalid escape sequence found in '" +
+                                std::string (begin, end) + "' at '" +
+                                std::string (it, end) + "'");
+                }
+                ++it;
+        }
+
+        const iterator_t value_end = it;
+
+
+        // Compose block_match.
+        return value_match_t<iterator_t> (
+                match_t<iterator_t> (value_begin, value_end)
+        );
+}
+
 
 
 template <typename iterator_t>
-//block_t parse (iterator_t it, iterator_t end) {
 inline block_t<iterator_t>
- parse (block_match_t<iterator_t> const & parent_block) {
+parse (block_match_t<iterator_t> const & parent_block) {
         const iterator_t parse_begin = parent_block.content().begin();
         iterator_t       it  = parent_block.content().begin();
         const iterator_t end = parent_block.content().end();
@@ -385,38 +426,21 @@ inline block_t<iterator_t>
         eat_whitespace (it, end);
         while (it != end) {
 
-                bool matchAny = false;
+                if (const block_match_t<iterator_t> block_match = block (it, end)) {
+                        it = block_match.behind_content();
+                        const block_t<iterator_t> block = parse (block_match);
+                        if (block)
+                                ret.add_child (block);
 
-                if (!matchAny) {
-                        const block_match_t<iterator_t> block_match = block (it, end);
-                        if (block_match) {
-                                matchAny = true;
+                } else if (const value_match_t<iterator_t> value_match = value (it, end)) {
+                        ret.add_value (value_match);
+                        it = value_match.behind_value();
 
-                                //std::cout << "[[[" << std::string (block_match.id().begin(), block_match.id().end()) << "]]]\n";
-                                //std::cout << "<<<" << std::string (block_match.content.begin, block_match.content.end) << ">>>\n";
+                } else  if (const value_match_t<iterator_t> value_match = anonymous_value (it, end)) {
+                        ret.add_value (value_match);
+                        it = value_match.behind_value();
 
-                                it = block_match.behind_content();
-
-                                const block_t<iterator_t> block = parse (block_match);
-                                if (block)
-                                        ret.add_child (block);
-                        }
-                }
-
-                if (!matchAny) {
-                        const value_match_t<iterator_t> value_match = value (it, end);
-                        if (value_match) {
-                                ret.add_value (value_match);
-                                matchAny = true;
-
-                                //std::cout << "(((" << std::string (value_match.id().begin(), value_match.id().end()) << ")))\n";
-                                //std::cout << "===" << std::string (value_match.value().begin(), value_match.value().end()) << "===\n";
-
-                                it = value_match.behind_value();
-                        }
-                }
-
-                if (!matchAny) {
+                } else {
                         throw std::invalid_argument (
                                 "unexpected character found in '" +
                                 std::string (parse_begin, end) + "' at '" +
