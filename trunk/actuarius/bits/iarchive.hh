@@ -212,6 +212,50 @@ public:
                 return *this;
         }
 
+        template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
+        IArchive&
+        operator & (npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> val) {
+                using namespace detail;
+                path.push (path.top() + val.name + "/");
+
+                if (detail::block_t<iterator_t>
+                        block=doc.take_child(val.name)
+                ) {
+                        while (detail::block_t<iterator_t>
+                                child = block.take_first_child ()
+                        ) {
+                                std::cout << "id: " << child.id() << std::endl;
+
+                                // map id -> enum-value
+                                if (!val.enumDesc.exists (child.id().c_str())){
+                                        std::cerr
+                                          << "warning: found nothing for "
+                                          << path.top()
+                                          << " for value '"
+                                          << child.id()
+                                          << "' (necrp)"
+                                          << std::endl;
+                                        continue;
+                                }
+
+                                typename CONT::value_type value;
+                                value.*val.ptr =
+                                        val.enumDesc[child.id().c_str()];
+                                IArchive ia (*this, child, false);
+                                value.serialize (ia);
+                                val.value.push_back (value);
+                        }
+                } else {
+                        std::cerr << "warning: found nothing for "
+                                  << path.top()
+                                  << " (nrp)"
+                                  << std::endl;
+                }
+
+                path.pop ();
+                return *this;
+        }
+
 private:
         std::string content;
         detail::block_t<iterator_t> doc;

@@ -258,6 +258,15 @@ namespace actuarius { namespace detail {
                         return block_t();
                 }
 
+                block_t take_first_child () {
+                        if (children.size()) {
+                                block_t ret = *children.begin();
+                                children.pop_front();
+                                return ret;
+                        }
+                        return block_t();
+                }
+
                 value_match_t<iterator_t> take_value (std::string name) {
                         typedef value_match_t<iterator_t>  vm_t;
                         for (typename std::list<vm_t>::iterator
