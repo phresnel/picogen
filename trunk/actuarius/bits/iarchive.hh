@@ -101,7 +101,7 @@ public:
                 } else {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
-                                  << " (nrp)"
+                                  << " (ref)"
                                   << std::endl;
                 }
 
