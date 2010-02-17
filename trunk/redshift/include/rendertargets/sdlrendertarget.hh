@@ -23,11 +23,7 @@
 
 #include "../setup.hh"
 #include "../rendertargets/rendertarget.hh"
-#ifdef __MINGW32__
- #include <SDL/SDL.h>
-#else
- #include <SDL.h>
-#endif
+#include <SDL/SDL.h>
 
 namespace redshift {
 
