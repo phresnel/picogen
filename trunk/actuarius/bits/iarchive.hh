@@ -246,46 +246,29 @@ public:
                 if (detail::block_t<iterator_t>
                         block=doc.take_child(val.name)
                 ) {
-                        detail::block_t<iterator_t> child;
-                        detail::value_match_t<iterator_t> value;
-                        //while (block.take_first_value_or_child (value,child)) {
-                        while (child = block.take_first_child()) {
-                                if (child) {
-                                        std::cout << "id: " << child.id() << std::endl;
-
-                                        // map id -> enum-value
-                                        if (!val.enumDesc.exists (child.id().c_str())){
-                                                std::cerr
-                                                  << "warning: found nothing for "
-                                                  << path.top()
-                                                  << " for value '"
-                                                  << child.id()
-                                                  << "' (necrp)"
-                                                  << std::endl;
-                                                continue;
-                                        }
-                                        typename CONT::value_type value;
-                                        value.*val.ptr =
-                                                val.enumDesc[child.id().c_str()];
-                                        IArchive ia (*this, child, false);
-                                        value.serialize (ia);
-                                        val.value.push_back (value);
-                                } else {
-                                        const std::string
-                                                id = std::string(value.id().begin(),value.id().end()),
-                                                values = std::string(value.id().begin(),value.id().end());
-                                        std::cout << "id!" << id << std::endl;
-                                        std::cout << "values!" << values << std::endl;
-                                        // 0) split at ','
-                                        // 1) deserialize splitees
-                                        // 2) ...
-                                        // 3) profit
+                        while (detail::block_t<iterator_t> child = block.take_first_child()) {
+                                // map id -> enum-value
+                                if (!val.enumDesc.exists (child.id().c_str())){
+                                        std::cerr
+                                          << "warning: found nothing for "
+                                          << path.top()
+                                          << " for value '"
+                                          << child.id()
+                                          << "' (necrp)"
+                                          << std::endl;
+                                        continue;
                                 }
+                                typename CONT::value_type value;
+                                value.*val.ptr =
+                                        val.enumDesc[child.id().c_str()];
+                                IArchive ia (*this, child, false);
+                                value.serialize (ia);
+                                val.value.push_back (value);
                         }
                 } else {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
-                                  << " (nrp)"
+                                  << " (npecrp)"
                                   << std::endl;
                 }
 
