@@ -311,6 +311,56 @@ block (iterator_t it, iterator_t end) {
 
 
 
+template <typename iterator_t>
+inline block_match_t<iterator_t>
+anonymous_block (iterator_t it, iterator_t end) {
+        const iterator_t block_begin = it;
+
+        eat_whitespace (it, end);
+        if (!is_open_brace (it))
+                return block_match_t<iterator_t>();
+        ++it; // after brace
+
+
+        // Parse whole block.
+        const iterator_t content_begin = it;
+        int balance = 1;
+        while (0 != balance) {
+                if (it == end)
+                        throw std::invalid_argument(
+                        "reached end-of-file thanks to unbalanced braces"
+                        );
+                if (is_open_brace (it))
+                        ++balance;
+                else if (is_close_brace (it))
+                        --balance;
+                else if ('\\' == *it) {
+                        const iterator_t peek = it+1;
+                        if (peek == end)
+                                throw std::invalid_argument (
+                                "escape character ('\\') at end of file"
+                                );
+                        if (is_valid_for_escape (peek))
+                                ++it;
+                        else
+                                throw std::invalid_argument (
+                                "invalid escape sequence found in '" +
+                                std::string (block_begin, end) + "' at '" +
+                                std::string (it, end) + "'");
+                }
+                ++it;
+        }
+        const iterator_t content_end = it-1; // before brace
+
+
+        // Compose block_match.
+        return block_match_t<iterator_t> (
+                match_t<iterator_t> (content_begin, content_end)
+        );
+}
+
+
+
 
 template <typename iterator_t>
 inline value_match_t<iterator_t>
@@ -421,6 +471,12 @@ parse (block_match_t<iterator_t> const & parent_block) {
         while (it != end) {
 
                 if (const block_match_t<iterator_t> block_match = block (it, end)) {
+                        it = block_match.behind_content();
+                        const block_t<iterator_t> block = parse (block_match);
+                        if (block)
+                                ret.add_child (block);
+
+                } else if (const block_match_t<iterator_t> block_match = anonymous_block (it, end)) {
                         it = block_match.behind_content();
                         const block_t<iterator_t> block = parse (block_match);
                         if (block)

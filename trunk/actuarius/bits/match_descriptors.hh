@@ -87,6 +87,13 @@ namespace actuarius { namespace detail {
                 , success_ (true)
                 {}
 
+                block_match_t (
+                        match_t<iterator_t> content
+                )
+                : content_(content)
+                , success_ (true)
+                {}
+
                 block_match_t ()
                 : success_ (false)
                 {}

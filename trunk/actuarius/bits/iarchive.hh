@@ -215,6 +215,30 @@ public:
                 return *this;
         }
 
+        template <typename T>
+         typename detail::enable_if<
+                 detail::has_serialize_function<IArchive,T>,
+                 IArchive
+         >::type&
+        operator & (ref<T> val) {
+                path.push (path.top() + "?" + "/");
+
+                if (detail::block_t<iterator_t>
+                        child = doc.take_first_child ()
+                ) {
+                        IArchive ia (*this, child, false);
+                        val.value.serialize (ia);
+                } else {
+                        std::cerr << "warning: found nothing for "
+                                  << path.top()
+                                  << " (ref rec)"
+                                  << std::endl;
+                }
+
+                path.pop ();
+                return *this;
+        }
+
         IArchive&
         operator & (nrp<std::string> val) {
                 using namespace detail;

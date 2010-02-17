@@ -127,6 +127,22 @@ public:
                 return *this;
         }
 
+        template <typename T>
+        typename detail::enable_if<
+                detail::has_serialize_function<OArchive,T>,
+                OArchive
+        >::type &
+        operator & (ref<T> val) {
+                path.push (path.top() + "?" + "/");
+                out << indent() << "{\n";
+                ++indendation;
+                val.value.serialize (*this);
+                --indendation;
+                out << indent () << "}\n" << std::flush;
+                path.pop ();
+                return *this;
+        }
+
         OArchive&
         operator & (nrp<std::string> val) {
                 path.push (path.top() + val.name + "/");
