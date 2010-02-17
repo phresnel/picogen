@@ -115,8 +115,8 @@ namespace actuarius { namespace detail {
                         return success_;
                 }
 
-                iterator_t behind_content () const {
-                        return content_.end() + 1;
+                iterator_t content_end () const {
+                        return content_.end();
                 }
 
                 match_t<iterator_t> id () const {
@@ -184,8 +184,8 @@ namespace actuarius { namespace detail {
                 }
 
 
-                iterator_t behind_value () const {
-                        return value_.end() + 1;
+                iterator_t value_end () const {
+                        return value_.end();
                 }
 
 

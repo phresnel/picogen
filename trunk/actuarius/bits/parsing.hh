@@ -386,10 +386,8 @@ value (iterator_t it, iterator_t end) {
 
         // Parse whole value.
         const iterator_t value_begin = it;
-        while (!is_semicolon (it)) {
-                // Last semicolon before '}' is optional.
-                if (it == end) { --it; break; }
-
+        // Last semicolon before '}' is optional.
+        while (it!=end && !is_semicolon (it)) {
                 if ('\\' == *it) {
                         const iterator_t peek = it+1;
                         if (peek == end)
@@ -426,10 +424,8 @@ anonymous_value (iterator_t it, iterator_t end) {
 
         // Parse whole value.
         const iterator_t value_begin = it;
-        while (!is_semicolon (it)) {
-                // Last semicolon before '}' is optional.
-                if (it == end) { --it; break; }
-
+        // Last semicolon before '}' is optional.
+        while (it!=end && !is_semicolon (it)) {
                 if ('\\' == *it) {
                         const iterator_t peek = it+1;
                         if (peek == end)
@@ -448,7 +444,6 @@ anonymous_value (iterator_t it, iterator_t end) {
         }
 
         const iterator_t value_end = it;
-
 
         // Compose block_match.
         return value_match_t<iterator_t> (
@@ -469,26 +464,29 @@ parse (block_match_t<iterator_t> const & parent_block) {
 
         eat_whitespace (it, end);
         while (it != end) {
-
                 if (const block_match_t<iterator_t> block_match = block (it, end)) {
-                        it = block_match.behind_content();
+                        it = block_match.content_end();
                         const block_t<iterator_t> block = parse (block_match);
                         if (block)
                                 ret.add_child (block);
 
+                        if (it != end) ++it;
                 } else if (const block_match_t<iterator_t> block_match = anonymous_block (it, end)) {
-                        it = block_match.behind_content();
+                        it = block_match.content_end();
                         const block_t<iterator_t> block = parse (block_match);
                         if (block)
                                 ret.add_child (block);
 
+                        if (it != end) ++it;
                 } else if (const value_match_t<iterator_t> value_match = value (it, end)) {
                         ret.add_value (value_match);
-                        it = value_match.behind_value();
+                        it = value_match.value_end();
+                        if (it != end) ++it;
 
                 } else  if (const value_match_t<iterator_t> value_match = anonymous_value (it, end)) {
                         ret.add_value (value_match);
-                        it = value_match.behind_value();
+                        it = value_match.value_end();
+                        if (it != end) ++it;
 
                 } else {
                         throw std::invalid_argument (
@@ -496,7 +494,6 @@ parse (block_match_t<iterator_t> const & parent_block) {
                                 std::string (parse_begin, end) + "' at '" +
                                 std::string (it, end) + "'");
                 }
-
                 eat_whitespace (it, end);
         }
 
