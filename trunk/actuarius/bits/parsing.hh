@@ -337,12 +337,9 @@ value (iterator_t it, iterator_t end) {
         // Parse whole value.
         const iterator_t value_begin = it;
         while (!is_semicolon (it)) {
-                if (it == end)
-                        throw std::invalid_argument(
-                        "reached end-of-file before reaching semicolon at '" +
-                        std::string (value_begin, end) +
-                        "'"
-                        );
+                // Last semicolon before '}' is optional.
+                if (it == end) { --it; break; }
+
                 if ('\\' == *it) {
                         const iterator_t peek = it+1;
                         if (peek == end)
@@ -380,7 +377,9 @@ anonymous_value (iterator_t it, iterator_t end) {
         // Parse whole value.
         const iterator_t value_begin = it;
         while (!is_semicolon (it)) {
+                // Last semicolon before '}' is optional.
                 if (it == end) { --it; break; }
+
                 if ('\\' == *it) {
                         const iterator_t peek = it+1;
                         if (peek == end)
