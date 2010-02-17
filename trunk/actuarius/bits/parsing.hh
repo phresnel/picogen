@@ -361,6 +361,19 @@ anonymous_block (iterator_t it, iterator_t end) {
 
 
 
+template <typename iterator_t>
+inline block_match_t<iterator_t>
+block_or_anonymous_block (iterator_t it, iterator_t end) {
+        if (const block_match_t<iterator_t> block_match = block (it, end)) {
+                return block_match;
+        } else if (const block_match_t<iterator_t> block_match = anonymous_block (it, end)) {
+                return block_match;
+        } else {
+                return block_match_t<iterator_t>();
+        }
+}
+
+
 
 template <typename iterator_t>
 inline value_match_t<iterator_t>
@@ -415,6 +428,8 @@ value (iterator_t it, iterator_t end) {
         );
 }
 
+
+
 template <typename iterator_t>
 inline value_match_t<iterator_t>
 anonymous_value (iterator_t it, iterator_t end) {
@@ -454,6 +469,21 @@ anonymous_value (iterator_t it, iterator_t end) {
 
 
 template <typename iterator_t>
+inline value_match_t<iterator_t>
+value_or_anonymous_value (iterator_t it, iterator_t end) {
+        if (const value_match_t<iterator_t> value_match = value (it, end)) {
+                return value_match;
+        } else if (const value_match_t<iterator_t> value_match = anonymous_value (it, end)) {
+                return value_match;
+        } else {
+                return value_match_t<iterator_t>();
+        }
+}
+
+
+
+
+template <typename iterator_t>
 inline block_t<iterator_t>
 parse (block_match_t<iterator_t> const & parent_block) {
         const iterator_t parse_begin = parent_block.content().begin();
@@ -464,26 +494,18 @@ parse (block_match_t<iterator_t> const & parent_block) {
 
         eat_whitespace (it, end);
         while (it != end) {
-                if (const block_match_t<iterator_t> block_match = block (it, end)) {
+                if (const block_match_t<iterator_t>
+                        block_match = block_or_anonymous_block (it, end)
+                ) {
                         it = block_match.content_end();
                         const block_t<iterator_t> block = parse (block_match);
                         if (block)
                                 ret.add_child (block);
 
                         if (it != end) ++it;
-                } else if (const block_match_t<iterator_t> block_match = anonymous_block (it, end)) {
-                        it = block_match.content_end();
-                        const block_t<iterator_t> block = parse (block_match);
-                        if (block)
-                                ret.add_child (block);
-
-                        if (it != end) ++it;
-                } else if (const value_match_t<iterator_t> value_match = value (it, end)) {
-                        ret.add_value (value_match);
-                        it = value_match.value_end();
-                        if (it != end) ++it;
-
-                } else  if (const value_match_t<iterator_t> value_match = anonymous_value (it, end)) {
+                } else if (const value_match_t<iterator_t>
+                                value_match = value_or_anonymous_value (it, end)
+                ) {
                         ret.add_value (value_match);
                         it = value_match.value_end();
                         if (it != end) ++it;
