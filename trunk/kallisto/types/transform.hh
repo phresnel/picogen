@@ -44,7 +44,32 @@ namespace kallisto {
                         _10, _11, _12, _13,
                         _20, _21, _22, _23,
                         _30, _31, _32, _33
-                ))
+                  ))
+                , i(inverse (m))
+                {}
+
+                Transform (
+                        T _00, T _01, T _02, T _03,
+                        T _10, T _11, T _12, T _13,
+                        T _20, T _21, T _22, T _23,
+                        T _30, T _31, T _32, T _33,
+                        T _i00, T _i01, T _i02, T _i03,
+                        T _i10, T _i11, T _i12, T _i13,
+                        T _i20, T _i21, T _i22, T _i23,
+                        T _i30, T _i31, T _i32, T _i33
+                )
+                : m(Transform::set(
+                        _00, _01, _02, _03,
+                        _10, _11, _12, _13,
+                        _20, _21, _22, _23,
+                        _30, _31, _32, _33
+                  ))
+                , i(Transform::set(
+                        _i00, _i01, _i02, _i03,
+                        _i10, _i11, _i12, _i13,
+                        _i20, _i21, _i22, _i23,
+                        _i30, _i31, _i32, _i33
+                  ))
                 {}
 
                 Transform (shared_array<const T> const &m, shared_array<const T> const &i)
@@ -114,6 +139,95 @@ namespace kallisto {
                 T operator () (unsigned int u, unsigned int v) const {
                         return m[u+v*4];
                 }
+
+        public: // Named constructors.
+
+                // Translation.
+                static Transform translation (T x, T y, T z) {
+                        return Transform (
+                                0, 0, 0, x,
+                                0, 1, 0, y,
+                                0, 0, 1, z,
+                                0, 0, 0, 1,
+
+                                0, 0, 0, -x,
+                                0, 1, 0, -y,
+                                0, 0, 1, -z,
+                                0, 0, 0, 1
+                        );
+                }
+                static Transform translation (const Vector<CARTESIAN,T> &rhs) {
+                        return translation (rhs.x, rhs.y, rhs.z);
+                }
+
+                // Scaling.
+                static Transform scaling (T x, T y, T z) {
+                        return Transform (
+                                x, 0, 0, 0,
+                                0, y, 0, 0,
+                                0, 0, z, 0,
+                                0, 0, 0, 1,
+
+                                1.f/x, 0, 0, 0,
+                                0, 1.f/y, 0, 0,
+                                0, 0, 1.f/z, 0,
+                                0, 0, 0, 1
+                        );
+                }
+                static Transform scaling (const Vector<CARTESIAN,T> &rhs) {
+                        return scaling (rhs.x, rhs.y, rhs.z);
+                }
+
+                // Rotation.
+                static Transform rotationX (T angle) {
+                        const T sin_ = std::sin(angle);
+                        const T cos_ = std::cos(angle);
+                        return Transform (
+                                1,    0,     0,  0,
+                                0, cos_, -sin_,  0,
+                                0, sin_,  cos_,  0,
+                                0,    0,     0,  1,
+
+                                1,    0,     0,  0,
+                                0, cos_,  sin_,  0,
+                                0, -sin_, cos_,  0,
+                                0,    0,     0,  1
+                        );
+                }
+
+                static Transform rotationY (T angle) {
+                        const T sin_ = std::sin(angle);
+                        const T cos_ = std::cos(angle);
+                        return Transform (
+                                cos_,   0, sin_, 0,
+                                   0,   1,    0, 0,
+                               -sin_,   0, cos_, 0,
+                                   0,   0,    0, 1,
+
+                                cos_,   0,-sin_, 0,
+                                   0,   1,    0, 0,
+                                sin_,   0, cos_, 0,
+                                   0,   0,    0, 1,
+                        );
+                }
+
+                static Transform rotationZ (T angle) {
+                        const T sin_ = std::sin(angle);
+                        const T cos_ = std::cos(angle);
+                        return Transform (
+                                cos_t, -sin_t, 0, 0,
+                                sin_t,  cos_t, 0, 0,
+                                    0,      0, 1, 0,
+                                    0,      0, 0, 1
+
+                                cos_t,  sin_t, 0, 0,
+                                -sin_t, cos_t, 0, 0,
+                                 0,         0, 1, 0,
+                                 0,         0, 0, 1
+                        );
+                }
+
+
         private:
                 shared_array<const T> m, i;
 
@@ -159,10 +273,10 @@ namespace kallisto {
                 }
 
                 // Lifted directly from PBRT, original comments left in.
-                static shared_array<T> inverse (shared_array<const T> const &m) {
+                static shared_array<const T> inverse (shared_array<const T> const &m) {
                         int indxc[4], indxr[4];
                         int ipiv[4] = { 0, 0, 0, 0 };
-                        shared_array<T> minv (new T [4*4]);
+                        T *minv = new T [4*4];
                         //memcpy(minv, m, 4*4*sizeof(float));
                         for (int u=0; u<4; ++u) for (int v=0; v<4; ++v) {
                                 minv[u+v*4] = m[u+v*4];
@@ -220,7 +334,7 @@ namespace kallisto {
                                                 swap(minv[k+indxr[j]*4], minv[k+indxc[j]*4]);
                                 }
                         }
-                        return minv;
+                        return shared_array<const T>(minv);
                 }
         };
 }
