@@ -24,11 +24,17 @@ namespace redshift { namespace camera {
 
 
 
-Pinhole::Pinhole (shared_ptr<RenderTarget> film_)
-: film(film_)
+Pinhole::Pinhole (
+        shared_ptr<RenderTarget> film_,
+        real_t frontDist,
+        Transform const & xform
+)
+: Camera(xform)
+, film(film_)
 , invFilmWidth(constants::one/static_cast<real_t>(film->getWidth()))
 , invFilmHeight(constants::one/static_cast<real_t>(film->getHeight()))
 , aspect (static_cast<real_t>(film->getWidth()) / film->getHeight())
+, frontDist (frontDist)
 {
 }
 
@@ -57,7 +63,7 @@ tuple<float,RayDifferential> Pinhole::generateRay (Sample const &sample) const{
         // TODO: need aspect ratio parameter
         ray.direction.x = (-0.5 + sample.imageCoordinates.u * invFilmWidth)*aspect;
         ray.direction.y =  0.5 - sample.imageCoordinates.v * invFilmHeight;
-        ray.direction.z = 1.0;
+        ray.direction.z = frontDist;
         ray.direction = normalize (ray.direction);
         ray.position = Point(0,0,0);
         /*ray.minT = constants::epsilon;

@@ -451,12 +451,14 @@ void run() {
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
         int const width = 1680/6;
-        int const height = width/3;
+        int const height = width;
         int const AA = 1;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer));
-
-        camera->setTransform (redshift::Transform::translation (0,25,-4700));
+        shared_ptr<Camera> camera (new Pinhole(
+                renderBuffer, 1.0f,
+                redshift::Transform::translation (0,5000,0)
+                *redshift::Transform::rotationX(constants::pi*0.5f)
+        ));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -493,9 +495,9 @@ void run() {
         shared_ptr<primitive::Primitive> agg (list);
 
         shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(-7.0,4.001,1.001));
+        preetham->setSunDirection(Vector(-7.0,1.001,1.001));
         preetham->setTurbidity(2.0f);
-        preetham->setSunColor(redshift::Color(1.1,1,0.9)*7);
+        preetham->setSunColor(redshift::Color(1.1,1,0.9)*70);
         preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
         preetham->enableFogHack (false, 0.00025f, 150000);
         preetham->invalidate();
@@ -516,14 +518,14 @@ void run() {
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
                 shared_ptr<Integrator> (new DirectLighting(20/*ambient samples*/)),
-                shared_ptr<VolumeRegion> ()/*new volume::Homogeneous (
+                shared_ptr<VolumeRegion> (new volume::Exponential (
                         Color::fromRgb(1,1,0.8)*0.00025, // absorption
                         Color::fromRgb(1,1,1)*0.00025, // out scattering probability
                         Color::fromRgb(1,1,1)*0.0001, // emission
                         0.0 // Henyey Greenstein
-                        //, 1.f, 0.0075f, Point(0.f,0.f,0.f)
-                ))//*/,
-                shared_ptr<VolumeIntegrator> ()//new Emission(50.f))
+                        , 1.f, 0.0075f, Point(0.f,0.f,0.f)
+                )),//*/,
+                shared_ptr<VolumeIntegrator> (new SingleScattering(50.f))
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));

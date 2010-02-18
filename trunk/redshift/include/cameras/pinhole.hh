@@ -33,7 +33,8 @@ namespace redshift { namespace camera {
         class Pinhole : public Camera, DoFinalize(Pinhole) {
         public:
 
-                Pinhole (shared_ptr<RenderTarget> film);
+                Pinhole (shared_ptr<RenderTarget> film, real_t frontDist,
+                         Transform const &xform = Transform::identity());
                 virtual ~Pinhole () ;
 
                 inline tuple<float,RayDifferential>
@@ -46,6 +47,7 @@ namespace redshift { namespace camera {
                 real_t invFilmWidth;
                 real_t invFilmHeight;
                 real_t aspect;
+                real_t frontDist;
         };
 } }
 
