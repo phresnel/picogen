@@ -92,6 +92,23 @@ namespace kallisto {
                         return Transform (i,m);
                 }
 
+                Point<CARTESIAN,T> position () const {
+                        if (1.f != (*this)(0,0)
+                                || 1.f != (*this)(1,1)
+                                || 1.f != (*this)(2,2)
+                                || 1.f != (*this)(3,3)
+                        ) {
+                                std::cerr << "Warning: It has been tried to "
+                                "get the position of a scaled Transform, "
+                                " which is currently not explitly supported.";
+                                std::cerr << std::endl;
+                        }
+                        return Point<CARTESIAN,T>(
+                                (*this)(0,3), (*this)(1,3), (*this)(2,3)
+                        );
+
+                }
+
                 Vector<CARTESIAN,T> operator * (Vector<CARTESIAN,T> const &v) const {
                         const T x = v.x, y = v.y, z = v.z;
                         return Vector<CARTESIAN,T>(
@@ -147,12 +164,12 @@ namespace kallisto {
                 // Translation.
                 static Transform translation (T x, T y, T z) {
                         return Transform (
-                                0, 0, 0, x,
+                                1, 0, 0, x,
                                 0, 1, 0, y,
                                 0, 0, 1, z,
                                 0, 0, 0, 1,
 
-                                0, 0, 0, -x,
+                                1, 0, 0, -x,
                                 0, 1, 0, -y,
                                 0, 0, 1, -z,
                                 0, 0, 0, 1
