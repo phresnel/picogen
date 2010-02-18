@@ -29,7 +29,7 @@ namespace kallisto {
         public: // Construct.
 
                 Transform ()
-                : m(identity()), i(m)
+                : m(identity_()), i(m)
                 {}
 
 
@@ -161,6 +161,10 @@ namespace kallisto {
 
         public: // Named constructors.
 
+                static Transform identity () {
+                        return Transform ();
+                }
+
                 // Translation.
                 static Transform translation (T x, T y, T z) {
                         return Transform (
@@ -271,7 +275,7 @@ namespace kallisto {
                         return m;
                 }
 
-                static T* identity() {
+                static T* identity_() {
                         return set(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
                 }
 
