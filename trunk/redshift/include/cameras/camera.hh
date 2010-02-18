@@ -33,6 +33,12 @@ namespace redshift { namespace camera {
                 virtual tuple<real_t,RayDifferential>
                                 generateRay (Sample const &) const = 0;
                 virtual ~Camera () {}
+
+                virtual void setTransform (Transform const &t) {
+                        transform = t;
+                }
+        protected:
+                Transform transform;
         };
 } }
 

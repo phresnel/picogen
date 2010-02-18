@@ -18,11 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifdef __MINGW32__
- #include <SDL/SDL.h>
-#else
- #include <SDL.h>
-#endif
+#include <SDL/SDL.h>
 #include <omp.h>
 
 #include <cstdlib>
@@ -198,27 +194,219 @@ class HeightFunction : public redshift::HeightFunction {
 
 
 
+struct Object {
+        enum Type {
+                lazy_quadtree,
+                horizon_plane
+        };
+
+        Type type;
+
+
+
+        // - Object data ------------------------------------------------------
+        // LazyQuadtree.
+        std::string lazyQuadtreeCode;
+        unsigned int lazyQuadtreeMaxRecursion;
+        float lazyQuadtreeLodFactor;
+        float lazyQuadtreeSize;
+        // --------------------------------------------------------------------
+
+
+
+        // - Serialization ----------------------------------------------------
+        template<typename Arch>
+        void serialize (Arch &arch) {
+                using actuarius::pack;
+                arch & pack ("type", typenames, type);
+
+                switch (type) {
+                case lazy_quadtree:
+                        arch & pack ("code", lazyQuadtreeCode);
+                        arch & pack ("max-recursion", lazyQuadtreeMaxRecursion);
+                        arch & pack ("lod-factor", lazyQuadtreeLodFactor);
+                        arch & pack ("size", lazyQuadtreeSize);
+                        break;
+                case horizon_plane: break;
+                };
+        }
+        // --------------------------------------------------------------------
+
+
+
+        // - Ctor / Assignment ------------------------------------------------
+        Object ()
+        : type(lazy_quadtree)
+        , lazyQuadtreeCode("(sin x)")
+        , lazyQuadtreeMaxRecursion(6)
+        , lazyQuadtreeLodFactor(0.0025f)
+        , lazyQuadtreeSize(10000.f)
+        {}
+
+        Object (Object const & rhs)
+        : type (rhs.type)
+        , lazyQuadtreeCode         (rhs.lazyQuadtreeCode)
+        , lazyQuadtreeMaxRecursion (rhs.lazyQuadtreeMaxRecursion)
+        , lazyQuadtreeLodFactor    (rhs.lazyQuadtreeLodFactor)
+        , lazyQuadtreeSize         (rhs.lazyQuadtreeSize)
+        {}
+
+        Object const & operator = (Object const & rhs) {
+                type = rhs.type;
+                lazyQuadtreeCode         = rhs.lazyQuadtreeCode;
+                lazyQuadtreeMaxRecursion = rhs.lazyQuadtreeMaxRecursion;
+                lazyQuadtreeLodFactor    = rhs.lazyQuadtreeLodFactor;
+                lazyQuadtreeSize         = rhs.lazyQuadtreeSize;
+                return *this;
+        }
+        // --------------------------------------------------------------------
+
+
+
+        // - Static data ------------------------------------------------------
+        static const actuarius::Enum<Type> typenames;
+        // --------------------------------------------------------------------
+};
+const actuarius::Enum<Object::Type> Object::typenames
+         ( actuarius::Nvp<Object::Type>(Object::lazy_quadtree, "lazy_quadtree")
+         | actuarius::Nvp<Object::Type>(Object::horizon_plane, "horizon_plane")
+         /*| Nvp<Foo>(three, "three")
+         | Nvp<Foo>(four, "four")*/
+         );
+
+
+
+struct Transform {
+};
+
+
 struct RedshiftJob {
-        // Data.
-        unsigned int redshiftVersion;
+        // Basic configuration.
         unsigned int width, height;
         unsigned int samplesPerPixel;
+
+        // Description.
+        std::string title;
+        std::string description;
+
+        // Objects.
+        struct Objects {
+                std::vector<Object> objects;
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack ("object", objects);
+                }
+
+                Objects () {}
+
+                Object &operator [] (unsigned int i) {
+                        return objects[i];
+                }
+                const Object &operator [] (unsigned int i) const {
+                        return objects[i];
+                }
+                void push_back (Object const &ob) {
+                        objects.push_back (ob);
+                }
+        };
+        Objects objects;
+
+        // Constructor.
+        RedshiftJob ()
+        : width(800), height(600), samplesPerPixel(1)
+        , title("default-title")
+        , description("default-description")
+        , objects()
+        {}
 
         // Serialization.
         template<typename Arch>
         void serialize (Arch &arch) {
                 using actuarius::pack;
-                arch & pack ("redshift-version", redshiftVersion);
                 arch & pack ("width", width);
                 arch & pack ("height", height);
                 arch & pack ("samples-per-pixel", samplesPerPixel);
+
+                arch & pack ("title", title);
+                arch & pack ("description", description);
+
+                arch & pack ("objects", objects);
         }
 };
 
 
+struct Advice {
+        struct Row {
+                float x,y,z,w;
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack(x) & pack(y) & pack(z) & pack(w);
+                }
+        };
+
+        enum Type {
+                foo,
+                bar
+        };
+        Type type;
+        float tx, ty;
+        std::string tz;
+        Row row0;
+        Row row1;
+        Row row2;
+        Row row3;
+
+        // Serialization.
+        template<typename Arch>
+        void serialize (Arch &arch) {
+                using actuarius::pack;
+                //arch & pack ("num", num) & pack ("alpha", alpha);
+                //arch & pack ("x",tx) & pack ("y",ty) & pack ("z",tz);
+                arch & pack (row0);
+                arch & pack (row1);
+                arch & pack (row2);
+                arch & pack (row3);
+        }
+
+        static const actuarius::Enum<Advice::Type> typenames;
+};
+const actuarius::Enum<Advice::Type> Advice::typenames
+        ( actuarius::Nvp<Advice::Type>(Advice::foo, "foo")
+        | actuarius::Nvp<Advice::Type>(Advice::bar, "bar")
+        );
+
+
 void doActuariusTest () {
         using namespace actuarius;
-        if (true) {
+        std::ifstream os ("foo.txt");
+        //std::ofstream os ("foo.txt");
+        //std::ostream &os = std::cout;
+
+        std::vector<Advice> advices;
+
+        Advice a;
+        /*a.type = Advice::foo; advices.push_back(a);
+        a.type = Advice::bar; advices.push_back(a);*/
+
+        IArchive(os) & pack ("frob", &Advice::type, Advice::typenames, advices);
+
+        /*for (std::vector<Advice>::iterator it=advices.begin(); it!=advices.end(); ++it) {
+                switch (it->type) {
+                case Advice::foo: std::cout << "foo :), " << it->tx << ", " << it->ty << ", " << it->tz << "\n"; break;
+                case Advice::bar: std::cout << "bar :D, " << it->tx << ", " << it->ty << ", " << it->tz << "\n"; break;
+                };
+        }*/
+        Advice s = advices[0];
+        std::cout << s.row0.x << ',' << s.row0.y << ',' << s.row0.z << ',' << s.row0.w << '\n';
+        std::cout << s.row1.x << ',' << s.row1.y << ',' << s.row1.z << ',' << s.row1.w << '\n';
+        std::cout << s.row2.x << ',' << s.row2.y << ',' << s.row2.z << ',' << s.row2.w << '\n';
+        std::cout << s.row3.x << ',' << s.row3.y << ',' << s.row3.z << ',' << s.row3.w << '\n';
+
+        /*if (1) {
                 std::ofstream os ("in.txt");
 
                 RedshiftJob job;
@@ -226,15 +414,26 @@ void doActuariusTest () {
                 job.width = 1024;
                 job.height = 768;
                 job.samplesPerPixel = 3;
+
+                job.title = "actuarius-test";
+                job.description = "grind grind grind";
+
+                Object ob;
+                ob.type = Object::lazy_quadtree;
+                ob.lazyQuadtreeCode = "(sin x)";
+                job.objects.push_back (ob);
+
                 OArchive(os) & pack ("redshift-job", job);
 
         }
         {
                 std::ifstream is ("in.txt");
-                RedshiftJob job = {0};
+                RedshiftJob job;
                 IArchive(is) & pack ("redshift-job", job);
                 std::cout << job.width << "x" << job.height << "x" << job.samplesPerPixel << std::endl;
-        }
+                std::cout << job.title << ":" << job.description << std::endl;
+                std::cout << job.objects[0].lazyQuadtreeCode << std::endl;
+        }*/
 }
 
 
@@ -246,15 +445,18 @@ void run() {
         using namespace redshift::interaction;
         using namespace redshift::primitive;
 
+
         redshift::StopWatch stopWatch;
 
         // TODO replace RenderTarget with Film?
         //    i mean, a "RenderTarget" might be flipable, but a Film not, or so
-        int const width = 1680;
+        int const width = 1680/6;
         int const height = width/3;
-        int const AA = 6;
+        int const AA = 1;
         RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-        shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(0,25,-4700))));
+        shared_ptr<Camera> camera (new Pinhole(renderBuffer));
+
+        camera->setTransform (redshift::Transform::translation (0,25,-4700));
 
         shared_ptr<redshift::HeightFunction> heightFunction;
         shared_ptr<redshift::HeightFunction> distortHeightFunction;
@@ -286,7 +488,7 @@ void run() {
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,55,-5420)), 10)));
         list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(0,75,-5420)), 10)));*/
         //list->add (shared_ptr<primitive::Primitive> (new ClosedSphere (vector_cast<Point>(PointF(610,5,-3850)), 10)));
-        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, distortHeightFunction, 10, 0.0025)));
+        list->add (shared_ptr<primitive::Primitive> (new LazyQuadtree (heightFunction, 10000, 4, 0.0025)));
         list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (0, distortHeightFunction)));
         shared_ptr<primitive::Primitive> agg (list);
 
@@ -314,14 +516,14 @@ void run() {
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(1,1,1)))
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
                 shared_ptr<Integrator> (new DirectLighting(20/*ambient samples*/)),
-                shared_ptr<VolumeRegion> (new volume::Exponential (
+                shared_ptr<VolumeRegion> ()/*new volume::Homogeneous (
                         Color::fromRgb(1,1,0.8)*0.00025, // absorption
                         Color::fromRgb(1,1,1)*0.00025, // out scattering probability
                         Color::fromRgb(1,1,1)*0.0001, // emission
                         0.0 // Henyey Greenstein
-                        , 1.f, 0.0075f, Point(0.f,0.f,0.f)
-                )),
-                shared_ptr<VolumeIntegrator> (new SingleScattering(50.f))
+                        //, 1.f, 0.0075f, Point(0.f,0.f,0.f)
+                ))//*/,
+                shared_ptr<VolumeIntegrator> ()//new Emission(50.f))
         );
 
         RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
@@ -352,8 +554,8 @@ int main (int, char*[])
 {
         using namespace redshift;
 
-        /*doActuariusTest ();
-        return 0;*/
+        //doActuariusTest ();
+        //return 0;
 
         try {
                 // Initialize SDL video.

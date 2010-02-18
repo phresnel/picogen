@@ -54,6 +54,7 @@ namespace redshift {
                                        // at only roughly 70% of runtime
                                        // compared to int
 
+
         // Cartesian Types
         typedef kallisto::Point<kallisto::CARTESIAN,
                                 fixed_point_t>               CartesianPoint;
@@ -76,6 +77,7 @@ namespace redshift {
         typedef kallisto::BoundingBox<PointF>           BoundingBoxF;
         typedef kallisto::Sphere<Point,real_t>          Sphere;
         typedef kallisto::Ray   <Point,Vector>          Ray;
+        typedef kallisto::Transform<real_t> Transform;
         typedef kallisto::RayDifferential<Point,Vector> RayDifferential;
         typedef kallisto::OrthonormalBasis<Vector>      OrthonormalBasis;
 

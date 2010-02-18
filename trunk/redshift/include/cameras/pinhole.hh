@@ -26,27 +26,26 @@
 #include "../rendertargets/rendertarget.hh"
 #include "../cameras/camera.hh"
 
-namespace redshift { namespace camera {        
+namespace redshift { namespace camera {
 
         DefineFinalizer(Pinhole);
 
         class Pinhole : public Camera, DoFinalize(Pinhole) {
         public:
 
-                Pinhole (shared_ptr<RenderTarget> film, Point position);
+                Pinhole (shared_ptr<RenderTarget> film);
                 virtual ~Pinhole () ;
-                
+
                 inline tuple<float,RayDifferential>
-                           generateRay(Sample const &) const;                           
+                           generateRay(Sample const &) const;
                 bool hasCommonCenter () const ;
                 Point getCommonCenter () const ;
-                
-        private:                
+
+        private:
                 shared_ptr<RenderTarget> film;
                 real_t invFilmWidth;
                 real_t invFilmHeight;
                 real_t aspect;
-                Point position;
         };
 } }
 
