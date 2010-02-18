@@ -22,17 +22,18 @@
 #define KALLISTO_HH_INCLUDED_20090218
 
 //#include "common.hh"
+#include <cmath>
 
 namespace kallisto {
         enum coordinate_space_t {
                 CARTESIAN,
                 SPHERICAL
         };
-        
+
         namespace traits {
                 using std::numeric_limits;
         }
-        
+
 
         // Integer comparison that takes care of gcc's warning ...
         // "warning: comparison of unsigned expression >= 0 is always true"
@@ -48,11 +49,11 @@ namespace kallisto {
          struct int_cmp_le <T, min, max, min_zero, true> {
                 enum { value = min <= max };
         };
-        template <typename T, T min, T max> 
+        template <typename T, T min, T max>
          struct int_cmp_le <T, min, max, false, false> {
                 enum { value = min <= max };
         };
-        template <typename T, T min, T max> 
+        template <typename T, T min, T max>
          struct int_cmp_le <T, min, max, true, false> {
                 enum { value = true };
         };
@@ -74,19 +75,19 @@ namespace kallisto {
         inline float         abs (float const &rhs)        {return fabsf(rhs);}
         inline double        abs (double const &rhs)       {return fabs(rhs); }
         inline long double   abs (long double const &rhs)  {return fabsl(rhs);}
-        
-        
-        
+
+
+
         template <typename T> inline void swap (T &lhs, T &rhs) {
                 const T tmp = lhs;
                 lhs = rhs;
                 rhs = tmp;
         }
-        
+
         template <typename T> inline T min (T lhs, T rhs) {
                 return lhs < rhs ? lhs : rhs;
         }
-        
+
         template <typename T> inline T max (T lhs, T rhs) {
                 return lhs > rhs ? lhs : rhs;
         }
@@ -97,7 +98,7 @@ namespace kallisto {
 
 namespace kallisto {
         using boost::optional;
-        
+
         using boost::tuple;
         using boost::get;
         using boost::make_tuple;

@@ -72,9 +72,11 @@ namespace kallisto {
                   ))
                 {}
 
+        private:
                 Transform (shared_array<const T> const &m, shared_array<const T> const &i)
                 : m(m), i(i)
                 {}
+        public:
 
                 Transform (Transform const &rhs)
                 : m(rhs.m), i(rhs.i)
@@ -207,7 +209,7 @@ namespace kallisto {
                                 cos_,   0,-sin_, 0,
                                    0,   1,    0, 0,
                                 sin_,   0, cos_, 0,
-                                   0,   0,    0, 1,
+                                   0,   0,    0, 1
                         );
                 }
 
@@ -215,15 +217,15 @@ namespace kallisto {
                         const T sin_ = std::sin(angle);
                         const T cos_ = std::cos(angle);
                         return Transform (
-                                cos_t, -sin_t, 0, 0,
-                                sin_t,  cos_t, 0, 0,
-                                    0,      0, 1, 0,
-                                    0,      0, 0, 1
+                                cos_, -sin_, 0, 0,
+                                sin_,  cos_, 0, 0,
+                                    0,    0, 1, 0,
+                                    0,    0, 0, 1,
 
-                                cos_t,  sin_t, 0, 0,
-                                -sin_t, cos_t, 0, 0,
-                                 0,         0, 1, 0,
-                                 0,         0, 0, 1
+                                cos_,  sin_, 0, 0,
+                                -sin_, cos_, 0, 0,
+                                 0,       0, 1, 0,
+                                 0,       0, 0, 1
                         );
                 }
 
