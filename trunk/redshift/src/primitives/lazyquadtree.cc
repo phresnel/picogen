@@ -531,7 +531,11 @@ public:
                 real_t lodFactor
         )
         : fun(fun)
-        , primaryBB(initBB (size,min(1000.f,(size*size*size)/100)))
+        , primaryBB(initBB (
+                size,
+                static_cast<unsigned int>(
+                        max(1000.f,min(1000000.0f, (size*size*size)/1000.f))
+                )))
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
@@ -607,6 +611,9 @@ private:
                 real_t minh = 10000000.0f , maxh = -10000000.0f;
                 MersenneTwister<real_t,0,1> mt (4654641);
                 const real_t size05 = size/2;
+                std::cout << "random sampling function (will take "
+                        << numSamples
+                        << " samples) ... " << std::flush;
                 for (int x=0; x<numSamples; ++x) {
                         const real_t uv[] = {
                                 mt.rand()*size-size05,
@@ -616,6 +623,7 @@ private:
                         if (h < minh) minh = h;
                         if (h > maxh) maxh = h;
                 }
+                std::cout << "done" << std::endl;
                 return BoundingBoxF (
                         PointF(-size05,minh,-size05),
                         PointF(size05,maxh,size05)
@@ -685,7 +693,8 @@ shared_ptr<Bsdf> LazyQuadtree::getBsdf(
 ) const {
         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
         bsdf->add (shared_ptr<Bxdf>(
-                new bsdf::Lambertian (Color::fromRgb(0.5,0.25,0.125), mt)
+                //new bsdf::Lambertian (Color::fromRgb(0.5,0.25,0.125), mt)
+                new bsdf::Lambertian (Color::fromRgb(0.15,0.15,0.15), mt)
         ));
         return bsdf;
 }
