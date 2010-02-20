@@ -93,16 +93,16 @@ namespace kallisto {
                 }
 
                 Point<CARTESIAN,T> position () const {
-                        if (1.f != (*this)(0,0)
-                                || 1.f != (*this)(1,1)
-                                || 1.f != (*this)(2,2)
-                                || 1.f != (*this)(3,3)
+                        /*if (std::fabs((*this)(0,0)-1.f)>0.01f
+                                || std::fabs((*this)(1,1)-1.f)>0.01f
+                                || std::fabs((*this)(2,2)-1.f)>0.01f
+                                || std::fabs((*this)(3,3)-1.f)>0.01f
                         ) {
                                 std::cerr << "Warning: It has been tried to "
                                 "get the position of a scaled Transform, "
                                 " which is currently not explitly supported.";
                                 std::cerr << std::endl;
-                        }
+                        }*/
                         return Point<CARTESIAN,T>(
                                 (*this)(0,3), (*this)(1,3), (*this)(2,3)
                         );
