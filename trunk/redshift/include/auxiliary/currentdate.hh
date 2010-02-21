@@ -24,6 +24,7 @@
 #include <ctime>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 class CurrentDate {
 public:

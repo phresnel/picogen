@@ -22,13 +22,26 @@
 // TODO: check if boost reports on cerr or cout
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-#include <string>
-
-#include <boost/program_options.hpp>
-#include <iostream>
-
 #include "../include/auxiliary/currentdate.hh"
 #include "../include/redshift.hh"
+
+#include "../include/redshift.hh"
+#include "../include/rendertargets/sdlrendertarget.hh"
+#include "../include/rendertargets/colorrendertarget.hh"
+#include "../include/interaction/sdlcommandprocessor.hh"
+#include "../include/basictypes/height-function.hh"
+#include "../../actuarius/actuarius.hh"
+
+#include <string>
+#include <iostream>
+#include <cstdlib>
+#include <stdexcept>
+#include <sstream>
+#include <iostream>
+#include <fstream>
+
+#include <boost/program_options.hpp>
+
 namespace {
         using redshift::optional;
 

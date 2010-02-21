@@ -23,6 +23,7 @@
 
 #include "../setup.hh"
 #include "../interaction/usercommandprocessor.hh"
+#include "../auxiliary/stopwatch.hh"
 
 namespace redshift { namespace interaction {
 
