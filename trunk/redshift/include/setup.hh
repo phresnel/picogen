@@ -34,10 +34,6 @@
 #define DoFinalize(x) virtual x##Finalize
 
 
-///////////////////////////////////////////////////////////////////////////////
-// Include micro classes.
-///////////////////////////////////////////////////////////////////////////////
-#include "basictypes/stopwatch.hh"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Assimilate kallisto-types and define some convenience types.
@@ -49,8 +45,8 @@ namespace redshift {
         };
 
         typedef float real_t;
-        typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
-        //typedef float fixed_point_t; //<-- lasttime I checked, floats where
+        //typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
+        typedef float fixed_point_t; //<-- lasttime I checked, floats where
                                        // at only roughly 70% of runtime
                                        // compared to int
 
@@ -100,35 +96,6 @@ namespace redshift {
         using std::make_pair;
 
 
-        // Should be in some lib.
-        struct Mutex {
-                Mutex() { omp_init_lock(&lock); }
-                ~Mutex() { omp_destroy_lock(&lock); }
-                void Lock() { omp_set_lock(&lock); }
-                void Unlock() { omp_unset_lock(&lock); }
-
-                bool Test () {
-                        return !!omp_test_lock (&lock);
-                }
-
-                Mutex(const Mutex& ) { omp_init_lock(&lock); }
-                Mutex& operator= (const Mutex& ) { return *this; }
-        public:
-                omp_lock_t lock;
-        };
-        struct ScopedLock {
-                explicit ScopedLock(Mutex& m) : mut(m), locked(true) { mut.Lock(); }
-                ~ScopedLock() { Unlock(); }
-                void Unlock() { if(!locked) return; locked=false; mut.Unlock(); }
-                void LockAgain() { if(locked) return; mut.Lock(); locked=true; }
-        private:
-                Mutex& mut;
-                bool locked;
-        private:
-                void operator=(const ScopedLock&);
-                ScopedLock(const ScopedLock&);
-        };
-
         // Should be in kallisto.
         class Interval {
         public:
@@ -147,6 +114,9 @@ namespace redshift {
                 real_t min_, max_;
         };
 }
+
+#include "auxiliary/mutex.hh"
+#include "auxiliary/scopedlock.hh"
 
 #include "basictypes/rgb.hh"
 namespace redshift {

@@ -36,7 +36,8 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 # libs
 #------------------------------------------------------------------------------
 SDLLIBS := `sdl-config --static-libs`
-LIBS   := $(SDLLIBS) ../skylab/preetham.o
+BOOSTLIBS := -lboost_program_options
+LIBS   := $(SDLLIBS) $(BOOSTLIBS) ../skylab/preetham.o
 
 
 #------------------------------------------------------------------------------
