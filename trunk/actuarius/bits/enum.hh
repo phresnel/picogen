@@ -134,7 +134,8 @@ public:
         }
 
         Enum (Nvp<T> const & rhs) {
-                name2value [rhs.name] = rhs.value();
+                name2value [rhs.name()] = rhs.value();
+                value2name [rhs.value()] = rhs.name();
         }
 
         Enum (Enum const &rhs)
