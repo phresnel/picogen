@@ -261,9 +261,9 @@ public:
                 return *this;
         }
 
-        template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
+        template <typename CONT, typename ADVICE_TYPE>
         IArchive&
-        operator & (npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> val) {
+        operator & (npecrp<CONT,ADVICE_TYPE> val) {
                 using namespace detail;
                 path.push (path.top() + val.name + "/");
 

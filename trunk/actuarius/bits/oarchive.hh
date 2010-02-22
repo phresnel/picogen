@@ -153,9 +153,9 @@ public:
                 return *this;
         }
 
-        template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
+        template <typename CONT, typename ADVICE_TYPE>
         OArchive&
-        operator & (npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> val) {
+        operator & (npecrp<CONT,ADVICE_TYPE> val) {
 
                 path.push (path.top() + val.name + "/");
 

@@ -26,15 +26,15 @@ namespace actuarius {
 //-----------------------------------------------------------------------------
 // nrp - name ptr enum reference-to-container pair
 //-----------------------------------------------------------------------------
-template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
+template <typename CONT, typename ADVICE_TYPE>
 struct npecrp {
         const char *name;
-        ADVICE_MEMBER CONT::value_type:: *ptr;
+        ADVICE_TYPE CONT::value_type:: *ptr;
 
         Enum<ADVICE_TYPE> enumDesc;
         CONT &value;
 
-        npecrp (const char *name, ADVICE_MEMBER CONT::value_type::* ptr,
+        npecrp (const char *name, ADVICE_TYPE CONT::value_type::* ptr,
                 Enum<ADVICE_TYPE> enumDesc, CONT &value)
         : name(name), ptr(ptr), enumDesc(enumDesc), value (value) {}
 
@@ -42,14 +42,14 @@ private:
         npecrp operator = (npecrp const &) ;
 };
 
-template <typename CONT, typename ADVICE_MEMBER, typename ADVICE_TYPE>
-npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> make_npecrp (
+template <typename CONT, typename ADVICE_TYPE>
+npecrp<CONT,ADVICE_TYPE> make_npecrp (
         const char *name,
-        ADVICE_MEMBER CONT::value_type::* ptr,
+        ADVICE_TYPE CONT::value_type::* ptr,
         Enum<ADVICE_TYPE> enumDesc,
         CONT &value
 ) {
-        return npecrp<CONT,ADVICE_MEMBER,ADVICE_TYPE> (
+        return npecrp<CONT,ADVICE_TYPE> (
                 name, ptr, enumDesc, value
         );
 }
