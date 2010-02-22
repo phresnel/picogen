@@ -132,6 +132,15 @@ namespace actuarius {
         // Advice lists.
         //---------------------------------------------------------------------
         template <typename CONT, typename ADVICE_TYPE>
+        npcrp<CONT,ADVICE_TYPE> pack (
+                const char *name,
+                ADVICE_TYPE CONT::value_type::* ptr,
+                CONT &value
+        ) {
+                return make_npcrp(name, ptr, value);
+        }
+
+        template <typename CONT, typename ADVICE_TYPE>
         npecrp<CONT,ADVICE_TYPE> pack (
                 const char *name,
                 ADVICE_TYPE CONT::value_type::* ptr,

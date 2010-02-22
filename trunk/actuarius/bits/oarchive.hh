@@ -155,6 +155,31 @@ public:
 
         template <typename CONT, typename ADVICE_TYPE>
         OArchive&
+        operator & (npcrp<CONT,ADVICE_TYPE> val) {
+
+                path.push (path.top() + val.name + "/");
+
+                out << indent() << val.name << "{\n";
+                ++indendation;
+                for (typename CONT::iterator it = val.value.begin();
+                     it!=val.value.end();
+                     ++it
+                ) {
+                        out << indent() << (*it).*val.ptr << "{\n";
+                        ++indendation;
+                        it->serialize (*this);
+                        --indendation;
+                        out << indent() << "}\n";
+                }
+                --indendation;
+                out << indent() << "}\n" << std::flush;
+                path.pop ();
+
+                return *this;
+        }
+
+        template <typename CONT, typename ADVICE_TYPE>
+        OArchive&
         operator & (npecrp<CONT,ADVICE_TYPE> val) {
 
                 path.push (path.top() + val.name + "/");

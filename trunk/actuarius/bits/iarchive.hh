@@ -29,6 +29,17 @@
 namespace actuarius {
 class IArchive {
         typedef std::string::iterator iterator_t;
+
+        template <typename T> void read_val (std::string const & from, T &to) {
+                std::stringstream ss;
+                ss << from;
+                ss >> to;
+        }
+        void read_val (std::string const & from, std::string &to) {
+                std::stringstream ss;
+                ss << from;
+                to = ss.str();
+        }
 public:
 
         enum { serialize = 0, deserialize = 1 };
@@ -69,9 +80,8 @@ public:
                 if (detail::value_match_t<iterator_t>
                       value = doc.take_value (val.name)
                 ) {
-                        std::stringstream ss;
-                        ss << unescape_nonstring_terminal (value.value());
-                        ss >> val.value;
+                        read_val (unescape_nonstring_terminal (value.value()),
+                                val.value);
                 } else {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
@@ -95,9 +105,8 @@ public:
                 if (detail::value_match_t<iterator_t>
                       value = doc.take_first_value()
                 ) {
-                        std::stringstream ss;
-                        ss << unescape_nonstring_terminal (value.value());
-                        ss >> val.value;
+                        read_val(unescape_nonstring_terminal (value.value()),
+                                val.value);
                 } else {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
@@ -254,6 +263,37 @@ public:
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (nrp)"
+                                  << std::endl;
+                }
+
+                path.pop ();
+                return *this;
+        }
+
+        template <typename CONT, typename ADVICE_TYPE>
+        IArchive&
+        operator & (npcrp<CONT,ADVICE_TYPE> val) {
+                using namespace detail;
+                path.push (path.top() + val.name + "/");
+
+                if (detail::block_t<iterator_t>
+                        block=doc.take_child(val.name)
+                ) {
+                        while (detail::block_t<iterator_t> child = block.take_first_child()) {
+                                typename CONT::value_type value;
+
+                                std::stringstream ss;
+                                ss << child.id().c_str();
+                                ss >> value.*val.ptr;
+
+                                IArchive ia (*this, child, false);
+                                value.serialize (ia);
+                                val.value.push_back (value);
+                        }
+                } else {
+                        std::cerr << "warning: found nothing for "
+                                  << path.top()
+                                  << " (npecrp)"
                                   << std::endl;
                 }
 
