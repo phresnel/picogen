@@ -44,6 +44,9 @@
 
 namespace {
         using redshift::optional;
+        using redshift::tuple;
+        using redshift::make_tuple;
+        using redshift::get;
 
         struct Options {
                 bool printStats;
@@ -131,6 +134,31 @@ namespace {
                 ret.renderSetupName = render_setup;
                 return ret;
         }
+
+        tuple<int,std::string> toIntOrString (std::string const &str) {
+                bool canBeNumber = true;
+                for (unsigned int i=0; i<str.length(); ++i) {
+                        switch (str[i]) {
+                        case '0':case '1':case '2':case '3':case '4':
+                        case '5':case '6':case '7':case '8':case '9':
+                                break;
+                        default:
+                                canBeNumber = false;
+                                goto afterLoop;
+                        };
+                }
+                afterLoop:
+
+                int num;
+                if (!canBeNumber) {
+                        num = -1;
+                } else {
+                        std::stringstream ss;
+                        ss << str;
+                        ss >> num;
+                }
+                return make_tuple(num, str);
+        }
 }
 
 
@@ -205,15 +233,8 @@ namespace redshift { namespace scenefile {
                 template<typename Arch>
                 void serialize (Arch &arch) {
                         using actuarius::pack;
-
-                        // TODO: check if this works bi-directionally
-                        if (Arch::serialize && type == none) {
-                                std::string bogo = "none";
-                                arch & pack (bogo);
-                        } else {
-                                arch & pack("type", Typenames, type);
-                                arch & pack("step-size", stepSize);
-                        }
+                        arch & pack("type", Typenames, type);
+                        arch & pack("step-size", stepSize);
                 }
         };
         const actuarius::Enum<VolumeIntegrator::Type> VolumeIntegrator::Typenames =
@@ -240,7 +261,8 @@ namespace redshift { namespace scenefile {
                         arch & pack ("width", width);
                         arch & pack ("height", height);
                         arch & pack ("surface-integrator", surfaceIntegrator);
-                        arch & pack ("volume-integrator", volumeIntegrator);
+                        if (volumeIntegrator.type != VolumeIntegrator::none)
+                                arch & pack ("volume-integrator", volumeIntegrator);
                 }
         };
 
@@ -298,7 +320,11 @@ void actuarius_test () {
         RenderSettings rs;
         rs.width = 800;
         rs.height = 600;
-        rs.title = "preview";
+        rs.title = "preview-easy";
+        scene.addRenderSettings (rs);
+        rs.width = 800;
+        rs.height = 600;
+        rs.title = "preview-tough";
         scene.addRenderSettings (rs);
         rs.width = 3200;
         rs.height = 1600;
@@ -319,7 +345,38 @@ void actuarius_test () {
                         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
                                 std::cout << " [" << i << "] " << scene.renderSettings(i).title << "\n";
                         }
-                        std::cout << ". Which one do you want to use? "<< std::endl;
+                        std::cout << ". Which one do you want to use (number or [partial] name)? "<< std::endl;
+
+                        int bestMatch = 0;
+                        int index = -1;
+                        do {
+                                std::string str;
+                                std::getline (std::cin,str);
+                                const tuple<int,std::string> ns = toIntOrString(str);
+
+                                if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.renderSettingsCount()) {
+                                        index = get<0>(ns);
+                                } else {
+                                        for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
+                                                if (scene.renderSettings(i).title == get<1>(ns)) {
+                                                        index = i;
+                                                        break;
+                                                } else if (index < 0) {
+                                                        if (std::string::npos !=
+                                                                scene.renderSettings(i).title.find(get<1>(ns)))
+                                                                index = i;
+                                                }
+                                        }
+                                }
+                                if (index < 0) {
+                                        std::cout << "Number or name \"" << str << "\" "
+                                                << "not found. Please type in a valid "
+                                                << "number or [partial] name." << std::endl;
+                                }
+                        } while (index < 0);
+
+                        std::cout << "You have chosen [" << index << "], \""
+                                << scene.renderSettings(index).title << "\"." << std::endl;
                 }
         }
 }
