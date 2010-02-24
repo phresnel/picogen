@@ -38,6 +38,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 #include <boost/program_options.hpp>
@@ -247,10 +248,14 @@ namespace redshift { namespace scenefile {
 
         // RenderSettings.
         struct RenderSettings {
-                unsigned int width, height;
+                unsigned int width, height, samplesPerPixel;
                 std::string title;
                 SurfaceIntegrator surfaceIntegrator;
                 VolumeIntegrator volumeIntegrator;
+
+                RenderSettings ()
+                : width(800), height(600), samplesPerPixel(1)
+                {}
 
                 // Serialization.
                 template<typename Arch>
@@ -260,8 +265,9 @@ namespace redshift { namespace scenefile {
                         //arch & pack ("title", title);
                         arch & pack ("width", width);
                         arch & pack ("height", height);
+                        arch & pack ("samples-per-pixel", samplesPerPixel);
                         arch & pack ("surface-integrator", surfaceIntegrator);
-                        if (volumeIntegrator.type != VolumeIntegrator::none)
+                        if (Arch::deserialize || volumeIntegrator.type != VolumeIntegrator::none)
                                 arch & pack ("volume-integrator", volumeIntegrator);
                 }
         };
@@ -309,6 +315,7 @@ void actuarius_test () {
         // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
         using namespace redshift::scenefile;
         using namespace actuarius;
+        using namespace std;
         Scene scene;
 
         Object o;
@@ -329,6 +336,7 @@ void actuarius_test () {
         rs.width = 3200;
         rs.height = 1600;
         rs.title = "full";
+        rs.volumeIntegrator.type = VolumeIntegrator::single;
         scene.addRenderSettings (rs);
 
         {std::ofstream ofs("test.red");
@@ -341,11 +349,21 @@ void actuarius_test () {
                 IArchive (ifs) & pack("scene", scene);
 
                 if (scene.renderSettingsCount()>1) {
-                        std::cout << "There are multiple render settings present, \n";
+                        std::cout << "\nThere are multiple render settings present: \n\n";
                         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
-                                std::cout << " [" << i << "] " << scene.renderSettings(i).title << "\n";
+                                const RenderSettings &rs = scene.renderSettings(i);
+                                std::cout << "  [" << i << "] "
+                                << setfill('.') << left << setw(16)
+                                << rs.title
+                                << resetiosflags(ios_base::adjustfield)
+                                << rs.width
+                                << "x" << rs.height
+                                << ", " << rs.samplesPerPixel
+                                << " sample" << (rs.samplesPerPixel!=1?"s":"") << " per pixel"
+                                << ", volume-render: " << VolumeIntegrator::Typenames[rs.volumeIntegrator.type]
+                                << "\n";
                         }
-                        std::cout << ". Which one do you want to use (number or [partial] name)? "<< std::endl;
+                        std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
 
                         int bestMatch = 0;
                         int index = -1;
