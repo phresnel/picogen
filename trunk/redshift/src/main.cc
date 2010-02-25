@@ -399,8 +399,38 @@ void actuarius_test () {
         }
 }
 
+void read_angle_test() {
+        enum UnitOfAngle {
+                Degree, Radian
+        };
+        while(1) {
+                std::string str;
+                std::getline(std::cin,str);
+                std::stringstream ss (str);
+                double num;
+                std::string unit;
+                ss >> num;
+                ss >> unit;
+
+                std::clog << "<" << num << ">" << "<" << unit << ">\n";
+
+                UnitOfAngle u;
+                if (unit == "rad"
+                || unit == "radian"
+                || unit == "radians"
+                || unit == "c"
+                ) u = Radian;
+                else if (unit == "deg"
+                || unit == "degree"
+                || unit == "degrees"
+                || unit == "°"
+                ) u = Radian;
+        }
+}
+
 int main (int argc, char *argv[]) {
-        actuarius_test();
+        read_angle_test();
+        //actuarius_test();
         return 0;
 
         const optional<Options> oo = parseOptions(argc,argv);
