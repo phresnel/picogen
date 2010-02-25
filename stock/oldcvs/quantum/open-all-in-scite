@@ -1,5 +1,0 @@
-(                                           \
-      find -type f                          \
-    | grep -E "\.(cc|cpp|h|hpp)$"           \
-    | xargs scite                           \
-)

@@ -1,8 +1,0 @@
-
-[ ] make namespace scene independent of Qt (i.e. of QString)
-[ ] question whether namespace scene shall even be independent of redshift
-[ ] codegen.cc/.hh plus code-generation in general shall belong to namespace scene
-[ ] HeightmapLayers needs a constructor that accepts a scene::heightmap::Composition
-[ ] no load/store signals for editor windows (see heightmap_layers.cc::on_openDefinition_clicked())
-
-[x] make namespace scene independent of HeightmapLayers
