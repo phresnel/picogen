@@ -101,7 +101,7 @@ optional<Intersection> Scene::intersect(
 
 
 tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample) const {
-        if (false && surfaceIntegrator && volumeIntegrator) {
+        if (surfaceIntegrator && volumeIntegrator) {
                 const tuple<real_t,Color>
                         Lo = surfaceIntegrator->Li_VolumeOnly(*this, sample.primaryRay, sample);
                 const Interval i (0, 10000); // TODO: quirk

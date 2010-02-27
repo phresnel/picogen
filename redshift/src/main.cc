@@ -184,18 +184,103 @@ namespace redshift { namespace scenefile {
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
 
+                inline shared_ptr<primitive::Primitive> toPrimitive () const {
+                        switch (type) {
+                        case lazy_quadtree: return lazyQuadtreeParams.toPrimitive();
+                        case horizon_plane: return horizonPlaneParams.toPrimitive();
+                        };
+                        throw std::exception();
+                }
+
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {
                         using actuarius::pack;
-
+                        switch (type) {
+                        case lazy_quadtree:
+                                arch
+                                & pack("code", lazyQuadtreeParams.code)
+                                & pack("size", lazyQuadtreeParams.size)
+                                & pack("max-recursion", lazyQuadtreeParams.maxRecursion)
+                                & pack("lod-factor", lazyQuadtreeParams.lodFactor)
+                                ;
+                                break;
+                        case horizon_plane:
+                                arch
+                                & pack("code", horizonPlaneParams.code)
+                                & pack("height", horizonPlaneParams.height)
+                                ;
+                                break;
+                        };
                 }
+        private:
+                struct LazyQuadtreeParams {
+                        std::string code;
+                        double size;
+                        unsigned int maxRecursion;
+                        double lodFactor;
+
+                        LazyQuadtreeParams ()
+                        : code("(+"
+                                "  (* 600 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{57} frequency{0.001} layercount{3} persistence{0.4}] x y))))"
+                                "  (* 70 ([LayeredNoise2d filter{cosine} seed{542} frequency{0.01} layercount{10} persistence{0.5}] x y))"
+                                "  -400"
+                                ") ")
+                        , size(10000)
+                        , maxRecursion(7)
+                        , lodFactor(0.00125)
+                        {}
+
+                        shared_ptr<primitive::Primitive> toPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+
+                                shared_ptr<redshift::HeightFunction> heightFunction =
+                                        shared_ptr<redshift::HeightFunction> (
+                                                new ::redshift::QuatschHeightFunction(code)
+                                        );
+                                return shared_ptr<primitive::Primitive>(new LazyQuadtree(
+                                        heightFunction,
+                                        size,
+                                        maxRecursion,
+                                        lodFactor
+                                ));
+                        }
+                };
+                struct HorizonPlaneParams {
+                        std::string code;
+                        double height;
+
+                        HorizonPlaneParams ()
+                        : code("(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))")
+                        , height(0)
+                        {}
+
+                        shared_ptr<primitive::Primitive> toPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+
+                                shared_ptr<redshift::HeightFunction> heightFunction =
+                                        shared_ptr<redshift::HeightFunction> (
+                                                new ::redshift::QuatschHeightFunction(code)
+                                        );
+                                return shared_ptr<primitive::Primitive>(new HorizonPlane(
+                                        height,
+                                        heightFunction
+                                ));
+                        }
+                };
+                LazyQuadtreeParams lazyQuadtreeParams;
+                HorizonPlaneParams horizonPlaneParams;
+
+        public:
+
+
         };
         const actuarius::Enum<Object::Type> Object::Typenames =
                 ( actuarius::Nvp<Object::Type>(Object::horizon_plane, "horizon-plane")
                 | actuarius::Nvp<Object::Type>(Object::lazy_quadtree, "lazy-quadtree")
-                );
-
+        );
 
 
         // SurfaceIntegrator.
@@ -303,9 +388,6 @@ namespace redshift { namespace scenefile {
                         static const actuarius::Enum<Type> Typenames;
                         Type type;
 
-                        double x,y,z;
-                        double angle;
-
                         redshift::Transform toRedshiftTransform () const {
                                 using redshift::Transform;
                                 const double to_radians = redshift::constants::pi/180;
@@ -348,6 +430,9 @@ namespace redshift { namespace scenefile {
                                         break;
                                 };
                         }
+
+                        double x,y,z;
+                        double angle;
                 };
 
                 std::string title;
@@ -537,28 +622,20 @@ namespace {
                 ));
 
 
+                // Add objects.
                 primitive::List *list = new List;
-                shared_ptr<redshift::HeightFunction> distortHeightFunction;
-                try {
-                        distortHeightFunction = shared_ptr<redshift::HeightFunction> (
-                        new ::redshift::QuatschHeightFunction(
-                          "(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))"
-                        ));
-                } catch(...) {}
-                list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (-5, distortHeightFunction)));
-
-                shared_ptr<primitive::Primitive> agg (list);
-
                 for (unsigned int i=0; i<scene.objectCount(); ++i) {
+                        list->add (scene.object(i).toPrimitive());
                 }
+                shared_ptr<primitive::Primitive> agg (list);
 
 
                 // atmosphere
                 shared_ptr<background::Preetham> preetham (new background::Preetham());
-                preetham->setSunDirection(Vector(-7.0,2.001,0.010));
+                preetham->setSunDirection(Vector(-7.0,5.001,0.010));
                 preetham->setTurbidity(2.0f);
                 //preetham->setSunColor(redshift::Color(1.1,1,0.9)*17);
-                preetham->setSunColor(redshift::Color(1.1,1,0.9)*18);
+                preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
                 preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
                 preetham->enableFogHack (false, 0.00025f, 150000);
                 preetham->invalidate();
@@ -571,7 +648,7 @@ namespace {
                         shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
                         //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(0.5,0.25,0.125))),
                         //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                        shared_ptr<Integrator> (new DirectLighting(0/*ambient samples*/)),
+                        shared_ptr<Integrator> (new DirectLighting(10/*ambient samples*/)),
 
                         shared_ptr<VolumeRegion>(),
                         shared_ptr<VolumeIntegrator>()
