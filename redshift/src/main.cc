@@ -173,7 +173,7 @@ namespace {
                         if (*it != ' ' && *it != '\n' && *it != '\t' && *it != '\r')
                                 return false;
                 }
-                return true;
+                return str.length()>0;
         }
 }
 
@@ -547,6 +547,9 @@ namespace redshift { namespace scenefile {
                 Camera const & camera(unsigned int index) const {
                         return cameras_[index];
                 }
+                void pruneCameras () {
+                        cameras_.clear();
+                }
 
 
                 // Serialization.
@@ -589,7 +592,7 @@ namespace {
                                 std::getline (std::cin,str);
                                 const tuple<int,std::string> ns = toIntOrString(str);
 
-                                if (get<0>(ns) < 0 || isWhitespaceOrEmpty(get<1>(ns))) {
+                                if (isWhitespaceOrEmpty(get<1>(ns))) {
                                         continue;
                                 }
                                 if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.renderSettingsCount()) {
@@ -634,6 +637,65 @@ namespace {
                         do {
                                 std::cout << "Please enter an image resolution in format \"<width>x<height>\": " << std::endl;
                         } */
+                }
+        }
+
+
+        // Stupid code dup from above.
+        void queryCamera (redshift::scenefile::Scene &scene) {
+                using namespace redshift::scenefile;
+                using namespace std;
+                if (scene.cameraCount()>1) {
+                        std::cout << "\nThere are multiple cameras present: \n\n";
+                        for (unsigned int i=0; i<scene.cameraCount(); ++i) {
+                                const Camera &cam = scene.camera(i);
+                                std::cout << "  [" << i << "] "
+                                << cam.title
+                                << "\n";
+                        }
+                        std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
+
+                        int bestMatch = 0;
+                        int index = -1;
+                        do {
+                                std::string str;
+                                std::getline (std::cin,str);
+                                const tuple<int,std::string> ns = toIntOrString(str);
+
+                                if (isWhitespaceOrEmpty(get<1>(ns))) {
+                                        continue;
+                                }
+                                if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.cameraCount()) {
+                                        index = get<0>(ns);
+                                } else {
+                                        for (unsigned int i=0; i<scene.cameraCount(); ++i) {
+                                                if (scene.camera(i).title == get<1>(ns)) {
+                                                        index = i;
+                                                        break;
+                                                } else if (index < 0) {
+                                                        if (std::string::npos !=
+                                                                scene.camera(i).title.find(get<1>(ns)))
+                                                                index = i;
+                                                }
+                                        }
+                                }
+                                if (index < 0) {
+                                        std::cout << "Number or name \"" << str << "\" "
+                                                << "not found. Please type in a valid "
+                                                << "number or [partial] name." << std::endl;
+                                }
+                        } while (index < 0);
+
+                        std::cout << "You have chosen [" << index << "], \""
+                                << scene.camera(index).title << "\"." << std::endl;
+
+                        Camera tmp = scene.camera(index);
+                        scene.pruneCameras();
+                        scene.addCamera (tmp);
+                } else if (scene.cameraCount() == 0) {
+                        std::cout << "There are no camera settings. Please consult the documentation."
+                                << std::endl;
+                        throw std::exception ();
                 }
         }
 
@@ -775,6 +837,7 @@ void actuarius_test () {
                 IArchive (ifs) & pack("scene", scene);
 
                 queryRenderSettings (scene);
+                queryCamera (scene);
                 renderSdl (scene, false);
         }
 }
