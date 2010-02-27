@@ -224,7 +224,6 @@ namespace redshift { namespace scenefile {
                                 & pack("size", lazyQuadtreeParams.size)
                                 & pack("max-recursion", lazyQuadtreeParams.maxRecursion)
                                 & pack("lod-factor", lazyQuadtreeParams.lodFactor)
-                                & pack("lod-factor", lazyQuadtreeParams.lodFactor)
                                 & pack("color", lazyQuadtreeParams.color)
                                 ;
                         } break;
