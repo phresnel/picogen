@@ -140,6 +140,7 @@ namespace {
         }
 
         tuple<int,std::string> toIntOrString (std::string const &str) {
+
                 bool canBeNumber = true;
                 for (unsigned int i=0; i<str.length(); ++i) {
                         switch (str[i]) {
@@ -153,7 +154,7 @@ namespace {
                 }
                 afterLoop:
 
-                int num;
+                int num = -1;
                 if (!canBeNumber) {
                         num = -1;
                 } else {
@@ -162,6 +163,17 @@ namespace {
                         ss >> num;
                 }
                 return make_tuple(num, str);
+        }
+
+        bool isWhitespaceOrEmpty (std::string const & str) {
+                for (std::string::const_iterator it=str.begin();
+                        it != str.end();
+                        ++it
+                ) {
+                        if (*it != ' ' && *it != '\n' && *it != '\t' && *it != '\r')
+                                return false;
+                }
+                return true;
         }
 }
 
@@ -577,6 +589,9 @@ namespace {
                                 std::getline (std::cin,str);
                                 const tuple<int,std::string> ns = toIntOrString(str);
 
+                                if (get<0>(ns) < 0 || isWhitespaceOrEmpty(get<1>(ns))) {
+                                        continue;
+                                }
                                 if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.renderSettingsCount()) {
                                         index = get<0>(ns);
                                 } else {
