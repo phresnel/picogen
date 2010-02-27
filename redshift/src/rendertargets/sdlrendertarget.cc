@@ -103,8 +103,12 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
 
 
-SdlRenderTarget::SdlRenderTarget (int width_, int height_)
-: width(width_), height(height_) {
+SdlRenderTarget::SdlRenderTarget (
+        int width_, int height_,
+        std::string const &outputFile)
+: width(width_), height(height_)
+, outputFile (outputFile)
+{
         using namespace std;
 
         // Create a new window.
@@ -122,7 +126,11 @@ SdlRenderTarget::SdlRenderTarget (int width_, int height_)
 
 
 SdlRenderTarget::~SdlRenderTarget() {
-        SDL_SaveBMP (display, "/home/smach/Desktop/tmp.bmp");
+        if (0 != SDL_SaveBMP (display, outputFile.c_str())) {
+                std::cout << "Error while writing output file. Trying \"tmp.bmp\"."
+                        << std::endl;
+                SDL_SaveBMP (display, "tmp.bmp");
+        }
 }
 
 
