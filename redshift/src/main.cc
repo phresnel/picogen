@@ -283,10 +283,114 @@ namespace redshift { namespace scenefile {
 
 
 
+        // Camera.
+        struct Camera {
+                struct Transform {
+                        enum Type {
+                                move,
+                                move_left,
+                                move_right,
+                                move_up,
+                                move_down,
+                                move_forward,
+                                move_backward,
+
+                                yaw,
+                                pitch,
+                                roll
+                        };
+
+                        static const actuarius::Enum<Type> Typenames;
+                        Type type;
+
+                        double x,y,z;
+                        double angle;
+
+                        redshift::Transform toRedshiftTransform () const {
+                                using redshift::Transform;
+                                const double to_radians = redshift::constants::pi/180;
+                                switch (type) {
+                                case move:
+                                case move_left:
+                                case move_right:
+                                case move_up:
+                                case move_down:
+                                case move_forward:
+                                case move_backward:  return Transform::translation(x,y,z);
+
+                                case yaw:   return Transform::rotationY(angle*to_radians);
+                                case pitch: return Transform::rotationX(angle*to_radians);
+                                case roll:  return Transform::rotationZ(angle*to_radians);
+                                };
+                                return redshift::Transform();
+                        }
+
+
+                        // Serialization.
+                        template<typename Arch>
+                        void serialize (Arch &arch) {
+                                using actuarius::pack;
+                                x = y = z = 0;
+                                switch (type) {
+                                case move:
+                                        arch & pack(x) & pack(y) & pack(z);
+                                        break;
+                                case move_right: arch & pack(x); break;
+                                case move_left:  arch & pack(x); x = -x; break;
+                                case move_up:    arch & pack(y); break;
+                                case move_down:  arch & pack(y);  y = -y; break;
+                                case move_forward: arch & pack(z); break;
+                                case move_backward: arch & pack(z); z = -z; break;
+                                case yaw:
+                                case pitch:
+                                case roll:
+                                        arch & pack(angle);
+                                        break;
+                                };
+                        }
+                };
+
+                std::string title;
+                std::vector<Transform> transforms;
+
+                redshift::Transform toRedshiftTransform () const {
+                        typedef std::vector<Transform>::const_iterator iterator;
+                        redshift::Transform ret;
+                        for (iterator it = transforms.begin(); it!=transforms.end(); ++it) {
+                                ret = ret * it->toRedshiftTransform();
+                        }
+                        return ret;
+                }
+
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack ("transform", &Transform::type, Transform::Typenames, transforms);
+                }
+        };
+
+        const actuarius::Enum<Camera::Transform::Type> Camera::Transform::Typenames =
+                ( actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move, "move")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_left, "move-left")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_right, "move-right")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_down, "move-down")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_up, "move-up")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_backward, "move-backward")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_forward, "move-forward")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::yaw, "yaw")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::pitch, "pitch")
+                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::roll, "roll")
+                );
+
+
+
         // Scene = (RenderSettings+)(Objects*)
         class Scene {
                 std::vector<Object> objects_;
                 std::vector<RenderSettings> renderSettings_;
+                std::vector<Camera> cameras_;
         public:
                 void addRenderSettings (RenderSettings const &rs) {
                         renderSettings_.push_back (rs);
@@ -312,12 +416,24 @@ namespace redshift { namespace scenefile {
                 }
 
 
+                void addCamera (Camera const &o) {
+                        cameras_.push_back (o);
+                }
+                unsigned int cameraCount() const {
+                        return cameras_.size();
+                }
+                Camera const & camera(unsigned int index) const {
+                        return cameras_[index];
+                }
+
+
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {
                         using actuarius::pack;
 
                         arch & pack ("render-settings", &RenderSettings::title, renderSettings_);
+                        arch & pack ("cameras", &Camera::title, cameras_);
                         arch & pack ("objects", &Object::type, Object::Typenames, objects_);
                 }
         };
@@ -417,20 +533,43 @@ namespace {
                 RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
                 shared_ptr<Camera> camera (new Pinhole(
                         renderBuffer, 1.2f,
-                        redshift::Transform::translation (-4000,3000,0)
-                        *redshift::Transform::rotationX(constants::pi*0.5f)
+                        scene.camera(0).toRedshiftTransform()
                 ));
 
 
                 primitive::List *list = new List;
+                shared_ptr<redshift::HeightFunction> distortHeightFunction;
+                try {
+                        distortHeightFunction = shared_ptr<redshift::HeightFunction> (
+                        new ::redshift::QuatschHeightFunction(
+                          "(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))"
+                        ));
+                } catch(...) {}
+                list->add (shared_ptr<primitive::Primitive> (new HorizonPlane (-5, distortHeightFunction)));
+
                 shared_ptr<primitive::Primitive> agg (list);
+
+                for (unsigned int i=0; i<scene.objectCount(); ++i) {
+                }
+
+
+                // atmosphere
+                shared_ptr<background::Preetham> preetham (new background::Preetham());
+                preetham->setSunDirection(Vector(-7.0,2.001,0.010));
+                preetham->setTurbidity(2.0f);
+                //preetham->setSunColor(redshift::Color(1.1,1,0.9)*17);
+                preetham->setSunColor(redshift::Color(1.1,1,0.9)*18);
+                preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
+                preetham->enableFogHack (false, 0.00025f, 150000);
+                preetham->invalidate();
+                // ----------
 
                 Scene Scene (
                         renderBuffer,
                         camera,
                         agg,
-                        //shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
-                        shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(0.5,0.25,0.125))),
+                        shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
+                        //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(0.5,0.25,0.125))),
                         //shared_ptr<Background>(new backgrounds::VisualiseDirection())
                         shared_ptr<Integrator> (new DirectLighting(0/*ambient samples*/)),
 
@@ -478,29 +617,39 @@ void actuarius_test () {
         using namespace std;
         Scene scene;
 
-        Object o;
-        o.type = Object::lazy_quadtree;
-        scene.addObject (o);
-        o.type = Object::horizon_plane;
-        scene.addObject (o);
+        if (0) {
+                Object o;
+                o.type = Object::lazy_quadtree;
+                scene.addObject (o);
+                o.type = Object::horizon_plane;
+                scene.addObject (o);
 
-        RenderSettings rs;
-        rs.width = 800;
-        rs.height = 600;
-        rs.title = "preview-easy";
-        scene.addRenderSettings (rs);
-        rs.width = 800;
-        rs.height = 600;
-        rs.title = "preview-tough";
-        scene.addRenderSettings (rs);
-        rs.width = 3200;
-        rs.height = 1600;
-        rs.title = "full";
-        rs.volumeIntegrator.type = VolumeIntegrator::single;
-        scene.addRenderSettings (rs);
+                RenderSettings rs;
+                rs.width = 800;
+                rs.height = 600;
+                rs.title = "preview-easy";
+                scene.addRenderSettings (rs);
+                rs.width = 800;
+                rs.height = 600;
+                rs.title = "preview-tough";
+                scene.addRenderSettings (rs);
+                rs.width = 3200;
+                rs.height = 1600;
+                rs.title = "full";
+                rs.volumeIntegrator.type = VolumeIntegrator::single;
+                scene.addRenderSettings (rs);
 
-        {std::ofstream ofs("test.red");
-        OArchive (ofs) & pack("scene", scene);}
+                Camera c;
+                c.title = "hello-world";
+                Camera::Transform t;
+                t.type = Camera::Transform::move;
+                t.x = 6; t.y = 7; t.z = 8;
+                c.transforms.push_back (t);
+                scene.addCamera (c);
+
+                std::ofstream ofs("test.red");
+                OArchive (ofs) & pack("scene", scene);
+        }
 
         {
                 // Evolve read function from this
