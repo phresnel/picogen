@@ -54,6 +54,7 @@ namespace {
 
         struct Options {
                 bool printStats;
+                bool pauseAfterRendering;
                 std::string inputFile;
                 std::string outputFile;
                 std::string renderSetupName;
@@ -62,7 +63,7 @@ namespace {
         optional<Options> parseOptions (int argc, char *argv[]) {
                 namespace po = boost::program_options;
 
-                bool print_stats;
+                bool print_stats, pauseAfterRendering;
                 std::string input_file="", output_file;
                 std::string render_setup;
 
@@ -72,26 +73,32 @@ namespace {
 
                 po::options_description desc("Allowed options");
                 desc.add_options()
-                        ("help", "print help message")
+                        ("help", "Print help message.")
 
-                        ("print-stats,p",
+                        ("print-stats,s",
                         po::value<bool>(&print_stats)
                         ->default_value(false),
-                        "print statistics after rendering")
+                        "Print statistics after rendering.")
+
+                        ("pause,p",
+                        po::value<bool>(&pauseAfterRendering)
+                        ->default_value(false),
+                        "Pause after rendering (if unset, the window will close "
+                        "after rendering is done).")
 
                         ("input-file,i",
                         po::value<std::string>(&input_file),
-                        "file that contains the job")
+                        "File that contains the job.")
 
                         ("output-file,o",
                         po::value<std::string>(&output_file),
-                        "image file to write to")
+                        "Image file to write to.")
 
                         ("render-setup,r",
                         po::value<std::string>(&input_file),
-                        "if there are multiple rendering-setups in the input-file, "
+                        "If there are multiple rendering-setups in the input-file, "
                         "use this parameter to describe the name of the setup you "
-                        "want to render; if unset, you will be prompted"
+                        "want to render; if unset, you will be prompted."
                         )
                 ;
 
@@ -131,8 +138,10 @@ namespace {
                         // TODO: --help extensions
                 }
 
+
                 Options ret;
                 ret.printStats = print_stats;
+                ret.pauseAfterRendering = pauseAfterRendering;
                 ret.inputFile = input_file;
                 ret.outputFile = output_file;
                 ret.renderSetupName = render_setup;
@@ -590,7 +599,7 @@ namespace {
                         do {
                                 std::string str;
                                 std::getline (std::cin,str);
-                                if (isWhitespaceOrEmpty(str) {
+                                if (isWhitespaceOrEmpty(str)) {
                                         continue;
                                 }
 
@@ -704,7 +713,8 @@ namespace {
 
         void renderSdl (
                 redshift::scenefile::Scene const &scene,
-                bool closeRenderScreen
+                bool pauseAfterRendering,
+                const std::string &outputFile
         ) {
                 using namespace redshift;
                 using namespace redshift::camera;
@@ -768,7 +778,7 @@ namespace {
                         shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
                 );
 
-                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
+                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,outputFile));
 
                 UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
 
@@ -784,14 +794,14 @@ namespace {
                 ss << "t:" << stopWatch();
                 SDL_WM_SetCaption(ss.str().c_str(), ss.str().c_str());
 
-                if (!closeRenderScreen) {
+                if (pauseAfterRendering) {
                         while (!commandProcessor->userWantsToQuit())
                                 commandProcessor->tick();
                 }
         }
 }
 
-void actuarius_test () {
+void read_and_render (Options const & options) {
         // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
         using namespace redshift::scenefile;
         using namespace actuarius;
@@ -834,13 +844,20 @@ void actuarius_test () {
 
         {
                 // Evolve read function from this
+                std::ifstream ifs(options.inputFile.c_str());
+                if (!ifs) {
+                        std::cout << "Input file \""
+                                << options.inputFile
+                                << "\" could not be opened."
+                                << std::endl;
+                        return;
+                }
                 Scene scene;
-                std::ifstream ifs("test.red");
                 IArchive (ifs) & pack("scene", scene);
 
                 queryRenderSettings (scene);
                 queryCamera (scene);
-                renderSdl (scene, false);
+                renderSdl (scene, options.pauseAfterRendering, options.outputFile);
         }
 }
 
@@ -874,12 +891,8 @@ void read_angle_test() {
 }
 
 int main (int argc, char *argv[]) {
-        //read_angle_test();
-        actuarius_test();
-        return 0;
-
         const optional<Options> oo = parseOptions(argc,argv);
         if (!oo)
                 return 0;
-        const Options options = *oo;
+        read_and_render(*oo);
 }

@@ -126,6 +126,7 @@ SdlRenderTarget::SdlRenderTarget (
 
 
 SdlRenderTarget::~SdlRenderTarget() {
+        if (outputFile.length())
         if (0 != SDL_SaveBMP (display, outputFile.c_str())) {
                 std::cout << "Error while writing output file. Trying \"tmp.bmp\"."
                         << std::endl;
