@@ -173,7 +173,7 @@ namespace {
                         if (*it != ' ' && *it != '\n' && *it != '\t' && *it != '\r')
                                 return false;
                 }
-                return str.length()>0;
+                return true;
         }
 }
 
@@ -590,11 +590,12 @@ namespace {
                         do {
                                 std::string str;
                                 std::getline (std::cin,str);
-                                const tuple<int,std::string> ns = toIntOrString(str);
-
-                                if (isWhitespaceOrEmpty(get<1>(ns))) {
+                                if (isWhitespaceOrEmpty(str) {
                                         continue;
                                 }
+
+                                const tuple<int,std::string> ns = toIntOrString(str);
+
                                 if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.renderSettingsCount()) {
                                         index = get<0>(ns);
                                 } else {
@@ -660,11 +661,12 @@ namespace {
                         do {
                                 std::string str;
                                 std::getline (std::cin,str);
-                                const tuple<int,std::string> ns = toIntOrString(str);
-
-                                if (isWhitespaceOrEmpty(get<1>(ns))) {
+                                if (isWhitespaceOrEmpty(str)) {
                                         continue;
                                 }
+
+                                const tuple<int,std::string> ns = toIntOrString(str);
+
                                 if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.cameraCount()) {
                                         index = get<0>(ns);
                                 } else {
