@@ -28,8 +28,11 @@
 #include "../include/redshift.hh"
 #include "../include/rendertargets/sdlrendertarget.hh"
 #include "../include/rendertargets/colorrendertarget.hh"
+#include "../include/cameras/pinhole.hh"
 #include "../include/interaction/sdlcommandprocessor.hh"
+#include "../include/interaction/rendertarget-copying-reporter.hh"
 #include "../include/basictypes/height-function.hh"
+#include "../include/basictypes/quatsch-height-function.hh"
 #include "../../actuarius/actuarius.hh"
 
 #include <string>
@@ -162,7 +165,13 @@ namespace {
         }
 }
 
-
+namespace parsi {
+        /*
+        struct ImageResolution { unsigned int width, height; };
+        ImageResolution parseImageResolution (std::istream &in) {
+                // int char int
+        }*/
+}
 
 namespace redshift { namespace scenefile {
 
@@ -288,6 +297,9 @@ namespace redshift { namespace scenefile {
                 RenderSettings const & renderSettings(unsigned int index) const {
                         return renderSettings_[index];
                 }
+                void pruneRenderSettings () {
+                        renderSettings_.clear();
+                }
 
                 void addObject (Object const &o) {
                         objects_.push_back (o);
@@ -311,43 +323,10 @@ namespace redshift { namespace scenefile {
         };
 } }
 
-void actuarius_test () {
-        // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
-        using namespace redshift::scenefile;
-        using namespace actuarius;
-        using namespace std;
-        Scene scene;
-
-        Object o;
-        o.type = Object::lazy_quadtree;
-        scene.addObject (o);
-        o.type = Object::horizon_plane;
-        scene.addObject (o);
-
-        RenderSettings rs;
-        rs.width = 800;
-        rs.height = 600;
-        rs.title = "preview-easy";
-        scene.addRenderSettings (rs);
-        rs.width = 800;
-        rs.height = 600;
-        rs.title = "preview-tough";
-        scene.addRenderSettings (rs);
-        rs.width = 3200;
-        rs.height = 1600;
-        rs.title = "full";
-        rs.volumeIntegrator.type = VolumeIntegrator::single;
-        scene.addRenderSettings (rs);
-
-        {std::ofstream ofs("test.red");
-        OArchive (ofs) & pack("scene", scene);}
-
-        {
-                // Evolve read function from this
-                Scene scene;
-                std::ifstream ifs("test.red");
-                IArchive (ifs) & pack("scene", scene);
-
+namespace {
+        void queryRenderSettings (redshift::scenefile::Scene &scene) {
+                using namespace redshift::scenefile;
+                using namespace std;
                 if (scene.renderSettingsCount()>1) {
                         std::cout << "\nThere are multiple render settings present: \n\n";
                         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
@@ -395,7 +374,142 @@ void actuarius_test () {
 
                         std::cout << "You have chosen [" << index << "], \""
                                 << scene.renderSettings(index).title << "\"." << std::endl;
+
+                        RenderSettings tmp = scene.renderSettings(index);
+                        scene.pruneRenderSettings();
+                        scene.addRenderSettings (tmp);
+                } else if (scene.renderSettingsCount() == 0) {
+                        std::cout << "There are no render settings. Please consult the documentation, "
+                                << "for now, we'll just use 640*480 pixels, no volume rendering"
+                                << std::endl;
+                        RenderSettings rs;
+                        rs.width = 640;
+                        rs.height = 480;
+                        scene.addRenderSettings (rs);
+                        /*
+                        std::cout << "\nThere are no render settings. I'll guide you to one.\n" << std::flush;
+
+                        optional<ImageResolution> res;
+                        do {
+                                std::cout << "Please enter an image resolution in format \"<width>x<height>\": " << std::endl;
+                        } */
                 }
+        }
+
+
+        void renderSdl (
+                redshift::scenefile::Scene const &scene,
+                bool closeRenderScreen
+        ) {
+                using namespace redshift;
+                using namespace redshift::camera;
+                using namespace redshift::interaction;
+                using namespace redshift::primitive;
+
+                redshift::StopWatch stopWatch;
+
+                const unsigned int
+                        width = scene.renderSettings(0).width,
+                        height = scene.renderSettings(0).height,
+                        samplesPerPixel = scene.renderSettings(0).samplesPerPixel
+                ;
+
+                RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
+                shared_ptr<Camera> camera (new Pinhole(
+                        renderBuffer, 1.2f,
+                        redshift::Transform::translation (-4000,3000,0)
+                        *redshift::Transform::rotationX(constants::pi*0.5f)
+                ));
+
+
+                primitive::List *list = new List;
+                shared_ptr<primitive::Primitive> agg (list);
+
+                Scene Scene (
+                        renderBuffer,
+                        camera,
+                        agg,
+                        //shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
+                        shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(0.5,0.25,0.125))),
+                        //shared_ptr<Background>(new backgrounds::VisualiseDirection())
+                        shared_ptr<Integrator> (new DirectLighting(0/*ambient samples*/)),
+
+                        shared_ptr<VolumeRegion>(),
+                        shared_ptr<VolumeIntegrator>()
+
+                        /*
+                        shared_ptr<VolumeRegion> (new volume::Exponential (
+                                0.0*Color::fromRgb(1,1,0.8)*0.00025, // absorption
+                                3*Color::fromRgb(1,1,1)*0.00025, // out scattering probability
+                                0.0*Color::fromRgb(1,1,1)*0.0001, // emission
+                                0.0 // Henyey Greenstein
+                                , 1.f, 0.125*0.0075f, Point(0.f,0.f,0.f)
+                        )),
+                        shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
+                );
+
+                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height));
+
+                UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
+
+                ProgressReporter::Ptr reporter (
+                          new RenderTargetCopyingReporter(renderBuffer, screenBuffer));
+
+                Scene.render(reporter, commandProcessor, samplesPerPixel);
+                copy (renderBuffer, screenBuffer);
+                screenBuffer->flip();
+
+                stopWatch.stop();
+                std::stringstream ss;
+                ss << "t:" << stopWatch();
+                SDL_WM_SetCaption(ss.str().c_str(), ss.str().c_str());
+
+                if (!closeRenderScreen) {
+                        while (!commandProcessor->userWantsToQuit())
+                                commandProcessor->tick();
+                }
+        }
+}
+
+void actuarius_test () {
+        // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
+        using namespace redshift::scenefile;
+        using namespace actuarius;
+        using namespace std;
+        Scene scene;
+
+        Object o;
+        o.type = Object::lazy_quadtree;
+        scene.addObject (o);
+        o.type = Object::horizon_plane;
+        scene.addObject (o);
+
+        RenderSettings rs;
+        rs.width = 800;
+        rs.height = 600;
+        rs.title = "preview-easy";
+        scene.addRenderSettings (rs);
+        rs.width = 800;
+        rs.height = 600;
+        rs.title = "preview-tough";
+        scene.addRenderSettings (rs);
+        rs.width = 3200;
+        rs.height = 1600;
+        rs.title = "full";
+        rs.volumeIntegrator.type = VolumeIntegrator::single;
+        scene.addRenderSettings (rs);
+
+        {std::ofstream ofs("test.red");
+        OArchive (ofs) & pack("scene", scene);}
+
+        {
+                // Evolve read function from this
+                Scene scene;
+                std::ifstream ifs("test.red");
+                IArchive (ifs) & pack("scene", scene);
+
+                queryRenderSettings (scene);
+                renderSdl (scene, false);
         }
 }
 
@@ -429,8 +543,8 @@ void read_angle_test() {
 }
 
 int main (int argc, char *argv[]) {
-        read_angle_test();
-        //actuarius_test();
+        //read_angle_test();
+        actuarius_test();
         return 0;
 
         const optional<Options> oo = parseOptions(argc,argv);
