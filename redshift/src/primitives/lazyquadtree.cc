@@ -528,7 +528,8 @@ public:
                 shared_ptr<HeightFunction const> fun,
                 real_t size,
                 unsigned int maxRecursion,
-                real_t lodFactor
+                real_t lodFactor,
+                Color color
         )
         : fun(fun)
         , primaryBB(initBB (
@@ -548,6 +549,8 @@ public:
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
+        , color(color)
+        , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
         {}
 
 
@@ -600,12 +603,24 @@ public:
 
 
 
+        shared_ptr<Bsdf> getBsdf(
+                const DifferentialGeometry & dgGeom
+        ) const {
+                shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
+                bsdf->add (shared_ptr<Bxdf>(
+                        new bsdf::Lambertian (color, mt)
+                ));
+                return bsdf;
+        }
+
 private:
 
         shared_ptr<HeightFunction const> fun;
         BoundingBoxF primaryBB;
         BoundingBox primaryFixpBB;
         lazyquadtree::Node primaryNode;
+        Color color;
+        shared_ptr<MersenneTwister<real_t,0,1> > mt;
 
         BoundingBoxF initBB(const real_t size, const unsigned int numSamples) const {
                 real_t minh = 10000000.0f , maxh = -10000000.0f;
@@ -648,10 +663,10 @@ LazyQuadtree::LazyQuadtree (
         shared_ptr<HeightFunction const> fun,
         real_t size,
         unsigned int maxRecursion,
-        real_t lodFactor
+        real_t lodFactor,
+        Color color
 )
-: impl (new LazyQuadtreeImpl (fun, size, maxRecursion, lodFactor))
-, mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
+: impl (new LazyQuadtreeImpl (fun, size, maxRecursion, lodFactor, color))
 , heightFun(fun)
 {
 }
@@ -691,13 +706,7 @@ optional<Intersection>
 shared_ptr<Bsdf> LazyQuadtree::getBsdf(
         const DifferentialGeometry & dgGeom
 ) const {
-        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-        bsdf->add (shared_ptr<Bxdf>(
-                //new bsdf::Lambertian (Color::fromRgb(0.5,0.25,0.125), mt)
-                //new bsdf::Lambertian (Color::fromRgb(0.15,0.15,0.15), mt)
-                new bsdf::Lambertian (Color::fromRgb(1.0,1.0,1.0), mt)
-        ));
-        return bsdf;
+        return impl->getBsdf (dgGeom);
 }
 
 

@@ -175,6 +175,21 @@ namespace parsi {
 
 namespace redshift { namespace scenefile {
 
+        // Rgb.
+        struct Rgb {
+                double r,g,b;
+
+                Rgb (double r, double g, double b) : r(r), g(g), b(b) {}
+                Rgb () : r(1), g(1), b(1) {}
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack(r) & pack(g) & pack(b);
+                }
+        };
+
         // Object.
         struct Object {
                 enum Type {
@@ -196,15 +211,23 @@ namespace redshift { namespace scenefile {
                 template<typename Arch>
                 void serialize (Arch &arch) {
                         using actuarius::pack;
+
                         switch (type) {
-                        case lazy_quadtree:
+                        case lazy_quadtree: {
+                                /*const Rgb rgb = lazy_quadtree.color.toRgb();
+                                r = rgb.r;
+                                g = rgb.g;
+                                b = rgb.b;*/
+
                                 arch
                                 & pack("code", lazyQuadtreeParams.code)
                                 & pack("size", lazyQuadtreeParams.size)
                                 & pack("max-recursion", lazyQuadtreeParams.maxRecursion)
                                 & pack("lod-factor", lazyQuadtreeParams.lodFactor)
+                                & pack("lod-factor", lazyQuadtreeParams.lodFactor)
+                                & pack("color", lazyQuadtreeParams.color)
                                 ;
-                                break;
+                        } break;
                         case horizon_plane:
                                 arch
                                 & pack("code", horizonPlaneParams.code)
@@ -219,6 +242,7 @@ namespace redshift { namespace scenefile {
                         double size;
                         unsigned int maxRecursion;
                         double lodFactor;
+                        Rgb color;
 
                         LazyQuadtreeParams ()
                         : code("(+"
@@ -229,6 +253,7 @@ namespace redshift { namespace scenefile {
                         , size(10000)
                         , maxRecursion(7)
                         , lodFactor(0.00125)
+                        , color(0.7,0.7,0.7)
                         {}
 
                         shared_ptr<primitive::Primitive> toPrimitive() const {
@@ -243,7 +268,8 @@ namespace redshift { namespace scenefile {
                                         heightFunction,
                                         size,
                                         maxRecursion,
-                                        lodFactor
+                                        lodFactor,
+                                        redshift::Color::fromRgb(color.r, color.g, color.b)
                                 ));
                         }
                 };
