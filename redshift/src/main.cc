@@ -53,19 +53,28 @@ namespace {
         using redshift::get;
 
         struct Options {
-                bool printStats;
                 bool pauseAfterRendering;
                 std::string inputFile;
                 std::string outputFile;
                 std::string renderSetupName;
+                std::string useRenderSettings;
+                std::string useCamera;
+                bool doSaveOutput;
+
+
+                // TODO: Unsupported:
+                bool printStats;
+                bool headless;
         };
 
         optional<Options> parseOptions (int argc, char *argv[]) {
                 namespace po = boost::program_options;
 
-                bool print_stats, pauseAfterRendering;
+                Options ret;
+
+                /*bool print_stats, pauseAfterRendering;
                 std::string input_file="", output_file;
-                std::string render_setup;
+                std::string render_setup;*/
 
                 // Declare the supported options.
                 po::positional_options_description p;
@@ -76,29 +85,43 @@ namespace {
                         ("help", "Print help message.")
 
                         ("print-stats,s",
-                        po::value<bool>(&print_stats)
+                        po::value(&ret.printStats)
                         ->default_value(false),
                         "Print statistics after rendering.")
 
                         ("pause,p",
-                        po::value<bool>(&pauseAfterRendering)
+                        po::value(&ret.pauseAfterRendering)
                         ->default_value(false),
                         "Pause after rendering (if unset, the window will close "
                         "after rendering is done).")
 
                         ("input-file,i",
-                        po::value<std::string>(&input_file),
+                        po::value<std::string>(&ret.inputFile),
                         "File that contains the job.")
 
+                        ("save-output,S",
+                        po::value(&ret.doSaveOutput)
+                        ->default_value(true),
+                        "Save image after rendering.")
+
                         ("output-file,o",
-                        po::value<std::string>(&output_file),
+                        po::value(&ret.outputFile),
                         "Image file to write to.")
 
-                        ("render-setup,r",
-                        po::value<std::string>(&input_file),
+                        ("render-settings,r",
+                        po::value(&ret.useRenderSettings),
                         "If there are multiple rendering-setups in the input-file, "
-                        "use this parameter to describe the name of the setup you "
-                        "want to render; if unset, you will be prompted."
+                        "use this parameter to describe the title of the setup you "
+                        "want to render (either by [partial] name, or by zero-based "
+                        "index ; if unset, you will be prompted."
+                        )
+
+                        ("camera,c",
+                        po::value(&ret.useCamera),
+                        "If there are multiple camera-setups in the input-file, "
+                        "use this parameter to describe the title of the setup you "
+                        "want to render (either by [partial] name, or by zero-based "
+                        "index ; if unset, you will be prompted."
                         )
                 ;
 
@@ -119,16 +142,16 @@ namespace {
                 }
 
 
-                if (input_file == "") {
+                if (ret.inputFile == "") {
                         std::cout << "No input-file set.\n";
                         std::cout << desc << "\n";
                         return optional<Options>();
                 }
-                if (output_file == "") {
-                        output_file = "redshift-"+CurrentDate::AsPartOfFilename()+".bmp";
-                        std::cout << "No output-file set, will write to '" << output_file << "'.\n";
+                if (ret.outputFile == "" && ret.doSaveOutput) {
+                        ret.outputFile = "redshift-"+CurrentDate::AsPartOfFilename()+".bmp";
+                        std::cout << "No output-file set, will write to '" << ret.outputFile << "'.\n";
                 }
-                const std::string ext = filename_extension (output_file);
+                const std::string ext = filename_extension (ret.outputFile);
                 if (ext == "bmp") {
                         // okay
                 } else if (ext == "") {
@@ -138,13 +161,6 @@ namespace {
                         // TODO: --help extensions
                 }
 
-
-                Options ret;
-                ret.printStats = print_stats;
-                ret.pauseAfterRendering = pauseAfterRendering;
-                ret.inputFile = input_file;
-                ret.outputFile = output_file;
-                ret.renderSetupName = render_setup;
                 return ret;
         }
 
@@ -574,58 +590,78 @@ namespace redshift { namespace scenefile {
 } }
 
 namespace {
-        void queryRenderSettings (redshift::scenefile::Scene &scene) {
+
+        int queryRenderSettingsMatch (
+                redshift::scenefile::Scene const &scene,
+                std::string const & str
+        ) {
+                using namespace redshift::scenefile;
+                using namespace std;
+
+                int index = -1;
+                if (isWhitespaceOrEmpty(str)) {
+                        return -1;
+                }
+
+                const tuple<int,std::string> ns = toIntOrString(str);
+
+                if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.renderSettingsCount()) {
+                        index = get<0>(ns);
+                } else {
+                        for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
+                                if (scene.renderSettings(i).title == get<1>(ns)) {
+                                        index = i;
+                                        break;
+                                } else if (index < 0) {
+                                        if (std::string::npos !=
+                                                scene.renderSettings(i).title.find(get<1>(ns)))
+                                                index = i;
+                                }
+                        }
+                }
+                if (index < 0) {
+                        std::cout << "Number or name \"" << str << "\" "
+                                << "not found. Please type in a valid "
+                                << "number or [partial] name." << std::endl;
+                }
+                return index;
+        }
+        void queryRenderSettings (redshift::scenefile::Scene &scene, const Options & options) {
                 using namespace redshift::scenefile;
                 using namespace std;
                 if (scene.renderSettingsCount()>1) {
-                        std::cout << "\nThere are multiple render settings present: \n\n";
-                        for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
-                                const RenderSettings &rs = scene.renderSettings(i);
-                                std::cout << "  [" << i << "] "
-                                << setfill('.') << left << setw(16)
-                                << rs.title
-                                << resetiosflags(ios_base::adjustfield)
-                                << rs.width
-                                << "x" << rs.height
-                                << ", " << rs.samplesPerPixel
-                                << " sample" << (rs.samplesPerPixel!=1?"s":"") << " per pixel"
-                                << ", volume-render: " << VolumeIntegrator::Typenames[rs.volumeIntegrator.type]
-                                << "\n";
-                        }
-                        std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
-
-                        int bestMatch = 0;
                         int index = -1;
-                        do {
-                                std::string str;
-                                std::getline (std::cin,str);
-                                if (isWhitespaceOrEmpty(str)) {
-                                        continue;
-                                }
 
-                                const tuple<int,std::string> ns = toIntOrString(str);
+                        // At first, try to match what was given as an option to us.
+                        if (!isWhitespaceOrEmpty(options.useRenderSettings)) {
+                                index = queryRenderSettingsMatch (scene, options.useRenderSettings);
+                        }
 
-                                if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.renderSettingsCount()) {
-                                        index = get<0>(ns);
-                                } else {
-                                        for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
-                                                if (scene.renderSettings(i).title == get<1>(ns)) {
-                                                        index = i;
-                                                        break;
-                                                } else if (index < 0) {
-                                                        if (std::string::npos !=
-                                                                scene.renderSettings(i).title.find(get<1>(ns)))
-                                                                index = i;
-                                                }
-                                        }
+                        // If still not, dump a menu.
+                        if (index<0) {
+                                std::cout << "\nThere are multiple render settings present: \n\n";
+                                for (unsigned int i=0; i<scene.renderSettingsCount(); ++i) {
+                                        const RenderSettings &rs = scene.renderSettings(i);
+                                        std::cout << "  [" << i << "] "
+                                        << setfill('.') << left << setw(16)
+                                        << rs.title
+                                        << resetiosflags(ios_base::adjustfield)
+                                        << rs.width
+                                        << "x" << rs.height
+                                        << ", " << rs.samplesPerPixel
+                                        << " sample" << (rs.samplesPerPixel!=1?"s":"") << " per pixel"
+                                        << ", volume-render: " << VolumeIntegrator::Typenames[rs.volumeIntegrator.type]
+                                        << "\n";
                                 }
-                                if (index < 0) {
-                                        std::cout << "Number or name \"" << str << "\" "
-                                                << "not found. Please type in a valid "
-                                                << "number or [partial] name." << std::endl;
-                                }
-                        } while (index < 0);
+                                std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
 
+                                int bestMatch = 0;
+                                while (index<0) {
+                                        std::string str;
+                                        std::getline (std::cin,str);
+                                        index = queryRenderSettingsMatch (scene, str);
+                                }
+                        }
                         std::cout << "You have chosen [" << index << "], \""
                                 << scene.renderSettings(index).title << "\"." << std::endl;
 
@@ -652,50 +688,70 @@ namespace {
 
 
         // Stupid code dup from above.
-        void queryCamera (redshift::scenefile::Scene &scene) {
+        int queryCameraMatch (
+                redshift::scenefile::Scene const &scene,
+                std::string const & str
+        ) {
+                using namespace redshift::scenefile;
+                using namespace std;
+                int index = -1;
+
+                if (isWhitespaceOrEmpty(str)) {
+                        return -1;
+                }
+
+                const tuple<int,std::string> ns = toIntOrString(str);
+
+                if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.cameraCount()) {
+                        index = get<0>(ns);
+                } else {
+                        for (unsigned int i=0; i<scene.cameraCount(); ++i) {
+                                if (scene.camera(i).title == get<1>(ns)) {
+                                        index = i;
+                                        break;
+                                } else if (index < 0) {
+                                        if (std::string::npos !=
+                                                scene.camera(i).title.find(get<1>(ns)))
+                                                index = i;
+                                }
+                        }
+                }
+                if (index < 0) {
+                        std::cout << "Number or name \"" << str << "\" "
+                                << "not found. Please type in a valid "
+                                << "number or [partial] name." << std::endl;
+                }
+                return index;
+        }
+        void queryCamera (redshift::scenefile::Scene &scene, const Options & options) {
                 using namespace redshift::scenefile;
                 using namespace std;
                 if (scene.cameraCount()>1) {
-                        std::cout << "\nThere are multiple cameras present: \n\n";
-                        for (unsigned int i=0; i<scene.cameraCount(); ++i) {
-                                const Camera &cam = scene.camera(i);
-                                std::cout << "  [" << i << "] "
-                                << cam.title
-                                << "\n";
-                        }
-                        std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
-
-                        int bestMatch = 0;
                         int index = -1;
-                        do {
-                                std::string str;
-                                std::getline (std::cin,str);
-                                if (isWhitespaceOrEmpty(str)) {
-                                        continue;
-                                }
 
-                                const tuple<int,std::string> ns = toIntOrString(str);
+                        // At first, try to match what was given as an option to us.
+                        if (!isWhitespaceOrEmpty(options.useCamera)) {
+                                index = queryCameraMatch (scene, options.useCamera);
+                        }
 
-                                if (get<0>(ns)>=0 && (unsigned)get<0>(ns)<scene.cameraCount()) {
-                                        index = get<0>(ns);
-                                } else {
-                                        for (unsigned int i=0; i<scene.cameraCount(); ++i) {
-                                                if (scene.camera(i).title == get<1>(ns)) {
-                                                        index = i;
-                                                        break;
-                                                } else if (index < 0) {
-                                                        if (std::string::npos !=
-                                                                scene.camera(i).title.find(get<1>(ns)))
-                                                                index = i;
-                                                }
-                                        }
+                        // If still not, dump a menu.
+                        if (index < 0) {
+                                std::cout << "\nThere are multiple cameras present: \n\n";
+                                for (unsigned int i=0; i<scene.cameraCount(); ++i) {
+                                        const Camera &cam = scene.camera(i);
+                                        std::cout << "  [" << i << "] "
+                                        << cam.title
+                                        << "\n";
                                 }
-                                if (index < 0) {
-                                        std::cout << "Number or name \"" << str << "\" "
-                                                << "not found. Please type in a valid "
-                                                << "number or [partial] name." << std::endl;
+                                std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
+
+                                int bestMatch = 0;
+                                while (index<0) {
+                                        std::string str;
+                                        std::getline (std::cin,str);
+                                        index = queryCameraMatch (scene, str);
                                 }
-                        } while (index < 0);
+                        }
 
                         std::cout << "You have chosen [" << index << "], \""
                                 << scene.camera(index).title << "\"." << std::endl;
@@ -713,8 +769,7 @@ namespace {
 
         void renderSdl (
                 redshift::scenefile::Scene const &scene,
-                bool pauseAfterRendering,
-                const std::string &outputFile
+                const Options & options
         ) {
                 using namespace redshift;
                 using namespace redshift::camera;
@@ -778,7 +833,7 @@ namespace {
                         shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
                 );
 
-                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,outputFile));
+                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,options.outputFile));
 
                 UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
 
@@ -794,7 +849,7 @@ namespace {
                 ss << "t:" << stopWatch();
                 SDL_WM_SetCaption(ss.str().c_str(), ss.str().c_str());
 
-                if (pauseAfterRendering) {
+                if (options.pauseAfterRendering) {
                         while (!commandProcessor->userWantsToQuit())
                                 commandProcessor->tick();
                 }
@@ -855,9 +910,9 @@ void read_and_render (Options const & options) {
                 Scene scene;
                 IArchive (ifs) & pack("scene", scene);
 
-                queryRenderSettings (scene);
-                queryCamera (scene);
-                renderSdl (scene, options.pauseAfterRendering, options.outputFile);
+                queryRenderSettings (scene, options);
+                queryCamera (scene, options);
+                renderSdl (scene, options);
         }
 }
 
