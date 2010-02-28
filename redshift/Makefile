@@ -115,6 +115,7 @@ OBJFILES += $(RENDERTARGETSOBJDIR)/sdlrendertarget.o
 
 OBJFILES += $(VOLUMESOBJDIR)/homogeneous.o
 OBJFILES += $(VOLUMESOBJDIR)/exponential.o
+OBJFILES += $(VOLUMESOBJDIR)/list.o
 
 ###############################################################################
 ## MAIN TARGETS ###############################################################
@@ -339,6 +340,9 @@ $(VOLUMESOBJDIR)/homogeneous.o: ./src/volume/homegeneous.cc
 	$(CXX) -o $@ $<
 
 $(VOLUMESOBJDIR)/exponential.o: ./src/volume/exponential.cc
+	$(CXX) -o $@ $<
+
+$(VOLUMESOBJDIR)/list.o: ./src/volume/list.cc
 	$(CXX) -o $@ $<
 
 
