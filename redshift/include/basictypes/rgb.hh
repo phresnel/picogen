@@ -83,11 +83,11 @@ namespace redshift {
                 return Rgb (std::exp(v.r),std::exp(v.g),std::exp(v.b));
         }
 
-        inline Rgb saturate (Rgb const &v, real_t min, real_t max) {
+        inline Rgb saturate (Rgb const &v, real_t min_, real_t max_) {
                 return Rgb (
-                        v.r<min ? min:v.r>max ? max:v.r,
-                        v.g<min ? min:v.g>max ? max:v.g,
-                        v.b<min ? min:v.b>max ? max:v.b
+                        v.r<min_ ? min_:v.r>max_ ? max_:v.r,
+                        v.g<min_ ? min_:v.g>max_ ? max_:v.g,
+                        v.b<min_ ? min_:v.b>max_ ? max_:v.b
                 );
         }
 

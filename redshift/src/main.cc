@@ -67,6 +67,20 @@ namespace {
                 bool headless;
         };
 
+        // For ggc-style -f and -fno- pairs. Grabbed from
+        // http://www.boost.org/doc/libs/1_42_0/doc/html/program_options/howto.html#id1420416
+        std::pair<std::string, std::string> gccstyle(const std::string& s) {
+                using std::string;
+                if (s.find("-f") == 0) {
+                        if (s.substr(2, 3) == "no-")
+                                return std::make_pair(s.substr(5), string("false"));
+                        else
+                                return std::make_pair(s.substr(2), string("true"));
+                } else {
+                        return std::make_pair(string(), string());
+                }
+        }
+
         optional<Options> parseOptions (int argc, char *argv[]) {
                 namespace po = boost::program_options;
 
@@ -112,23 +126,29 @@ namespace {
                         po::value(&ret.useRenderSettings),
                         "If there are multiple rendering-setups in the input-file, "
                         "use this parameter to describe the title of the setup you "
-                        "want to render (either by [partial] name, or by zero-based "
-                        "index ; if unset, you will be prompted."
+                        "want to render\n"
+                        "(either by [partial] name, or by zero-based "
+                        "index ; if unset, you will be prompted.)"
                         )
 
                         ("camera,c",
                         po::value(&ret.useCamera),
                         "If there are multiple camera-setups in the input-file, "
                         "use this parameter to describe the title of the setup you "
-                        "want to render (either by [partial] name, or by zero-based "
-                        "index ; if unset, you will be prompted."
+                        "want to render \n"
+                        "(either by [partial] name, or by zero-based "
+                        "index ; if unset, you will be prompted.)"
                         )
                 ;
 
                 po::variables_map vm;
                 try {
                         po::store(po::command_line_parser(argc, argv)
-                                .options(desc).positional(p).run(), vm);
+                                        .options(desc)
+                                        //.extra_parser(gccstyle)
+                                        .positional(p)
+                                        .run()
+                                , vm);
                         po::notify(vm);
                 } catch (std::exception const &rhs) {
                         std::cout << rhs.what() << "\n";
@@ -152,15 +172,16 @@ namespace {
                         std::cout << "No output-file set, will write to '" << ret.outputFile << "'.\n";
                 }
                 const std::string ext = filename_extension (ret.outputFile);
-                if (ext == "bmp") {
-                        // okay
-                } else if (ext == "") {
-                        std::cout << "Missing filename extension for output file, will use bmp.\n";
-                } else {
-                        std::cout << "Unsupported filename extension for output file: " << ext << "\n";
-                        // TODO: --help extensions
+                if (ret.doSaveOutput) {
+                        if (ext == "bmp") {
+                                // okay
+                        } else if (ext == "") {
+                                std::cout << "Missing filename extension for output file, will use bmp.\n";
+                        } else {
+                                std::cout << "Unsupported filename extension for output file: " << ext << "\n";
+                                // TODO: --help extensions
+                        }
                 }
-
                 return ret;
         }
 
@@ -224,6 +245,37 @@ namespace redshift { namespace scenefile {
                 void serialize (Arch &arch) {
                         using actuarius::pack;
                         arch & pack(r) & pack(g) & pack(b);
+                }
+        };
+        struct Normal {
+                double x,y,z;
+
+                Normal (double x, double y, double z) : x(x), y(y), z(z) {
+                        const double len = 1/std::sqrt(x*x + y*y + z*z);
+                        x *= len;
+                        y *= len;
+                        z *= len;
+                }
+                Normal () : x(0), y(1), z(0) {}
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack(x) & pack(y) & pack(z);
+                }
+        };
+        struct Point {
+                double x,y,z;
+
+                Point (double x, double y, double z) : x(x), y(y), z(z) {}
+                Point () : x(0), y(0), z(0) {}
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack(x) & pack(y) & pack(z);
                 }
         };
 
@@ -371,6 +423,82 @@ namespace redshift { namespace scenefile {
 
 
 
+        // Volume.
+        struct Volume {
+                enum Type {
+                        homogeneous,
+                        exponential
+                };
+                static const actuarius::Enum<Type> Typenames;
+                Type type;
+
+                shared_ptr<VolumeRegion> toVolume () const {
+                        switch (type) {
+                        case homogeneous:
+                                return shared_ptr<VolumeRegion> (new volume::Homogeneous(
+                                        redshift::Color::fromRgb(sigma_a.r,sigma_a.g,sigma_a.b),
+                                        redshift::Color::fromRgb(sigma_s.r,sigma_s.g,sigma_s.b),
+                                        redshift::Color::fromRgb(Lve.r,Lve.g,Lve.b),
+                                        hg
+                                ));
+                        case exponential:
+                                return shared_ptr<VolumeRegion> (new volume::Exponential(
+                                        redshift::Color::fromRgb(sigma_a.r,sigma_a.g,sigma_a.b),
+                                        redshift::Color::fromRgb(sigma_s.r,sigma_s.g,sigma_s.b),
+                                        redshift::Color::fromRgb(Lve.r,Lve.g,Lve.b),
+                                        hg,
+                                        baseFactor,
+                                        exponentFactor,
+                                        redshift::Point(min.x, min.y, min.z),
+                                        redshift::Vector(up.x, up.y, up.z)
+                                ));
+                        };
+                }
+
+                Rgb sigma_a, sigma_s, Lve;
+                double hg;
+
+                Normal up; Point min;
+                real_t baseFactor, exponentFactor;
+
+                Volume ()
+                : sigma_a(0,0,0)
+                , sigma_s(0,0,0)
+                , Lve(0,0,0)
+                , hg(0)
+                {}
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+
+                        switch (type) {
+                        case homogeneous:
+                                arch & pack("absorption", sigma_a);
+                                arch & pack("out-scatter", sigma_s);
+                                arch & pack("emission", Lve);
+                                arch & pack("phase-function", hg);
+                                break;
+                        case exponential:
+                                arch & pack("absorption", sigma_a);
+                                arch & pack("out-scatter", sigma_s);
+                                arch & pack("emission", Lve);
+                                arch & pack("phase-function", hg);
+                                arch & pack("up", up);
+                                arch & pack("min", min);
+                                arch & pack("base-factor", baseFactor);
+                                arch & pack("exponent-factor", exponentFactor);
+                                break;
+                        };
+                }
+        };
+        const actuarius::Enum<Volume::Type> Volume::Typenames =
+                ( actuarius::Nvp<Volume::Type>(Volume::homogeneous, "homogeneous")
+                | actuarius::Nvp<Volume::Type>(Volume::exponential, "exponential")
+                );
+
+
         // VolumeIntegrator.
         struct VolumeIntegrator {
                 enum Type {
@@ -385,6 +513,23 @@ namespace redshift { namespace scenefile {
                 VolumeIntegrator ()
                 : type(none), stepSize(100.f)
                 {}
+
+
+                shared_ptr<redshift::VolumeIntegrator> toVolumeIntegrator() const {
+                        switch (type) {
+                        case emission:
+                                return shared_ptr<redshift::VolumeIntegrator>(
+                                        new Emission(stepSize)
+                                );
+                        case single:
+                                return shared_ptr<redshift::VolumeIntegrator>(
+                                        new SingleScattering(stepSize)
+                                );
+                        case none:
+                                return shared_ptr<redshift::VolumeIntegrator>();
+                        };
+                        return shared_ptr<redshift::VolumeIntegrator>();
+                }
 
                 // Serialization.
                 template<typename Arch>
@@ -536,6 +681,7 @@ namespace redshift { namespace scenefile {
         // Scene = (RenderSettings+)(Objects*)
         class Scene {
                 std::vector<Object> objects_;
+                std::vector<Volume> volumes_;
                 std::vector<RenderSettings> renderSettings_;
                 std::vector<Camera> cameras_;
         public:
@@ -563,6 +709,17 @@ namespace redshift { namespace scenefile {
                 }
 
 
+                void addVolume (Volume const &o) {
+                        volumes_.push_back (o);
+                }
+                unsigned int volumeCount() const {
+                        return volumes_.size();
+                }
+                Volume const & volume(unsigned int index) const {
+                        return volumes_[index];
+                }
+
+
                 void addCamera (Camera const &o) {
                         cameras_.push_back (o);
                 }
@@ -585,6 +742,7 @@ namespace redshift { namespace scenefile {
                         arch & pack ("render-settings", &RenderSettings::title, renderSettings_);
                         arch & pack ("cameras", &Camera::title, cameras_);
                         arch & pack ("objects", &Object::type, Object::Typenames, objects_);
+                        arch & pack ("volumes", &Volume::type, Volume::Typenames, volumes_);
                 }
         };
 } }
@@ -799,9 +957,17 @@ namespace {
                 shared_ptr<primitive::Primitive> agg (list);
 
 
+                // Add volumes.
+                volume::List *volumeList = new volume::List;
+                for (unsigned int i=0; i<scene.volumeCount(); ++i) {
+                        volumeList->add (scene.volume(i).toVolume());
+                }
+                shared_ptr<VolumeRegion> volumeAgg (volumeList);
+
+
                 // atmosphere
                 shared_ptr<background::Preetham> preetham (new background::Preetham());
-                preetham->setSunDirection(Vector(-7.0,5.001,0.010));
+                preetham->setSunDirection(Vector(-4.0,1.001,0.010));
                 preetham->setTurbidity(2.0f);
                 //preetham->setSunColor(redshift::Color(1.1,1,0.9)*17);
                 preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
@@ -819,8 +985,11 @@ namespace {
                         //shared_ptr<Background>(new backgrounds::VisualiseDirection())
                         shared_ptr<Integrator> (new DirectLighting(10/*ambient samples*/)),
 
-                        shared_ptr<VolumeRegion>(),
-                        shared_ptr<VolumeIntegrator>()
+                        volumeAgg,
+                        shared_ptr<VolumeIntegrator>(
+                                scene.renderSettings(0)
+                                        .volumeIntegrator
+                                        .toVolumeIntegrator())
 
                         /*
                         shared_ptr<VolumeRegion> (new volume::Exponential (

@@ -54,7 +54,7 @@ tuple<real_t,Color> Emission::Li (
 
 	// Prepare for volume integration stepping
 	const int N = static_cast<int>(ceil((t1-t0) / stepSize)); // Ceil2Int(), PBRT p. 856 (A.3.4)
-	const real_t step = (t1 - t0) / N;
+        const real_t step = (t1 - t0) / N;
 
 	Color Tr = Color::fromRgb(1.f,1.f,1.f);
 	Point curr = ray(t0), prev;
@@ -92,7 +92,11 @@ tuple<real_t,Color> Emission::Li (
                 // Compute emission-only source term at _p_
 		Lv = Lv + Tr * vr->Lve(curr, w);
 	}
-	return make_tuple(1.f,Lv * step);
+        const Color ret = Lv * step;
+        /*if (ret.r <= 0.1 && ret.g >= 0.5 && ret.b >= 0.5) {
+                std::cout << ret.r << "," << ret.g << "," << ret.b << std::endl;
+        }*/
+	return make_tuple(1.f,ret);
 }
 
 

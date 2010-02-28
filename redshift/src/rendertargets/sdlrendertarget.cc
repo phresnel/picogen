@@ -66,7 +66,7 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                 Uint32 &bufp = static_cast<Uint32*>(display.display->pixels)
                                           [y * (display.display->pitch/4) + x];
 
-                Rgb toRgb = Rgb (color.toRgb());
+
                 //>>> What is this for??
                     /*if ( toRgb.r > 0.0031308 ) toRgb.r = 1.055 * ( pow(toRgb.r,(1/2.4) ) ) - 0.055;
                     else                 toRgb.r = 12.92 * toRgb.r;
@@ -74,11 +74,20 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                     else                 toRgb.g = 12.92 * toRgb.g;
                     if ( toRgb.b > 0.0031308 ) toRgb.b = 1.055 * ( pow(toRgb.b,(1/2.4) ) ) - 0.055;
                     else                 toRgb.b = 12.92 * toRgb.b;*/
-                Rgb const  rgb = saturate (toRgb, 0.0, 1.0);
-                bufp = SDL_MapRGB(display.display->format,
-                                (unsigned char)(255.0*rgb.r),
-                                (unsigned char)(255.0*rgb.g),
-                                (unsigned char)(255.0*rgb.b));
+                //Rgb const rgb = saturate (color,0,1).toRgb(); // TODO: strange, saturate yields NaNs?
+                Rgb const rgb = color.toRgb();
+                const int r_ = (int)(255.f * rgb.r);
+                const int g_ = (int)(255.f * rgb.g);
+                const int b_ = (int)(255.f * rgb.b);
+                const int r = r_<0?0:r_>255?255:r_;
+                const int g = g_<0?0:g_>255?255:g_;
+                const int b = b_<0?0:b_>255?255:b_;
+                if (r==0 && g==255 && b==255) {
+                        std::cout << color.r << "," << color.g << "," << color.b << std::endl;
+                        std::cout << rgb.r << "," << rgb.g << "," << rgb.b << std::endl;
+                        std::cout << std::endl;
+                }
+                bufp = SDL_MapRGB(display.display->format,r,g,b);
         }
 
         Color getPixel (int x, int y) const {

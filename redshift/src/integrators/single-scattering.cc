@@ -46,6 +46,7 @@ tuple<real_t,Color> SingleScattering::Li (
         const Vector sunDir = bg->getSunDirection();
         const Color sunCol = bg->getSunColor();
 
+
 	real_t t0, t1;
 	//if (!vr || !vr->IntersectP(ray, &t0, &t1)) return 0.f;
 
@@ -59,7 +60,7 @@ tuple<real_t,Color> SingleScattering::Li (
 
 	// Prepare for volume integration stepping
 	const int N = static_cast<int>(ceil((t1-t0) / stepSize)); // Ceil2Int(), PBRT p. 856 (A.3.4)
-	const real_t step = (t1 - t0) / N;
+        const real_t step = (t1 - t0) / N;
 
 	Color Tr = Color::fromRgb(1.f,1.f,1.f);
 	Point curr = ray(t0), prev;

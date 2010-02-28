@@ -204,6 +204,15 @@ void Scene::render (
                                 const real_t Ls_alpha (get<0>(Ls_));
                                 const Color Ls_color  (get<1>(Ls_));
                                 const Color finalColor = rayWeight * Ls_color;
+
+                                if (finalColor.r != finalColor.r
+                                   || finalColor.g != finalColor.g
+                                   || finalColor.b != finalColor.b
+                                ) {
+                                        std::cout << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;
+                                        --i;
+                                        continue;
+                                }
                                 accu = accu + finalColor;
                                 //PBRT:<issue warning if unexpected radiance value returned>
                         }
@@ -214,7 +223,15 @@ void Scene::render (
                         if (0) {
                                 accu = multiplyComponents (accu, threadCol[omp_get_thread_num()]);
                         }
-                        lock->setPixel (x,y,accu*(1.f/numAASamples));
+                        if (accu.r != accu.r
+                           || accu.g != accu.g
+                           || accu.b != accu.b
+                        ) {
+                                std::cout << "NaN pixel at " << x << ":" << y << std::endl;
+                        }
+
+                        Color c = accu*(1.f/numAASamples);
+                        lock->setPixel (x,y,c);
                         ++sampleNumber;
 
 
