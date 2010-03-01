@@ -157,20 +157,31 @@ void Scene::render (
                 Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f)
         };
 
+        uint32_t salt = 0; // TODO: this should be exposed to job-level
+
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
-        for (int y=renderTarget->getHeight()-1; y>=0; --y) {
+
+        const uint32_t width = renderTarget->getWidth();
+        const uint32_t height = renderTarget->getHeight();
+
+        for (uint32_t y=0; y<height; ++y) {
                 //#warning no multicore!
                 #pragma omp parallel for \
                         schedule(dynamic) \
                         reduction(+:sampleNumber)
-                for (int x=0; x<renderTarget->getWidth(); ++x) {
+                for (uint32_t x=0; x<width; ++x) {
                         Color accu = Color::fromRgb(0,0,0);
                         for (int i=0; i<numAASamples; ++i) {
+
+                                kallisto::random::marsaglia::UNI rand (x+(y*width), (x*height)+y, i, salt);
+                                rand.skip(4);
+
                                 Sample sample (
                                         ImageCoordinates(static_cast<real_t>(x)+(rand()/(1.f+RAND_MAX)),
                                                          static_cast<real_t>(y)+(rand()/(1.f+RAND_MAX))),
                                         LensCoordinates(),
-                                        renderTarget
+                                        renderTarget,
+                                        rand
                                 );
 
                                 //-------------------------------------------------------------

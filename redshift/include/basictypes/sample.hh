@@ -29,37 +29,40 @@
 namespace redshift { class RenderTarget; }
 
 namespace redshift {
-        
+
         class Sample {
         public:
                 ImageCoordinates imageCoordinates;
                 LensCoordinates lensCoordinates;
                 RayDifferential primaryRay;
                 shared_ptr<RenderTarget> renderTarget;
+                kallisto::random::marsaglia::UNI rand;
 
-                Sample (ImageCoordinates const & imageCoordinates_,
+                /*Sample (ImageCoordinates const & imageCoordinates_,
                         LensCoordinates const & lensCoordinates_)
                 : imageCoordinates(imageCoordinates_)
                 , lensCoordinates(lensCoordinates_)
-                {}
-                
+                {}*/
+
                 Sample (ImageCoordinates const & imageCoordinates_,
                         LensCoordinates const & lensCoordinates_,
-                        shared_ptr<RenderTarget> renderTarget_)
+                        shared_ptr<RenderTarget> renderTarget_,
+                        kallisto::random::marsaglia::UNI const & rand)
                 : imageCoordinates (imageCoordinates_)
                 , lensCoordinates (lensCoordinates_)
                 , renderTarget (renderTarget_)
+                , rand(rand)
                 {}
-           
-                Sample (ImageCoordinates const & imageCoordinates_,
+
+                /*Sample (ImageCoordinates const & imageCoordinates_,
                         LensCoordinates const & lensCoordinates_,
                         RayDifferential const & primaryRay_)
                 : imageCoordinates(imageCoordinates_)
                 , lensCoordinates(lensCoordinates_)
                 , primaryRay (primaryRay_)
-                {}
+                {}*/
 
-        };        
+        };
 }
 
 #endif // SAMPLE_HH_INCLUDED_20090310
