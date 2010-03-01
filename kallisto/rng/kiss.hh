@@ -190,6 +190,10 @@ namespace kallisto { namespace random { namespace marsaglia {
 
                 KISS () {}
                 uint32_t operator () () { return kiss(); }
+                void skip (uint32_t count) {
+                        for (uint32_t u=0; u<count; ++u)
+                                kiss();
+                }
         protected:
                 uint32_t kiss () {
                         return (mwc()^cong())+shr3();
@@ -213,6 +217,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 {}
 
                 double operator () () { return uni(); }
+                void skip (uint32_t count) { KISS::skip(count); }
         protected:
                 double uni () {
                         return kiss() * 2.328306e-10;
@@ -231,6 +236,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 ) : KISS(mwc_znew, mwc_wnew, cong, shr3)
                 {}
                 double operator () () { return vni(); }
+                void skip (uint32_t count) { KISS::skip(count); }
         protected:
                 double vni () {
                         // The original by Marsaglia converted kiss() to
