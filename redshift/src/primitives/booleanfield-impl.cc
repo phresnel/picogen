@@ -18,9 +18,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-namespace impl {  
+namespace impl {
 
-        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;   
+        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;
         typedef backend_t::Function Function;
         typedef backend_t::FunctionPtr FunctionPtr;
         typedef backend_t::scalar_t scalar_t;
@@ -29,21 +29,21 @@ namespace impl {
 
         Compiler::ConfigurableFunctionsMap addfuns() {
                 using namespace redshift;
-                
-                
+
+
                 quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
                         new quatsch::CreateConfigurableFunction <
-                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,  
+                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,
                                 Function
                         >
                 );
                 quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoise2dDesc (
                         new quatsch::CreateConfigurableFunction <
-                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,  
+                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,
                                 Function
                         >
                 );
-                
+
                 Compiler::ConfigurableFunctionsMap addfuns;
                 addfuns.addSymbol ("Noise2d", noiseDesc);
                 addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
@@ -108,13 +108,13 @@ namespace impl {
         float operator * (Vector const & lhs, Vector const & rhs) {
                 return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
         }
-        
+
         Vector operator - (Vector const & lhs, Vector const & rhs) {
-                const Vector ret = {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z}; 
+                const Vector ret = {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z};
                 return ret;
         }
         Vector operator + (Vector const & lhs, Vector const & rhs) {
-                const Vector ret = {lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z}; 
+                const Vector ret = {lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z};
                 return ret;
         }
 
@@ -201,7 +201,7 @@ namespace impl {
                 const int dx_negative;
                 const int dy_negative;
                 const int dz_negative;
-                
+
                 FastRay (Ray const &ray)
                 : position(ray.position)
                 , direction(ray.direction)
@@ -227,7 +227,7 @@ namespace impl {
                 {}
         private:
                 FastRay();
-                FastRay & operator = (FastRay const &);        
+                FastRay & operator = (FastRay const &);
         };
         Point operator * (FastRay const & ray, float f) {
                 return ray.position + ray.direction * f;
@@ -247,7 +247,7 @@ namespace impl {
 
 
         /*
-        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;   
+        typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;
         typedef backend_t::Function Function;
         typedef backend_t::FunctionPtr FunctionPtr;
         typedef backend_t::scalar_t scalar_t;
@@ -256,21 +256,21 @@ namespace impl {
 
         Compiler::ConfigurableFunctionsMap addfuns() {
                 using namespace redshift;
-                
-                
+
+
                 quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
                         new quatsch::CreateConfigurableFunction <
-                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,  
+                                quatsch :: configurable_functions :: Noise2d <Function, Compiler>,
                                 Function
                         >
                 );
                 quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoise2dDesc (
                         new quatsch::CreateConfigurableFunction <
-                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,  
+                                quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,
                                 Function
                         >
                 );
-                
+
                 Compiler::ConfigurableFunctionsMap addfuns;
                 addfuns.addSymbol ("Noise2d", noiseDesc);
                 addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
@@ -283,16 +283,16 @@ namespace impl {
                 z -= 500;
                 using namespace redshift;
                 typedef quatsch::backend::est::Backend <real_t, const real_t *> backend_t;
-            
+
                 typedef backend_t::Function Function;
                 typedef backend_t::FunctionPtr FunctionPtr;
                 typedef backend_t::scalar_t scalar_t;
                 typedef backend_t::parameters_t parameters_t;
 
                 typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
-                
-                static Compiler::FunctionPtr fun (Compiler::compile (std::string("x;y"), 
-                        //std::string("([LayeredNoise2d frequency{1.0} filter{cosine} layercount{5} seed{41} persistence{0.52}] x y)"), 
+
+                static Compiler::FunctionPtr fun (Compiler::compile (std::string("x;y"),
+                        //std::string("([LayeredNoise2d frequency{1.0} filter{cosine} layercount{5} seed{41} persistence{0.52}] x y)"),
                         std::string(
                                 /*"(* 5 (- 1 (abs "
                                 "([LayeredNoise2d frequency{0.5} filter{bilinear} layercount{4} seed{45} persistence{0.5}] "
@@ -304,11 +304,11 @@ namespace impl {
                                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                                 "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
                                 ")))"
-                        ), 
+                        ),
                         addfuns(), std::cerr));
                 const real_t p[] = { .0025*x, .0025*z };
                 return y < 600*(*fun)(p);
-                
+
                 #elif 0
                 y += 3;
                 z -= 15;
@@ -325,10 +325,10 @@ namespace impl {
                 z -= 10;
                 const bool a = y < -2 + (0.5f * sin(x*3) * sin(z*3));
                 const bool b = sqrt (x*x + (y)*(y) + z*z)<1.0f;
-                
+
                 const bool c = (sqrt(pow (x+2, 2.f)+pow (z-2, 2.f))<3.f)
                                 & (y>2.0f) & (y<2.2f);
-                                
+
 
                 const float xxx = x+2;
                 const float zzz = z-2;
@@ -345,7 +345,7 @@ namespace impl {
                 #endif
         }
 
-        inline bool fun (Point const &pos) {        
+        inline bool fun (Point const &pos) {
                 return fun (pos.x, pos.y, pos.z);
         }
 
@@ -407,16 +407,16 @@ namespace impl {
         };
         class BooleanFieldImpl {
 
-                mutable kallisto::random::MersenneTwister<float, 0, 1> mt;
-                
+                mutable Random rand;
+
                 /*float size;
                 float rsize;*/
                 Vector size, rsize, center;
-                
+
                 //size_t sampleGridSize = 128;
                 //bool sampleGrid[sampleGridSize*sampleGridSize*sampleGridSize];
                 inline bool is_empty (Point const &c, Vector const &size, Point const &watcher) const {
-                        /*const float 
+                        /*const float
                                 left   = (c.x - size.x * .5f) * rsize + .5f,
                                 right  = (c.x + size.x * .5f) * rsize + .5f,
                                 front  = (c.y - size.y * .5f) * rsize + .5f,
@@ -432,7 +432,7 @@ namespace impl {
                                 sbottom = size_t(bottom * sampleGridSize),
                                 stop    = size_t(top * sampleGridSize)
                         ;
-                        
+
                         if (sright-sleft>0 && sback-sfront>0 && sbottom-stop>0) {
                                 for (size_t u=sleft; u<sright; ++u)
                                 for (size_t v=sfront; v<sback; ++v)
@@ -447,7 +447,7 @@ namespace impl {
                                 }
                         } else*/ {
                                 const int count = min (
-                                        1000.f, 
+                                        1000.f,
                                         ((500+10*size.x*size.y*size.z)/6)
                                         #warning make this customizable
                                         // / (1+length (watcher-c))
@@ -456,9 +456,9 @@ namespace impl {
                                 for (int i=0; i<count; ++i) {
                                         #warning tbh i am unsure why *2.f gives good results
                                         const float s[] = {
-                                                mt.rand()*1.5f-.75f,
-                                                mt.rand()*1.5f-.75f,
-                                                mt.rand()*1.5f-.75f
+                                                rand()*1.5f-.75f,
+                                                rand()*1.5f-.75f,
+                                                rand()*1.5f-.75f
                                         };
                                         if (ref!=fun (c.x + size.x * s[0], c.y + size.y * s[1], c.z + size.z * s[2])) return false;
                                         if (ref!=fun (c.x + size.x * s[0], c.y + size.y * s[2], c.z + size.z * s[1])) return false;
@@ -469,7 +469,7 @@ namespace impl {
                                 }
                         }
                         return true;
-                        
+
                 }
                 /*
                 void init_grid () {
@@ -480,7 +480,7 @@ namespace impl {
                                                         u*sampleGridSize*sampleGridSize
                                                         +v*sampleGridSize
                                                         +w];
-                                
+
                                 const float
                                         left = (u/(float)sampleGridSize)*this->size - this->size*.5f,
                                         right = ((1+u)/(float)sampleGridSize)*this->size - this->size*.5f,
@@ -519,7 +519,7 @@ namespace impl {
                                         }  else if (ref!=fun (c.x + size.x * s[2], c.y + size.y * s[1], c.z + size.z * s[0])) {
                                                 sample.state = Sample::nonempty;
                                                 break;
-                                        } 
+                                        }
                                 }
                         }
                 }*/
@@ -531,7 +531,7 @@ namespace impl {
                                 empty,
                                 nonempty,
                                 nonempty_leaf
-                                
+
                                 /*
                                 inner,
                                 nonempty_leaf,
@@ -549,7 +549,7 @@ namespace impl {
                         float intersect (
                                 FastRay const &ray,
                                 float tnear, float tfar,
-                                Point const & c, 
+                                Point const & c,
                                 Vector const & size,
                                 int axis,
                                 BooleanFieldImpl const &field
@@ -563,7 +563,7 @@ namespace impl {
                                 if (empty == state)
                                         return -1;
                                 if (nonempty_leaf != state) {
-                                        if (0 == children) {                                        
+                                        if (0 == children) {
                                                 if (queryCount >= 20) {
                                                         const float min = (step * 5);// * (1+length (ray.position-c));
                                                         if ((size.x>min)|(size.y>min)|(size.z>min)) {
@@ -581,31 +581,31 @@ namespace impl {
                                         const int nextAxis = nn[axis+1];
                                         const int near = ray.direction[axis] < 0.f;
                                         const int far = !near;
-                                        
+
                                         float s;
-                                        Vector newSize = size;                                
+                                        Vector newSize = size;
                                         switch (axis) {
                                         case 0:
-                                                s = (newSize.x *= 0.5f);                                 
+                                                s = (newSize.x *= 0.5f);
                                                 break;
-                                        case 1: 
-                                                s = (newSize.y *= 0.5f); 
+                                        case 1:
+                                                s = (newSize.y *= 0.5f);
                                                 break;
-                                        case 2: default: 
-                                                s = (newSize.z *= 0.5f); 
+                                        case 2: default:
+                                                s = (newSize.z *= 0.5f);
                                                 break;
                                         };
 
-                                        const float 
+                                        const float
                                                 d = (c[axis] - ray.position[axis]) * ray.direction_recip[axis]
                                         ;
-                                        
+
                                         const Point center_near = c+cca[axis][near]*s*.5f;
                                         const Point center_far = c+cca[axis][far]*s*.5f;
-                                        
+
                                         if (d <= tnear) {
                                                 return children[far].intersect (
-                                                        ray, tnear, tfar, 
+                                                        ray, tnear, tfar,
                                                         center_far,
                                                         newSize,
                                                         nextAxis,
@@ -613,16 +613,16 @@ namespace impl {
                                                 );
                                         } else if (d >= tfar) {
                                                 return children[near].intersect (
-                                                        ray, tnear, tfar, 
+                                                        ray, tnear, tfar,
                                                         center_near,
                                                         newSize,
                                                         nextAxis,
                                                         field
                                                 );
                                         }
-                                        
+
                                         const float t = children[near].intersect (
-                                                        ray, tnear, d, 
+                                                        ray, tnear, d,
                                                         center_near,
                                                         newSize,
                                                         nextAxis,
@@ -630,15 +630,15 @@ namespace impl {
                                                 );
                                         if ((t >= .0f) & (t <= d)) return t;
                                         else return children[far].intersect (
-                                                        ray, d, tfar, 
+                                                        ray, d, tfar,
                                                         center_far,
                                                         newSize,
                                                         nextAxis,
                                                         field
                                                 );
-                                } else {                                
-                                        const float                                         
-                                                begin=tnear-step, 
+                                } else {
+                                        const float
+                                                begin=tnear-step,
                                                 end=tfar+step
                                         ;
                                         float dist = begin;
@@ -656,14 +656,15 @@ namespace impl {
                                 }
                                 return -1;
                         }
-                };       
+                };
                 Node root;
 
         public:
                 BooleanFieldImpl (float size)
                 : /*sampleGridSize(128), sampleGrid(new Sample[sampleGridSize*sampleGridSize*sampleGridSize])*/
                  //size(size), rsize(1.f/size)
-                 root ()
+                 rand(12345,6789,01234,56789)
+                , root ()
                 {
                         Vector mins = {size/2,size/2,size/2}, maxs = {-size/2,-size/2,-size/2};
                         if (0) {
@@ -674,9 +675,9 @@ namespace impl {
                                 for (int i=0; i<count; ++i) {
                                         #warning tbh i am unsure why *2.f gives good results
                                         const float s[] = {
-                                                size*(mt.rand()-.5),
-                                                size*(mt.rand()-.5),
-                                                size*(mt.rand()-.5)
+                                                size*(rand()-.5),
+                                                size*(rand()-.5),
+                                                size*(rand()-.5)
                                         };
                                         const bool f = fun (s[0], s[1], s[2]);
                                         if (refmin==f) {
@@ -708,7 +709,7 @@ namespace impl {
                         std::cerr << "size={" << this->size.x << "," << this->size.y << "," << this->size.z << "}\n";
                         std::cerr << "center={" << this->center.x << "," << this->center.y << "," << this->center.z << "}\n";
                 }
-                
+
                 ~BooleanFieldImpl() {
                 }
 
@@ -722,27 +723,27 @@ namespace impl {
                         if (does && (tnear < tfar)) {
                                 return root.intersect (ray, tnear<0?0:tnear, tfar, c, s, 0, *this);
                         }
-                        return -1.f;                
+                        return -1.f;
                 }
-                
+
                 float step (Ray const &ray, float distance, float stepSize) const {
                         const bool init_sign = fun (ray*distance);
-                        
+
                         // Assume we begin inside some volume. Hence move backwards first.
                         for (float f = distance; f > distance-0.1f; f-=stepSize) {
                                 if (fun (ray*f) != init_sign)
                                         return f;
                         }
-                        
+
                         for (float f = distance; f < distance+0.1f; f+=stepSize) {
                                 if (fun (ray*f) != init_sign)
                                         return f;
                         }
-                        
+
                         return -1;
                 }
-                
-                
+
+
                 redshift::optional<Vector> normal (
                         Ray const &ray, float distance,
                         Vector const & ruo, Vector const & rvo
@@ -751,10 +752,10 @@ namespace impl {
                         const Ray
                                 ru = {(ray.position+ruo*l), ray.direction},
                                 rv = {(ray.position+rvo*l), ray.direction}
-                        ;                        
+                        ;
                         const float
                                 a = step (ru, distance, sl),
-                                b = step (rv, distance, sl),                        
+                                b = step (rv, distance, sl),
                                 c = step (ray, distance, sl)
                         ;
                         const Point
@@ -763,7 +764,7 @@ namespace impl {
                         ;
                         const Point
                                 C = ray * c
-                        ;       
+                        ;
                         const Vector
                                 U = normalize (A-C),
                                 V = normalize (B-C),
@@ -775,7 +776,7 @@ namespace impl {
 
                 Vector normal (Ray const &ray, const float distance) const {
                         const Vector up = {0,1,0};
-                        const Vector 
+                        const Vector
                                 ruo = normalize (cross (ray.direction, up)),//*/random_perpendicular (ray.direction),
                                 rvo = normalize (cross (ruo, ray.direction))
                         ;
@@ -783,7 +784,7 @@ namespace impl {
                         /*if (!a) a = normal (ray, distance, ruo, -rvo);
                         if (!a) a = normal (ray, distance, -ruo, rvo);
                         if (!a) a = normal (ray, distance, -ruo, -rvo);*/
-                        
+
                         /*if (a) {
                                 const Vector ret = {0,1,0};
                                 return ret;

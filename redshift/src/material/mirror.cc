@@ -24,11 +24,7 @@ namespace redshift { namespace bsdf {
 
 
 
-Mirror::Mirror (
-        //DifferentialGeometry const &shadingDG_,
-        Color const &color_
-)
-//: Bsdf (shadingDG_)
+Mirror::Mirror (Color const &color_)
 : Bxdf (Bsdf::reflection, Bsdf::specular)
 , color (color_)
 {}
@@ -36,12 +32,8 @@ Mirror::Mirror (
 
 
 optional<tuple<Color,Vector> > Mirror::sample_f (
-        const Vector &in
+        const Vector &in, Random &
 ) const {
-        /*return make_tuple(
-                color,
-                reflect (in, shadingDG.getNormal())
-        );*/
         return make_tuple (
                 color,
                 Vector(-in.x, in.y, -in.z)
@@ -50,7 +42,7 @@ optional<tuple<Color,Vector> > Mirror::sample_f (
 
 
 
-Color Mirror::f (const Vector &out, const Vector &in) const {
+Color Mirror::f (const Vector &out, const Vector &in, Random&) const {
         return Color::fromRgb(0,0,0);
 }
 

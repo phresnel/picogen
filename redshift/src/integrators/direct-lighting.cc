@@ -73,7 +73,10 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                         if (numAmbientSamples>0)
                         for (numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
                                 const optional<tuple<Color,Vector> > v_ =
-                                        bsdf->sample_f (-ray.direction, Bsdf::reflection, Bsdf::diffuse);
+                                        bsdf->sample_f (
+                                                -ray.direction,
+                                                Bsdf::reflection, Bsdf::diffuse,
+                                                rand);
                                 if (v_) {
                                         ray.direction = get<1>(*v_);
                                         Sample s = sample;
@@ -91,7 +94,9 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
                         Ray ray (poi, raydiff.direction);
                         const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
-                                -ray.direction, Bsdf::reflection, Bsdf::specular);
+                                -ray.direction,
+                                Bsdf::reflection, Bsdf::specular,
+                                rand);
                         if (v_) {
                                 const tuple<Color,Vector> v = *v_;
                                 ray.direction = get<1>(v);
@@ -113,11 +118,11 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 if (bg->hasSun()) {
                         const Vector sunDir = bg->getSunDirection();
                         const Ray ray (poi,sunDir);
-                        const Color surfaceColor = bsdf->f(ray.direction, sunDir, Bsdf::reflection, Bsdf::diffuse)/* * constants::pi*/; // TODO: is this correct?
-                        //std::cout << "eh" << std::flush;
-                        /*const Color skyColor = bg->hasFastDiffuseQuery()
-                                        ? bg->diffuseQuery (poi, normal)
-                                        : Color(5,0,0);*/
+                        const Color surfaceColor = bsdf->f(
+                                ray.direction,
+                                sunDir,
+                                Bsdf::reflection, Bsdf::diffuse,
+                                rand)/* * constants::pi*/; // TODO: is this correct?
 
                         if (!scene.doesIntersect (ray)) {
                                 const real_t d = max(

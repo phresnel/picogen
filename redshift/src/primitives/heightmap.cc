@@ -26,8 +26,9 @@ namespace redshift { namespace primitive {
 
 Heightmap::Heightmap(shared_ptr<HeightFunction const> fun, real_t detail_)
 : function (fun), detail (detail_)
-, mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 {
+        srand (1);
+        Random rand (std::rand(), std::rand(), std::rand(), std::rand());
         for (int i=0; i<1024; ++i) {
                 const real_t x = 4000*((real_t)rand() / (real_t)RAND_MAX-0.5);
                 const real_t z = 4000*((real_t)rand() / (real_t)RAND_MAX-0.5);

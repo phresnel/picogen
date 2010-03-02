@@ -39,7 +39,6 @@ namespace redshift { namespace primitive {
 
 BooleanField::BooleanField (shared_ptr<HeightFunction const> fun, real_t detail)
 : impl (new impl::BooleanFieldImpl(1500))
-, mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 {
 }
 

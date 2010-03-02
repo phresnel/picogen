@@ -93,7 +93,7 @@ namespace kallisto {
 
 #include "types/transform.hh"
 
-#include "rng/mt.hh"
+//#include "rng/mt.hh"
 #include "rng/kiss.hh"
 
 #endif // COMMON_H__INCLUDED_20090215

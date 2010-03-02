@@ -40,7 +40,7 @@ namespace redshift {
                 virtual bool hasAtmosphereShade () const {
                         return false;
                 }
-                virtual Color diffuseQuery(Point const&, Normal const&) const {
+                virtual Color diffuseQuery(Point const&, Normal const&, Random &) const {
                         return Color::fromRgb(0,0,0);
                 }
                 virtual Color atmosphereShade (

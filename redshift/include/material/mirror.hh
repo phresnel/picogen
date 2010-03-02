@@ -27,15 +27,17 @@
 namespace redshift { namespace bsdf {
         class Mirror : public Bxdf {
         public:
-                Mirror (
-                        Color const &color_
-                );
+                Mirror (Color const &color_);
 
                 virtual optional<tuple<Color,Vector> > sample_f (
-                        const Vector &in
+                        const Vector &in,
+                        Random &
                 ) const;
 
-                virtual Color f (const Vector &out, const Vector &in) const;
+                virtual Color f (
+                        const Vector &out,
+                        const Vector &in,
+                        Random &) const;
         private:
                 Color const color;
         };

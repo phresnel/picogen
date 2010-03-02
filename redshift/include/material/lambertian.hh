@@ -27,20 +27,16 @@
 namespace redshift { namespace bsdf {
         class Lambertian : public Bxdf {
         public:
-                Lambertian (
-                        Color const &color_,
-                        shared_ptr<MersenneTwister<real_t,0,1> > mt
-                );
+                Lambertian (Color const &color_);
 
                 virtual optional<tuple<Color,Vector> > sample_f (
-                        const Vector &in
+                        const Vector &in, Random &
                 ) const;
 
-                virtual Color f (const Vector &out, const Vector &in) const;
+                virtual Color f (const Vector &out, const Vector &in, Random &) const;
 
         private:
                 Color const color;
-                shared_ptr<MersenneTwister<real_t,0,1> > mt;
         };
 } }
 

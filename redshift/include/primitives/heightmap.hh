@@ -49,7 +49,7 @@ public:
                 const DifferentialGeometry & dgGeom
         ) const {
                 shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color::fromRgb(1,0,0), mt)));
+                bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color::fromRgb(1,0,0))));
                 return bsdf;
         }
 
@@ -67,7 +67,6 @@ private:
         shared_ptr<HeightFunction const> function;
         real_t detail;
         BoundingBox boundingBox;
-        shared_ptr<MersenneTwister<real_t,0,1> > mt;
 };
 
 } }

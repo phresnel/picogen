@@ -59,7 +59,7 @@ Vector Bsdf::localToWorld (Vector const &v) const {
 
 
 optional<tuple<Color,Vector> > Bsdf::sample_f (
-        const Vector &in_, Reflection r, Specular s
+        const Vector &in_, Reflection r, Specular s, Random &rand
 ) const {
         const int nc = numComponents (r,s);
         if (nc == 0)
@@ -84,7 +84,7 @@ optional<tuple<Color,Vector> > Bsdf::sample_f (
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
                 if ((**it).is (r,s)) {
-                        const optional<tuple<Color,Vector> >ret = (**it).sample_f (in);
+                        const optional<tuple<Color,Vector> >ret = (**it).sample_f (in, rand);
                         if (ret) {
                                 #warning get rid of above optional<> crap
                                 return make_tuple(
@@ -104,7 +104,8 @@ optional<tuple<Color,Vector> > Bsdf::sample_f (
 
 Color Bsdf::f (
         const Vector &out_, const Vector &in_,
-        Bsdf::Reflection r, Bsdf::Specular s
+        Bsdf::Reflection r, Bsdf::Specular s,
+        Random &rand
 ) const {
         const Vector out = worldToLocal (out_);
         const Vector in  = worldToLocal (in_);
@@ -123,7 +124,7 @@ Color Bsdf::f (
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
                 if ((**it).is (r,s))
-                        col = col + (**it).f (out, in);
+                        col = col + (**it).f (out, in, rand);
         }
         return col;
 }
@@ -133,7 +134,7 @@ Color Bsdf::f (
 bool Bsdf::is (Bsdf::Reflection r, Bsdf::Specular s) const {
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it)
-                if ((**it).is (r,s))
+                if ((**it).is (r, s))
                         return true;
         return false;
 }

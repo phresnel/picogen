@@ -177,8 +177,7 @@ void Scene::render (
                                 rand.skip(4);
 
                                 Sample sample (
-                                        ImageCoordinates(static_cast<real_t>(x)+(rand()/(1.f+RAND_MAX)),
-                                                         static_cast<real_t>(y)+(rand()/(1.f+RAND_MAX))),
+                                        ImageCoordinates(x+rand(),y+rand()),
                                         LensCoordinates(),
                                         renderTarget
                                 );

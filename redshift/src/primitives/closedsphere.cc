@@ -26,7 +26,6 @@ namespace redshift { namespace primitive {
 
 ClosedSphere::ClosedSphere (Point const & center, real_t radius)
 : sphereData (center, radius)
-, mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
 {
 }
 

@@ -118,11 +118,8 @@ namespace redshift {
                 return lhs > rhs ? lhs : rhs;
         }
 
-        using kallisto::random::MersenneTwister;
-
         using std::pair;
         using std::make_pair;
-
 
         // Should be in kallisto.
         class Interval {
@@ -256,6 +253,32 @@ namespace redshift {
         inline Vector reflect (const Vector &in, const Normal &n) {
                 const real_t f = dot(vector_cast<Vector>(n),in) * 2.f;
                 return in - vector_cast<Vector>(n*f);
+        }
+
+
+        // The R postfix is for "rejection sampled"
+        inline tuple<real_t,real_t> uniformDiskR (Random &rand) {
+                real_t x,y;
+                do {
+                        x = 2*rand()-1;
+                        y = 2*rand()-1;
+                } while (x*x+y*y > 1);
+                return make_tuple(x,y);
+        }
+        inline tuple<real_t,real_t,real_t> uniformSphereR (Random &rand) {
+                real_t x,y,z;
+                do {
+                        x = 2*rand()-1;
+                        y = 2*rand()-1;
+                        z = 2*rand()-1;
+                } while (x*x+y*y+z*z > 1);
+                return make_tuple(x,y,z);
+        }
+        inline tuple<real_t,real_t,real_t> cosineHemisphereR (Random &rand) {
+                const tuple<real_t,real_t> r2 = uniformDiskR(rand);
+                const real_t x = get<0>(r2);
+                const real_t z = get<1>(r2);
+                return make_tuple(x, std::sqrt(1-x*x-z*z), z);
         }
 }
 

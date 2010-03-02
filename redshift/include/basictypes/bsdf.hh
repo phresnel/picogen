@@ -47,11 +47,11 @@ public:
         //virtual bool hasAny (Reflection, Specular) const = 0;
 
         optional<tuple<Color,Vector> > sample_f (
-                const Vector &in, Reflection, Specular
+                const Vector &in, Reflection, Specular, Random &
         ) const;
 
         Color f (const Vector &out, const Vector &in,
-                Bsdf::Reflection r, Bsdf::Specular s) const;
+                Bsdf::Reflection r, Bsdf::Specular s, Random&) const;
         // HasShadingGeometry(), pbrt 10.1, p. 464
 
         DifferentialGeometry getShadingDifferentialGeometry () const {
@@ -104,8 +104,8 @@ public:
                 return ((reflection&r)==r) && ((specular&s)==s);
         }
 
-        virtual optional<tuple<Color,Vector> > sample_f (const Vector &in) const = 0;
-        virtual Color f (const Vector &out, const Vector &in) const = 0;
+        virtual optional<tuple<Color,Vector> > sample_f (const Vector &in, Random &) const = 0;
+        virtual Color f (const Vector &out, const Vector &in, Random &) const = 0;
 
 protected:
         const Bsdf::Reflection reflection;

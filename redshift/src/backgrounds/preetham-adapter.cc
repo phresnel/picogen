@@ -34,7 +34,7 @@ Color PreethamAdapter::query (Ray const &ray) const {
 }
 
 Color PreethamAdapter::diffuseQuery (
-        Point const &poi, Normal const &normal
+        Point const &poi, Normal const &normal, Random &rand
 ) const {
         Color sum = Color::fromRgb (0,0,0);
         Ray ray;
@@ -42,9 +42,9 @@ Color PreethamAdapter::diffuseQuery (
 
         int numSamples;
         for (numSamples = 0; numSamples < 10; ++numSamples) {
-                const tuple<real_t,real_t,real_t> sphere = diffuseRng.cosine_hemisphere();
+                const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
                 const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
-        
+
                 const real_t &sx = get<0>(sphere);
                 const real_t &sy = get<1>(sphere);
                 const real_t &sz = get<2>(sphere);

@@ -550,7 +550,6 @@ public:
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
         , color(color)
-        , mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
         {}
 
 
@@ -607,9 +606,7 @@ public:
                 const DifferentialGeometry & dgGeom
         ) const {
                 shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                bsdf->add (shared_ptr<Bxdf>(
-                        new bsdf::Lambertian (color, mt)
-                ));
+                bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (color)));
                 return bsdf;
         }
 
@@ -620,19 +617,18 @@ private:
         BoundingBox primaryFixpBB;
         lazyquadtree::Node primaryNode;
         Color color;
-        shared_ptr<MersenneTwister<real_t,0,1> > mt;
 
         BoundingBoxF initBB(const real_t size, const unsigned int numSamples) const {
                 real_t minh = 10000000.0f , maxh = -10000000.0f;
-                MersenneTwister<real_t,0,1> mt (4654641);
+                Random rand (123,45678,91011,121314);
                 const real_t size05 = size/2;
                 /*std::cout << "random sampling function (will take "
                         << numSamples
                         << " samples) ... " << std::flush;*/
                 for (unsigned int x=0; x<numSamples; ++x) {
                         const real_t uv[] = {
-                                mt.rand()*size-size05,
-                                mt.rand()*size-size05
+                                rand()*size-size05,
+                                rand()*size-size05
                         };
                         const real_t h = (*fun)(uv[0],uv[1]);
                         if (h < minh) minh = h;

@@ -25,22 +25,18 @@ namespace redshift { namespace bsdf {
 
 
 Lambertian::Lambertian (
-        //DifferentialGeometry const &shadingDG_,
-        Color const &color_,
-        shared_ptr<MersenneTwister<real_t,0,1> > mt_
+        Color const &color_
 )
-//: Bsdf (shadingDG_)
 : Bxdf (Bsdf::reflection, Bsdf::diffuse)
 , color (color_ * (1.f/constants::pi))
-, mt(mt_)
 {}
 
 
 
 optional<tuple<Color,Vector> > Lambertian::sample_f (
-        const Vector &in
+        const Vector &in, Random &rand
 ) const {
-        const tuple<real_t,real_t,real_t> sphere = mt->cosine_hemisphere();
+        const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
         const real_t &sx = get<0>(sphere);
         const real_t &sy = get<1>(sphere);
         const real_t &sz = get<2>(sphere);
@@ -49,7 +45,7 @@ optional<tuple<Color,Vector> > Lambertian::sample_f (
 
 
 
-Color Lambertian::f (const Vector &out, const Vector &in) const {
+Color Lambertian::f (const Vector &out, const Vector &in, Random &) const {
         return color;
 }
 

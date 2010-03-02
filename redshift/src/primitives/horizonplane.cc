@@ -25,8 +25,7 @@ namespace redshift { namespace primitive {
 
 
 HorizonPlane::HorizonPlane (real_t height_, shared_ptr<HeightFunction const> heightFunction)
-: mt(shared_ptr<MersenneTwister<real_t,0,1> > (new MersenneTwister<real_t,0,1>))
-, fun (heightFunction)
+: fun (heightFunction)
 , height(height_)
 {
 }

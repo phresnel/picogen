@@ -58,7 +58,6 @@ namespace redshift { namespace primitive {
                 HorizonPlane(HorizonPlane const&);
                 HorizonPlane &operator = (HorizonPlane const&);
 
-                shared_ptr<MersenneTwister<real_t,0,1> > mt;
                 shared_ptr<HeightFunction const> fun;
                 real_t height;
         };
