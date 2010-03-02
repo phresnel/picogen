@@ -68,31 +68,34 @@ namespace redshift {
 
                 // Absorption:
                 //   Absorption cross section.
-                virtual Color sigma_a (const Point &p, const Vector &w)const=0;
+                virtual Color sigma_a (const Point &p, const Vector &w, Random& rand)const=0;
 
 
 
                 // Emission:
                 //   Change in radiance due to emmission.
-                virtual Color Lve (const Point &p,const Vector &w) const = 0;
+                virtual Color Lve (const Point &p,const Vector &w, Random& rand) const = 0;
 
 
 
                 // Scattering:
                 //   Out-Scattering Probability per Unit Distance.
-                virtual Color sigma_s (const Point &p, const Vector &w)const=0;
+                virtual Color sigma_s (const Point &p, const Vector &w, Random& rand)const=0;
 
                 //   "Extinction" or "Attenuation": sigma_a+sigma_s
-                virtual Color sigma_t (const Point &p, const Vector &w)const;
+                virtual Color sigma_t (const Point &p, const Vector &w, Random& rand)const;
 
 
                 // Phase function.
                 virtual real_t p (const Point &p,
-                                  const Vector &w_in,const Vector &w_out
+                                  const Vector &w_in,
+                                  const Vector &w_out,
+                                  Random& rand
                 ) const = 0;
 
                 virtual Color tau (const Ray &r, const Interval &i,
-                                   real_t step=1.f, real_t offset=.5f) const=0;
+                                   real_t step, real_t offset,
+                                   Random& rand) const=0;
         };
 
 
@@ -115,29 +118,31 @@ namespace redshift {
 
                 virtual ~DensityRegion () {}
 
-                virtual real_t density(const Point &p) const = 0;
+                virtual real_t density(const Point &p, Random& rand) const = 0;
 
-                Color sigma_a(const Point &p, const Vector &) const {
-                        return density(p) * sigma_a_;
+                Color sigma_a(const Point &p, const Vector &, Random& rand) const {
+                        return density(p,rand) * sigma_a_;
                 }
-                Color sigma_s(const Point &p, const Vector &) const {
-                        return density(p) * sigma_s_;
+                Color sigma_s(const Point &p, const Vector &, Random& rand) const {
+                        return density(p,rand) * sigma_s_;
                 }
-                Color sigma_t(const Point &p, const Vector &w) const {
-                        return density(p) * (VolumeRegion::sigma_t(p,w));
+                Color sigma_t(const Point &p, const Vector &w, Random& rand) const {
+                        const real_t a = density(p,rand);
+                        const Color b = VolumeRegion::sigma_t(p,w,rand);
+                        return a * b;
                 }
-                Color Lve(const Point &p, const Vector &) const {
-                        return density(p) * Lve_;
+                Color Lve(const Point &p, const Vector &w, Random& rand) const {
+                        return density(p,rand) * Lve_;
                 }
                 real_t p(
                         const Point &p,
                         const Vector &w_in,
-                        const Vector &w_out
+                        const Vector &w_out, Random& rand
                 ) const {
                         return phaseHG(w_in, w_out, henyeyGreensteinParameter);
                 }
                 Color tau (const Ray &r, const Interval &i,
-                                real_t step, real_t offset) const;
+                                real_t step, real_t offset, Random& rand) const;
         private:
                 const Color sigma_a_;
                 const Color sigma_s_;
@@ -153,11 +158,13 @@ namespace redshift {
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
-                        const Interval &interval
+                        const Interval &interval,
+                        Random& rand
                 ) const = 0;
                 virtual tuple<real_t,Color> Transmittance(const Scene &scene,
                         const Ray &ray, const Sample &sample,
-                        const Interval &interval
+                        const Interval &interval,
+                        Random& rand
                 ) const = 0;
         };
 }

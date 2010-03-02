@@ -45,7 +45,7 @@ Exponential::Exponential (
 
 
 
-real_t Exponential::density(const Point &p) const {
+real_t Exponential::density(const Point &p, Random& rand) const {
         const real_t h = dot (vector_cast<Vector>(p-min), up);
         return baseFactor * std::exp (-exponentFactor * h);
 }

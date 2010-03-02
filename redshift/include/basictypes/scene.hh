@@ -58,16 +58,18 @@ namespace redshift {
                         interaction::UserCommandProcessor::Ptr,
                         unsigned int samplePerPixel
                 ) const ;
+
                 optional<Intersection> intersect(
                                         RayDifferential const &ray) const;
                 bool doesIntersect (Sample const &sample) const;
-                bool doesIntersect (Ray const &ray) const;
-                shared_ptr<Background> getBackground () const;
-                shared_ptr<camera::Camera> getCamera () const;
-                shared_ptr<VolumeRegion> getVolumeRegion () const;
+                bool doesIntersect (Ray const &ray)       const;
 
-                tuple<real_t,Color> Li(Sample const&) const;
-                tuple<real_t,Color> Li_VolumeOnly(Sample const&) const;
+                shared_ptr<Background>     getBackground ()   const;
+                shared_ptr<camera::Camera> getCamera ()       const;
+                shared_ptr<VolumeRegion>   getVolumeRegion () const;
+
+                tuple<real_t,Color> Li(Sample const&, Random &) const;
+                tuple<real_t,Color> Li_VolumeOnly(Sample const&, Random &) const;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead

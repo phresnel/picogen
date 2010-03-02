@@ -100,36 +100,36 @@ optional<Intersection> Scene::intersect(
 
 
 
-tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample) const {
+tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) const {
         if (surfaceIntegrator && volumeIntegrator) {
                 const tuple<real_t,Color>
-                        Lo = surfaceIntegrator->Li_VolumeOnly(*this, sample.primaryRay, sample);
+                        Lo = surfaceIntegrator->Li_VolumeOnly(*this, sample.primaryRay, sample, rand);
                 const Interval i (0, 10000); // TODO: quirk
                 const tuple<real_t,Color>
-                        T  = volumeIntegrator->Transmittance (*this,sample.primaryRay,sample,i),
-                        Lv = volumeIntegrator->Li (*this,sample.primaryRay,sample,i);
+                        T  = volumeIntegrator->Transmittance (*this,sample.primaryRay, sample, i, rand),
+                        Lv = volumeIntegrator->Li (*this,sample.primaryRay, sample, i, rand);
                 return make_tuple (1.f, get<1>(T)*get<1>(Lo) + get<1>(Lv));
         } else {
                 const tuple<real_t,Color> Lo =
-                        surfaceIntegrator->Li_VolumeOnly (*this, sample.primaryRay, sample);
+                        surfaceIntegrator->Li_VolumeOnly (*this, sample.primaryRay, sample, rand);
                 return make_tuple(get<0>(Lo),get<1>(Lo));
         }
 }
 
 
 
-tuple<real_t,Color> Scene::Li (Sample const & sample) const {
+tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
         if (surfaceIntegrator && volumeIntegrator) {
                 const tuple<real_t,Color,real_t>
-                        Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample);
+                        Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand);
                 const Interval i (0, get<2>(Lo)>10000?10000:get<2>(Lo)); // TODO: quirk
                 const tuple<real_t,Color>
-                        T  = volumeIntegrator->Transmittance (*this,sample.primaryRay,sample,i),
-                        Lv = volumeIntegrator->Li (*this,sample.primaryRay,sample,i);
+                        T  = volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand),
+                        Lv = volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand);
                 return make_tuple (1.f, get<1>(T)*get<1>(Lo) + get<1>(Lv));
         } else {
                 const tuple<real_t,Color,real_t> Lo =
-                        surfaceIntegrator->Li (*this, sample.primaryRay, sample);
+                        surfaceIntegrator->Li (*this, sample.primaryRay, sample, rand);
                 return make_tuple(get<0>(Lo),get<1>(Lo));
         }
 }
@@ -173,15 +173,14 @@ void Scene::render (
                         Color accu = Color::fromRgb(0,0,0);
                         for (int i=0; i<numAASamples; ++i) {
 
-                                kallisto::random::marsaglia::UNI rand (x+(y*width), (x*height)+y, i, salt);
+                                Random rand (x+(y*width), (x*height)+y, i, salt);
                                 rand.skip(4);
 
                                 Sample sample (
                                         ImageCoordinates(static_cast<real_t>(x)+(rand()/(1.f+RAND_MAX)),
                                                          static_cast<real_t>(y)+(rand()/(1.f+RAND_MAX))),
                                         LensCoordinates(),
-                                        renderTarget,
-                                        rand
+                                        renderTarget
                                 );
 
                                 //-------------------------------------------------------------
@@ -211,7 +210,7 @@ void Scene::render (
                                 //-------------------------------------------------------------
                                 // 3) Evaluate Radiance Along Primary Ray.
                                 //-------------------------------------------------------------
-                                const tuple<real_t,Color> Ls_ (Li(sample));
+                                const tuple<real_t,Color> Ls_ = Li(sample, rand);
                                 const real_t Ls_alpha (get<0>(Ls_));
                                 const Color Ls_color  (get<1>(Ls_));
                                 const Color finalColor = rayWeight * Ls_color;

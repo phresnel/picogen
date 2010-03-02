@@ -37,10 +37,10 @@ void List::add (shared_ptr<VolumeRegion> volume) {
 
 
 // absorption
-Color List::sigma_a (const Point &p, const Vector &w) const {
+Color List::sigma_a (const Point &p, const Vector &w, Random& rand) const {
         Color ret = Color::fromRgb(0,0,0);
         for (const_iterator it = volumes.begin(); it!=volumes.end(); ++it) {
-                ret = ret + (*it)->sigma_a (p, w);
+                ret = ret + (*it)->sigma_a (p, w, rand);
         }
         return ret;
 }
@@ -48,10 +48,10 @@ Color List::sigma_a (const Point &p, const Vector &w) const {
 
 
 // out scattering probability
-Color List::sigma_s (const Point &p, const Vector &w) const {
+Color List::sigma_s (const Point &p, const Vector &w, Random& rand) const {
         Color ret = Color::fromRgb(0,0,0);
         for (const_iterator it = volumes.begin(); it!=volumes.end(); ++it) {
-                ret = ret + (*it)->sigma_s (p, w);
+                ret = ret + (*it)->sigma_s (p, w, rand);
         }
         return ret;
 }
@@ -59,10 +59,10 @@ Color List::sigma_s (const Point &p, const Vector &w) const {
 
 
 // emission
-Color List::Lve (const Point &p,const Vector &w) const {
+Color List::Lve (const Point &p,const Vector &w, Random& rand) const {
         Color ret = Color::fromRgb(0,0,0);
         for (const_iterator it = volumes.begin(); it!=volumes.end(); ++it) {
-                ret = ret + (*it)->Lve (p, w);
+                ret = ret + (*it)->Lve (p, w, rand);
         }
         return ret;
 }
@@ -72,21 +72,21 @@ Color List::Lve (const Point &p,const Vector &w) const {
 real_t List::p (
         const Point &p,
         const Vector &w_in,
-        const Vector &w_out
+        const Vector &w_out, Random& rand
 ) const {
         real_t ret = 0;
         for (const_iterator it = volumes.begin(); it!=volumes.end(); ++it) {
-                ret = ret + (*it)->p(p, w_in, w_out);
+                ret = ret + (*it)->p(p, w_in, w_out, rand);
         }
         return ret;
 }
 
 
 
-Color List::sigma_t (const Point &p, const Vector &w) const {
+Color List::sigma_t (const Point &p, const Vector &w, Random& rand) const {
         Color ret = Color::fromRgb(0,0,0);
         for (const_iterator it = volumes.begin(); it!=volumes.end(); ++it) {
-                ret = ret + (*it)->sigma_t (p, w);
+                ret = ret + (*it)->sigma_t (p, w, rand);
         }
         return ret;
 }
@@ -95,11 +95,11 @@ Color List::sigma_t (const Point &p, const Vector &w) const {
 
 Color List::tau (
         const Ray &r, const Interval &i,
-        real_t step, real_t offset
+        real_t step, real_t offset, Random& rand
 ) const {
         Color ret = Color::fromRgb(0,0,0);
         for (const_iterator it = volumes.begin(); it!=volumes.end(); ++it) {
-                ret = ret + (*it)->tau (r, i, step, offset);
+                ret = ret + (*it)->tau (r, i, step, offset, rand);
         }
         return ret;
 }

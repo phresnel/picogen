@@ -82,6 +82,34 @@ namespace redshift {
         using kallisto::vector_cast;
         using kallisto::scalar_cast;
 
+        class Random {
+        public:
+                Random (uint32_t A, uint32_t B, uint32_t C, uint32_t D)
+                : rand(A,B,C,D)
+                {}
+
+                Random (Random const &x)
+                : rand(x.rand)
+                {}
+
+                Random& operator = (Random const &rhs) {
+                        rand = rhs.rand;
+                        return *this;
+                }
+
+                double operator () () {
+                        return rand();
+                }
+
+                void skip (uint32_t u) {
+                        rand.skip(u);
+                }
+        private:
+                Random () ;
+
+                kallisto::random::marsaglia::UNI rand;
+        };
+
         template <typename T> inline T min (T const &lhs, T const &rhs) {
                 return lhs < rhs ? lhs : rhs;
         }

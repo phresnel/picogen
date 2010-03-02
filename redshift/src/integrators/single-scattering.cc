@@ -37,7 +37,8 @@ tuple<real_t,Color> SingleScattering::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
-        const Interval &interval
+        const Interval &interval,
+        Random& rand
 ) const {
         const Ray ray = raydiff;
         const shared_ptr<VolumeRegion> vr = scene.getVolumeRegion();
@@ -66,7 +67,7 @@ tuple<real_t,Color> SingleScattering::Li (
 	Point curr = ray(t0), prev;
 	const Vector w = -ray.direction;
 
-        t0 += rng()*step;
+        t0 += rand()*step;
 	/*if (sample)
 		t0 += sample->oneD[scatterSampleOffset][0] * step;
 	else
@@ -77,12 +78,14 @@ tuple<real_t,Color> SingleScattering::Li (
 		prev = curr;
 		curr = ray(t0);
 
+                const real_t offset = rand();
                 const Color stepTau =
                         vr->tau(
                                 Ray(prev, ray.direction),//normalize(vector_cast<Vector>(curr - prev))),
                                 Interval(0,step),
                                 .5f * stepSize,
-                                rng()
+                                offset,
+                                rand
                         );
 
 		Tr = Tr * exp(-stepTau);
@@ -96,17 +99,24 @@ tuple<real_t,Color> SingleScattering::Li (
 		}*/
 
                 // Compute emission-only source term at _p_
-		Lv = Lv + Tr * vr->Lve(curr, w);
-                const Color ss = vr->sigma_s (curr,w);
+		Lv = Lv + Tr * vr->Lve(curr, w, rand);
+                const Color ss = vr->sigma_s (curr, w, rand);
 
                 // Background
                 const Ray sunRay (curr,sunDir);
                 if (!scene.doesIntersect (sunRay)) {
-                        const tuple<real_t,Color> T_ = Transmittance(scene,sunRay,sample,Interval(0,1000));//TODO: quirk interval max
+                        const tuple<real_t,Color> T_ =
+                                Transmittance(
+                                        scene,
+                                        sunRay,
+                                        sample,
+                                        Interval(0,1000),
+                                        rand
+                                );//TODO: quirk interval max
                         const Color T = get<1>(T_);
                         const Color Ld = sunCol * T;
                         const real_t pdf = 1;
-                        Lv = Lv + Tr * ss * vr->p(curr,w,-sunDir) * Ld * (1.f/pdf);
+                        Lv = Lv + Tr * ss * vr->p(curr,w, -sunDir, rand) * Ld * (1.f/pdf);
                 }
 	}
 	return make_tuple(1.f,Lv * step);
@@ -117,17 +127,17 @@ tuple<real_t,Color> SingleScattering::Li (
 tuple<real_t,Color> SingleScattering::Transmittance(
         const Scene &scene,
         const Ray &ray, const Sample &sample,
-        const Interval &interval
+        const Interval &interval, Random& rand
 ) const {
 	if (!scene.getVolumeRegion())
                 return make_tuple(1.f,Color::fromRgb(1,1,1));
 
 	const real_t step = stepSize;//sample ? stepSize : 4.f * stepSize;
-	const real_t offset = rng ();
+	const real_t offset = rand ();
 		//sample ? sample->oneD[tauSampleOffset][0] :
 		//RandomFloat();
 	const Color tau =
-		scene.getVolumeRegion()->tau(ray, interval, step, offset);
+		scene.getVolumeRegion()->tau(ray, interval, step, offset, rand);
 	return make_tuple(1.f,exp(-tau));
 }
 

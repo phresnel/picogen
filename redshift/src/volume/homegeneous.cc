@@ -41,21 +41,21 @@ Homogeneous::Homogeneous (
 
 
 // absorption
-Color Homogeneous::sigma_a (const Point &p, const Vector &w) const {
+Color Homogeneous::sigma_a (const Point &p, const Vector &w, Random& rand) const {
         return sigma_a_;
 }
 
 
 
 // out scattering probability
-Color Homogeneous::sigma_s (const Point &p, const Vector &w) const {
+Color Homogeneous::sigma_s (const Point &p, const Vector &w, Random& rand) const {
         return sigma_s_;
 }
 
 
 
 // emission
-Color Homogeneous::Lve (const Point &p,const Vector &w) const {
+Color Homogeneous::Lve (const Point &p,const Vector &w, Random& rand) const {
         return Lve_;
 }
 
@@ -64,24 +64,26 @@ Color Homogeneous::Lve (const Point &p,const Vector &w) const {
 real_t Homogeneous::p (
         const Point &p,
         const Vector &w_in,
-        const Vector &w_out
+        const Vector &w_out, Random& rand
 ) const {
         return phaseHG (w_in, w_out, henyeyGreensteinParameter);
 }
 
 
 
-Color Homogeneous::sigma_t (const Point &p, const Vector &w) const {
-        return sigma_a(p,w)+sigma_s(p,w);
+Color Homogeneous::sigma_t (const Point &p, const Vector &w, Random& rand) const {
+        const Color a = sigma_a(p,w,rand);
+        const Color b = sigma_s(p,w,rand);
+        return a+b;
 }
 
 
 
 Color Homogeneous::tau (
         const Ray &r, const Interval &i,
-        real_t step, real_t offset
+        real_t step, real_t offset, Random& rand
 ) const {
-        return sigma_t(r.position,r.direction) * i.mag();
+        return sigma_t(r.position,r.direction,rand) * i.mag();
 }
 
 

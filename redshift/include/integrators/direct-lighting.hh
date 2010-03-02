@@ -34,12 +34,12 @@ namespace redshift {
                 virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
-                        const Sample &sample
+                        const Sample &sample, Random& rand
                 ) const ;
                 virtual tuple<real_t,Color> Li_VolumeOnly (
                         const Scene &scene,
                         const RayDifferential &raydiff,
-                        const Sample &sample
+                        const Sample &sample, Random& rand
                 ) const ;
 
                 DirectLighting (unsigned int numAmbientSamples=0);
@@ -48,11 +48,11 @@ namespace redshift {
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
+                        Random& rand,
                         const bool doMirror
                 ) const ;
 
                 const int numAmbientSamples;
-                mutable MersenneTwister<real_t,0,1> diffuseRng;
         };
 }
 

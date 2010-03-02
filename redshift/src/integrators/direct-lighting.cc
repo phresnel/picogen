@@ -34,7 +34,8 @@ DirectLighting::DirectLighting (unsigned int numAmbientSamples)
 tuple<real_t,Color> DirectLighting::Li_VolumeOnly (
         const Scene &scene,
         const RayDifferential &raydiff,
-        const Sample &sample
+        const Sample &sample,
+        Random &rand
 ) const {
         return make_tuple (
                 1.0, scene.getBackground()->query(raydiff)
@@ -47,6 +48,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
+        Random &rand,
         const bool doMirror
 ) const {
         const optional<Intersection> I (scene.intersect (raydiff));
@@ -76,7 +78,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                                         ray.direction = get<1>(*v_);
                                         Sample s = sample;
                                         s.primaryRay = ray;
-                                        const tuple<real_t,Color> L = scene.Li_VolumeOnly(s);
+                                        const tuple<real_t,Color> L = scene.Li_VolumeOnly(s, rand);
                                         /*if (ray.direction.y>0)*/ {
                                                 sum = sum +
                                                         //bg->query (ray)  *  get<0>(*v_);
@@ -95,7 +97,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                                 ray.direction = get<1>(v);
                                 Sample r = sample;
                                 r.primaryRay = ray;
-                                spec = spec + get<1> (scene.Li (r));
+                                spec = spec + get<1>(scene.Li (r, rand));
                         }
                 }
 
@@ -143,7 +145,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                                 }
                                 C = C * (1.f / num);*/
 
-                                const Ray sunRay = Ray (vector_cast<Point>(sv),sunDir);
+                                const Ray sunRay = Ray (vector_cast<Point>(sv), sunDir);
                                 if (!scene.doesIntersect (sunRay)) {
                                         C = C + bg->querySun (sunRay);
                                 }
@@ -170,9 +172,9 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
 tuple<real_t,Color,real_t> DirectLighting::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
-        const Sample &sample
+        const Sample &sample, Random &rand
 ) const {
-        return Li(scene, raydiff, sample, true);
+        return Li(scene, raydiff, sample, rand, true);
 }
 
 }

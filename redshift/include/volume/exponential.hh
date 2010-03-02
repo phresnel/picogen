@@ -44,7 +44,7 @@ namespace redshift { namespace volume {
                         Vector const & up = Vector (0,1,0)
                 );
 
-                real_t density(const Point &p) const;
+                real_t density(const Point &p, Random& rand) const;
 
         private:
                 Exponential ();

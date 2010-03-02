@@ -38,19 +38,19 @@ namespace redshift { namespace volume {
                 void add (shared_ptr<VolumeRegion> volume) ;
 
 
-                Color sigma_a (const Point &p, const Vector &w) const;
-                Color sigma_s (const Point &p, const Vector &w) const;
+                Color sigma_a (const Point &p, const Vector &w, Random& rand) const;
+                Color sigma_s (const Point &p, const Vector &w, Random& rand) const;
 
-                Color Lve (const Point &p,const Vector &w) const;
+                Color Lve (const Point &p,const Vector &w, Random& rand) const;
 
                 real_t p (const Point &p,
-                          const Vector &w_in,const Vector &w_out
+                          const Vector &w_in,const Vector &w_out, Random& rand
                 ) const;
 
-                Color sigma_t (const Point &p, const Vector &w) const;
+                Color sigma_t (const Point &p, const Vector &w, Random& rand) const;
 
                 Color tau (const Ray &r, const Interval &i,
-                           real_t step, real_t offset) const;
+                           real_t step, real_t offset, Random& rand) const;
 
         private:
                 List (List const &);

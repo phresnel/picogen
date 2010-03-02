@@ -37,15 +37,14 @@ namespace redshift {
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
-                        const Interval &interval
+                        const Interval &interval, Random& rand
                 ) const ;
                 tuple<real_t,Color> Transmittance(
                         const Scene &scene,
                         const Ray &ray, const Sample &sample,
-                        const Interval &interval
+                        const Interval &interval, Random& rand
                 ) const ;
         private:
-                mutable MersenneTwister<real_t,0,1> rng;
                 real_t stepSize;
         };
 }

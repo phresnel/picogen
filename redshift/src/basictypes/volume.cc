@@ -23,8 +23,10 @@
 namespace redshift {
 
 // VolumeRegion.
-Color VolumeRegion::sigma_t(const Point &p, const Vector &w) const {
-	return sigma_a(p, w) + sigma_s(p, w);
+Color VolumeRegion::sigma_t(const Point &p, const Vector &w, Random &rand) const {
+        const Color a = sigma_a(p, w, rand);
+        const Color b = sigma_s(p, w, rand);
+        return a + b;
 }
 
 
@@ -32,7 +34,7 @@ Color VolumeRegion::sigma_t(const Point &p, const Vector &w) const {
 // DensityRegion.
 Color DensityRegion::tau (
         const Ray &rn, const Interval &i,
-        real_t stepSize, real_t offset
+        real_t stepSize, real_t offset, Random &rand
 ) const {
         real_t t0=i.min(), t1=i.max();
 
@@ -40,7 +42,7 @@ Color DensityRegion::tau (
 
 	t0 += offset * stepSize;
 	while (t0 < t1) {
-		tau = tau + this->sigma_t(rn(t0), -rn.direction);
+		tau = tau + this->sigma_t(rn(t0), -rn.direction, rand);
 		t0 += stepSize;
 	}
 	return tau * stepSize;

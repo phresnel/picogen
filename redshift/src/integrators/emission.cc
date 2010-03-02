@@ -37,7 +37,8 @@ tuple<real_t,Color> Emission::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
-        const Interval &interval
+        const Interval &interval,
+        Random &rand
 ) const {
         const Ray ray = raydiff;
         const shared_ptr<VolumeRegion> vr = scene.getVolumeRegion();
@@ -60,7 +61,7 @@ tuple<real_t,Color> Emission::Li (
 	Point curr = ray(t0), prev;
 	const Vector w = -ray.direction;
 
-        t0 += rng()*step;
+        t0 += rand()*step;
 	/*if (sample)
 		t0 += sample->oneD[scatterSampleOffset][0] * step;
 	else
@@ -71,12 +72,14 @@ tuple<real_t,Color> Emission::Li (
 		prev = curr;
 		curr = ray(t0);
 
+                const real_t offset = rand();
                 const Color stepTau =
                         vr->tau(
                                 Ray(prev, ray.direction),//normalize(vector_cast<Vector>(curr - prev))),
                                 Interval(0,step),
                                 .5f * stepSize,
-                                rng()
+                                offset,
+                                rand
                         );
 
 		Tr = Tr * exp(-stepTau);
@@ -90,7 +93,7 @@ tuple<real_t,Color> Emission::Li (
 		}*/
 
                 // Compute emission-only source term at _p_
-		Lv = Lv + Tr * vr->Lve(curr, w);
+		Lv = Lv + Tr * vr->Lve(curr, w, rand);
 	}
         const Color ret = Lv * step;
         /*if (ret.r <= 0.1 && ret.g >= 0.5 && ret.b >= 0.5) {
@@ -104,17 +107,18 @@ tuple<real_t,Color> Emission::Li (
 tuple<real_t,Color> Emission::Transmittance(
         const Scene &scene,
         const Ray &ray, const Sample &sample,
-        const Interval &interval
+        const Interval &interval,
+        Random &rand
 ) const {
 	if (!scene.getVolumeRegion())
                 return make_tuple(1.f,Color::fromRgb(1,1,1));
 
 	const real_t step = stepSize;//sample ? stepSize : 4.f * stepSize;
-	const real_t offset = rng ();
+	const real_t offset = rand ();
 		//sample ? sample->oneD[tauSampleOffset][0] :
 		//RandomFloat();
 	const Color tau =
-		scene.getVolumeRegion()->tau(ray, interval, step, offset);
+		scene.getVolumeRegion()->tau(ray, interval, step, offset, rand);
 	return make_tuple(1.f,exp(-tau));
 }
 
