@@ -556,12 +556,16 @@ namespace redshift { namespace scenefile {
 
                 Normal sunDirection;
                 double turbidity;
+                Rgb sunColor;
+                Rgb skyFilter;
 
 
                 Background ()
                 : type(preetham_shirley)
-                , sunDirection(-1,1,1)
+                , sunDirection(0,0.5,2)
                 , turbidity(2.5)
+                , sunColor(3,3,3)
+                , skyFilter(0.05,0.05,0.05)
                 {}
 
                 shared_ptr<redshift::Background> toBackground() const {
@@ -570,8 +574,8 @@ namespace redshift { namespace scenefile {
                                 shared_ptr<redshift::background::Preetham> preetham (new background::Preetham());
                                 preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
                                 preetham->setTurbidity(turbidity);
-                                preetham->setSunColor(redshift::Color(1.1,1,0.9)*18);
-                                preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
+                                preetham->setSunColor(redshift::Color(sunColor.r,sunColor.g,sunColor.b));
+                                preetham->setColorFilter(redshift::Color(skyFilter.r,skyFilter.g,skyFilter.b));
                                 preetham->enableFogHack (false, 0.00025f, 150000);
                                 preetham->invalidate();
 
@@ -592,6 +596,8 @@ namespace redshift { namespace scenefile {
                         case preetham_shirley:
                                 arch & pack ("sun-direction", sunDirection);
                                 arch & pack ("turbidity", turbidity);
+                                arch & pack ("sun-color", sunColor);
+                                arch & pack ("sky-filter", skyFilter);
                                 break;
                         };
                 }
