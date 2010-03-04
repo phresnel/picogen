@@ -546,6 +546,61 @@ namespace redshift { namespace scenefile {
                 );
 
 
+        // Background.
+        struct Background {
+                enum Type {
+                        preetham_shirley
+                };
+                static const actuarius::Enum<Type> Typenames;
+                Type type;
+
+                Normal sunDirection;
+                double turbidity;
+
+
+                Background ()
+                : type(preetham_shirley)
+                , sunDirection(-1,1,1)
+                , turbidity(2.5)
+                {}
+
+                shared_ptr<redshift::Background> toBackground() const {
+                        switch (type) {
+                        case preetham_shirley: {
+                                shared_ptr<redshift::background::Preetham> preetham (new background::Preetham());
+                                preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
+                                preetham->setTurbidity(turbidity);
+                                preetham->setSunColor(redshift::Color(1.1,1,0.9)*18);
+                                preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
+                                preetham->enableFogHack (false, 0.00025f, 150000);
+                                preetham->invalidate();
+
+                                return shared_ptr<redshift::Background> (
+                                        new backgrounds::PreethamAdapter (preetham)
+                                );
+                        } break;
+                        };
+                        return shared_ptr<redshift::Background>();
+                }
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+
+                        switch (type) {
+                        case preetham_shirley:
+                                arch & pack ("sun-direction", sunDirection);
+                                arch & pack ("turbidity", turbidity);
+                                break;
+                        };
+                }
+        };
+        const actuarius::Enum<Background::Type> Background::Typenames =
+                ( actuarius::Nvp<Background::Type>(Background::preetham_shirley, "preetham-shirley")
+                );
+
+
 
         // RenderSettings.
         struct RenderSettings {
@@ -684,6 +739,7 @@ namespace redshift { namespace scenefile {
                 std::vector<Volume> volumes_;
                 std::vector<RenderSettings> renderSettings_;
                 std::vector<Camera> cameras_;
+                std::vector<Background> backgrounds_;
         public:
                 void addRenderSettings (RenderSettings const &rs) {
                         renderSettings_.push_back (rs);
@@ -719,6 +775,16 @@ namespace redshift { namespace scenefile {
                         return volumes_[index];
                 }
 
+                void addBackground (Background const &o) {
+                        backgrounds_.push_back (o);
+                }
+                unsigned int backgroundCount() const {
+                        return backgrounds_.size();
+                }
+                Background const & background(unsigned int index) const {
+                        return backgrounds_[index];
+                }
+
 
                 void addCamera (Camera const &o) {
                         cameras_.push_back (o);
@@ -743,6 +809,7 @@ namespace redshift { namespace scenefile {
                         arch & pack ("cameras", &Camera::title, cameras_);
                         arch & pack ("objects", &Object::type, Object::Typenames, objects_);
                         arch & pack ("volumes", &Volume::type, Volume::Typenames, volumes_);
+                        arch & pack ("backgrounds", &Background::type, Background::Typenames, backgrounds_);
                 }
         };
 } }
@@ -966,21 +1033,37 @@ namespace {
 
 
                 // atmosphere
-                shared_ptr<background::Preetham> preetham (new background::Preetham());
+                /*shared_ptr<background::Preetham> preetham (new background::Preetham());
                 preetham->setSunDirection(Vector(-4.0,1.001,0.010));
                 preetham->setTurbidity(2.0f);
                 //preetham->setSunColor(redshift::Color(1.1,1,0.9)*17);
                 preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
                 preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
                 preetham->enableFogHack (false, 0.00025f, 150000);
-                preetham->invalidate();
+                preetham->invalidate();*/
+
+                // TODO: support arbitrary many backgrounds (Starsky!)
+                shared_ptr<Background> background;
+                if (scene.backgroundCount()) {
+                        background = scene.background(0).toBackground();
+                } else {
+                        shared_ptr<background::Preetham> preetham (new background::Preetham());
+                        preetham->setSunDirection(Vector(-4.0,1.001,0.010));
+                        preetham->setTurbidity(2.0f);
+                        preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
+                        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
+                        preetham->enableFogHack (false, 0.00025f, 150000);
+                        preetham->invalidate();
+                        background = shared_ptr<redshift::Background> (
+                                        new backgrounds::PreethamAdapter (preetham));
+                }
                 // ----------
 
                 Scene Scene (
                         renderBuffer,
                         camera,
                         agg,
-                        shared_ptr<Background> (new backgrounds::PreethamAdapter (preetham)),
+                        background,
                         //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(0.5,0.25,0.125))),
                         //shared_ptr<Background>(new backgrounds::VisualiseDirection())
                         shared_ptr<Integrator> (new DirectLighting(10/*ambient samples*/)),
