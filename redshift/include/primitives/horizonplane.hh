@@ -36,7 +36,7 @@ namespace redshift { namespace primitive {
                 , DoFinalize(HorizonPlane)
         {
         public:
-                HorizonPlane(real_t height, shared_ptr<HeightFunction const> fun);
+                HorizonPlane(real_t height, shared_ptr<HeightFunction const> fun, const Color &color);
                 ~HorizonPlane ();
 
                 bool doesIntersect (RayDifferential const &ray) const;
@@ -49,7 +49,7 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom
                 ) const {
                         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror (Color::fromRgb(1,1,1))));
+                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror (color)));
                         return bsdf;
                 }
 
@@ -60,6 +60,7 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<HeightFunction const> fun;
                 real_t height;
+                Color color;
         };
 } }
 

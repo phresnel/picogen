@@ -24,9 +24,10 @@ namespace redshift { namespace primitive {
 
 
 
-HorizonPlane::HorizonPlane (real_t height_, shared_ptr<HeightFunction const> heightFunction)
+HorizonPlane::HorizonPlane (real_t height_, shared_ptr<HeightFunction const> heightFunction, const Color &color)
 : fun (heightFunction)
 , height(height_)
+, color (color)
 {
 }
 
