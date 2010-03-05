@@ -320,6 +320,7 @@ namespace redshift { namespace scenefile {
                                 arch
                                 & pack("code", horizonPlaneParams.code)
                                 & pack("height", horizonPlaneParams.height)
+                                & pack("color", horizonPlaneParams.color)
                                 ;
                                 break;
                         };
@@ -364,6 +365,7 @@ namespace redshift { namespace scenefile {
                 struct HorizonPlaneParams {
                         std::string code;
                         double height;
+                        Rgb color;
 
                         HorizonPlaneParams ()
                         : code("(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))")
@@ -380,7 +382,8 @@ namespace redshift { namespace scenefile {
                                         );
                                 return shared_ptr<primitive::Primitive>(new HorizonPlane(
                                         height,
-                                        heightFunction
+                                        heightFunction,
+                                        redshift::Color::fromRgb(color.r,color.g,color.b)
                                 ));
                         }
                 };
@@ -508,10 +511,10 @@ namespace redshift { namespace scenefile {
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
-                float stepSize;
+                double stepSize, cutoffDistance;
 
                 VolumeIntegrator ()
-                : type(none), stepSize(100.f)
+                : type(none), stepSize(100.), cutoffDistance(5000.)
                 {}
 
 
@@ -519,11 +522,11 @@ namespace redshift { namespace scenefile {
                         switch (type) {
                         case emission:
                                 return shared_ptr<redshift::VolumeIntegrator>(
-                                        new Emission(stepSize)
+                                        new Emission(stepSize, cutoffDistance)
                                 );
                         case single:
                                 return shared_ptr<redshift::VolumeIntegrator>(
-                                        new SingleScattering(stepSize)
+                                        new SingleScattering(stepSize, cutoffDistance)
                                 );
                         case none:
                                 return shared_ptr<redshift::VolumeIntegrator>();
@@ -537,6 +540,7 @@ namespace redshift { namespace scenefile {
                         using actuarius::pack;
                         arch & pack("type", Typenames, type);
                         arch & pack("step-size", stepSize);
+                        arch & pack("cutoff-distance", cutoffDistance);
                 }
         };
         const actuarius::Enum<VolumeIntegrator::Type> VolumeIntegrator::Typenames =
@@ -1017,7 +1021,7 @@ namespace {
 
                 RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
                 shared_ptr<Camera> camera (new Pinhole(
-                        renderBuffer, 1.2f,
+                        renderBuffer, 0.5f,
                         scene.camera(0).toRedshiftTransform()
                 ));
 
