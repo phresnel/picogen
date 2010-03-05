@@ -102,7 +102,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                                 ray.direction = get<1>(v);
                                 Sample r = sample;
                                 r.primaryRay = ray;
-                                spec = spec + get<1>(scene.Li (r, rand));
+                                spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v);
                         }
                 }
 

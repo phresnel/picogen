@@ -32,7 +32,7 @@ namespace redshift {
                 , DoFinalize(Emission)
         {
         public:
-                Emission (real_t stepSize);
+                Emission (real_t stepSize, real_t cutoffDistance);
                 tuple<real_t,Color> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
@@ -46,6 +46,7 @@ namespace redshift {
                 ) const ;
         private:
                 real_t stepSize;
+                real_t cutoffDistance;
         };
 }
 

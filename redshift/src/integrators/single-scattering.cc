@@ -26,8 +26,8 @@ namespace redshift {
 
 
 
-SingleScattering::SingleScattering (real_t stepSize_)
-: stepSize(stepSize_)
+SingleScattering::SingleScattering (real_t stepSize_, real_t cutoffDistance_)
+: stepSize(stepSize_), cutoffDistance(cutoffDistance_)
 {
 }
 
@@ -42,6 +42,7 @@ tuple<real_t,Color> SingleScattering::Li (
 ) const {
         const Ray ray = raydiff;
         const shared_ptr<VolumeRegion> vr = scene.getVolumeRegion();
+        if (!vr) return 0.f;
 
         const shared_ptr<Background> bg = scene.getBackground();
         const Vector sunDir = bg->getSunDirection();
@@ -53,8 +54,7 @@ tuple<real_t,Color> SingleScattering::Li (
 
         // quirk: should cull against AABB here
         t0 = interval.min();
-        t1 = interval.max();
-	if (!vr) return 0.f;
+        t1 = interval.max()>cutoffDistance?cutoffDistance:interval.max();
 
 	// Do emission-only volume integration in _vr_
 	Color Lv = Color::fromRgb(0.f,0.f,0.f);
@@ -91,12 +91,11 @@ tuple<real_t,Color> SingleScattering::Li (
 		Tr = Tr * exp(-stepTau);
 
 		// Terminate if transmittance is small
-                /*
-		if (Tr.y() < constants::epsilon) {
-			const float continueProb = .5f;
-			if (RandomFloat() > continueProb) break;
-			Tr /= continueProb;
-		}*/
+		if (Tr.Y() < 0.05) {
+			const real_t continueProb = .5f;
+			if (rand() > continueProb) break;
+			Tr = Tr * (1/continueProb);
+		}
 
                 // Compute emission-only source term at _p_
 		Lv = Lv + Tr * vr->Lve(curr, w, rand);
@@ -110,7 +109,7 @@ tuple<real_t,Color> SingleScattering::Li (
                                         scene,
                                         sunRay,
                                         sample,
-                                        Interval(0,1000),
+                                        Interval(0,cutoffDistance),
                                         rand
                                 );//TODO: quirk interval max
                         const Color T = get<1>(T_);

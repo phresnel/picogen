@@ -26,8 +26,9 @@ namespace redshift {
 
 
 
-Emission::Emission (real_t stepSize_)
+Emission::Emission (real_t stepSize_, real_t cutoffDistance_)
 : stepSize(stepSize_)
+, cutoffDistance(cutoffDistance_)
 {
 }
 
@@ -42,13 +43,14 @@ tuple<real_t,Color> Emission::Li (
 ) const {
         const Ray ray = raydiff;
         const shared_ptr<VolumeRegion> vr = scene.getVolumeRegion();
+        if (!vr) return 0.f;
+
 	real_t t0, t1;
 	//if (!vr || !vr->IntersectP(ray, &t0, &t1)) return 0.f;
 
         // quirk: should cull against AABB here
         t0 = interval.min();
-        t1 = interval.max();
-	if (!vr) return 0.f;
+        t1 = interval.max()>cutoffDistance?cutoffDistance:interval.max();
 
 	// Do emission-only volume integration in _vr_
 	Color Lv = Color::fromRgb(0.f,0.f,0.f);
@@ -85,20 +87,21 @@ tuple<real_t,Color> Emission::Li (
 		Tr = Tr * exp(-stepTau);
 
 		// Possibly terminate raymarching if transmittance is small
-                /*
-		if (Tr.y() < constants::epsilon) {
-			const float continueProb = .5f;
-			if (RandomFloat() > continueProb) break;
-			Tr /= continueProb;
-		}*/
+                if (Tr.Y() < 0.05) {
+			const real_t continueProb = .5f;
+			if (rand() > continueProb) break;
+			Tr = Tr * (1/continueProb);
+		}
+                /*if (t0>15000) {
+                        const real_t continueProb = .95f;
+			if (rand() > continueProb) break;
+			Tr = Tr * (1/continueProb);
+                }*/
 
                 // Compute emission-only source term at _p_
 		Lv = Lv + Tr * vr->Lve(curr, w, rand);
 	}
         const Color ret = Lv * step;
-        /*if (ret.r <= 0.1 && ret.g >= 0.5 && ret.b >= 0.5) {
-                std::cout << ret.r << "," << ret.g << "," << ret.b << std::endl;
-        }*/
 	return make_tuple(1.f,ret);
 }
 
@@ -115,8 +118,6 @@ tuple<real_t,Color> Emission::Transmittance(
 
 	const real_t step = stepSize;//sample ? stepSize : 4.f * stepSize;
 	const real_t offset = rand ();
-		//sample ? sample->oneD[tauSampleOffset][0] :
-		//RandomFloat();
 	const Color tau =
 		scene.getVolumeRegion()->tau(ray, interval, step, offset, rand);
 	return make_tuple(1.f,exp(-tau));

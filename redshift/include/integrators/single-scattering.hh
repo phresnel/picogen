@@ -32,7 +32,7 @@ namespace redshift {
                 , DoFinalize(SingleScattering)
         {
         public:
-                SingleScattering (real_t stepSize);
+                SingleScattering (real_t stepSize, real_t cutoffDistance);
                 tuple<real_t,Color> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
@@ -45,7 +45,7 @@ namespace redshift {
                         const Interval &interval, Random& rand
                 ) const ;
         private:
-                real_t stepSize;
+                real_t stepSize, cutoffDistance;
         };
 }
 
