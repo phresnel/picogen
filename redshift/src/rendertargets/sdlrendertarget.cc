@@ -67,13 +67,6 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
                                           [y * (display.display->pitch/4) + x];
 
 
-                //>>> What is this for??
-                    /*if ( toRgb.r > 0.0031308 ) toRgb.r = 1.055 * ( pow(toRgb.r,(1/2.4) ) ) - 0.055;
-                    else                 toRgb.r = 12.92 * toRgb.r;
-                    if ( toRgb.g > 0.0031308 ) toRgb.g = 1.055 * ( pow(toRgb.g,(1/2.4) ) ) - 0.055;
-                    else                 toRgb.g = 12.92 * toRgb.g;
-                    if ( toRgb.b > 0.0031308 ) toRgb.b = 1.055 * ( pow(toRgb.b,(1/2.4) ) ) - 0.055;
-                    else                 toRgb.b = 12.92 * toRgb.b;*/
                 //Rgb const rgb = saturate (color,0,1).toRgb(); // TODO: strange, saturate yields NaNs?
                 Rgb const rgb = color.toRgb();
                 const int r_ = (int)(255.f * rgb.r);
