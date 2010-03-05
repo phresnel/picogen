@@ -81,6 +81,40 @@ namespace redshift {
         using kallisto::does_intersect;
         using kallisto::vector_cast;
         using kallisto::scalar_cast;
+}
+
+
+namespace redshift {
+
+        template <uint32_t m, uint32_t a, uint32_t c>
+        class LCG {
+        public:
+                LCG (uint32_t s) : curr(s) {}
+
+                uint32_t operator () () {
+                        return curr = ((uint64_t)(((uint64_t)a*curr)&0xFFFFFFFFUL) + c) % m;
+                }
+
+                void seed (uint32_t s) {
+                        curr = s;
+                }
+        private:
+                uint32_t curr;
+        };
+
+        template <uint32_t m, uint32_t a, uint32_t c>
+        class LCGf : private LCG<m,a,c> {
+        public:
+                LCGf(uint32_t s) : LCG<m,a,c>(s) {}
+
+                float operator () () {
+                        return LCG<m,a,c>::operator()() * (1.f/(1.f+m));
+                }
+
+                void seed (uint32_t s) {
+                        LCG<m,a,c>::seed(s);
+                }
+        };
 
         class Random {
         public:
@@ -109,7 +143,11 @@ namespace redshift {
 
                 kallisto::random::marsaglia::UNI rand;
         };
+}
 
+
+
+namespace redshift {
         template <typename T> inline T min (T const &lhs, T const &rhs) {
                 return lhs < rhs ? lhs : rhs;
         }
