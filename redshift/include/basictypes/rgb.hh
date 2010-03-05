@@ -23,6 +23,17 @@
 
 namespace redshift {
 
+        struct SRgb {
+                real_t r, g, b;
+
+                SRgb () : r(0), g(0), b(0) {}
+
+                SRgb (real_t r_, real_t g_, real_t b_)
+                : r(r_) , g(g_), b(b_)
+                {}
+        };
+
+
         struct Rgb {
                 real_t r, g, b;
 
@@ -35,6 +46,25 @@ namespace redshift {
                 Rgb (Rgb const &rgb)
                 : r(rgb.r) , g(rgb.g), b(rgb.b)
                 {}
+
+                operator SRgb () const {
+                        SRgb srgb(r,g,b);
+                        if ( srgb.r > 0.0031308 ) srgb.r = 1.055 * ( pow(srgb.r,(1/2.4) ) ) - 0.055;
+                        else                 srgb.r = 12.92 * srgb.r;
+                        if ( srgb.g > 0.0031308 ) srgb.g = 1.055 * ( pow(srgb.g,(1/2.4) ) ) - 0.055;
+                        else                 srgb.g = 12.92 * srgb.g;
+                        if ( srgb.b > 0.0031308 ) srgb.b = 1.055 * ( pow(srgb.b,(1/2.4) ) ) - 0.055;
+                        else                 srgb.b = 12.92 * srgb.b;
+                        return srgb;
+                }
+
+                /*operator Yxy () const {
+
+                }*/
+
+                real_t Y () const {
+                        return 0.299*r + 0.567*g + 0.114*b;
+                }
 
                 Rgb &operator = (Rgb const &rhs) {
                         this->r = rhs.r;
