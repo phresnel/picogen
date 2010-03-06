@@ -25,10 +25,9 @@
 
 
 ColorWheelWidget::ColorWheelWidget (QWidget *parent)
-: QGLWidget(QGLFormat(QGL::SampleBuffers),parent) {
-        currentColor.r = 1.0f;
-        currentColor.g = 0.0f;
-        currentColor.b = 0.0f;
+: QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
+, currentColor(color::rgb_to_hsv(1,0,0))
+{
 }
 
 
@@ -71,7 +70,6 @@ void ColorWheelWidget::paintGL () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
 
-        const hsvf current = rgb_to_hsv(currentColor);
         const float
                 width = (float)this->width(),
                 height = (float)this->height(),
@@ -106,8 +104,8 @@ void ColorWheelWidget::paintGL () {
 
         // mark hue in circle
         {
-                const QPointF currentDir (cos(current.h * pi / 180),
-                                        -sin(current.h * pi / 180));
+                const QPointF currentDir (cos(currentColor.h * pi / 180),
+                                        -sin(currentColor.h * pi / 180));
 
                 //p.setPen(QColor(255,255,255));
                 glColor3f (1.f, 1.f, 1.f);
@@ -126,16 +124,16 @@ void ColorWheelWidget::paintGL () {
 
         // Draw sv triangle.
         const QPointF hue = center+0.99*inner_radius *
-                            QPointF (cos(current.h * pi / 180),
-                                     -sin(current.h * pi / 180));
+                            QPointF (cos(currentColor.h * pi / 180),
+                                     -sin(currentColor.h * pi / 180));
         const QPointF white = center+0.99*inner_radius *
-                              QPointF  (cos((-120+current.h) * pi / 180),
-                                        -sin((-120+current.h) * pi / 180));
+                              QPointF  (cos((-120+currentColor.h) * pi / 180),
+                                        -sin((-120+currentColor.h) * pi / 180));
         const QPointF black = center+0.99*inner_radius *
-                              QPointF(cos((120+current.h) * pi / 180),
-                                      -sin((120+current.h) * pi / 180));
+                              QPointF(cos((120+currentColor.h) * pi / 180),
+                                      -sin((120+currentColor.h) * pi / 180));
 
-        const color::rgbf currentFullHue = hsv_to_rgb (current.h, 1.f, 1.f);
+        const color::rgbf currentFullHue = hsv_to_rgb(currentColor.h, 1.f, 1.f);
         glBegin (GL_TRIANGLES);
         glColor3f (currentFullHue.r, currentFullHue.g, currentFullHue.b);
         glVertex2f (hue.x(), hue.y());
@@ -185,7 +183,7 @@ void ColorWheelWidget::update(QPointF const & mousePosition) {
                         alpha = (acos(n_x)*180.f/color::pi),
                         hue = n_y>0?360-alpha:alpha
                 ;
-                currentColor = color::hsv_to_rgb(hue, 1, 1);
+                currentColor = color::hsvf(hue, 1, 1);
                 emit currentColorChanged(currentColor);
                 repaint();
         }
@@ -193,7 +191,7 @@ void ColorWheelWidget::update(QPointF const & mousePosition) {
 
 
 
-void ColorWheelWidget::setCurrentColor (color::rgbf col) {
+void ColorWheelWidget::setCurrentColor (color::hsvf col) {
         currentColor = col;
         repaint();
 }

@@ -54,19 +54,19 @@ private:
         };
         Mode mode;
 
-        color::rgbf currentColor;
+        color::hsvf currentColor;
 
         ColorWheelWidget *colorWheel;
         ColorPlaneWidget *colorPlane;
 
 signals:
-        void currentColorChanged (color::rgbf col);
+        void currentColorChanged (color::hsvf col);
 
 private slots:
         void on_spinColorV_valueChanged(int );
         void on_spinColorS_valueChanged(int );
         void on_spinColorH_valueChanged(int );
-        void setCurrentColor (color::rgbf col);
+        void setCurrentColor (color::hsvf col);
 };
 
 #endif // COLORPICKER_HH

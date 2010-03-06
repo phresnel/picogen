@@ -40,14 +40,14 @@ protected:
         void mousePressEvent(QMouseEvent*);
 
 signals:
-        void currentColorChanged (color::rgbf col);
+        void currentColorChanged (color::hsvf col);
 
 private slots:
-        void setCurrentColor (color::rgbf col);
+        void setCurrentColor (color::hsvf col);
 
 private:
         void update(QPointF const & mousePosition);
-        color::rgbf currentColor;
+        color::hsvf currentColor;
 };
 
 #endif // COLORWHEELWIDGET_HH

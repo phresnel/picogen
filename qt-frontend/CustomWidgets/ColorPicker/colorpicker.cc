@@ -46,12 +46,12 @@ ColorPicker::ColorPicker(QWidget *parent) :
                         colorWheel = new ColorWheelWidget (this));
 
 
-        QObject::connect(colorWheel, SIGNAL(currentColorChanged(color::rgbf)),
-                         this, SLOT(setCurrentColor(color::rgbf))
+        QObject::connect(colorWheel, SIGNAL(currentColorChanged(color::hsvf)),
+                         this, SLOT(setCurrentColor(color::hsvf))
         );
 
-        QObject::connect(this, SIGNAL(currentColorChanged(color::rgbf)),
-                         colorWheel, SLOT(setCurrentColor(color::rgbf))
+        QObject::connect(this, SIGNAL(currentColorChanged(color::hsvf)),
+                         colorWheel, SLOT(setCurrentColor(color::hsvf))
         );
 
         //currentColor
@@ -78,36 +78,29 @@ void ColorPicker::changeEvent(QEvent *e) {
 
 
 
-void ColorPicker::setCurrentColor (color::rgbf col) {
+void ColorPicker::setCurrentColor (color::hsvf col) {
         currentColor = col;
-        color::hsvf hsv = color::rgb_to_hsv(currentColor);
-        ui->spinColorH->setValue((int)hsv.h);
-        ui->spinColorS->setValue((int)(hsv.s*100.0f));
-        ui->spinColorV->setValue((int)(hsv.v*100.0f));
+        ui->spinColorH->setValue((int)currentColor.h);
+        ui->spinColorS->setValue((int)(currentColor.s*100.0f));
+        ui->spinColorV->setValue((int)(currentColor.v*100.0f));
         repaint();
         emit currentColorChanged(currentColor);
 }
 
 void ColorPicker::on_spinColorH_valueChanged(int val) {
-        color::hsvf hsv = color::rgb_to_hsv(currentColor);
-        hsv.h = val;
-        currentColor = color::hsv_to_rgb(hsv);
+        currentColor.h = val;
         setCurrentColor (currentColor);
         emit currentColorChanged(currentColor);
 }
 
 void ColorPicker::on_spinColorS_valueChanged(int val) {
-        color::hsvf hsv = color::rgb_to_hsv(currentColor);
-        hsv.s = val / 100.0f;
-        currentColor = color::hsv_to_rgb(hsv);
+        currentColor.s = val / 100.0f;
         setCurrentColor (currentColor);
         emit currentColorChanged(currentColor);
 }
 
 void ColorPicker::on_spinColorV_valueChanged(int val) {
-        color::hsvf hsv = color::rgb_to_hsv(currentColor);
-        hsv.v = val / 100.0f;
-        currentColor = color::hsv_to_rgb(hsv);
+        currentColor.v = val / 100.0f;
         setCurrentColor (currentColor);
         emit currentColorChanged(currentColor);
 }
@@ -115,25 +108,22 @@ void ColorPicker::on_spinColorV_valueChanged(int val) {
 
 
 void ColorPicker::paintEvent(QPaintEvent*) {
-        const color::hsvf currentHsv = rgb_to_hsv (currentColor);
-        {
-                QImage img (
-                        ui->colorH->width(), ui->colorH->height(),
-                        QImage::Format_RGB32);
-                QPainter painter (&img);
-                for (int x=0; x<ui->colorH->width(); ++x) {
-                        const float h = x / float(ui->colorH->width()) * 360.0f;
-                        const color::rgbf col = color::hsv_to_rgb(
-                                        h, currentHsv.s, currentHsv.v);
-                        painter.setPen(QColor(
-                            (int)(col.r*255), (int)(col.g*255), (int)(col.b*255)
-                        ));
-                        painter.drawLine(
-                                QPointF(x, 0),
-                                QPointF(x, ui->colorH->height())
-                        );
+        QImage img (
+                ui->colorH->width(), ui->colorH->height(),
+                QImage::Format_RGB32);
+        QPainter painter (&img);
+        for (int x=0; x<ui->colorH->width(); ++x) {
+                const float h = x / float(ui->colorH->width()) * 360.0f;
+                const color::rgbf col = color::hsv_to_rgb(
+                                h, currentColor.s, currentColor.v);
+                painter.setPen(QColor(
+                    (int)(col.r*255), (int)(col.g*255), (int)(col.b*255)
+                ));
+                painter.drawLine(
+                        QPointF(x, 0),
+                        QPointF(x, ui->colorH->height())
+                );
 
-                }
-                ui->colorH->setPixmap(QPixmap::fromImage(img));
         }
+        ui->colorH->setPixmap(QPixmap::fromImage(img));
 }
