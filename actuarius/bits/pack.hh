@@ -34,6 +34,7 @@ namespace actuarius {
         // Scalar types.
         //---------------------------------------------------------------------
         template <typename T>
+        inline
         typename detail::disable_if<
                 detail::is_container_type<T>,
                 nrp<T>
@@ -43,6 +44,7 @@ namespace actuarius {
         }
 
         template <typename T>
+        inline
         typename detail::disable_if<
                 detail::is_container_type<T>,
                 nerp<T>
@@ -53,6 +55,7 @@ namespace actuarius {
 
         // convenience overload.
         template <typename T>
+        inline
         typename detail::disable_if<
                 detail::is_container_type<T>,
                 nerp<T>
@@ -67,6 +70,7 @@ namespace actuarius {
         // Unnamed values.
         //---------------------------------------------------------------------
         template <typename T>
+        inline
         ref<T> pack (T &value) {
                 return make_ref (value);
         }
@@ -77,6 +81,7 @@ namespace actuarius {
         // Container types.
         //---------------------------------------------------------------------
         template <typename T>
+        inline
         typename detail::enable_if<
                 detail::is_container_type<T>,
                 ncrp<T>
@@ -88,6 +93,7 @@ namespace actuarius {
 
 
         template <typename T>
+        inline
         typename detail::enable_if<
                 detail::is_container_type<T>,
                 necrp<T>
@@ -104,6 +110,7 @@ namespace actuarius {
 
         // convenience overload
         template <typename T>
+        inline
         typename detail::enable_if<
                 detail::is_container_type<T>,
                 necrp<T>
@@ -121,6 +128,7 @@ namespace actuarius {
         //---------------------------------------------------------------------
         // Special.
         //---------------------------------------------------------------------
+        inline
         nrp<std::string>
         pack (const char* name, std::string &value) {
                 return make_nrp (name, value);
@@ -132,6 +140,7 @@ namespace actuarius {
         // Advice lists.
         //---------------------------------------------------------------------
         template <typename CONT, typename ADVICE_TYPE>
+        inline
         npcrp<CONT,ADVICE_TYPE> pack (
                 const char *name,
                 ADVICE_TYPE CONT::value_type::* ptr,
@@ -141,6 +150,7 @@ namespace actuarius {
         }
 
         template <typename CONT, typename ADVICE_TYPE>
+        inline
         npecrp<CONT,ADVICE_TYPE> pack (
                 const char *name,
                 ADVICE_TYPE CONT::value_type::* ptr,
