@@ -100,11 +100,13 @@ namespace kallisto {
 #endif
 
 #define KALLISTO_ARRAY_FOREACHELEM(x) \
-        for (unsigned int i=0; i<N; ++i) \
-                x;
+        for (unsigned int i=0; i<N; ++i) { \
+                x; \
+        }
 #define KALLISTO_ARRAY_FRIEND_FOREACHELEM(x,N_) \
-        for (unsigned int i=0; i<N_; ++i) \
-                x;
+        for (unsigned int i=0; i<N_; ++i) { \
+                x; \
+        }
 
 
 

@@ -98,29 +98,37 @@ namespace kallisto {
         }
 
 
-
+        // For sake of KISS the following are implemented quite
+        // straightforward.
+        // TODO: use KALLISTO_ARRAY_FRIEND_FOREACHELEM again,
+        //       so that it might profit from parallelization again.
+        //       (note though that as of writing this, there is
+        //       no parallelization in KALLISTO_ARRAY_FRIEND_FOREACHELEM)
         template <unsigned int N, typename RULES, typename REP>
         inline typename traits::enable_if<has_member_reduction_all<RULES>,bool>::type
         all (array<bool,N,RULES,REP> const &arr) {
-                bool ret = true;
-                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret && arr.expr_rep[i],N);
-                return ret;
+                for (unsigned int i=0; i<N_; ++i) {
+                        if (!expr_rep[i]) return false;
+                }
+                return true;
         }
 
         template <unsigned int N, typename RULES, typename REP>
         inline typename traits::enable_if<has_member_reduction_none<RULES>,bool>::type
         none (array<bool,N,RULES,REP> const &arr) {
-                bool ret = true;
-                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret && !arr.expr_rep[i],N);
-                return ret;
+                for (unsigned int i=0; i<N_; ++i) {
+                        if (expr_rep[i]) return false;
+                }
+                return true;
         }
 
         template <unsigned int N, typename RULES, typename REP>
         inline typename traits::enable_if<has_member_reduction_any<RULES>,bool>::type
         any (array<bool,N,RULES,REP> const &arr) {
-                bool ret = false;
-                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret || arr.expr_rep[i],N);
-                return ret;
+                for (unsigned int i=0; i<N_; ++i) {
+                        if (expr_rep[i]) return true;
+                }
+                return false;
         }
 
         // Sidelore: Upon testing my implementation with [uninitialized] data,
