@@ -112,6 +112,7 @@ namespace kallisto {
 #include "array_bits/increment_decrement.hh"
 #include "array_bits/binary_operators.hh"
 #include "array_bits/unary_operators.hh"
+#include "array_bits/relational.hh"
 #include "array_bits/if_then_else.hh"
 #include "array_bits/cmath.hh"
 #include "array_bits/reduction.hh"

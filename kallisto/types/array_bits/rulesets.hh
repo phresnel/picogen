@@ -251,9 +251,20 @@ namespace kallisto {
                         reduction_product,
                         reduction_sum,
                         reduction_length,
-                        reduction_length_sq
+                        reduction_length_sq,
+                        reduction_all,
+                        reduction_none,
+                        reduction_any
                 ;
         };
+
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_product)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_sum)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_length)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_length_sq)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_all)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_none)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_any)
 
 
 
@@ -328,11 +339,16 @@ namespace kallisto {
         , r_flow_control
         {};
 
-        struct r_floating
+
+        struct r_floating_basic
         : r_additive
         , r_assign_generic
         , r_multiplicative_generic
         , r_unary_generic
+        {};
+
+        struct r_floating
+        : r_floating_basic
         , r_math_special
         , r_reduction
         , r_flow_control

@@ -26,11 +26,6 @@ namespace kallisto {
         // I guess making reductions part of the expression template closure
         // would not make much sense, so KISS away.
 
-        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_product)
-        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_sum)
-        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_length)
-        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_length_sq)
-
         template <typename T> class _reduce_product {
                 T result_;
         public:
@@ -103,6 +98,30 @@ namespace kallisto {
         }
 
 
+
+        template <unsigned int N, typename RULES, typename REP>
+        inline typename traits::enable_if<has_member_reduction_all<RULES>,bool>::type
+        all (array<bool,N,RULES,REP> const &arr) {
+                bool ret = true;
+                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret && arr.expr_rep[i],N);
+                return ret;
+        }
+
+        template <unsigned int N, typename RULES, typename REP>
+        inline typename traits::enable_if<has_member_reduction_none<RULES>,bool>::type
+        none (array<bool,N,RULES,REP> const &arr) {
+                bool ret = true;
+                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret && !arr.expr_rep[i],N);
+                return ret;
+        }
+
+        template <unsigned int N, typename RULES, typename REP>
+        inline typename traits::enable_if<has_member_reduction_any<RULES>,bool>::type
+        any (array<bool,N,RULES,REP> const &arr) {
+                bool ret = false;
+                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret || arr.expr_rep[i],N);
+                return ret;
+        }
 
         // Sidelore: Upon testing my implementation with [uninitialized] data,
         // I realised that iff there are dividesisions in the calculation,
