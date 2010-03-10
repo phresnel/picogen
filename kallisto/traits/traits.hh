@@ -33,11 +33,14 @@ namespace kallisto { namespace traits {
         //   types_equal<A,B>::value = true,  if A == B
         //   types_equal<A,B>::value = false, if A != B
         ///////////////////////////////////////////////////////////////////////
+
+        // 'types_equal' IS OBSOLETE, USE 'same_type'
+        // looks like deprecated does not work for class templates
         template<typename A, typename B>
-        struct types_equal : public false_value {};
+        struct types_equal  : public false_value  {};
 
         template<typename T>
-        struct types_equal<T,T> : public true_value  {};
+        struct types_equal<T,T> : public true_value {};
 
         STATIC_ASSERT(!(types_equal<int32_t,int64_t>::value));
         STATIC_ASSERT(!(types_equal<uint64_t,int64_t>::value));

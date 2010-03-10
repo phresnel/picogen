@@ -28,33 +28,30 @@ namespace kallisto {
         template<typename T_, unsigned int N_, typename RULES_, typename REP_>\
         typename traits::enable_if<                                           \
                 has_member_##name##_a<RULES_>,                                \
-                array<T_,N_,RULES_,REP_> &                                    \
+                void                                                          \
         >::type                                                               \
         operator op (array<T_,N_,RULES_,REP_> const &rhs) {                   \
                 KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] op rhs[i]);            \
-                return *this;                                                 \
         }                                                                     \
                                                                               \
         template<typename T_>                                                 \
         typename traits::enable_if_c<                                         \
                 has_member_##name##_s<RULES>::value                           \
                   && traits::same_type<T_,T>::value,                          \
-                array &                                                       \
+                void                                                          \
         >::type                                                               \
         operator op (T_ rhs) {                                                \
                 KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] op rhs);               \
-                return *this;                                                 \
         }                                                                     \
                                                                               \
         template<typename T_, unsigned int N_, typename RULES_, typename REP_,\
                                                                typename REP2_>\
         typename traits::enable_if<                                           \
                 has_member_##name##_a<RULES_>,                                \
-                array<T_,N_,RULES_,REP_> &                                    \
+                void                                                          \
         >::type                                                               \
         operator op (array<T_,N_,RULES_,REP2_> const &rhs) {                  \
                 KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] op rhs[i]);            \
-                return *this;                                                 \
         }
         //---------------------------------------------------------------------
 
@@ -67,9 +64,28 @@ namespace kallisto {
                 enum noinit_ {noinit};
                 array (noinit_) {}
 
-                explicit array (T val = 0) {
-                        for (unsigned int i=0; i<N; ++i)
-                                expr_rep[i] = val;
+                explicit array (T val) {
+                        KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = val);
+                }
+
+                array () {
+                        KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = 0);
+                }
+
+                array (const T (&rhs)[N]) {
+                        KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
+                }
+
+                template <
+                        typename T_, unsigned int N_,
+                        typename RULES_, typename REP_
+                >
+                array(typename traits::enable_if<
+                           traits::same_type<array, kallisto::array<T_,N_,RULES_,REP_> >,
+                           const kallisto::array<T_,N_,RULES_,REP_> &
+                        >::type rhs
+                ) {
+                        KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
                 }
 
                 array (REP const &expr_rep)
@@ -102,7 +118,6 @@ namespace kallisto {
                 // I hereby present, copy-assignment:
                 void operator = (array const &rhs) {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
-                        //return *this;
                 }
                 // ... as for 7), and because clients can still forbid any
                 // other operation, we also don't make expr-assignment
@@ -111,7 +126,11 @@ namespace kallisto {
                 void
                 operator = (array<T,N,RULES,REP2> const &rhs) {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
-                        //return *this;
+                }
+
+                void
+                operator = (const T (&rhs)[N]) {
+                        KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
                 }
 
                 // But this should be tweakable: array = scalar
@@ -119,11 +138,10 @@ namespace kallisto {
                 typename traits::enable_if_c<
                         has_member_assign_s<RULES>::value
                           && traits::same_type<T_,T>::value,
-                        array &
+                        void
                 >::type
                 operator = (T_ rhs) {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs);
-                        return *this;
                 }
 
                 KALLISTO_ARRAY_IMPLEMENT_ASSIGNMENT(augmented_plus, +=)
