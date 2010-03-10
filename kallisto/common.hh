@@ -53,6 +53,7 @@ namespace kallisto {
 #include "metamath/bitwise.hh"
 
 #include "traits/traits.hh"
+#include "types/array.hh"
 
 #include "traits/float_traits.hh"
 #include "traits/int_traits.hh"
