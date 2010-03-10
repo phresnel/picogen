@@ -170,6 +170,13 @@ namespace kallisto {
                         return expr_rep;
                 }
 
+
+                /*friend inline bool all (array<bool,N,RULES,REP> const &arr) {
+                        bool ret = true;
+                        //KALLISTO_ARRAY_FOREACHELEM(ret = ret && arr.expr_rep[i],N);
+                        return ret;
+                }*/
+
         private:
 
                 REP expr_rep;
@@ -179,8 +186,16 @@ namespace kallisto {
 
                 template <template <typename> class F_,
                         typename T_, unsigned int N_, typename RULES_, typename REP_
-                >
-                friend inline T_ _array_reduce(array<T_,N_,RULES_,REP_> const &arr);
+                > friend inline T_ _array_reduce(array<T_,N_,RULES_,REP_> const &arr);
+
+                template <unsigned int N_, typename RULES_, typename REP_>
+                friend bool all (array<bool,N_,RULES_,REP_> const &arr);
+
+                template <unsigned int N_, typename RULES_, typename REP_>
+                friend bool none (array<bool,N_,RULES_,REP_> const &arr);
+
+                template <unsigned int N_, typename RULES_, typename REP_>
+                friend bool any (array<bool,N_,RULES_,REP_> const &arr);
         };
 }
 
@@ -200,6 +215,28 @@ namespace kallisto {
                 F<T> ret;
                 KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret.apply(arr.expr_rep[i]),N);
                 return ret.result();
+        }
+
+
+        template <unsigned int N, typename RULES, typename REP>
+        inline bool all (array<bool,N,RULES,REP> const &arr) {
+                bool ret = true;
+                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret && arr.expr_rep[i],N);
+                return ret;
+        }
+
+        template <unsigned int N, typename RULES, typename REP>
+        inline bool none (array<bool,N,RULES,REP> const &arr) {
+                bool ret = true;
+                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret && !arr.expr_rep[i],N);
+                return ret;
+        }
+
+        template <unsigned int N, typename RULES, typename REP>
+        inline bool any (array<bool,N,RULES,REP> const &arr) {
+                bool ret = false;
+                KALLISTO_ARRAY_FRIEND_FOREACHELEM(ret = ret || arr.expr_rep[i],N);
+                return ret;
         }
 }
 
