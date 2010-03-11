@@ -47,7 +47,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n) {
     for (int i = 0; i < n-1; ++i)
-        if (lambda[i] >= lambda[i+1]) return false;
+        if (lambda[i] > lambda[i+1]) {
+                return false;
+        }
     return true;
 }
 

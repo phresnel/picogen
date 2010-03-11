@@ -245,9 +245,7 @@ Spectrum PreethamShirleySmits::GetSkySpectralRadiance(real_t theta, real_t phi) 
     real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
     real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
     real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-
     Spectrum spect = ChromaticityToSpectrum(x,y);
-
 				// A simple luminance function would be more efficient.
     return Y * spect / spect.y();
 }
