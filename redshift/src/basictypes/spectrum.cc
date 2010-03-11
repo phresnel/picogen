@@ -594,7 +594,8 @@ Spectrum Spectrum::FromSampled(
             vector<real_t> slambda(&lambda[0], &lambda[n]);
             vector<real_t> sv(&v[0], &v[n]);
             sortSpectrumSamples(&slambda[0], &sv[0], n);
-            return FromSampled(&slambda[0], &sv[0], n);
+
+            return FromSampled(&sv[0], &slambda[0], n);
         }
         Spectrum r;
         for (int i = 0; i < base::num_components; ++i) {
@@ -603,6 +604,7 @@ Spectrum Spectrum::FromSampled(
                         (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
             const real_t lambda1 = lerp(real_t(i+1) / base::num_components,
                         (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
+
             r[i] = averageSpectrumSamples(lambda, v, n, lambda0, lambda1);
         }
         return r;
@@ -615,13 +617,12 @@ Spectrum Spectrum::FromSampled(
 ) {
         // This function is only a quick hack!
         real_t *lambda = new real_t[n];
+
         for (unsigned int u=0; u<n; ++u) {
                 lambda[u] = lerp(u/(real_t)n, (real_t)lambdaStart, (real_t)lambdaEnd);
         }
-
         const Spectrum ret = Spectrum::FromSampled (lambda, v, n);
-
-        delete [] v;
+        delete [] lambda;
 }
 
 const real_t RGB2SpectLambda[RGB_TO_SPECTRUM_SAMPLES] = {

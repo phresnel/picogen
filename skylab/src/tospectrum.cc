@@ -80,16 +80,13 @@ namespace {
 
 void InitChromaticityToSpectrum()
 {
-        /*
-    riS0Spectrum = RiRegularSpectralCurve(S0Amplitudes,300,830,54);
-    riS1Spectrum = RiRegularSpectralCurve(S1Amplitudes,300,830,54);
-    riS2Spectrum = RiRegularSpectralCurve(S2Amplitudes,300,830,54);
-        */
+    riS0Spectrum = Spectrum::FromSampled(S0Amplitudes,300,830,54);
+    riS1Spectrum = Spectrum::FromSampled(S1Amplitudes,300,830,54);
+    riS2Spectrum = Spectrum::FromSampled(S2Amplitudes,300,830,54);
 }
 
 Spectrum PreethamShirleySmits::ChromaticityToSpectrum(real_t x, real_t y) const
 {
-        throw std::runtime_error("ChromaticityToSpectrum not implemented");
     static bool inited = false;
     if(!inited) {
 	inited = true;

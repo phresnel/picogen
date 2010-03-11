@@ -81,6 +81,7 @@ PreethamShirleySmits::PreethamShirleySmits(
 		   real_t turb,
 		   bool initAtmEffects) // turbidity
 {
+
     latitude = lat;
     longitude = longi;
     julianDay = jd;
@@ -90,10 +91,13 @@ PreethamShirleySmits::PreethamShirleySmits(
 
     V = 4.0; // Junge's exponent.
 
+
     InitSunThetaPhi();
+
     toSun = Vector(cos(phiS)*sin(thetaS), sin(phiS)*sin(thetaS), cos(thetaS));
 
     sunSpectralRad =  ComputeAttenuatedSunlight(thetaS, turbidity);
+
     sunSolidAngle =  0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
 
     real_t theta2 = thetaS*thetaS;
@@ -210,19 +214,15 @@ real_t PreethamShirleySmits::GetSunSolidAngle() const
 
 Spectrum PreethamShirleySmits::GetSkySpectralRadiance(const Vector &varg) const
 {
-    std::cout << "Foo" << std::endl;
     real_t theta, phi;
     Vector v = normalize(varg);
-    std::cout << "Bar" << std::endl;
     if (v.up() < 0) return Spectrum(0.000000);
     if (v.up() < 0.001)
       v = normalize(Vector(v.right(),0.001, v.ahead()));
 
-    std::cout << "Frob" << std::endl;
     theta = acos(v.up());
     if (fabs(theta)< 1e-5) phi = 0;
     else  phi = atan2(v.ahead(),v.right());
-    std::cout << "Fop" << std::endl;
     return GetSkySpectralRadiance(theta,phi);
 }
 

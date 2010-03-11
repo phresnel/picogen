@@ -180,7 +180,7 @@ static real_t k_waAmplitudes[13] = {
 
 
 // 380-750 by 10nm
-static float solAmplitudes[38] = {
+static real_t solAmplitudes[38] = {
     165.5, 162.3, 211.2, 258.8, 258.2,
     242.3, 267.6, 296.6, 305.4, 300.6,
     306.6, 288.3, 287.1, 278.2, 271.0,
@@ -212,12 +212,13 @@ Spectrum PreethamShirleySmits::ComputeAttenuatedSunlight(real_t theta, int turbi
     RiRegularSpectralCurve   solCurve(solAmplitudes, 380, 750, 38);  // every 10 nm  IN WRONG UNITS
 				                                     // Need a factor of 100 (done below)
     */
+
+
     Spectrum k_oCurve = Spectrum::FromSampled (k_oAmplitudes, k_oWavelengths, 64);
     Spectrum k_gCurve = Spectrum::FromSampled (k_gAmplitudes, k_gWavelengths , 4);
     Spectrum k_waCurve = Spectrum::FromSampled (k_waAmplitudes, k_waWavelengths, 13);
     Spectrum solCurve = Spectrum::FromSampled(solAmplitudes, 380, 750, 38);  // every 10 nm  IN WRONG UNITS
 				                                     // Need a factor of 100 (done below)
-
     real_t  data[91];  // (800 - 350) / 5  + 1
 
     real_t beta = 0.04608365822050 * turbidity - 0.04586025928522;
