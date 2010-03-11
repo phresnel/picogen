@@ -25,7 +25,7 @@
 #include <RiSpectralCurve.H>
 #endif*/
 
-#include "sunsky.hh"
+#include "../include/sunsky.hh"
 
 namespace redshift {
 

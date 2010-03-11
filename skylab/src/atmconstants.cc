@@ -10,7 +10,7 @@
  *
  */
 
-#include "sunsky.hh"
+#include "../include/sunsky.hh"
 #include <iostream>
 
 /*#ifndef RICOMMON_H

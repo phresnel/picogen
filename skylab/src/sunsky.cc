@@ -31,7 +31,7 @@
 #include <RiSpectralCurve.H>
 #endif*/
 
-#include "sunsky.hh"
+#include "../include/sunsky.hh"
 
 #include <iostream>
 #include <cmath>

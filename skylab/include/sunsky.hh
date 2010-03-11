@@ -26,7 +26,7 @@
 #endif
 */
 
-#include "../../poco/redshift/include/setup.hh"
+#include "../../redshift/include/setup.hh"
 
 
 namespace redshift {
