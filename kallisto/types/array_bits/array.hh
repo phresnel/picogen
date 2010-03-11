@@ -76,15 +76,8 @@ namespace kallisto {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
                 }
 
-                template <
-                        typename T_, unsigned int N_,
-                        typename RULES_, typename REP_
-                >
-                array(typename traits::enable_if<
-                           traits::same_type<array, kallisto::array<T_,N_,RULES_,REP_> >,
-                           const kallisto::array<T_,N_,RULES_,REP_> &
-                        >::type rhs
-                ) {
+                template <typename REP_>
+                array(const kallisto::array<T,N,RULES,REP_> &rhs) {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
                 }
 
