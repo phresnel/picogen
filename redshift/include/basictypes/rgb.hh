@@ -23,7 +23,7 @@
 
 namespace redshift {
 
-        struct SRgb {
+        struct __attribute__((deprecated)) SRgb {
                 real_t r, g, b;
 
                 SRgb () : r(0), g(0), b(0) {}
@@ -34,10 +34,14 @@ namespace redshift {
         };
 
 
-        struct Rgb {
+        // Deprecated, in future, Rgb should be a lightweight
+        // class only to be used for color space conversions.
+        struct __attribute__((deprecated)) Rgb {
                 real_t r, g, b;
 
                 Rgb () : r(0), g(0), b(0) {}
+
+                explicit Rgb (real_t f) : r(0), g(0), b(0) {}
 
                 Rgb (real_t r_, real_t g_, real_t b_)
                 : r(r_) , g(g_), b(b_)
@@ -46,6 +50,24 @@ namespace redshift {
                 Rgb (Rgb const &rgb)
                 : r(rgb.r) , g(rgb.g), b(rgb.b)
                 {}
+
+                int numComponents() const { return 3; }
+                enum { num_components = 3 };
+
+                real_t operator [] (int index) const {
+                        switch (index) {
+                        case 0: return r;
+                        case 1: return g;
+                        case 2: return b;
+                        };
+                }
+                real_t & operator [] (int index) {
+                        switch (index) {
+                        case 0: return r;
+                        case 1: return g;
+                        case 2: return b;
+                        };
+                }
 
                 operator SRgb () const {
                         SRgb srgb(r,g,b);
@@ -107,6 +129,13 @@ namespace redshift {
                         if ( b > 0.0031308 ) b = 1.055 * ( pow(b,(1/2.4) ) ) - 0.055;
                         else                 b = 12.92 * b;*/
                 }
+
+                Rgb & operator += (Rgb const &rhs) {
+                        r += rhs.r;
+                        g += rhs.g;
+                        b += rhs.b;
+                        return *this;
+                }
         };
 
         inline Rgb exp (Rgb const &v) {
@@ -134,6 +163,14 @@ namespace redshift {
                         lhs * rhs.r,
                         lhs * rhs.g,
                         lhs * rhs.b
+                );
+        }
+
+        inline Rgb operator / (Rgb const & lhs, real_t rhs) {
+                return Rgb (
+                        lhs.r / rhs,
+                        lhs.g / rhs,
+                        lhs.b / rhs
                 );
         }
 
@@ -165,5 +202,7 @@ namespace redshift {
                 return Rgb (-lhs.r,-lhs.g,-lhs.b);
         }
 }
+
+
 
 #endif // RGB_H_INCLUDED_20090224

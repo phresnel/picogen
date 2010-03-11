@@ -81,6 +81,8 @@ namespace redshift {
         using kallisto::does_intersect;
         using kallisto::vector_cast;
         using kallisto::scalar_cast;
+
+        using kallisto::array;
 }
 
 
@@ -182,6 +184,8 @@ namespace redshift {
 #include "auxiliary/scopedlock.hh"
 
 #include "basictypes/rgb.hh"
+#include "basictypes/spectrum.hh"
+
 namespace redshift {
         //class Rgb;
         typedef Rgb Color;

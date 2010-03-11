@@ -85,6 +85,7 @@ OBJFILES += $(BASICTYPESOBJDIR)/differentialgeometry.o
 OBJFILES += $(BASICTYPESOBJDIR)/intersection.o
 OBJFILES += $(BASICTYPESOBJDIR)/bsdf.o
 OBJFILES += $(BASICTYPESOBJDIR)/volume.o
+OBJFILES += $(BASICTYPESOBJDIR)/spectrum.o
 
 OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 
@@ -203,6 +204,9 @@ $(BASICTYPESOBJDIR)/bsdf.o: ./src/basictypes/bsdf.cc
 	$(CXX) -o $@ $<
 
 $(BASICTYPESOBJDIR)/volume.o: ./src/basictypes/volume.cc
+	$(CXX) -o $@ $<
+
+$(BASICTYPESOBJDIR)/spectrum.o: ./src/basictypes/spectrum.cc
 	$(CXX) -o $@ $<
 
 
