@@ -111,15 +111,15 @@ void  RiSunSky::CreateConstants()
 
 	/* Rayleigh total scattering coefficient */
 	/* (4-48), p 199, MC */
-	n2_1 = n2_1Curve(lambda);
+	n2_1 = n2_1Curve.at(lambda);
 	b_m[i] = 8*M_PI*M_PI*M_PI*n2_1*Anis_cor/
 	    (3*Nlambda4);
 
 
 	/* Mie total scattering coefficient */
 	/* (6-30). p 280; MC */
-	if (V > 3.9) K = KCurve(lambda); // V = 4.0;
-	else K = K25Curve(lambda);       // V = 2.5
+	if (V > 3.9) K = KCurve.at(lambda); // V = 4.0;
+	else K = K25Curve.at(lambda);       // V = 2.5
 
 	b_p[i] = 0.434*M_PI*c*pow(real_t(2*constants::pi/lambdasi),V-2) * K *
 	    pow(real_t(0.01),V-3);  /* Last term is unit correction for c */

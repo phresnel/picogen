@@ -19,8 +19,8 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "../poco/redshift/include/setup.hh"
-#include "preetham-shirley-smits/sunsky.hh"
+#include "../redshift/include/setup.hh"
+#include "../skylab/include/sunsky.hh"
 
 
 

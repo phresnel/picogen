@@ -73,10 +73,6 @@ namespace redshift {
                 {}
 
                 using array<real_t,N,r_spectrum>::operator=;
-
-
-
-
         private:
                 /*static real_t XWeight[N];
                 static real_t YWeight[N];
@@ -180,6 +176,20 @@ namespace redshift {
                         for (int i = 0; i < CIE_SAMPLES; ++i)
                                 yy += Y[i] * (*this)[i];
                         return yy / yint;
+                }
+
+
+                real_t at (real_t const lambda) const {
+                        const real_t f = (lambda - SAMPLED_LAMBDA_START)
+                                        /(SAMPLED_LAMBDA_END-SAMPLED_LAMBDA_START);
+                        const real_t scaled = f * (num_components-1);
+                        const int i = scaled;
+
+                        if (i<0) return (*this)[0];
+                        if (i+1>=num_components) return (*this)[num_components-1];
+
+                        const real_t u = scaled - i;
+                        return (1-u)*(*this)[i] + u*(*this)[i+1];
                 }
 
         public: // Static functions.
