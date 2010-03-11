@@ -39,40 +39,48 @@ namespace redshift {
         };
 
         template <unsigned int N>
-        class Spectrum : public array<real_t, N, r_spectrum> {
+        class spectrum_base : public array<real_t, N, r_spectrum> {
         public:
                 enum { num_components = N };
 
+                typedef redshift::real_t real_t;
+
                 enum noinit_ {noinit};
 
-                Spectrum (noinit_)
+                spectrum_base (noinit_)
                 : array<real_t,N, r_spectrum>(array<real_t,N,r_spectrum>::noinit)
                 {}
 
-                Spectrum ()
+                spectrum_base ()
                 : array<real_t,N,r_spectrum>()
                 {}
 
-                explicit Spectrum (real_t f)
+                explicit spectrum_base (real_t f)
                 : array<real_t,N,r_spectrum>(f)
                 {}
 
-                Spectrum (const real_t (&f)[N])
+                spectrum_base (const real_t (&f)[N])
                 : array<real_t,N,r_spectrum>(f)
                 {}
 
-                Spectrum (const Spectrum &rhs)
+                spectrum_base (const spectrum_base &rhs)
                 : array<real_t,N,r_spectrum>(rhs)
                 {}
 
                 template <typename REP>
-                Spectrum (array<real_t,N,r_spectrum,REP> const & rhs)
+                spectrum_base (array<real_t,N,r_spectrum,REP> const & rhs)
                 : array<real_t,N,r_spectrum>(rhs)
                 {}
 
                 using array<real_t,N,r_spectrum>::operator=;
 
+
+
+
         private:
+                /*static real_t XWeight[N];
+                static real_t YWeight[N];
+                static real_t ZWeight[N];*/
         };
 
 
@@ -106,14 +114,102 @@ namespace redshift {
         // Also, we don't have to forbid the bool-reductions (all,none,any),
         // as the user won't be able to pass ==.
         template <unsigned int N>
-        inline bool operator == (Spectrum<N> const &, real_t ) {
-                throw std::runtime_error ("you are not allowed to call operator==(Spectrum,real_t)");
+        inline bool operator == (spectrum_base<N> const &, real_t ) {
+                throw std::runtime_error ("you are not allowed to call operator==(spectrum_base,real_t)");
         }
 
         template <unsigned int N>
-        inline bool black (Spectrum<N> const &s) {
+        inline bool black (spectrum_base<N> const &s) {
                 return kallisto::all(kallisto::operator==(s,real_t(0)));
         }
+}
+
+#include <vector>
+namespace redshift {
+
+        enum { SAMPLED_LAMBDA_START = 400 };
+        enum { SAMPLED_LAMBDA_END = 700 };
+        enum { CIE_SAMPLES = 471 };
+
+        enum { RGB_TO_SPECTRUM_SAMPLES = 32 };
+
+        extern const real_t CIE_X[CIE_SAMPLES];
+        extern const real_t CIE_Y[CIE_SAMPLES];
+        extern const real_t CIE_Z[CIE_SAMPLES];
+        extern const real_t CIE_lambda[CIE_SAMPLES];
+        static const int nRGB2SpectSamples = 32;
+        extern const real_t RGB2SpectLambda[nRGB2SpectSamples];
+        extern const real_t RGBRefl2SpectWhite[nRGB2SpectSamples];
+        extern const real_t RGBRefl2SpectCyan[nRGB2SpectSamples];
+        extern const real_t RGBRefl2SpectMagenta[nRGB2SpectSamples];
+        extern const real_t RGBRefl2SpectYellow[nRGB2SpectSamples];
+        extern const real_t RGBRefl2SpectRed[nRGB2SpectSamples];
+        extern const real_t RGBRefl2SpectGreen[nRGB2SpectSamples];
+        extern const real_t RGBRefl2SpectBlue[nRGB2SpectSamples];
+        extern const real_t RGBIllum2SpectWhite[nRGB2SpectSamples];
+        extern const real_t RGBIllum2SpectCyan[nRGB2SpectSamples];
+        extern const real_t RGBIllum2SpectMagenta[nRGB2SpectSamples];
+        extern const real_t RGBIllum2SpectYellow[nRGB2SpectSamples];
+        extern const real_t RGBIllum2SpectRed[nRGB2SpectSamples];
+        extern const real_t RGBIllum2SpectGreen[nRGB2SpectSamples];
+        extern const real_t RGBIllum2SpectBlue[nRGB2SpectSamples];
+
+        extern bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n);
+        extern void sortSpectrumSamples(real_t *lambda, real_t *vals, int n);
+
+        class Spectrum : public spectrum_base<8> {
+                typedef spectrum_base<8> base;
+        public:
+                enum noinit_ {noinit};
+
+                Spectrum (noinit_) : base(base::noinit) {}
+                Spectrum () : base() {}
+                explicit Spectrum (real_t f) : base(f) {}
+                Spectrum (const real_t (&f)[base::num_components]) : base(f) {}
+                Spectrum (const Spectrum &rhs) : base(rhs) {}
+
+                template <typename REP>
+                Spectrum (array<real_t,base::num_components,r_spectrum,REP> const & rhs)
+                : base(rhs)
+                {}
+
+                using base::operator=;
+
+                real_t y() const {
+                        real_t yy = 0.f;
+                        for (int i = 0; i < CIE_SAMPLES; ++i)
+                                yy += Y[i] * (*this)[i];
+                        return yy / yint;
+                }
+
+        public: // Static functions.
+                static void static_init ();
+                static Spectrum FromSampled(
+                        const real_t *v,
+                        const real_t *lambda,
+                        int n
+                );
+
+                static Spectrum FromSampled(
+                        const real_t *v,
+                        unsigned int lambdaStart, unsigned int lambdaEnd,
+                        int n
+                );
+
+
+        private:
+                static Spectrum X, Y, Z;
+                static real_t yint;
+
+                static Spectrum rgbRefl2SpectWhite, rgbRefl2SpectCyan;
+                static Spectrum rgbRefl2SpectMagenta, rgbRefl2SpectYellow;
+                static Spectrum rgbRefl2SpectRed, rgbRefl2SpectGreen;
+                static Spectrum rgbRefl2SpectBlue;
+                static Spectrum rgbIllum2SpectWhite, rgbIllum2SpectCyan;
+                static Spectrum rgbIllum2SpectMagenta, rgbIllum2SpectYellow;
+                static Spectrum rgbIllum2SpectRed, rgbIllum2SpectGreen;
+                static Spectrum rgbIllum2SpectBlue;
+        };
 }
 
 #endif // SPECTRUM_HH_INCLUDED_20100311

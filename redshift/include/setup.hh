@@ -322,6 +322,15 @@ namespace redshift {
                 const real_t z = get<1>(r2);
                 return make_tuple(x, std::sqrt(1-x*x-z*z), z);
         }
+
+
+
+        template <typename T>
+        inline T lerp (
+                T const & alpha, T const & begin, T const & end
+        ) {
+                return alpha*(end-begin) + begin;
+        }
 }
 
 #include "../../skylab/include/preetham.hh"

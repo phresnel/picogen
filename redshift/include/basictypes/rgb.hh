@@ -23,7 +23,7 @@
 
 namespace redshift {
 
-        struct __attribute__((deprecated)) SRgb {
+        struct /*__attribute__((deprecated))*/ SRgb {
                 real_t r, g, b;
 
                 SRgb () : r(0), g(0), b(0) {}
@@ -36,7 +36,7 @@ namespace redshift {
 
         // Deprecated, in future, Rgb should be a lightweight
         // class only to be used for color space conversions.
-        struct __attribute__((deprecated)) Rgb {
+        struct /*__attribute__((deprecated))*/ Rgb {
                 real_t r, g, b;
 
                 Rgb () : r(0), g(0), b(0) {}

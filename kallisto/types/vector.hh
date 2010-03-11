@@ -49,6 +49,12 @@ namespace kallisto {
         public: // Construct.
                 T x, y, z;
 
+                // To help when porting existing code that use other
+                // axis-orientation.
+                T up() const { return y; }
+                T right() const { return x; }
+                T ahead() const { return z; }
+
                 Vector ()
                 : x(T()), y(T()), z(T()) {
                 }
