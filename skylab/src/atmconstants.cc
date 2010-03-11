@@ -17,8 +17,8 @@
 #include <RiCommon.H>
 #endif
 
-#ifndef RISUNSKY_H
-#include <RiSunSky.H>
+#ifndef PreethamShirleySmits_H
+#include <PreethamShirleySmits.H>
 #endif
 
 #ifndef RISPECTRALCURVE_H
@@ -85,7 +85,7 @@ void InitNetaTable()
 
 /* might need to be converted because the above functions use a
    different system ... */
-void  RiSunSky::CreateConstants()
+void  PreethamShirleySmits::CreateConstants()
 {
     InitNetaTable();
 
@@ -148,7 +148,7 @@ void  RiSunSky::CreateConstants()
 
 
 
-Spectrum RiSunSky::GetNeta(real_t theta, real_t v) const
+Spectrum PreethamShirleySmits::GetNeta(real_t theta, real_t v) const
 {
     theta = theta*180.0/M_PI * 10;
     real_t u = theta - (int)theta;

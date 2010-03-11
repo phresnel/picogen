@@ -13,8 +13,8 @@
 #include <RiCommon.H>
 #endif
 
-#ifndef RISUNSKY_H
-#include <RiSunSky.H>
+#ifndef PreethamShirleySmits_H
+#include <PreethamShirleySmits.H>
 #endif
 
 #ifndef RICOLORXYZV_H
@@ -199,13 +199,13 @@ static float solAmplitudes[38] = {
 // ********************************************************/
 
 /* Most units not in SI system - For units, refer MI */
-Spectrum RiSunSky::ComputeAttenuatedSunlight(real_t theta, int turbidity)
+Spectrum PreethamShirleySmits::ComputeAttenuatedSunlight(real_t theta, int turbidity)
 {
         using std::cos;
         using std::pow;
         using std::exp;
-        throw std::runtime_error ("Spectrum RiSunSky::ComputeAttenuatedSunlight(real_t theta, int turbidity)");
-#if 0
+        //throw std::runtime_error ("Spectrum PreethamShirleySmits::ComputeAttenuatedSunlight(real_t theta, int turbidity)");
+
     /*RiIrregularSpectralCurve k_oCurve(k_oAmplitudes, k_oWavelengths, 64);
     RiIrregularSpectralCurve k_gCurve(k_gAmplitudes, k_gWavelengths, 4);
     RiIrregularSpectralCurve k_waCurve(k_waAmplitudes, k_waWavelengths, 13);
@@ -245,25 +245,25 @@ Spectrum RiSunSky::ComputeAttenuatedSunlight(real_t theta, int turbidity)
 				// lOzone - amount of ozone in cm(NTP)
 				// Results agree with the graph (pg 128, MI)
 	const real_t lOzone = .35;
-	tauO = exp(-m * k_oCurve(lambda) * lOzone);
+	tauO = exp(-m * k_oCurve.at(lambda) * lOzone);
 
 				// Attenuation due to mixed gases absorption
 				// Results agree with the graph (pg 131, MI)
-	tauG = exp(-1.41 * k_gCurve(lambda) * m / pow(1 + 118.93 * k_gCurve(lambda) * m, 0.45));
+	tauG = exp(-1.41 * k_gCurve.at(lambda) * m / pow(1 + 118.93 * k_gCurve.at(lambda) * m, 0.45));
 
 				// Attenuation due to water vapor absorbtion
 				// w - precipitable water vapor in centimeters (standard = 2)
 				// Results agree with the graph (pg 132, MI)
 	const real_t w = 2.0;
-	tauWA = exp(-0.2385 * k_waCurve(lambda) * w * m /
-		    pow(1 + 20.07 * k_waCurve(lambda) * w * m, 0.45));
+	tauWA = exp(-0.2385 * k_waCurve.at(lambda) * w * m /
+		    pow(1 + 20.07 * k_waCurve.at(lambda) * w * m, 0.45));
 
-	data[i] = 100 * solCurve(lambda) * tauR * tauA * tauO * tauG * tauWA;  // 100 comes from solCurve being
+	data[i] = 100 * solCurve.at(lambda) * tauR * tauA * tauO * tauG * tauWA;  // 100 comes from solCurve being
 	                                                                       // in wrong units.
 
     }
-    return RiRegularSpectralCurve(data, 350,800,91);  // Converts to Spectrum
-#endif
+    return Spectrum::FromSampled(data, 350,800,91);  // Converts to Spectrum
+//#endif
 }
 
 }

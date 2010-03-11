@@ -15,8 +15,8 @@
 #endif
 
 
-#ifndef RISUNSKY_H
-#include <RiSunSky.H>
+#ifndef PreethamShirleySmits_H
+#include <PreethamShirleySmits.H>
 #endif
 
 #ifndef RISPECTRALCURVE_H
@@ -87,7 +87,7 @@ void InitChromaticityToSpectrum()
         */
 }
 
-Spectrum RiSunSky::ChromaticityToSpectrum(real_t x, real_t y) const
+Spectrum PreethamShirleySmits::ChromaticityToSpectrum(real_t x, real_t y) const
 {
         throw std::runtime_error("ChromaticityToSpectrum not implemented");
     static bool inited = false;

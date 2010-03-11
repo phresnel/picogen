@@ -42,7 +42,7 @@ redshift::Vector screenToHemisphereSat (float u, float v) {
 
 
 
-#include <stdio.h>
+//#include <stdio>
 #include <SDL/SDL.h>
 
 #define WIDTH 256
@@ -62,6 +62,16 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
 }
 
 
+static redshift::PreethamShirleySmits pss(
+        6, // [in] lat Latitude (0-360)
+	51,			// [in] long Longitude (-90,90) south to north
+	0,			// [in] sm  Standard Meridian
+	90,			// [in] jd  Julian Day (1-365)
+	14.25f,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
+	2.f,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
+	false			// [in] initAtmEffects  if atm effects are not initialized, bad things will
+				// happen if you try to use them....
+);
 void DrawScreen(SDL_Surface* screen) {
         using namespace redshift;
 
@@ -74,6 +84,8 @@ void DrawScreen(SDL_Surface* screen) {
                         const real_t u = (x / (real_t)WIDTH);
                         const real_t v = (y / (real_t)HEIGHT);
                         const Vector d = screenToHemisphereSat(u,v);
+
+                        const Spectrum s = pss.GetSkySpectralRadiance(d);
 
                         setpixel (
                                 screen, x, y,

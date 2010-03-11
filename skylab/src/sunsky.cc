@@ -2,11 +2,11 @@
 /* Copyright 1999
  * Wed Apr 14 10:07:50 1999  Brian Smits  (bes@phoenix.cs.utah.edu)
  *
- * RiSunSky.C
+ * PreethamShirleySmits.C
  *
  *
  *
- * $Id: RiSunSky.C,v 1.2 1999/07/15 00:07:34 bes Exp $
+ * $Id: PreethamShirleySmits.C,v 1.2 1999/07/15 00:07:34 bes Exp $
  *
  */
 
@@ -19,8 +19,8 @@
 #include <RiCommon.H>
 #endif
 
-#ifndef RISUNSKY_H
-#include <RiSunSky.H>
+#ifndef PreethamShirleySmits_H
+#include <PreethamShirleySmits.H>
 #endif
 
 #ifndef RICOLORXYZV_H
@@ -72,7 +72,8 @@ inline real_t RiAngleBetween(real_t thetav, real_t phiv, real_t theta, real_t ph
 
 
 
-RiSunSky::RiSunSky(real_t lat,
+PreethamShirleySmits::PreethamShirleySmits(
+                   real_t lat,
 		   real_t longi,
 		   int sm,       // standardMeridian
 		   int jd,       // julianDay
@@ -147,7 +148,7 @@ RiSunSky::RiSunSky(real_t lat,
 // All angles in Radians
 // ********************************************************/
 
-void RiSunSky::SunThetaPhi(real_t &stheta, real_t &sphi) const
+void PreethamShirleySmits::SunThetaPhi(real_t &stheta, real_t &sphi) const
 {
     sphi = phiS;
     stheta = thetaS;
@@ -160,7 +161,7 @@ void RiSunSky::SunThetaPhi(real_t &stheta, real_t &sphi) const
 // From IES Lighting Handbook pg 361
 // ********************************************************/
 
-void RiSunSky::InitSunThetaPhi()
+void PreethamShirleySmits::InitSunThetaPhi()
 {
     real_t solarTime = timeOfDay +
 	(0.170*sin(4*constants::pi*(julianDay - 80)/373) - 0.129*sin(2*constants::pi*(julianDay - 8)/355)) +
@@ -182,7 +183,7 @@ void RiSunSky::InitSunThetaPhi()
 
 }
 
-Vector RiSunSky::GetSunPosition() const
+Vector PreethamShirleySmits::GetSunPosition() const
 {
     return toSun;
 }
@@ -192,12 +193,12 @@ Vector RiSunSky::GetSunPosition() const
 //
 // ********************************************************/
 
-Spectrum RiSunSky::GetSunSpectralRadiance() const
+Spectrum PreethamShirleySmits::GetSunSpectralRadiance() const
 {
     return sunSpectralRad;
 }
 
-real_t RiSunSky::GetSunSolidAngle() const
+real_t PreethamShirleySmits::GetSunSolidAngle() const
 {
     return sunSolidAngle;
 }
@@ -207,21 +208,25 @@ real_t RiSunSky::GetSunSolidAngle() const
 //
 // ********************************************************/
 
-Spectrum RiSunSky::GetSkySpectralRadiance(const Vector &varg) const
+Spectrum PreethamShirleySmits::GetSkySpectralRadiance(const Vector &varg) const
 {
+    std::cout << "Foo" << std::endl;
     real_t theta, phi;
     Vector v = normalize(varg);
+    std::cout << "Bar" << std::endl;
     if (v.up() < 0) return Spectrum(0.000000);
     if (v.up() < 0.001)
-      v = normalize(Vector(v.right(),v.ahead(),.001 ));
+      v = normalize(Vector(v.right(),0.001, v.ahead()));
 
+    std::cout << "Frob" << std::endl;
     theta = acos(v.up());
     if (fabs(theta)< 1e-5) phi = 0;
     else  phi = atan2(v.ahead(),v.right());
+    std::cout << "Fop" << std::endl;
     return GetSkySpectralRadiance(theta,phi);
 }
 
-inline real_t RiSunSky::PerezFunction(const real_t *lam, real_t theta, real_t gamma, real_t lvz) const
+inline real_t PreethamShirleySmits::PerezFunction(const real_t *lam, real_t theta, real_t gamma, real_t lvz) const
 {
         using std::exp; using std::sin; using std::cos;
    real_t den = ((1 + lam[1]*exp(lam[2])) *
@@ -233,7 +238,7 @@ inline real_t RiSunSky::PerezFunction(const real_t *lam, real_t theta, real_t ga
    return lvz* num/den;
 }
 
-Spectrum RiSunSky::GetSkySpectralRadiance(real_t theta, real_t phi) const
+Spectrum PreethamShirleySmits::GetSkySpectralRadiance(real_t theta, real_t phi) const
 {
     real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
 				// Compute xyY values
@@ -264,7 +269,7 @@ Spectrum RiSunSky::GetSkySpectralRadiance(real_t theta, real_t phi) const
 
 
 
-void RiSunSky::CalculateA0(real_t thetav, real_t phiv, Spectrum &A0_1, Spectrum &A0_2) const
+void PreethamShirleySmits::CalculateA0(real_t thetav, real_t phiv, Spectrum &A0_1, Spectrum &A0_2) const
 {
     using std::sin; using std::cos;
     real_t psi;
@@ -307,7 +312,7 @@ void RiSunSky::CalculateA0(real_t thetav, real_t phiv, Spectrum &A0_1, Spectrum 
     A0_2 =  (sunAmb_2 + skyAmb_2);
 }
 
-void  RiSunSky::InitA0() const
+void  PreethamShirleySmits::InitA0() const
 {
     int i, j;
     real_t theta, phi;
@@ -315,13 +320,13 @@ void  RiSunSky::InitA0() const
     real_t delTheta = M_PI/Nt;
     real_t delPhi = 2*M_PI/Np;
 
-    std::cerr << "ggSunSky::Preprocessing: 0%\r";
+    std::cerr << "ggPreethamShirleySmits::Preprocessing: 0%\r";
     for (i=0,theta = 0; theta<=  M_PI; theta+= delTheta,i++) {
 	for (j=0,phi=0; phi <= 2*M_PI; phi+= delPhi,j++)
 	  CalculateA0(theta, phi,  AT0_1[i][j], AT0_2[i][j]);
-	std::cerr << "ggSunSky::Preprocessing: " << 100*(i*Np+j)/((Nt+1)*Np) <<"%  \r";
+	std::cerr << "ggPreethamShirleySmits::Preprocessing: " << 100*(i*Np+j)/((Nt+1)*Np) <<"%  \r";
     }
-    std::cerr << "ggSunSky::Preprocessing:  100%   " << std::endl;
+    std::cerr << "ggPreethamShirleySmits::Preprocessing:  100%   " << std::endl;
 }
 
 
@@ -332,7 +337,7 @@ void  RiSunSky::InitA0() const
 // ********************************************************/
 
 
-void RiSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source,
+void PreethamShirleySmits::GetAtmosphericEffects(const Vector &viewer, const Vector &source,
 				     Spectrum &attenuation, Spectrum &inscatter ) const
 {
     assert(atmInited);
@@ -367,7 +372,7 @@ inline real_t EvalFunc(real_t B, real_t x)
 }
 
 
-Spectrum RiSunSky::AttenuationFactor(real_t h0, real_t theta, real_t s) const
+Spectrum PreethamShirleySmits::AttenuationFactor(real_t h0, real_t theta, real_t s) const
 {
     using std::cos; using std::exp;
     real_t costheta = cos(theta);
@@ -424,7 +429,7 @@ inline void RiCalculateABCD(real_t a, real_t b, real_t c, real_t d, real_t e,
 	  -3*a*b*b + b*e*a*a*a - c*a*a*a + 3*c*b*a*a)/den;
 }
 
-Spectrum RiSunSky::InscatteredRadiance(real_t h0, real_t theta, real_t phi, real_t s) const
+Spectrum PreethamShirleySmits::InscatteredRadiance(real_t h0, real_t theta, real_t phi, real_t s) const
 {
     using std::exp; using std::cos;
     real_t costheta = cos(theta);

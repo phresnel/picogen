@@ -1,14 +1,14 @@
 // -*- C++ -*-
-#ifndef RISUNSKY_H
-#define RISUNSKY_H
+#ifndef PreethamShirleySmits_H
+#define PreethamShirleySmits_H
 /* Copyright 1999
  * Mon Apr 19 13:42:11 1999  Brian Smits  (bes@phoenix.cs.utah.edu)
  *
- * RiSunSky.H
+ * PreethamShirleySmits.H
  *
  *
  *
- * $Id: RiSunSky.H,v 1.1 1999/06/10 20:12:32 bes Exp $
+ * $Id: PreethamShirleySmits.H,v 1.1 1999/06/10 20:12:32 bes Exp $
  *
  */
 
@@ -32,7 +32,7 @@
 namespace redshift {
 /***************************************************************
 CLASS
-    RiSunSky
+    PreethamShirleySmits
      <one line summary>
 
 DESCRIPTION
@@ -40,10 +40,10 @@ DESCRIPTION
 
 ****************************************************************/
 
-class RiSunSky {
+class PreethamShirleySmits {
   public:
 				// GROUP: Constructors and assignment
-				//// Constructs an RiSunSky based on
+				//// Constructs an PreethamShirleySmits based on
 				// [in] lat Latitude (0-360)
 				// [in] long Longitude (-90,90) south to north
 				// [in] sm  Standard Meridian
@@ -52,7 +52,7 @@ class RiSunSky {
 				// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
 				// [in] initAtmEffects  if atm effects are not initialized, bad things will
 				// happen if you try to use them....
-    RiSunSky(real_t lat, real_t longi, int sm, int jd, real_t tod, real_t turb,bool initAtmEffects = true);
+    PreethamShirleySmits(real_t lat, real_t longi, int sm, int jd, real_t tod, real_t turb,bool initAtmEffects = true);
 				// GROUP: Members
 				////  Position (actual Direction) of the sun
 				// South = +x,  East = +y, up = +z
@@ -79,9 +79,9 @@ class RiSunSky {
 			       Spectrum &atmInscatter ) const;
   private:
 				//// Copy Constructor (unimplemented)
-    RiSunSky(const RiSunSky &);
+    PreethamShirleySmits(const PreethamShirleySmits &);
 				//// Assignment (unimplemented)
-    RiSunSky &operator=(const RiSunSky &);
+    PreethamShirleySmits &operator=(const PreethamShirleySmits &);
 				//// Compute the sun's position based on IES Sunlight Publication ????
     void 	InitSunThetaPhi();
 				//// Transmittance for the sun weighted by sun's spectrum.
@@ -134,4 +134,4 @@ class RiSunSky {
 
 } // namespace redshift
 
-#endif /* RISUNSKY_H */
+#endif /* PreethamShirleySmits_H */
