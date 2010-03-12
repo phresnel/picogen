@@ -63,6 +63,7 @@ static Spectrum AT0_2[Nt+1][Np+1];
 /* All angles in radians, theta angles measured from normal */
 inline real_t RiAngleBetween(real_t thetav, real_t phiv, real_t theta, real_t phi)
 {
+  using std::sin; using std::cos; using std::acos;
   real_t cospsi = sin(thetav) * sin(theta) * cos(phi-phiv) + cos(thetav) * cos(theta);
   if (cospsi > 1) return 0;
   if (cospsi < -1) return M_PI;
@@ -81,6 +82,9 @@ PreethamShirleySmits::PreethamShirleySmits(
 		   real_t turb,
 		   bool initAtmEffects) // turbidity
 {
+    using std::tan;
+    using std::sin;
+    using std::cos;
 
     latitude = lat;
     longitude = longi;
@@ -264,18 +268,6 @@ Spectrum PreethamShirleySmits::GetSkySpectralRadiance(real_t theta, real_t phi) 
 				// A simple luminance function would be more efficient.
     const Spectrum ret = Y * spect / spect.y();
 
-    /*using namespace color;
-    const RGB rgb1 = GetSkySpectralRadiance_xyY(theta,phi).toRGB();
-    const RGB rgb2 = Spectrum::FromRGB(rgb1).toRGB();
-    const RGB rgb3 = ret.toRGB();
-
-    std::cout << "\n";
-    std::cout << "spect.y() = " << spect.y() << "\n";
-    std::cout << "rgb1: " << rgb1.R << "/" << rgb1.G << "/" << rgb1.B << std::endl;
-    std::cout << "rgb2: " << rgb2.R << "/" << rgb2.G << "/" << rgb2.B << std::endl;
-    std::cout << "rgb3: " << rgb3.R << "/" << rgb3.G << "/" << rgb3.B << std::endl;
-    std::cout << std::endl;*/
-
     return ret;
 }
 
@@ -313,7 +305,7 @@ void PreethamShirleySmits::CalculateA0(real_t thetav, real_t phiv, Spectrum &A0_
     Spectrum skyRad;
     Spectrum beta_ang_1, beta_ang_2;
     real_t theta, phi, phiDelta = M_PI/20;
-    real_t thetaDelta = M_PI/2/20;
+    real_t thetaDelta = (M_PI/2)/20;
     real_t thetaUpper;
 
     Spectrum skyAmb_1 (Spectrum::real_t(0));
@@ -351,6 +343,9 @@ void PreethamShirleySmits::CalculateA0(real_t thetav, real_t phiv, Spectrum &A0_
 
 void  PreethamShirleySmits::InitA0() const
 {
+    // This loop was buggy in the original code, causing the last entries to be black. /phresnel
+
+    /* // original code
     int i, j;
     real_t theta, phi;
 
@@ -364,6 +359,14 @@ void  PreethamShirleySmits::InitA0() const
 	std::cerr << "ggPreethamShirleySmits::Preprocessing: " << 100*(i*Np+j)/((Nt+1)*Np) <<"%  \r";
     }
     std::cerr << "ggPreethamShirleySmits::Preprocessing:  100%   " << std::endl;
+    */
+    for (int i=0; i<Nt+1; ++i) {
+            const real_t theta = (real_t(i)/(Nt)) * M_PI;
+            for (int j=0; j<Np+1; ++j) {
+                    const real_t phi   = (real_t(j)/(Np)) * 2.f*M_PI;
+                    CalculateA0(theta, phi,  AT0_1[i][j], AT0_2[i][j]);
+            }
+    }
 }
 
 
@@ -386,7 +389,6 @@ void PreethamShirleySmits::GetAtmosphericEffects(const Vector &viewer, const Vec
     real_t phiv = atan2(direction.ahead(),direction.right());
     real_t s = length(viewer - source);
 
-
     // This should be changed so that we don't need to worry about it.
     if(h0+s*cos(thetav) <= 0)
     {
@@ -398,6 +400,11 @@ void PreethamShirleySmits::GetAtmosphericEffects(const Vector &viewer, const Vec
 
     attenuation = AttenuationFactor(h0, thetav, s);
     inscatter   = InscatteredRadiance(h0, thetav, phiv, s);
+
+    /*for (unsigned int i=0; i<Spectrum::num_components; ++i) {
+           std::cout << i << ":" << inscatter[i] << "\n";
+    }*/
+    //exit(0);
 }
 
 
@@ -481,7 +488,7 @@ Spectrum PreethamShirleySmits::InscatteredRadiance(real_t h0, real_t theta, real
     GetA0fromTable(theta, phi, A0_1, A0_2);
 
     // approximation (< 0.3 for 1% accuracy)
-    if (fabs(B_1*s) < 0.3) {
+    if (true || fabs(B_1*s) < 0.3) {
 	real_t constTerm1 =  std::exp(-Alpha_1*h0);
 	real_t constTerm2 =  std::exp(-Alpha_2*h0);
 

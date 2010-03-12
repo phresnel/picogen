@@ -164,8 +164,9 @@ namespace redshift {
         extern bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n);
         extern void sortSpectrumSamples(real_t *lambda, real_t *vals, int n);
 
-        class Spectrum : public spectrum_base<3> {
-                typedef spectrum_base<3> base;
+        typedef spectrum_base<3> _spectrum_base;
+        class Spectrum : public _spectrum_base {
+                typedef _spectrum_base base;
         public:
                 enum noinit_ {noinit};
 

@@ -51,7 +51,7 @@ namespace kallisto {
 
                 // To help when porting existing code that use other
                 // axis-orientation.
-                T up() const { return y; }
+                T up()    const { return y; }
                 T right() const { return x; }
                 T ahead() const { return z; }
 

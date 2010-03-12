@@ -531,7 +531,7 @@ vals[i], vals[(i)+1])
 
 
 void Spectrum::static_init() {
-        std::cout << "void Spectrum::static_init() {\n";
+        //std::cout << "void Spectrum::static_init() {\n";
         // Compute XYZ matching functions for _SampledSpectrum_
         yint = 0;
         for (int i = 0; i < num_components; ++i) {
@@ -546,13 +546,13 @@ void Spectrum::static_init() {
             Z[i] = averageSpectrumSamples(CIE_lambda, CIE_Z, CIE_SAMPLES,
                                             wl0, wl1);
 
-            std::cout << "        X[" << i << "] = " << X[i] << std::endl;
+            /*std::cout << "        X[" << i << "] = " << X[i] << std::endl;
             std::cout << "        Y[" << i << "] = " << Y[i] << std::endl;
-            std::cout << "        Z[" << i << "] = " << Z[i] << std::endl;
+            std::cout << "        Z[" << i << "] = " << Z[i] << std::endl;*/
             yint += Y[i];
         }
 
-        std::cout << "        yint: " << yint << std::endl;
+        //std::cout << "        yint: " << yint << std::endl;
 
         // Compute RGB to spectrum functions for _SampledSpectrum_
         for (int i = 0; i < num_components; ++i) {
@@ -590,8 +590,6 @@ void Spectrum::static_init() {
             rgbIllum2SpectBlue[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectBlue,
                 nRGB2SpectSamples, wl0, wl1);
         }
-
-        std::cout << "}\n";
 }
 
 

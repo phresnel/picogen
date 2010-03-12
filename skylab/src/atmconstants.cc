@@ -150,7 +150,7 @@ void  PreethamShirleySmits::CreateConstants()
 
 Spectrum PreethamShirleySmits::GetNeta(real_t theta, real_t v) const
 {
-    theta = theta*180.0/M_PI * 10;
+    theta = theta*(180.0/M_PI) * 10;
     real_t u = theta - (int)theta;
     if((theta < 0)||(theta > 1801)) {
 	std::cerr << "Error:getNeta() [theta outside range] theta=" << theta/10
