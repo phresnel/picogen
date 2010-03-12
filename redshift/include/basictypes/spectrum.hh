@@ -33,6 +33,7 @@ namespace redshift {
         {
                 typedef void
                         math_exp,
+                        math_max_as,
                         reduction_all,
                         relational_equal_to_as
                 ;
@@ -115,8 +116,18 @@ namespace redshift {
         }
 
         template <unsigned int N>
+        inline bool max (spectrum_base<N> const &) {
+                throw std::runtime_error ("you are not allowed to call max(spectrum_base)");
+        }
+
+        template <unsigned int N>
         inline bool black (spectrum_base<N> const &s) {
                 return kallisto::all(kallisto::operator==(s,real_t(0)));
+        }
+
+        template <unsigned int N>
+        inline spectrum_base<N> clamp (spectrum_base<N> const &s) {
+                return kallisto::max(s, typename spectrum_base<N>::real_t(0));
         }
 }
 
@@ -153,8 +164,8 @@ namespace redshift {
         extern bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n);
         extern void sortSpectrumSamples(real_t *lambda, real_t *vals, int n);
 
-        class Spectrum : public spectrum_base<5> {
-                typedef spectrum_base<5> base;
+        class Spectrum : public spectrum_base<3> {
+                typedef spectrum_base<3> base;
         public:
                 enum noinit_ {noinit};
 
@@ -173,8 +184,9 @@ namespace redshift {
 
                 real_t y() const {
                         real_t yy = 0.f;
-                        for (int i = 0; i < CIE_SAMPLES; ++i)
+                        for (int i = 0; i < num_components; ++i) {
                                 yy += Y[i] * (*this)[i];
+                        }
                         return yy / yint;
                 }
 
@@ -198,7 +210,7 @@ namespace redshift {
                         for (int i = 0; i < num_components; ++i) {
                             ret.X += X[i] * (*this)[i];
                             ret.Y += Y[i] * (*this)[i];
-                            ret.Y += Z[i] * (*this)[i];
+                            ret.Z += Z[i] * (*this)[i];
                         }
                         ret.X /= yint;
                         ret.Y /= yint;
@@ -223,6 +235,8 @@ namespace redshift {
                         unsigned int lambdaStart, unsigned int lambdaEnd,
                         int n
                 );
+
+                static Spectrum FromRGB(color::RGB const &rgb) ;
 
 
         private:

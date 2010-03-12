@@ -200,8 +200,6 @@ namespace kallisto {
 
 
 namespace kallisto {
-        // Implement pre-/post- inc-/decrement. Prolly a bit too waste
-        // (the basic idea was that array<> only needs to make a single friend)
         template <typename F, typename T, unsigned int N, typename RULES, typename REP>
         inline void _array_invoke(array<T,N,RULES,REP> &arr) {
                 KALLISTO_ARRAY_FRIEND_FOREACHELEM(F::apply(arr.expr_rep[i]),N);

@@ -45,7 +45,7 @@ redshift::Vector screenToHemisphereSat (float u, float v) {
 //#include <stdio>
 #include <SDL/SDL.h>
 
-#define WIDTH 16
+#define WIDTH 64
 #define HEIGHT WIDTH
 #define BPP 4
 #define DEPTH 32
@@ -65,17 +65,18 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
 void DrawScreen(SDL_Surface* screen) {
         const double ft = std::fmod (clock() / (double)CLOCKS_PER_SEC, 24);
         redshift::PreethamShirleySmits pss(
-                6, // [in] lat Latitude (0-360)
+                30, // [in] lat Latitude (0-360)
                 30,			// [in] long Longitude (-90,90) south to north
                 0,			// [in] sm  Standard Meridian
                 90,			// [in] jd  Julian Day (1-365)
-                14.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
-                2.f,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
+                ft,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
+                15.f,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
                 false			// [in] initAtmEffects  if atm effects are not initialized, bad things will
                                         // happen if you try to use them....
         );
 
         using namespace redshift;
+        using namespace color;
 
         if (SDL_MUSTLOCK(screen)) {
                 if (SDL_LockSurface(screen) < 0) return;
@@ -90,10 +91,20 @@ void DrawScreen(SDL_Surface* screen) {
                         const Spectrum s = pss.GetSkySpectralRadiance(d);
                         const color::RGB rgb = s.toRGB();
                         //const color::RGB rgb = pss.GetSkySpectralRadiance_xyY(d).toRGB();
-                        std::cout << rgb.R << ", " << rgb.G << ", " << rgb.B << std::endl;
-                        const int r_ = rgb.R;
-                        const int g_ = rgb.G;
-                        const int b_ = rgb.B;
+
+                        //const RGB rgb = Spectrum::FromRGB(RGB(u,v,1)).toRGB();
+
+                        /*std::cout << "\n\n";
+                        std::cout << "spec: ";
+                        for (int i=0; i<Spectrum::num_components; ++i)
+                                std::cout << s[i] << ' ';
+                        std::cout << "\nrgb_:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
+                        std::cout << "\n\n";
+                        exit(0);*/
+
+                        const int r_ = (rgb.R/20000)*255;
+                        const int g_ = (rgb.G/20000)*255;
+                        const int b_ = (rgb.B/20000)*255;
                         const int r = r_<0 ? 0 : r_>255 ? 255 : r_;
                         const int g = g_<0 ? 0 : g_>255 ? 255 : g_;
                         const int b = b_<0 ? 0 : b_>255 ? 255 : b_;
@@ -113,10 +124,27 @@ void DrawScreen(SDL_Surface* screen) {
 
 int main(int argc, char* argv[])
 {
+        freopen( "CON", "w", stdout );
+        redshift::Spectrum::static_init();
+
+
+        if (0) {
+                freopen( "CON", "w", stdout );
+                using namespace redshift;
+                const Spectrum s = Spectrum::FromRGB(color::RGB(0.1,0.1,0.1));
+                const color::RGB rgb = s.toRGB();
+
+                std::cout << "\n\n";
+                std::cout << "spec:";
+                for (int i=0; i<Spectrum::num_components; ++i)
+                        std::cout << s[i] << ' ';
+                std::cout << "\nrgb.:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
+                std::cout << "\n\n";
+                exit(0);
+        }
+
         SDL_Surface *screen;
         SDL_Event event;
-
-        redshift::Spectrum::static_init();
 
         int keypress = 0;
 
@@ -126,6 +154,8 @@ int main(int argc, char* argv[])
                 SDL_Quit();
                 return 1;
         }
+
+        freopen( "CON", "w", stdout );
 
         while (!keypress) {
                 DrawScreen(screen);

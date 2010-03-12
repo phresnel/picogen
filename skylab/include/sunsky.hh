@@ -66,8 +66,10 @@ class PreethamShirleySmits {
     real_t	GetSunSolidAngle() const;
 				//// Spectral radiance of the sky in the specified direction
     Spectrum  GetSkySpectralRadiance(const Vector &v) const;
+    color::xyY GetSkySpectralRadiance_xyY(const Vector &v) const;
 				//// An alternate way of getting the sky's spectral radiance
     Spectrum  GetSkySpectralRadiance(real_t theta, real_t phi) const;
+    color::xyY GetSkySpectralRadiance_xyY(real_t theta, real_t phi) const;
 				////  Compute Atmospheric Perspective based on
 				// [in] viewer  Position of the viewer
 				// [in] source  Position of the distant point

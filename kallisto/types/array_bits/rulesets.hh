@@ -190,7 +190,21 @@ namespace kallisto {
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(bitwise_or_sa)
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(bitwise_or_as)
 
-        struct r_math_special {
+        struct r_math_special_generic {
+                typedef void
+                        math_min_aa, math_min_sa, math_min_as,
+                        math_max_aa, math_max_sa, math_max_as
+                ;
+        };
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(math_min_aa)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(math_min_sa)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(math_min_as)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(math_max_aa)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(math_max_sa)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(math_max_as)
+
+
+        struct r_math_special : r_math_special_generic {
                 typedef void
                         // unary
                         math_acos,
@@ -337,6 +351,7 @@ namespace kallisto {
         , r_unary_all
         , r_reduction
         , r_flow_control
+        , r_math_special_generic
         {};
 
 

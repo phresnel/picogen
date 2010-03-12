@@ -226,6 +226,21 @@ Spectrum PreethamShirleySmits::GetSkySpectralRadiance(const Vector &varg) const
     return GetSkySpectralRadiance(theta,phi);
 }
 
+
+color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(const Vector &varg) const
+{
+    real_t theta, phi;
+    Vector v = normalize(varg);
+    if (v.up() < 0) return color::xyY(0,0,0);
+    if (v.up() < 0.001)
+      v = normalize(Vector(v.right(),0.001, v.ahead()));
+
+    theta = acos(v.up());
+    if (fabs(theta)< 1e-5) phi = 0;
+    else  phi = atan2(v.ahead(),v.right());
+    return GetSkySpectralRadiance_xyY(theta,phi);
+}
+
 inline real_t PreethamShirleySmits::PerezFunction(const real_t *lam, real_t theta, real_t gamma, real_t lvz) const
 {
         using std::exp; using std::sin; using std::cos;
@@ -245,9 +260,33 @@ Spectrum PreethamShirleySmits::GetSkySpectralRadiance(real_t theta, real_t phi) 
     real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
     real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
     real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-    Spectrum spect = ChromaticityToSpectrum(x,y);
+    const Spectrum spect = ChromaticityToSpectrum(x,y);
 				// A simple luminance function would be more efficient.
-    return Y * spect / spect.y();
+    const Spectrum ret = Y * spect / spect.y();
+
+    /*using namespace color;
+    const RGB rgb1 = GetSkySpectralRadiance_xyY(theta,phi).toRGB();
+    const RGB rgb2 = Spectrum::FromRGB(rgb1).toRGB();
+    const RGB rgb3 = ret.toRGB();
+
+    std::cout << "\n";
+    std::cout << "spect.y() = " << spect.y() << "\n";
+    std::cout << "rgb1: " << rgb1.R << "/" << rgb1.G << "/" << rgb1.B << std::endl;
+    std::cout << "rgb2: " << rgb2.R << "/" << rgb2.G << "/" << rgb2.B << std::endl;
+    std::cout << "rgb3: " << rgb3.R << "/" << rgb3.G << "/" << rgb3.B << std::endl;
+    std::cout << std::endl;*/
+
+    return ret;
+}
+
+color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(real_t theta, real_t phi) const
+{
+    real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+				// Compute xyY values
+    real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
+    real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
+    real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+    return color::xyY (x,y,Y);
 }
 
 
