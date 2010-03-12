@@ -1,4 +1,4 @@
-g++ -lSDL \
+g++ -lSDL -Wall \
         ../redshift/src/basictypes/spectrum.cc \
         ../redshift/src/constants.cc \
         ../skylab/src/tospectrum.cc \

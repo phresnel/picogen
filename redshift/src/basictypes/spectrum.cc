@@ -600,15 +600,18 @@ Spectrum Spectrum::FromSampled(
             return FromSampled(&sv[0], &slambda[0], n);
         }
         Spectrum r;
+
+        std::cout << "        sampling: ";
         for (int i = 0; i < base::num_components; ++i) {
             // Compute average value of given SPD over $i$th sample's range
             const real_t lambda0 = lerp(real_t(i) / base::num_components,
                         (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
             const real_t lambda1 = lerp(real_t(i+1) / base::num_components,
                         (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
-
             r[i] = averageSpectrumSamples(lambda, v, n, lambda0, lambda1);
+            std::cout << r[i] << " ";
         }
+        std::cout << std::endl;
         return r;
 }
 
@@ -618,13 +621,13 @@ Spectrum Spectrum::FromSampled(
         int n
 ) {
         // This function is only a quick hack!
-        real_t *lambda = new real_t[n];
+        std::vector<real_t> lambda(n);
 
-        for (unsigned int u=0; u<n; ++u) {
+        for (int u=0; u<n; ++u) {
                 lambda[u] = lerp(u/(real_t)n, (real_t)lambdaStart, (real_t)lambdaEnd);
         }
-        const Spectrum ret = Spectrum::FromSampled (lambda, v, n);
-        delete [] lambda;
+        const Spectrum ret = Spectrum::FromSampled (v, &lambda[0], n);
+        return ret;
 }
 
 const real_t RGB2SpectLambda[RGB_TO_SPECTRUM_SAMPLES] = {
