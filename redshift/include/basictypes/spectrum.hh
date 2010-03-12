@@ -153,8 +153,8 @@ namespace redshift {
         extern bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n);
         extern void sortSpectrumSamples(real_t *lambda, real_t *vals, int n);
 
-        class Spectrum : public spectrum_base<8> {
-                typedef spectrum_base<8> base;
+        class Spectrum : public spectrum_base<4> {
+                typedef spectrum_base<4> base;
         public:
                 enum noinit_ {noinit};
 
@@ -190,6 +190,24 @@ namespace redshift {
 
                         const real_t u = scaled - i;
                         return (1-u)*(*this)[i] + u*(*this)[i+1];
+                }
+
+
+                color::XYZ toXYZ() const {
+                        color::XYZ ret;
+                        for (int i = 0; i < num_components; ++i) {
+                            ret.X += X[i] * (*this)[i];
+                            ret.Y += Y[i] * (*this)[i];
+                            ret.Y += Z[i] * (*this)[i];
+                        }
+                        ret.X /= yint;
+                        ret.Y /= yint;
+                        ret.Z /= yint;
+                        return ret;
+                }
+
+                color::RGB toRGB() const {
+                        return toXYZ().toRGB();
                 }
 
         public: // Static functions.

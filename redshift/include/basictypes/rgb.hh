@@ -34,6 +34,78 @@ namespace redshift {
         };
 
 
+        namespace color {
+
+                struct XYZ;
+                struct xyY;
+                struct RGB;
+
+                struct XYZ {
+                        real_t X, Y, Z;
+
+                        XYZ () : X(0), Y(0), Z(0) {}
+                        XYZ (real_t X, real_t Y, real_t Z)
+                        : X(X), Y(Y), Z(Z)
+                        {}
+
+                        RGB toRGB() const ;
+                };
+
+                struct xyY {
+                        real_t x, y, Y;
+
+                        xyY () : x(0), y(0), Y(0) {}
+                        xyY (real_t x, real_t y, real_t Y)
+                        : x(x), y(y), Y(Y)
+                        {}
+
+                        RGB toRGB() const ;
+                        XYZ toXYZ() const ;
+                };
+
+                struct RGB {
+                        real_t R, G, B;
+
+                        RGB () : R(0), G(0), B(0) {}
+                        RGB (real_t R, real_t G, real_t B)
+                        : R(R), G(G), B(B)
+                        {}
+
+                        XYZ toXYZ() const ;
+                };
+
+
+                inline RGB XYZ::toRGB () const {
+                        return RGB(
+                         3.2404542*X + -1.5371385*Y + -0.4985314*Z,
+                        -0.9692660*X +  1.8760108*Y +  0.0415560*Z,
+                         0.0556434*X + -0.2040259*Y +  1.0572252*Z
+                        );
+                }
+
+                inline XYZ RGB::toXYZ () const {
+                        return XYZ(
+                        0.412453f*R + 0.357580f*G + 0.180423f*B,
+                        0.212671f*R + 0.715160f*G + 0.072169f*B,
+                        0.019334f*R + 0.119193f*G + 0.950227f*B
+                        );
+                }
+
+                inline RGB xyY::toRGB () const {
+                        return toXYZ().toRGB();
+                }
+
+                inline XYZ xyY::toXYZ () const {
+                        if (y==0)
+                                return XYZ(0,0,0);
+                        return XYZ(
+                                x * ( Y / y ),
+                                Y,
+                                (1-x-y) * ( Y / y )
+                        );
+                }
+        }
+
         // Deprecated, in future, Rgb should be a lightweight
         // class only to be used for color space conversions.
         struct /*__attribute__((deprecated))*/ Rgb {

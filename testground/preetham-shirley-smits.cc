@@ -45,8 +45,8 @@ redshift::Vector screenToHemisphereSat (float u, float v) {
 //#include <stdio>
 #include <SDL/SDL.h>
 
-#define WIDTH 256
-#define HEIGHT 256
+#define WIDTH 64
+#define HEIGHT WIDTH
 #define BPP 4
 #define DEPTH 32
 
@@ -85,11 +85,21 @@ void DrawScreen(SDL_Surface* screen) {
                         const real_t v = (y / (real_t)HEIGHT);
                         const Vector d = screenToHemisphereSat(u,v);
 
-                        const Spectrum s = pss.GetSkySpectralRadiance(d);
-
+                        /*const Spectrum s = pss.GetSkySpectralRadiance(d);
+                        const color::RGB rgb = s.toRGB();*/
+                        const color::RGB rgb = pss.GetSkySpectralRadiance_xyY(d).toRGB();
+                        const int r_ = rgb.R/100;
+                        const int g_ = rgb.G/100;
+                        const int b_ = rgb.B/100;
+                        const int r = r_<0 ? 0 : r_>255 ? 255 : r_;
+                        const int g = g_<0 ? 0 : g_>255 ? 255 : g_;
+                        const int b = b_<0 ? 0 : b_>255 ? 255 : b_;
+                        std::cout << r << "," << g << "," << b << std::endl;
                         setpixel (
                                 screen, x, y,
-                                d.x*128+128,d.y*128+128,d.z*128+128
+                                r,
+                                g,
+                                b
                         );
                 }
         }
