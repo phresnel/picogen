@@ -56,13 +56,17 @@ static real_t const Alpha_2 = 0.11360016092149e-3;
 
 #define radians(x) ((x)/180.0*constants::pi)
 
-static Spectrum AT0_1[Nt+1][Np+1];
-static Spectrum AT0_2[Nt+1][Np+1];
+static PreethamShirleySmits::Spectrum AT0_1[Nt+1][Np+1];
+static PreethamShirleySmits::Spectrum AT0_2[Nt+1][Np+1];
 
 
 
 /* All angles in radians, theta angles measured from normal */
-inline real_t RiAngleBetween(real_t thetav, real_t phiv, real_t theta, real_t phi)
+inline PreethamShirleySmits::real_t RiAngleBetween(
+        PreethamShirleySmits::real_t thetav,
+        PreethamShirleySmits::real_t phiv,
+        PreethamShirleySmits::real_t theta,
+        PreethamShirleySmits::real_t phi)
 {
         using std::sin;
         using std::cos;
@@ -204,12 +208,12 @@ Vector PreethamShirleySmits::GetSunPosition() const
 //
 // ********************************************************/
 
-Spectrum PreethamShirleySmits::GetSunSpectralRadiance() const
+PreethamShirleySmits::Spectrum PreethamShirleySmits::GetSunSpectralRadiance() const
 {
         return sunSpectralRad;
 }
 
-real_t PreethamShirleySmits::GetSunSolidAngle() const
+PreethamShirleySmits::real_t PreethamShirleySmits::GetSunSolidAngle() const
 {
         return sunSolidAngle;
 }
@@ -219,7 +223,7 @@ real_t PreethamShirleySmits::GetSunSolidAngle() const
 //
 // ********************************************************/
 
-Spectrum PreethamShirleySmits::GetSkySpectralRadiance(const Vector &varg) const
+PreethamShirleySmits::Spectrum PreethamShirleySmits::GetSkySpectralRadiance(const Vector &varg) const
 {
         real_t theta, phi;
         Vector v = normalize(varg);
@@ -248,21 +252,29 @@ color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(const Vector &varg) 
         return GetSkySpectralRadiance_xyY(theta,phi);
 }
 
-inline real_t PreethamShirleySmits::PerezFunction(const real_t *lam, real_t theta, real_t gamma, real_t lvz) const
+inline PreethamShirleySmits::real_t PreethamShirleySmits::PerezFunction(
+        const PreethamShirleySmits::real_t *lam,
+        PreethamShirleySmits::real_t theta,
+        PreethamShirleySmits::real_t gamma,
+        PreethamShirleySmits::real_t lvz
+) const
 {
         using std::exp;
         using std::sin;
         using std::cos;
-        real_t den = ((1 + lam[1]*exp(lam[2])) *
+        PreethamShirleySmits::real_t den = ((1 + lam[1]*exp(lam[2])) *
                       (1 + lam[3]*exp(lam[4]*thetaS) + lam[5]*cos(thetaS)*cos(thetaS)));
 
-        real_t num = ((1 + lam[1]*exp(lam[2]/cos(theta))) *
+        PreethamShirleySmits::real_t num = ((1 + lam[1]*exp(lam[2]/cos(theta))) *
                       (1 + lam[3]*exp(lam[4]*gamma)  + lam[5]*cos(gamma)*cos(gamma)));
 
         return lvz* num/den;
 }
 
-Spectrum PreethamShirleySmits::GetSkySpectralRadiance(real_t theta, real_t phi) const
+PreethamShirleySmits::Spectrum
+PreethamShirleySmits::GetSkySpectralRadiance(
+        PreethamShirleySmits::real_t theta,
+        PreethamShirleySmits::real_t phi) const
 {
         real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
         // Compute xyY values
@@ -276,7 +288,9 @@ Spectrum PreethamShirleySmits::GetSkySpectralRadiance(real_t theta, real_t phi) 
         return ret;
 }
 
-color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(real_t theta, real_t phi) const
+color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(
+        PreethamShirleySmits::real_t theta,
+        PreethamShirleySmits::real_t phi) const
 {
         real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
         // Compute xyY values
@@ -304,7 +318,10 @@ color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(real_t theta, real_t
 
 
 void PreethamShirleySmits::CalculateA0(
-        real_t thetav, real_t phiv, Spectrum &A0_1, Spectrum &A0_2
+        PreethamShirleySmits::real_t thetav,
+        PreethamShirleySmits::real_t phiv,
+        PreethamShirleySmits::Spectrum &A0_1,
+        PreethamShirleySmits::Spectrum &A0_2
 ) const {
         using std::sin;
         using std::cos;
@@ -428,7 +445,12 @@ inline real_t EvalFunc(real_t B, real_t x)
 
 
 
-Spectrum PreethamShirleySmits::AttenuationFactor(real_t h0, real_t theta, real_t s) const
+PreethamShirleySmits::Spectrum
+PreethamShirleySmits::AttenuationFactor(
+        PreethamShirleySmits::real_t h0,
+        PreethamShirleySmits::real_t theta,
+        PreethamShirleySmits::real_t s
+) const
 {
         using std::cos;
         using std::exp;
@@ -444,7 +466,12 @@ Spectrum PreethamShirleySmits::AttenuationFactor(real_t h0, real_t theta, real_t
 
 
 
-static void GetA0fromTable(real_t theta, real_t phi, Spectrum &A0_1, Spectrum &A0_2) {
+static void GetA0fromTable(
+        PreethamShirleySmits::real_t theta,
+        PreethamShirleySmits::real_t phi,
+        PreethamShirleySmits::Spectrum &A0_1,
+        PreethamShirleySmits::Spectrum &A0_2
+) {
         real_t eps = 1e-4;
         if (phi < 0) phi += 2*M_PI; // convert phi from -pi..pi to 0..2pi
         theta = theta*Nt/M_PI - eps;
@@ -464,9 +491,17 @@ static void GetA0fromTable(real_t theta, real_t phi, Spectrum &A0_1, Spectrum &A
 
 
 
-inline real_t RiHelper1(real_t A, real_t B, real_t C, real_t D,
-                        real_t H, real_t K, real_t u) {
-        real_t t = std::exp(-K*(H-u));
+inline PreethamShirleySmits::real_t RiHelper1(
+        PreethamShirleySmits::real_t A,
+        PreethamShirleySmits::real_t B,
+        PreethamShirleySmits::real_t C,
+        PreethamShirleySmits::real_t D,
+
+        PreethamShirleySmits::real_t H,
+        PreethamShirleySmits::real_t K,
+        PreethamShirleySmits::real_t u
+) {
+        PreethamShirleySmits::real_t t = std::exp(-K*(H-u));
         return (t/K)*((A*u*u*u + B*u*u + C*u +D) -
                       (3*A*u*u + 2*B*u + C)/K +
                       (6*A*u + 2*B)/(K*K) -
@@ -475,8 +510,18 @@ inline real_t RiHelper1(real_t A, real_t B, real_t C, real_t D,
 
 
 
-inline void RiCalculateABCD(real_t a, real_t b, real_t c, real_t d, real_t e,
-                            real_t den, real_t &A, real_t &B, real_t &C, real_t &D)
+inline void RiCalculateABCD(
+        PreethamShirleySmits::real_t a,
+        PreethamShirleySmits::real_t b,
+        PreethamShirleySmits::real_t c,
+        PreethamShirleySmits::real_t d,
+        PreethamShirleySmits::real_t e,
+
+        PreethamShirleySmits::real_t den,
+        PreethamShirleySmits::real_t &A,
+        PreethamShirleySmits::real_t &B,
+        PreethamShirleySmits::real_t &C,
+        PreethamShirleySmits::real_t &D)
 {
         A = (-b*d -2 + 2*c + a*e - b*e + a*d)/den;
         B = -(2*a*a*e + a*a*d - 3*a - a*b*e +
@@ -489,8 +534,11 @@ inline void RiCalculateABCD(real_t a, real_t b, real_t c, real_t d, real_t e,
 
 
 
-Spectrum PreethamShirleySmits::InscatteredRadiance(
-        real_t h0, real_t theta, real_t phi, real_t s
+PreethamShirleySmits::Spectrum PreethamShirleySmits::InscatteredRadiance(
+        PreethamShirleySmits::real_t h0,
+        PreethamShirleySmits::real_t theta,
+        PreethamShirleySmits::real_t phi,
+        PreethamShirleySmits::real_t s
 ) const {
         using std::exp;
         using std::cos;

@@ -199,7 +199,10 @@ static real_t solAmplitudes[38] = {
 // ********************************************************/
 
 /* Most units not in SI system - For units, refer MI */
-Spectrum PreethamShirleySmits::ComputeAttenuatedSunlight(real_t theta, int turbidity)
+PreethamShirleySmits::Spectrum
+PreethamShirleySmits::ComputeAttenuatedSunlight(
+        PreethamShirleySmits::real_t theta,
+        int turbidity)
 {
         using std::cos;
         using std::pow;

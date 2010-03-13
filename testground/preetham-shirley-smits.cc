@@ -96,7 +96,7 @@ void DrawScreen(SDL_Surface* screen) {
                                 const Vector d = screenToHemisphereSat(u,v);
 
                                 #if 1
-                                const Spectrum ssp = pss.GetSkySpectralRadiance(d);
+                                const Spectrum<double> ssp = pss.GetSkySpectralRadiance(d);
                                 const Vector viewer (0,0,0);
                                 /*const Vector at = viewer + d * real_t(0.f);
                                 Spectrum att(Spectrum::noinit), inscatter(Spectrum::noinit);
@@ -115,7 +115,7 @@ void DrawScreen(SDL_Surface* screen) {
                                 std::cout << "\nrgb_:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
                                 std::cout << "\n\n";
                                 exit(0);*/
-                                const Spectrum tot = ssp;
+                                const Spectrum<double> tot = ssp;
                                 const RGB& rgb = tot.toRGB();
                                         /*(x%10)==0 ? rgbR :
                                         (x/10)%2==0 ? rgbS : rgbX*/;
@@ -152,23 +152,8 @@ void DrawScreen(SDL_Surface* screen) {
 int main(int argc, char* argv[])
 {
         //freopen( "CON", "w", stdout );
-        redshift::Spectrum::static_init();
+        redshift::Spectrum<double>::static_init();
 
-
-        if (0) {
-                //freopen( "CON", "w", stdout );
-                using namespace redshift;
-                const Spectrum s = Spectrum::FromRGB(color::RGB(0.1,0.1,0.1));
-                const color::RGB rgb = s.toRGB();
-
-                std::cout << "\n\n";
-                std::cout << "spec:";
-                for (int i=0; i<Spectrum::num_components; ++i)
-                        std::cout << s[i] << ' ';
-                std::cout << "\nrgb.:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
-                std::cout << "\n\n";
-                exit(0);
-        }
 
         SDL_Surface *screen;
         SDL_Event event;

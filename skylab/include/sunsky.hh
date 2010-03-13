@@ -42,6 +42,8 @@ DESCRIPTION
 
 class PreethamShirleySmits {
   public:
+        typedef double real_t;
+        typedef redshift::Spectrum<real_t> Spectrum;
 				// GROUP: Constructors and assignment
 				//// Constructs an PreethamShirleySmits based on
 				// [in] lat Latitude (0-360)

@@ -39,12 +39,12 @@ namespace redshift {
                 ;
         };
 
-        template <unsigned int N>
-        class spectrum_base : public array<real_t, N, r_spectrum> {
+        template <typename T, unsigned int N>
+        class spectrum_base : public array<T, N, r_spectrum> {
         public:
                 enum { num_components = N };
 
-                typedef redshift::real_t real_t;
+                typedef T real_t;
 
                 enum noinit_ {noinit};
 
@@ -110,24 +110,24 @@ namespace redshift {
         // other functions than mentioned there do not exist (enable_if fu).
         // Also, we don't have to forbid the bool-reductions (all,none,any),
         // as the user won't be able to pass ==.
-        template <unsigned int N>
-        inline bool operator == (spectrum_base<N> const &, real_t ) {
+        template <typename T, unsigned int N>
+        inline bool operator == (spectrum_base<T,N> const &, real_t ) {
                 throw std::runtime_error ("you are not allowed to call operator==(spectrum_base,real_t)");
         }
 
-        template <unsigned int N>
-        inline bool max (spectrum_base<N> const &) {
+        template <typename T, unsigned int N>
+        inline spectrum_base<T,N> max (spectrum_base<T,N> const &, T) {
                 throw std::runtime_error ("you are not allowed to call max(spectrum_base)");
         }
 
-        template <unsigned int N>
-        inline bool black (spectrum_base<N> const &s) {
-                return kallisto::all(kallisto::operator==(s,real_t(0)));
+        template <typename T, unsigned int N>
+        inline bool black (spectrum_base<T, N> const &s) {
+                return kallisto::all(kallisto::operator==(s,spectrum_base<T, N>::real_t(0)));
         }
 
-        template <unsigned int N>
-        inline spectrum_base<N> clamp (spectrum_base<N> const &s) {
-                return kallisto::max(s, typename spectrum_base<N>::real_t(0));
+        template <typename T, unsigned int N>
+        inline spectrum_base<T,N> clamp (spectrum_base<T,N> const &s) {
+                return kallisto::max(s, typename spectrum_base<T, N>::real_t(0));
         }
 }
 
@@ -161,14 +161,22 @@ namespace redshift {
         extern const real_t RGBIllum2SpectGreen[nRGB2SpectSamples];
         extern const real_t RGBIllum2SpectBlue[nRGB2SpectSamples];
 
+        template <typename real_t>
         extern bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n);
+
+        template <typename real_t>
         extern void sortSpectrumSamples(real_t *lambda, real_t *vals, int n);
 
-        typedef spectrum_base<6> _spectrum_base;
-        class Spectrum : public _spectrum_base {
-                typedef _spectrum_base base;
+        //typedef spectrum_base<real_t,6> _spectrum_base;
+
+        template <typename T>
+        class Spectrum : public spectrum_base<T,6> {
+                typedef spectrum_base<T,6> base;
         public:
                 enum noinit_ {noinit};
+
+                using base::num_components;
+                typedef typename base::real_t real_t;
 
                 Spectrum (noinit_) : base(base::noinit) {}
                 Spectrum () : base() {}
@@ -185,7 +193,7 @@ namespace redshift {
 
                 real_t y() const {
                         real_t yy = 0.f;
-                        for (int i = 0; i < num_components; ++i) {
+                        for (int i = 0; i < base::num_components; ++i) {
                                 yy += Y[i] * (*this)[i];
                         }
                         return yy / yint;
@@ -195,11 +203,12 @@ namespace redshift {
                 real_t at (real_t const lambda) const {
                         const real_t f = (lambda - SAMPLED_LAMBDA_START)
                                         /(SAMPLED_LAMBDA_END-SAMPLED_LAMBDA_START);
-                        const real_t scaled = f * (num_components-1);
+                        const real_t scaled = f * (base::num_components-1);
                         const int i = scaled;
 
                         if (i<0) return (*this)[0];
-                        if (i+1>=num_components) return (*this)[num_components-1];
+                        if (i+1>=base::num_components)
+                                return (*this)[base::num_components-1];
 
                         const real_t u = scaled - i;
                         return (1-u)*(*this)[i] + u*(*this)[i+1];
@@ -208,7 +217,7 @@ namespace redshift {
 
                 color::XYZ toXYZ() const {
                         color::XYZ ret;
-                        for (int i = 0; i < num_components; ++i) {
+                        for (int i = 0; i < base::num_components; ++i) {
                             ret.X += X[i] * (*this)[i];
                             ret.Y += Y[i] * (*this)[i];
                             ret.Z += Z[i] * (*this)[i];
@@ -238,10 +247,7 @@ namespace redshift {
 
                 static Spectrum FromRGB(color::RGB const &rgb) ;
 
-        public: // Static functions.
-                static void static_init ();
 
-        private:
                 static Spectrum X, Y, Z;
                 static real_t yint;
 
@@ -253,7 +259,12 @@ namespace redshift {
                 static Spectrum rgbIllum2SpectMagenta, rgbIllum2SpectYellow;
                 static Spectrum rgbIllum2SpectRed, rgbIllum2SpectGreen;
                 static Spectrum rgbIllum2SpectBlue;
+
+        public: // Static functions.
+                static void static_init ();
         };
 }
+
+#include "spectrum.inl.hh"
 
 #endif // SPECTRUM_HH_INCLUDED_20100311

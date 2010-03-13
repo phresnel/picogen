@@ -21,8 +21,11 @@
 #include "../../include/setup.hh"
 #include "../../include/basictypes/spectrum.hh"
 
-
 #include <iostream>
+
+// C++0x TODO:
+//   * In this file, explicitly instantiate Spectrum on floating types
+//   * In header file, extern-explicitly-instantiate Spectrum on floating types
 
 namespace redshift {
 // Below: Copyright(c) 1998-2007 Matt Pharr and Greg Humphreys,
@@ -43,28 +46,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
-bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n) {
-    for (int i = 0; i < n-1; ++i)
-        if (lambda[i] > lambda[i+1]) {
-                return false;
-        }
-    return true;
-}
-
-
-void sortSpectrumSamples(real_t *lambda, real_t *vals, int n) {
-    std::vector<std::pair<real_t, real_t> > sortVec;
-    sortVec.reserve(n);
-    for (int i = 0; i < n; ++i)
-        sortVec.push_back(std::make_pair(lambda[i], vals[i]));
-    std::sort(sortVec.begin(), sortVec.end());
-    for (int i = 0; i < n; ++i) {
-        lambda[i] = sortVec[i].first;
-        vals[i] = sortVec[i].second;
-    }
-}
 
 
 
@@ -473,257 +454,6 @@ const real_t CIE_lambda[CIE_SAMPLES] = {
     808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821,
     822, 823, 824, 825, 826, 827, 828, 829, 830 };
 
-// Spectral Data Definitions
-Spectrum Spectrum::X;
-Spectrum Spectrum::Y;
-Spectrum Spectrum::Z;
-real_t Spectrum::yint;
-Spectrum Spectrum::rgbRefl2SpectWhite;
-Spectrum Spectrum::rgbRefl2SpectCyan;
-Spectrum Spectrum::rgbRefl2SpectMagenta;
-Spectrum Spectrum::rgbRefl2SpectYellow;
-Spectrum Spectrum::rgbRefl2SpectRed;
-Spectrum Spectrum::rgbRefl2SpectGreen;
-Spectrum Spectrum::rgbRefl2SpectBlue;
-Spectrum Spectrum::rgbIllum2SpectWhite;
-Spectrum Spectrum::rgbIllum2SpectCyan;
-Spectrum Spectrum::rgbIllum2SpectMagenta;
-Spectrum Spectrum::rgbIllum2SpectYellow;
-Spectrum Spectrum::rgbIllum2SpectRed;
-Spectrum Spectrum::rgbIllum2SpectGreen;
-Spectrum Spectrum::rgbIllum2SpectBlue;
-
-
-real_t averageSpectrumSamples(const real_t *lambda, const real_t *vals,
-        int n, real_t lambdaStart, real_t lambdaEnd) {
-    //for (int i = 0; i < n-1; ++i) Assert(lambda[i+1] > lambda[i]);
-    //Assert(lambdaStart < lambdaEnd);
-    // Handle cases with out-of-bounds range or single sample only
-    if (lambdaEnd <= lambda[0]) return vals[0];
-    if (lambdaStart >= lambda[n-1]) return vals[n-1];
-    if (n == 1) return vals[0];
-    real_t sum = 0.f;
-    // Add contributions of constant segments before/after samples
-    if (lambdaStart < lambda[0])
-        sum += vals[0] * (lambda[0] - lambdaStart);
-    if (lambdaEnd > lambda[n-1])
-        sum += vals[n-1] * (lambdaEnd - lambda[n-1]);
-
-    // Advance to first relevant wavelength segment
-    int i = 0;
-    while (lambdaStart > lambda[i+1]) ++i;
-    //Assert(i+1 < n);
-
-    // Loop over wavelength sample segments and add contributions
-#define INTERP(w, i) \
-lerp(((w) - lambda[i]) / (lambda[(i)+1] - lambda[i]), \
-vals[i], vals[(i)+1])
-#define SEG_AVG(wl0, wl1, i) (0.5f * (INTERP(wl0, i) + INTERP(wl1, i)))
-    for (; i+1 < n && lambdaEnd >= lambda[i]; ++i) {
-        real_t segStart = max(lambdaStart, lambda[i]);
-        real_t segEnd = min(lambdaEnd, lambda[i+1]);
-        sum += SEG_AVG(segStart, segEnd, i) * (segEnd - segStart);
-    }
-#undef INTERP
-#undef SEG_AVG
-    return sum / (lambdaEnd - lambdaStart);
-}
-
-
-void Spectrum::static_init() {
-        //std::cout << "void Spectrum::static_init() {\n";
-        // Compute XYZ matching functions for _SampledSpectrum_
-        yint = 0;
-        for (int i = 0; i < num_components; ++i) {
-            const real_t wl0 = lerp(real_t(i) / num_components,
-                        (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
-            const real_t wl1 = lerp(real_t(i+1) / num_components,
-                        (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
-            X[i] = averageSpectrumSamples(CIE_lambda, CIE_X, CIE_SAMPLES,
-                                            wl0, wl1);
-            Y[i] = averageSpectrumSamples(CIE_lambda, CIE_Y, CIE_SAMPLES,
-                                            wl0, wl1);
-            Z[i] = averageSpectrumSamples(CIE_lambda, CIE_Z, CIE_SAMPLES,
-                                            wl0, wl1);
-
-            /*std::cout << "        X[" << i << "] = " << X[i] << std::endl;
-            std::cout << "        Y[" << i << "] = " << Y[i] << std::endl;
-            std::cout << "        Z[" << i << "] = " << Z[i] << std::endl;*/
-            yint += Y[i];
-        }
-
-        //std::cout << "        yint: " << yint << std::endl;
-
-        // Compute RGB to spectrum functions for _SampledSpectrum_
-        for (int i = 0; i < num_components; ++i) {
-            const real_t wl0 = lerp(real_t(i) / num_components,
-                        (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
-            const real_t wl1 = lerp(real_t(i+1) / num_components,
-                        (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
-            rgbRefl2SpectWhite[i] = averageSpectrumSamples(RGB2SpectLambda, RGBRefl2SpectWhite,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbRefl2SpectCyan[i] = averageSpectrumSamples(RGB2SpectLambda, RGBRefl2SpectCyan,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbRefl2SpectMagenta[i] = averageSpectrumSamples(RGB2SpectLambda, RGBRefl2SpectMagenta,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbRefl2SpectYellow[i] = averageSpectrumSamples(RGB2SpectLambda, RGBRefl2SpectYellow,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbRefl2SpectRed[i] = averageSpectrumSamples(RGB2SpectLambda, RGBRefl2SpectRed,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbRefl2SpectGreen[i] = averageSpectrumSamples(RGB2SpectLambda, RGBRefl2SpectGreen,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbRefl2SpectBlue[i] = averageSpectrumSamples(RGB2SpectLambda, RGBRefl2SpectBlue,
-                nRGB2SpectSamples, wl0, wl1);
-
-            rgbIllum2SpectWhite[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectWhite,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbIllum2SpectCyan[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectCyan,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbIllum2SpectMagenta[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectMagenta,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbIllum2SpectYellow[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectYellow,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbIllum2SpectRed[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectRed,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbIllum2SpectGreen[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectGreen,
-                nRGB2SpectSamples, wl0, wl1);
-            rgbIllum2SpectBlue[i] = averageSpectrumSamples(RGB2SpectLambda, RGBIllum2SpectBlue,
-                nRGB2SpectSamples, wl0, wl1);
-        }
-}
-
-
-
-Spectrum Spectrum::FromSampled(
-        const real_t *v,
-        const real_t *lambda, int n
-) {
-        using std::vector;
-        // Sort samples if unordered, use sorted for returned spectrum
-        if (!spectrumSamplesSorted(lambda, v, n)) {
-            vector<real_t> slambda(&lambda[0], &lambda[n]);
-            vector<real_t> sv(&v[0], &v[n]);
-            sortSpectrumSamples(&slambda[0], &sv[0], n);
-
-            return FromSampled(&sv[0], &slambda[0], n);
-        }
-        Spectrum r;
-
-        //std::cout << "        sampling: ";
-        for (int i = 0; i < base::num_components; ++i) {
-            // Compute average value of given SPD over $i$th sample's range
-            const real_t lambda0 = lerp(real_t(i) / base::num_components,
-                        (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
-            const real_t lambda1 = lerp(real_t(i+1) / base::num_components,
-                        (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
-            r[i] = averageSpectrumSamples(lambda, v, n, lambda0, lambda1);
-            //std::cout << r[i] << " ";
-        }
-        //std::cout << std::endl;
-        return r;
-}
-
-Spectrum Spectrum::FromSampled(
-        const real_t *v,
-        unsigned int lambdaStart, unsigned int lambdaEnd,
-        int n
-) {
-        // This function is only a quick hack!
-        std::vector<real_t> lambda(n);
-
-        for (int u=0; u<n; ++u) {
-                lambda[u] = lerp(u/(real_t)n, (real_t)lambdaStart, (real_t)lambdaEnd);
-        }
-        const Spectrum ret = Spectrum::FromSampled (v, &lambda[0], n);
-        return ret;
-}
-
-
-
-Spectrum Spectrum::FromRGB(color::RGB const &rgb) {
-        Spectrum r;
-    /*if (type == SPECTRUM_REFLECTANCE)*/ {
-        // Convert reflectance spectrum to RGB
-        if (rgb.R <= rgb.G && rgb.R <= rgb.B) {
-            // Compute reflectance _SampledSpectrum_ with _rgb.R_ as minimum
-            r += rgb.R * rgbRefl2SpectWhite;
-            if (rgb.G <= rgb.B) {
-                r += (rgb.G - rgb.R) * rgbRefl2SpectCyan;
-                r += (rgb.B - rgb.G) * rgbRefl2SpectBlue;
-            }
-            else {
-                r += (rgb.B - rgb.R) * rgbRefl2SpectCyan;
-                r += (rgb.G - rgb.B) * rgbRefl2SpectGreen;
-            }
-        }
-        else if (rgb.G <= rgb.R && rgb.G <= rgb.B) {
-            // Compute reflectance _SampledSpectrum_ with _rgb.G_ as minimum
-            r += rgb.G * rgbRefl2SpectWhite;
-            if (rgb.R <= rgb.B) {
-                r += (rgb.R - rgb.G) * rgbRefl2SpectMagenta;
-                r += (rgb.B - rgb.R) * rgbRefl2SpectBlue;
-            }
-            else {
-                r += (rgb.B - rgb.G) * rgbRefl2SpectMagenta;
-                r += (rgb.R - rgb.B) * rgbRefl2SpectRed;
-            }
-        }
-        else {
-            // Compute reflectance _SampledSpectrum_ with _rgb.B_ as minimum
-            r += rgb.B * rgbRefl2SpectWhite;
-            if (rgb.R <= rgb.G) {
-                r += (rgb.R - rgb.B) * rgbRefl2SpectYellow;
-                r += (rgb.G - rgb.R) * rgbRefl2SpectGreen;
-            }
-            else {
-                r += (rgb.G - rgb.B) * rgbRefl2SpectYellow;
-                r += (rgb.R - rgb.G) * rgbRefl2SpectRed;
-            }
-        }
-        r *= Spectrum::real_t(.94);
-    }/*
-    else {
-        // Convert illuminant spectrum to RGB
-        if (rgb[0] <= rgb[1] && rgb[0] <= rgb[2]) {
-            // Compute illuminant _SampledSpectrum_ with _rgb[0]_ as minimum
-            r += rgb[0] * rgbIllum2SpectWhite;
-            if (rgb[1] <= rgb[2]) {
-                r += (rgb[1] - rgb[0]) * rgbIllum2SpectCyan;
-                r += (rgb[2] - rgb[1]) * rgbIllum2SpectBlue;
-            }
-            else {
-                r += (rgb[2] - rgb[0]) * rgbIllum2SpectCyan;
-                r += (rgb[1] - rgb[2]) * rgbIllum2SpectGreen;
-            }
-        }
-        else if (rgb[1] <= rgb[0] && rgb[1] <= rgb[2]) {
-            // Compute illuminant _SampledSpectrum_ with _rgb[1]_ as minimum
-            r += rgb[1] * rgbIllum2SpectWhite;
-            if (rgb[0] <= rgb[2]) {
-                r += (rgb[0] - rgb[1]) * rgbIllum2SpectMagenta;
-                r += (rgb[2] - rgb[0]) * rgbIllum2SpectBlue;
-            }
-            else {
-                r += (rgb[2] - rgb[1]) * rgbIllum2SpectMagenta;
-                r += (rgb[0] - rgb[2]) * rgbIllum2SpectRed;
-            }
-        }
-        else {
-            // Compute illuminant _SampledSpectrum_ with _rgb[2]_ as minimum
-            r += rgb[2] * rgbIllum2SpectWhite;
-            if (rgb[0] <= rgb[1]) {
-                r += (rgb[0] - rgb[2]) * rgbIllum2SpectYellow;
-                r += (rgb[1] - rgb[0]) * rgbIllum2SpectGreen;
-            }
-            else {
-                r += (rgb[1] - rgb[2]) * rgbIllum2SpectYellow;
-                r += (rgb[0] - rgb[1]) * rgbIllum2SpectRed;
-            }
-        }
-        r *= .86445f;
-    }*/
-    return clamp(r);
-}
 
 
 
@@ -990,3 +720,6 @@ const real_t RGBIllum2SpectBlue[RGB_TO_SPECTRUM_SAMPLES] = {
     1.5769743995852967e-01, 1.9069090525482305e-01 };
 
 }
+
+
+
