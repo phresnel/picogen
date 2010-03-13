@@ -189,6 +189,7 @@ namespace redshift {
 namespace redshift {
         //class Rgb;
         typedef Rgb Color;
+        typedef SpectrumBase<real_t> Spectrum;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -334,5 +335,7 @@ namespace redshift {
 }
 
 #include "../../skylab/include/preetham.hh"
+
+#include "static_init.hh"
 
 #endif // SETUP_HH_INCLUDED_20090303

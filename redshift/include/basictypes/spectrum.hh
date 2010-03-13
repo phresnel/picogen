@@ -170,22 +170,29 @@ namespace redshift {
         //typedef spectrum_base<real_t,6> _spectrum_base;
 
         template <typename T>
-        class Spectrum : public spectrum_base<T,6> {
+        class SpectrumBase : public spectrum_base<T,6> {
                 typedef spectrum_base<T,6> base;
         public:
                 enum noinit_ {noinit};
 
-                using base::num_components;
+                enum { num_components = base::num_components };
                 typedef typename base::real_t real_t;
 
-                Spectrum (noinit_) : base(base::noinit) {}
-                Spectrum () : base() {}
-                explicit Spectrum (real_t f) : base(f) {}
-                Spectrum (const real_t (&f)[base::num_components]) : base(f) {}
-                Spectrum (const Spectrum &rhs) : base(rhs) {}
+                SpectrumBase (noinit_) : base(base::noinit) {}
+                SpectrumBase () : base() {}
+                explicit SpectrumBase (real_t f) : base(f) {}
+                SpectrumBase (const real_t (&f)[base::num_components]) : base(f) {}
+                SpectrumBase (const SpectrumBase &rhs) : base(rhs) {}
+
+                template <typename U>
+                explicit SpectrumBase (SpectrumBase<U> const & rhs) {
+                        for (int i; i<num_components; ++i) {
+                                (*this)[i] = static_cast<T>(rhs[i]);
+                        }
+                }
 
                 template <typename REP>
-                Spectrum (array<real_t,base::num_components,r_spectrum,REP> const & rhs)
+                SpectrumBase  (array<real_t,base::num_components,r_spectrum,REP> const & rhs)
                 : base(rhs)
                 {}
 
@@ -232,33 +239,45 @@ namespace redshift {
                         return toXYZ().toRGB();
                 }
 
+                template <typename U>
+                typename kallisto::traits::enable_if_c<
+                        num_components==SpectrumBase<U>::num_components,
+                        SpectrumBase<U>
+                >::type spectrum_cast() const {
+                        SpectrumBase<U> ret (SpectrumBase<U>::noinit);
+                        for (int i; i<num_components; ++i) {
+                                ret [i] = static_cast<U>((*this)[i]);
+                        }
+                        return ret;
+                }
+
         public: // Named constructors.
-                static Spectrum FromSampled(
+                static SpectrumBase FromSampled(
                         const real_t *v,
                         const real_t *lambda,
                         int n
                 );
 
-                static Spectrum FromSampled(
+                static SpectrumBase FromSampled(
                         const real_t *v,
                         unsigned int lambdaStart, unsigned int lambdaEnd,
                         int n
                 );
 
-                static Spectrum FromRGB(color::RGB const &rgb) ;
+                static SpectrumBase FromRGB(color::RGB const &rgb) ;
 
 
-                static Spectrum X, Y, Z;
+                static SpectrumBase X, Y, Z;
                 static real_t yint;
 
-                static Spectrum rgbRefl2SpectWhite, rgbRefl2SpectCyan;
-                static Spectrum rgbRefl2SpectMagenta, rgbRefl2SpectYellow;
-                static Spectrum rgbRefl2SpectRed, rgbRefl2SpectGreen;
-                static Spectrum rgbRefl2SpectBlue;
-                static Spectrum rgbIllum2SpectWhite, rgbIllum2SpectCyan;
-                static Spectrum rgbIllum2SpectMagenta, rgbIllum2SpectYellow;
-                static Spectrum rgbIllum2SpectRed, rgbIllum2SpectGreen;
-                static Spectrum rgbIllum2SpectBlue;
+                static SpectrumBase rgbRefl2SpectWhite, rgbRefl2SpectCyan;
+                static SpectrumBase rgbRefl2SpectMagenta, rgbRefl2SpectYellow;
+                static SpectrumBase rgbRefl2SpectRed, rgbRefl2SpectGreen;
+                static SpectrumBase rgbRefl2SpectBlue;
+                static SpectrumBase rgbIllum2SpectWhite, rgbIllum2SpectCyan;
+                static SpectrumBase rgbIllum2SpectMagenta, rgbIllum2SpectYellow;
+                static SpectrumBase rgbIllum2SpectRed, rgbIllum2SpectGreen;
+                static SpectrumBase rgbIllum2SpectBlue;
 
         public: // Static functions.
                 static void static_init ();

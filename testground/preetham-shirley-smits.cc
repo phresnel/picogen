@@ -96,7 +96,7 @@ void DrawScreen(SDL_Surface* screen) {
                                 const Vector d = screenToHemisphereSat(u,v);
 
                                 #if 1
-                                const Spectrum<double> ssp = pss.GetSkySpectralRadiance(d);
+                                const SpectrumBase<float> ssp = SpectrumBase<float>(pss.GetSkySpectralRadiance(d));
                                 const Vector viewer (0,0,0);
                                 /*const Vector at = viewer + d * real_t(0.f);
                                 Spectrum att(Spectrum::noinit), inscatter(Spectrum::noinit);
@@ -115,7 +115,7 @@ void DrawScreen(SDL_Surface* screen) {
                                 std::cout << "\nrgb_:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
                                 std::cout << "\n\n";
                                 exit(0);*/
-                                const Spectrum<double> tot = ssp;
+                                const SpectrumBase<float> tot = ssp;
                                 const RGB& rgb = tot.toRGB();
                                         /*(x%10)==0 ? rgbR :
                                         (x/10)%2==0 ? rgbS : rgbX*/;
@@ -152,7 +152,7 @@ void DrawScreen(SDL_Surface* screen) {
 int main(int argc, char* argv[])
 {
         //freopen( "CON", "w", stdout );
-        redshift::Spectrum<double>::static_init();
+        redshift::static_init();
 
 
         SDL_Surface *screen;

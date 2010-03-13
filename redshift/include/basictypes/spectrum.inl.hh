@@ -19,32 +19,32 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // C++0x TODO:
-//   * In source file, explicitly instantiate Spectrum on floating types
-//   * In this file, extern-explicitly-instantiate Spectrum on floating types
+//   * In source file, explicitly instantiate SpectrumBase on floating types
+//   * In this file, extern-explicitly-instantiate SpectrumBase on floating types
 //   * And then, un-inline all functions herein
 
 
 namespace redshift {
 
 // Spectral Data Definitions
-template <typename T> Spectrum<T> Spectrum<T>::X;
-template <typename T> Spectrum<T> Spectrum<T>::Y;
-template <typename T> Spectrum<T> Spectrum<T>::Z;
-template <typename T> typename Spectrum<T>::real_t Spectrum<T>::yint;
-template <typename T> Spectrum<T> Spectrum<T>::rgbRefl2SpectWhite;
-template <typename T> Spectrum<T> Spectrum<T>::rgbRefl2SpectCyan;
-template <typename T> Spectrum<T> Spectrum<T>::rgbRefl2SpectMagenta;
-template <typename T> Spectrum<T> Spectrum<T>::rgbRefl2SpectYellow;
-template <typename T> Spectrum<T> Spectrum<T>::rgbRefl2SpectRed;
-template <typename T> Spectrum<T> Spectrum<T>::rgbRefl2SpectGreen;
-template <typename T> Spectrum<T> Spectrum<T>::rgbRefl2SpectBlue;
-template <typename T> Spectrum<T> Spectrum<T>::rgbIllum2SpectWhite;
-template <typename T> Spectrum<T> Spectrum<T>::rgbIllum2SpectCyan;
-template <typename T> Spectrum<T> Spectrum<T>::rgbIllum2SpectMagenta;
-template <typename T> Spectrum<T> Spectrum<T>::rgbIllum2SpectYellow;
-template <typename T> Spectrum<T> Spectrum<T>::rgbIllum2SpectRed;
-template <typename T> Spectrum<T> Spectrum<T>::rgbIllum2SpectGreen;
-template <typename T> Spectrum<T> Spectrum<T>::rgbIllum2SpectBlue;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::X;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::Y;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::Z;
+template <typename T> typename SpectrumBase<T>::real_t SpectrumBase<T>::yint;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectWhite;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectCyan;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectMagenta;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectYellow;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectRed;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectGreen;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectBlue;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectWhite;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectCyan;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectMagenta;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectYellow;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectRed;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectGreen;
+template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectBlue;
 
 
 
@@ -74,8 +74,8 @@ inline void sortSpectrumSamples(real_t *lambda, real_t *vals, int n) {
 
 
 
-template <typename real_t>
-inline real_t averageSpectrumSamples(const real_t *lambda, const real_t *vals,
+template <typename samples_t, typename real_t>
+inline real_t averageSpectrumSamples(const samples_t *lambda, const samples_t *vals,
         int n, real_t lambdaStart, real_t lambdaEnd) {
     //for (int i = 0; i < n-1; ++i) Assert(lambda[i+1] > lambda[i]);
     //Assert(lambdaStart < lambdaEnd);
@@ -97,12 +97,12 @@ inline real_t averageSpectrumSamples(const real_t *lambda, const real_t *vals,
 
     // Loop over wavelength sample segments and add contributions
 #define INTERP(w, i) \
-lerp(((w) - lambda[i]) / (lambda[(i)+1] - lambda[i]), \
-vals[i], vals[(i)+1])
+        lerp((real_t)(((w) - lambda[i]) / (lambda[(i)+1] - lambda[i])), \
+        (real_t)vals[i], (real_t)vals[(i)+1])
 #define SEG_AVG(wl0, wl1, i) (0.5f * (INTERP(wl0, i) + INTERP(wl1, i)))
     for (; i+1 < n && lambdaEnd >= lambda[i]; ++i) {
-        real_t segStart = max(lambdaStart, lambda[i]);
-        real_t segEnd = min(lambdaEnd, lambda[i+1]);
+        real_t segStart = max((real_t)lambdaStart, (real_t)lambda[i]);
+        real_t segEnd = min((real_t)lambdaEnd, (real_t)lambda[i+1]);
         sum += SEG_AVG(segStart, segEnd, i) * (segEnd - segStart);
     }
 #undef INTERP
@@ -112,8 +112,9 @@ vals[i], vals[(i)+1])
 
 
 template <typename T>
-inline void Spectrum<T>::static_init() {
-        //std::cout << "void Spectrum::static_init() {\n";
+inline void SpectrumBase<T>::static_init() {
+        typedef T real_t;
+        //std::cout << "void SpectrumBase::static_init() {\n";
         // Compute XYZ matching functions for _SampledSpectrum_
         yint = 0;
         for (int i = 0; i < num_components; ++i) {
@@ -136,7 +137,7 @@ inline void Spectrum<T>::static_init() {
 
         //std::cout << "        yint: " << yint << std::endl;
 
-        // Compute RGB to spectrum functions for _SampledSpectrum_
+        // Compute RGB to SpectrumBase functions for _SampledSpectrum_
         for (int i = 0; i < num_components; ++i) {
             const real_t wl0 = lerp(real_t(i) / num_components,
                         (real_t)SAMPLED_LAMBDA_START, (real_t)SAMPLED_LAMBDA_END);
@@ -176,8 +177,8 @@ inline void Spectrum<T>::static_init() {
 
 
 
-template <typename T>
-inline Spectrum<T> Spectrum<T>::FromSampled(
+template <typename real_t>
+inline SpectrumBase<real_t> SpectrumBase<real_t>::FromSampled(
         const real_t *v,
         const real_t *lambda, int n
 ) {
@@ -190,7 +191,7 @@ inline Spectrum<T> Spectrum<T>::FromSampled(
 
             return FromSampled(&sv[0], &slambda[0], n);
         }
-        Spectrum r;
+        SpectrumBase r;
 
         //std::cout << "        sampling: ";
         for (int i = 0; i < base::num_components; ++i) {
@@ -206,8 +207,8 @@ inline Spectrum<T> Spectrum<T>::FromSampled(
         return r;
 }
 
-template <typename T>
-inline Spectrum<T> Spectrum<T>::FromSampled(
+template <typename real_t>
+inline SpectrumBase<real_t> SpectrumBase<real_t>::FromSampled(
         const real_t *v,
         unsigned int lambdaStart, unsigned int lambdaEnd,
         int n
@@ -218,17 +219,17 @@ inline Spectrum<T> Spectrum<T>::FromSampled(
         for (int u=0; u<n; ++u) {
                 lambda[u] = lerp(u/(real_t)n, (real_t)lambdaStart, (real_t)lambdaEnd);
         }
-        const Spectrum ret = Spectrum::FromSampled (v, &lambda[0], n);
+        const SpectrumBase ret = SpectrumBase::FromSampled (v, &lambda[0], n);
         return ret;
 }
 
 
 
 template <typename T>
-inline Spectrum<T> Spectrum<T>::FromRGB(color::RGB const &rgb) {
-        Spectrum r;
+inline SpectrumBase<T> SpectrumBase<T>::FromRGB(color::RGB const &rgb) {
+        SpectrumBase r;
     /*if (type == SPECTRUM_REFLECTANCE)*/ {
-        // Convert reflectance spectrum to RGB
+        // Convert reflectance SpectrumBase to RGB
         if (rgb.R <= rgb.G && rgb.R <= rgb.B) {
             // Compute reflectance _SampledSpectrum_ with _rgb.R_ as minimum
             r += rgb.R * rgbRefl2SpectWhite;
@@ -265,10 +266,10 @@ inline Spectrum<T> Spectrum<T>::FromRGB(color::RGB const &rgb) {
                 r += (rgb.R - rgb.G) * rgbRefl2SpectRed;
             }
         }
-        r *= Spectrum::real_t(.94);
+        r *= SpectrumBase::real_t(.94);
     }/*
     else {
-        // Convert illuminant spectrum to RGB
+        // Convert illuminant SpectrumBase to RGB
         if (rgb[0] <= rgb[1] && rgb[0] <= rgb[2]) {
             // Compute illuminant _SampledSpectrum_ with _rgb[0]_ as minimum
             r += rgb[0] * rgbIllum2SpectWhite;
