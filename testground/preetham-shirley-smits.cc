@@ -98,10 +98,10 @@ void DrawScreen(SDL_Surface* screen) {
                                 #if 1
                                 const SpectrumBase<float> ssp = SpectrumBase<float>(pss.GetSkySpectralRadiance(d));
                                 const Vector viewer (0,0,0);
-                                /*const Vector at = viewer + d * real_t(0.f);
-                                Spectrum att(Spectrum::noinit), inscatter(Spectrum::noinit);
+                                const Vector at = viewer + d * real_t(0.f);
+                                PssSunSky::Spectrum att(Spectrum::noinit), inscatter(Spectrum::noinit);
                                 pss.GetAtmosphericEffects (viewer, at, att, inscatter);
-                                const color::RGB rgbS = inscatter.toRGB();
+                                /*const color::RGB rgbS = inscatter.toRGB();
                                 const color::RGB rgbX = ssp.toRGB();
                                 const color::RGB rgbR (200000,0,0);*/
 

@@ -48,8 +48,8 @@ namespace redshift
 // density decreses as exp(-alpha*h) alpha in m^-1.
 // _1 refers to Haze, _2 referes to molecules.
 
-static real_t const Alpha_1 = 0.83331810215394e-3;
-static real_t const Alpha_2 = 0.11360016092149e-3;
+static PssSunSky::real_t const Alpha_1 = 0.83331810215394e-3;
+static PssSunSky::real_t const Alpha_2 = 0.11360016092149e-3;
 
 #define Nt 20 // Number of bins for theta
 #define Np 20 // Number of bins for phi
@@ -472,16 +472,16 @@ static void GetA0fromTable(
         PssSunSky::Spectrum &A0_1,
         PssSunSky::Spectrum &A0_2
 ) {
-        real_t eps = 1e-4;
+        PssSunSky::real_t eps = 1e-4;
         if (phi < 0) phi += 2*M_PI; // convert phi from -pi..pi to 0..2pi
         theta = theta*Nt/M_PI - eps;
         phi = phi*Np/(2*M_PI) - eps;
         if (theta < 0) theta = 0;
         if (phi < 0) phi = 0;
         int i = (int) theta;
-        real_t u = theta - i;
+        PssSunSky::real_t u = theta - i;
         int j = (int)phi;
-        real_t v = phi - j;
+        PssSunSky::real_t v = phi - j;
 
         A0_1 = (1-u)*(1-v)*AT0_1[i][j] + u*(1-v)*AT0_1[i+1][j]
                + (1-u)*v*AT0_1[i][j+1] + u*v*AT0_1[i+1][j+1];

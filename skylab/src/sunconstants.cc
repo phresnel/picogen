@@ -33,7 +33,7 @@ namespace redshift {
 /* Units are either [] or cm^-1. refer when in doubt MI */
 
 // k_o Spectrum table from pg 127, MI.
-static real_t k_oWavelengths[64] = {
+static PssSunSky::real_t k_oWavelengths[64] = {
 300, 305, 310, 315, 320,
 325, 330, 335, 340, 345,
 350, 355,
@@ -58,7 +58,7 @@ static real_t k_oWavelengths[64] = {
 
 
 
-static real_t k_oAmplitudes[65] = {
+static PssSunSky::real_t k_oAmplitudes[65] = {
   10.0,
   4.8,
   2.7,
@@ -131,14 +131,14 @@ static real_t k_oAmplitudes[65] = {
 
 
 // k_g Spectrum table from pg 130, MI.
-static real_t k_gWavelengths[4] = {
+static PssSunSky::real_t k_gWavelengths[4] = {
   759,
   760,
   770,
   771
 };
 
-static real_t k_gAmplitudes[4] = {
+static PssSunSky::real_t k_gAmplitudes[4] = {
   0,
   3.0,
   0.210,
@@ -146,7 +146,7 @@ static real_t k_gAmplitudes[4] = {
 };
 
 // k_wa Spectrum table from pg 130, MI.
-static real_t k_waWavelengths[13] = {
+static PssSunSky::real_t k_waWavelengths[13] = {
   689,
   690,
   700,
@@ -162,7 +162,7 @@ static real_t k_waWavelengths[13] = {
   800
 };
 
-static real_t k_waAmplitudes[13] = {
+static PssSunSky::real_t k_waAmplitudes[13] = {
   0,
   0.160e-1,
   0.240e-1,
@@ -180,7 +180,7 @@ static real_t k_waAmplitudes[13] = {
 
 
 // 380-750 by 10nm
-static real_t solAmplitudes[38] = {
+static PssSunSky::real_t solAmplitudes[38] = {
     165.5, 162.3, 211.2, 258.8, 258.2,
     242.3, 267.6, 296.6, 305.4, 300.6,
     306.6, 288.3, 287.1, 278.2, 271.0,
