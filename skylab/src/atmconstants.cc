@@ -17,8 +17,8 @@
 #include <RiCommon.H>
 #endif
 
-#ifndef PreethamShirleySmits_H
-#include <PreethamShirleySmits.H>
+#ifndef PssSunSky_H
+#include <PssSunSky.H>
 #endif
 
 #ifndef RISPECTRALCURVE_H
@@ -29,7 +29,7 @@ namespace redshift {
 
 namespace {
         // 300-800 at 10 nm
-        PreethamShirleySmits::real_t n2_1Amplitudes[51] = {
+        PssSunSky::real_t n2_1Amplitudes[51] = {
           3.4012e-7, 3.3702e-7, 3.3425e-7, 3.3177e-7, 3.2955e-7,
           3.2754e-7, 3.2572e-7, 3.2406e-7, 3.2255e-7, 3.2116e-7,
 
@@ -49,43 +49,43 @@ namespace {
         };
 
         // 300-800 at 1nm
-        PreethamShirleySmits::real_t KAmplitudes[501] = {
+        PssSunSky::real_t KAmplitudes[501] = {
         #include "K.spectrum"
         };
 
-        PreethamShirleySmits::real_t K25Amplitudes[501] = {
+        PssSunSky::real_t K25Amplitudes[501] = {
         #include "K25.spectrum"
         };
 
         //300- 790 at 10nm  (for each of 1801 tenths of a degree
-        PreethamShirleySmits::real_t netaLambdaTable[50][1801] = {
+        PssSunSky::real_t netaLambdaTable[50][1801] = {
         #include "Neta.Table"
         };
 
-        PreethamShirleySmits::Spectrum netaTable[1801];
+        PssSunSky::Spectrum netaTable[1801];
 
-        PreethamShirleySmits::real_t const Anis_cor = 1.06;  // Correction for molecular anisotropy.
-        PreethamShirleySmits::real_t const N = 2.545e25; // Number of molecules per unit volume.
+        PssSunSky::real_t const Anis_cor = 1.06;  // Correction for molecular anisotropy.
+        PssSunSky::real_t const N = 2.545e25; // Number of molecules per unit volume.
 
 }
 
 void InitNetaTable()
 {
-    PreethamShirleySmits::real_t data[50];
+    PssSunSky::real_t data[50];
 
     // samplesPositions: quick hack
     for(int i = 0; i < 1801; i++) {
 	for(int j = 0; j < 50; j++)
 	  data[j] = netaLambdaTable[j][i];
 
-	netaTable[i] = PreethamShirleySmits::Spectrum::FromSampled(data,300,790,50);
+	netaTable[i] = PssSunSky::Spectrum::FromSampled(data,300,790,50);
     }
 }
 
 
 /* might need to be converted because the above functions use a
    different system ... */
-void  PreethamShirleySmits::CreateConstants()
+void  PssSunSky::CreateConstants()
 {
     InitNetaTable();
 
@@ -161,9 +161,9 @@ void  PreethamShirleySmits::CreateConstants()
 
 
 
-PreethamShirleySmits::Spectrum PreethamShirleySmits::GetNeta(
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t v
+PssSunSky::Spectrum PssSunSky::GetNeta(
+        PssSunSky::real_t theta,
+        PssSunSky::real_t v
 ) const
 {
     /* // original

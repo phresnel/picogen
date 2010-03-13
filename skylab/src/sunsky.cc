@@ -2,11 +2,11 @@
 /* Copyright 1999
  * Wed Apr 14 10:07:50 1999  Brian Smits  (bes@phoenix.cs.utah.edu)
  *
- * PreethamShirleySmits.C
+ * PssSunSky.C
  *
  *
  *
- * $Id: PreethamShirleySmits.C,v 1.2 1999/07/15 00:07:34 bes Exp $
+ * $Id: PssSunSky.C,v 1.2 1999/07/15 00:07:34 bes Exp $
  *
  */
 
@@ -19,8 +19,8 @@
 #include <RiCommon.H>
 #endif
 
-#ifndef PreethamShirleySmits_H
-#include <PreethamShirleySmits.H>
+#ifndef PssSunSky_H
+#include <PssSunSky.H>
 #endif
 
 #ifndef RICOLORXYZV_H
@@ -56,17 +56,17 @@ static real_t const Alpha_2 = 0.11360016092149e-3;
 
 #define radians(x) ((x)/180.0*constants::pi)
 
-static PreethamShirleySmits::Spectrum AT0_1[Nt+1][Np+1];
-static PreethamShirleySmits::Spectrum AT0_2[Nt+1][Np+1];
+static PssSunSky::Spectrum AT0_1[Nt+1][Np+1];
+static PssSunSky::Spectrum AT0_2[Nt+1][Np+1];
 
 
 
 /* All angles in radians, theta angles measured from normal */
-inline PreethamShirleySmits::real_t RiAngleBetween(
-        PreethamShirleySmits::real_t thetav,
-        PreethamShirleySmits::real_t phiv,
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t phi)
+inline PssSunSky::real_t RiAngleBetween(
+        PssSunSky::real_t thetav,
+        PssSunSky::real_t phiv,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t phi)
 {
         using std::sin;
         using std::cos;
@@ -80,7 +80,7 @@ inline PreethamShirleySmits::real_t RiAngleBetween(
 
 
 
-PreethamShirleySmits::PreethamShirleySmits(
+PssSunSky::PssSunSky(
         real_t lat,
         real_t longi,
         int sm,       // standardMeridian
@@ -163,7 +163,7 @@ PreethamShirleySmits::PreethamShirleySmits(
 // All angles in Radians
 // ********************************************************/
 
-void PreethamShirleySmits::SunThetaPhi(real_t &stheta, real_t &sphi) const
+void PssSunSky::SunThetaPhi(real_t &stheta, real_t &sphi) const
 {
         sphi = phiS;
         stheta = thetaS;
@@ -176,7 +176,7 @@ void PreethamShirleySmits::SunThetaPhi(real_t &stheta, real_t &sphi) const
 // From IES Lighting Handbook pg 361
 // ********************************************************/
 
-void PreethamShirleySmits::InitSunThetaPhi()
+void PssSunSky::InitSunThetaPhi()
 {
         real_t solarTime = timeOfDay +
                            (0.170*sin(4*constants::pi*(julianDay - 80)/373) - 0.129*sin(2*constants::pi*(julianDay - 8)/355)) +
@@ -198,7 +198,7 @@ void PreethamShirleySmits::InitSunThetaPhi()
 
 }
 
-Vector PreethamShirleySmits::GetSunPosition() const
+Vector PssSunSky::GetSunPosition() const
 {
         return toSun;
 }
@@ -208,12 +208,12 @@ Vector PreethamShirleySmits::GetSunPosition() const
 //
 // ********************************************************/
 
-PreethamShirleySmits::Spectrum PreethamShirleySmits::GetSunSpectralRadiance() const
+PssSunSky::Spectrum PssSunSky::GetSunSpectralRadiance() const
 {
         return sunSpectralRad;
 }
 
-PreethamShirleySmits::real_t PreethamShirleySmits::GetSunSolidAngle() const
+PssSunSky::real_t PssSunSky::GetSunSolidAngle() const
 {
         return sunSolidAngle;
 }
@@ -223,7 +223,7 @@ PreethamShirleySmits::real_t PreethamShirleySmits::GetSunSolidAngle() const
 //
 // ********************************************************/
 
-PreethamShirleySmits::Spectrum PreethamShirleySmits::GetSkySpectralRadiance(const Vector &varg) const
+PssSunSky::Spectrum PssSunSky::GetSkySpectralRadiance(const Vector &varg) const
 {
         real_t theta, phi;
         Vector v = normalize(varg);
@@ -238,7 +238,7 @@ PreethamShirleySmits::Spectrum PreethamShirleySmits::GetSkySpectralRadiance(cons
 }
 
 
-color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(const Vector &varg) const
+color::xyY PssSunSky::GetSkySpectralRadiance_xyY(const Vector &varg) const
 {
         real_t theta, phi;
         Vector v = normalize(varg);
@@ -252,29 +252,29 @@ color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(const Vector &varg) 
         return GetSkySpectralRadiance_xyY(theta,phi);
 }
 
-inline PreethamShirleySmits::real_t PreethamShirleySmits::PerezFunction(
-        const PreethamShirleySmits::real_t *lam,
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t gamma,
-        PreethamShirleySmits::real_t lvz
+inline PssSunSky::real_t PssSunSky::PerezFunction(
+        const PssSunSky::real_t *lam,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t gamma,
+        PssSunSky::real_t lvz
 ) const
 {
         using std::exp;
         using std::sin;
         using std::cos;
-        PreethamShirleySmits::real_t den = ((1 + lam[1]*exp(lam[2])) *
+        PssSunSky::real_t den = ((1 + lam[1]*exp(lam[2])) *
                       (1 + lam[3]*exp(lam[4]*thetaS) + lam[5]*cos(thetaS)*cos(thetaS)));
 
-        PreethamShirleySmits::real_t num = ((1 + lam[1]*exp(lam[2]/cos(theta))) *
+        PssSunSky::real_t num = ((1 + lam[1]*exp(lam[2]/cos(theta))) *
                       (1 + lam[3]*exp(lam[4]*gamma)  + lam[5]*cos(gamma)*cos(gamma)));
 
         return lvz* num/den;
 }
 
-PreethamShirleySmits::Spectrum
-PreethamShirleySmits::GetSkySpectralRadiance(
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t phi) const
+PssSunSky::Spectrum
+PssSunSky::GetSkySpectralRadiance(
+        PssSunSky::real_t theta,
+        PssSunSky::real_t phi) const
 {
         real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
         // Compute xyY values
@@ -288,9 +288,9 @@ PreethamShirleySmits::GetSkySpectralRadiance(
         return ret;
 }
 
-color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t phi) const
+color::xyY PssSunSky::GetSkySpectralRadiance_xyY(
+        PssSunSky::real_t theta,
+        PssSunSky::real_t phi) const
 {
         real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
         // Compute xyY values
@@ -317,11 +317,11 @@ color::xyY PreethamShirleySmits::GetSkySpectralRadiance_xyY(
 
 
 
-void PreethamShirleySmits::CalculateA0(
-        PreethamShirleySmits::real_t thetav,
-        PreethamShirleySmits::real_t phiv,
-        PreethamShirleySmits::Spectrum &A0_1,
-        PreethamShirleySmits::Spectrum &A0_2
+void PssSunSky::CalculateA0(
+        PssSunSky::real_t thetav,
+        PssSunSky::real_t phiv,
+        PssSunSky::Spectrum &A0_1,
+        PssSunSky::Spectrum &A0_2
 ) const {
         using std::sin;
         using std::cos;
@@ -367,7 +367,7 @@ void PreethamShirleySmits::CalculateA0(
 
 
 
-void  PreethamShirleySmits::InitA0() const {
+void  PssSunSky::InitA0() const {
         // This loop was buggy in the original code, causing the last entries to be black. /phresnel
 
         /* // original code
@@ -377,13 +377,13 @@ void  PreethamShirleySmits::InitA0() const {
         real_t delTheta = M_PI/Nt;
         real_t delPhi = 2*M_PI/Np;
 
-        std::cerr << "ggPreethamShirleySmits::Preprocessing: 0%\r";
+        std::cerr << "ggPssSunSky::Preprocessing: 0%\r";
         for (i=0,theta = 0; theta<=  M_PI; theta+= delTheta,i++) {
             for (j=0,phi=0; phi <= 2*M_PI; phi+= delPhi,j++)
               CalculateA0(theta, phi,  AT0_1[i][j], AT0_2[i][j]);
-            std::cerr << "ggPreethamShirleySmits::Preprocessing: " << 100*(i*Np+j)/((Nt+1)*Np) <<"%  \r";
+            std::cerr << "ggPssSunSky::Preprocessing: " << 100*(i*Np+j)/((Nt+1)*Np) <<"%  \r";
         }
-        std::cerr << "ggPreethamShirleySmits::Preprocessing:  100%   " << std::endl;
+        std::cerr << "ggPssSunSky::Preprocessing:  100%   " << std::endl;
         */
         for (int i=0; i<Nt+1; ++i) {
                 const real_t theta = (real_t(i)/(Nt)) * M_PI;
@@ -402,7 +402,7 @@ void  PreethamShirleySmits::InitA0() const {
 // ********************************************************/
 
 
-void PreethamShirleySmits::GetAtmosphericEffects(const Vector &viewer, const Vector &source,
+void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source,
                 Spectrum &attenuation, Spectrum &inscatter ) const
 {
         assert(atmInited);
@@ -445,11 +445,11 @@ inline real_t EvalFunc(real_t B, real_t x)
 
 
 
-PreethamShirleySmits::Spectrum
-PreethamShirleySmits::AttenuationFactor(
-        PreethamShirleySmits::real_t h0,
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t s
+PssSunSky::Spectrum
+PssSunSky::AttenuationFactor(
+        PssSunSky::real_t h0,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t s
 ) const
 {
         using std::cos;
@@ -467,10 +467,10 @@ PreethamShirleySmits::AttenuationFactor(
 
 
 static void GetA0fromTable(
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t phi,
-        PreethamShirleySmits::Spectrum &A0_1,
-        PreethamShirleySmits::Spectrum &A0_2
+        PssSunSky::real_t theta,
+        PssSunSky::real_t phi,
+        PssSunSky::Spectrum &A0_1,
+        PssSunSky::Spectrum &A0_2
 ) {
         real_t eps = 1e-4;
         if (phi < 0) phi += 2*M_PI; // convert phi from -pi..pi to 0..2pi
@@ -491,17 +491,17 @@ static void GetA0fromTable(
 
 
 
-inline PreethamShirleySmits::real_t RiHelper1(
-        PreethamShirleySmits::real_t A,
-        PreethamShirleySmits::real_t B,
-        PreethamShirleySmits::real_t C,
-        PreethamShirleySmits::real_t D,
+inline PssSunSky::real_t RiHelper1(
+        PssSunSky::real_t A,
+        PssSunSky::real_t B,
+        PssSunSky::real_t C,
+        PssSunSky::real_t D,
 
-        PreethamShirleySmits::real_t H,
-        PreethamShirleySmits::real_t K,
-        PreethamShirleySmits::real_t u
+        PssSunSky::real_t H,
+        PssSunSky::real_t K,
+        PssSunSky::real_t u
 ) {
-        PreethamShirleySmits::real_t t = std::exp(-K*(H-u));
+        PssSunSky::real_t t = std::exp(-K*(H-u));
         return (t/K)*((A*u*u*u + B*u*u + C*u +D) -
                       (3*A*u*u + 2*B*u + C)/K +
                       (6*A*u + 2*B)/(K*K) -
@@ -511,17 +511,17 @@ inline PreethamShirleySmits::real_t RiHelper1(
 
 
 inline void RiCalculateABCD(
-        PreethamShirleySmits::real_t a,
-        PreethamShirleySmits::real_t b,
-        PreethamShirleySmits::real_t c,
-        PreethamShirleySmits::real_t d,
-        PreethamShirleySmits::real_t e,
+        PssSunSky::real_t a,
+        PssSunSky::real_t b,
+        PssSunSky::real_t c,
+        PssSunSky::real_t d,
+        PssSunSky::real_t e,
 
-        PreethamShirleySmits::real_t den,
-        PreethamShirleySmits::real_t &A,
-        PreethamShirleySmits::real_t &B,
-        PreethamShirleySmits::real_t &C,
-        PreethamShirleySmits::real_t &D)
+        PssSunSky::real_t den,
+        PssSunSky::real_t &A,
+        PssSunSky::real_t &B,
+        PssSunSky::real_t &C,
+        PssSunSky::real_t &D)
 {
         A = (-b*d -2 + 2*c + a*e - b*e + a*d)/den;
         B = -(2*a*a*e + a*a*d - 3*a - a*b*e +
@@ -534,11 +534,11 @@ inline void RiCalculateABCD(
 
 
 
-PreethamShirleySmits::Spectrum PreethamShirleySmits::InscatteredRadiance(
-        PreethamShirleySmits::real_t h0,
-        PreethamShirleySmits::real_t theta,
-        PreethamShirleySmits::real_t phi,
-        PreethamShirleySmits::real_t s
+PssSunSky::Spectrum PssSunSky::InscatteredRadiance(
+        PssSunSky::real_t h0,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t phi,
+        PssSunSky::real_t s
 ) const {
         using std::exp;
         using std::cos;

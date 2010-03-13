@@ -1,14 +1,14 @@
 // -*- C++ -*-
-#ifndef PreethamShirleySmits_H
-#define PreethamShirleySmits_H
+#ifndef PssSunSky_H
+#define PssSunSky_H
 /* Copyright 1999
  * Mon Apr 19 13:42:11 1999  Brian Smits  (bes@phoenix.cs.utah.edu)
  *
- * PreethamShirleySmits.H
+ * PssSunSky.H
  *
  *
  *
- * $Id: PreethamShirleySmits.H,v 1.1 1999/06/10 20:12:32 bes Exp $
+ * $Id: PssSunSky.H,v 1.1 1999/06/10 20:12:32 bes Exp $
  *
  */
 
@@ -32,7 +32,7 @@
 namespace redshift {
 /***************************************************************
 CLASS
-    PreethamShirleySmits
+    PssSunSky
      <one line summary>
 
 DESCRIPTION
@@ -40,12 +40,12 @@ DESCRIPTION
 
 ****************************************************************/
 
-class PreethamShirleySmits {
+class PssSunSky {
   public:
         typedef double real_t;
         typedef redshift::SpectrumBase<real_t> Spectrum;
 				// GROUP: Constructors and assignment
-				//// Constructs an PreethamShirleySmits based on
+				//// Constructs an PssSunSky based on
 				// [in] lat Latitude (0-360)
 				// [in] long Longitude (-90,90) south to north
 				// [in] sm  Standard Meridian
@@ -54,7 +54,7 @@ class PreethamShirleySmits {
 				// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
 				// [in] initAtmEffects  if atm effects are not initialized, bad things will
 				// happen if you try to use them....
-    PreethamShirleySmits(real_t lat, real_t longi, int sm, int jd, real_t tod, real_t turb,bool initAtmEffects = true);
+    PssSunSky(real_t lat, real_t longi, int sm, int jd, real_t tod, real_t turb,bool initAtmEffects = true);
 				// GROUP: Members
 				////  Position (actual Direction) of the sun
 				// South = +x,  East = +y, up = +z
@@ -83,9 +83,9 @@ class PreethamShirleySmits {
 			       Spectrum &atmInscatter ) const;
   private:
 				//// Copy Constructor (unimplemented)
-    PreethamShirleySmits(const PreethamShirleySmits &);
+    PssSunSky(const PssSunSky &);
 				//// Assignment (unimplemented)
-    PreethamShirleySmits &operator=(const PreethamShirleySmits &);
+    PssSunSky &operator=(const PssSunSky &);
 				//// Compute the sun's position based on IES Sunlight Publication ????
     void 	InitSunThetaPhi();
 				//// Transmittance for the sun weighted by sun's spectrum.
@@ -138,4 +138,4 @@ class PreethamShirleySmits {
 
 } // namespace redshift
 
-#endif /* PreethamShirleySmits_H */
+#endif /* PssSunSky_H */

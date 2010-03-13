@@ -13,8 +13,8 @@
 #include <RiCommon.H>
 #endif
 
-#ifndef PreethamShirleySmits_H
-#include <PreethamShirleySmits.H>
+#ifndef PssSunSky_H
+#include <PssSunSky.H>
 #endif
 
 #ifndef RICOLORXYZV_H
@@ -199,15 +199,15 @@ static real_t solAmplitudes[38] = {
 // ********************************************************/
 
 /* Most units not in SI system - For units, refer MI */
-PreethamShirleySmits::Spectrum
-PreethamShirleySmits::ComputeAttenuatedSunlight(
-        PreethamShirleySmits::real_t theta,
+PssSunSky::Spectrum
+PssSunSky::ComputeAttenuatedSunlight(
+        PssSunSky::real_t theta,
         int turbidity)
 {
         using std::cos;
         using std::pow;
         using std::exp;
-        //throw std::runtime_error ("Spectrum PreethamShirleySmits::ComputeAttenuatedSunlight(real_t theta, int turbidity)");
+        //throw std::runtime_error ("Spectrum PssSunSky::ComputeAttenuatedSunlight(real_t theta, int turbidity)");
 
     /*RiIrregularSpectralCurve k_oCurve(k_oAmplitudes, k_oWavelengths, 64);
     RiIrregularSpectralCurve k_gCurve(k_gAmplitudes, k_gWavelengths, 4);

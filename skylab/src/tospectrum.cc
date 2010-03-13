@@ -15,8 +15,8 @@
 #endif
 
 
-#ifndef PreethamShirleySmits_H
-#include <PreethamShirleySmits.H>
+#ifndef PssSunSky_H
+#include <PssSunSky.H>
 #endif
 
 #ifndef RISPECTRALCURVE_H
@@ -32,7 +32,7 @@ namespace redshift {
 
 namespace {
         //300-830 10nm
-        PreethamShirleySmits::real_t S0Amplitudes[54] = {
+        PssSunSky::real_t S0Amplitudes[54] = {
         0.04,6.0,29.6,55.3,57.3,
         61.8,61.5,68.8,63.4,65.8,
         94.8,104.8,105.9,96.8,113.9,
@@ -46,7 +46,7 @@ namespace {
         61.0,53.3,58.9,61.9
         };
 
-        PreethamShirleySmits::real_t S1Amplitudes[54] = {
+        PssSunSky::real_t S1Amplitudes[54] = {
         0.02,4.5,22.4,42.0,40.6,
         41.6,38.0,42.4,38.5,35.0,
         43.4,46.3,43.9,37.1,36.7,
@@ -60,7 +60,7 @@ namespace {
         -9.7,-8.3,-9.3,-9.8
         };
 
-        PreethamShirleySmits::real_t S2Amplitudes[54] = {
+        PssSunSky::real_t S2Amplitudes[54] = {
         0.0,2.0,4.0,8.5,7.8,
         6.7,5.3,6.1,3.0,1.2,
         -1.1,-0.5,-0.7,-1.2,-2.6,
@@ -75,20 +75,20 @@ namespace {
         };
 
 
-        PreethamShirleySmits::Spectrum riS0Spectrum, riS1Spectrum, riS2Spectrum;
+        PssSunSky::Spectrum riS0Spectrum, riS1Spectrum, riS2Spectrum;
         }
 
 void InitChromaticityToSpectrum()
 {
-    riS0Spectrum = PreethamShirleySmits::Spectrum::FromSampled(S0Amplitudes,300,830,54);
-    riS1Spectrum = PreethamShirleySmits::Spectrum::FromSampled(S1Amplitudes,300,830,54);
-    riS2Spectrum = PreethamShirleySmits::Spectrum::FromSampled(S2Amplitudes,300,830,54);
+    riS0Spectrum = PssSunSky::Spectrum::FromSampled(S0Amplitudes,300,830,54);
+    riS1Spectrum = PssSunSky::Spectrum::FromSampled(S1Amplitudes,300,830,54);
+    riS2Spectrum = PssSunSky::Spectrum::FromSampled(S2Amplitudes,300,830,54);
 }
 
-PreethamShirleySmits::Spectrum
-PreethamShirleySmits::ChromaticityToSpectrum(
-        PreethamShirleySmits::real_t x,
-        PreethamShirleySmits::real_t y) const
+PssSunSky::Spectrum
+PssSunSky::ChromaticityToSpectrum(
+        PssSunSky::real_t x,
+        PssSunSky::real_t y) const
 {
     static bool inited = false;
     if(!inited) {
