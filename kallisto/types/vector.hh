@@ -183,13 +183,15 @@ namespace kallisto {
 
         template <coordinate_space_t SPACE, typename T> inline
         T length (Vector<SPACE,T> const & v) {
-                return kallisto::sqrt (lengthSq (v));
+                const T lsq = lengthSq (v);
+                return kallisto::sqrt (lsq);
         }
 
         //template <typename T> inline T normalize (T const & v);
         template <coordinate_space_t SPACE, typename T> inline
         Vector <SPACE,T> normalize (Vector <SPACE,T> const & v) {
-                return v / length (v);
+                const T l = length (v);
+                return v / l;
         }
 }
 

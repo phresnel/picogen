@@ -62,19 +62,19 @@ namespace kallisto {
 
 
         // Template friendly sqrt().
-        inline float       sqrt (float const &rhs)       {return sqrtf (rhs);}
-        inline double      sqrt (double const &rhs)      {return sqrt (rhs); }
-        inline long double sqrt (long double const &rhs) {return sqrtl (rhs);}
+        inline float       sqrt (float const &rhs)       {return std::sqrt (rhs);}
+        inline double      sqrt (double const &rhs)      {return std::sqrt (rhs); }
+        inline long double sqrt (long double const &rhs) {return std::sqrt (rhs);}
 
         // Template friendly abs().
-        inline int           abs (int const &rhs)          {return abs (rhs); }
-        inline long int      abs (long int const &rhs)     {return labs(rhs); }
+        inline int           abs (int const &rhs)          {return std::abs (rhs); }
+        inline long int      abs (long int const &rhs)     {return std::abs (rhs); }
 #if __STDC_VERSION__ >= 199901L
-        inline long long int abs (long long int const &rhs){return llabs(rhs);}
+        inline long long int abs (long long int const &rhs){return std::abs (rhs);}
 #endif
-        inline float         abs (float const &rhs)        {return fabsf(rhs);}
-        inline double        abs (double const &rhs)       {return fabs(rhs); }
-        inline long double   abs (long double const &rhs)  {return fabsl(rhs);}
+        inline float         abs (float const &rhs)        {return std::fabs(rhs);}
+        inline double        abs (double const &rhs)       {return std::fabs(rhs); }
+        inline long double   abs (long double const &rhs)  {return std::fabs(rhs);}
 
 
 

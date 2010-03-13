@@ -21,6 +21,10 @@
 #ifndef ARRAY0_HH_INCLUDED_20100309
 #define ARRAY0_HH_INCLUDED_20100309
 
+#ifdef KALLISTO_CHECK_BOUNDS
+#include <stdexcept>
+#endif
+
 namespace kallisto {
         //-- KALLISTO_ARRAY_IMPLEMENT_ASSIGNMENT ------------------------------
         #define KALLISTO_ARRAY_IMPLEMENT_ASSIGNMENT(name,op)                  \
@@ -150,9 +154,19 @@ namespace kallisto {
                 #undef KALLISTO_ARRAY_IMPLEMENT_ASSIGNMENT
 
                 T operator [] (unsigned int i) const {
+                        #ifdef KALLISTO_CHECK_BOUNDS
+                        if (i>=N) {
+                                throw std::runtime_error("kallisto::array<>: index out of bounds");
+                        }
+                        #endif
                         return expr_rep[i];
                 }
                 T & operator [] (unsigned int i) {
+                        #ifdef KALLISTO_CHECK_BOUNDS
+                        if (i>=N) {
+                                throw std::runtime_error("kallisto::array<>: index out of bounds");
+                        }
+                        #endif
                         return expr_rep[i];
                 }
 
