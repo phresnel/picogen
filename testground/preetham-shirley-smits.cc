@@ -33,6 +33,7 @@ redshift::Vector screenToHemisphereSat (float u, float v) {
         if (x*x+z*z>1.0f) {
                 return normalize (redshift::Vector(x,0,z));
         }
+
         const float h = 1-x*x-z*z;
         const float y = sqrt (h);
         return normalize (redshift::Vector(x,y,z));
@@ -63,7 +64,7 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
 
 
 void DrawScreen(SDL_Surface* screen) {
-        const double ft = std::fmod (6 + clock() / (double)CLOCKS_PER_SEC, 24);
+        //const double ft = std::fmod (6 + clock() / (double)CLOCKS_PER_SEC, 24);
         static redshift::PreethamShirleySmits pss(
                 30, // [in] lat Latitude (0-360)
                 30,			// [in] long Longitude (-90,90) south to north
@@ -84,43 +85,52 @@ void DrawScreen(SDL_Surface* screen) {
 
         for (unsigned int y=0; y<HEIGHT; ++y) {
                 for (unsigned int x=0; x<WIDTH; ++x) {
-                        const real_t u = (x / (real_t)WIDTH);
-                        const real_t v = (y / (real_t)HEIGHT);
-                        const Vector d = screenToHemisphereSat(u,v);
+                        const int numSamples = 1;
+                        RGB sum;
+                        for (int i=0; i<numSamples; ++i) {
 
-                        #if 1
-                        const Spectrum ssp = pss.GetSkySpectralRadiance(d);
-                        const Vector viewer (0,0,0);
-                        const Vector at = viewer + d * 1000.f;
-                        Spectrum att, inscatter;
-                        pss.GetAtmosphericEffects (viewer, at, att, inscatter);
+                                const real_t mu = rand() / (RAND_MAX+1.0f);
+                                const real_t mv = rand() / (RAND_MAX+1.0f);
+                                const real_t u = ((x+mu) / (real_t)WIDTH);
+                                const real_t v = ((y+mv) / (real_t)HEIGHT);
+                                const Vector d = screenToHemisphereSat(u,v);
 
-                        const color::RGB rgbS = inscatter.toRGB();
-                        const color::RGB rgbX = ssp.toRGB();
-                        const color::RGB rgbR (200000,0,0);
+                                #if 1
+                                const Spectrum ssp = pss.GetSkySpectralRadiance(d);
+                                const Vector viewer (0,0,0);
+                                const Vector at = viewer + d * real_t(1000.f);
+                                Spectrum att(Spectrum::noinit), inscatter(Spectrum::noinit);
+                                pss.GetAtmosphericEffects (viewer, at, att, inscatter);
+                                const color::RGB rgbS = inscatter.toRGB();
+                                const color::RGB rgbX = ssp.toRGB();
+                                const color::RGB rgbR (200000,0,0);
 
 
-                        //const RGB rgb = Spectrum::FromRGB(RGB(u,v,1)).toRGB();
+                                //const RGB rgb = Spectrum::FromRGB(RGB(u,v,1)).toRGB();
 
-                        /*std::cout << "\n\n";
-                        std::cout << "spec: ";
-                        for (int i=0; i<Spectrum::num_components; ++i)
-                                std::cout << s[i] << ' ';
-                        std::cout << "\nrgb_:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
-                        std::cout << "\n\n";
-                        exit(0);*/
-                        const RGB& rgb = Spectrum(inscatter/100.f).toRGB();
-                                /*(x%10)==0 ? rgbR :
-                                (x/10)%2==0 ? rgbS : rgbX*/;
-                        #else
-                        real_t thetav = acos(d.up());
-                        real_t phiv = atan2(d.ahead(),d.right());
-                        RGB rgb (phiv, 0, 0);
-                        #endif
+                                /*std::cout << "\n\n";
+                                std::cout << "spec: ";
+                                for (int i=0; i<Spectrum::num_components; ++i)
+                                        std::cout << s[i] << ' ';
+                                std::cout << "\nrgb_:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
+                                std::cout << "\n\n";
+                                exit(0);*/
+                                const RGB& rgb = Spectrum(inscatter/real_t(20)).toRGB();
+                                        /*(x%10)==0 ? rgbR :
+                                        (x/10)%2==0 ? rgbS : rgbX*/;
+                                #else
+                                real_t thetav = acos(d.up());
+                                real_t phiv = atan2(d.ahead(),d.right());
+                                RGB rgb (phiv, 0, 0);
+                                #endif
 
-                        const int r_ = (rgb.R)*255;
-                        const int g_ = (rgb.G)*255;
-                        const int b_ = (rgb.B)*255;
+                                sum.R += rgb.R;
+                                sum.G += rgb.G;
+                                sum.B += rgb.B;
+                        }
+                        const int r_ = (sum.R)*255 / numSamples;
+                        const int g_ = (sum.G)*255 / numSamples;
+                        const int b_ = (sum.B)*255 / numSamples;
                         const int r = r_<0 ? 0 : r_>255 ? 255 : r_;
                         const int g = g_<0 ? 0 : g_>255 ? 255 : g_;
                         const int b = b_<0 ? 0 : b_>255 ? 255 : b_;
@@ -140,12 +150,12 @@ void DrawScreen(SDL_Surface* screen) {
 
 int main(int argc, char* argv[])
 {
-        freopen( "CON", "w", stdout );
+        //freopen( "CON", "w", stdout );
         redshift::Spectrum::static_init();
 
 
         if (0) {
-                freopen( "CON", "w", stdout );
+                //freopen( "CON", "w", stdout );
                 using namespace redshift;
                 const Spectrum s = Spectrum::FromRGB(color::RGB(0.1,0.1,0.1));
                 const color::RGB rgb = s.toRGB();
@@ -171,7 +181,7 @@ int main(int argc, char* argv[])
                 return 1;
         }
 
-        freopen( "CON", "w", stdout );
+        //freopen( "CON", "w", stdout );
 
         while (!keypress) {
                 DrawScreen(screen);
