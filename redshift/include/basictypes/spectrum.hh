@@ -223,8 +223,7 @@ namespace redshift {
                         return toXYZ().toRGB();
                 }
 
-        public: // Static functions.
-                static void static_init ();
+        public: // Named constructors.
                 static Spectrum FromSampled(
                         const real_t *v,
                         const real_t *lambda,
@@ -239,6 +238,8 @@ namespace redshift {
 
                 static Spectrum FromRGB(color::RGB const &rgb) ;
 
+        public: // Static functions.
+                static void static_init ();
 
         private:
                 static Spectrum X, Y, Z;

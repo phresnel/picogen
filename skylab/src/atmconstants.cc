@@ -112,8 +112,9 @@ void  PreethamShirleySmits::CreateConstants()
 	/* Rayleigh total scattering coefficient */
 	/* (4-48), p 199, MC */
 	n2_1 = n2_1Curve.at(lambda);
-	b_m[i] = 8*M_PI*M_PI*M_PI*n2_1*Anis_cor/
-	    (3*Nlambda4);
+	b_m[i] =
+                (8*M_PI*M_PI*M_PI*n2_1*Anis_cor)/
+                (3*Nlambda4);
 
 
 	/* Mie total scattering coefficient */
@@ -121,8 +122,8 @@ void  PreethamShirleySmits::CreateConstants()
 	if (V > 3.9) K = KCurve.at(lambda); // V = 4.0;
 	else K = K25Curve.at(lambda);       // V = 2.5
 
-	b_p[i] = 0.434*M_PI*c*pow(real_t(2*constants::pi/lambdasi),V-2) * K *
-	    pow(real_t(0.01),V-3);  /* Last term is unit correction for c */
+	b_p[i] = 0.434*M_PI*c*pow(2*constants::pi/lambdasi,V-2) * K *
+	    pow(0.01,V-3);  /* Last term is unit correction for c */
 
 	/* Rayleigh Angular scattering coefficient */
 	/*  (4-55), p 200; MC */
@@ -136,20 +137,33 @@ void  PreethamShirleySmits::CreateConstants()
 	/* (6-24), p 271; MC */
 	/* Needs to be multiplied by neta(theta,lambda) to get exact
 	   angular scattering constant term */
-	b_p_ang_prefix[i] = 0.217*c*pow(real_t(2*M_PI/lambdasi),V-2)*
-	    pow(real_t(0.01),V-3);  /* Last term is unit correction for c */
+	b_p_ang_prefix[i] = 0.217*c*pow(2*M_PI/lambdasi,V-2)*
+	    pow(0.01,V-3);  /* Last term is unit correction for c */
     }
 
     beta_m = Spectrum::FromSampled(b_m, 300,800,101);
     beta_p = Spectrum::FromSampled(b_p, 300,800,101);
     beta_m_ang_prefix = Spectrum::FromSampled(b_m_ang_prefix, 300,800,101);
     beta_p_ang_prefix = Spectrum::FromSampled(b_p_ang_prefix, 300,800,101);
+
+    std::cout << "beta_m {\n" << std::fixed;
+    std::cout << "   orig: "; for (int i=0;i<101;++i) std::cout << b_m[i] << "  ";
+    std::cout << "\n   new: "; for (int i=0;i<Spectrum::num_components;++i) std::cout << beta_m[i] << "  ";
+    std::cout << "\n}\n";
+    std::cout << std::endl;
+
+    std::cout << "beta_p {\n" << std::fixed;
+    std::cout << "   orig: "; for (int i=0;i<101;++i) std::cout << b_p[i] << "  ";
+    std::cout << "\n   new: "; for (int i=0;i<Spectrum::num_components;++i) std::cout << beta_p[i] << "  ";
+    std::cout << "\n}\n";
+    std::cout << std::endl;
 }
 
 
 
 Spectrum PreethamShirleySmits::GetNeta(real_t theta, real_t v) const
 {
+    /* // original
     theta = theta*(180.0/M_PI) * 10;
     real_t u = theta - (int)theta;
     if((theta < 0)||(theta > 1801)) {
@@ -157,12 +171,20 @@ Spectrum PreethamShirleySmits::GetNeta(real_t theta, real_t v) const
 	     <<"degrees" << std::endl;
 	return Spectrum(real_t(0));
     }
+
     if (theta > 1800) theta=1800;
 
     if ((int)theta==1800)
       return  netaTable[1800];
+    */
+    theta = theta*(180.0/M_PI) * 10;
+    const int itheta = static_cast<int>(theta);
+    const real_t u = theta - itheta;
 
-    return (1-u) * netaTable[(int)theta] + u * netaTable[(int)theta+1];
+    if (itheta < 0) return netaTable[0];
+    if (itheta >= 1800) return netaTable[1800];
+
+    return (1-u) * netaTable[itheta] + u * netaTable[itheta+1];
 
 }
 

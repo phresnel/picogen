@@ -70,8 +70,8 @@ void DrawScreen(SDL_Surface* screen) {
                 30,			// [in] long Longitude (-90,90) south to north
                 0,			// [in] sm  Standard Meridian
                 90,			// [in] jd  Julian Day (1-365)
-                7.7,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
-                3.f,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
+                9.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
+                17,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
                 true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
                                         // happen if you try to use them....
         );
@@ -98,12 +98,12 @@ void DrawScreen(SDL_Surface* screen) {
                                 #if 1
                                 const Spectrum ssp = pss.GetSkySpectralRadiance(d);
                                 const Vector viewer (0,0,0);
-                                const Vector at = viewer + d * real_t(1000.f);
+                                /*const Vector at = viewer + d * real_t(0.f);
                                 Spectrum att(Spectrum::noinit), inscatter(Spectrum::noinit);
                                 pss.GetAtmosphericEffects (viewer, at, att, inscatter);
                                 const color::RGB rgbS = inscatter.toRGB();
                                 const color::RGB rgbX = ssp.toRGB();
-                                const color::RGB rgbR (200000,0,0);
+                                const color::RGB rgbR (200000,0,0);*/
 
 
                                 //const RGB rgb = Spectrum::FromRGB(RGB(u,v,1)).toRGB();
@@ -115,7 +115,8 @@ void DrawScreen(SDL_Surface* screen) {
                                 std::cout << "\nrgb_:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
                                 std::cout << "\n\n";
                                 exit(0);*/
-                                const RGB& rgb = Spectrum(inscatter/real_t(20)).toRGB();
+                                const Spectrum tot = ssp;
+                                const RGB& rgb = tot.toRGB();
                                         /*(x%10)==0 ? rgbR :
                                         (x/10)%2==0 ? rgbS : rgbX*/;
                                 #else
@@ -128,9 +129,9 @@ void DrawScreen(SDL_Surface* screen) {
                                 sum.G += rgb.G;
                                 sum.B += rgb.B;
                         }
-                        const int r_ = (sum.R)*255 / numSamples;
-                        const int g_ = (sum.G)*255 / numSamples;
-                        const int b_ = (sum.B)*255 / numSamples;
+                        const int r_ = (sum.R*0.00005)*255 / numSamples;
+                        const int g_ = (sum.G*0.00005)*255 / numSamples;
+                        const int b_ = (sum.B*0.00005)*255 / numSamples;
                         const int r = r_<0 ? 0 : r_>255 ? 255 : r_;
                         const int g = g_<0 ? 0 : g_>255 ? 255 : g_;
                         const int b = b_<0 ? 0 : b_>255 ? 255 : b_;
