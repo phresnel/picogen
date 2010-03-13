@@ -37,7 +37,7 @@ namespace redshift { namespace camera {
                          Transform const &xform = Transform::identity());
                 virtual ~Pinhole () ;
 
-                inline tuple<float,RayDifferential>
+                inline tuple<real_t,RayDifferential>
                            generateRay(Sample const &) const;
                 bool hasCommonCenter () const ;
                 Point getCommonCenter () const ;

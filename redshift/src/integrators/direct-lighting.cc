@@ -60,7 +60,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 const Normal normalG = gd.getGeometricNormal();
                 const Normal normalS = gd.getShadingNormal();
                 const Point poi = gd.getCenter()+
-                        vector_cast<PointCompatibleVector>(normalG*0.001f);
+                        vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
                 //-- skylight begin -------------------------------------------
                 Color sum = Color::fromRgb (0,0,0);
@@ -126,7 +126,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
 
                         if (!scene.doesIntersect (ray)) {
                                 const real_t d = max(
-                                        0.f,
+                                        real_t(0),
                                         dot(sunDir,vector_cast<Vector>(normalS)));
                                 ret = ret + multiplyComponents(surfaceColor,bg->querySun(ray))*d;
                         }

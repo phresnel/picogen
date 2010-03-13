@@ -535,7 +535,7 @@ public:
         , primaryBB(initBB (
                 size,
                 static_cast<unsigned int>(
-                        max(1000.f,min(250000.0f, (size*size*size)/1000.f))
+                        max(real_t(1000),min(real_t(250000), (size*size*size)/1000.f))
                 )))
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
