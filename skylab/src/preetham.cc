@@ -112,7 +112,9 @@ static void Yxy_RGB (real_t *p_color, real_t Y, real_t x, real_t y) {
 
 namespace redshift { namespace background {
 Preetham::Preetham() :
-        m_T (1.8), m_sunSolidAngleFactor (1), m_sunColor (100,100,100), m_colorFilter (1,1,1),
+        m_T (1.8), m_sunSolidAngleFactor (1),
+        m_sunColor (Color::FromRGB(100,100,100)),
+        m_colorFilter (Color::FromRGB(1,1,1)),
         m_enableSunFalloffHack (false), m_enableFogHack (false) {
 }
 
@@ -304,9 +306,8 @@ Color Preetham::shade (Ray in_ray) const {
         /*real_t c[3];
         Yxy_RGB (c, Y, x, y);
         color.from_rgb (c[0],c[1],c[2]);*/
-        Color color;
-        color.fromYxy (Y, x, y);
-        return multiplyComponents (color, m_colorFilter);
+        Color color = Color::FromRGB (color::xyY (x,y,Y).toRGB());
+        return color * m_colorFilter;
 }
 
 Color Preetham::sunShade (Ray ray) const {
@@ -322,7 +323,7 @@ Color Preetham::sunShade (Ray ray) const {
                 const real_t i = i_ < 0.0 ? 0.0 : i_ > 1.0 ? 1.0 : i_;
                 return m_sunColor * i;
         }
-        return Color (.0f, .0f, .0f);
+        return Color(0);
 }
 
 
@@ -355,7 +356,7 @@ redshift::tuple<Color,Ray,real_t> Preetham::sunSample (Point position) const {
         );
 
         const Color color =
-                m_sunColor * (m_sunSolidAngle/ (4.0*redshift::constants::pi));
+                m_sunColor * (m_sunSolidAngle/ (4*redshift::constants::pi));
 
         return make_tuple(color,ray,1.0f);
         /*

@@ -180,7 +180,9 @@ namespace redshift {
 
                 SpectrumBase (noinit_) : base(base::noinit) {}
                 SpectrumBase () : base() {}
-                explicit SpectrumBase (real_t f) : base(f) {}
+
+                template <typename U>
+                explicit SpectrumBase (U f) : base(real_t(f)) {}
                 SpectrumBase (const real_t (&f)[base::num_components]) : base(f) {}
                 SpectrumBase (const SpectrumBase &rhs) : base(rhs) {}
 
@@ -265,6 +267,10 @@ namespace redshift {
                 );
 
                 static SpectrumBase FromRGB(color::RGB const &rgb) ;
+                template <typename U>
+                static SpectrumBase FromRGB(U R, U G, U B) {
+                        return FromRGB(color::RGB(R,G,B));
+                }
 
 
                 static SpectrumBase X, Y, Z;

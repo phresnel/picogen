@@ -188,8 +188,8 @@ namespace redshift {
 
 namespace redshift {
         //class Rgb;
-        typedef Rgb Color;
-        typedef SpectrumBase<real_t> Spectrum;
+        //typedef Rgb Color;
+        typedef SpectrumBase<real_t> Spectrum, Color;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
