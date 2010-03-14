@@ -68,10 +68,10 @@ namespace kallisto {
                 scalar_rep (T val) : c (val) {}
 
                 enum { size = 0 };
-                T operator [] (unsigned int i) const {
+                T operator [] (unsigned int) const {
                         return c;
                 }
-                T & operator [] (unsigned int i) {
+                T & operator [] (unsigned int) {
                         return c;
                 }
         private:

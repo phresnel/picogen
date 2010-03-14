@@ -23,6 +23,8 @@
 
 #ifdef KALLISTO_CHECK_BOUNDS
 #include <stdexcept>
+#include <typeinfo>
+#include <sstream>
 #endif
 
 namespace kallisto {
@@ -156,7 +158,19 @@ namespace kallisto {
                 T operator [] (unsigned int i) const {
                         #ifdef KALLISTO_CHECK_BOUNDS
                         if (i>=N) {
-                                throw std::runtime_error("kallisto::array<>: index out of bounds");
+                                typedef std::string str;
+                                std::stringstream ss;
+                                ss << "T kallisto::array<>::operator [] (unsigned int i) const: "
+                                   << "index out of bounds ("
+                                   << i << " over " << N
+                                   << ").\n "
+                                   << "array = " << str(typeid(array).name()) << "\n"
+                                   << "T = " << str(typeid(T).name()) << "\n"
+                                   << "N = " << N << "\n"
+                                   << "RULES = " << str(typeid(RULES).name()) << "\n"
+                                   << "REP = " << str(typeid(REP).name()) << "\n"
+                                ;
+                                throw std::runtime_error(ss.str());
                         }
                         #endif
                         return expr_rep[i];
@@ -164,7 +178,19 @@ namespace kallisto {
                 T & operator [] (unsigned int i) {
                         #ifdef KALLISTO_CHECK_BOUNDS
                         if (i>=N) {
-                                throw std::runtime_error("kallisto::array<>: index out of bounds");
+                                typedef std::string str;
+                                std::stringstream ss;
+                                ss << "T & kallisto::array<>::operator [] (unsigned int i): "
+                                   << "index out of bounds ("
+                                   << i << " over " << N
+                                   << ").\n "
+                                   << "array = " << str(typeid(array).name()) << "\n"
+                                   << "T = " << str(typeid(T).name()) << "\n"
+                                   << "N = " << N << "\n"
+                                   << "RULES = " << str(typeid(RULES).name()) << "\n"
+                                   << "REP = " << str(typeid(REP).name()) << "\n"
+                                ;
+                                throw std::runtime_error(ss.str());
                         }
                         #endif
                         return expr_rep[i];
