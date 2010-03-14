@@ -50,7 +50,7 @@ template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectBlue;
 
 
 template <typename real_t>
-inline bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n) {
+inline bool spectrumSamplesSorted(const real_t *lambda, const real_t */*vals*/, int n) {
     for (int i = 0; i < n-1; ++i)
         if (lambda[i] > lambda[i+1]) {
                 return false;

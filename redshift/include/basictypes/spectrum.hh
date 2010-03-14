@@ -186,7 +186,7 @@ namespace redshift {
 
                 template <typename U>
                 explicit SpectrumBase (SpectrumBase<U> const & rhs) {
-                        for (int i; i<num_components; ++i) {
+                        for (int i=0; i<num_components; ++i) {
                                 (*this)[i] = static_cast<T>(rhs[i]);
                         }
                 }
