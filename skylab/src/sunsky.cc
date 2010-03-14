@@ -86,23 +86,43 @@ PssSunSky::PssSunSky(
         int jd,       // julianDay
         real_t tOfDay,   // timeOfDay
         real_t turb,
-        bool initAtmEffects) // turbidity
+        bool initAtmEffects // turbidity
+) : turbidity (turb)
 {
-        using std::tan;
-        using std::sin;
-        using std::cos;
-
-        latitude = lat;
+        /*latitude = lat;
         longitude = longi;
         julianDay = jd;
         timeOfDay = tOfDay;
         standardMeridian = sm * 15.0;  // sm is actually timezone number (east to west, zero based...)
-        turbidity = turb;
+        */
+
+        InitSunThetaPhi(lat, longi, jd, tOfDay, sm * 15.0);
+        InitRest(initAtmEffects);
+}
+
+PssSunSky::PssSunSky(
+        const Vector &direction,
+        real_t turbidity,
+        bool initAtmEffects
+) : turbidity (turbidity)
+{
+        /*latitude = lat;
+        longitude = longi;
+        julianDay = jd;
+        timeOfDay = tOfDay;
+        standardMeridian = sm * 15.0;  // sm is actually timezone number (east to west, zero based...)
+        */
+
+        InitSunThetaPhi(direction);
+        InitRest(initAtmEffects);
+}
+
+void PssSunSky::InitRest (bool initAtmEffects) {
+        using std::tan;
+        using std::sin;
+        using std::cos;
 
         V = 4.0; // Junge's exponent.
-
-
-        InitSunThetaPhi();
 
         toSun = Vector(cos(phiS)*sin(thetaS), cos(thetaS), sin(phiS)*sin(thetaS));
 
@@ -110,12 +130,14 @@ PssSunSky::PssSunSky(
 
         sunSolidAngle =  0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
 
-        real_t theta2 = thetaS*thetaS;
-        real_t theta3 = theta2*thetaS;
-        real_t T = turb;
-        real_t T2 = turb*turb;
+        const real_t
+                theta2 = thetaS*thetaS,
+                theta3 = theta2*thetaS,
+                T = turbidity,
+                T2 = turbidity*turbidity
+        ;
 
-        real_t chi = (4.0/9.0 - T / 120.0) * (constants::pi - 2 * thetaS);
+        const real_t chi = (4.0/9.0 - T / 120.0) * (constants::pi - 2 * thetaS);
         zenith_Y = (4.0453 * T - 4.9710) * tan(chi) - .2155 * T + 2.4192;
         zenith_Y *= 1000;  // conversion from kcd/m^2 to cd/m^2
 
@@ -153,7 +175,6 @@ PssSunSky::PssSunSky(
                 InitA0();
         }
         atmInited = initAtmEffects;
-
 }
 
 /**********************************************************
@@ -175,26 +196,34 @@ void PssSunSky::SunThetaPhi(real_t &stheta, real_t &sphi) const
 // From IES Lighting Handbook pg 361
 // ********************************************************/
 
-void PssSunSky::InitSunThetaPhi()
-{
-        real_t solarTime = timeOfDay +
+void PssSunSky::InitSunThetaPhi(
+        const real_t latitude,
+        const real_t longitude,
+        const int    julianDay,
+        const real_t timeOfDay,
+        const int standardMeridian
+) {
+        const real_t
+                solarTime = timeOfDay +
                            (0.170*sin(4*constants::pi*(julianDay - 80)/373) - 0.129*sin(2*constants::pi*(julianDay - 8)/355)) +
-                           (standardMeridian - longitude)/15.0;
-
-        real_t solarDeclination = (0.4093*sin(2*constants::pi*(julianDay - 81)/368));
-
-        real_t solarAltitude= asin(sin(radians(latitude)) * sin(solarDeclination) -
-                                   cos(radians(latitude)) * cos(solarDeclination) * cos(constants::pi*solarTime/12));
-
-        real_t opp, adj;
-        opp = -cos(solarDeclination) * sin(constants::pi*solarTime/12);
-        adj = -(cos(radians(latitude)) * sin(solarDeclination) +
-                sin(radians(latitude)) * cos(solarDeclination) *  cos(constants::pi*solarTime/12));
-        real_t solarAzimuth=atan2(opp,adj);
+                           (standardMeridian - longitude)/15.0,
+                solarDeclination = (0.4093*sin(2*constants::pi*(julianDay - 81)/368)),
+                solarAltitude = asin(sin(radians(latitude)) * sin(solarDeclination) -
+                                   cos(radians(latitude)) * cos(solarDeclination) * cos(constants::pi*solarTime/12)),
+                opp = -cos(solarDeclination) * sin(constants::pi*solarTime/12),
+                adj = -(cos(radians(latitude)) * sin(solarDeclination) +
+                        sin(radians(latitude)) * cos(solarDeclination) *  cos(constants::pi*solarTime/12)),
+                solarAzimuth = atan2(opp,adj)
+        ;
 
         phiS = -solarAzimuth;
         thetaS = constants::pi / 2.0 - solarAltitude;
+}
 
+void PssSunSky::InitSunThetaPhi(Vector const &sunDirection) {
+        using std::atan2; using std::acos;
+        thetaS = acos (sunDirection.up() / length (sunDirection));
+        phiS = atan2 (sunDirection.ahead(), sunDirection.right());
 }
 
 Vector PssSunSky::GetSunPosition() const

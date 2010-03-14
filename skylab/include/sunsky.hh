@@ -48,13 +48,14 @@ class PssSunSky {
 				//// Constructs an PssSunSky based on
 				// [in] lat Latitude (0-360)
 				// [in] long Longitude (-90,90) south to north
-				// [in] sm  Standard Meridian
+				// [in] sm  Standard Meridian (timezone number, east-to-west, 0-based)
 				// [in] jd  Julian Day (1-365)
 				// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
 				// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
 				// [in] initAtmEffects  if atm effects are not initialized, bad things will
 				// happen if you try to use them....
-    PssSunSky(real_t lat, real_t longi, int sm, int jd, real_t tod, real_t turb,bool initAtmEffects = true);
+    PssSunSky(real_t latitude, real_t longitude, int timezone, int julianDay, real_t timeOfDay, real_t turbidity, bool initAtmEffects = true);
+    PssSunSky(Vector const & sunDirection, real_t turbidity, bool initAtmEffects=true) ;
 				// GROUP: Members
 				////  Position (actual Direction) of the sun
 				// South = +x,  East = +y, up = +z
@@ -87,7 +88,15 @@ class PssSunSky {
 				//// Assignment (unimplemented)
     PssSunSky &operator=(const PssSunSky &);
 				//// Compute the sun's position based on IES Sunlight Publication ????
-    void 	InitSunThetaPhi();
+    void InitSunThetaPhi(
+        const real_t latitude,
+        const real_t longitude,
+        const int julianDay,
+        const real_t timeOfDay,
+        const int standardMeridian
+    );
+    void InitSunThetaPhi(Vector const &sunDirection);
+    void InitRest (bool initAtmEffects);
 				//// Transmittance for the sun weighted by sun's spectrum.
     Spectrum ComputeAttenuatedSunlight(real_t theta, int turbidity);
 				//// Conversion from xy to a Spectrum
@@ -110,10 +119,11 @@ class PssSunSky {
 				////
     real_t PerezFunction(const real_t *lam, real_t theta, real_t phi, real_t lvz) const;
 				//Group: Data
-    real_t 	latitude, longitude;
+    /*real_t 	latitude, longitude;
     int 	julianDay;
     real_t 	timeOfDay;
     int 	standardMeridian;
+    */
     real_t 	turbidity;
 				//// Sun Position Vector
     Vector 	toSun;

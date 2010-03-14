@@ -65,16 +65,19 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
 
 void DrawScreen(SDL_Surface* screen) {
         //const double ft = std::fmod (6 + clock() / (double)CLOCKS_PER_SEC, 24);
-        redshift::PssSunSky pss(
+        using namespace redshift;
+        using namespace background;
+        /*PssSunSky pss(
                 30, // [in] lat Latitude (0-360)
                 30,			// [in] long Longitude (-90,90) south to north
                 0,			// [in] sm  Standard Meridian
                 90,			// [in] jd  Julian Day (1-365)
-                9.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
-                17,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
+                12.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
+                3,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
                 true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
                                         // happen if you try to use them....
-        );
+        );*/
+        PssSunSky pss (Vector(1,1,1), 3, true);
 
         using namespace redshift;
         using namespace color;
