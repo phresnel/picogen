@@ -113,7 +113,7 @@ namespace redshift {
 
                 Rgb () : r(0), g(0), b(0) {}
 
-                explicit Rgb (real_t f) : r(0), g(0), b(0) {}
+                explicit Rgb (real_t f) : r(f), g(f), b(f) {}
 
                 Rgb (real_t r_, real_t g_, real_t b_)
                 : r(r_) , g(g_), b(b_)
