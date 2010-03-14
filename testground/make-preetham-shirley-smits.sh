@@ -1,4 +1,4 @@
-g++ -lSDL -Wall \
+g++ -lSDL -Wall -Wextra \
         -DKALLISTO_CHECK_BOUNDS \
         ../redshift/src/basictypes/spectrum.cc \
         ../redshift/src/constants.cc \

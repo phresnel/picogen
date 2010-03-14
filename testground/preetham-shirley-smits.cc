@@ -65,7 +65,7 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
 
 void DrawScreen(SDL_Surface* screen) {
         //const double ft = std::fmod (6 + clock() / (double)CLOCKS_PER_SEC, 24);
-        static redshift::PssSunSky pss(
+        redshift::PssSunSky pss(
                 30, // [in] lat Latitude (0-360)
                 30,			// [in] long Longitude (-90,90) south to north
                 0,			// [in] sm  Standard Meridian
@@ -149,7 +149,7 @@ void DrawScreen(SDL_Surface* screen) {
 }
 
 
-int main(int argc, char* argv[])
+int main(int /*argc*/, char* /*argv*/[])
 {
         //freopen( "CON", "w", stdout );
         redshift::static_init();
