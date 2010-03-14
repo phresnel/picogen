@@ -25,7 +25,7 @@
 #include <RiSpectralCurve.H>
 #endif
 */
-namespace redshift {
+namespace redshift { namespace background {
 
 namespace {
         // 300-800 at 10 nm
@@ -193,5 +193,4 @@ PssSunSky::Spectrum PssSunSky::GetNeta(
 
 }
 
-
-}
+} }

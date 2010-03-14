@@ -25,7 +25,6 @@
 #include "../include/auxiliary/currentdate.hh"
 #include "../include/redshift.hh"
 
-#include "../include/redshift.hh"
 #include "../include/rendertargets/sdlrendertarget.hh"
 #include "../include/rendertargets/colorrendertarget.hh"
 #include "../include/cameras/pinhole.hh"
@@ -1058,7 +1057,7 @@ namespace {
                 if (scene.backgroundCount()) {
                         background = scene.background(0).toBackground();
                 } else {
-                        shared_ptr<background::Preetham> preetham (new background::Preetham());
+                        /*shared_ptr<background::Preetham> preetham (new background::Preetham());
                         preetham->setSunDirection(Vector(-4.0,1.001,0.010));
                         preetham->setTurbidity(2.0f);
                         preetham->setSunColor(Color::FromRGB(1.1,1.,0.9)*Color::real_t(5));
@@ -1066,7 +1065,20 @@ namespace {
                         preetham->enableFogHack (false, 0.00025f, 150000);
                         preetham->invalidate();
                         background = shared_ptr<redshift::Background> (
-                                        new backgrounds::PreethamAdapter (preetham));
+                                        new backgrounds::PreethamAdapter (preetham));*/
+
+                        shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
+                                30, // [in] lat Latitude (0-360)
+                                30,			// [in] long Longitude (-90,90) south to north
+                                0,			// [in] sm  Standard Meridian
+                                90,			// [in] jd  Julian Day (1-365)
+                                12.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
+                                2,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
+                                true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
+                                                        // happen if you try to use them....
+                        ));
+                        background = shared_ptr<redshift::Background> (
+                                new backgrounds::PssAdapter (pss));
                 }
                 // ----------
 
@@ -1096,7 +1108,7 @@ namespace {
                         shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
                 );
 
-                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,options.outputFile));
+                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,options.outputFile,0.00013f));
 
                 UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
 

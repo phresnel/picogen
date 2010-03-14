@@ -335,6 +335,7 @@ namespace redshift {
 }
 
 #include "../../skylab/include/preetham.hh"
+#include "../../skylab/include/sunsky.hh"
 
 #include "static_init.hh"
 

@@ -27,7 +27,7 @@
 
 #include "../include/sunsky.hh"
 
-namespace redshift {
+namespace redshift { namespace background {
 
 /* All data lifted from MI */
 /* Units are either [] or cm^-1. refer when in doubt MI */
@@ -270,4 +270,4 @@ PssSunSky::ComputeAttenuatedSunlight(
 //#endif
 }
 
-}
+} }

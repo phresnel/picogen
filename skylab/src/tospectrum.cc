@@ -26,7 +26,7 @@
 #include "../include/sunsky.hh"
 
 
-namespace redshift {
+namespace redshift { namespace background {
 
 
 
@@ -102,4 +102,4 @@ PssSunSky::ChromaticityToSpectrum(
     return riS0Spectrum + M1 * riS1Spectrum + M2 * riS2Spectrum;
 }
 
-}
+} }

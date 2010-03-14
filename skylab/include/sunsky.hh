@@ -29,7 +29,7 @@
 #include "../../redshift/include/setup.hh"
 
 
-namespace redshift {
+namespace redshift { namespace background {
 /***************************************************************
 CLASS
     PssSunSky
@@ -136,6 +136,6 @@ class PssSunSky {
     bool atmInited;
 };
 
-} // namespace redshift
+} } // namespace redshift.background
 
 #endif /* PssSunSky_H */

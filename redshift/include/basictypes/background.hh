@@ -24,6 +24,12 @@
 #include "../setup.hh"
 
 namespace redshift {
+        // TODO: seperate file
+        struct AtmosphericEffects {
+                Spectrum attenuation;
+                Spectrum inscatter;
+        };
+
         class Background {
         public:
                 virtual Color query (Ray const &ray) const = 0;
@@ -43,11 +49,14 @@ namespace redshift {
                 virtual Color diffuseQuery(Point const&, Normal const&, Random &) const {
                         return Color(0);
                 }
+
                 virtual Color atmosphereShade (
-                        Color const &, Ray const &, real_t
+                        Color const &c, Ray const &, real_t
                 ) const {
-                        return Color(0);
+                        return c;
                 }
+
+                //virtual AtmosphericEffects atmosphericEffects (
         };
 }
 

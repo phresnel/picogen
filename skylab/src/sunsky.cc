@@ -37,8 +37,7 @@
 #include <cmath>
 
 
-namespace redshift
-{
+namespace redshift { namespace background {
 /**********************************************************
 // Atmospheric Perspective Constants
 //
@@ -619,4 +618,4 @@ PssSunSky::Spectrum PssSunSky::InscatteredRadiance(
                 + A0_2 * I_2;
 }
 
-} // namespace redshift
+} }

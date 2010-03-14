@@ -37,7 +37,7 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 #------------------------------------------------------------------------------
 SDLLIBS := `sdl-config --static-libs`
 BOOSTLIBS := -lboost_program_options
-LIBS   := $(SDLLIBS) $(BOOSTLIBS) ../skylab/preetham.o
+LIBS   := $(SDLLIBS) $(BOOSTLIBS) ../skylab/skylab.a
 
 
 #------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ else ifeq ($(COMPILE), "DEBUG")
 else
 	CXXFLAGS += -O3 -march=native
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
-	CXXFLAGS += -ffast-math -march=native -fassociative-math
+	CXXFLAGS += -ffast-math -fassociative-math
 	CXXFLAGS += -mfpmath=sse
 	CXXFLAGS += -fopenmp
 endif
@@ -77,6 +77,7 @@ OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
+OBJFILES += $(BACKGROUNDSOBJDIR)/pss-adapter.o
 
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
@@ -176,6 +177,10 @@ $(OBJDIR)/quatsch-integration.o: ./src/quatsch-integration.cc
 
 $(BACKGROUNDSOBJDIR)/preetham-adapter.o: \
                      ./src/backgrounds/preetham-adapter.cc
+	$(CXX) -o $@ $<
+
+$(BACKGROUNDSOBJDIR)/pss-adapter.o: \
+                     ./src/backgrounds/pss-adapter.cc
 	$(CXX) -o $@ $<
 
 

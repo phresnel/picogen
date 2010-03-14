@@ -28,9 +28,14 @@ namespace redshift {
 struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
         redshift::SdlRenderTarget const & display;
+        const real_t linearOutputScale;
 
-        SdlRenderTargetLock (redshift::SdlRenderTarget const & display_)
+        SdlRenderTargetLock (
+                redshift::SdlRenderTarget const & display_,
+                real_t linearOutputScale
+        )
         : display (display_)
+        , linearOutputScale(linearOutputScale)
         {
                 if (SDL_MUSTLOCK (display.display) &&
                         SDL_LockSurface (display.display)<0) {
@@ -69,9 +74,9 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
                 //Rgb const rgb = saturate (color,0,1).toRgb(); // TODO: strange, saturate yields NaNs?
                 color::RGB const rgb = color.toRGB();
-                const int r_ = (int)(255.f * rgb.R);
-                const int g_ = (int)(255.f * rgb.G);
-                const int b_ = (int)(255.f * rgb.B);
+                const int r_ = (int)(255.f * rgb.R * linearOutputScale);
+                const int g_ = (int)(255.f * rgb.G * linearOutputScale);
+                const int b_ = (int)(255.f * rgb.B * linearOutputScale);
                 const int r = r_<0?0:r_>255?255:r_;
                 const int g = g_<0?0:g_>255?255:g_;
                 const int b = b_<0?0:b_>255?255:b_;
@@ -102,9 +107,11 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
 SdlRenderTarget::SdlRenderTarget (
         int width_, int height_,
-        std::string const &outputFile)
+        std::string const &outputFile,
+        real_t linearOutputScale)
 : width(width_), height(height_)
 , outputFile (outputFile)
+, linearOutputScale(linearOutputScale)
 {
         using namespace std;
 
@@ -134,14 +141,14 @@ SdlRenderTarget::~SdlRenderTarget() {
 
 
 shared_ptr<RenderTargetLock> SdlRenderTarget::lock () {
-        return shared_ptr<RenderTargetLock> (new SdlRenderTargetLock (*this));
+        return shared_ptr<RenderTargetLock> (new SdlRenderTargetLock (*this, linearOutputScale));
 }
 
 
 
 shared_ptr<RenderTargetLock const> SdlRenderTarget::lock () const {
         return shared_ptr<RenderTargetLock const>
-                        (new SdlRenderTargetLock (*this));
+                        (new SdlRenderTargetLock (*this, linearOutputScale));
 }
 
 
