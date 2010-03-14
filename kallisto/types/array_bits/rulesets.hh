@@ -260,7 +260,7 @@ namespace kallisto {
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(math_pow_sa)
 
 
-        struct r_reduction {
+        struct r_reduction_generic {
                 typedef void
                         reduction_product,
                         reduction_sum,
@@ -272,6 +272,13 @@ namespace kallisto {
                 ;
         };
 
+        struct r_reduction : r_reduction_generic {
+                typedef void
+                        reduction_isnan,
+                        reduction_isinf
+                ;
+        };
+
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_product)
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_sum)
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_length)
@@ -279,6 +286,8 @@ namespace kallisto {
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_all)
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_none)
         KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_any)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_isnan)
+        KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(reduction_isinf)
 
 
 
@@ -349,7 +358,7 @@ namespace kallisto {
         , r_multiplicative_all
         , r_bitwise
         , r_unary_all
-        , r_reduction
+        , r_reduction_generic
         , r_flow_control
         , r_math_special_generic
         {};

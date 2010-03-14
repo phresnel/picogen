@@ -131,6 +131,33 @@ namespace kallisto {
                 return false;
         }
 
+
+
+        // isnan isinf
+        template <typename T> inline bool _isnan (T val) {
+                return val != val;
+        }
+        template <typename T> inline bool _isinf (T val) {
+                return std::numeric_limits<T>().infinity() == val;
+        }
+
+        template <typename T, unsigned int N, typename RULES, typename REP>
+        inline typename traits::enable_if<has_member_reduction_isnan<RULES>,bool>::type
+        isnan (array<T,N,RULES,REP> const &arr) {
+                for (unsigned int i=0; i<N; ++i)
+                        if (_isnan(arr[i])) return true;
+                return false;
+        }
+
+        template <typename T, unsigned int N, typename RULES, typename REP>
+        inline typename traits::enable_if<has_member_reduction_isinf<RULES>,bool>::type
+        isinf (array<T,N,RULES,REP> const &arr) {
+                for (unsigned int i=0; i<N; ++i)
+                        if (_isinf(arr[i])) return true;
+                return false;
+        }
+
+
         // Sidelore: Upon testing my implementation with [uninitialized] data,
         // I realised that iff there are dividesisions in the calculation,
         // my array was a tad slower than std::valarray. I then initialized it
