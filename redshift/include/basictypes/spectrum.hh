@@ -35,6 +35,8 @@ namespace redshift {
                         math_exp,
                         math_max_as,
                         reduction_all,
+                        reduction_isnan,
+                        reduction_isinf,
                         relational_equal_to_as
                 ;
         };
@@ -128,6 +130,15 @@ namespace redshift {
         template <typename T, unsigned int N>
         inline spectrum_base<T,N> clamp (spectrum_base<T,N> const &s) {
                 return kallisto::max(s, typename spectrum_base<T, N>::real_t(0));
+        }
+
+        template <typename T, unsigned int N>
+        inline bool isnan (spectrum_base<T,N> const &s) {
+                return kallisto::isnan (s);
+        }
+        template <typename T, unsigned int N>
+        inline bool isinf (spectrum_base<T,N> const &s) {
+                return kallisto::isinf (s);
         }
 }
 

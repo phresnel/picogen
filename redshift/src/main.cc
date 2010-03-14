@@ -358,7 +358,7 @@ namespace redshift { namespace scenefile {
                                         size,
                                         maxRecursion,
                                         lodFactor,
-                                        redshift::Color::fromRgb(color.r, color.g, color.b)
+                                        redshift::Color::FromRGB(color.r, color.g, color.b)
                                 ));
                         }
                 };
@@ -383,7 +383,7 @@ namespace redshift { namespace scenefile {
                                 return shared_ptr<primitive::Primitive>(new HorizonPlane(
                                         height,
                                         heightFunction,
-                                        redshift::Color::fromRgb(color.r,color.g,color.b)
+                                        redshift::Color::FromRGB(color.r,color.g,color.b)
                                 ));
                         }
                 };
@@ -439,16 +439,16 @@ namespace redshift { namespace scenefile {
                         switch (type) {
                         case homogeneous:
                                 return shared_ptr<VolumeRegion> (new volume::Homogeneous(
-                                        redshift::Color::fromRgb(sigma_a.r,sigma_a.g,sigma_a.b),
-                                        redshift::Color::fromRgb(sigma_s.r,sigma_s.g,sigma_s.b),
-                                        redshift::Color::fromRgb(Lve.r,Lve.g,Lve.b),
+                                        redshift::Color::FromRGB(sigma_a.r,sigma_a.g,sigma_a.b),
+                                        redshift::Color::FromRGB(sigma_s.r,sigma_s.g,sigma_s.b),
+                                        redshift::Color::FromRGB(Lve.r,Lve.g,Lve.b),
                                         hg
                                 ));
                         case exponential:
                                 return shared_ptr<VolumeRegion> (new volume::Exponential(
-                                        redshift::Color::fromRgb(sigma_a.r,sigma_a.g,sigma_a.b),
-                                        redshift::Color::fromRgb(sigma_s.r,sigma_s.g,sigma_s.b),
-                                        redshift::Color::fromRgb(Lve.r,Lve.g,Lve.b),
+                                        redshift::Color::FromRGB(sigma_a.r,sigma_a.g,sigma_a.b),
+                                        redshift::Color::FromRGB(sigma_s.r,sigma_s.g,sigma_s.b),
+                                        redshift::Color::FromRGB(Lve.r,Lve.g,Lve.b),
                                         hg,
                                         baseFactor,
                                         exponentFactor,
@@ -573,13 +573,14 @@ namespace redshift { namespace scenefile {
                 {}
 
                 shared_ptr<redshift::Background> toBackground() const {
+                        using namespace redshift;
                         switch (type) {
                         case preetham_shirley: {
                                 shared_ptr<redshift::background::Preetham> preetham (new background::Preetham());
                                 preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
                                 preetham->setTurbidity(turbidity);
-                                preetham->setSunColor(redshift::Color(sunColor.r,sunColor.g,sunColor.b));
-                                preetham->setColorFilter(redshift::Color(skyFilter.r,skyFilter.g,skyFilter.b));
+                                preetham->setSunColor(Color::FromRGB(sunColor.r,sunColor.g,sunColor.b));
+                                preetham->setColorFilter(Color::FromRGB(skyFilter.r,skyFilter.g,skyFilter.b));
                                 preetham->enableFogHack (false, 0.00025f, 150000);
                                 preetham->invalidate();
 
@@ -1060,8 +1061,8 @@ namespace {
                         shared_ptr<background::Preetham> preetham (new background::Preetham());
                         preetham->setSunDirection(Vector(-4.0,1.001,0.010));
                         preetham->setTurbidity(2.0f);
-                        preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
-                        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
+                        preetham->setSunColor(Color::FromRGB(1.1,1.,0.9)*Color::real_t(5));
+                        preetham->setColorFilter(Color::FromRGB(1.0,1.0,1.0)*Color::real_t(0.025));
                         preetham->enableFogHack (false, 0.00025f, 150000);
                         preetham->invalidate();
                         background = shared_ptr<redshift::Background> (
@@ -1074,7 +1075,7 @@ namespace {
                         camera,
                         agg,
                         background,
-                        //shared_ptr<Background>(new backgrounds::Monochrome(Color::fromRgb(0.5,0.25,0.125))),
+                        //shared_ptr<Background>(new backgrounds::Monochrome(Color::FromRGB(0.5,0.25,0.125))),
                         //shared_ptr<Background>(new backgrounds::VisualiseDirection())
                         shared_ptr<Integrator> (new DirectLighting(10/*ambient samples*/)),
 
@@ -1086,9 +1087,9 @@ namespace {
 
                         /*
                         shared_ptr<VolumeRegion> (new volume::Exponential (
-                                0.0*Color::fromRgb(1,1,0.8)*0.00025, // absorption
-                                3*Color::fromRgb(1,1,1)*0.00025, // out scattering probability
-                                0.0*Color::fromRgb(1,1,1)*0.0001, // emission
+                                0.0*Color::FromRGB(1,1,0.8)*0.00025, // absorption
+                                3*Color::FromRGB(1,1,1)*0.00025, // out scattering probability
+                                0.0*Color::FromRGB(1,1,1)*0.0001, // emission
                                 0.0 // Henyey Greenstein
                                 , 1.f, 0.125*0.0075f, Point(0.f,0.f,0.f)
                         )),

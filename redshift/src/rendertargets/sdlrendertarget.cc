@@ -68,18 +68,13 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
 
                 //Rgb const rgb = saturate (color,0,1).toRgb(); // TODO: strange, saturate yields NaNs?
-                Rgb const rgb = color.toRgb();
-                const int r_ = (int)(255.f * rgb.r);
-                const int g_ = (int)(255.f * rgb.g);
-                const int b_ = (int)(255.f * rgb.b);
+                color::RGB const rgb = color.toRGB();
+                const int r_ = (int)(255.f * rgb.R);
+                const int g_ = (int)(255.f * rgb.G);
+                const int b_ = (int)(255.f * rgb.B);
                 const int r = r_<0?0:r_>255?255:r_;
                 const int g = g_<0?0:g_>255?255:g_;
                 const int b = b_<0?0:b_>255?255:b_;
-                if (r==0 && g==255 && b==255) {
-                        std::cout << color.r << "," << color.g << "," << color.b << std::endl;
-                        std::cout << rgb.r << "," << rgb.g << "," << rgb.b << std::endl;
-                        std::cout << std::endl;
-                }
                 bufp = SDL_MapRGB(display.display->format,r,g,b);
         }
 

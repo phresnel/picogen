@@ -43,7 +43,7 @@ optional<tuple<Color,Vector> > Mirror::sample_f (
 
 
 Color Mirror::f (const Vector &out, const Vector &in, Random&) const {
-        return Color::fromRgb(0,0,0);
+        return Color(0);
 }
 
 

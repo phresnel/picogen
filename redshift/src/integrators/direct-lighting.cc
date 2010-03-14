@@ -63,8 +63,8 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
                 //-- skylight begin -------------------------------------------
-                Color sum = Color::fromRgb (0,0,0);
-                Color spec = Color::fromRgb (0,0,0);
+                Color sum = Color(0);
+                Color spec = Color(0);
                 int numSamples = 1;
                 // diffuse
                 if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
@@ -108,8 +108,8 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
 
                 const Color surfaceSkyColor = spec + (
                         numSamples==0
-                        ? Color(0.3,0.3,0.3)
-                        : (sum * (1./numSamples)) * constants::pi
+                        ? Color(0.3)
+                        : Color((sum / Color::real_t(numSamples)) * Color::real_t(constants::pi))
                 ); // TODO: is this correct?
                 //-------------------------------------------------------------
 
@@ -128,7 +128,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                                 const real_t d = max(
                                         real_t(0),
                                         dot(sunDir,vector_cast<Vector>(normalS)));
-                                ret = ret + multiplyComponents(surfaceColor,bg->querySun(ray))*d;
+                                ret = ret + (surfaceColor * bg->querySun(ray))*d;
                         }
                 }
 
@@ -140,7 +140,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                         Vector sv = vector_cast<Vector>(raydiff(0));
                         //const Color primaryColor = Color(0.5,0.5,0.5);//bg->query (raydiff);
                         for (real_t s=0; s<distance; (s+=step), (sv=sv+stepv)) {
-                                Color C (Color::fromRgb(0,0,0));
+                                Color C = Color (0);
                                 /*const int num = 3;
                                 for (int i=0; i<num; ++i) {
                                         const tuple<real_t,real_t,real_t> s

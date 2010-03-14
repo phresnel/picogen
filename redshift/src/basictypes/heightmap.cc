@@ -25,7 +25,7 @@ namespace redshift {
 
 
 HeightmapRenderer::HeightmapRenderer (
-        shared_ptr<RenderTarget> rt, 
+        shared_ptr<RenderTarget> rt,
         shared_ptr<HeightFunction> fun)
 : renderTarget(rt)
 , function(fun)
@@ -34,45 +34,45 @@ HeightmapRenderer::HeightmapRenderer (
 
 
 
-HeightmapRenderer::~HeightmapRenderer () {                
-}       
+HeightmapRenderer::~HeightmapRenderer () {
+}
 
 
 
 void HeightmapRenderer::render (
         interaction::ProgressReporter::ConstPtr reporter,
         interaction::UserCommandProcessor::Ptr ucp
-        
+
 ) const {
         const real_t totalNumberOfSamples = static_cast<real_t>
                 (renderTarget->getWidth() * renderTarget->getHeight());
         real_t sampleNumber = 0;
-        
+
         int const width = renderTarget->getWidth();
         int const height = renderTarget->getHeight();
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
         for (int y=height-1; y>=0; --y)
          for (int x=0; x<width; ++x) {
-                
+
                 const real_t
                         u = static_cast<real_t>(x) / width,
                         v = static_cast<real_t>(y) / height,
                         h_ = (*function) (u, v)
                         ;
-                        
-                lock->setPixel (x,y, Rgb (h_,h_,h_));
-                
+
+                lock->setPixel (x,y, Color::FromRGB(h_,h_,h_));
+
                 ++sampleNumber;
                 reporter->report (lock, sampleNumber, totalNumberOfSamples);
-                        
-                
+
+
                 /*Sample sample (
                         ImageCoordinates(static_cast<real_t>(x),
                                             static_cast<real_t>(y)),
                         LensCoordinates(),
                         renderTarget
-                );                
+                );
                 const tuple<real_t,RayDifferential>
                                           primo = camera->generateRay (sample);
                 const real_t & rayWeight (get<0>(primo));
@@ -86,23 +86,23 @@ void HeightmapRenderer::render (
                 ++sample.imageCoordinates.v;
                 sample.primaryRay.ry = get<1>(camera->generateRay (sample));
                 --sample.imageCoordinates.v;
-                
+
                 sample.primaryRay.hasDifferentials= true;
-               
+
                 const tuple<real_t,Color> Ls_ (Li(sample));
                 const real_t Ls_alpha (get<0>(Ls_));
                 const Color Ls_color  (get<1>(Ls_));
                 const Color finalColor = rayWeight * Ls_color;
-                
+
                 //PBRT:<issue warning if unexpected radiance value returned>
 
-                //PBRT:<add sample contribution to image> 28                
+                //PBRT:<add sample contribution to image> 28
                 lock->setPixel (x,y,finalColor);
                         //Rgb (
                           //      (float)x/(float)renderTarget->getWidth(),
-                          //      (float)y/(float)renderTarget->getHeight(), 
+                          //      (float)y/(float)renderTarget->getHeight(),
                                 0.5));
-                                
+
                 ++sampleNumber;
                 reporter->report (lock, sampleNumber, totalNumberOfSamples);
                 */

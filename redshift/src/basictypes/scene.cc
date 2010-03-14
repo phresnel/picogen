@@ -151,10 +151,10 @@ void Scene::render (
 
         // non-portable thread id visualisation
         const Color threadCol[] = {
-                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
-                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
-                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
-                Color::fromRgb ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f)
+                Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
+                Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
+                Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
+                Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f)
         };
 
         uint32_t salt = 0; // TODO: this should be exposed to job-level
@@ -170,7 +170,7 @@ void Scene::render (
                         schedule(dynamic) \
                         reduction(+:sampleNumber)
                 for (uint32_t x=0; x<width; ++x) {
-                        Color accu = Color::fromRgb(0,0,0);
+                        Color accu = Color::FromRGB(0,0,0);
                         for (int i=0; i<numAASamples; ++i) {
 
                                 LCGf<0xFFFFFFFFUL, 1103515245UL, 12345UL> mwcf (x+(y*width));
@@ -214,11 +214,13 @@ void Scene::render (
                                 const Color Ls_color  (get<1>(Ls_));
                                 const Color finalColor = rayWeight * Ls_color;
 
-                                if (finalColor.r != finalColor.r
-                                   || finalColor.g != finalColor.g
-                                   || finalColor.b != finalColor.b
-                                ) {
+                                if (isnan (finalColor)) {
                                         std::cout << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;
+                                        --i;
+                                        continue;
+                                }
+                                if (isinf (finalColor)) {
+                                        std::cout << "inf pixel at " << x << ":" << y << ":" << i << std::endl;
                                         --i;
                                         continue;
                                 }
@@ -230,13 +232,17 @@ void Scene::render (
                         // 4) PBRT:<add sample contribution to image> 28
                         //-------------------------------------------------------------
                         if (0) {
-                                accu = multiplyComponents (accu, threadCol[omp_get_thread_num()]);
+                                accu = accu * threadCol[omp_get_thread_num()];
                         }
-                        if (accu.r != accu.r
-                           || accu.g != accu.g
-                           || accu.b != accu.b
-                        ) {
+                        if (isnan (accu)) {
                                 std::cout << "NaN pixel at " << x << ":" << y << std::endl;
+                                --x;
+                                continue;
+                        }
+                        if (isinf (accu)) {
+                                std::cout << "inf pixel at " << x << ":" << y << std::endl;
+                                --x;
+                                continue;
                         }
 
                         Color c = accu*(1.f/numAASamples);

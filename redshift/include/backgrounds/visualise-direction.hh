@@ -30,7 +30,7 @@ namespace redshift { namespace backgrounds {
         {
         public:
                 Color query (Ray const &ray) const {
-                        return Color::fromRgb(
+                        return Color::FromRGB(
                                 ray.direction.x+.5f,
                                 ray.direction.y+.5f,
                                 ray.direction.z+.5f

@@ -38,10 +38,7 @@ namespace redshift {
 
 
                                 return make_tuple (1.0,
-                                        Color(
-                                                /*I->getDistance()*0.05,
-                                                I->getDistance()*0.025,
-                                                I->getDistance()*0.0125*/
+                                        Color::FromRGB(
                                                 I->getShadingNormal().x+0.5,
                                                 I->getShadingNormal().y+0.5,
                                                 I->getShadingNormal().z+0.5
@@ -49,9 +46,10 @@ namespace redshift {
                                         I->getDistance()
                                 );
                         } else {
-                                Color const col (0.5+sample.primaryRay.direction.x,
-                                                 0.5+sample.primaryRay.direction.y,
-                                                 0.5+sample.primaryRay.direction.z);
+                                Color const col = Color::FromRGB (
+                                                0.5+sample.primaryRay.direction.x,
+                                                0.5+sample.primaryRay.direction.y,
+                                                0.5+sample.primaryRay.direction.z);
                                 return make_tuple (1.0, col, constants::infinity);
                         }
                 }

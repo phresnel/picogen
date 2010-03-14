@@ -38,7 +38,7 @@ Color DensityRegion::tau (
 ) const {
         real_t t0=i.min(), t1=i.max();
 
-	Color tau = Color::fromRgb(0,0,0);
+	Color tau = Color::FromRGB(0,0,0);
 
 	t0 += offset * stepSize;
 	while (t0 < t1) {

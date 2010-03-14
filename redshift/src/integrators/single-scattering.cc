@@ -57,13 +57,13 @@ tuple<real_t,Color> SingleScattering::Li (
         t1 = interval.max()>cutoffDistance?cutoffDistance:interval.max();
 
 	// Do emission-only volume integration in _vr_
-	Color Lv = Color::fromRgb(0.f,0.f,0.f);
+	Color Lv = Color(0.f);
 
 	// Prepare for volume integration stepping
 	const int N = static_cast<int>(ceil((t1-t0) / stepSize)); // Ceil2Int(), PBRT p. 856 (A.3.4)
         const real_t step = (t1 - t0) / N;
 
-	Color Tr = Color::fromRgb(1.f,1.f,1.f);
+	Color Tr = Color(1.f);
 	Point curr = ray(t0), prev;
 	const Vector w = -ray.direction;
 
@@ -91,7 +91,7 @@ tuple<real_t,Color> SingleScattering::Li (
 		Tr = Tr * exp(-stepTau);
 
 		// Terminate if transmittance is small
-		if (Tr.Y() < 0.05) {
+		if (Tr.y() < 0.05) {
 			const real_t continueProb = .5f;
 			if (rand() > continueProb) break;
 			Tr = Tr * (1/continueProb);
@@ -129,7 +129,7 @@ tuple<real_t,Color> SingleScattering::Transmittance(
         const Interval &interval, Random& rand
 ) const {
 	if (!scene.getVolumeRegion())
-                return make_tuple(1.f,Color::fromRgb(1,1,1));
+                return make_tuple(1.f,Color(1));
 
 	const real_t step = stepSize;//sample ? stepSize : 4.f * stepSize;
 	const real_t offset = rand ();
