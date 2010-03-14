@@ -146,6 +146,7 @@ void  PssSunSky::CreateConstants()
     beta_m_ang_prefix = Spectrum::FromSampled(b_m_ang_prefix, 300,800,101);
     beta_p_ang_prefix = Spectrum::FromSampled(b_p_ang_prefix, 300,800,101);
 
+    /*
     std::cout << "beta_m {\n" << std::fixed;
     std::cout << "   orig: "; for (int i=0;i<101;++i) std::cout << b_m[i] << "  ";
     std::cout << "\n   new: "; for (int i=0;i<Spectrum::num_components;++i) std::cout << beta_m[i] << "  ";
@@ -157,13 +158,14 @@ void  PssSunSky::CreateConstants()
     std::cout << "\n   new: "; for (int i=0;i<Spectrum::num_components;++i) std::cout << beta_p[i] << "  ";
     std::cout << "\n}\n";
     std::cout << std::endl;
+    */
 }
 
 
 
 PssSunSky::Spectrum PssSunSky::GetNeta(
         PssSunSky::real_t theta,
-        PssSunSky::real_t v
+        PssSunSky::real_t //v
 ) const
 {
     /* // original
