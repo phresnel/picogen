@@ -245,7 +245,7 @@ void Scene::render (
                                 continue;
                         }
 
-                        Color c = accu*(1.f/numAASamples);
+                        Color c = accu*(Color::real_t(1)/numAASamples);
                         lock->setPixel (x,y,c);
                         ++sampleNumber;
 

@@ -42,8 +42,8 @@ namespace redshift { namespace backgrounds {
                 // TODO: refactor the sun functions into a PreethamSunAdapter
                 bool hasSun () const { return true; }
                 Vector getSunDirection () const { return normalize(preetham->GetSunPosition()); }
-                Color getSunColor () const { return Color(preetham->GetSunSpectralRadiance()); }
-                Color querySun (Ray const &ray) { return Color::FromRGB(1,0,0); }
+                Color getSunColor () const;
+                Color querySun (Ray const &ray) const;
         private:
                 shared_ptr<redshift::background::PssSunSky> preetham;
         };

@@ -67,7 +67,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 Color spec = Color(0);
                 int numSamples = 1;
                 // diffuse
-                if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+                if (0) if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
                         if (numAmbientSamples>0)
@@ -132,37 +132,10 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                         }
                 }
 
-                //-- atmospheric scattering -----------------------------------
-                if (false) {
-                        const Vector sunDir = bg->getSunDirection();
-                        const real_t step = 10.f;
-                        const Vector stepv = raydiff.direction * step;
-                        Vector sv = vector_cast<Vector>(raydiff(0));
-                        //const Color primaryColor = Color(0.5,0.5,0.5);//bg->query (raydiff);
-                        for (real_t s=0; s<distance; (s+=step), (sv=sv+stepv)) {
-                                Color C = Color (0);
-                                /*const int num = 3;
-                                for (int i=0; i<num; ++i) {
-                                        const tuple<real_t,real_t,real_t> s
-                                                = diffuseRng.uniform_sphere();
-                                        const Vector dir (get<0>(s),fabs(get<1>(s)),get<2>(s));
-                                        //C = C + bg->query (Ray (vector_cast<Point>(sv),dir));
-                                }
-                                C = C * (1.f / num);*/
 
-                                const Ray sunRay = Ray (vector_cast<Point>(sv), sunDir);
-                                if (!scene.doesIntersect (sunRay)) {
-                                        C = C + bg->querySun (sunRay);
-                                }
-
-                                ret = (ret * 0.99f)
-                                    + (C * 0.01f);
-                        }
-                }
-                //-------------------------------------------------------------
-
-                if (bg->hasAtmosphereShade())
+                if (0) if (bg->hasAtmosphereShade()) {
                         ret = bg->atmosphereShade (ret, raydiff, gd.getDistance());
+                }
                 return make_tuple(1.0f, ret, gd.getDistance());
         } else {
                 return make_tuple (1.0,

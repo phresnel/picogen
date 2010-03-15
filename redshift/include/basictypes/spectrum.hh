@@ -181,8 +181,8 @@ namespace redshift {
         //typedef spectrum_base<real_t,6> _spectrum_base;
 
         template <typename T>
-        class SpectrumBase : public spectrum_base<T,6> {
-                typedef spectrum_base<T,6> base;
+        class SpectrumBase : public spectrum_base<T,16> {
+                typedef spectrum_base<T,16> base;
         public:
                 enum noinit_ {noinit};
 

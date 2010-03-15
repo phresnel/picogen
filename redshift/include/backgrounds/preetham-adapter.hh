@@ -43,7 +43,7 @@ namespace redshift { namespace backgrounds {
                 bool hasSun () const { return true; }
                 Vector getSunDirection () const { return preetham->getSunDirection(); }
                 Color getSunColor () const { return preetham->getSunColor(); }
-                Color querySun (Ray const &ray) { return preetham->sunShade (ray); }
+                Color querySun (Ray const &ray) const { return preetham->sunShade (ray); }
         private:
                 shared_ptr<redshift::background::Preetham> preetham;
         };

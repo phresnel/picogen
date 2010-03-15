@@ -32,6 +32,14 @@ Color PssAdapter::query (Ray const &ray) const {
                 //+ preetham->sunShade(ray);
         //return Color::fromRgb (1,0.5,0.25);
 }
+
+Color PssAdapter::getSunColor () const {
+        return Color(preetham->GetSunSpectralRadiance());
+}
+
+Color PssAdapter::querySun (Ray const &ray) const {
+        return getSunColor();
+}
 /*
 Color PssAdapter::diffuseQuery (
         Point const &poi, Normal const &normal, Random &rand
@@ -74,6 +82,7 @@ Color PssAdapter::atmosphereShade (
                 viewer, source,
                 attenuation, inscatter
         );
+        //return color;
         return color * Color(attenuation) + Color(inscatter);
 }
 

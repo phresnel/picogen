@@ -38,7 +38,7 @@ namespace redshift {
                 virtual bool hasSun () const { return false; }
                 virtual Vector getSunDirection () const { return Vector(); }
                 virtual Color getSunColor () const { return Color(); }
-                virtual Color querySun (Ray const &ray) { return Color(); }
+                virtual Color querySun (Ray const &ray) const { return Color(); }
 
                 virtual bool hasFastDiffuseQuery () const {
                         return false;

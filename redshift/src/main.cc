@@ -281,6 +281,7 @@ namespace redshift { namespace scenefile {
         // Object.
         struct Object {
                 enum Type {
+                        water_plane,
                         horizon_plane,
                         lazy_quadtree
                 };
@@ -290,7 +291,8 @@ namespace redshift { namespace scenefile {
                 inline shared_ptr<primitive::Primitive> toPrimitive () const {
                         switch (type) {
                         case lazy_quadtree: return lazyQuadtreeParams.toPrimitive();
-                        case horizon_plane: return horizonPlaneParams.toPrimitive();
+                        case water_plane: return WaterPlaneParams.toPrimitive();
+                        case horizon_plane: return HorizonPlaneParams.toPrimitive();
                         };
                         throw std::exception();
                 }
@@ -315,11 +317,17 @@ namespace redshift { namespace scenefile {
                                 & pack("color", lazyQuadtreeParams.color)
                                 ;
                         } break;
+                        case water_plane:
+                                arch
+                                & pack("code", WaterPlaneParams.code)
+                                & pack("height", WaterPlaneParams.height)
+                                & pack("color", WaterPlaneParams.color)
+                                ;
+                                break;
                         case horizon_plane:
                                 arch
-                                & pack("code", horizonPlaneParams.code)
-                                & pack("height", horizonPlaneParams.height)
-                                & pack("color", horizonPlaneParams.color)
+                                & pack("height", HorizonPlaneParams.height)
+                                & pack("color", HorizonPlaneParams.color)
                                 ;
                                 break;
                         };
@@ -361,14 +369,15 @@ namespace redshift { namespace scenefile {
                                 ));
                         }
                 };
-                struct HorizonPlaneParams {
+                struct WaterPlaneParams {
                         std::string code;
                         double height;
                         Rgb color;
 
-                        HorizonPlaneParams ()
+                        WaterPlaneParams ()
                         : code("(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))")
                         , height(0)
+                        , color(1,1,1)
                         {}
 
                         shared_ptr<primitive::Primitive> toPrimitive() const {
@@ -379,23 +388,44 @@ namespace redshift { namespace scenefile {
                                         shared_ptr<redshift::HeightFunction> (
                                                 new ::redshift::QuatschHeightFunction(code)
                                         );
-                                return shared_ptr<primitive::Primitive>(new HorizonPlane(
+                                return shared_ptr<primitive::Primitive>(new WaterPlane(
                                         height,
                                         heightFunction,
                                         redshift::Color::FromRGB(color.r,color.g,color.b)
                                 ));
                         }
                 };
+                struct HorizonPlaneParams {
+                        double height;
+                        Rgb color;
+
+                        HorizonPlaneParams ()
+                        : height(0)
+                        , color(1,1,1)
+                        {}
+
+                        shared_ptr<primitive::Primitive> toPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+
+                                return shared_ptr<primitive::Primitive>(new HorizonPlane(
+                                        height,
+                                        redshift::Color::FromRGB(color.r,color.g,color.b)
+                                ));
+                        }
+                };
                 LazyQuadtreeParams lazyQuadtreeParams;
-                HorizonPlaneParams horizonPlaneParams;
+                WaterPlaneParams WaterPlaneParams;
+                HorizonPlaneParams HorizonPlaneParams;
 
         public:
 
 
         };
         const actuarius::Enum<Object::Type> Object::Typenames =
-                ( actuarius::Nvp<Object::Type>(Object::horizon_plane, "horizon-plane")
+                ( actuarius::Nvp<Object::Type>(Object::water_plane, "water-plane")
                 | actuarius::Nvp<Object::Type>(Object::lazy_quadtree, "lazy-quadtree")
+                | actuarius::Nvp<Object::Type>(Object::horizon_plane, "horizon-plane")
         );
 
 
@@ -552,7 +582,7 @@ namespace redshift { namespace scenefile {
         // Background.
         struct Background {
                 enum Type {
-                        preetham_shirley
+                        pss_sunsky
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -564,7 +594,7 @@ namespace redshift { namespace scenefile {
 
 
                 Background ()
-                : type(preetham_shirley)
+                : type(pss_sunsky)
                 , sunDirection(0,0.5,2)
                 , turbidity(2.5)
                 , sunColor(3,3,3)
@@ -574,17 +604,23 @@ namespace redshift { namespace scenefile {
                 shared_ptr<redshift::Background> toBackground() const {
                         using namespace redshift;
                         switch (type) {
-                        case preetham_shirley: {
-                                shared_ptr<redshift::background::Preetham> preetham (new background::Preetham());
-                                preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
+                        case pss_sunsky: {
+                                shared_ptr<redshift::background::PssSunSky> preetham (
+                                 new background::PssSunSky(
+                                        normalize(Vector(sunDirection.x,sunDirection.y,sunDirection.z)),
+                                        turbidity,
+                                        true
+                                ));
+
+                                /*preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
                                 preetham->setTurbidity(turbidity);
                                 preetham->setSunColor(Color::FromRGB(sunColor.r,sunColor.g,sunColor.b));
                                 preetham->setColorFilter(Color::FromRGB(skyFilter.r,skyFilter.g,skyFilter.b));
                                 preetham->enableFogHack (false, 0.00025f, 150000);
-                                preetham->invalidate();
+                                preetham->invalidate();*/
 
                                 return shared_ptr<redshift::Background> (
-                                        new backgrounds::PreethamAdapter (preetham)
+                                        new backgrounds::PssAdapter (preetham)
                                 );
                         } break;
                         };
@@ -597,7 +633,7 @@ namespace redshift { namespace scenefile {
                         using actuarius::pack;
 
                         switch (type) {
-                        case preetham_shirley:
+                        case pss_sunsky:
                                 arch & pack ("sun-direction", sunDirection);
                                 arch & pack ("turbidity", turbidity);
                                 arch & pack ("sun-color", sunColor);
@@ -607,7 +643,7 @@ namespace redshift { namespace scenefile {
                 }
         };
         const actuarius::Enum<Background::Type> Background::Typenames =
-                ( actuarius::Nvp<Background::Type>(Background::preetham_shirley, "preetham-shirley")
+                ( actuarius::Nvp<Background::Type>(Background::pss_sunsky, "pss-sunsky")
                 );
 
 
@@ -635,6 +671,22 @@ namespace redshift { namespace scenefile {
                         arch & pack ("surface-integrator", surfaceIntegrator);
                         if (Arch::deserialize || volumeIntegrator.type != VolumeIntegrator::none)
                                 arch & pack ("volume-integrator", volumeIntegrator);
+                }
+        };
+
+        // FilmSettings.
+        struct FilmSettings {
+                double colorscale;
+
+                FilmSettings ()
+                : colorscale(1)
+                {}
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack ("color-scale", colorscale);
                 }
         };
 
@@ -743,13 +795,14 @@ namespace redshift { namespace scenefile {
 
 
 
-        // Scene = (RenderSettings+)(Objects*)
+        // Scene = (RenderSettings+)(FilmSettings)(Objects*)
         class Scene {
                 std::vector<Object> objects_;
                 std::vector<Volume> volumes_;
                 std::vector<RenderSettings> renderSettings_;
                 std::vector<Camera> cameras_;
                 std::vector<Background> backgrounds_;
+                FilmSettings filmSettings_;
         public:
                 void addRenderSettings (RenderSettings const &rs) {
                         renderSettings_.push_back (rs);
@@ -809,6 +862,10 @@ namespace redshift { namespace scenefile {
                         cameras_.clear();
                 }
 
+                FilmSettings filmSettings () const {
+                        return filmSettings_;
+                }
+
 
                 // Serialization.
                 template<typename Arch>
@@ -820,6 +877,7 @@ namespace redshift { namespace scenefile {
                         arch & pack ("objects", &Object::type, Object::Typenames, objects_);
                         arch & pack ("volumes", &Volume::type, Volume::Typenames, volumes_);
                         arch & pack ("backgrounds", &Background::type, Background::Typenames, backgrounds_);
+                        arch & pack ("film-settings", filmSettings_);
                 }
         };
 } }
@@ -1113,7 +1171,7 @@ namespace {
                         shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
                 );
 
-                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,options.outputFile,0.00005f));
+                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,options.outputFile,scene.filmSettings().colorscale));
 
                 UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
 
@@ -1147,7 +1205,7 @@ void read_and_render (Options const & options) {
                 Object o;
                 o.type = Object::lazy_quadtree;
                 scene.addObject (o);
-                o.type = Object::horizon_plane;
+                o.type = Object::water_plane;
                 scene.addObject (o);
 
                 RenderSettings rs;
