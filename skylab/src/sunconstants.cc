@@ -202,12 +202,11 @@ static PssSunSky::real_t solAmplitudes[38] = {
 PssSunSky::Spectrum
 PssSunSky::ComputeAttenuatedSunlight(
         PssSunSky::real_t theta,
-        int turbidity)
+        real_t turbidity)
 {
         using std::cos;
         using std::pow;
         using std::exp;
-        //throw std::runtime_error ("Spectrum PssSunSky::ComputeAttenuatedSunlight(real_t theta, int turbidity)");
 
     /*RiIrregularSpectralCurve k_oCurve(k_oAmplitudes, k_oWavelengths, 64);
     RiIrregularSpectralCurve k_gCurve(k_gAmplitudes, k_gWavelengths, 4);

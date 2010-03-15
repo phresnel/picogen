@@ -98,7 +98,7 @@ class PssSunSky {
     void InitSunThetaPhi(Vector const &sunDirection);
     void InitRest (bool initAtmEffects);
 				//// Transmittance for the sun weighted by sun's spectrum.
-    Spectrum ComputeAttenuatedSunlight(real_t theta, int turbidity);
+    Spectrum ComputeAttenuatedSunlight(real_t theta, real_t turbidity);
 				//// Conversion from xy to a Spectrum
     Spectrum ChromaticityToSpectrum(real_t x, real_t y) const;
 				// GROUP:  RiAtmPerspective.C Functions
