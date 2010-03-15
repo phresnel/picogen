@@ -29,13 +29,16 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
         redshift::SdlRenderTarget const & display;
         const real_t linearOutputScale;
+        const bool convertToSrgb;
 
         SdlRenderTargetLock (
                 redshift::SdlRenderTarget const & display_,
-                real_t linearOutputScale
+                real_t linearOutputScale,
+                bool convertToSrgb
         )
         : display (display_)
         , linearOutputScale(linearOutputScale)
+        , convertToSrgb(convertToSrgb)
         {
                 if (SDL_MUSTLOCK (display.display) &&
                         SDL_LockSurface (display.display)<0) {
@@ -74,13 +77,25 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 
                 //Rgb const rgb = saturate (color,0,1).toRgb(); // TODO: strange, saturate yields NaNs?
                 color::RGB const rgb = color.toRGB();
-                const int r_ = (int)(255.f * rgb.R * linearOutputScale);
-                const int g_ = (int)(255.f * rgb.G * linearOutputScale);
-                const int b_ = (int)(255.f * rgb.B * linearOutputScale);
-                const int r = r_<0?0:r_>255?255:r_;
-                const int g = g_<0?0:g_>255?255:g_;
-                const int b = b_<0?0:b_>255?255:b_;
-                bufp = SDL_MapRGB(display.display->format,r,g,b);
+
+                if (convertToSrgb) {
+                        const color::SRGB srgb = rgb.toSRGB();
+                        const int r_ = (int)(255.f * srgb.R * linearOutputScale);
+                        const int g_ = (int)(255.f * srgb.G * linearOutputScale);
+                        const int b_ = (int)(255.f * srgb.B * linearOutputScale);
+                        const int r = r_<0?0:r_>255?255:r_;
+                        const int g = g_<0?0:g_>255?255:g_;
+                        const int b = b_<0?0:b_>255?255:b_;
+                        bufp = SDL_MapRGB(display.display->format,r,g,b);
+                } else {
+                        const int r_ = (int)(255.f * rgb.R * linearOutputScale);
+                        const int g_ = (int)(255.f * rgb.G * linearOutputScale);
+                        const int b_ = (int)(255.f * rgb.B * linearOutputScale);
+                        const int r = r_<0?0:r_>255?255:r_;
+                        const int g = g_<0?0:g_>255?255:g_;
+                        const int b = b_<0?0:b_>255?255:b_;
+                        bufp = SDL_MapRGB(display.display->format,r,g,b);
+                }
         }
 
         Color getPixel (int x, int y) const {
@@ -108,10 +123,12 @@ struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
 SdlRenderTarget::SdlRenderTarget (
         int width_, int height_,
         std::string const &outputFile,
-        real_t linearOutputScale)
+        real_t linearOutputScale, bool convertToSrgb
+)
 : width(width_), height(height_)
 , outputFile (outputFile)
 , linearOutputScale(linearOutputScale)
+, convertToSrgb(convertToSrgb)
 {
         using namespace std;
 
@@ -141,14 +158,17 @@ SdlRenderTarget::~SdlRenderTarget() {
 
 
 shared_ptr<RenderTargetLock> SdlRenderTarget::lock () {
-        return shared_ptr<RenderTargetLock> (new SdlRenderTargetLock (*this, linearOutputScale));
+        return shared_ptr<RenderTargetLock> (new SdlRenderTargetLock (
+                *this, linearOutputScale, convertToSrgb
+        ));
 }
 
 
 
 shared_ptr<RenderTargetLock const> SdlRenderTarget::lock () const {
-        return shared_ptr<RenderTargetLock const>
-                        (new SdlRenderTargetLock (*this, linearOutputScale));
+        return shared_ptr<RenderTargetLock const> (new SdlRenderTargetLock (
+                *this, linearOutputScale, convertToSrgb
+        ));
 }
 
 

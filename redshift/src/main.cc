@@ -677,9 +677,11 @@ namespace redshift { namespace scenefile {
         // FilmSettings.
         struct FilmSettings {
                 double colorscale;
+                bool convertToSrgb;
 
                 FilmSettings ()
                 : colorscale(1)
+                , convertToSrgb(false)
                 {}
 
                 // Serialization.
@@ -687,6 +689,7 @@ namespace redshift { namespace scenefile {
                 void serialize (Arch &arch) {
                         using actuarius::pack;
                         arch & pack ("color-scale", colorscale);
+                        arch & pack ("convert-to-srgb", convertToSrgb);
                 }
         };
 
@@ -1171,7 +1174,12 @@ namespace {
                         shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
                 );
 
-                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(width,height,options.outputFile,scene.filmSettings().colorscale));
+                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(
+                        width, height,
+                        options.outputFile,
+                        scene.filmSettings().colorscale,
+                        scene.filmSettings().convertToSrgb
+                ));
 
                 UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
 

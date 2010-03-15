@@ -39,6 +39,7 @@ namespace redshift {
                 struct XYZ;
                 struct xyY;
                 struct RGB;
+                struct SRGB;
 
                 struct XYZ {
                         real_t X, Y, Z;
@@ -72,6 +73,16 @@ namespace redshift {
                         {}
 
                         XYZ toXYZ() const ;
+                        SRGB toSRGB() const ;
+                };
+
+                struct SRGB {
+                        real_t R, G, B;
+
+                        SRGB () : R(0), G(0), B(0) {}
+                        SRGB (real_t R, real_t G, real_t B)
+                        : R(R), G(G), B(B)
+                        {}
                 };
 
 
@@ -89,6 +100,17 @@ namespace redshift {
                         0.212671f*R + 0.715160f*G + 0.072169f*B,
                         0.019334f*R + 0.119193f*G + 0.950227f*B
                         );
+                }
+
+                inline SRGB RGB::toSRGB () const {
+                        SRGB srgb(R,G,B);
+                        if ( srgb.R > 0.0031308 ) srgb.R = 1.055 * ( pow(srgb.R,(1/2.4) ) ) - 0.055;
+                        else                 srgb.R = 12.92 * srgb.R;
+                        if ( srgb.G > 0.0031308 ) srgb.G = 1.055 * ( pow(srgb.G,(1/2.4) ) ) - 0.055;
+                        else                 srgb.G = 12.92 * srgb.G;
+                        if ( srgb.B > 0.0031308 ) srgb.B = 1.055 * ( pow(srgb.B,(1/2.4) ) ) - 0.055;
+                        else                 srgb.B = 12.92 * srgb.B;
+                        return srgb;
                 }
 
                 inline RGB xyY::toRGB () const {

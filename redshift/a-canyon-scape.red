@@ -1,5 +1,5 @@
 scene{
-    film-settings{color-scale:0.0002}
+    film-settings{color-scale:0.015; convert-to-srgb:1;}
     render-settings{
         prev-vol{
             width:512;
@@ -58,8 +58,8 @@ scene{
     }
     backgrounds{
         pss-sunsky {
-                turbidity:2.7;
-                sun-direction{1.0;1.0;-1.0}
+                turbidity:5.7;
+                sun-direction{0.0;0.25;1.0}
         }
     }
     volumes {

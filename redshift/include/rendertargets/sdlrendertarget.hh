@@ -33,7 +33,10 @@ namespace redshift {
                 , DoFinalize(SdlRenderTarget) {
         public:
                 SdlRenderTarget (int width_, int height_,
-                        std::string const & outputFile, real_t linearOutputScale=1.f);
+                        std::string const & outputFile,
+                        real_t linearOutputScale=1.f,
+                        bool convertToSrgb=false
+                );
                 ~SdlRenderTarget();
                 shared_ptr<RenderTargetLock> lock ();
                 shared_ptr<RenderTargetLock const> lock () const;
@@ -46,6 +49,7 @@ namespace redshift {
                 SDL_Surface *display;
                 std::string outputFile;
                 real_t linearOutputScale;
+                bool convertToSrgb;
 
                 class SdlRenderTargetLock;
                 friend class SdlRenderTargetLock;
