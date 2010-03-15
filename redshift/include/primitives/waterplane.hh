@@ -18,25 +18,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119
-#define PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119
+#ifndef PRIMITIVE_WATERPLANE_H_INCLUDED_20100119
+#define PRIMITIVE_WATERPLANE_H_INCLUDED_20100119
 
 #include "../setup.hh"
 #include "../basictypes/intersection.hh"
 #include "../primitives/primitive.hh"
-#include "../material/lambertian.hh"
+#include "../material/mirror.hh"
+#include "../basictypes/height-function.hh"
 
 namespace redshift { namespace primitive {
 
-        DefineFinalizer(HorizonPlane);
+        DefineFinalizer(WaterPlane);
 
-        class HorizonPlane
+        class WaterPlane
                 : public Primitive
-                , DoFinalize(HorizonPlane)
+                , DoFinalize(WaterPlane)
         {
         public:
-                HorizonPlane(real_t height, const Color &color);
-                ~HorizonPlane ();
+                WaterPlane(real_t height, shared_ptr<HeightFunction const> fun, const Color &color);
+                ~WaterPlane ();
 
                 bool doesIntersect (RayDifferential const &ray) const;
                 bool doesIntersect (Ray const &ray) const;
@@ -48,18 +49,19 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom
                 ) const {
                         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (color)));
+                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror (color)));
                         return bsdf;
                 }
 
         private:
-                HorizonPlane();
-                HorizonPlane(HorizonPlane const&);
-                HorizonPlane &operator = (HorizonPlane const&);
+                WaterPlane();
+                WaterPlane(WaterPlane const&);
+                WaterPlane &operator = (WaterPlane const&);
 
+                shared_ptr<HeightFunction const> fun;
                 real_t height;
                 Color color;
         };
 } }
 
-#endif // PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119
+#endif // PRIMITIVE_WaterPlane_H_INCLUDED_20100119

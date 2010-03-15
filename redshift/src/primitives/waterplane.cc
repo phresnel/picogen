@@ -18,39 +18,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/primitives/horizonplane.hh"
+#include "../../include/primitives/waterplane.hh"
 
 namespace redshift { namespace primitive {
 
 
 
-HorizonPlane::HorizonPlane (real_t height_, const Color &color)
-: height(height_)
+WaterPlane::WaterPlane (real_t height_, shared_ptr<HeightFunction const> heightFunction, const Color &color)
+: fun (heightFunction)
+, height(height_)
 , color (color)
 {
 }
 
 
 
-HorizonPlane::~HorizonPlane () {
+WaterPlane::~WaterPlane () {
 }
 
 
 
-bool HorizonPlane::doesIntersect (RayDifferential const &ray) const {
+bool WaterPlane::doesIntersect (RayDifferential const &ray) const {
         return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
 }
 
 
 
-bool HorizonPlane::doesIntersect (Ray const &ray) const {
+bool WaterPlane::doesIntersect (Ray const &ray) const {
         return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
 }
 
 
 
 optional<Intersection>
- HorizonPlane::intersect(RayDifferential const &ray) const {
+ WaterPlane::intersect(RayDifferential const &ray) const {
         if (!doesIntersect (ray))
                 return false;
         const real_t d = (height - scalar_cast<real_t>(ray.position.y))
@@ -59,8 +60,18 @@ optional<Intersection>
         const Point poi = ray(d);
         const Vector voi = vector_cast<Vector>(poi);
 
-        const Vector u = Vector(1,0,0);
-        const Vector v = Vector(0,0,1);
+        // For some reason I fail to see in this dull moment, I had to flip
+        // u x v with v x u.
+        const real_t s = 0.001f;
+        const real_t h =  (*fun)(voi.x,voi.z);
+        const Vector u = normalize (Vector(s, (*fun)(voi.x+s,voi.z) - h, 0));
+        const Vector v = normalize (Vector(0, (*fun)(voi.x,voi.z+s) - h, s));
+        //const Normal N = Normal(0,scalar_cast<real_t>(ray.position.y)>height?1:-1,0);//vector_cast<Normal>(cross (u,v));
+        /*const Normal N =
+                scalar_cast<real_t>(ray.position.y)>height
+                ? vector_cast<Normal>(cross (v,u))
+                : vector_cast<Normal>(cross (u,v))
+        ;*/
 
         const bool isAbove = !(scalar_cast<real_t>(ray.position.y)>height);
 

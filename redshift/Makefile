@@ -106,6 +106,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
 OBJFILES += $(PRIMITIVESOBJDIR)/lazyquadtree.o
 OBJFILES += $(PRIMITIVESOBJDIR)/horizonplane.o
+OBJFILES += $(PRIMITIVESOBJDIR)/waterplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/list.o
 
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
@@ -274,6 +275,10 @@ $(PRIMITIVESOBJDIR)/lazyquadtree.o: \
 
 $(PRIMITIVESOBJDIR)/horizonplane.o: \
                      ./src/primitives/horizonplane.cc
+	$(CXX) -o $@ $<
+
+$(PRIMITIVESOBJDIR)/waterplane.o: \
+                     ./src/primitives/waterplane.cc
 	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/list.o: \
