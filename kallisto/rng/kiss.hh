@@ -40,7 +40,7 @@ namespace kallisto { namespace random { namespace marsaglia {
 
         // -- Bits ----------------------------------------------------
         struct Znew {
-                Znew (uint32_t value=362436069) : z(value) {}
+                explicit Znew (uint32_t value=362436069) : z(value) {}
                 Znew & operator = (uint32_t value) {
                         z = value;
                         return *this;
@@ -69,7 +69,7 @@ namespace kallisto { namespace random { namespace marsaglia {
         };
 
         struct Wnew {
-                Wnew (uint32_t value=521288629) : w(value) {}
+                explicit Wnew (uint32_t value=521288629) : w(value) {}
                 Wnew & operator = (uint32_t value) {
                         w = value;
                         return *this;
@@ -100,7 +100,7 @@ namespace kallisto { namespace random { namespace marsaglia {
 
         // -- Basically, safe typedefs to uint --------------------------------
         struct Jsr {
-                Jsr (uint32_t value=123456789) : jsr(value) {}
+                explicit Jsr (uint32_t value=123456789) : jsr(value) {}
                 Jsr & operator = (uint32_t value) {
                         jsr = value;
                         return *this;
@@ -113,7 +113,7 @@ namespace kallisto { namespace random { namespace marsaglia {
         };
 
         struct Jcong {
-                Jcong (uint32_t value=380116160) : jcong(value) {}
+                explicit Jcong (uint32_t value=380116160) : jcong(value) {}
                 Jcong & operator = (uint32_t value) {
                         jcong = value;
                         return *this;
@@ -134,7 +134,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 MWC (Znew const & znew_, Wnew const & wnew_)
                 : Znew(znew_), Wnew(wnew_)
                 {}
-                MWC (uint32_t znew_, uint32_t wnew_)
+                explicit MWC (uint32_t znew_, uint32_t wnew_)
                 : Znew(znew_), Wnew(wnew_)
                 {}
                 MWC () {}
@@ -157,7 +157,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 using Jsr::operator uint32_t;
         public:
                 SHR3 (Jsr const &jsr_=Jsr()) : Jsr(jsr_) {}
-                SHR3 (uint32_t jsr_) : Jsr(jsr_) {}
+                explicit SHR3 (uint32_t jsr_) : Jsr(jsr_) {}
 
                 uint32_t operator () () { return shr3(); }
         protected:
@@ -175,7 +175,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 using Jcong::operator uint32_t;
         public:
                 CONG (Jcong const &jcong_=Jcong()) : Jcong(jcong_) {}
-                CONG (uint32_t jcong_) : Jcong(jcong_) {}
+                explicit CONG (uint32_t jcong_) : Jcong(jcong_) {}
                 uint32_t operator () () { return cong(); }
         protected:
                 uint32_t cong () {
@@ -223,7 +223,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 UNI () {}
                 UNI (KISS const &kiss) : KISS(kiss) {}
 
-                UNI(
+                explicit UNI(
                         uint32_t mwc_znew, uint32_t mwc_wnew,
                         uint32_t cong,
                         uint32_t shr3
@@ -243,7 +243,7 @@ namespace kallisto { namespace random { namespace marsaglia {
         public:
                 VNI () {}
                 VNI (KISS const &kiss) : KISS(kiss) {}
-                VNI(
+                explicit VNI(
                         uint32_t mwc_znew, uint32_t mwc_wnew,
                         uint32_t cong,
                         uint32_t shr3
