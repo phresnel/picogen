@@ -22,15 +22,24 @@
 #define KISS_HH_INCLUDED_20100301
 
 // Implemented after:
-// * http://www.bobwheeler.com/statistics/Password/MarsagliaPost.txt
-// * http://www.math.niu.edu/~rusin/known-math/99/RNG
+// [0] http://www.bobwheeler.com/statistics/Password/MarsagliaPost.txt
+// [1a] http://www.math.niu.edu/~rusin/known-math/99/RNG
+// [1b] http://groups.google.com/group/sci.crypt/browse_thread/thread/...
+//      ...ca8682a4658a124d/   (glue at ... parts and remove ...)
+//
+// Note that Marsaglias first post [0] had some flaws. E.g., in Wnew, the
+// result was &'ed with 65535, in the end causing that the second seed to KISS
+// had only a very small effect to the sequence, meaning in UNI, that sequences
+// differed by only a small fraction (like 0.02345678 vs. 0.234569).
+//
+// This version now represents Marsaglias generators from his second post
+// [1a,1b].
+//
 
 namespace kallisto { namespace random { namespace marsaglia {
 
         // -- Bits ----------------------------------------------------
         struct Znew {
-                enum { max = 4294901760U };
-
                 Znew (uint32_t value=362436069) : z(value) {}
                 Znew & operator = (uint32_t value) {
                         z = value;
@@ -39,21 +48,20 @@ namespace kallisto { namespace random { namespace marsaglia {
                 uint32_t operator () () { return znew(); }
         protected:
                 uint32_t znew() {
-                        // orig: (z=36969 * (z&65535) + (z>>16)) << 16
+                        // orig: (z=36969*(z&65535)+(z>>16))
 
-                        // max z = 4294967295
                         const uint32_t
-                          alpha = z&65535,     // max:     65535
-                          bravo = 36969*alpha, // max:2422763415
-                          charlie = z>>16      // max:     65535
+                          alpha = z&65535,
+                          bravo = 36969*alpha,
+                          charlie = z>>16
                         ;
-                        z = bravo + charlie;   // max:2422828950
+                        z = bravo + charlie;
 
                         // Note that the maximum of z does not yield
                         // the maximum return value, as for the left
                         // shift. The maximum return value is reached
                         // for all z that have the lower 16 bits set.
-                        return static_cast<uint32_t>(z << 16);
+                        return z;
 
                 }
         private:
@@ -61,8 +69,6 @@ namespace kallisto { namespace random { namespace marsaglia {
         };
 
         struct Wnew {
-                enum { max = 65535 };
-
                 Wnew (uint32_t value=521288629) : w(value) {}
                 Wnew & operator = (uint32_t value) {
                         w = value;
@@ -71,17 +77,18 @@ namespace kallisto { namespace random { namespace marsaglia {
                 uint32_t operator () () { return wnew(); }
         protected:
                 uint32_t wnew() {
-                        // orig: (w=18000*(w&65535)+(w>>16))&65535
+                        // orig: (w=18000*(w&65535)+(w>>16))
+
 
                         // All maxima are in uint32_t bounds,
                         // hence behaviour should be well-defined.
                         const uint32_t
-                          alpha = w&65535,     // max:65535
-                          bravo = 18000*alpha, // max:1179630000
-                          charlie = w>>16      // max:36968
+                          alpha = w&65535,
+                          bravo = 18000*alpha,
+                          charlie = w>>16
                         ;
-                        w = bravo + charlie;   // max:1179666968
-                        return w & 65535;      // max:65535
+                        w = bravo + charlie;
+                        return w;
                 }
         private:
                 uint32_t w;
@@ -124,8 +131,6 @@ namespace kallisto { namespace random { namespace marsaglia {
         // -- Aggregates ------------------------------------------------------
         class MWC : Znew, Wnew {
         public:
-                enum { max = Znew::max + Wnew::max /*4294967295*/ };
-
                 MWC (Znew const & znew_, Wnew const & wnew_)
                 : Znew(znew_), Wnew(wnew_)
                 {}
@@ -135,9 +140,15 @@ namespace kallisto { namespace random { namespace marsaglia {
                 MWC () {}
 
                 uint32_t operator () () { return mwc(); }
+
+                void skip (uint32_t count) {
+                        for (uint32_t u=0; u<count; ++u)
+                                mwc();
+                }
         protected:
                 uint32_t mwc () {
-                        return znew() + wnew();
+                        // orig: ((znew<<16)+wnew )
+                        return (znew()<<16) + wnew();
                 }
         };
 
@@ -151,6 +162,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 uint32_t operator () () { return shr3(); }
         protected:
                 uint32_t shr3 () {
+                        // (jsr^=(jsr<<17), jsr^=(jsr>>13), jsr^=(jsr<<5))
                         *this = *this ^ static_cast<uint32_t>(*this<<17);
                         *this = *this ^ static_cast<uint32_t>(*this>>13);
                         *this = *this ^ static_cast<uint32_t>(*this<<5);
@@ -167,6 +179,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 uint32_t operator () () { return cong(); }
         protected:
                 uint32_t cong () {
+                        // orig: (jcong=69069*jcong+1234567)
                         return *this = static_cast<uint32_t>(
                                 static_cast<uint32_t>(69069 * *this)
                                 + 1234567
@@ -196,6 +209,7 @@ namespace kallisto { namespace random { namespace marsaglia {
                 }
         protected:
                 uint32_t kiss () {
+                        // orig: ((MWC^CONG)+SHR3)
                         return (mwc()^cong())+shr3();
                 }
         };
