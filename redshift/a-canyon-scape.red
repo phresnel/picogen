@@ -17,7 +17,7 @@ scene{
         prev-no-vol{
             width:800;
             height:600;
-            samples-per-pixel:1;
+            samples-per-pixel:10;
             surface-integrator{
                 type:redshift;
             }
@@ -50,16 +50,16 @@ scene{
                                 ] (+ 100000 x) (+ 100000 y))
                         )
 
-                        (+ 250 (* 5000  (foo x y)))
+                        (+ 500 (* 5000  (foo x y)))
                         /*(+ 300 (* (sin (* x 0.001)) (sin (* y 0.001))))*/
                 ;
         }
-        horizon-plane{height:300; }
+        water-plane{height:0; }
     }
     backgrounds{
         pss-sunsky {
-                turbidity:5.7;
-                sun-direction{0.0;0.25;1.0}
+                turbidity:2.2;
+                sun-direction{1.0;1.5;1.0}
         }
     }
     volumes {

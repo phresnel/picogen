@@ -67,7 +67,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 Color spec = Color(0);
                 int numSamples = 1;
                 // diffuse
-                if (0) if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+                if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
                         if (numAmbientSamples>0)
@@ -133,7 +133,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 }
 
 
-                if (0) if (bg->hasAtmosphereShade()) {
+                if (bg->hasAtmosphereShade()) {
                         ret = bg->atmosphereShade (ret, raydiff, gd.getDistance());
                 }
                 return make_tuple(1.0f, ret, gd.getDistance());

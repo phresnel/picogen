@@ -172,9 +172,10 @@ void Scene::render (
                 for (uint32_t x=0; x<width; ++x) {
                         Color accu = Color::FromRGB(0,0,0);
                         for (int i=0; i<numAASamples; ++i) {
-
                                 LCGf<0xFFFFFFFFUL, 1103515245UL, 12345UL> mwcf (x+(y*width));
-                                Random rand (mwcf(), mwcf(), i+1, salt+1);
+
+                                //Random rand (mwcf(), mwcf(), i+1, salt+1);
+                                Random rand (::rand(), ::rand(), i+1, salt+1);
 
                                 Sample sample (
                                         ImageCoordinates(x+rand(),y+rand()),
