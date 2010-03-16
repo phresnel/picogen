@@ -266,7 +266,7 @@ inline SpectrumBase<T> SpectrumBase<T>::FromRGB(color::RGB const &rgb) {
                 r += (rgb.R - rgb.G) * rgbRefl2SpectRed;
             }
         }
-        r *= SpectrumBase::real_t(.94);
+        r *= typename SpectrumBase::real_t(.94);
     }/*
     else {
         // Convert illuminant SpectrumBase to RGB

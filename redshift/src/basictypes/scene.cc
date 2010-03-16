@@ -26,9 +26,32 @@
 
 #include <omp.h>
 
+namespace {
+        redshift::Random createRandom(
+                uint32_t a, uint32_t b, uint32_t c, uint32_t d
+        ) {
+                using namespace kallisto::random::marsaglia;
+                MWC A(a,b);          // a, b
+                MWC B(c,d);          // c, d
+                for (uint32_t warm=0; warm<4; ++warm) {  // warm up
+                        A(); B();
+                }
+                MWC mwc = MWC(A(), B()); // A+B
+                mwc.skip(16);      // warm up
+
+                // IMPORTANT: using variables instead of passing
+                // as between the ( and the ) of a call, there is no sequence point
+                // (and thus it'd be not portable)
+                const uint32_t e=mwc(), f=mwc(), g=mwc(), h=mwc();
+                redshift::Random ret = redshift::Random (e, f, g, h);
+                ret.skip(16);
+                return ret;
+        }
+}
+
+
+
 namespace redshift {
-
-
 
 Scene::Scene (
         shared_ptr<RenderTarget> rt,
@@ -142,7 +165,7 @@ void Scene::render (
         unsigned int numAASamples_
 ) const {
 
-        const int numAASamples = numAASamples_?numAASamples_:1;
+        const uint32_t numAASamples = numAASamples_?numAASamples_:1;
         const real_t totalNumberOfSamples = static_cast<real_t>
                 (renderTarget->getWidth() * renderTarget->getHeight() * numAASamples);
         real_t sampleNumber = 0;
@@ -157,31 +180,40 @@ void Scene::render (
                 Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f)
         };
 
-        uint32_t salt = 0; // TODO: this should be exposed to job-level
+        const uint32_t userSalt = 0; // TODO: this should be exposed to job-level
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
 
-        const uint32_t width = renderTarget->getWidth();
-        const uint32_t height = renderTarget->getHeight();
+        const int width = renderTarget->getWidth();
+        const int height = renderTarget->getHeight();
 
-        for (uint32_t y=0; y<height; ++y) {
+        for (int y=0; y<height; ++y) {
                 //#warning no multicore!
                 #pragma omp parallel for \
                         schedule(dynamic) \
                         reduction(+:sampleNumber)
-                for (uint32_t x=0; x<width; ++x) {
+                for (int x=0; x<width; ++x) {
                         Color accu = Color::FromRGB(0,0,0);
-                        for (int i=0; i<numAASamples; ++i) {
-                                LCGf<0xFFFFFFFFUL, 1103515245UL, 12345UL> mwcf (x+(y*width));
+                        for (int i=0; i<(int)numAASamples; ++i) {
+                                redshift::Random rand;
 
-                                //Random rand (mwcf(), mwcf(), i+1, salt+1);
-                                Random rand (::rand(), ::rand(), i+1, salt+1);
-
-                                Sample sample (
-                                        ImageCoordinates(x+rand(),y+rand()),
-                                        LensCoordinates(),
-                                        renderTarget
+                                // That's totally strange. g++ version 4.4 chokes
+                                // (the whole system if you don't kill -9 it)
+                                // if I directly construct rand, instead of using
+                                // the following assignment. But I failed to minimize
+                                // a testcase and haven't filed a report yet.
+                                rand = createRandom(
+                                        (uint32_t)x, (uint32_t)y, (uint32_t)userSalt, (uint32_t)i
                                 );
+
+                                const real_t u = rand(), v = rand();
+                                const real_t imageX = x+u;
+                                const real_t imageY = y+v;
+
+                                const ImageCoordinates IC = ImageCoordinates(imageX, imageY);
+                                const LensCoordinates LC = LensCoordinates ();
+
+                                Sample sample = Sample (IC, LC, renderTarget);
 
                                 //-------------------------------------------------------------
                                 // 1) Generate Primary Ray.

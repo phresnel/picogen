@@ -17,7 +17,7 @@ scene{
         prev-no-vol{
             width:800;
             height:600;
-            samples-per-pixel:10;
+            samples-per-pixel:1;
             surface-integrator{
                 type:redshift;
             }
@@ -27,7 +27,7 @@ scene{
         aerial{
             transform{
                 move-up{320}
-                move-forward{10000}
+                move-forward{8000}
                 yaw{0}
                 pitch{0}
             }

@@ -120,6 +120,10 @@ namespace redshift {
 
         class Random {
         public:
+                Random ()
+                : rand(clock()+100, clock()+200, clock()+10000, clock()+100000)
+                {}
+
                 Random (uint32_t A, uint32_t B, uint32_t C, uint32_t D)
                 : rand(A,B,C,D)
                 {}
@@ -141,8 +145,6 @@ namespace redshift {
                         rand.skip(u);
                 }
         private:
-                Random () ;
-
                 kallisto::random::marsaglia::UNI rand;
         };
 }

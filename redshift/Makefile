@@ -54,9 +54,10 @@ else
 	CXXFLAGS += -ffast-math -fassociative-math
 	CXXFLAGS += -mfpmath=sse
 	CXXFLAGS += -fopenmp
+        # CXXFLAGS += -ftree-vectorizer-verbose=1
 endif
 
-CXXFLAGS += -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
+CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 # CXXFLAGS += -Wextra -Wshadow -pedantic
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
