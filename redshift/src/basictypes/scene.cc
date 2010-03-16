@@ -124,8 +124,6 @@ optional<Intersection> Scene::intersect(
 
 
 tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) const {
-        const tuple<real_t,Color>
-                Lo = surfaceIntegrator->Li_VolumeOnly(*this, sample.primaryRay, sample, rand);
 
         const Interval i (0, 100000); // TODO: quirk
 
@@ -139,7 +137,9 @@ tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) con
                    : make_tuple(real_t(1), Color(real_t(0)))
         ;
 
-        const Color ret_ = get<1>(T) * get<1>(Lo) + get<1>(Lv);
+        const Color atmosphere = background->query(sample.primaryRay);
+
+        const Color ret_ = get<1>(T) * atmosphere + get<1>(Lv);
         const Color ret = background->atmosphereShade (ret_, sample.primaryRay, constants::infinity);
 
         return make_tuple (1.f, ret);
@@ -148,29 +148,37 @@ tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) con
 
 
 tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
+        // Intersect geometry.
         const tuple<real_t,Color,real_t>
-                Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand);
+                Lo_ = surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand);
 
-        const real_t distance = get<2>(Lo);
+        const Color Lo = get<1>(Lo_);
+        const real_t distance = get<2>(Lo_);
         const bool didIntersect = distance != constants::infinity;
 
         const Interval i (0, distance>10000?10000:distance); // TODO: quirk
 
+        // Intersect volumes.
         const tuple<real_t,Color>
-                T  = volumeIntegrator
+                T_  = volumeIntegrator
                    ? volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand)
                    : make_tuple(real_t(1), Color(real_t(1))),
 
-                Lv = volumeIntegrator
+                Lv_ = volumeIntegrator
                    ? volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand)
                    : make_tuple(real_t(1), Color(real_t(0)))
         ;
+        const Color T = get<1>(T_), Lv = get<1>(Lv_);
 
+        // Background.
+        const Color atmosphere = background->query(sample.primaryRay);
+
+        // Now either put atmo- or geom-color into eq.
         const Color
-                ret_ = get<1>(T) * get<1>(Lo)  +  get<1>(Lv),
-                ret = /*didIntersect && background && background->hasAtmosphereShade()
-                    ?*/ background->atmosphereShade (ret_, sample.primaryRay, distance)
-                    //: ret_
+                ret_ = T * (didIntersect ? Lo : atmosphere)  +  Lv,
+                ret = background && background->hasAtmosphereShade()
+                    ? background->atmosphereShade (ret_, sample.primaryRay, distance)
+                    : ret_
         ;
 
         return make_tuple (1.f, ret);
@@ -206,14 +214,17 @@ void Scene::render (
         const int width = renderTarget->getWidth();
         const int height = renderTarget->getHeight();
 
-        for (int y=0; y<height; ++y) {
+        for (int y_=0; y_<height; ++y_) {
+                const int y = y_;
                 //#warning no multicore!
                 #pragma omp parallel for \
                         schedule(dynamic) \
                         reduction(+:sampleNumber)
-                for (int x=0; x<width; ++x) {
+                for (int x_=0; x_<width; ++x_) {
+                        const int x = x_;
                         Color accu = Color::FromRGB(0,0,0);
-                        for (int i=0; i<(int)numAASamples; ++i) {
+                        for (int i_=0; i_<(int)numAASamples; ++i_) {
+                                const int i = i_;
                                 redshift::Random rand;
 
                                 // That's totally strange. g++ version 4.4 chokes
@@ -221,9 +232,7 @@ void Scene::render (
                                 // if I directly construct rand, instead of using
                                 // the following assignment. But I failed to minimize
                                 // a testcase and haven't filed a report yet.
-                                rand = createRandom(
-                                        (uint32_t)x, (uint32_t)y, (uint32_t)userSalt, (uint32_t)i
-                                );
+                                rand = createRandom(x, y, userSalt, i);
 
                                 const real_t u = rand(), v = rand();
                                 const real_t imageX = x+u;
@@ -268,15 +277,11 @@ void Scene::render (
 
                                 if (isnan (finalColor)) {
                                         std::cout << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;
-                                        --i;
-                                        continue;
-                                }
-                                if (isinf (finalColor)) {
+                                } else if (isinf (finalColor)) {
                                         std::cout << "inf pixel at " << x << ":" << y << ":" << i << std::endl;
-                                        --i;
-                                        continue;
+                                } else {
+                                        accu = accu + finalColor;
                                 }
-                                accu = accu + finalColor;
                                 //PBRT:<issue warning if unexpected radiance value returned>
                         }
 
@@ -288,18 +293,13 @@ void Scene::render (
                         }
                         if (isnan (accu)) {
                                 std::cout << "NaN pixel at " << x << ":" << y << std::endl;
-                                --x;
-                                continue;
-                        }
-                        if (isinf (accu)) {
+                        } else if (isinf (accu)) {
                                 std::cout << "inf pixel at " << x << ":" << y << std::endl;
-                                --x;
-                                continue;
+                        } else {
+                                Color c = accu*(Color::real_t(1)/numAASamples);
+                                lock->setPixel (x,y,c);
+                                ++sampleNumber;
                         }
-
-                        Color c = accu*(Color::real_t(1)/numAASamples);
-                        lock->setPixel (x,y,c);
-                        ++sampleNumber;
 
 
                         //-------------------------------------------------------------

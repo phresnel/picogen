@@ -62,9 +62,9 @@ CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s -fopenmp
+LINK := g++-4.3 -s -fopenmp
 AR   := ar -rs
-CXX  := g++ -c $(CXXFLAGS) $(LIBS)
+CXX  := g++-4.3 -c $(CXXFLAGS) $(LIBS)
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
 AMALGAM := g++ $(CXXFLAGS) \
 	-combine -fwhole-program -funit-at-a-time -DAMALGAM \
@@ -94,6 +94,7 @@ OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 
 OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
+OBJFILES += $(INTEGRATORSOBJDIR)/redshift.o
 OBJFILES += $(INTEGRATORSOBJDIR)/emission.o
 OBJFILES += $(INTEGRATORSOBJDIR)/single-scattering.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
@@ -233,6 +234,10 @@ $(SAMPLERSOBJDIR)/sampler.o: \
 
 $(INTEGRATORSOBJDIR)/direct-lighting.o: \
                      ./src/integrators/direct-lighting.cc
+	$(CXX) -o $@ $<
+
+$(INTEGRATORSOBJDIR)/redshift.o: \
+                     ./src/integrators/redshift.cc
 	$(CXX) -o $@ $<
 
 $(INTEGRATORSOBJDIR)/emission.o: \

@@ -1317,7 +1317,7 @@ void read_angle_test() {
 }
 
 int main (int argc, char *argv[]) {
-        freopen( "CON", "w", stdout );
+        //freopen( "CON", "w", stdout );
         redshift::static_init();
         const optional<Options> oo = parseOptions(argc,argv);
         if (!oo)

@@ -29,14 +29,11 @@
 
 namespace redshift {
         DefineFinalizer(RedshiftIntegrator);
-        class RedshiftIntegrator : public Integrator, DoFinalize(RedshiftIntegrator) {
+        class RedshiftIntegrator
+        : public Integrator
+        , DoFinalize(RedshiftIntegrator) {
         public:
                 virtual tuple<real_t,Color,real_t> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample, Random& rand
-                ) const ;
-                virtual tuple<real_t,Color> Li_VolumeOnly (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample, Random& rand

@@ -1,5 +1,5 @@
 scene{
-    film-settings{color-scale:0.4; convert-to-srgb:0;}
+    film-settings{color-scale:0.0125; convert-to-srgb:1;}
     render-settings{
         prev-vol{
             width:512;
@@ -9,15 +9,15 @@ scene{
                 type:redshift;
             }
             volume-integrator{
-                type:emission;
-                step-size:50;
-                cutoff-distance:4000000;
+                type:single;
+                step-size:600;
+                cutoff-distance:4000;
             }
         }
         prev-no-vol{
-            width:800;
-            height:600;
-            samples-per-pixel:1;
+            width:400;
+            height:300;
+            samples-per-pixel:5;
             surface-integrator{
                 type:redshift;
             }
@@ -26,8 +26,8 @@ scene{
     cameras{
         aerial{
             transform{
-                move-up{620}
-                move-forward{8000}
+                move-up{2000}
+                move-forward{10000}
                 yaw{0}
                 pitch{0}
             }
@@ -36,9 +36,9 @@ scene{
     objects{
         lazy-quadtree{
                 color{1.0;1.0;1.0}
-                max-recursion:10;
+                max-recursion:8;
                 lod-factor:0.000125;
-                size:500000;
+                size:5000000;
                 code:
                         (defun foo (x y)
                                 ([LayeredNoise2d
@@ -54,20 +54,20 @@ scene{
                         /*(+ 300 (* (sin (* x 0.001)) (sin (* y 0.001))))*/
                 ;
         }
-        /*water-plane{height:0; }*/
+        water-plane{height:0; }
     }
     backgrounds{
         pss-sunsky {
-                turbidity:2.2;
-                sun-direction{0.0;0.5;0.0}
+                turbidity:1.9;
+                sun-direction{1.0;1.0;1.0}
         }
     }
     volumes {
-        homogeneous {
-                absorption{0.002;0.002;0.002}
-                out-scatter{0.0;0.0;0.0}
-                emission{0.002;0.002;0.002}
-                min{0;0;0}
+        exponential {
+                absorption{0.0007;0.0007;0.0007}
+                out-scatter{0.001;0.001;0.001}
+                emission{0.0006;0.0006;0.0006}
+                min{0;300;0}
                 phase-function:0;
                 base-factor:1;
                 exponent-factor:0.005;

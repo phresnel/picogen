@@ -31,7 +31,7 @@ namespace redshift {
         DefineFinalizer(DirectLighting);
         class DirectLighting : public Integrator, DoFinalize(DirectLighting) {
         public:
-                virtual tuple<real_t,Color,real_t> Li (
+                tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample, Random& rand

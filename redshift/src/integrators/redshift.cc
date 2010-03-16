@@ -31,18 +31,6 @@ RedshiftIntegrator::RedshiftIntegrator (unsigned int numAmbientSamples)
 
 
 
-tuple<real_t,Color> RedshiftIntegrator::Li_VolumeOnly (
-        const Scene &scene,
-        const RayDifferential &raydiff,
-        const Sample &sample,
-        Random &rand
-) const {
-        return make_tuple (
-                1.0, scene.getBackground()->query(raydiff)
-        );
-}
-
-
 
 tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
         const Scene &scene,
@@ -146,12 +134,12 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                 }*/
                 return make_tuple(1.0f, ret, gd.getDistance());
         } else {
-                /*return make_tuple (1.0,
-                        scene.getBackground()->query(raydiff),
+                return make_tuple (1.0,
+                        Color(0),
                         constants::infinity
-                );*/
-                const tuple<real_t,Color> volumeLi = scene.Li_VolumeOnly(sample,rand);
-                return make_tuple (get<0>(volumeLi), get<1>(volumeLi), constants::infinity);
+                );
+                /*const tuple<real_t,Color> volumeLi = scene.Li_VolumeOnly(sample,rand);
+                return make_tuple (get<0>(volumeLi), get<1>(volumeLi), constants::infinity);*/
         }
 }
 
