@@ -189,10 +189,10 @@ namespace kallisto { namespace random { namespace marsaglia {
 
         class KISS : MWC, CONG, SHR3 {
         public:
-                KISS(MWC const&mwc_, CONG const&cong_, SHR3 const&shr3_)
+                /*KISS(MWC const&mwc_, CONG const&cong_, SHR3 const&shr3_)
                 : MWC(mwc_), CONG(cong_), SHR3(shr3_)
-                {}
-                KISS(
+                {}*/
+                explicit KISS(
                         uint32_t mwc_znew, uint32_t mwc_wnew,
                         uint32_t cong,
                         uint32_t shr3
@@ -220,8 +220,8 @@ namespace kallisto { namespace random { namespace marsaglia {
         // I think UNI should be a distribution, not an RNG on itself
         class UNI : KISS {
         public:
-                UNI () {}
-                UNI (KISS const &kiss) : KISS(kiss) {}
+                //UNI () {}
+                //UNI (KISS const &kiss) : KISS(kiss) {}
 
                 explicit UNI(
                         uint32_t mwc_znew, uint32_t mwc_wnew,
@@ -241,8 +241,8 @@ namespace kallisto { namespace random { namespace marsaglia {
         // I think VNI should be a distribution, not an RNG on itself
         class VNI : KISS {
         public:
-                VNI () {}
-                VNI (KISS const &kiss) : KISS(kiss) {}
+                //VNI () {}
+                //VNI (KISS const &kiss) : KISS(kiss) {}
                 explicit VNI(
                         uint32_t mwc_znew, uint32_t mwc_wnew,
                         uint32_t cong,

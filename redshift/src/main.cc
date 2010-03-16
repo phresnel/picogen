@@ -466,13 +466,26 @@ namespace redshift { namespace scenefile {
 
                 shared_ptr<VolumeRegion> toVolume () const {
                         switch (type) {
-                        case homogeneous:
+                        case homogeneous: {
+                                const Color
+                                        absorb = redshift::Color::FromRGB(sigma_a.r,sigma_a.g,sigma_a.b),
+                                        scatter = redshift::Color::FromRGB(sigma_s.r,sigma_s.g,sigma_s.b),
+                                        emit = redshift::Color::FromRGB(Lve.r,Lve.g,Lve.b)
+                                ;
+                                std::cout << std::fixed;
+                                std::cout << "absorption: "; for (int i=0; i<Color::num_components; ++i) {
+                                        std::cout << absorb[i] << " ";
+                                } std::cout << " (y=" << absorb.y() << ")\n";
+                                std::cout << "out-scatter: "; for (int i=0; i<Color::num_components; ++i) {
+                                        std::cout << scatter[i] << " ";
+                                } std::cout << " (y=" << scatter.y() << ")\n";
+                                std::cout << "emission: "; for (int i=0; i<Color::num_components; ++i) {
+                                        std::cout << emit[i] << " ";
+                                } std::cout << " (y=" << emit.y() << ")\n";
                                 return shared_ptr<VolumeRegion> (new volume::Homogeneous(
-                                        redshift::Color::FromRGB(sigma_a.r,sigma_a.g,sigma_a.b),
-                                        redshift::Color::FromRGB(sigma_s.r,sigma_s.g,sigma_s.b),
-                                        redshift::Color::FromRGB(Lve.r,Lve.g,Lve.b),
-                                        hg
+                                        absorb, scatter, emit, hg
                                 ));
+                        };
                         case exponential:
                                 return shared_ptr<VolumeRegion> (new volume::Exponential(
                                         redshift::Color::FromRGB(sigma_a.r,sigma_a.g,sigma_a.b),
