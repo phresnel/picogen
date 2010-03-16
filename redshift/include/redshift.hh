@@ -101,6 +101,7 @@ namespace redshift{class RenderTarget;}
 #include "integrators/visualize-distance.hh"
 #include "integrators/show-surface-normals.hh"
 #include "integrators/direct-lighting.hh"
+#include "integrators/redshift.hh"
 #include "integrators/emission.hh"
 #include "integrators/single-scattering.hh"
 

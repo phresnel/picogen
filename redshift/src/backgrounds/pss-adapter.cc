@@ -23,14 +23,32 @@
 namespace redshift { namespace backgrounds {
 
 PssAdapter::PssAdapter (
-        shared_ptr<redshift::background::PssSunSky> preetham
-) : preetham (preetham) {
+        shared_ptr<redshift::background::PssSunSky> preetham,
+        real_t sunSizeFactor
+)
+: preetham (preetham)
+, sunSizeFactor(sunSizeFactor)
+{
+}
+
+bool PssAdapter::isInSunSolidAngle (Vector const & vector) const {
+        const real_t
+                dotS = dot(vector, getSunDirection()),
+                alpha = acos (dotS),
+                sr = 2 * constants::pi * (1 - std::cos(alpha/2))
+        ;
+        return sr < (preetham->GetSunSolidAngle() * sunSizeFactor);
 }
 
 Color PssAdapter::query (Ray const &ray) const {
-        return Color(preetham->GetSkySpectralRadiance (ray.direction));
-                //+ preetham->sunShade(ray);
-        //return Color::fromRgb (1,0.5,0.25);
+        using redshift::background::PssSunSky;
+
+        const real_t teh_sun = isInSunSolidAngle (ray.direction) ? 1.f : 0.f;
+
+        return Color(
+                preetham->GetSkySpectralRadiance (ray.direction)
+                + teh_sun * preetham->GetSunSpectralRadiance()
+        );
 }
 
 Color PssAdapter::getSunColor () const {
@@ -38,7 +56,8 @@ Color PssAdapter::getSunColor () const {
 }
 
 Color PssAdapter::querySun (Ray const &ray) const {
-        return getSunColor();
+        const real_t teh_sun = isInSunSolidAngle (ray.direction)?1.f:0.f;
+        return getSunColor() * teh_sun;
 }
 /*
 Color PssAdapter::diffuseQuery (

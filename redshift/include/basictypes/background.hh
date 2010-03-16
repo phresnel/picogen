@@ -25,10 +25,10 @@
 
 namespace redshift {
         // TODO: seperate file
-        struct AtmosphericEffects {
+        /*struct AtmosphericEffects {
                 Spectrum attenuation;
                 Spectrum inscatter;
-        };
+        };*/
 
         class Background {
         public:

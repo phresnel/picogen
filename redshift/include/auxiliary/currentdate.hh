@@ -59,7 +59,6 @@ private:
         const std::tm tm;
         static std::tm getTm () {
                 std::time_t t;
-                std::tm *tm;
                 time (&t);
                 return *localtime (&t);
         }

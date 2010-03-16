@@ -498,6 +498,7 @@ namespace redshift { namespace scenefile {
                                         redshift::Vector(up.x, up.y, up.z)
                                 ));
                         };
+                        return shared_ptr<VolumeRegion>();
                 }
 
                 Rgb sigma_a, sigma_s, Lve;
@@ -602,6 +603,7 @@ namespace redshift { namespace scenefile {
 
                 Normal sunDirection;
                 double turbidity;
+                double sunSizeFactor;
                 Rgb sunColor;
                 Rgb skyFilter;
 
@@ -610,6 +612,7 @@ namespace redshift { namespace scenefile {
                 : type(pss_sunsky)
                 , sunDirection(0,0.5,2)
                 , turbidity(2.5)
+                , sunSizeFactor(1)
                 , sunColor(3,3,3)
                 , skyFilter(0.05,0.05,0.05)
                 {}
@@ -618,23 +621,31 @@ namespace redshift { namespace scenefile {
                         using namespace redshift;
                         switch (type) {
                         case pss_sunsky: {
+                        #if 1
                                 shared_ptr<redshift::background::PssSunSky> preetham (
                                  new background::PssSunSky(
                                         normalize(Vector(sunDirection.x,sunDirection.y,sunDirection.z)),
                                         turbidity,
                                         true
                                 ));
+                                return shared_ptr<redshift::Background> (
+                                  new backgrounds::PssAdapter (
+                                        preetham, sunSizeFactor
+                                ));
+                        #else
+                                shared_ptr<redshift::background::Preetham> preetham (
+                                 new redshift::background::Preetham());
 
-                                /*preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
+                                preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
                                 preetham->setTurbidity(turbidity);
                                 preetham->setSunColor(Color::FromRGB(sunColor.r,sunColor.g,sunColor.b));
                                 preetham->setColorFilter(Color::FromRGB(skyFilter.r,skyFilter.g,skyFilter.b));
                                 preetham->enableFogHack (false, 0.00025f, 150000);
-                                preetham->invalidate();*/
-
+                                preetham->invalidate();
                                 return shared_ptr<redshift::Background> (
-                                        new backgrounds::PssAdapter (preetham)
+                                        new backgrounds::PreethamAdapter (preetham)
                                 );
+                        #endif
                         } break;
                         };
                         return shared_ptr<redshift::Background>();
@@ -648,6 +659,7 @@ namespace redshift { namespace scenefile {
                         switch (type) {
                         case pss_sunsky:
                                 arch & pack ("sun-direction", sunDirection);
+                                arch & pack ("sun-size-factor", sunSizeFactor);
                                 arch & pack ("turbidity", turbidity);
                                 arch & pack ("sun-color", sunColor);
                                 arch & pack ("sky-filter", skyFilter);
@@ -1157,7 +1169,7 @@ namespace {
                                 true
                         ));
                         background = shared_ptr<redshift::Background> (
-                                new backgrounds::PssAdapter (pss));
+                                new backgrounds::PssAdapter (pss,1));
                 }
                 // ----------
 
@@ -1168,7 +1180,7 @@ namespace {
                         background,
                         //shared_ptr<Background>(new backgrounds::Monochrome(Color::FromRGB(0.5,0.25,0.125))),
                         //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                        shared_ptr<Integrator> (new DirectLighting(10/*ambient samples*/)),
+                        shared_ptr<Integrator> (new RedshiftIntegrator(10/*ambient samples*/)),
 
                         volumeAgg,
                         shared_ptr<VolumeIntegrator>(
@@ -1305,9 +1317,11 @@ void read_angle_test() {
 }
 
 int main (int argc, char *argv[]) {
+        freopen( "CON", "w", stdout );
         redshift::static_init();
         const optional<Options> oo = parseOptions(argc,argv);
         if (!oo)
                 return 0;
         read_and_render(*oo);
+        return 0;
 }
