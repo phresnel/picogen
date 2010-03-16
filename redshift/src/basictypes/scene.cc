@@ -101,37 +101,56 @@ optional<Intersection> Scene::intersect(
 
 
 tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) const {
-        if (surfaceIntegrator && volumeIntegrator) {
-                const tuple<real_t,Color>
-                        Lo = surfaceIntegrator->Li_VolumeOnly(*this, sample.primaryRay, sample, rand);
-                const Interval i (0, 10000); // TODO: quirk
-                const tuple<real_t,Color>
-                        T  = volumeIntegrator->Transmittance (*this,sample.primaryRay, sample, i, rand),
-                        Lv = volumeIntegrator->Li (*this,sample.primaryRay, sample, i, rand);
-                return make_tuple (1.f, get<1>(T)*get<1>(Lo) + get<1>(Lv));
-        } else {
-                const tuple<real_t,Color> Lo =
-                        surfaceIntegrator->Li_VolumeOnly (*this, sample.primaryRay, sample, rand);
-                return make_tuple(get<0>(Lo),get<1>(Lo));
-        }
+        const tuple<real_t,Color>
+                Lo = surfaceIntegrator->Li_VolumeOnly(*this, sample.primaryRay, sample, rand);
+
+        const Interval i (0, 100000); // TODO: quirk
+
+        const tuple<real_t,Color>
+                T  = volumeIntegrator
+                   ? volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand)
+                   : make_tuple(real_t(1), Color(real_t(1))),
+
+                Lv = volumeIntegrator
+                   ? volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand)
+                   : make_tuple(real_t(1), Color(real_t(0)))
+        ;
+
+        const Color ret_ = get<1>(T) * get<1>(Lo) + get<1>(Lv);
+        const Color ret = background->atmosphereShade (ret_, sample.primaryRay, constants::infinity);
+
+        return make_tuple (1.f, ret);
 }
 
 
 
 tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
-        if (surfaceIntegrator && volumeIntegrator) {
-                const tuple<real_t,Color,real_t>
-                        Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand);
-                const Interval i (0, get<2>(Lo)>10000?10000:get<2>(Lo)); // TODO: quirk
-                const tuple<real_t,Color>
-                        T  = volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand),
-                        Lv = volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand);
-                return make_tuple (1.f, get<1>(T)*get<1>(Lo) + get<1>(Lv));
-        } else {
-                const tuple<real_t,Color,real_t> Lo =
-                        surfaceIntegrator->Li (*this, sample.primaryRay, sample, rand);
-                return make_tuple(get<0>(Lo),get<1>(Lo));
-        }
+        const tuple<real_t,Color,real_t>
+                Lo = surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand);
+
+        const real_t distance = get<2>(Lo);
+        const bool didIntersect = distance != constants::infinity;
+
+        const Interval i (0, distance>10000?10000:distance); // TODO: quirk
+
+        const tuple<real_t,Color>
+                T  = volumeIntegrator
+                   ? volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand)
+                   : make_tuple(real_t(1), Color(real_t(1))),
+
+                Lv = volumeIntegrator
+                   ? volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand)
+                   : make_tuple(real_t(1), Color(real_t(0)))
+        ;
+
+        const Color
+                ret_ = get<1>(T) * get<1>(Lo)  +  get<1>(Lv),
+                ret = /*didIntersect && background && background->hasAtmosphereShade()
+                    ?*/ background->atmosphereShade (ret_, sample.primaryRay, distance)
+                    //: ret_
+        ;
+
+        return make_tuple (1.f, ret);
 }
 
 
@@ -175,7 +194,9 @@ void Scene::render (
                                 LCGf<0xFFFFFFFFUL, 1103515245UL, 12345UL> mwcf (x+(y*width));
 
                                 //Random rand (mwcf(), mwcf(), i+1, salt+1);
-                                Random rand (::rand(), ::rand(), i+1, salt+1);
+                                Random rand;
+                                rand = Random (::rand()+clock(), ::rand()+clock(), i+1, salt+1);
+                                rand.skip(32);
 
                                 Sample sample (
                                         ImageCoordinates(x+rand(),y+rand()),

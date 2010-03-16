@@ -18,20 +18,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/integrators/direct-lighting.hh"
+#include "../../include/integrators/redshift.hh"
 
 namespace redshift {
 
 
 
-DirectLighting::DirectLighting (unsigned int numAmbientSamples)
+RedshiftIntegrator::RedshiftIntegrator (unsigned int numAmbientSamples)
 : numAmbientSamples(numAmbientSamples)
 {
 }
 
 
 
-tuple<real_t,Color> DirectLighting::Li_VolumeOnly (
+tuple<real_t,Color> RedshiftIntegrator::Li_VolumeOnly (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -44,7 +44,7 @@ tuple<real_t,Color> DirectLighting::Li_VolumeOnly (
 
 
 
-tuple<real_t,Color,real_t> DirectLighting::Li (
+tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -67,7 +67,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                 Color spec = Color(0);
                 int numSamples = 1;
                 // diffuse
-                if (0&&bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+                if (0 && bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
                         if (numAmbientSamples>0)
@@ -108,56 +108,56 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
 
                 const Color surfaceSkyColor = spec + (
                         numSamples==0
-                        ? Color(0.3)
+                        ? Color(0.0)
                         : Color((sum / Color::real_t(numSamples)) * Color::real_t(constants::pi))
                 ); // TODO: is this correct?
                 //-------------------------------------------------------------
 
                 Color ret = surfaceSkyColor;
 
-                if (0 && bg->hasSun()) {
+                if (bg->hasSun()) {
                         const Vector sunDir = bg->getSunDirection();
-                        const Ray ray (poi,sunDir);
+                        const Ray sunRay (poi,sunDir);
                         const Color surfaceColor = bsdf->f(
-                                ray.direction,
+                                -raydiff.direction,
                                 sunDir,
                                 Bsdf::reflection, Bsdf::diffuse,
-                                rand)/* * constants::pi*/; // TODO: is this correct?
+                                rand
+                        );
 
-                        /*
-                        if (!scene.doesIntersect (ray)) {
+                        // Scene::Li_VolumeOnly() won't test for intersection,
+                        // so we must do it ourself.
+                        if (!scene.doesIntersect (sunRay)) {
+                                Sample sunSample = sample;
+                                sunSample.primaryRay = sunRay;
+
                                 const real_t d = max(
-                                        real_t(0),
-                                        dot(sunDir,vector_cast<Vector>(normalS)));
-                                ret = ret + (surfaceColor * bg->querySun(ray))*d;
+                                    real_t(0),
+                                    dot(sunDir,vector_cast<Vector>(normalS))
+                                );
+                                const tuple<real_t,Color> volumeLi = scene.Li_VolumeOnly(sunSample,rand);
+                                ret += surfaceColor * get<1>(volumeLi) * d;
                         }
-                        */
-                        Sample s = sample;
-                        s.primaryRay = ray;
-
-                        const real_t d = max(
-                          real_t(0), dot(sunDir,vector_cast<Vector>(normalS)));
-
-                        const tuple<real_t,Color> L = scene.Li_VolumeOnly(s, rand);
-                        ret = ret + surfaceColor * get<1>(L) * d;
                 }
 
 
-                if (0&&bg->hasAtmosphereShade()) {
+                /*if (0&&bg->hasAtmosphereShade()) {
                         ret = bg->atmosphereShade (ret, raydiff, gd.getDistance());
-                }
+                }*/
                 return make_tuple(1.0f, ret, gd.getDistance());
         } else {
-                return make_tuple (1.0,
+                /*return make_tuple (1.0,
                         scene.getBackground()->query(raydiff),
                         constants::infinity
-                );
+                );*/
+                const tuple<real_t,Color> volumeLi = scene.Li_VolumeOnly(sample,rand);
+                return make_tuple (get<0>(volumeLi), get<1>(volumeLi), constants::infinity);
         }
 }
 
 
 
-tuple<real_t,Color,real_t> DirectLighting::Li (
+tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample, Random &rand

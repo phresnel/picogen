@@ -64,6 +64,7 @@ tuple<real_t,Color> Emission::Li (
 	const Vector w = -ray.direction;
 
         t0 += rand()*step;
+
 	/*if (sample)
 		t0 += sample->oneD[scatterSampleOffset][0] * step;
 	else
@@ -84,7 +85,7 @@ tuple<real_t,Color> Emission::Li (
                                 rand
                         );
 
-		Tr = Tr * exp(-stepTau);
+		Tr *= exp(-stepTau);
 
 		// Possibly terminate raymarching if transmittance is small
                 if (Tr.y() < 0.05) {

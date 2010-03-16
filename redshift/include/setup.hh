@@ -124,6 +124,9 @@ namespace redshift {
                 : rand(A,B,C,D)
                 {}
 
+                Random () : rand(1,1,1,1) {
+                }
+
                 Random (Random const &x)
                 : rand(x.rand)
                 {}
@@ -141,7 +144,6 @@ namespace redshift {
                         rand.skip(u);
                 }
         private:
-                Random () ;
 
                 kallisto::random::marsaglia::UNI rand;
         };
