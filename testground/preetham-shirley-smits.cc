@@ -20,7 +20,7 @@
 
 
 #include "../redshift/include/setup.hh"
-#include "../skylab/include/sunsky.hh"
+#include "../redshift/include/backgrounds/preetham-shirley-smits/sunsky.hh"
 
 
 
@@ -156,6 +156,34 @@ int main(int /*argc*/, char* /*argv*/[])
 {
         //freopen( "CON", "w", stdout );
         redshift::static_init();
+
+
+        using namespace redshift;
+        using namespace color;
+        using namespace background;
+        PssSunSky pss (Vector(1,4,1), 1.9, true);
+
+        PssSunSky::Spectrum white_(1);
+        for (double f=0; f<30000; f+=1000) {
+                PssSunSky::Spectrum att_, inscatter_;
+                pss.GetAtmosphericEffects(Vector(0,10,0), Vector(0,10+f*0.5,f),
+                        att_, inscatter_);
+
+                const RGB att = att_.toRGB();
+                const RGB inscatter = inscatter_.toRGB();
+
+                const PssSunSky::Spectrum white__ = white_ * att_;
+                const RGB white = white__.toRGB();
+                std::cout << std::fixed
+                        << f << ": (" << att.R << " | " << att.G << " | " << att.B << ")   "
+                        << "   (" << inscatter.R << " | " << inscatter.G << " | " << inscatter.B << ")   "
+                        << "   (" << white.R << " | " << white.G << " | " << white.B << ")"
+                        << "\n"
+                ;
+        }
+
+std::cout << "exiting from DrawScreen()." << std::endl;
+return 0;
 
 
         SDL_Surface *screen;

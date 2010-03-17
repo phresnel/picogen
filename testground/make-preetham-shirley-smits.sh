@@ -2,8 +2,8 @@ g++ -lSDL -Wall -Wextra \
         -DKALLISTO_CHECK_BOUNDS \
         ../redshift/src/basictypes/spectrum.cc \
         ../redshift/src/constants.cc \
-        ../skylab/src/tospectrum.cc \
-        ../skylab/src/atmconstants.cc \
-        ../skylab/src/sunconstants.cc \
-        ../skylab/src/sunsky.cc \
+        ../redshift/src/backgrounds/preetham-shirley-smits/tospectrum.cc \
+        ../redshift/src/backgrounds/preetham-shirley-smits/atmconstants.cc \
+        ../redshift/src/backgrounds/preetham-shirley-smits/sunconstants.cc \
+        ../redshift/src/backgrounds/preetham-shirley-smits/sunsky.cc \
         preetham-shirley-smits.cc
