@@ -55,7 +55,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                 Color spec = Color(0);
                 int numSamples = 1;
                 // diffuse
-                if (0 && bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+                if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
                         if (numAmbientSamples>0)
@@ -128,10 +128,6 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         }
                 }
 
-
-                /*if (0&&bg->hasAtmosphereShade()) {
-                        ret = bg->atmosphereShade (ret, raydiff, gd.getDistance());
-                }*/
                 return make_tuple(1.0f, ret, gd.getDistance());
         } else {
                 return make_tuple (1.0,

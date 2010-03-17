@@ -26,7 +26,7 @@ scene{
     cameras{
         aerial{
             transform{
-                move-up{2000}
+                move-up{200}
                 move-forward{10000}
                 yaw{0}
                 pitch{0}
