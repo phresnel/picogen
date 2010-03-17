@@ -31,7 +31,7 @@
 #include <RiSpectralCurve.H>
 #endif*/
 
-#include "../include/sunsky.hh"
+#include "../../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
 
 #include <iostream>
 #include <cmath>
@@ -435,12 +435,12 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source
 {
         assert(atmInited);
         // Clean up the 1000 problem
-        real_t h0 = viewer.up()+1000;//1000 added to make sure ray doesnt
+        const real_t h0 = viewer.up()+1000;//1000 added to make sure ray doesnt
         //go below zero.
-        Vector direction = normalize (source - viewer);
-        real_t thetav = acos(direction.up());
-        real_t phiv = atan2(direction.ahead(),direction.right());
-        real_t s = length(viewer - source);
+        const Vector direction = normalize (source - viewer);
+        const real_t thetav = acos(direction.up());
+        const real_t phiv = atan2(direction.ahead(),direction.right());
+        const real_t s = length(viewer - source);
 
         // Fix added by me (would otherwise result in fault mem access if s==0)
         if (s<=0) {
@@ -453,7 +453,7 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source
         if (h0+s*cos(thetav) <= 0) {
                 attenuation = Spectrum::real_t(1);
                 inscatter = Spectrum::real_t(0);
-                std::cerr << "\nWarning: Ray going below earth's surface \n";
+                std::cerr << "Warning: Ray going below earth's surface \n";
                 return;
         }
 

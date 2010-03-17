@@ -25,7 +25,7 @@
 #include <RiSpectralCurve.H>
 #endif*/
 
-#include "../include/sunsky.hh"
+#include "../../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
 
 namespace redshift { namespace background {
 

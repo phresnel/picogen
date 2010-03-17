@@ -26,7 +26,7 @@
 #endif
 */
 
-#include "../../redshift/include/setup.hh"
+#include "../../setup.hh"
 
 
 namespace redshift { namespace background {

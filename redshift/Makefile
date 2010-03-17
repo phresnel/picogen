@@ -37,7 +37,7 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 #------------------------------------------------------------------------------
 SDLLIBS := `sdl-config --static-libs`
 BOOSTLIBS := -lboost_program_options
-LIBS   := $(SDLLIBS) $(BOOSTLIBS) ../skylab/skylab.a
+LIBS   := $(SDLLIBS) $(BOOSTLIBS)
 
 
 #------------------------------------------------------------------------------
@@ -79,6 +79,12 @@ OBJFILES += $(OBJDIR)/quatsch-integration.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
 OBJFILES += $(BACKGROUNDSOBJDIR)/pss-adapter.o
+
+OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_atmconstants.o
+OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_sunconstants.o
+OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_sunsky.o
+OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_tospectrum.o
+OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_preetham.o
 
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
@@ -186,6 +192,25 @@ $(BACKGROUNDSOBJDIR)/pss-adapter.o: \
                      ./src/backgrounds/pss-adapter.cc
 	$(CXX) -o $@ $<
 
+$(BACKGROUNDSOBJDIR)/preetham-shirley-smits_atmconstants.o: \
+                     ./src/backgrounds/preetham-shirley-smits/atmconstants.cc
+	$(CXX) -o $@ $<
+
+$(BACKGROUNDSOBJDIR)/preetham-shirley-smits_sunconstants.o: \
+                     ./src/backgrounds/preetham-shirley-smits/sunconstants.cc
+	$(CXX) -o $@ $<
+
+$(BACKGROUNDSOBJDIR)/preetham-shirley-smits_sunsky.o: \
+                     ./src/backgrounds/preetham-shirley-smits/sunsky.cc
+	$(CXX) -o $@ $<
+
+$(BACKGROUNDSOBJDIR)/preetham-shirley-smits_tospectrum.o: \
+                     ./src/backgrounds/preetham-shirley-smits/tospectrum.cc
+	$(CXX) -o $@ $<
+
+$(BACKGROUNDSOBJDIR)/preetham-shirley-smits_preetham.o: \
+                     ./src/backgrounds/preetham-shirley-smits/preetham.cc
+	$(CXX) -o $@ $<
 
 
 ###############################################################################

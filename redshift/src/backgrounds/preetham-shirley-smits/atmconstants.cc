@@ -10,7 +10,7 @@
  *
  */
 
-#include "../include/sunsky.hh"
+#include "../../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <iostream>
 
 /*#ifndef RICOMMON_H
