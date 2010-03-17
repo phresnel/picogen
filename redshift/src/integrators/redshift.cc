@@ -67,10 +67,11 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                                 rand);
                                 if (v_) {
                                         ray.direction = get<1>(*v_);
-                                        Sample s = sample;
-                                        s.primaryRay = ray;
-                                        const tuple<real_t,Color> L = scene.Li_VolumeOnly(s, rand);
                                         /*if (ray.direction.y>0)*/ {
+                                                Sample s = sample;
+                                                s.primaryRay = ray;
+                                                const tuple<real_t,Color> L = scene.Li_VolumeOnly(s, rand);
+
                                                 sum = sum +
                                                         //bg->query (ray)  *  get<0>(*v_);
                                                         get<1>(L)  *  get<0>(*v_);

@@ -450,20 +450,57 @@ void  PssSunSky::InitA0() const {
 //
 // ********************************************************/
 
+#define TEST_TICTOC 0
 
-void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source,
+void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source_,
                 Spectrum &attenuation, Spectrum &inscatter ) const
 {
         assert(atmInited);
         // Clean up the 1000 problem
         const real_t h0 = viewer.up()+1000;//1000 added to make sure ray doesnt
         //go below zero.
+
+        // phresnel/ try to fix their 1000 meter problem by culling
+        // the source so that it is above 0.
+        // TODO: see tictoc
+        Vector source;
+
+#if TEST_TICTOC
+        int i = 0;
+#endif
+
+        if (source_.y < 0) {
+                const Vector direction = normalize (source - viewer);
+                const real_t f = viewer.y / -direction.y;
+#if TEST_TICTOC
+                source = source_;//viewer + f * direction;
+                ++i;
+#else
+                source = viewer + f * direction;
+#endif
+        } else {
+                source = source_;
+        }
+
         const Vector direction = normalize (source - viewer);
         const real_t thetav = acos(direction.up());
         const real_t phiv = atan2(direction.ahead(),direction.right());
         const real_t s = length(viewer - source);
 
-        // Fix added by me (would otherwise result in fault mem access if s==0)
+#if TEST_TICTOC
+        // this seems to only seldomly be triggered, it means
+        // that if i==1, than we culled source, even though
+        // the "if (h0+s*cos(thetav) <= 0)" statement is not true
+        // (to test it, assign source_ to source instead of assigning  viewer + f * direction to it)
+        if (h0+s*cos(thetav) <= 0) {
+                ++i;
+        }
+        if (i==1) {
+                std::cout << "tictoc\n";
+        }
+#endif
+
+        // fix added (phresnel)/ would otherwise result in fault mem access if s==0
         if (s<=0) {
                 attenuation = Spectrum(Spectrum::real_t(1));
                 inscatter = Spectrum(Spectrum::real_t(0));

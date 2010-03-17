@@ -17,7 +17,7 @@ scene{
         prev-no-vol{
             width:400;
             height:300;
-            samples-per-pixel:5;
+            samples-per-pixel:1;
             surface-integrator{
                 type:redshift;
             }
@@ -26,40 +26,42 @@ scene{
     cameras{
         aerial{
             transform{
-                move-up{200}
-                move-forward{10000}
+                move-up{1500}
+                move-forward{100}
                 yaw{0}
                 pitch{0}
+
+                move-up{2000}
             }
         }
     }
     objects{
         lazy-quadtree{
-                color{1.0;1.0;1.0}
+                color{0.85;1.0;0.85}
                 max-recursion:8;
                 lod-factor:0.000125;
-                size:5000000;
+                size:50000;
                 code:
                         (defun foo (x y)
                                 ([LayeredNoise2d
                                         filter{cosine}
                                         seed{5}
-                                        frequency{0.0001}
+                                        frequency{0.0002}
                                         layercount{8}
                                         persistence{0.5}
                                 ] (+ 100000 x) (+ 100000 y))
                         )
 
-                        (+ 500 (* 5000  (foo x y)))
+                        (+ 2000 500 (* 5000  (foo x y)))
                         /*(+ 300 (* (sin (* x 0.001)) (sin (* y 0.001))))*/
                 ;
         }
-        water-plane{height:0; }
+        water-plane{height:2010; }
     }
     backgrounds{
         pss-sunsky {
                 turbidity:1.9;
-                sun-direction{1.0;1.0;1.0}
+                sun-direction{0.2;0.7;1.0}
         }
     }
     volumes {

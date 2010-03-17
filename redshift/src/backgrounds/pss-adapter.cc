@@ -101,7 +101,6 @@ Color PssAdapter::atmosphereShade (
                 viewer, source,
                 attenuation, inscatter
         );
-        //return color;
         return color * Color(attenuation) + Color(inscatter);
 }
 
