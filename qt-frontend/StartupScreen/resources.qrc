@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/sreenshots">
+        <file>resources/screenshots/picogen.png</file>
+    </qresource>
+</RCC>

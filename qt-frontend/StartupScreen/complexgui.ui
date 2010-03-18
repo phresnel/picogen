@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ComplexGUI</class>
+ <widget class="QMainWindow" name="ComplexGUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>654</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+	background-color: rgb(90, 90, 90);
+	color: rgb(255,255,255);
+	border-width: 0px;
+	border-style: solid;
+	border-color: transparent;
+	border-radius:5px;
+}
+QPushButton:disabled, 
+QComboBox:disabled,
+QSpinBox:disabled, 
+QDoubleSpinBox:disabled {
+	background-color: rgb(90, 90, 90);
+	color: rgb(140,140,140);
+	border-color: rgb(120,120,120)
+}
+
+QPushButton {
+    border-radius:10px;
+	border-width: 2px;
+	border-color: rgb(150,150,150);
+
+background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                       stop: 0 #46474a, 
+                                       stop: 1 #8a8b8e);
+
+}
+QLabel {
+	border-color: transparent;
+	color: rgb(170,170,170);
+}
+
+QGroupBox {
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                       stop: 0 rgb(110, 110, 110), stop: 1 rgb(140, 130, 120));
+	margin-top: 1.5ex; /* leave space at the top for the title */
+	border-radius: 16px;
+}
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top center; /* position at the top center */
+	color: rgb(255, 193, 100);
+}
+QGraphicsView, #heightmapLabel {
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1,
+             stop:0 rgb(108, 128, 108), 
+             stop:1 rgb(0, 0, 0));
+	border: 2px solid gray;
+	border-radius: 5px;
+	border-color: rgb(120, 120, 120);
+	margin-top: 1ex; /* leave space at the top for the title */
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTreeWidget" name="treeWidget">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>171</width>
+      <height>441</height>
+     </rect>
+    </property>
+    <property name="animated">
+     <bool>true</bool>
+    </property>
+    <attribute name="headerVisible">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="headerVisible">
+     <bool>true</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>scene</string>
+     </property>
+    </column>
+    <item>
+     <property name="text">
+      <string>film-settings</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>color-scale</string>
+      </property>
+      <property name="flags">
+       <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>convert-to-srgb</string>
+      </property>
+      <property name="checkState">
+       <enum>Unchecked</enum>
+      </property>
+     </item>
+    </item>
+    <item>
+     <property name="text">
+      <string>render-settings</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>cameras</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>objects</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>background</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>volumes</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QMdiArea" name="mdiArea">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>10</y>
+      <width>461</width>
+      <height>451</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>654</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
