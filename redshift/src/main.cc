@@ -904,7 +904,7 @@ namespace redshift { namespace scenefile {
                         arch & pack ("cameras", &Camera::title, cameras_);
                         arch & pack ("objects", &Object::type, Object::Typenames, objects_);
                         arch & pack ("volumes", &Volume::type, Volume::Typenames, volumes_);
-                        arch & pack ("backgrounds", &Background::type, Background::Typenames, backgrounds_);
+                        arch & pack ("background", &Background::type, Background::Typenames, backgrounds_);
                         arch & pack ("film-settings", filmSettings_);
                 }
         };
