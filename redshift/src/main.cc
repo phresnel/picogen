@@ -408,9 +408,8 @@ namespace {
                 }
         }
 
-
         void renderSdl (
-                redshift::scenefile::Scene const &scene,
+                redshift::scenefile::Scene const &scened,
                 const Options & options
         ) {
                 using namespace redshift;
@@ -420,111 +419,22 @@ namespace {
 
                 redshift::StopWatch stopWatch;
 
+
                 const unsigned int
-                        width = scene.renderSettings(0).width,
-                        height = scene.renderSettings(0).height,
-                        samplesPerPixel = scene.renderSettings(0).samplesPerPixel
+                        width = scened.renderSettings(0).width,
+                        height = scened.renderSettings(0).height,
+                        samplesPerPixel = scened.renderSettings(0).samplesPerPixel
                 ;
 
                 RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-                shared_ptr<Camera> camera (new Pinhole(
-                        renderBuffer, 0.5f,
-                        scene.camera(0).toRedshiftTransform()
-                ));
+                shared_ptr<Scene> scene = sceneDescriptionToScene(scened, renderBuffer);
 
-
-                // Add objects.
-                primitive::List *list = new List;
-                for (unsigned int i=0; i<scene.objectCount(); ++i) {
-                        list->add (scene.object(i).toPrimitive());
-                }
-                shared_ptr<primitive::Primitive> agg (list);
-
-
-                // Add volumes.
-                volume::List *volumeList = new volume::List;
-                for (unsigned int i=0; i<scene.volumeCount(); ++i) {
-                        volumeList->add (scene.volume(i).toVolume());
-                }
-                shared_ptr<VolumeRegion> volumeAgg (volumeList);
-
-
-                // atmosphere
-                /*shared_ptr<background::Preetham> preetham (new background::Preetham());
-                preetham->setSunDirection(Vector(-4.0,1.001,0.010));
-                preetham->setTurbidity(2.0f);
-                //preetham->setSunColor(redshift::Color(1.1,1,0.9)*17);
-                preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
-                preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
-                preetham->enableFogHack (false, 0.00025f, 150000);
-                preetham->invalidate();*/
-
-                // TODO: support arbitrary many backgrounds (Starsky!)
-                shared_ptr<Background> background;
-                if (scene.backgroundCount()) {
-                        background = scene.background(0).toBackground();
-                } else {
-                        /*shared_ptr<background::Preetham> preetham (new background::Preetham());
-                        preetham->setSunDirection(Vector(-4.0,1.001,0.010));
-                        preetham->setTurbidity(2.0f);
-                        preetham->setSunColor(Color::FromRGB(1.1,1.,0.9)*Color::real_t(5));
-                        preetham->setColorFilter(Color::FromRGB(1.0,1.0,1.0)*Color::real_t(0.025));
-                        preetham->enableFogHack (false, 0.00025f, 150000);
-                        preetham->invalidate();
-                        background = shared_ptr<redshift::Background> (
-                                        new backgrounds::PreethamAdapter (preetham));*/
-
-                        /*shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
-                                30, // [in] lat Latitude (0-360)
-                                30,			// [in] long Longitude (-90,90) south to north
-                                0,			// [in] sm  Standard Meridian
-                                90,			// [in] jd  Julian Day (1-365)
-                                8.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
-                                7,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
-                                true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
-                                                        // happen if you try to use them....
-                        ));*/
-                        shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
-                                Vector(1,.25,1),
-                                7,
-                                true
-                        ));
-                        background = shared_ptr<redshift::Background> (
-                                new backgrounds::PssAdapter (pss,1));
-                }
-                // ----------
-
-                Scene Scene (
-                        renderBuffer,
-                        camera,
-                        agg,
-                        background,
-                        //shared_ptr<Background>(new backgrounds::Monochrome(Color::FromRGB(0.5,0.25,0.125))),
-                        //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                        shared_ptr<Integrator> (new RedshiftIntegrator(10/*ambient samples*/)),
-
-                        volumeAgg,
-                        shared_ptr<VolumeIntegrator>(
-                                scene.renderSettings(0)
-                                        .volumeIntegrator
-                                        .toVolumeIntegrator())
-
-                        /*
-                        shared_ptr<VolumeRegion> (new volume::Exponential (
-                                0.0*Color::FromRGB(1,1,0.8)*0.00025, // absorption
-                                3*Color::FromRGB(1,1,1)*0.00025, // out scattering probability
-                                0.0*Color::FromRGB(1,1,1)*0.0001, // emission
-                                0.0 // Henyey Greenstein
-                                , 1.f, 0.125*0.0075f, Point(0.f,0.f,0.f)
-                        )),
-                        shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
-                );
 
                 RenderTarget::Ptr screenBuffer (new SdlRenderTarget(
                         width, height,
                         options.outputFile,
-                        scene.filmSettings().colorscale,
-                        scene.filmSettings().convertToSrgb
+                        scened.filmSettings().colorscale,
+                        scened.filmSettings().convertToSrgb
                 ));
 
                 UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
@@ -532,7 +442,7 @@ namespace {
                 ProgressReporter::Ptr reporter (
                           new RenderTargetCopyingReporter(renderBuffer, screenBuffer));
 
-                Scene.render(reporter, commandProcessor, samplesPerPixel);
+                scene->render(reporter, commandProcessor, samplesPerPixel);
                 copy (renderBuffer, screenBuffer);
                 screenBuffer->flip();
 
@@ -547,6 +457,115 @@ namespace {
                 }
         }
 }
+
+
+redshift::shared_ptr<redshift::Scene>
+ sceneDescriptionToScene (
+        redshift::scenefile::Scene const &scene,
+        redshift::RenderTarget::Ptr renderBuffer
+) {
+        using namespace redshift;
+        using namespace redshift::camera;
+        using namespace redshift::interaction;
+        using namespace redshift::primitive;
+
+
+        shared_ptr<Camera> camera (new Pinhole(
+                renderBuffer, 0.5f,
+                scene.camera(0).toRedshiftTransform()
+        ));
+
+
+        // Add objects.
+        primitive::List *list = new List;
+        for (unsigned int i=0; i<scene.objectCount(); ++i) {
+                list->add (scene.object(i).toPrimitive());
+        }
+        shared_ptr<primitive::Primitive> agg (list);
+
+
+        // Add volumes.
+        volume::List *volumeList = new volume::List;
+        for (unsigned int i=0; i<scene.volumeCount(); ++i) {
+                volumeList->add (scene.volume(i).toVolume());
+        }
+        shared_ptr<VolumeRegion> volumeAgg (volumeList);
+
+
+        // atmosphere
+        /*shared_ptr<background::Preetham> preetham (new background::Preetham());
+        preetham->setSunDirection(Vector(-4.0,1.001,0.010));
+        preetham->setTurbidity(2.0f);
+        //preetham->setSunColor(redshift::Color(1.1,1,0.9)*17);
+        preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
+        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
+        preetham->enableFogHack (false, 0.00025f, 150000);
+        preetham->invalidate();*/
+
+        // TODO: support arbitrary many backgrounds (Starsky!)
+        shared_ptr<Background> background;
+        if (scene.backgroundCount()) {
+                background = scene.background(0).toBackground();
+        } else {
+                /*shared_ptr<background::Preetham> preetham (new background::Preetham());
+                preetham->setSunDirection(Vector(-4.0,1.001,0.010));
+                preetham->setTurbidity(2.0f);
+                preetham->setSunColor(Color::FromRGB(1.1,1.,0.9)*Color::real_t(5));
+                preetham->setColorFilter(Color::FromRGB(1.0,1.0,1.0)*Color::real_t(0.025));
+                preetham->enableFogHack (false, 0.00025f, 150000);
+                preetham->invalidate();
+                background = shared_ptr<redshift::Background> (
+                                new backgrounds::PreethamAdapter (preetham));*/
+
+                /*shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
+                        30, // [in] lat Latitude (0-360)
+                        30,			// [in] long Longitude (-90,90) south to north
+                        0,			// [in] sm  Standard Meridian
+                        90,			// [in] jd  Julian Day (1-365)
+                        8.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
+                        7,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
+                        true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
+                                                // happen if you try to use them....
+                ));*/
+                shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
+                        Vector(1,.25,1),
+                        7,
+                        true
+                ));
+                background = shared_ptr<redshift::Background> (
+                        new backgrounds::PssAdapter (pss,1));
+        }
+        // ----------
+
+        return shared_ptr<Scene> (new Scene (
+                renderBuffer,
+                camera,
+                agg,
+                background,
+                //shared_ptr<Background>(new backgrounds::Monochrome(Color::FromRGB(0.5,0.25,0.125))),
+                //shared_ptr<Background>(new backgrounds::VisualiseDirection())
+                shared_ptr<Integrator> (new RedshiftIntegrator(10/*ambient samples*/)),
+
+                volumeAgg,
+                shared_ptr<VolumeIntegrator>(
+                        scene.renderSettings(0)
+                                .volumeIntegrator
+                                .toVolumeIntegrator())
+
+                /*
+                shared_ptr<VolumeRegion> (new volume::Exponential (
+                        0.0*Color::FromRGB(1,1,0.8)*0.00025, // absorption
+                        3*Color::FromRGB(1,1,1)*0.00025, // out scattering probability
+                        0.0*Color::FromRGB(1,1,1)*0.0001, // emission
+                        0.0 // Henyey Greenstein
+                        , 1.f, 0.125*0.0075f, Point(0.f,0.f,0.f)
+                )),
+                shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
+        ));
+}
+
+
+
 
 void read_and_render (Options const & options) {
         // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
@@ -636,6 +655,7 @@ void read_angle_test() {
                 ) u = Radian;
         }
 }
+
 
 int main (int argc, char *argv[]) {
         //freopen( "CON", "w", stdout );

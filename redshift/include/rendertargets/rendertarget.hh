@@ -73,7 +73,7 @@ namespace redshift {
                  for (int x=0; x<width; ++x) {
                         targetl->setPixel (x, y, sourcel->getPixel (x, y));
                 }
-        }
+        }        
         
         inline void
         copy (RenderTarget::ConstPtr source, RenderTarget::ReadLockPtr sourcel, 

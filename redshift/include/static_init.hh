@@ -18,6 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifndef STATIC_INIT_HH_INCLUDED_20100317
+#define STATIC_INIT_HH_INCLUDED_20100317
+
+#include "setup.hh"
 namespace redshift {
         inline void static_init() {
                 redshift::SpectrumBase<float>::static_init();
@@ -25,3 +29,5 @@ namespace redshift {
                 redshift::SpectrumBase<long double>::static_init();
         }
 }
+
+#endif // STATIC_INIT_HH_INCLUDED_20100317

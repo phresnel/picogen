@@ -137,10 +137,17 @@ tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) con
                    : make_tuple(real_t(1), Color(real_t(0)))
         ;
 
-        const Color atmosphere = background->query(sample.primaryRay);
+        const Color atmosphere = background
+                        ? background->query(sample.primaryRay)
+                        : Color(0.5);
 
         const Color ret_ = get<1>(T) * atmosphere + get<1>(Lv);
-        const Color ret = background->atmosphereShade (ret_, sample.primaryRay, constants::infinity);
+        const Color ret =
+                background && background->hasAtmosphereShade()
+                ? background->atmosphereShade (ret_, sample.primaryRay, constants::infinity)
+                : ret_
+        ;
+
 
         return make_tuple (1.f, ret);
 }
@@ -150,7 +157,10 @@ tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) con
 tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
         // Intersect geometry.
         const tuple<real_t,Color,real_t>
-                Lo_ = surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand);
+                Lo_ = aggregate
+                    ? surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand)
+                    : make_tuple(1., Color(0), constants::infinity)
+        ;
 
         const Color Lo = get<1>(Lo_);
         const real_t distance = get<2>(Lo_);
@@ -171,7 +181,9 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
         const Color T = get<1>(T_), Lv = get<1>(Lv_);
 
         // Background.
-        const Color atmosphere = background->query(sample.primaryRay);
+        const Color atmosphere = background
+                        ? background->query(sample.primaryRay)
+                        : Color(0.5);
 
         // Now either put atmo- or geom-color into eq.
         const Color
@@ -197,7 +209,8 @@ void Scene::render (
                 (renderTarget->getWidth() * renderTarget->getHeight() * numAASamples);
         real_t sampleNumber = 0;
 
-        aggregate->prepare(*this);
+        if (aggregate)
+                aggregate->prepare(*this);
 
         // non-portable thread id visualisation
         const Color threadCol[] = {
@@ -222,7 +235,8 @@ void Scene::render (
                         reduction(+:sampleNumber)
                 for (int x_=0; x_<width; ++x_) {
                         const int x = x_;
-                        Color accu = Color::FromRGB(0,0,0);
+                        Color accu = Color::FromRGB(0,1,0);
+
                         for (int i_=0; i_<(int)numAASamples; ++i_) {
                                 const int i = i_;
                                 redshift::Random rand;
@@ -307,12 +321,10 @@ void Scene::render (
                         //-------------------------------------------------------------
                 }
                 bool userWantsToQuit = false;
-                #pragma omp master
-                {
-                        reporter->report (lock, sampleNumber, totalNumberOfSamples);
-                        ucp->tick();
-                        userWantsToQuit = ucp->userWantsToQuit();
-                }
+                reporter->report (lock, sampleNumber, totalNumberOfSamples);
+                ucp->tick();
+                userWantsToQuit = ucp->userWantsToQuit();
+
                 if (userWantsToQuit)
                         break;
         }

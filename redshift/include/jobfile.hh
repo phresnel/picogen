@@ -228,11 +228,7 @@ namespace redshift { namespace scenefile {
 
 
         };
-        const actuarius::Enum<Object::Type> Object::Typenames =
-                ( actuarius::Nvp<Object::Type>(Object::water_plane, "water-plane")
-                | actuarius::Nvp<Object::Type>(Object::lazy_quadtree, "lazy-quadtree")
-                | actuarius::Nvp<Object::Type>(Object::horizon_plane, "horizon-plane")
-        );
+
 
 
         // SurfaceIntegrator.
@@ -255,9 +251,6 @@ namespace redshift { namespace scenefile {
                         arch & pack("type", Typenames, type);
                 }
         };
-        const actuarius::Enum<SurfaceIntegrator::Type> SurfaceIntegrator::Typenames =
-                ( actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::redshift, "redshift")
-                );
 
 
 
@@ -332,10 +325,7 @@ namespace redshift { namespace scenefile {
                         };
                 }
         };
-        const actuarius::Enum<Volume::Type> Volume::Typenames =
-                ( actuarius::Nvp<Volume::Type>(Volume::homogeneous, "homogeneous")
-                | actuarius::Nvp<Volume::Type>(Volume::exponential, "exponential")
-                );
+
 
 
         // VolumeIntegrator.
@@ -379,11 +369,6 @@ namespace redshift { namespace scenefile {
                         arch & pack("cutoff-distance", cutoffDistance);
                 }
         };
-        const actuarius::Enum<VolumeIntegrator::Type> VolumeIntegrator::Typenames =
-                ( actuarius::Nvp<VolumeIntegrator::Type>(VolumeIntegrator::none, "none")
-                | actuarius::Nvp<VolumeIntegrator::Type>(VolumeIntegrator::emission, "emission")
-                | actuarius::Nvp<VolumeIntegrator::Type>(VolumeIntegrator::single, "single")
-                );
 
 
         // Background.
@@ -460,9 +445,6 @@ namespace redshift { namespace scenefile {
                         };
                 }
         };
-        const actuarius::Enum<Background::Type> Background::Typenames =
-                ( actuarius::Nvp<Background::Type>(Background::pss_sunsky, "pss-sunsky")
-                );
 
 
 
@@ -601,19 +583,6 @@ namespace redshift { namespace scenefile {
                 }
         };
 
-        const actuarius::Enum<Camera::Transform::Type> Camera::Transform::Typenames =
-                ( actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move, "move")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_left, "move-left")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_right, "move-right")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_down, "move-down")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_up, "move-up")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_backward, "move-backward")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_forward, "move-forward")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::yaw, "yaw")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::pitch, "pitch")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::roll, "roll")
-                );
-
 
 
         // Scene = (RenderSettings+)(FilmSettings)(Objects*)
@@ -705,5 +674,12 @@ namespace redshift { namespace scenefile {
                 }
         };
 } }
+
+
+redshift::shared_ptr<redshift::Scene>
+ sceneDescriptionToScene (
+        redshift::scenefile::Scene const &scene,
+        redshift::RenderTarget::Ptr renderBuffer
+);
 
 #endif // JOBFILE_HH_INCLUDED_20100318
