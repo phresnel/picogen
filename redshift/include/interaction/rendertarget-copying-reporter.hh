@@ -38,7 +38,7 @@ public:
 
 
         void report (RenderTarget::ReadLockPtr sourcel,
-                                              int completed, int total) const {
+                                              int /*completed*/, int /*total*/) const {
                 if (lastTime() < 0.5)
                         return;
                 lastTime.restart();

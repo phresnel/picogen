@@ -230,9 +230,9 @@ void Scene::render (
         for (int y_=0; y_<height; ++y_) {
                 const int y = y_;
                 //#warning no multicore!
-                #pragma omp parallel for \
+                /*#pragma omp parallel for \
                         schedule(dynamic) \
-                        reduction(+:sampleNumber)
+                        reduction(+:sampleNumber)*/
                 for (int x_=0; x_<width; ++x_) {
                         const int x = x_;
                         Color accu = Color::FromRGB(0,1,0);
