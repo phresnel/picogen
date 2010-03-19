@@ -1,0 +1,13 @@
+Files in this directory are only tracked in the "upstream" branch, any file you
+put into this directory will be ignored by version control.
+
+To checkout the upstream branch, do:
+
+        git clone <picogen-repository>
+        git checkout -b upstream remotes/origin/upstream
+
+If the picogen repository layout changed at some day, you might want to look at
+
+        git branch -a
+
+If all not helps, beat phresnel via mail or in the forums.
