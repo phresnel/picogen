@@ -77,7 +77,7 @@ private:
 // Name value pair - list construction helpers
 //-----------------------------------------------------------------------------
 template <typename T>
-std::vector<Nvp<T> > operator | (
+inline std::vector<Nvp<T> > operator | (
         Nvp<T> const & lhs,
         Nvp<T> const & rhs
 ) {
@@ -90,7 +90,7 @@ std::vector<Nvp<T> > operator | (
 
 
 template <typename T>
-std::vector<Nvp<T> > operator | (
+inline std::vector<Nvp<T> > operator | (
         std::vector<Nvp<T> > const & lhs,
         Nvp<T> const & rhs
 ) {
