@@ -14,6 +14,6 @@ HEADERS += mainwindow.hh \
 FORMS += mainwindow.ui \
     ../RenderWindow/renderwindow.ui
 LIBS += ../../redshift/lib/libpicogen.a \
-        -lgomp
+        -lgomp -lboost_program_options -lSDL
 include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
 include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)

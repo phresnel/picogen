@@ -35,7 +35,8 @@ namespace redshift {
                 : public redshift::RenderTarget
                 , DoFinalize(QImageRenderTarget) {
         public:
-                QImageRenderTarget (int width_, int height_);
+                QImageRenderTarget (int width_, int height_,
+                                    double colorscale, bool toSRGB);
                 ~QImageRenderTarget();
                 
                 shared_ptr<RenderTargetLock> lock ();
@@ -48,8 +49,10 @@ namespace redshift {
                 operator QImage ();
 
         private:         
-                int width, height;
+                int width, height;                
                 QImage display;
+                double colorscale;
+                bool toSRGB;
                 
                 class QImageRenderTargetLock;
                 friend class QImageRenderTargetLock;

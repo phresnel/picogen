@@ -27,13 +27,16 @@
 
 namespace redshift {
 
-
 struct QImageRenderTarget::QImageRenderTargetLock : redshift::RenderTargetLock {
 
         redshift::QImageRenderTarget & display;
+        double colorscale;
+        bool toSRGB;
 
-        QImageRenderTargetLock (redshift::QImageRenderTarget & display_)
-        : display (display_)
+
+        QImageRenderTargetLock (redshift::QImageRenderTarget & display_,
+                                double colorscale, bool toSRGB)
+        : display (display_), colorscale(colorscale), toSRGB(toSRGB)
         {
         }
 
@@ -56,16 +59,27 @@ struct QImageRenderTarget::QImageRenderTargetLock : redshift::RenderTargetLock {
                         }
                 }
                 //display.display [y*display.getWidth() + x] = color;
-                const color::RGB
-                        rgb_ = color.toRGB(),
-                        rgb(rgb_.R*255, rgb_.G*255, rgb_.B*255);
 
-                const int
-                        r = (int)rgb.R < 0 ? 0 : (int)rgb.R > 255 ? 255 : (int)rgb.R,
-                        g = (int)rgb.G < 0 ? 0 : (int)rgb.G > 255 ? 255 : (int)rgb.G,
-                        b = (int)rgb.B < 0 ? 0 : (int)rgb.B > 255 ? 255 : (int)rgb.B
-                ;
-                display.display.setPixel (x, y, QColor(r,g,b).rgb());
+                const color::RGB rgb = color.toRGB();
+
+                if (toSRGB) {
+                        const color::SRGB srgb = rgb.toSRGB();
+                        const int r_ = (int)(255.f * srgb.R * colorscale);
+                        const int g_ = (int)(255.f * srgb.G * colorscale);
+                        const int b_ = (int)(255.f * srgb.B * colorscale);
+                        const int r = r_<0?0:r_>255?255:r_;
+                        const int g = g_<0?0:g_>255?255:g_;
+                        const int b = b_<0?0:b_>255?255:b_;
+                        return display.display.setPixel (x, y, QColor(r,g,b).rgb());
+                } else {
+                        const int r_ = (int)(255.f * rgb.R * colorscale);
+                        const int g_ = (int)(255.f * rgb.G * colorscale);
+                        const int b_ = (int)(255.f * rgb.B * colorscale);
+                        const int r = r_<0?0:r_>255?255:r_;
+                        const int g = g_<0?0:g_>255?255:g_;
+                        const int b = b_<0?0:b_>255?255:b_;
+                        return display.display.setPixel (x, y, QColor(r,g,b).rgb());
+                }
         }
 
         Color getPixel (int x, int y) const {
@@ -131,8 +145,10 @@ struct QImageRenderTarget::QImageRenderTargetConstLock
 
 
 
-QImageRenderTarget::QImageRenderTarget (int width_, int height_)
+QImageRenderTarget::QImageRenderTarget (int width_, int height_,
+                                        double colorscale, bool toSRGB)
 : width(width_), height(height_), display(width, height, QImage::Format_RGB32)
+, colorscale(colorscale), toSRGB(toSRGB)
 {
 }
 
@@ -142,7 +158,6 @@ QImageRenderTarget::~QImageRenderTarget() {
 }
 
 
-
 QImageRenderTarget::operator QImage () {
         return display;
 }
@@ -150,7 +165,8 @@ QImageRenderTarget::operator QImage () {
 
 
 shared_ptr<RenderTargetLock> QImageRenderTarget::lock () {
-        return shared_ptr<RenderTargetLock> (new QImageRenderTargetLock (*this));
+        return shared_ptr<RenderTargetLock> (new QImageRenderTargetLock (
+                        *this, colorscale, toSRGB));
 }
 
 

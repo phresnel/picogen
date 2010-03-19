@@ -24,12 +24,18 @@
 #define RENDERWINDOW_HH
 
 #include <QDialog>
+#include <QThread>
 
 namespace Ui {
     class RenderWindow;
 }
 
+
+class RenderWindow;
 class RenderWindowImpl;
+
+
+
 class RenderWindow : public QDialog {
         Q_OBJECT
 public:
