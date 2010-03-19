@@ -565,7 +565,7 @@ redshift::shared_ptr<redshift::Scene>
 }
 
 
-
+#ifndef PICOGENLIB
 
 void read_and_render (Options const & options) {
         // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
@@ -666,3 +666,6 @@ int main (int argc, char *argv[]) {
         read_and_render(*oo);
         return 0;
 }
+
+
+#endif // PICOGENLIB
