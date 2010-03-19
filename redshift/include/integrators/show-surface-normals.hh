@@ -29,7 +29,7 @@ namespace redshift {
                 virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
-                        const Sample &sample, Random& rand
+                        const Sample &sample, Random& /*rand*/
                 ) const {
                         const optional<Intersection> I (
                                                 scene.intersect (raydiff));

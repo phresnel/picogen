@@ -58,7 +58,7 @@ namespace redshift { namespace primitive {
                 virtual shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom) const = 0;
 
-                virtual void prepare (const Scene &scene) {}
+                virtual void prepare (const Scene &/*scene*/) {}
 
                 virtual ~Primitive () {}
         };

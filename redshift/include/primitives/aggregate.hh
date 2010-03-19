@@ -38,7 +38,7 @@ namespace redshift { namespace primitive {
                                         RayDifferential const &ray) const = 0;
 
                 virtual shared_ptr<Bsdf> getBsdf(
-                        const DifferentialGeometry & dgGeom
+                        const DifferentialGeometry & /*dgGeom*/
                 ) const {
                         throw std::logic_error (
                                 "getBsdf() called on aggregate.");

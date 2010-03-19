@@ -29,7 +29,7 @@ namespace redshift { namespace backgrounds {
         {
         public:
                 Monochrome (Color col) : color (col) {}
-                Color query (Ray const &ray) const {
+                Color query (Ray const &/*ray*/) const {
                         return color;
                 }
         private:

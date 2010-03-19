@@ -686,6 +686,9 @@ namespace redshift { namespace scenefile {
                 FilmSettings filmSettings () const {
                         return filmSettings_;
                 }
+                void setFilmSettings (FilmSettings const &fs) {
+                        filmSettings_ = fs;
+                }
 
 
                 // Serialization.

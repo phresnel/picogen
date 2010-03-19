@@ -131,13 +131,13 @@ namespace redshift {
                         const Color b = VolumeRegion::sigma_t(p,w,rand);
                         return a * b;
                 }
-                Color Lve(const Point &p, const Vector &w, Random& rand) const {
+                Color Lve(const Point &p, const Vector &/*w*/, Random& rand) const {
                         return density(p,rand) * Lve_;
                 }
                 real_t p(
-                        const Point &p,
+                        const Point &/*p*/,
                         const Vector &w_in,
-                        const Vector &w_out, Random& rand
+                        const Vector &w_out, Random& /*rand*/
                 ) const {
                         return phaseHG(w_in, w_out, henyeyGreensteinParameter);
                 }
