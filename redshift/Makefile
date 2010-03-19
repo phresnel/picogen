@@ -75,6 +75,7 @@ AMALGAM := g++ $(CXXFLAGS) \
 OBJFILES :=
 # main.o is intentionally excluded, and must be included by main targets
 OBJFILES += $(OBJDIR)/constants.o
+OBJFILES += $(OBJDIR)/jobfile.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
@@ -173,6 +174,10 @@ $(OBJDIR)/lib-main.o: ./src/main.cc
 
 
 $(OBJDIR)/constants.o: ./src/constants.cc
+	$(CXX) -o $@ $<
+
+
+$(OBJDIR)/jobfile.o: ./src/jobfile.cc
 	$(CXX) -o $@ $<
 
 
