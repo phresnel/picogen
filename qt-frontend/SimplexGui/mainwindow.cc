@@ -201,46 +201,41 @@ void MainWindow::on_actionShow_redshift_job_code_triggered()
         typedef QtVariantProperty* VProp;
 
 
-        Props props = ui->settings->properties();
+        Props topProps = ui->settings->properties();
 
         QString ret;
         using namespace redshift;
         scenefile::Scene scene;
 
-        foreach (Prop prop, props) {
-                if (prop->propertyName() == "film-settings") {
-                        Props subs = prop->subProperties();
-                        scenefile::FilmSettings fs;
-                        foreach (Prop sub, subs) {
-                                if (sub->propertyName()=="color-scale")
-                                        fs.colorscale = ((QtVariantProperty*)sub)->value().toDouble();
-                                if (sub->propertyName()=="convert-to-srgb")
-                                        fs.convertToSrgb = ((QtVariantProperty*)sub)->value().toBool();
-                        }
-                        scene.setFilmSettings(fs);
-                } else if (prop->propertyName() == "render-settings") {
-                        foreach (Prop mooh, prop->subProperties()) {
-                                Props subs = mooh->subProperties();
+        // FilmSettings.
+        const Props filmSettings = readSubProperties("film-settings", topProps);
+        scenefile::FilmSettings fs;
+        fs.colorscale = readValue<double>("color-scale", filmSettings);
+        fs.convertToSrgb = readValue<bool>("convert-to-srgb", filmSettings);
+        scene.setFilmSettings(fs);
 
-                                scenefile::RenderSettings rs;
-                                rs.width = readValue<unsigned int>("width", subs);
-                                rs.height = readValue<unsigned int>("height", subs);
-                                rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
+        // RenderSettings.
+        const Props renderSettings = readSubProperties("render-settings", topProps);
+        foreach (Prop mooh, renderSettings) {
+                Props subs = mooh->subProperties();
 
-                                Props vp = readSubProperties("volume-integrator", subs);
-                                rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
-                                rs.volumeIntegrator.cutoffDistance = readValue<double>("cutoff-distance", vp);
-                                const QString integT = readValueText("type", vp);
-                                if ("none" == integT)
-                                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::none;
-                                else if ("emission" == integT)
-                                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::emission;
-                                else if ("single" == integT)
-                                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
+                scenefile::RenderSettings rs;
+                rs.width = readValue<unsigned int>("width", subs);
+                rs.height = readValue<unsigned int>("height", subs);
+                rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
 
-                                scene.addRenderSettings(rs);
-                        }
-                }
+                Props vp = readSubProperties("volume-integrator", subs);
+                rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
+                rs.volumeIntegrator.cutoffDistance = readValue<double>("cutoff-distance", vp);
+                const QString integT = readValueText("type", vp);
+                if ("none" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::none;
+                else if ("emission" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::emission;
+                else if ("single" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
+
+                scene.addRenderSettings(rs);
         }
 
         using namespace actuarius;
