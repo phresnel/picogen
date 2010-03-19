@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-TARGET = test-import
+TARGET = simplex-gui
 TEMPLATE = app
 
 DEFINES += __STDC_LIMIT_MACROS
@@ -16,5 +16,5 @@ HEADERS  += mainwindow.hh
 
 FORMS    += mainwindow.ui
 
-include(../../qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
-include(../../qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)
+include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
+include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)

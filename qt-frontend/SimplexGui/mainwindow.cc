@@ -8,7 +8,7 @@
 #include "qtpropertymanager.h"
 #include "qttreepropertybrowser.h"
 
-#include "../../../../picogen-picogen-master/picogen-picogen/redshift/include/jobfile.hh"
+#include "../../redshift/include/jobfile.hh"
 
 
 namespace {
@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 item = variantManager->addProperty(
                                 QVariant::Double,
                                 QLatin1String("color-scale"));
-                item->setValue(1);                
+                item->setValue(1);
                 item->setAttribute(QLatin1String("singleStep"), 0.05);
                 item->setAttribute(QLatin1String("decimals"), 6);
                 topItem->addSubProperty(item);
@@ -108,7 +108,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         // Render Settings.
         {
-                QtProperty *topItem = 0;                
+                QtProperty *topItem = 0;
 
                 topItem = groupManager->addProperty("render-settings");
                 renderSettingsProperty = topItem;
@@ -116,7 +116,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 addRenderSettings("preview");
                 addRenderSettings("production");
-        }        
+        }
 
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);
@@ -211,14 +211,14 @@ void MainWindow::on_actionShow_redshift_job_code_triggered()
                 if (prop->propertyName() == "film-settings") {
                         Props subs = prop->subProperties();
                         scenefile::FilmSettings fs;
-                        foreach (Prop sub, subs) {                                
+                        foreach (Prop sub, subs) {
                                 if (sub->propertyName()=="color-scale")
                                         fs.colorscale = ((QtVariantProperty*)sub)->value().toDouble();
                                 if (sub->propertyName()=="convert-to-srgb")
                                         fs.convertToSrgb = ((QtVariantProperty*)sub)->value().toBool();
                         }
                         scene.setFilmSettings(fs);
-                } else if (prop->propertyName() == "render-settings") {                        
+                } else if (prop->propertyName() == "render-settings") {
                         foreach (Prop mooh, prop->subProperties()) {
                                 Props subs = mooh->subProperties();
 
