@@ -8,6 +8,8 @@
 #include "qtpropertymanager.h"
 #include "qttreepropertybrowser.h"
 
+#include "../RenderWindow/renderwindow.hh"
+
 #include "../../redshift/include/jobfile.hh"
 
 
@@ -62,11 +64,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->setupUi(this);
 
         // WindowList
-        /*setCentralWidget(ui->mdiArea);
         QtWindowListMenu *winMenu = new QtWindowListMenu(menuBar());
         winMenu->attachToMdiArea(ui->mdiArea);
         winMenu->setTitle("Windows");
-        menuBar()->addMenu(winMenu);*/
+        menuBar()->addMenu(winMenu);
 
         // Properties
         variantManager = new QtVariantPropertyManager(this);
@@ -242,4 +243,11 @@ void MainWindow::on_actionShow_redshift_job_code_triggered()
         std::stringstream ss;
         OArchive (ss) & pack("scene", scene);
         QMessageBox::information(this, QString("Teh codes"), ss.str().c_str());
+}
+
+void MainWindow::on_actionRender_triggered()
+{
+        RenderWindow *rw = new RenderWindow (this);
+        ui->mdiArea->addSubWindow(rw);
+        rw->show();
 }

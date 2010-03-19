@@ -112,7 +112,7 @@ QDoubleSpinBox, QDoubleSpinBox::down-button,  QSpinBox::down-button { width: 16p
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>18</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebugging">
@@ -121,7 +121,14 @@ QDoubleSpinBox, QDoubleSpinBox::down-button,  QSpinBox::down-button { width: 16p
     </property>
     <addaction name="actionShow_redshift_job_code"/>
    </widget>
+   <widget class="QMenu" name="menuRender">
+    <property name="title">
+     <string>Render</string>
+    </property>
+    <addaction name="actionRender"/>
+   </widget>
    <addaction name="menuDebugging"/>
+   <addaction name="menuRender"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -138,6 +145,14 @@ QDoubleSpinBox, QDoubleSpinBox::down-button,  QSpinBox::down-button { width: 16p
    </property>
    <property name="shortcut">
     <string>Alt+R</string>
+   </property>
+  </action>
+  <action name="actionRender">
+   <property name="text">
+    <string>Render</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

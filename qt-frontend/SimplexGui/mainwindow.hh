@@ -27,12 +27,13 @@ private:
 
     QtVariantEditorFactory *variantFactory;
     QtEnumEditorFactory *comboBoxFactory;
-    QtEnumPropertyManager *enumManager;    
+    QtEnumPropertyManager *enumManager;
 
     QtProperty *renderSettingsProperty;
     void addRenderSettings (std::string const &name);
 
 private slots:
+    void on_actionRender_triggered();
     void on_actionShow_redshift_job_code_triggered();
 };
 
