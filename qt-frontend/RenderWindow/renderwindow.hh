@@ -29,17 +29,20 @@ namespace Ui {
     class RenderWindow;
 }
 
+class RenderWindowImpl;
 class RenderWindow : public QDialog {
-    Q_OBJECT
+        Q_OBJECT
 public:
-    RenderWindow(QWidget *parent = 0);
-    ~RenderWindow();
+        RenderWindow(QWidget *parent = 0);
+        ~RenderWindow();
 
 protected:
-    void changeEvent(QEvent *e);
+        void changeEvent(QEvent *e);
 
 private:
-    Ui::RenderWindow *ui;
+        Ui::RenderWindow *ui;
+        RenderWindowImpl *impl;
+        friend class RenderWindowImpl;
 };
 
 #endif // RENDERWINDOW_HH

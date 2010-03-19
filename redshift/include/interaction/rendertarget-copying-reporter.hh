@@ -22,6 +22,7 @@
 #define RENDERTARGET_COPYING_REPORTER_HH_INCLUDED_20100227
 
 #include "progressreporter.hh"
+#include "../auxiliary/stopwatch.hh"
 
 namespace redshift { namespace interaction {
 class RenderTargetCopyingReporter : public ProgressReporter {
@@ -42,8 +43,8 @@ public:
                         return;
                 lastTime.restart();
 
-                real_t const finished = static_cast<real_t>(completed)
-                                          / static_cast<real_t>(total);
+                /*real_t const finished = static_cast<real_t>(completed)
+                                          / static_cast<real_t>(total);*/
                 /*
                 if (total>0.0) {
                         cout << real_t(100)*(finished) << "%"

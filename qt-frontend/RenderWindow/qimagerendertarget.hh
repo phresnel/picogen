@@ -18,42 +18,51 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef COLORRENDERTARGET_HH_INCLUDED_20090307
-#define COLORRENDERTARGET_HH_INCLUDED_20090307
+#ifndef QIMAGERENDERTARGET_HH_INCLUDED_20090327
+#define QIMAGERENDERTARGET_HH_INCLUDED_20090327
 
-#include "../setup.hh"
-#include "../rendertargets/rendertarget.hh"
+#include "../../redshift/include/setup.hh"
+#include "../../redshift/include/rendertargets/rendertargetlock.hh"
+#include "../../redshift/include/rendertargets/rendertarget.hh"
+#include "../../redshift/include/smart_ptr.hh"
+
+#include <QImage>
 
 namespace redshift {
 
-        DefineFinalizer(ColorRenderTarget);
-        class ColorRenderTarget
+        DefineFinalizer(QImageRenderTarget);
+        class QImageRenderTarget
                 : public redshift::RenderTarget
-                , DoFinalize(ColorRenderTarget) {
+                , DoFinalize(QImageRenderTarget) {
         public:
-                ColorRenderTarget (int width_, int height_);
-                ~ColorRenderTarget();
-
+                QImageRenderTarget (int width_, int height_);
+                ~QImageRenderTarget();
+                
                 shared_ptr<RenderTargetLock> lock ();
                 shared_ptr<RenderTargetLock const> lock () const;
-
-                void flip();
-                int getWidth() const;
+                
+                void flip();        
+                int getWidth() const;        
                 int getHeight() const;
+                
+                operator QImage ();
 
-        private:
+        private:         
                 int width, height;
-                shared_array<Color> display;
-
-                class ColorRenderTargetLock;
-                friend class ColorRenderTargetLock;
+                QImage display;
+                
+                class QImageRenderTargetLock;
+                friend class QImageRenderTargetLock;
+                
+                class QImageRenderTargetConstLock;
+                friend class QImageRenderTargetConstLock;
 
                 // disable
-                ColorRenderTarget() ;
-                ColorRenderTarget(ColorRenderTarget const&) ;
-                ColorRenderTarget & operator = (ColorRenderTarget const &) ;
+                QImageRenderTarget() ;
+                QImageRenderTarget(QImageRenderTarget const&) ;
+                QImageRenderTarget & operator = (QImageRenderTarget const &) ;                                
         };
 
 } // namespace redshift
 
-#endif // COLORRENDERTARGET_HH_INCLUDED_20090307
+#endif // QIMAGERENDERTARGET_HH_INCLUDED_20090327

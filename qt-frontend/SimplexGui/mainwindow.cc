@@ -245,8 +245,7 @@ void MainWindow::on_actionShow_redshift_job_code_triggered()
         QMessageBox::information(this, QString("Teh codes"), ss.str().c_str());
 }
 
-void MainWindow::on_actionRender_triggered()
-{
+void MainWindow::on_actionRender_triggered() {
         RenderWindow *rw = new RenderWindow (this);
         ui->mdiArea->addSubWindow(rw);
         rw->show();
