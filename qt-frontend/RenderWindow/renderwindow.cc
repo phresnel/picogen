@@ -57,8 +57,11 @@ void RenderWindowImpl::report (
         redshift::shared_ptr<redshift::RenderTargetLock const> rlock,
         int completed, int total
 ) {
-        copy(renderBuffer, target);
-        emit updateImage(*target, (double)completed / total);
+        if (++reportW>20) {
+                copy(renderBuffer, target);
+                emit updateImage(*target, (double)completed / total);
+                reportW = 0;
+        }
 }
 
 
