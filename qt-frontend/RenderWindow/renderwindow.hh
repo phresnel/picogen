@@ -41,6 +41,7 @@ namespace redshift {
         class QImageRenderTarget;
         class RenderTargetLock;
         class ColorRenderTarget;
+        class Scene;
 }
 
 
@@ -101,6 +102,7 @@ signals:
 private:
         redshift::shared_ptr<redshift::QImageRenderTarget> target;
         redshift::shared_ptr<redshift::ColorRenderTarget> renderBuffer;
+        redshift::shared_ptr<redshift::Scene> scene;
 };
 
 #endif // RENDERWINDOW_HH

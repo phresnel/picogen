@@ -21,6 +21,7 @@
 #include <QImage>
 #include <QThread>
 #include <QMessageBox>
+#include <QResizeEvent>
 
 #include "renderwindow.hh"
 #include "ui_renderwindow.h"
@@ -42,8 +43,7 @@
 // RenderWindowImpl
 //=============================================================================
 RenderWindowImpl::RenderWindowImpl () {
-        using namespace redshift;
-        using namespace redshift::interaction;
+
 }
 
 
@@ -71,10 +71,8 @@ void RenderWindowImpl::reportDone () {
 
 
 void RenderWindowImpl::run() {
-
         using namespace redshift;
         using namespace redshift::interaction;
-
         // --
 
         scenefile::Scene ss;
@@ -115,17 +113,16 @@ void RenderWindowImpl::run() {
         ss.addRenderSettings(rs);
 
 
+
         renderBuffer = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
-        target = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
+        target = shared_ptr<QImageRenderTarget>(
+                        new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
+
+        scene = sceneDescriptionToScene(ss, renderBuffer);
 
         shared_ptr<interaction::ProgressReporter> rep =
                 shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
-
-        shared_ptr<Scene> scene = sceneDescriptionToScene(ss, renderBuffer);
-
         UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
-
-
         scene->render(rep, commandProcessor, 1);
 }
 
@@ -144,6 +141,15 @@ RenderWindow::RenderWindow(QWidget *parent) :
     ui(new Ui::RenderWindow)
 {
         ui->setupUi(this);
+
+        // The following 3 lines are to ensure that we are properly sized.
+        // It seems impossible to do proper resizing within updateImage
+        // (I've tried to setMinimumSize() on pixmap, layout, myself, and also
+        //  the others like repaint(), update(), and all permutations)
+        QPixmap map(320,240);
+        map.fill(QColor(0,0,0));
+        ui->pix->setPixmap(map);
+
         impl = redshift::shared_ptr<RenderWindowImpl>(new RenderWindowImpl());
 
         connect(
