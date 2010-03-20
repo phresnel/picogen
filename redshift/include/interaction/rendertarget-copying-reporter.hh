@@ -38,7 +38,7 @@ public:
 
 
         void report (RenderTarget::ReadLockPtr sourcel,
-                                              int /*completed*/, int /*total*/) const {
+                                              int /*completed*/, int /*total*/) {
                 if (lastTime() < 0.5)
                         return;
                 lastTime.restart();
@@ -59,7 +59,7 @@ public:
 
 
 
-        void reportDone () const {
+        void reportDone () {
                 redshift::copy (source, target);
                 target->flip();
         }

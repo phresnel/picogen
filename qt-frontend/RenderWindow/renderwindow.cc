@@ -26,39 +26,46 @@
 #include "ui_renderwindow.h"
 #include "../../redshift/include/redshift.hh"
 #include "../../redshift/include/jobfile.hh"
-#include "../../redshift/include/interaction/rendertarget-copying-reporter.hh"
+#include "../../redshift/include/interaction/progressreporter.hh"
 #include "../../redshift/include/rendertargets/colorrendertarget.hh"
-
+#include "../../redshift/include/rendertargets/rendertargetlock.hh"
 #include "qimagerendertarget.hh"
+
+
+
+
+
 
 
 
 //=============================================================================
 // RenderWindowImpl
 //=============================================================================
-class RenderWindowImpl : public QThread {
-public:
-        RenderWindowImpl (RenderWindow *rw);
-        virtual ~RenderWindowImpl ();
-
-        virtual void run();
-private:
-        RenderWindow *renderWindow;
-};
-
-
-RenderWindowImpl::RenderWindowImpl (RenderWindow *rw) :
-        renderWindow(rw)
-{
+RenderWindowImpl::RenderWindowImpl () {
         using namespace redshift;
         using namespace redshift::interaction;
-
-        renderWindow->ui->pix->setPixmap(QPixmap(320,240));
 }
 
 
 
 RenderWindowImpl::~RenderWindowImpl () {
+}
+
+
+
+void RenderWindowImpl::report (
+        redshift::shared_ptr<redshift::RenderTargetLock const> rlock,
+        int completed, int total
+) {
+        copy(renderBuffer, target);
+        emit updateImage(*target, (double)completed / total);
+}
+
+
+
+void RenderWindowImpl::reportDone () {
+        copy(renderBuffer, target);
+        emit updateImage(*target, 2.f);
 }
 
 
@@ -82,7 +89,7 @@ void RenderWindowImpl::run() {
         srand(clock());
         ho.sunDirection = scenefile::Normal(0.5, 0.2, 0.7);
         ho.turbidity = 2.0f;
-        ss.addBackground(ho);                
+        ss.addBackground(ho);
 
         scenefile::Camera ca;
         ca.title = "foo";
@@ -108,42 +115,25 @@ void RenderWindowImpl::run() {
         ss.addRenderSettings(rs);
 
 
-        shared_ptr<
-                interaction::RenderTargetCopyingReporter
-        > rep;
+        renderBuffer = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
+        target = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
 
-        redshift::shared_ptr<redshift::QImageRenderTarget> qrt;
-        redshift::shared_ptr<redshift::ColorRenderTarget> crt;
+        shared_ptr<interaction::ProgressReporter> rep =
+                shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
 
-        crt = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
-        qrt = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
-        rep = shared_ptr<interaction::RenderTargetCopyingReporter>(
-                new interaction::RenderTargetCopyingReporter(crt, qrt)
-        );
-
-        shared_ptr<Scene> scene = sceneDescriptionToScene(ss, crt);
+        shared_ptr<Scene> scene = sceneDescriptionToScene(ss, renderBuffer);
 
         UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
 
 
-        scene->render(
-                        rep,
-                        commandProcessor,
-                        1
-        );
-
-        /*for (int y=0; y<240; ++y)
-        {
-                shared_ptr<RenderTargetLock> src_lock = crt->lock();
-                for (int i=0; i<320; ++i) {
-                        const Color c = Color::FromRGB(1.,0.5,0.25);
-                        src_lock->setPixel (i, y, c);
-                }
-        }*/
-        copy(crt, qrt);
-        renderWindow->ui->pix->setPixmap(QPixmap::fromImage(*qrt));
-
+        scene->render(rep, commandProcessor, 1);
 }
+
+
+
+
+
+
 
 
 //=============================================================================
@@ -154,15 +144,31 @@ RenderWindow::RenderWindow(QWidget *parent) :
     ui(new Ui::RenderWindow)
 {
         ui->setupUi(this);
-        impl = new RenderWindowImpl(this);
+        impl = redshift::shared_ptr<RenderWindowImpl>(new RenderWindowImpl());
+
+        connect(
+         impl.get(), SIGNAL(updateImage (QImage, double)),
+         this, SLOT(updateImage (QImage, double))
+        );
+
         impl->start();
 }
 
 
 
 RenderWindow::~RenderWindow() {
-        delete impl;
         delete ui;
+}
+
+
+
+void RenderWindow::updateImage (QImage image, double percentage) {
+        if (percentage>=1)
+                setWindowTitle("Done.");
+        else
+                setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
+
+        ui->pix->setPixmap(QPixmap::fromImage(image));
 }
 
 

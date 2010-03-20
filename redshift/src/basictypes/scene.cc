@@ -199,7 +199,7 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
 
 
 void Scene::render (
-        interaction::ProgressReporter::ConstPtr reporter,
+        interaction::ProgressReporter::Ptr reporter,
         interaction::UserCommandProcessor::Ptr ucp,
         unsigned int numAASamples_
 ) const {

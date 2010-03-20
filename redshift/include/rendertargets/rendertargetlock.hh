@@ -23,10 +23,10 @@
 
 namespace redshift {
         class RenderTargetLock {
-        public:                
+        public:
                 virtual void setPixel (int x, int y, Color const & color) = 0;
                 virtual Color getPixel (int x, int y) const = 0;
-                virtual ~RenderTargetLock () {}                
+                virtual ~RenderTargetLock () {}
         };
 }
 

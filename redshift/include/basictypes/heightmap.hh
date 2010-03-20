@@ -26,27 +26,27 @@
 #include "../rendertargets/rendertarget.hh"
 #include "../interaction/usercommandprocessor.hh"
 #include "../interaction/progressreporter.hh"
-        
+
 namespace redshift {
-        
+
         DefineFinalizer(HeightmapRenderer);
-        
+
         class HeightmapRenderer : DoFinalize(HeightmapRenderer) {
-        public:        
-                
-                HeightmapRenderer(shared_ptr<RenderTarget>, 
+        public:
+
+                HeightmapRenderer(shared_ptr<RenderTarget>,
                                   shared_ptr<HeightFunction>);
                 ~HeightmapRenderer ();
-                
-                void render(interaction::ProgressReporter::ConstPtr, 
+
+                void render(interaction::ProgressReporter::Ptr,
                           interaction::UserCommandProcessor::Ptr) const ;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
                 HeightmapRenderer (HeightmapRenderer const &);
                 HeightmapRenderer & operator= (HeightmapRenderer const &);
-                HeightmapRenderer();                
-                
+                HeightmapRenderer();
+
                 shared_ptr<RenderTarget>    renderTarget;
                 shared_ptr<HeightFunction>  function;
         };

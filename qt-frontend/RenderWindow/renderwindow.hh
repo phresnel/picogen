@@ -25,6 +25,8 @@
 
 #include <QDialog>
 #include <QThread>
+#include "../../redshift/include/smart_ptr.hh"
+#include "../../redshift/include/interaction/progressreporter.hh"
 
 namespace Ui {
     class RenderWindow;
@@ -33,6 +35,13 @@ namespace Ui {
 
 class RenderWindow;
 class RenderWindowImpl;
+
+
+namespace redshift {
+        class QImageRenderTarget;
+        class RenderTargetLock;
+        class ColorRenderTarget;
+}
 
 
 
@@ -45,10 +54,53 @@ public:
 protected:
         void changeEvent(QEvent *e);
 
+private slots:
+        void updateImage (QImage image, double percentage);
+
 private:
         Ui::RenderWindow *ui;
-        RenderWindowImpl *impl;
+        redshift::shared_ptr<RenderWindowImpl> impl;
         friend class RenderWindowImpl;
+};
+
+
+
+/*class ProgressReporter {
+public:
+        virtual void report (shared_ptr<RenderTargetLock const> rlock,
+                                int completed, int total) const = 0;
+        virtual void reportDone () const = 0;
+
+        typedef shared_ptr<ProgressReporter> Ptr;
+        typedef shared_ptr<ProgressReporter const> ConstPtr;
+};*/
+
+
+class RenderWindowImpl
+        : public QThread
+        , public redshift::interaction::ProgressReporter
+        , public redshift::enable_shared_from_this<RenderWindowImpl>
+{
+        Q_OBJECT
+public:
+        RenderWindowImpl ();
+        virtual ~RenderWindowImpl ();
+
+        // redshift::interaction::ProgressReporter
+        void report (redshift::shared_ptr<redshift::RenderTargetLock const> rlock,
+                     int completed, int total);
+        void reportDone ();
+
+        // QThread
+        void run();
+
+signals:
+        // any percentage >= 1. is assumed to mean 100%
+        void updateImage (QImage image, double percentage);
+
+private:
+        redshift::shared_ptr<redshift::QImageRenderTarget> target;
+        redshift::shared_ptr<redshift::ColorRenderTarget> renderBuffer;
 };
 
 #endif // RENDERWINDOW_HH

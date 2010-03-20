@@ -40,7 +40,7 @@ HeightmapRenderer::~HeightmapRenderer () {
 
 
 void HeightmapRenderer::render (
-        interaction::ProgressReporter::ConstPtr reporter,
+        interaction::ProgressReporter::Ptr reporter,
         interaction::UserCommandProcessor::Ptr ucp
 
 ) const {

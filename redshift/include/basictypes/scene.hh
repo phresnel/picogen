@@ -54,7 +54,7 @@ namespace redshift {
                 ~Scene ();
 
                 void render(
-                        interaction::ProgressReporter::ConstPtr,
+                        interaction::ProgressReporter::Ptr,
                         interaction::UserCommandProcessor::Ptr,
                         unsigned int samplePerPixel
                 ) const ;

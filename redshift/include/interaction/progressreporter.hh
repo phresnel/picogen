@@ -27,8 +27,8 @@ namespace redshift { namespace interaction {
         class ProgressReporter {
         public:
                 virtual void report (shared_ptr<RenderTargetLock const> rlock,
-                                        int completed, int total) const = 0;
-                virtual void reportDone () const = 0;
+                                        int completed, int total) = 0;
+                virtual void reportDone () = 0;
 
                 typedef shared_ptr<ProgressReporter> Ptr;
                 typedef shared_ptr<ProgressReporter const> ConstPtr;
