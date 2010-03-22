@@ -7,6 +7,7 @@
 #include "qtvariantproperty.h"
 #include "qtpropertymanager.h"
 #include "qttreepropertybrowser.h"
+#include "../SimpleInputBox/simpleinputbox.hh"
 
 #include "../RenderWindow/renderwindow.hh"
 
@@ -249,4 +250,14 @@ void MainWindow::on_actionRender_triggered() {
         RenderWindow *rw = new RenderWindow (this);
         ui->mdiArea->addSubWindow(rw);
         rw->show();
+}
+
+void MainWindow::on_pushButton_pressed() {
+        addRenderSettings("new setting");
+}
+
+void MainWindow::on_pushButton_2_pressed() {
+        SimpleInputBox *sib = new SimpleInputBox(this);
+        sib->exec();
+        QMessageBox::information(this, "", sib->value());
 }

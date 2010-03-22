@@ -33,6 +33,8 @@ private:
     void addRenderSettings (std::string const &name);
 
 private slots:
+    void on_pushButton_2_pressed();
+    void on_pushButton_pressed();
     void on_actionRender_triggered();
     void on_actionShow_redshift_job_code_triggered();
 };

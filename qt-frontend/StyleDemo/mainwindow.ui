@@ -43,6 +43,10 @@ QGraphicsView, QMdiArea, QTreeView {
 	border:2px solid #ccc;
 	border-radius:10px; 
 	background-color:#555;
+	alternate-background-color:#555;
+}
+QMdiArea::QFrame {
+	background-color:#111;
 }
 
 
@@ -297,11 +301,11 @@ QGroupBox {
      <enum>QFrame::NoFrame</enum>
     </property>
     <property name="background">
-     <brush brushstyle="BDiagPattern">
+     <brush brushstyle="SolidPattern">
       <color alpha="255">
-       <red>179</red>
-       <green>173</green>
-       <blue>164</blue>
+       <red>49</red>
+       <green>49</green>
+       <blue>49</blue>
       </color>
      </brush>
     </property>
@@ -342,7 +346,7 @@ QGroupBox {
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>19</height>
+     <height>16</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuItem_1">

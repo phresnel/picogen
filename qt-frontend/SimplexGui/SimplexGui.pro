@@ -7,13 +7,18 @@ DEFINES += __STDC_LIMIT_MACROS
 SOURCES += main.cc \
     mainwindow.cc \
     ../RenderWindow/renderwindow.cc \
-    ../RenderWindow/qimagerendertarget.cc
+    ../RenderWindow/qimagerendertarget.cc \
+    ../SimpleInputBox/simpleinputbox.cc
 HEADERS += mainwindow.hh \
     ../RenderWindow/renderwindow.hh \
-    ../RenderWindow/qimagerendertarget.hh
+    ../RenderWindow/qimagerendertarget.hh \
+    ../SimpleInputBox/simpleinputbox.hh
 FORMS += mainwindow.ui \
-    ../RenderWindow/renderwindow.ui
+    ../RenderWindow/renderwindow.ui \
+    ../SimpleInputBox/simpleinputbox.ui
 LIBS += ../../redshift/lib/libpicogen.a \
-        -lgomp -lboost_program_options -lSDL
+    -lgomp \
+    -lboost_program_options \
+    -lSDL
 include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
 include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)
