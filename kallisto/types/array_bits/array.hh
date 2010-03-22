@@ -114,6 +114,10 @@ namespace kallisto {
                 //    to forbid copy-assignment? use cases anyone? so for now,
                 //    let us just allow operator=(array), and forget about my
                 //    hours of effort to make it tweakable :( ... :)
+                // update:
+                // 8) I think we *could* do something using conditional
+                //    derivation (class Foo : public Bar<condition>) or a more
+                //    cascaded variant, but 7) still holds.
                 // I hereby present, copy-assignment:
                 void operator = (array const &rhs) {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
