@@ -46,16 +46,20 @@ private:
 
         QtProperty *renderSettingsProperty;        
         QtProperty *camerasProperty;
+        QtProperty *objectsProperty;
         QtEnumPropertyManager *transformEnumManager;        
+        QtEnumPropertyManager *objectTypeEnumManager;
 
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void addRenderSettings (std::string const &name);
         void addCamera (std::string const &name);
         void addTransform (QtProperty *transformRoot);
+        void addObject ();
 
         QtBrowserItem * currentBrowserItem;
 private slots:
+        void on_newObjectButton_pressed();
         void on_newTransformButton_pressed();
         void on_newRsButton_pressed();
         void on_actionRender_triggered();
@@ -64,6 +68,7 @@ private slots:
 
         // non MOC
         void transformEnumManager_valueChanged(QtProperty*, int);
+        void objectTypeEnumManager_valueChanged(QtProperty*, int);
         void rsTitleManager_valueChanged ( QtProperty *, const QString &);        
 };
 

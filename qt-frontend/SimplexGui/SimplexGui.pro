@@ -22,3 +22,4 @@ LIBS += ../../redshift/lib/libpicogen.a \
     -lSDL
 include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
 include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)
+OTHER_FILES += HOWTO_New_Stuff.txt

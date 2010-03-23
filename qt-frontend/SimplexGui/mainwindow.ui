@@ -122,7 +122,7 @@ QGroupBox {
         <item row="0" column="0">
          <widget class="QPushButton" name="newRsButton">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>New Render-Setting</string>
@@ -136,6 +136,16 @@ QGroupBox {
           </property>
           <property name="text">
            <string>New Transform</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="newObjectButton">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>New Object</string>
           </property>
          </widget>
         </item>

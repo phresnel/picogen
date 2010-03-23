@@ -99,11 +99,20 @@ MainWindow::MainWindow(QWidget *parent) :
         rsTitleManager = new QtStringPropertyManager (this);
         connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
                 this, SLOT(rsTitleManager_valueChanged(QtProperty*,const QString &)));
-        groupManager = new QtGroupPropertyManager(this);
+
+        groupManager = new QtGroupPropertyManager(this);        
         enumManager = new QtEnumPropertyManager(this);
+
+
         transformEnumManager = new QtEnumPropertyManager(this);
         connect(transformEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(transformEnumManager_valueChanged(QtProperty*,int)));
+
+        objectTypeEnumManager = new QtEnumPropertyManager(this);
+        connect(objectTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
+                this, SLOT(objectTypeEnumManager_valueChanged(QtProperty*,int)));
+
+
         comboBoxFactory = new QtEnumEditorFactory(this);
         lineEditFactory = new QtLineEditFactory(this);
 
@@ -111,6 +120,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setFactoryForManager(variantManager, variantFactory);
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
+        ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
 
         // Film Settings.
@@ -142,9 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         // Render Settings.
         {
-                QtProperty *topItem = 0;
-
-                topItem = groupManager->addProperty("render-settings");
+                QtProperty *topItem = groupManager->addProperty("render-settings");
                 renderSettingsProperty = topItem;
                 ui->settings->addProperty(topItem);
 
@@ -154,13 +162,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
         // Camera Settings.
         {
-                QtProperty *topItem = 0;
-
-                topItem = groupManager->addProperty("cameras");
-                camerasProperty = topItem;
-                ui->settings->addProperty(topItem);
-
+                camerasProperty = groupManager->addProperty("cameras");
+                ui->settings->addProperty(camerasProperty);
                 addCamera("hello-world");
+        }
+
+        // Objects.
+        {
+                objectsProperty = groupManager->addProperty("objects");
+                ui->settings->addProperty(objectsProperty);
+
+                addObject();
+                addObject();
         }
 
         ui->settings->setRootIsDecorated(true);
@@ -257,11 +270,12 @@ void MainWindow::addCamera(const std::string &name) {
 
 void MainWindow::addTransform (QtProperty *transformRoot) {
         QtProperty *transform = groupManager->addProperty("---");
+        transformRoot->addSubProperty(transform);
+
+
         QtProperty *transformType = transformEnumManager->addProperty("type");
-        transformRoot->addSubProperty(transform);                
-
-
         transform->addSubProperty(transformType);
+
         QStringList enumNames;
         enumNames << "move"
                   << "move-left"
@@ -273,7 +287,25 @@ void MainWindow::addTransform (QtProperty *transformRoot) {
                   << "pitch"
                   << "roll"
                   ;
-        transformEnumManager->setEnumNames(transformType, enumNames);
+        transformEnumManager->setEnumNames(transformType, enumNames);        
+}
+
+
+
+void MainWindow::addObject () {
+        QtProperty *object = groupManager->addProperty("---");
+        objectsProperty->addSubProperty(object);
+
+        QtProperty *objectType = objectTypeEnumManager->addProperty("type");
+        object->addSubProperty(objectType);
+
+
+        QStringList enumNames;
+        enumNames << "horizon-plane"
+                  << "water-plane"
+                  << "lazy-quadtree"                  
+                  ;
+        objectTypeEnumManager->setEnumNames(objectType, enumNames);
 }
 
 
@@ -320,6 +352,45 @@ void MainWindow::transformEnumManager_valueChanged(
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
                 }
 
+        }
+}
+
+
+
+void MainWindow::objectTypeEnumManager_valueChanged (
+        QtProperty* prop,
+        int index
+) {
+        // parent
+        //   |
+        //   +-----type
+        //   |
+        //   +-----param*
+
+        // We have 'type', now find 'parent'
+        if (QtProperty *t = findParent(ui->settings->properties(), prop)) {
+                const QStringList enumNames =
+                                objectTypeEnumManager->enumNames(prop);
+                const QString type = enumNames[index];
+
+                t->setPropertyName(type);
+
+                // Remove all properties not titled "type".
+                foreach (QtProperty *nt, t->subProperties()){
+                        if (nt->propertyName() != "type") {
+                                t->removeSubProperty(nt);
+                        }
+                }
+
+                if (type == "horizon-plane") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"height"));                        
+                } else if (type == "water-plane") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"height"));
+                        t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
+                } else if (type == "lazy-quadtree") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Color,"color"));
+                        //t->addSubProperty(variantManager->addProperty(QVariant::V,"color"));
+                }
         }
 }
 
@@ -440,4 +511,10 @@ void MainWindow::on_newTransformButton_pressed() {
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
         addTransform (currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_newObjectButton_pressed() {
+        addObject ();
 }
