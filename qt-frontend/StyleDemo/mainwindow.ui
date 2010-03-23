@@ -25,8 +25,8 @@
 }
 
 
-QScrollBar::add-line, QScrollBar::sub-line {width:0;height:0;}
-QScrollBar{margin:1px 1px 1px 1px;}
+QScrollBar::add-line, QScrollBar::sub-line {width:0;height:0;background:none;}
+QScrollBar{padding:1px 1px 1px 1px;}
 QScrollBar::handle{
 	border-radius:4px;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -34,19 +34,18 @@ QScrollBar::handle{
                                        stop: 0.6 #434343, stop:1 #757575);
 }
 QScrollBar::add-page, QScrollBar::sub-page{
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #333, stop: 0.2 #222,
-                                       stop: 0.8 #222, stop:1 #444);
+	background:none;
+	color:transparent;
 }
 
 QGraphicsView, QMdiArea, QTreeView {
 	border:2px solid #ccc;
 	border-radius:10px; 
-	background-color:#555;
-	alternate-background-color:#555;
+	background-color:#556;
+	alternate-background-color:#556;
 }
 QMdiArea::QFrame {
-	background-color:#111;
+	background-color:#222;
 }
 
 
@@ -63,7 +62,7 @@ QHeaderView::section {
 
 QMenuBar {
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #88a, stop:1 #aac);
+                                       stop:0 #889, stop:1 #aab);
  } QMenuBar::item  {
 	spacing: 3px; /* spacing between menu bar items */
 	padding: 1px 4px;
@@ -78,8 +77,8 @@ QMenuBar {
 QMenu {
 	border: 1px solid black;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #616161, stop: 0.5 #505050,
-                                       stop: 0.52 #434343, stop:1 #656565);
+                                       stop:0 #716161, stop: 0.5 #605050,
+                                       stop: 0.52 #534343, stop:1 #756565);
 } QMenu::item {
 } QMenu::item:selected {
 	background-color: #654321;
@@ -104,7 +103,7 @@ QPushButton {
 
 QGroupBox {
 	 background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                       stop: 0 #555, stop: 1 #888);
+                                       stop: 0 #555, stop: 1 #889);
 	border: 2px solid #CCC;
 	border-radius: 6px;
 	margin-top: 1ex; /* leave space at the top for the title */
