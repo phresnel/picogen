@@ -83,7 +83,8 @@ namespace {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    currentBrowserItem(0)
 {
         ui->setupUi(this);
 
@@ -97,15 +98,19 @@ MainWindow::MainWindow(QWidget *parent) :
         variantManager = new QtVariantPropertyManager(this);
         rsTitleManager = new QtStringPropertyManager (this);
         connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
-                this, SLOT(rsTitleManager_valueChanged(QtProperty*,QString)));
+                this, SLOT(rsTitleManager_valueChanged(QtProperty*,const QString &)));
         groupManager = new QtGroupPropertyManager(this);
         enumManager = new QtEnumPropertyManager(this);
+        transformEnumManager = new QtEnumPropertyManager(this);
+        connect(transformEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
+                this, SLOT(transformEnumManager_valueChanged(QtProperty*,int)));
         comboBoxFactory = new QtEnumEditorFactory(this);
         lineEditFactory = new QtLineEditFactory(this);
 
         variantFactory = new QtVariantEditorFactory(this);
         ui->settings->setFactoryForManager(variantManager, variantFactory);
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
+        ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
 
         // Film Settings.
@@ -145,6 +150,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 addRenderSettings("preview");
                 addRenderSettings("production");
+        }
+
+        // Camera Settings.
+        {
+                QtProperty *topItem = 0;
+
+                topItem = groupManager->addProperty("cameras");
+                camerasProperty = topItem;
+                ui->settings->addProperty(topItem);
+
+                addCamera("hello-world");
         }
 
         ui->settings->setRootIsDecorated(true);
@@ -226,7 +242,93 @@ void MainWindow::addRenderSettings (std::string const &name) {
 
 
 
-void MainWindow::rsTitleManager_valueChanged ( QtProperty * property, const QString & value ) {
+void MainWindow::addCamera(const std::string &name) {
+        QtProperty *camera = groupManager->addProperty(name.c_str());
+
+        QtProperty *transformRoot = groupManager->addProperty("transform");
+
+        camera->addSubProperty(transformRoot);
+        camerasProperty->addSubProperty(camera);
+
+        addTransform (transformRoot);
+}
+
+
+
+void MainWindow::addTransform (QtProperty *transformRoot) {
+        QtProperty *transform = groupManager->addProperty("---");
+        QtProperty *transformType = transformEnumManager->addProperty("type");
+        transformRoot->addSubProperty(transform);                
+
+
+        transform->addSubProperty(transformType);
+        QStringList enumNames;
+        enumNames << "move"
+                  << "move-left"
+                  << "move-right"
+                  << "move-up"
+                  << "move-backward"
+                  << "move-forward"
+                  << "yaw"
+                  << "pitch"
+                  << "roll"
+                  ;
+        transformEnumManager->setEnumNames(transformType, enumNames);
+}
+
+
+
+void MainWindow::transformEnumManager_valueChanged(
+        QtProperty* prop,
+        int index
+) {
+        if (QtProperty *t = findParent(ui->settings->properties(), prop)) {
+                const QStringList enumNames =
+                                transformEnumManager->enumNames(prop);
+                const QString type = enumNames[index];
+
+                t->setPropertyName(type);
+
+                // Remove all properties not titled "type".
+                foreach (QtProperty *nt, t->subProperties()){
+                        if (nt->propertyName() != "type") {
+                                t->removeSubProperty(nt);
+                        }
+                }
+
+                if (type == "move") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"right"));
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"up"));
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"forward"));
+                } else if (type == "move-left") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
+                } else if (type == "move-right") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
+                } else if (type == "move-up") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
+                } else if (type == "move-down") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
+                } else if (type == "move-forward") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
+                } else if (type == "move-backward") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
+                } else if (type == "yaw") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
+                } else if (type == "pitch") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
+                } else if (type == "roll") {
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
+                }
+
+        }
+}
+
+
+
+void MainWindow::rsTitleManager_valueChanged (
+        QtProperty * property,
+        const QString & value
+) {
         if (QtProperty *par = findParent (ui->settings->properties(), property)) {
                 par->setPropertyName(value);
         }
@@ -242,6 +344,17 @@ void MainWindow::changeEvent(QEvent *e) {
                 break;
         default:
                 break;
+        }
+}
+
+
+
+void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
+        currentBrowserItem = current;
+        if (current->property()->propertyName() == "transform") {
+                ui->newTransformButton->setEnabled(true);
+        } else {
+                ui->newTransformButton->setEnabled(false);
         }
 }
 
@@ -319,4 +432,12 @@ void MainWindow::on_actionRender_triggered() {
 
 void MainWindow::on_newRsButton_pressed() {
         addRenderSettings ("new_setting");
+}
+
+
+
+void MainWindow::on_newTransformButton_pressed() {
+        // We assume that newTransform can only clicked when the current-item
+        // is a transform.
+        addTransform (currentBrowserItem->property());
 }

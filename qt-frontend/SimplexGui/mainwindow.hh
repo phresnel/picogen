@@ -32,7 +32,8 @@ protected:
 private:
         Ui::MainWindow *ui;
 
-        QtStringPropertyManager *rsTitleManager;
+        QtStringPropertyManager *rsTitleManager;        
+
         QtLineEditFactory *lineEditFactory;
 
         QtVariantPropertyManager *variantManager;
@@ -43,17 +44,27 @@ private:
         QtEnumPropertyManager *enumManager;
         QtEnumEditorFactory *comboBoxFactory;
 
-        QtProperty *renderSettingsProperty;
-        void addRenderSettings (std::string const &name);
+        QtProperty *renderSettingsProperty;        
+        QtProperty *camerasProperty;
+        QtEnumPropertyManager *transformEnumManager;        
+
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
+        void addRenderSettings (std::string const &name);
+        void addCamera (std::string const &name);
+        void addTransform (QtProperty *transformRoot);
+
+        QtBrowserItem * currentBrowserItem;
 private slots:
+        void on_newTransformButton_pressed();
         void on_newRsButton_pressed();
         void on_actionRender_triggered();
         void on_actionShow_redshift_job_code_triggered();
+        void on_settings_currentItemChanged(QtBrowserItem * current);
 
-        // non-moc
-        void rsTitleManager_valueChanged ( QtProperty * property, const QString & value );
+        // non MOC
+        void transformEnumManager_valueChanged(QtProperty*, int);
+        void rsTitleManager_valueChanged ( QtProperty *, const QString &);        
 };
 
 #endif // MAINWINDOW_HH
