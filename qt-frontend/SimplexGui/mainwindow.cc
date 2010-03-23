@@ -79,6 +79,8 @@ namespace {
         }
 }
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -245,7 +247,9 @@ void MainWindow::changeEvent(QEvent *e) {
 
 
 
-void MainWindow::on_actionShow_redshift_job_code_triggered() {
+redshift::shared_ptr<redshift::scenefile::Scene>
+                MainWindow::createScene () const
+{
         typedef QList<QtProperty*> Props;
         typedef QtProperty* Prop;
         typedef QtVariantProperty* VProp;
@@ -255,14 +259,15 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
 
         QString ret;
         using namespace redshift;
-        scenefile::Scene scene;
+        shared_ptr<scenefile::Scene> scene = shared_ptr<scenefile::Scene>(
+                        new scenefile::Scene());
 
         // FilmSettings.
         const Props filmSettings = readSubProperties("film-settings", topProps);
         scenefile::FilmSettings fs;
         fs.colorscale = readValue<double>("color-scale", filmSettings);
         fs.convertToSrgb = readValue<bool>("convert-to-srgb", filmSettings);
-        scene.setFilmSettings(fs);
+        scene->setFilmSettings(fs);
 
         // RenderSettings.
         const Props renderSettings = readSubProperties("render-settings", topProps);
@@ -285,12 +290,20 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
                 else if ("single" == integT)
                         rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
 
-                scene.addRenderSettings(rs);
+                scene->addRenderSettings(rs);
         }
+        return scene;
+}
 
+
+
+void MainWindow::on_actionShow_redshift_job_code_triggered() {        
         using namespace actuarius;
+        using namespace redshift;
+
+        const shared_ptr<scenefile::Scene> scene = createScene ();
         std::stringstream ss;
-        OArchive (ss) & pack("scene", scene);
+        OArchive (ss) & pack("scene", *scene);
         QMessageBox::information(this, QString("Teh codes"), ss.str().c_str());
 }
 
@@ -304,14 +317,6 @@ void MainWindow::on_actionRender_triggered() {
 
 
 
-void MainWindow::on_pushButton_pressed() {
-        addRenderSettings("new setting");
-}
-
-
-
-void MainWindow::on_pushButton_2_pressed() {
-        SimpleInputBox *sib = new SimpleInputBox(this);
-        sib->exec();
-        QMessageBox::information(this, "", sib->value());
+void MainWindow::on_newRsButton_pressed() {
+        addRenderSettings ("new_setting");
 }
