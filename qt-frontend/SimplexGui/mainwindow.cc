@@ -310,7 +310,7 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
 
 
 void MainWindow::on_actionRender_triggered() {
-        RenderWindow *rw = new RenderWindow (this);
+        RenderWindow *rw = new RenderWindow (createScene(), this);
         ui->mdiArea->addSubWindow(rw);
         rw->show();
 }
