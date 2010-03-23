@@ -7,10 +7,10 @@
 #include "qtvariantproperty.h"
 #include "qtpropertymanager.h"
 #include "qttreepropertybrowser.h"
+#include <QtStringPropertyManager>
+
 #include "../SimpleInputBox/simpleinputbox.hh"
-
 #include "../RenderWindow/renderwindow.hh"
-
 #include "../../redshift/include/jobfile.hh"
 
 
@@ -56,6 +56,27 @@ namespace {
                 }
                 return QList<QtProperty*>();
         }
+
+
+        QtProperty *findParent(QtProperty *root, QtProperty* child) {
+                if (root == child)
+                        return 0;
+                foreach (QtProperty *prop, root->subProperties()) {
+                        if(prop == child)
+                                return root;
+                        if (QtProperty *n = findParent(prop, child))
+                                return n;
+                }
+                return 0;
+        }
+
+        QtProperty *findParent(QList<QtProperty*> props, QtProperty* child) {
+                foreach (QtProperty *prop, props) {
+                        if (QtProperty *curr = findParent (prop, child))
+                                return curr;
+                }
+                return 0;
+        }
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -72,14 +93,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
         // Properties
         variantManager = new QtVariantPropertyManager(this);
+        rsTitleManager = new QtStringPropertyManager (this);
+        connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
+                this, SLOT(rsTitleManager_valueChanged(QtProperty*,QString)));
         groupManager = new QtGroupPropertyManager(this);
         enumManager = new QtEnumPropertyManager(this);
         comboBoxFactory = new QtEnumEditorFactory(this);
+        lineEditFactory = new QtLineEditFactory(this);
 
         variantFactory = new QtVariantEditorFactory(this);
         ui->settings->setFactoryForManager(variantManager, variantFactory);
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
-
+        ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
 
         // Film Settings.
         {
@@ -123,16 +148,30 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);
         ui->settings->setHeaderVisible(false);
+
+
+
+        //menuBar()->repaint();
 }
+
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+
+
 void MainWindow::addRenderSettings (std::string const &name) {
 
         QtProperty *topItem = groupManager->addProperty(name.c_str());
+
+        QtProperty *title = rsTitleManager->addProperty("title");
+        rsTitleManager->setRegExp(title, QRegExp("([a-z0-9]|-|_)+", Qt::CaseInsensitive, QRegExp::RegExp));
+        rsTitleManager->setValue(title, name.c_str());
+        topItem->addSubProperty(title);
+
 
         QtVariantProperty *it = variantManager->addProperty(QVariant::Int, "width");
         it->setAttribute(QLatin1String("minimum"), 1);
@@ -183,21 +222,30 @@ void MainWindow::addRenderSettings (std::string const &name) {
         renderSettingsProperty->addSubProperty(topItem);
 }
 
-void MainWindow::changeEvent(QEvent *e)
-{
-    QMainWindow::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
+
+
+void MainWindow::rsTitleManager_valueChanged ( QtProperty * property, const QString & value ) {
+        if (QtProperty *par = findParent (ui->settings->properties(), property)) {
+                par->setPropertyName(value);
+        }
 }
 
 
-void MainWindow::on_actionShow_redshift_job_code_triggered()
-{
+
+void MainWindow::changeEvent(QEvent *e) {
+        QMainWindow::changeEvent(e);
+        switch (e->type()) {
+        case QEvent::LanguageChange:
+                ui->retranslateUi(this);
+                break;
+        default:
+                break;
+        }
+}
+
+
+
+void MainWindow::on_actionShow_redshift_job_code_triggered() {
         typedef QList<QtProperty*> Props;
         typedef QtProperty* Prop;
         typedef QtVariantProperty* VProp;
@@ -246,15 +294,21 @@ void MainWindow::on_actionShow_redshift_job_code_triggered()
         QMessageBox::information(this, QString("Teh codes"), ss.str().c_str());
 }
 
+
+
 void MainWindow::on_actionRender_triggered() {
         RenderWindow *rw = new RenderWindow (this);
         ui->mdiArea->addSubWindow(rw);
         rw->show();
 }
 
+
+
 void MainWindow::on_pushButton_pressed() {
         addRenderSettings("new setting");
 }
+
+
 
 void MainWindow::on_pushButton_2_pressed() {
         SimpleInputBox *sib = new SimpleInputBox(this);
