@@ -63,7 +63,7 @@ QHeaderView::section {
 
 QMenuBar {
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #888, stop:1 #aaa);
+                                       stop:0 #88a, stop:1 #aac);
  } QMenuBar::item  {
 	spacing: 3px; /* spacing between menu bar items */
 	padding: 1px 4px;
@@ -97,6 +97,9 @@ QPushButton {
 										stop: 1 #606060,
 										stop: 0 #535353, 
 										stop:0.6 #757575);
+} QPushButton:disabled {
+	color:gray;
+	background-color: black;
 }
 
 QGroupBox {
@@ -140,6 +143,9 @@ QGroupBox {
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>60</x>
@@ -149,7 +155,7 @@ QGroupBox {
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>disabled button</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
@@ -346,7 +352,7 @@ QGroupBox {
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>16</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuItem_1">

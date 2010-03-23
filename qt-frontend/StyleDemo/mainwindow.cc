@@ -1,7 +1,7 @@
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
-#include <foo.hh>
-#include <bar.hh>
+/*#include <foo.hh>
+#include <bar.hh>*/
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -9,8 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);    
 
-    Bar *s = new Bar(this);
-    ui->mdiArea->addSubWindow(s);
+    //Bar *s = new Bar(this);
+    //ui->mdiArea->addSubWindow(s);
 }
 
 MainWindow::~MainWindow()
