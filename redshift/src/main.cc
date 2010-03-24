@@ -470,10 +470,18 @@ redshift::shared_ptr<redshift::Scene>
         using namespace redshift::primitive;
 
 
-        shared_ptr<Camera> camera (new Pinhole(
-                renderBuffer, 0.5f,
-                scene.camera(0).toRedshiftTransform()
-        ));
+        shared_ptr<Camera> camera;
+        if (scene.cameraCount()) {
+                camera = shared_ptr<Camera> (new Pinhole(
+                        renderBuffer, 0.5f,
+                        scene.camera(0).toRedshiftTransform()
+                ));
+        } else {
+                camera = shared_ptr<Camera> (new Pinhole(
+                        renderBuffer, 0.5f,
+                        Transform::translation(0.f,0.1f,0.f)
+                ));
+        }
 
 
         // Add objects.
