@@ -512,8 +512,7 @@ namespace redshift { namespace scenefile {
                                 roll
                         };
 
-                        static const actuarius::Enum<Type> Typenames;
-                        Type type;
+                        static const actuarius::Enum<Type> Typenames;                        
 
                         redshift::Transform toRedshiftTransform () const {
                                 using redshift::Transform;
@@ -539,7 +538,6 @@ namespace redshift { namespace scenefile {
                         template<typename Arch>
                         void serialize (Arch &arch) {
                                 using actuarius::pack;
-                                x = y = z = 0;
                                 switch (type) {
                                 case move:
                                         arch & pack(x) & pack(y) & pack(z);
@@ -558,6 +556,7 @@ namespace redshift { namespace scenefile {
                                 };
                         }
 
+                        Type type;
                         double x,y,z;
                         double angle;
                 };

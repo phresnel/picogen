@@ -23,6 +23,9 @@ namespace {
 
         template <typename T>
         T readValue (QString name, QList<QtProperty*> list) {
+                if (name =="right") {
+                        std::cout << "foo";
+                }
                 QtProperty* retty = 0;
                 foreach (QtProperty* looky, list) {
                         if (name == looky->propertyName()) {
@@ -336,6 +339,7 @@ void MainWindow::transformEnumManager_valueChanged(
                         }
                 }
 
+                // When tweaking here, also look at XCVBN
                 if (type == "move") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"right"));
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"up"));
@@ -358,6 +362,12 @@ void MainWindow::transformEnumManager_valueChanged(
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
                 } else if (type == "roll") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
+                } else {
+                        throw std::runtime_error(
+                           (QString()
+                           + "MainWindow::transformEnumManager_valueChanged(): type '"
+                           + type
+                           + "' not supported").toStdString().c_str());
                 }
 
         }
@@ -477,7 +487,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
 
 redshift::shared_ptr<redshift::scenefile::Scene>
-                MainWindow::createScene () const
+        MainWindow::createScene () const
 {
         typedef QList<QtProperty*> Props;
         typedef QtProperty* Prop;
@@ -521,6 +531,74 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
                 scene->addRenderSettings(rs);
         }
+
+        // Camera.
+        const Props cameras = readSubProperties("cameras", topProps);
+        foreach (Prop cam, cameras) {
+                scenefile::Camera camera;
+                camera.title = cam->propertyName().toStdString();
+
+                const Props xforms = readSubProperties("transform", cam->subProperties());
+                foreach (Prop xform, xforms) {
+                        typedef scenefile::Camera::Transform Xf;
+                        Xf transform;
+
+                        // When tweaking here, also look at XCVBN
+                        const QString type = xform->propertyName();
+                        const Props xfsubs = xform->subProperties();
+
+                        QString q;
+                        for (int i=0; i<xfsubs.size(); ++i) {
+                                q+= xfsubs[i]->propertyName() + "\n";
+                        }
+
+
+                        if (type == "move") {                                
+                                transform.type = Xf::move;
+                                transform.x = readValue<double>("right", xfsubs);
+                                transform.y = readValue<double>("up", xfsubs);
+                                transform.z = readValue<double>("forward", xfsubs);                                
+                        } else if (type == "move-left") {
+                                transform.type = Xf::move_left;
+                                transform.x = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-right") {
+                                transform.type = Xf::move_right;
+                                transform.x = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-up") {
+                                transform.type = Xf::move_up;
+                                transform.y = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-down") {
+                                transform.type = Xf::move_down;
+                                transform.y = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-forward") {
+                                transform.type = Xf::move_forward;
+                                transform.z = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-backward") {
+                                transform.type = Xf::move_backward;
+                                transform.z = readValue<double>("distance", xfsubs);
+                        } else if (type == "yaw") {
+                                transform.type = Xf::yaw;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else if (type == "pitch") {
+                                transform.type = Xf::pitch;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else if (type == "roll") {
+                                transform.type = Xf::roll;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else {
+                                throw std::runtime_error(
+                                   (QString()
+                                   + "MainWindow::createScene () const: type '"
+                                   + type
+                                   + "' not supported").toStdString().c_str());
+                        }
+                        camera.transforms.push_back(transform);
+                }
+
+                scene->addCamera(camera);
+        }
+
+
         return scene;
 }
 
