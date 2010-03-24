@@ -8,14 +8,17 @@ SOURCES += main.cc \
     mainwindow.cc \
     ../RenderWindow/renderwindow.cc \
     ../RenderWindow/qimagerendertarget.cc \
-    ../SimpleInputBox/simpleinputbox.cc
+    ../SimpleInputBox/simpleinputbox.cc \
+    ../QtQuatschSourceEditor/quatschsourceeditor.cc
 HEADERS += mainwindow.hh \
     ../RenderWindow/renderwindow.hh \
     ../RenderWindow/qimagerendertarget.hh \
-    ../SimpleInputBox/simpleinputbox.hh
+    ../SimpleInputBox/simpleinputbox.hh \
+    ../QtQuatschSourceEditor/quatschsourceeditor.hh
 FORMS += mainwindow.ui \
     ../RenderWindow/renderwindow.ui \
-    ../SimpleInputBox/simpleinputbox.ui
+    ../SimpleInputBox/simpleinputbox.ui \
+    ../QtQuatschSourceEditor/quatschsourceeditor.ui
 LIBS += ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lboost_program_options \

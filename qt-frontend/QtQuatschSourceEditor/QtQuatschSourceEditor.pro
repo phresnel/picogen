@@ -3,10 +3,11 @@
 # -------------------------------------------------
 TARGET = QtQuatschSourceEditor
 TEMPLATE = app
+DEFINES += __STDC_LIMIT_MACROS
 SOURCES += main.cc \
     mainwindow.cc \
-    quatsch-editor.cc
+    quatschsourceeditor.cc
 HEADERS += mainwindow.hh \
-    quatsch-editor.hh
+    quatschsourceeditor.hh
 FORMS += mainwindow.ui \
-    quatsch-editor.ui
+    quatschsourceeditor.ui

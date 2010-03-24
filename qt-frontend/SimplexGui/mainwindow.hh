@@ -59,6 +59,8 @@ private:
 
         QtBrowserItem * currentBrowserItem;
 private slots:
+        void on_codeEditor_codeChanged();
+        void on_editCodeButton_pressed();
         void on_newObjectButton_pressed();
         void on_newTransformButton_pressed();
         void on_newRsButton_pressed();

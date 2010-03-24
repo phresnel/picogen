@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>740</width>
     <height>437</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@ QScrollBar::add-page, QScrollBar::sub-page{
 	color:transparent;
 }
 
-QGraphicsView, QMdiArea, QTreeView {
+QGraphicsView, QMdiArea, QTreeView, QTextEdit {
 	border:2px solid #ccc;
 	border-radius:10px; 
 	background-color:#556;
@@ -148,6 +148,16 @@ QGroupBox {
           </property>
          </widget>
         </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="editCodeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Edit Code</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -187,6 +197,25 @@ QGroupBox {
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="QuatschSourceEditor" name="codeEditor" native="true">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>256</width>
+        <height>324</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -194,8 +223,8 @@ QGroupBox {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
-     <height>19</height>
+     <width>740</width>
+     <height>16</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebugging">
@@ -237,6 +266,12 @@ QGroupBox {
    <class>QtTreePropertyBrowser</class>
    <extends>QWidget</extends>
    <header location="global">qttreepropertybrowser.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QuatschSourceEditor</class>
+   <extends>QWidget</extends>
+   <header>../QtQuatschSourceEditor/quatschsourceeditor.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

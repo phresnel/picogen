@@ -22,7 +22,7 @@
 
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
-#include "quatsch-editor.hh"
+#include "quatschsourceeditor.hh"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -30,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QuatschEditorImpl *i = new QuatschEditorImpl("(+ x y z)", 0);
-    i->show();
+    QuatschSourceEditor *i = new QuatschSourceEditor(this);
+    setCentralWidget(i);
 }
 
 MainWindow::~MainWindow()

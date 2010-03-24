@@ -11,6 +11,8 @@
 
 #include "../SimpleInputBox/simpleinputbox.hh"
 #include "../RenderWindow/renderwindow.hh"
+#include "../QtQuatschSourceEditor/quatschsourceeditor.hh"
+
 #include "../../redshift/include/jobfile.hh"
 
 
@@ -87,6 +89,10 @@ MainWindow::MainWindow(QWidget *parent) :
     currentBrowserItem(0)
 {
         ui->setupUi(this);
+
+        // code editor
+        ui->codeEditor->setEnabled(false);
+        ui->codeEditor->setVisible(false);
 
         // WindowList
         QtWindowListMenu *winMenu = new QtWindowListMenu(menuBar());
@@ -391,10 +397,12 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
                 } else if (type == "lazy-quadtree") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Color,"color"));
-                        t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
+
+                        QtProperty* code = variantManager->addProperty(QVariant::String,"code");
+                        t->addSubProperty(code);
 
                         QtVariantProperty* maxrec = variantManager->addProperty(QVariant::Int,"max-recursion");
-                        lodfac->setToolTip("Be careful. Slowly approach values beyond 10. For preview renderings, values less than 10 seem to work well.");
+                        maxrec->setToolTip("Be careful. Slowly approach values beyond 10. For preview renderings, values less than 10 seem to work well.");
                         maxrec->setAttribute(QLatin1String("minimum"), 1);
                         maxrec->setAttribute(QLatin1String("maximum"), 20);
                         maxrec->setAttribute(QLatin1String("singleStep"), 1);
@@ -449,11 +457,20 @@ void MainWindow::changeEvent(QEvent *e) {
 
 
 void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
-        currentBrowserItem = current;
-        if (current->property()->propertyName() == "transform") {
-                ui->newTransformButton->setEnabled(true);
+        this->currentBrowserItem = current;
+        QString name = current->property()->propertyName();
+
+        // TODO: below are a bit fragile, but for now work very well.
+        ui->newTransformButton->setEnabled(name == "transform");
+        ui->editCodeButton->setEnabled(name == "code");
+
+        const bool isCode = name == "code";
+        if (isCode) {
+                ui->codeEditor->setEnabled(true);
+                ui->codeEditor->setVisible(true);
         } else {
-                ui->newTransformButton->setEnabled(false);
+                ui->codeEditor->setEnabled(false);
+                ui->codeEditor->setVisible(false);
         }
 }
 
@@ -545,4 +562,21 @@ void MainWindow::on_newTransformButton_pressed() {
 
 void MainWindow::on_newObjectButton_pressed() {
         addObject ();
+}
+
+
+
+void MainWindow::on_editCodeButton_pressed() {
+        /*QuatschSourceEditor *qe = new QuatschSourceEditor("// hello foo", this);
+        ui->mdiArea->addSubWindow(qe);
+        qe->show();*/
+}
+
+
+
+void MainWindow::on_codeEditor_codeChanged() {
+        // We assume that this can only be triggered if the current item
+        // is some code.
+        ((QtVariantProperty*)currentBrowserItem->property())->
+                setValue(ui->codeEditor->code());
 }
