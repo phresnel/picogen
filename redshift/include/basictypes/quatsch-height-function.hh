@@ -67,7 +67,6 @@ private:
 
         FunctionSet functionSet;
         Compiler::FunctionPtr fun;
-        std::stringstream errors;
 
 public:
         real_t operator ()
@@ -80,18 +79,35 @@ public:
 
         QuatschHeightFunction (const std::string code)
         : functionSet(addfuns())
-        , fun (Compiler::compile (
-                "x;y",
-                //"(* 0.5 (* (sin (* x 2.0)) (sin(* y 2.0)) ))",
-                /*"(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{4} persistence{0.54} levelEvaluationFunction{(abs h)}] "
-                "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
-                "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
-                ")))",*/
-                code,
-                //"(* x 0.1)",
-                functionSet,
-                errors))
         {
+                std::stringstream errors;
+                fun = Compiler::compile (
+                        "x;y",
+                        //"(* 0.5 (* (sin (* x 2.0)) (sin(* y 2.0)) ))",
+                        /*"(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{4} persistence{0.54} levelEvaluationFunction{(abs h)}] "
+                        "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                        "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                        ")))",*/
+                        code,
+                        //"(* x 0.1)",
+                        functionSet,
+                        errors);
+        }
+
+        QuatschHeightFunction (const std::string code, std::stringstream &errors)
+        : functionSet(addfuns())
+        {
+                fun = Compiler::compile (
+                        "x;y",
+                        //"(* 0.5 (* (sin (* x 2.0)) (sin(* y 2.0)) ))",
+                        /*"(- 1 (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{4} persistence{0.54} levelEvaluationFunction{(abs h)}] "
+                        "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                        "  (+ y (^ (abs ([LayeredNoise2d filter{cosine} seed{12} frequency{0.25} layercount{12} persistence{0.54} levelEvaluationFunction{(abs h)}] x y)) 4))"
+                        ")))",*/
+                        code,
+                        //"(* x 0.1)",
+                        functionSet,
+                        errors);
         }
 };
 } // namespace redshift

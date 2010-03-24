@@ -162,10 +162,23 @@ namespace redshift { namespace scenefile {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
-                                shared_ptr<redshift::HeightFunction> heightFunction =
-                                        shared_ptr<redshift::HeightFunction> (
-                                                new ::redshift::QuatschHeightFunction(code)
+                                shared_ptr<redshift::HeightFunction> heightFunction;
+
+                                std::stringstream errors;
+
+                                try {
+                                        heightFunction =
+                                         shared_ptr<redshift::HeightFunction> (
+                                                new ::redshift::QuatschHeightFunction(code, errors)
                                         );
+                                } catch (quatsch::general_exception const &ex) {
+                                        // we are anyways replacing quatsch, so let's
+                                        // do it kissy
+                                        throw quatsch::general_exception(
+                                                ex.getMessage() + ":\n\n"
+                                                + errors.str()
+                                        );
+                                }
                                 return shared_ptr<primitive::Primitive>(new LazyQuadtree(
                                         heightFunction,
                                         size,
@@ -220,7 +233,7 @@ namespace redshift { namespace scenefile {
                                 ));
                         }
                 };
-        public:                
+        public:
                 LazyQuadtreeParams lazyQuadtreeParams;
                 WaterPlaneParams waterPlaneParams;
                 HorizonPlaneParams horizonPlaneParams;
@@ -511,7 +524,7 @@ namespace redshift { namespace scenefile {
                                 roll
                         };
 
-                        static const actuarius::Enum<Type> Typenames;                        
+                        static const actuarius::Enum<Type> Typenames;
 
                         redshift::Transform toRedshiftTransform () const {
                                 using redshift::Transform;
