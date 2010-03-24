@@ -97,8 +97,8 @@ namespace redshift { namespace scenefile {
                 inline shared_ptr<primitive::Primitive> toPrimitive () const {
                         switch (type) {
                         case lazy_quadtree: return lazyQuadtreeParams.toPrimitive();
-                        case water_plane: return WaterPlaneParams.toPrimitive();
-                        case horizon_plane: return HorizonPlaneParams.toPrimitive();
+                        case water_plane: return waterPlaneParams.toPrimitive();
+                        case horizon_plane: return horizonPlaneParams.toPrimitive();
                         };
                         throw std::exception();
                 }
@@ -125,15 +125,15 @@ namespace redshift { namespace scenefile {
                         } break;
                         case water_plane:
                                 arch
-                                & pack("code", WaterPlaneParams.code)
-                                & pack("height", WaterPlaneParams.height)
-                                & pack("color", WaterPlaneParams.color)
+                                & pack("code", waterPlaneParams.code)
+                                & pack("height", waterPlaneParams.height)
+                                & pack("color", waterPlaneParams.color)
                                 ;
                                 break;
                         case horizon_plane:
                                 arch
-                                & pack("height", HorizonPlaneParams.height)
-                                & pack("color", HorizonPlaneParams.color)
+                                & pack("height", horizonPlaneParams.height)
+                                & pack("color", horizonPlaneParams.color)
                                 ;
                                 break;
                         };
@@ -220,11 +220,10 @@ namespace redshift { namespace scenefile {
                                 ));
                         }
                 };
+        public:                
                 LazyQuadtreeParams lazyQuadtreeParams;
-                WaterPlaneParams WaterPlaneParams;
-                HorizonPlaneParams HorizonPlaneParams;
-
-        public:
+                WaterPlaneParams waterPlaneParams;
+                HorizonPlaneParams horizonPlaneParams;
 
 
         };

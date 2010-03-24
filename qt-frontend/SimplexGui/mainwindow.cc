@@ -23,9 +23,6 @@ namespace {
 
         template <typename T>
         T readValue (QString name, QList<QtProperty*> list) {
-                if (name =="right") {
-                        std::cout << "foo";
-                }
                 QtProperty* retty = 0;
                 foreach (QtProperty* looky, list) {
                         if (name == looky->propertyName()) {
@@ -544,13 +541,8 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         Xf transform;
 
                         // When tweaking here, also look at XCVBN
-                        const QString type = xform->propertyName();
                         const Props xfsubs = xform->subProperties();
-
-                        QString q;
-                        for (int i=0; i<xfsubs.size(); ++i) {
-                                q+= xfsubs[i]->propertyName() + "\n";
-                        }
+                        const QString type = readValueText("type", xfsubs);
 
 
                         if (type == "move") {                                
@@ -588,7 +580,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         } else {
                                 throw std::runtime_error(
                                    (QString()
-                                   + "MainWindow::createScene () const: type '"
+                                   + "MainWindow::createScene () const: transform-type '"
                                    + type
                                    + "' not supported").toStdString().c_str());
                         }
@@ -596,6 +588,49 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 }
 
                 scene->addCamera(camera);
+        }
+
+
+        // Objects.
+        const Props objects = readSubProperties("objects", topProps);
+        foreach (Prop object, objects) {
+                using scenefile::Object;
+
+                const Props subs = object->subProperties();
+                const QString type = readValueText("type", subs);
+
+                scenefile::Object object;
+
+                if (type == "water-plane") {
+                        object.type = Object::water_plane;
+                        const std::string tmp = readValue<QString>("code", subs).toStdString();
+                        if(!tmp.empty())
+                                object.waterPlaneParams.code = tmp;
+                        //object.waterPlaneParams.color
+                        object.waterPlaneParams.height = readValue<double>("height", subs);
+                } else if (type == "horizon-plane") {
+                        object.type = Object::horizon_plane;
+                        //object.horizonPlaneParams.color
+                        object.horizonPlaneParams.height = readValue<double>("height", subs);
+                } else if (type == "lazy-quadtree") {
+                        object.type = Object::lazy_quadtree;
+                        const std::string tmp = readValue<QString>("code", subs).toStdString();
+                        if(!tmp.empty())
+                                object.lazyQuadtreeParams.code = tmp;
+                        //object.lazyQuadtreeParams.color;
+                        object.lazyQuadtreeParams.lodFactor = readValue<double>("lod-factor", subs);
+                        object.lazyQuadtreeParams.maxRecursion = readValue<unsigned int>("max-recursion", subs);
+                        object.lazyQuadtreeParams.size = readValue<double>("size", subs);
+                } else {
+                        throw std::runtime_error(
+                           (QString()
+                           + "MainWindow::createScene () const: object-type '"
+                           + type
+                           + "' not supported").toStdString().c_str());
+                }
+
+                scene->addObject(object);
+
         }
 
 
