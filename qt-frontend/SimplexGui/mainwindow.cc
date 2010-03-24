@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
                 this, SLOT(rsTitleManager_valueChanged(QtProperty*,const QString &)));
 
-        groupManager = new QtGroupPropertyManager(this);        
+        groupManager = new QtGroupPropertyManager(this);
         enumManager = new QtEnumPropertyManager(this);
 
 
@@ -142,8 +142,10 @@ MainWindow::MainWindow(QWidget *parent) :
                                 QVariant::Double,
                                 QLatin1String("color-scale"));
                 item->setValue(1);
-                item->setAttribute(QLatin1String("singleStep"), 0.05);
+                item->setAttribute(QLatin1String("singleStep"), 0.01);
                 item->setAttribute(QLatin1String("decimals"), 6);
+                item->setAttribute(QLatin1String("minimum"), 0);
+                item->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
                 topItem->addSubProperty(item);
 
 
@@ -287,7 +289,7 @@ void MainWindow::addTransform (QtProperty *transformRoot) {
                   << "pitch"
                   << "roll"
                   ;
-        transformEnumManager->setEnumNames(transformType, enumNames);        
+        transformEnumManager->setEnumNames(transformType, enumNames);
 }
 
 
@@ -303,7 +305,7 @@ void MainWindow::addObject () {
         QStringList enumNames;
         enumNames << "horizon-plane"
                   << "water-plane"
-                  << "lazy-quadtree"                  
+                  << "lazy-quadtree"
                   ;
         objectTypeEnumManager->setEnumNames(objectType, enumNames);
 }
@@ -383,7 +385,7 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                 }
 
                 if (type == "horizon-plane") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"height"));                        
+                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"height"));
                 } else if (type == "water-plane") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"height"));
                         t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
@@ -481,7 +483,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
 
 
-void MainWindow::on_actionShow_redshift_job_code_triggered() {        
+void MainWindow::on_actionShow_redshift_job_code_triggered() {
         using namespace actuarius;
         using namespace redshift;
 

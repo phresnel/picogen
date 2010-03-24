@@ -42,6 +42,10 @@ namespace redshift {
         class RenderTargetLock;
         class ColorRenderTarget;
         class Scene;
+
+        namespace scenefile {
+                class Scene;
+        }
 }
 
 
@@ -49,7 +53,8 @@ namespace redshift {
 class RenderWindow : public QDialog {
         Q_OBJECT
 public:
-        RenderWindow(QWidget *parent = 0);
+        RenderWindow(redshift::shared_ptr<redshift::scenefile::Scene>,
+                     QWidget* parent=0);
         ~RenderWindow();
 
 protected:
@@ -62,6 +67,8 @@ private:
         Ui::RenderWindow *ui;
         redshift::shared_ptr<RenderWindowImpl> impl;
         friend class RenderWindowImpl;
+
+        redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
 };
 
 
@@ -84,7 +91,7 @@ class RenderWindowImpl
 {
         Q_OBJECT
 public:
-        RenderWindowImpl ();
+        RenderWindowImpl (redshift::shared_ptr<redshift::scenefile::Scene>);
         virtual ~RenderWindowImpl ();
 
         // redshift::interaction::ProgressReporter
@@ -103,7 +110,7 @@ private:
         int reportW;
         redshift::shared_ptr<redshift::QImageRenderTarget> target;
         redshift::shared_ptr<redshift::ColorRenderTarget> renderBuffer;
-        redshift::shared_ptr<redshift::Scene> scene;
+        redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
 };
 
 #endif // RENDERWINDOW_HH

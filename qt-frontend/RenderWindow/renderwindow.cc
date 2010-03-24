@@ -42,8 +42,9 @@
 //=============================================================================
 // RenderWindowImpl
 //=============================================================================
-RenderWindowImpl::RenderWindowImpl () {
-
+RenderWindowImpl::RenderWindowImpl (
+                redshift::shared_ptr<redshift::scenefile::Scene> scenefile
+) : scenefile(scenefile) {
 }
 
 
@@ -78,50 +79,16 @@ void RenderWindowImpl::run() {
         using namespace redshift::interaction;
         // --
 
-        scenefile::Scene ss;
-
-        scenefile::FilmSettings fs;
-        fs.colorscale = 0.01;
-        fs.convertToSrgb = true;
-        ss.setFilmSettings(fs);
-
-        scenefile::Background ho;
-        ho.type = scenefile::Background::pss_sunsky;
-        srand(clock());
-        ho.sunDirection = scenefile::Normal(0.5, 0.2, 0.7);
-        ho.turbidity = 2.0f;
-        ss.addBackground(ho);
-
-        scenefile::Camera ca;
-        ca.title = "foo";
-        scenefile::Camera::Transform pos;
-        pos.type = scenefile::Camera::Transform::move;
-        pos.x = 0; pos.y = 20; pos.z = 0;
-        ca.transforms.push_back(pos);
-        ss.addCamera(ca);
-
-
-        scenefile::RenderSettings rs;
-        rs.width = 320;
-        rs.height = 240;
-        rs.samplesPerPixel = 5;
-
-        scenefile::SurfaceIntegrator si;
-        si.type = scenefile::SurfaceIntegrator::redshift;
-        scenefile::VolumeIntegrator vi;
-        vi.type = scenefile::VolumeIntegrator::none;
-        rs.surfaceIntegrator = si;
-        rs.volumeIntegrator = vi;
-
-        ss.addRenderSettings(rs);
-
+        using namespace redshift;
+        const scenefile::FilmSettings &fs = scenefile->filmSettings();
 
 
         renderBuffer = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
         target = shared_ptr<QImageRenderTarget>(
                         new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
 
-        scene = sceneDescriptionToScene(ss, renderBuffer);
+        redshift::shared_ptr<redshift::Scene> scene =
+                        sceneDescriptionToScene(*scenefile, renderBuffer);
 
         shared_ptr<interaction::ProgressReporter> rep =
                 shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
@@ -139,9 +106,13 @@ void RenderWindowImpl::run() {
 //=============================================================================
 // RenderWindow
 //=============================================================================
-RenderWindow::RenderWindow(QWidget *parent) :
+RenderWindow::RenderWindow(
+        redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
+        QWidget *parent
+) :
     QDialog(parent),
-    ui(new Ui::RenderWindow)
+    ui(new Ui::RenderWindow),
+    scenefile(scenefile)
 {
         ui->setupUi(this);
 
@@ -153,11 +124,12 @@ RenderWindow::RenderWindow(QWidget *parent) :
         map.fill(QColor(0,0,0));
         ui->pix->setPixmap(map);
 
-        impl = redshift::shared_ptr<RenderWindowImpl>(new RenderWindowImpl());
+        impl = redshift::shared_ptr<RenderWindowImpl>(
+                        new RenderWindowImpl(scenefile));
 
         connect(
-         impl.get(), SIGNAL(updateImage (QImage, double)),
-         this, SLOT(updateImage (QImage, double))
+                impl.get(), SIGNAL(updateImage (QImage, double)),
+                this, SLOT(updateImage (QImage, double))
         );
 
         impl->start();
