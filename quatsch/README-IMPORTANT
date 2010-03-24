@@ -1,0 +1,13 @@
+PLEASE
+
+Don't use this compiler framework. While pretty performant thanks to heavy heavy
+compiler time loop unrolling (thus leveraging away virtual overhead a bit) it is
+also pretty unmaintainable as for exactly the latter. It also takes weeks to
+recompile.
+
+If you look at the quatsch2 branch, you'll see that rescue is coming, proll in
+picogen 0.4.
+
+Greets,
+
+phresnel
