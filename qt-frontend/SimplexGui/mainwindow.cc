@@ -391,6 +391,32 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
                 } else if (type == "lazy-quadtree") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Color,"color"));
+                        t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
+
+                        QtVariantProperty* maxrec = variantManager->addProperty(QVariant::Int,"max-recursion");
+                        lodfac->setToolTip("Be careful. Slowly approach values beyond 10. For preview renderings, values less than 10 seem to work well.");
+                        maxrec->setAttribute(QLatin1String("minimum"), 1);
+                        maxrec->setAttribute(QLatin1String("maximum"), 20);
+                        maxrec->setAttribute(QLatin1String("singleStep"), 1);
+                        maxrec->setValue(7);
+                        t->addSubProperty(maxrec);
+
+                        QtVariantProperty* lodfac = variantManager->addProperty(QVariant::Double,"lod-factor");
+                        lodfac->setToolTip("Very sensible factor. The smaller, the less detail-loss upon increasing distance.");
+                        lodfac->setAttribute(QLatin1String("minimum"), 0.000001);
+                        lodfac->setAttribute(QLatin1String("maximum"), 1);
+                        lodfac->setAttribute(QLatin1String("singleStep"), 0.00001);
+                        lodfac->setValue(0.000125);
+                        t->addSubProperty(lodfac);
+
+                        QtVariantProperty* size = variantManager->addProperty(QVariant::Double,"size");
+                        lodfac->setToolTip("Picogen's quadtree scales quite well. Feel free to try out very large values of 100k and bigger.");
+                        size->setAttribute(QLatin1String("minimum"), 1);
+                        size->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                        size->setAttribute(QLatin1String("singleStep"), 1000);
+                        size->setValue(50000);
+                        t->addSubProperty(size);
+
                         //t->addSubProperty(variantManager->addProperty(QVariant::V,"color"));
                 }
         }
