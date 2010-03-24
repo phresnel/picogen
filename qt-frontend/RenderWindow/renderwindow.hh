@@ -102,6 +102,9 @@ public:
         // QThread
         void run();
 
+        bool error() const { return error_; }
+        QString errorMessage() const { return errorMessage_; }
+
 signals:
         // any percentage >= 1. is assumed to mean 100%
         void updateImage (QImage image, double percentage);
@@ -111,6 +114,9 @@ private:
         redshift::shared_ptr<redshift::QImageRenderTarget> target;
         redshift::shared_ptr<redshift::ColorRenderTarget> renderBuffer;
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
+
+        bool error_;
+        QString errorMessage_;
 };
 
 #endif // RENDERWINDOW_HH

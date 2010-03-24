@@ -398,9 +398,13 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                 }
 
                 if (type == "horizon-plane") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"height"));
+                        QtVariantProperty* it = variantManager->addProperty(QVariant::Double,"height");
+                        t->addSubProperty(it);
+                        it->setAttribute(QLatin1String("decimals"), 6);
                 } else if (type == "water-plane") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"height"));
+                        QtVariantProperty* it = variantManager->addProperty(QVariant::Double,"height");
+                        t->addSubProperty(it);
+                        it->setAttribute(QLatin1String("decimals"), 6);
                         t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
                 } else if (type == "lazy-quadtree") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Color,"color"));
@@ -412,7 +416,6 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         maxrec->setToolTip("Be careful. Slowly approach values beyond 10. For preview renderings, values less than 10 seem to work well.");
                         maxrec->setAttribute(QLatin1String("minimum"), 1);
                         maxrec->setAttribute(QLatin1String("maximum"), 20);
-                        maxrec->setAttribute(QLatin1String("singleStep"), 1);
                         maxrec->setValue(7);
                         t->addSubProperty(maxrec);
 
@@ -421,6 +424,7 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         lodfac->setAttribute(QLatin1String("minimum"), 0.000001);
                         lodfac->setAttribute(QLatin1String("maximum"), 1);
                         lodfac->setAttribute(QLatin1String("singleStep"), 0.00001);
+                        lodfac->setAttribute(QLatin1String("decimals"), 6);
                         lodfac->setValue(0.000125);
                         t->addSubProperty(lodfac);
 
@@ -429,6 +433,7 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         size->setAttribute(QLatin1String("minimum"), 1);
                         size->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
                         size->setAttribute(QLatin1String("singleStep"), 1000);
+                        maxrec->setAttribute(QLatin1String("decimals"), 1);
                         size->setValue(50000);
                         t->addSubProperty(size);
 
@@ -475,6 +480,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         if (isCode) {
                 ui->codeEditor->setEnabled(true);
                 ui->codeEditor->setVisible(true);
+                ui->codeEditor->setCode(((QtVariantProperty*)current->property())->value().value<QString>());
         } else {
                 ui->codeEditor->setEnabled(false);
                 ui->codeEditor->setVisible(false);
@@ -545,11 +551,11 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         const QString type = readValueText("type", xfsubs);
 
 
-                        if (type == "move") {                                
+                        if (type == "move") {
                                 transform.type = Xf::move;
                                 transform.x = readValue<double>("right", xfsubs);
                                 transform.y = readValue<double>("up", xfsubs);
-                                transform.z = readValue<double>("forward", xfsubs);                                
+                                transform.z = readValue<double>("forward", xfsubs);
                         } else if (type == "move-left") {
                                 transform.type = Xf::move_left;
                                 transform.x = readValue<double>("distance", xfsubs);

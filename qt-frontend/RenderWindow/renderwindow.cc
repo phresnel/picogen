@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include <stdexcept>
 #include <QImage>
 #include <QThread>
 #include <QMessageBox>
@@ -44,7 +45,7 @@
 //=============================================================================
 RenderWindowImpl::RenderWindowImpl (
                 redshift::shared_ptr<redshift::scenefile::Scene> scenefile
-) : scenefile(scenefile) {
+) : scenefile(scenefile), error_(false), errorMessage_("") {
 }
 
 
@@ -80,20 +81,35 @@ void RenderWindowImpl::run() {
         // --
 
         using namespace redshift;
-        const scenefile::FilmSettings &fs = scenefile->filmSettings();
 
+        try {
+                const scenefile::FilmSettings &fs = scenefile->filmSettings();
 
-        renderBuffer = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
-        target = shared_ptr<QImageRenderTarget>(
-                        new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
+                renderBuffer = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
+                target = shared_ptr<QImageRenderTarget>(
+                                new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
 
-        redshift::shared_ptr<redshift::Scene> scene =
-                        sceneDescriptionToScene(*scenefile, renderBuffer);
+                redshift::shared_ptr<redshift::Scene> scene =
+                                sceneDescriptionToScene(*scenefile, renderBuffer);
 
-        shared_ptr<interaction::ProgressReporter> rep =
-                shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
-        UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
-        scene->render(rep, commandProcessor, 1);
+                shared_ptr<interaction::ProgressReporter> rep =
+                        shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
+                UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
+
+                scene->render(rep, commandProcessor, 1);
+
+        } catch (std::exception const &ex) {
+                error_ = true;
+                errorMessage_ = QString()
+                        + "Critical exception occured:\n"
+                        + ex.what();
+                emit updateImage (QImage(), 2);
+        } catch (...) {
+                error_ = true;
+                errorMessage_ = QString()
+                        + "An unknown, critical exception occured";
+                emit updateImage (QImage(), 2);
+        }
 }
 
 
@@ -144,12 +160,18 @@ RenderWindow::~RenderWindow() {
 
 
 void RenderWindow::updateImage (QImage image, double percentage) {
-        if (percentage>=1)
-                setWindowTitle("Done.");
-        else
-                setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
+        if (impl->error()) {
+                setWindowTitle ("Error");
+                ui->pix->setText(impl->errorMessage());
+        } else {
+                if (percentage>=1) {
+                        setWindowTitle("Done.");
+                } else {
+                        setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
+                }
 
-        ui->pix->setPixmap(QPixmap::fromImage(image));
+                ui->pix->setPixmap(QPixmap::fromImage(image));
+        }
 }
 
 
