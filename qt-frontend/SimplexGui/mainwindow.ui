@@ -224,7 +224,7 @@ QGroupBox {
      <x>0</x>
      <y>0</y>
      <width>740</width>
-     <height>16</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebugging">
@@ -271,7 +271,7 @@ QGroupBox {
   <customwidget>
    <class>QuatschSourceEditor</class>
    <extends>QWidget</extends>
-   <header>../QtQuatschSourceEditor/quatschsourceeditor.hh</header>
+   <header>quatschsourceeditor.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
