@@ -21,6 +21,8 @@
 #ifndef SPECTRUM_HH_INCLUDED_20100311
 #define SPECTRUM_HH_INCLUDED_20100311
 
+#include <sstream>
+
 #include "../redshift-kallisto.hh"
 #include "rgb.hh"
 
@@ -143,6 +145,20 @@ namespace redshift {
         inline bool isinf (spectrum_base<T,N> const &s) {
                 return kallisto::isinf (s);
         }
+
+
+
+        // Helper for spectrum internal use.
+        template <typename T> struct SpectrumBaseTypeId_ ;
+        template <> struct SpectrumBaseTypeId_<float> {
+                static const char *name () { return "float"; }
+        };
+        template <> struct SpectrumBaseTypeId_<double> {
+                static const char *name () { return "double"; }
+        };
+        template <> struct SpectrumBaseTypeId_<long double> {
+                static const char *name () { return "long double"; }
+        };
 }
 
 #include <vector>
@@ -183,7 +199,7 @@ namespace redshift {
 
         //typedef spectrum_base<real_t,6> _spectrum_base;
 
-        template <typename T, unsigned int N=16>
+        template <typename T, unsigned int N=spectrum_samples>
         class SpectrumBase : public spectrum_base<T,N> {
                 typedef spectrum_base<T,N> base;
         public:
@@ -193,12 +209,17 @@ namespace redshift {
                 typedef typename base::real_t real_t;
 
                 SpectrumBase (noinit_) : base(base::noinit) {}
-                SpectrumBase () : base() {}
+                SpectrumBase () : base() {
+                }
 
                 template <typename U>
                 explicit SpectrumBase (U f) : base(real_t(f)) {}
-                SpectrumBase (const real_t (&f)[base::num_components]) : base(f) {}
-                SpectrumBase (const SpectrumBase &rhs) : base(rhs) {}
+
+                SpectrumBase (const real_t (&f)[base::num_components])
+                : base(f) {}
+
+                SpectrumBase (const SpectrumBase &rhs) : base(rhs) {
+                }
 
                 template <typename U>
                 explicit SpectrumBase (SpectrumBase<U> const & rhs) {
@@ -209,8 +230,8 @@ namespace redshift {
 
                 template <typename REP>
                 SpectrumBase  (array<real_t,base::num_components,r_spectrum,REP> const & rhs)
-                : base(rhs)
-                {}
+                : base(rhs) {
+                }
 
                 using base::operator=;
 
@@ -286,7 +307,6 @@ namespace redshift {
                         return FromRGB(color::RGB(R,G,B));
                 }
 
-
                 static SpectrumBase X, Y, Z;
                 static real_t yint;
 
@@ -301,6 +321,20 @@ namespace redshift {
 
         public: // Static functions.
                 static void static_init ();
+        private:
+                static bool static_init_called;
+
+                /*void test_static_init() {
+                        if (!static_init_called) {
+                                std::stringstream ss;
+                                ss << std::string("SpectrumBase<")
+                                   << SpectrumBaseTypeId_<T>::name()
+                                   << ", " << N
+                                   << "> created, but static_init() "
+                                   << "has not been called yet.";
+                                throw std::runtime_error(ss.str());
+                        }
+                }*/
         };
 }
 

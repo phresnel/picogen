@@ -23,6 +23,7 @@
 //   * In this file, extern-explicitly-instantiate SpectrumBase on floating types
 //   * And then, un-inline all functions herein
 
+#include <sstream>
 
 namespace redshift {
 
@@ -111,8 +112,24 @@ inline real_t averageSpectrumSamples(const samples_t *lambda, const samples_t *v
 }
 
 
+
+template <typename T, unsigned int N>
+bool SpectrumBase<T, N>::static_init_called = false;
+
 template <typename T, unsigned int N>
 inline void SpectrumBase<T, N>::static_init() {
+
+        if (static_init_called) {
+                std::stringstream ss;
+                ss << std::string("SpectrumBase<")
+                   << SpectrumBaseTypeId_<T>::name()
+                   << ", " << N
+                   << ">::static_init() called multiple times";
+                throw std::runtime_error(ss.str());
+        }
+
+        static_init_called = true;
+
         typedef T real_t;
         //std::cout << "void SpectrumBase::static_init() {\n";
         // Compute XYZ matching functions for _SampledSpectrum_

@@ -24,13 +24,20 @@
 #include "setup.hh"
 namespace redshift {
         inline void static_init() {
-                redshift::SpectrumBase<float>::static_init();
-                redshift::SpectrumBase<double>::static_init();
-                redshift::SpectrumBase<long double>::static_init();
+                redshift::SpectrumBase<float,spectrum_samples>::static_init();
+                redshift::SpectrumBase<float,longspectrum_samples>::static_init();
+                redshift::SpectrumBase<float,referencespectrum_samples>::static_init();
+                redshift::SpectrumBase<float,halfreferencespectrum_samples>::static_init();
 
-                redshift::SpectrumBase<float,64>::static_init();
-                redshift::SpectrumBase<double,64>::static_init();
-                redshift::SpectrumBase<long double,64>::static_init();
+                redshift::SpectrumBase<double,spectrum_samples>::static_init();
+                redshift::SpectrumBase<double,longspectrum_samples>::static_init();
+                redshift::SpectrumBase<double,referencespectrum_samples>::static_init();
+                redshift::SpectrumBase<double,halfreferencespectrum_samples>::static_init();
+
+                redshift::SpectrumBase<long double,spectrum_samples>::static_init();
+                redshift::SpectrumBase<long double,longspectrum_samples>::static_init();
+                redshift::SpectrumBase<long double,referencespectrum_samples>::static_init();
+                redshift::SpectrumBase<long double,halfreferencespectrum_samples>::static_init();
         }
 }
 
