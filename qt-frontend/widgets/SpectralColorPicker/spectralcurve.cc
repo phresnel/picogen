@@ -70,24 +70,25 @@ void SpectralCurve::paintEvent (QPaintEvent *e) {
         p.drawRect(0,0,width(),height());
 
         p.setPen(QPen(QBrush(Qt::black), 1.f));
-        QPainterPath pp(QPointF(0,0));        
+        QPainterPath pp(QPointF(0,0));
         const int size = spectrum.size();
-        for (int s=0; s<size; ++s) {                
+        for (int s=0; s<size; ++s) {
                 const double y0 = height()-height()*spectrum[s];
                 const double x0 = (s/(double)(size-1)) * width();
 
                 if (s==0) {
                         pp.moveTo(x0, y0);
                 }
+                pp.lineTo(x0, y0);
 
-                const double s1 = s+1<size ? s+1 : s;
-                const double y1 = height()-height()*spectrum[s1];                
+                /*const double s1 = s+1<size ? s+1 : s;
+                const double y1 = height()-height()*spectrum[s1];
                 const double x1 = ((s1)/(double)(size-1)) * width();
 
                 const double s2 = s1+1<size ? s1+1 : s1;
                 const double y2 = height()-height()*spectrum[s2];
-                const double x2 = ((s2)/(double)(size-1)) * width();
-                pp.cubicTo(x0, y0, x1, y1, x2, y2);
+                const double x2 = ((s2)/(double)(size-1)) * width();*/
+                //pp.cubicTo(x0, y0, x1, y1, x2, y2);
         }
         p.drawPath(pp);
 
