@@ -9,11 +9,11 @@
 #include "qttreepropertybrowser.h"
 #include <QtStringPropertyManager>
 
-#include "../SimpleInputBox/simpleinputbox.hh"
-#include "../RenderWindow/renderwindow.hh"
-#include "../QtQuatschSourceEditor/quatschsourceeditor.hh"
+#include "simpleinputbox.hh"
+#include "renderwindow.hh"
+#include "quatschsourceeditor.hh"
 
-#include "../../redshift/include/jobfile.hh"
+#include "redshift/include/jobfile.hh"
 
 
 namespace {

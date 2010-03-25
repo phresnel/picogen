@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <iostream>
-#include "../../redshift/include/redshift.hh"
+#include "redshift/include/redshift.hh"
 #include "quatschsourceeditor.hh"
 #include <QCloseEvent>
 

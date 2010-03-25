@@ -11,3 +11,4 @@ HEADERS += mainwindow.hh \
     quatschsourceeditor.hh
 FORMS += mainwindow.ui \
     quatschsourceeditor.ui
+INCLUDEPATH += ../../../
