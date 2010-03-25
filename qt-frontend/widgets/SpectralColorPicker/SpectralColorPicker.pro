@@ -3,21 +3,20 @@
 # -------------------------------------------------
 TARGET = SpectralColorPicker
 TEMPLATE = app
-
 INCLUDEPATH += ../../../
 INCLUDEPATH += ../../../redshift/include/
-
 DEFINES += __STDC_LIMIT_MACROS
-
 SOURCES += main.cc \
     mainwindow.cc \
     spectralcolorpicker.cc \
-    spectralslider.cc
+    spectralslider.cc \
+    spectrumdisplay.cc
 HEADERS += mainwindow.hh \
     spectralcolorpicker.hh \
-    spectralslider.hh
+    spectralslider.hh \
+    spectrumdisplay.hh
 FORMS += mainwindow.ui \
     spectralcolorpicker.ui \
-    spectralslider.ui
+    spectralslider.ui \
+    spectrumdisplay.ui
 LIBS += ../../../redshift/lib/libpicogen.a
-

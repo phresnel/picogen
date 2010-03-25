@@ -22,22 +22,43 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="frame">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+    <widget class="SpectrumDisplay" name="widget" native="true"/>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
      </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0">
-      <item>
-       <layout class="QHBoxLayout" name="slidersLayout"/>
-      </item>
-     </layout>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>378</width>
+        <height>243</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="SpectrumDisplay" name="widget_2" native="true"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="slidersLayout"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SpectrumDisplay</class>
+   <extends>QWidget</extends>
+   <header>spectrumdisplay.hh</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

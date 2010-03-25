@@ -19,22 +19,29 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include <QtGui/QApplication>
-#include "mainwindow.hh"
-#include "redshift/include/static_init.hh"
+#ifndef SPECTRUMDISPLAY_HH
+#define SPECTRUMDISPLAY_HH
 
-#include <fstream>
+#include <QWidget>
 
-int main(int argc, char *argv[]) {
-        try {                
-                redshift::static_init();
-                QApplication a(argc, argv);
-                MainWindow w;
-                w.show();
-                return a.exec();
-        } catch (std::exception const &ex) {
-                std::ofstream ofs("C:/Dokumente und Einstellungen/smach/Desktop/foobar.txt");
-                ofs << ex.what();
-                return -1;
-        }
+namespace Ui {
+    class SpectrumDisplay;
 }
+
+class SpectrumDisplay : public QWidget {
+        Q_OBJECT
+public:
+        SpectrumDisplay(QWidget *parent = 0);
+        ~SpectrumDisplay();
+
+protected:
+        void changeEvent(QEvent *e);
+        void paintEvent(QPaintEvent *);
+
+private:
+        Ui::SpectrumDisplay *ui;
+
+        QImage spectralImage;
+};
+
+#endif // SPECTRUMDISPLAY_HH

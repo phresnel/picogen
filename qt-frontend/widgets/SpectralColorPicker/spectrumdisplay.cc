@@ -18,92 +18,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#include <fstream>
-#include <QMessageBox>
-
-#include "spectralcolorpicker.hh"
-#include "spectralslider.hh"
-#include "ui_spectralcolorpicker.h"
+#include <QPainter>
+#include "spectrumdisplay.hh"
+#include "ui_spectrumdisplay.h"
 
 #include "redshift/include/setup.hh"
 
-SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
+SpectrumDisplay::SpectrumDisplay(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::SpectralColorPicker)
+    ui(new Ui::SpectrumDisplay)
 {
         ui->setupUi(this);
-        const int num_sliders = 16;
-        const double min = 400;
-        const double max = 700;
-        for (int i=0; i<num_sliders; ++i) {
-                const double lambda = (i/(double)(num_sliders-1))*(max-min)+min;
-                SpectralSlider *w = new SpectralSlider (lambda, this);
-                sliders.push_back(w);
-                ui->slidersLayout->addWidget(w);
-
-                connect (w, SIGNAL(amplitudeChanged(double,double)),
-                         this, SLOT(amplitudeChanged(double,double)));
-        }
-}
 
 
-
-SpectralColorPicker::~SpectralColorPicker() {
-        delete ui;
-}
-
-
-
-void SpectralColorPicker::changeEvent(QEvent *e) {
-        QWidget::changeEvent(e);
-        switch (e->type()) {
-        case QEvent::LanguageChange:
-                ui->retranslateUi(this);
-                break;
-        default:
-                break;
-        }
-}
-
-
-
-void SpectralColorPicker::amplitudeChanged (double amp, double wavelength) {
-        typedef redshift::LongSpectrum Spectrum;
+        // Below method is extremely wasteful, better write a
+        // setAmplitude(wave,amp)-method for spectrum
+        using redshift::ReferenceSpectrum;
         using redshift::color::RGB;
         using redshift::color::SRGB;
 
-        std::vector<Spectrum::real_t> amplitudes, wavelengths;
-        foreach (SpectralSlider *slider, sliders) {
-                amplitudes.push_back(slider->amplitude());
-                wavelengths.push_back(slider->wavelength());
-        }
-
-        const Spectrum spectrum = Spectrum::FromSampled(
-                                                        &amplitudes[0],
-                                                        &wavelengths[0],
-                                                        amplitudes.size());
-        const RGB rgb_ = spectrum.toRGB();
-        const SRGB rgb = rgb_.toSRGB();
-        const int
-                R_ = rgb.R * 255,
-                G_ = rgb.G * 255,
-                B_ = rgb.B * 255,
-                R = R_ < 0 ? 0 : R_ > 255 ? 255 : R_,
-                G = G_ < 0 ? 0 : G_ > 255 ? 255 : G_,
-                B = B_ < 0 ? 0 : B_ > 255 ? 255 : B_
-                ;
-
-        QImage i(Spectrum::num_components,32,QImage::Format_RGB32);
-        i.fill(QColor(R,G,B).rgb());
-
-        /*
         ReferenceSpectrum::real_t
                 wavs[ReferenceSpectrum::num_components] = { 0.0 };
         for (int x=0; x<ReferenceSpectrum::num_components; ++x) {
                 wavs[x] = redshift::SAMPLED_LAMBDA_START+x;
         }
 
+        QImage image (ReferenceSpectrum::num_components, 32, QImage::Format_RGB32);
         for (int x=0; x<ReferenceSpectrum::num_components; ++x) {
 
                 ReferenceSpectrum::real_t
@@ -114,7 +54,7 @@ void SpectralColorPicker::amplitudeChanged (double amp, double wavelength) {
                                                                 amps,
                                                                 wavs,
                                                                 ReferenceSpectrum::num_components);
-                const redshift::real_t y = spectrum.y();
+                //const redshift::real_t y = spectrum.y();
                 const RGB rgb__ = spectrum.toRGB();
                 const RGB rgb_ (rgb__.R*250, rgb__.G*250, rgb__.B*250);
                 const SRGB rgb = rgb_.toSRGB();
@@ -128,9 +68,39 @@ void SpectralColorPicker::amplitudeChanged (double amp, double wavelength) {
                         ;
                 const unsigned int col = QColor(R,G,B).rgb();
 
-                for (int y=0; y<32; ++y) {
-                        i.setPixel(x, y, col);
+                for (int y=0; y<image.height(); ++y) {
+                        image.setPixel(x, y, col);
                 }
-        }*/
-        ui->colorPreview->setPixmap(QPixmap::fromImage(i));
+        }
+
+        ui->label->setPixmap(QPixmap::fromImage(image));
+
+        spectralImage = image;
+}
+
+
+
+#include <QPaintEvent>
+void SpectrumDisplay::paintEvent(QPaintEvent *e) {
+        //spectralImage.
+        e->ignore();
+}
+
+
+
+SpectrumDisplay::~SpectrumDisplay() {
+        delete ui;
+}
+
+
+
+void SpectrumDisplay::changeEvent(QEvent *e) {
+        QWidget::changeEvent(e);
+        switch (e->type()) {
+        case QEvent::LanguageChange:
+                ui->retranslateUi(this);
+                break;
+        default:
+                break;
+        }
 }
