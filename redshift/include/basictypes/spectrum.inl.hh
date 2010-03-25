@@ -27,24 +27,24 @@
 namespace redshift {
 
 // Spectral Data Definitions
-template <typename T> SpectrumBase<T> SpectrumBase<T>::X;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::Y;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::Z;
-template <typename T> typename SpectrumBase<T>::real_t SpectrumBase<T>::yint;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectWhite;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectCyan;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectMagenta;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectYellow;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectRed;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectGreen;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbRefl2SpectBlue;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectWhite;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectCyan;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectMagenta;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectYellow;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectRed;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectGreen;
-template <typename T> SpectrumBase<T> SpectrumBase<T>::rgbIllum2SpectBlue;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::X;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::Y;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::Z;
+template <typename T, unsigned int N> typename SpectrumBase<T,N>::real_t SpectrumBase<T,N>::yint;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbRefl2SpectWhite;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbRefl2SpectCyan;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbRefl2SpectMagenta;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbRefl2SpectYellow;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbRefl2SpectRed;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbRefl2SpectGreen;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbRefl2SpectBlue;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbIllum2SpectWhite;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbIllum2SpectCyan;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbIllum2SpectMagenta;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbIllum2SpectYellow;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbIllum2SpectRed;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbIllum2SpectGreen;
+template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::rgbIllum2SpectBlue;
 
 
 
@@ -111,8 +111,8 @@ inline real_t averageSpectrumSamples(const samples_t *lambda, const samples_t *v
 }
 
 
-template <typename T>
-inline void SpectrumBase<T>::static_init() {
+template <typename T, unsigned int N>
+inline void SpectrumBase<T, N>::static_init() {
         typedef T real_t;
         //std::cout << "void SpectrumBase::static_init() {\n";
         // Compute XYZ matching functions for _SampledSpectrum_
@@ -177,8 +177,8 @@ inline void SpectrumBase<T>::static_init() {
 
 
 
-template <typename real_t>
-inline SpectrumBase<real_t> SpectrumBase<real_t>::FromSampled(
+template <typename real_t, unsigned int N>
+inline SpectrumBase<real_t, N> SpectrumBase<real_t,N>::FromSampled(
         const real_t *v,
         const real_t *lambda, int n
 ) {
@@ -207,8 +207,8 @@ inline SpectrumBase<real_t> SpectrumBase<real_t>::FromSampled(
         return r;
 }
 
-template <typename real_t>
-inline SpectrumBase<real_t> SpectrumBase<real_t>::FromSampled(
+template <typename real_t, unsigned int N>
+inline SpectrumBase<real_t, N> SpectrumBase<real_t,N>::FromSampled(
         const real_t *v,
         unsigned int lambdaStart, unsigned int lambdaEnd,
         int n
@@ -225,8 +225,8 @@ inline SpectrumBase<real_t> SpectrumBase<real_t>::FromSampled(
 
 
 
-template <typename T>
-inline SpectrumBase<T> SpectrumBase<T>::FromRGB(color::RGB const &rgb) {
+template <typename T, unsigned int N>
+inline SpectrumBase<T,N> SpectrumBase<T,N>::FromRGB(color::RGB const &rgb) {
         SpectrumBase r;
     /*if (type == SPECTRUM_REFLECTANCE)*/ {
         // Convert reflectance SpectrumBase to RGB

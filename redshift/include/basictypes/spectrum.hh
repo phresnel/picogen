@@ -21,6 +21,9 @@
 #ifndef SPECTRUM_HH_INCLUDED_20100311
 #define SPECTRUM_HH_INCLUDED_20100311
 
+#include "../redshift-kallisto.hh"
+#include "rgb.hh"
+
 namespace redshift {
 
         // The basic strategy is to derive from the expression-template
@@ -180,9 +183,9 @@ namespace redshift {
 
         //typedef spectrum_base<real_t,6> _spectrum_base;
 
-        template <typename T>
-        class SpectrumBase : public spectrum_base<T,16> {
-                typedef spectrum_base<T,16> base;
+        template <typename T, unsigned int N=16>
+        class SpectrumBase : public spectrum_base<T,N> {
+                typedef spectrum_base<T,N> base;
         public:
                 enum noinit_ {noinit};
 

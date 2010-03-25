@@ -21,7 +21,6 @@
 #ifndef SETUP_HH_INCLUDED_20090303
 #define SETUP_HH_INCLUDED_20090303
 
-#include "../../kallisto/common.hh"
 #include <utility>
 
 #define DefineFinalizer(x) \
@@ -34,57 +33,7 @@
 #define DoFinalize(x) virtual x##Finalize
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-// Assimilate kallisto-types and define some convenience types.
-///////////////////////////////////////////////////////////////////////////////
-namespace redshift {
-
-        enum {
-                ALLOW_LOGSPAM = 1
-        };
-
-        typedef double real_t;
-        //typedef kallisto::fixed_point_t<int64_t,16>          fixed_point_t;
-        typedef real_t fixed_point_t; //<-- lasttime I checked, floats where
-                                       // at only roughly 70% of runtime
-                                       // compared to int
-
-
-        // Cartesian Types
-        typedef kallisto::Point<kallisto::CARTESIAN,
-                                fixed_point_t>               CartesianPoint;
-        typedef kallisto::Point<kallisto::CARTESIAN,
-                                real_t>                      CartesianPointF;
-        typedef kallisto::Normal<kallisto::CARTESIAN,real_t> CartesianNormal;
-        typedef kallisto::Vector<kallisto::CARTESIAN,real_t> CartesianVector;
-
-
-        // Std-Types
-        typedef CartesianPoint  Point;
-        typedef CartesianPointF PointF;
-        typedef CartesianNormal Normal;
-        typedef CartesianVector Vector;
-
-        typedef kallisto::Vector<kallisto::CARTESIAN,
-                                fixed_point_t> PointCompatibleVector;
-
-        typedef kallisto::BoundingBox<Point>            BoundingBox;
-        typedef kallisto::BoundingBox<PointF>           BoundingBoxF;
-        typedef kallisto::Sphere<Point,real_t>          Sphere;
-        typedef kallisto::Ray   <Point,Vector>          Ray;
-        typedef kallisto::Transform<real_t> Transform;
-        typedef kallisto::RayDifferential<Point,Vector> RayDifferential;
-        typedef kallisto::OrthonormalBasis<Vector>      OrthonormalBasis;
-
-        using kallisto::intersect;
-        using kallisto::does_intersect;
-        using kallisto::vector_cast;
-        using kallisto::scalar_cast;
-
-        using kallisto::array;
-}
-
+#include "redshift-kallisto.hh"
 
 namespace redshift {
 

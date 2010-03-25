@@ -27,6 +27,10 @@ namespace redshift {
                 redshift::SpectrumBase<float>::static_init();
                 redshift::SpectrumBase<double>::static_init();
                 redshift::SpectrumBase<long double>::static_init();
+
+                redshift::SpectrumBase<float,64>::static_init();
+                redshift::SpectrumBase<double,64>::static_init();
+                redshift::SpectrumBase<long double,64>::static_init();
         }
 }
 
