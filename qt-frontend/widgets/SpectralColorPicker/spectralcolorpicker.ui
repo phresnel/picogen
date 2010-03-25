@@ -22,7 +22,7 @@
     </widget>
    </item>
    <item>
-    <widget class="SpectrumDisplay" name="widget" native="true"/>
+    <widget class="SpectralCurve" name="spectralCurve" native="true"/>
    </item>
    <item>
     <widget class="QScrollArea" name="scrollArea">
@@ -56,6 +56,12 @@
    <class>SpectrumDisplay</class>
    <extends>QWidget</extends>
    <header>spectrumdisplay.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpectralCurve</class>
+   <extends>QWidget</extends>
+   <header>spectralcurve.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

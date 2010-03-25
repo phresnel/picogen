@@ -10,13 +10,17 @@ SOURCES += main.cc \
     mainwindow.cc \
     spectralcolorpicker.cc \
     spectralslider.cc \
-    spectrumdisplay.cc
+    spectrumdisplay.cc \
+    spectralcurve.cc
 HEADERS += mainwindow.hh \
     spectralcolorpicker.hh \
     spectralslider.hh \
-    spectrumdisplay.hh
+    spectrumdisplay.hh \
+    spectralcurve.hh \
+    createspectralimage.hh
 FORMS += mainwindow.ui \
     spectralcolorpicker.ui \
     spectralslider.ui \
-    spectrumdisplay.ui
+    spectrumdisplay.ui \
+    spectralcurve.ui
 LIBS += ../../../redshift/lib/libpicogen.a

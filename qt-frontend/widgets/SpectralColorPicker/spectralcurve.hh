@@ -18,33 +18,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#ifndef SPECTRUMDISPLAY_HH
-#define SPECTRUMDISPLAY_HH
+#ifndef SPECTRALCURVE_HH
+#define SPECTRALCURVE_HH
 
 #include <QWidget>
 
 namespace Ui {
-    class SpectrumDisplay;
+    class SpectralCurve;
 }
 
-class SpectrumDisplay : public QWidget {
-        Q_OBJECT
+#include "spectrumdisplay.hh"
+#include "redshift/include/setup.hh"
+
+class SpectralCurve : public QWidget {
+    Q_OBJECT
 public:
-        SpectrumDisplay(QWidget *parent = 0);
-        ~SpectrumDisplay();
+    SpectralCurve(QWidget *parent = 0);
+    ~SpectralCurve();
+
+    void setSpectrum (redshift::LongSpectrum const &spectrum);
 
 protected:
-        void changeEvent(QEvent *e);
-        void paintEvent(QPaintEvent *);
+    void changeEvent(QEvent *e);
+    void paintEvent (QPaintEvent *);
 
 private:
-        Ui::SpectrumDisplay *ui;
-        QImage spectralImage;
-
-protected:
-        double scaledWidth() const;
-        double left() const;
+    Ui::SpectralCurve *ui;
+    QImage spectralImage;
+    redshift::LongSpectrum spectrum;
 };
 
-#endif // SPECTRUMDISPLAY_HH
+#endif // SPECTRALCURVE_HH

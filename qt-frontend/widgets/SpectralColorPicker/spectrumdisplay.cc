@@ -19,10 +19,11 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <QPainter>
+#include <QPaintEvent>
+
 #include "spectrumdisplay.hh"
 #include "ui_spectrumdisplay.h"
-
-#include "redshift/include/setup.hh"
+#include "createspectralimage.hh"
 
 SpectrumDisplay::SpectrumDisplay(QWidget *parent) :
     QWidget(parent),
@@ -30,60 +31,21 @@ SpectrumDisplay::SpectrumDisplay(QWidget *parent) :
 {
         ui->setupUi(this);
 
-
-        // Below method is extremely wasteful, better write a
-        // setAmplitude(wave,amp)-method for spectrum
-        using redshift::ReferenceSpectrum;
-        using redshift::color::RGB;
-        using redshift::color::SRGB;
-
-        ReferenceSpectrum::real_t
-                wavs[ReferenceSpectrum::num_components] = { 0.0 };
-        for (int x=0; x<ReferenceSpectrum::num_components; ++x) {
-                wavs[x] = redshift::SAMPLED_LAMBDA_START+x;
-        }
-
-        QImage image (ReferenceSpectrum::num_components, 32, QImage::Format_RGB32);
-        for (int x=0; x<ReferenceSpectrum::num_components; ++x) {
-
-                ReferenceSpectrum::real_t
-                        amps[ReferenceSpectrum::num_components] = { 0.0 };
-                amps[x] = 1;
-
-                const ReferenceSpectrum spectrum = ReferenceSpectrum::FromSampled(
-                                                                amps,
-                                                                wavs,
-                                                                ReferenceSpectrum::num_components);
-                //const redshift::real_t y = spectrum.y();
-                const RGB rgb__ = spectrum.toRGB();
-                const RGB rgb_ (rgb__.R*250, rgb__.G*250, rgb__.B*250);
-                const SRGB rgb = rgb_.toSRGB();
-                const int
-                        R_ = rgb.R * 255,
-                        G_ = rgb.G * 255,
-                        B_ = rgb.B * 255,
-                        R = R_ < 0 ? 0 : R_ > 255 ? 255 : R_,
-                        G = G_ < 0 ? 0 : G_ > 255 ? 255 : G_,
-                        B = B_ < 0 ? 0 : B_ > 255 ? 255 : B_
-                        ;
-                const unsigned int col = QColor(R,G,B).rgb();
-
-                for (int y=0; y<image.height(); ++y) {
-                        image.setPixel(x, y, col);
-                }
-        }
-
-        ui->label->setPixmap(QPixmap::fromImage(image));
-
-        spectralImage = image;
+        spectralImage = createSpectralImage();
+        ui->label->setPixmap(QPixmap::fromImage(spectralImage));
 }
 
 
 
-#include <QPaintEvent>
 void SpectrumDisplay::paintEvent(QPaintEvent *e) {
         //spectralImage.
         e->ignore();
+}
+
+
+
+double SpectrumDisplay::scaledWidth() const {
+        return ui->label->width();
 }
 
 

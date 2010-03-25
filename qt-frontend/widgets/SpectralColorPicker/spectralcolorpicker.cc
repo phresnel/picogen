@@ -83,6 +83,9 @@ void SpectralColorPicker::amplitudeChanged (double amp, double wavelength) {
                                                         &amplitudes[0],
                                                         &wavelengths[0],
                                                         amplitudes.size());
+        ui->spectralCurve->setSpectrum(spectrum);
+        ui->spectralCurve->update();
+
         const RGB rgb_ = spectrum.toRGB();
         const SRGB rgb = rgb_.toSRGB();
         const int
