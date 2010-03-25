@@ -1,13 +1,23 @@
-CONFIG      += designer plugin debug_and_release
-TARGET      = $$qtLibraryTarget(spectralcolorpickerplugin)
-TEMPLATE    = lib
+# -------------------------------------------------
+# Project created by QtCreator 2010-03-25T10:39:36
+# -------------------------------------------------
+TARGET = SpectralColorPicker
+TEMPLATE = app
 
-HEADERS     = spectralcolorpickerplugin.hh
-SOURCES     = spectralcolorpickerplugin.cc
-RESOURCES   = icons.qrc
-LIBS        += -L. 
+INCLUDEPATH += ../../../
+INCLUDEPATH += ../../../redshift/include/
 
-target.path = $$[QT_INSTALL_PLUGINS]/designer
-INSTALLS    += target
+DEFINES += __STDC_LIMIT_MACROS
 
-include(spectralcolorpicker.pri)
+SOURCES += main.cc \
+    mainwindow.cc \
+    spectralcolorpicker.cc \
+    spectralslider.cc
+HEADERS += mainwindow.hh \
+    spectralcolorpicker.hh \
+    spectralslider.hh
+FORMS += mainwindow.ui \
+    spectralcolorpicker.ui \
+    spectralslider.ui
+LIBS += ../../../redshift/lib/libpicogen.a
+

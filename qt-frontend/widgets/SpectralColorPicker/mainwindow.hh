@@ -19,31 +19,26 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef SPECTRALCOLORPICKER_HH
-#define SPECTRALCOLORPICKER_HH
+#ifndef MAINWINDOW_HH
+#define MAINWINDOW_HH
 
-#include <QWidget>
+#include <QMainWindow>
 
 namespace Ui {
-    class SpectralColorPicker;
+    class MainWindow;
 }
 
-class SpectralSlider;
-class SpectralColorPicker : public QWidget {
+class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-        SpectralColorPicker(QWidget *parent = 0);
-        ~SpectralColorPicker();
+    MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
 protected:
-        void changeEvent(QEvent *e);
-
-private slots:
-        void amplitudeChanged (double amplitude, double wavelength);
+    void changeEvent(QEvent *e);
 
 private:
-        Ui::SpectralColorPicker *ui;
-        QVector<SpectralSlider*> sliders;
+    Ui::MainWindow *ui;
 };
 
-#endif // SPECTRALCOLORPICKER_HH
+#endif // MAINWINDOW_HH

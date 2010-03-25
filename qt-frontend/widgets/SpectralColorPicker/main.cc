@@ -19,31 +19,15 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef SPECTRALCOLORPICKER_HH
-#define SPECTRALCOLORPICKER_HH
+#include <QtGui/QApplication>
+#include "mainwindow.hh"
+#include "redshift/include/static_init.hh"
 
-#include <QWidget>
-
-namespace Ui {
-    class SpectralColorPicker;
+int main(int argc, char *argv[])
+{
+    redshift::static_init();
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
 }
-
-class SpectralSlider;
-class SpectralColorPicker : public QWidget {
-    Q_OBJECT
-public:
-        SpectralColorPicker(QWidget *parent = 0);
-        ~SpectralColorPicker();
-
-protected:
-        void changeEvent(QEvent *e);
-
-private slots:
-        void amplitudeChanged (double amplitude, double wavelength);
-
-private:
-        Ui::SpectralColorPicker *ui;
-        QVector<SpectralSlider*> sliders;
-};
-
-#endif // SPECTRALCOLORPICKER_HH
