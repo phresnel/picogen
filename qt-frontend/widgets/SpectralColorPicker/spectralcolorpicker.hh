@@ -23,10 +23,13 @@
 #define SPECTRALCOLORPICKER_HH
 
 #include <QWidget>
+#include "redshift/include/setup.hh"
+
 
 namespace Ui {
     class SpectralColorPicker;
 }
+
 
 class SpectralSlider;
 class SpectralColorPicker : public QWidget {
@@ -39,11 +42,19 @@ protected:
         void changeEvent(QEvent *e);
 
 private slots:
+        void on_lockSampleCount_toggled(bool checked);
+        void on_sampleCount_valueChanged(int );
         void amplitudeChanged (double amplitude, double wavelength);
 
 private:
         Ui::SpectralColorPicker *ui;
         QVector<SpectralSlider*> sliders;
+
+        void removeSpectralSliders();
+        void addSpectralSliders(unsigned int i);
+
+        typedef redshift::LongSpectrum Spectrum;
+        Spectrum spectrumFromSliders () const;
 };
 
 #endif // SPECTRALCOLORPICKER_HH
