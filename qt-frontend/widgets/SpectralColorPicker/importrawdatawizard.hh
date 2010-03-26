@@ -35,14 +35,34 @@ public:
     ImportRawDataWizard(QWidget *parent = 0);
     ~ImportRawDataWizard();
 
+    bool validateCurrentPage();
 protected:
     void changeEvent(QEvent *e);
 
 private:
     Ui::ImportRawDataWizard *ui;
 
-private slots:
+    bool currentPageValid;
+
+
+    enum { uniform_range, manual, from_raw_data } wavelengthImportMode;
+    enum { amplitude_wavelength, wavelength_amplitude,
+           amplitudes_wavelengths, wavelengths_amplitudes } rawLayout;
+
+private slots:    
+    void on_radioWavAmp_pressed();
+    void on_radioAmpWav_pressed();
+    void on_radioWavesAmps_pressed();
+    void on_radioAmpsWaves_pressed();
+    void on_radioUniformRange_pressed();
+    void on_radioManual_pressed();
+    void on_radioFromRaw_pressed();
+
     void on_openFileDialog_pressed();
+
+    // hmm, does not work automagically with on_ImportRawDataWizard_currentIdChanged
+    void wizard_currentIdChanged (int id);
+
 };
 
 #endif // IMPORTRAWDATAWIZARD_HH
