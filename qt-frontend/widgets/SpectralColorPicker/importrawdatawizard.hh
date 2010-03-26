@@ -40,6 +40,9 @@ protected:
 
 private:
     Ui::ImportRawDataWizard *ui;
+
+private slots:
+    void on_openFileDialog_pressed();
 };
 
 #endif // IMPORTRAWDATAWIZARD_HH
