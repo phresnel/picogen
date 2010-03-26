@@ -97,6 +97,6 @@ void SpectralCurve::paintEvent (QPaintEvent *e) {
 
 
 
-void SpectralCurve::setSpectrum (redshift::LongSpectrum const &spectrum) {
+void SpectralCurve::setSpectrum (SpectralColorPicker::Spectrum  const &spectrum) {
         this->spectrum = spectrum;
 }

@@ -66,9 +66,9 @@ bool readDoubleIgnoreOthers (QTextStream &in, QVariant &out) {
 
 
 ImportRawDataWizard::ImportRawDataWizard(QWidget *parent) :
-    QWizard(parent),
-    ui(new Ui::ImportRawDataWizard),
-    currentPageValid(true)
+        QWizard(parent),
+        ui(new Ui::ImportRawDataWizard),
+        currentPageValid(true)
 {
         ui->setupUi(this);
 
@@ -86,6 +86,10 @@ ImportRawDataWizard::ImportRawDataWizard(QWidget *parent) :
         ui->sourceUnitOfAmplitude->setCurrentIndex(0);
         on_sourceUnitOfWavelength_currentIndexChanged(0);
         on_sourceUnitOfAmplitude_currentIndexChanged(0);
+
+        ui->sourceAmplitudeCapEnable->setChecked(false);
+        on_sourceAmplitudeCapEnable_toggled(
+                        ui->sourceAmplitudeCapEnable->checkState());
 }
 
 
@@ -167,7 +171,7 @@ void ImportRawDataWizard::wizard_currentIdChanged (int id) {
                                 "([0-9]*\\.[0-9]+)"
                                 "|([0-9]+\\.[0-9]*)"
                                 "|([0-9]+)"
-                        );                        
+                        );
 
                         QTableWidgetItem *item = new QTableWidgetItem(sample);
                         if (dblregex.exactMatch(sample)) {
@@ -365,6 +369,10 @@ void ImportRawDataWizard::on_applyConversionButton_pressed() {
         const double wavefac = ui->sourceUnitOfWavelengthFactor->value();
         const double ampfac = ui->sourceUnitOfAmplitudeFactor->value();
 
+        const bool capInput = ui->sourceAmplitudeCapEnable->checkState();
+        const double capMin = ui->sourceAmplitudeCapMin->value();
+        const double capMax = ui->sourceAmplitudeCapMax->value();
+
         for (int y=0; y<ui->sourceSamples->rowCount(); ++y) {
                 // Get from source-table.
                 const QTableWidgetItem *waveit = ui->sourceSamples->item(y, 0);
@@ -373,8 +381,13 @@ void ImportRawDataWizard::on_applyConversionButton_pressed() {
                 // Convert to double and scale.
                 const QVariant wavevar(waveit->text());
                 const QVariant ampvar(ampit->text());
-                const double wave = wavevar.value<double>() * wavefac;
-                const double amp = ampvar.value<double>() * ampfac;
+                const double
+                        wave = wavevar.value<double>() * wavefac,
+                        amp_ = ampvar.value<double>() * ampfac,
+                        amp = capInput
+                            ? (amp_<capMin?capMin:amp_>capMax?capMax:amp_)
+                            : amp_
+                ;
 
                 // Add row.
                 const int currentRow = ui->targetSamples->rowCount();
@@ -389,4 +402,9 @@ void ImportRawDataWizard::on_applyConversionButton_pressed() {
                 ui->targetSamples->setItem(currentRow, 0, targetwavit);
                 ui->targetSamples->setItem(currentRow, 1, targetampit);
         }
+}
+
+void ImportRawDataWizard::on_sourceAmplitudeCapEnable_toggled(bool checked) {
+        ui->sourceAmplitudeCapMin->setEnabled(checked);
+        ui->sourceAmplitudeCapMax->setEnabled(checked);
 }

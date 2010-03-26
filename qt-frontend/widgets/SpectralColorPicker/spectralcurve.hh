@@ -28,7 +28,7 @@ namespace Ui {
 }
 
 #include "spectrumdisplay.hh"
-#include "redshift/include/setup.hh"
+#include "spectralcolorpicker.hh"
 
 class SpectralCurve : public QWidget {
     Q_OBJECT
@@ -36,7 +36,7 @@ public:
     SpectralCurve(QWidget *parent = 0);
     ~SpectralCurve();
 
-    void setSpectrum (redshift::LongSpectrum const &spectrum);
+    void setSpectrum (SpectralColorPicker::Spectrum const &spectrum);
 
 protected:
     void changeEvent(QEvent *e);
@@ -45,7 +45,7 @@ protected:
 private:
     Ui::SpectralCurve *ui;
     QImage spectralImage;
-    redshift::LongSpectrum spectrum;
+    SpectralColorPicker::Spectrum spectrum;
 };
 
 #endif // SPECTRALCURVE_HH

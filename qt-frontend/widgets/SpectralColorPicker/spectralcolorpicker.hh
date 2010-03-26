@@ -38,6 +38,8 @@ public:
         SpectralColorPicker(QWidget *parent = 0);
         ~SpectralColorPicker();
 
+        typedef redshift::ReferenceSpectrum Spectrum;
+
 protected:
         void changeEvent(QEvent *e);
 
@@ -53,8 +55,6 @@ private:
 
         void removeSpectralSliders();
         void addSpectralSliders(unsigned int i);
-
-        typedef redshift::LongSpectrum Spectrum;
         Spectrum spectrumFromSliders () const;
 };
 

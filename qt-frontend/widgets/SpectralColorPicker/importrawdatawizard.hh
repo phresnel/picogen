@@ -49,7 +49,8 @@ private:
     enum { amplitude_wavelength, wavelength_amplitude,
            amplitudes_wavelengths, wavelengths_amplitudes } rawLayout;
 
-private slots:    
+private slots:
+    void on_sourceAmplitudeCapEnable_toggled(bool checked);
     void on_applyConversionButton_pressed();
     void on_sourceUnitOfAmplitude_currentIndexChanged(int);
     void on_sourceUnitOfWavelength_currentIndexChanged(int);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>327</height>
+    <width>582</width>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -225,6 +225,54 @@
         </item>
         <item row="1" column="2">
          <widget class="QDoubleSpinBox" name="sourceUnitOfAmplitudeFactor">
+          <property name="decimals">
+           <number>8</number>
+          </property>
+          <property name="maximum">
+           <double>100000.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Sample Count</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="sourceUnitOfAmplitude_2">
+          <item>
+           <property name="text">
+            <string comment="custom">Keep</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Lower</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QDoubleSpinBox" name="sourceAmplitudeCapMax">
+          <property name="decimals">
+           <number>8</number>
+          </property>
+          <property name="maximum">
+           <double>100000.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="sourceAmplitudeCapEnable">
+          <property name="text">
+           <string>Cap Input Amplitudes</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="sourceAmplitudeCapMin">
           <property name="decimals">
            <number>8</number>
           </property>
