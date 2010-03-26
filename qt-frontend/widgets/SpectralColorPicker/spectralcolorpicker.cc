@@ -26,6 +26,8 @@
 #include "spectralslider.hh"
 #include "ui_spectralcolorpicker.h"
 
+#include "importrawdatawizard.hh"
+
 
 SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
     QWidget(parent),
@@ -142,4 +144,11 @@ void SpectralColorPicker::addSpectralSliders(unsigned int n) {
 
 void SpectralColorPicker::on_lockSampleCount_toggled(bool checked) {
         ui->sampleCount->setEnabled(!checked);
+}
+
+
+
+void SpectralColorPicker::on_importRawDataButton_pressed() {
+        ImportRawDataWizard *wiz = new ImportRawDataWizard(this);
+        wiz->exec();
 }

@@ -42,6 +42,7 @@ protected:
         void changeEvent(QEvent *e);
 
 private slots:
+        void on_importRawDataButton_pressed();
         void on_lockSampleCount_toggled(bool checked);
         void on_sampleCount_valueChanged(int );
         void amplitudeChanged (double amplitude, double wavelength);

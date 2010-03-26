@@ -11,16 +11,19 @@ SOURCES += main.cc \
     spectralcolorpicker.cc \
     spectralslider.cc \
     spectrumdisplay.cc \
-    spectralcurve.cc
+    spectralcurve.cc \
+    importrawdatawizard.cc
 HEADERS += mainwindow.hh \
     spectralcolorpicker.hh \
     spectralslider.hh \
     spectrumdisplay.hh \
     spectralcurve.hh \
-    createspectralimage.hh
+    createspectralimage.hh \
+    importrawdatawizard.hh
 FORMS += mainwindow.ui \
     spectralcolorpicker.ui \
     spectralslider.ui \
     spectrumdisplay.ui \
-    spectralcurve.ui
+    spectralcurve.ui \
+    importrawdatawizard.ui
 LIBS += ../../../redshift/lib/libpicogen.a
