@@ -50,6 +50,11 @@ private:
            amplitudes_wavelengths, wavelengths_amplitudes } rawLayout;
 
 private slots:    
+    void on_applyConversionButton_pressed();
+    void on_sourceUnitOfAmplitude_currentIndexChanged(int);
+    void on_sourceUnitOfWavelength_currentIndexChanged(int);
+    void on_sourceUnitOfAmplitudeFactor_editingFinished();
+    void on_sourceUnitOfWavelengthFactor_editingFinished();
     void on_radioWavAmp_pressed();
     void on_radioAmpWav_pressed();
     void on_radioWavesAmps_pressed();

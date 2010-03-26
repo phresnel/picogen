@@ -70,14 +70,22 @@ ImportRawDataWizard::ImportRawDataWizard(QWidget *parent) :
     ui(new Ui::ImportRawDataWizard),
     currentPageValid(true)
 {
-    ui->setupUi(this);
+        ui->setupUi(this);
 
-    connect (this,
-             SIGNAL(currentIdChanged(int)),
-             SLOT(wizard_currentIdChanged(int)));
+        connect (this,
+                SIGNAL(currentIdChanged(int)),
+                SLOT(wizard_currentIdChanged(int)));
 
-    ui->radioUniformRange->setEnabled(true);
-    on_radioUniformRange_pressed ();
+        ui->radioUniformRange->setEnabled(true);
+        on_radioUniformRange_pressed ();
+
+        ui->radioWavAmp->setEnabled(true);
+        on_radioWavAmp_pressed ();
+
+        ui->sourceUnitOfWavelength->setCurrentIndex(0);
+        ui->sourceUnitOfAmplitude->setCurrentIndex(0);
+        on_sourceUnitOfWavelength_currentIndexChanged(0);
+        on_sourceUnitOfAmplitude_currentIndexChanged(0);
 }
 
 
@@ -127,6 +135,9 @@ void ImportRawDataWizard::on_openFileDialog_pressed() {
 bool ImportRawDataWizard::validateCurrentPage() {
         if (currentId() == 0) {
                 if (QRegExp("[ \\n\\t]*").exactMatch(ui->rawData->toPlainText()))
+                        return false;
+        } else if (currentId() == 2) {
+                if (ui->targetSamples->rowCount()==0)
                         return false;
         }
         return currentPageValid;
@@ -313,4 +324,69 @@ void ImportRawDataWizard::on_radioAmpWav_pressed() {
 
 void ImportRawDataWizard::on_radioWavAmp_pressed() {
         rawLayout = wavelength_amplitude;
+}
+
+void ImportRawDataWizard::on_sourceUnitOfWavelengthFactor_editingFinished() {
+        ui->sourceUnitOfWavelength->setCurrentIndex(
+                ui->sourceUnitOfWavelength->count()-1
+        );
+}
+
+void ImportRawDataWizard::on_sourceUnitOfAmplitudeFactor_editingFinished() {
+        ui->sourceUnitOfAmplitude->setCurrentIndex(
+                ui->sourceUnitOfAmplitude->count()-1
+        );
+}
+
+void ImportRawDataWizard::on_sourceUnitOfWavelength_currentIndexChanged(int index) {
+        if (0 == index) {
+                ui->sourceUnitOfWavelengthFactor->setValue(1.);
+                ui->sourceUnitOfWavelengthFactor->setEnabled(false);
+        } else if (1 == index) {
+                ui->sourceUnitOfWavelengthFactor->setValue(0.1);
+                ui->sourceUnitOfWavelengthFactor->setEnabled(false);
+        } else {
+                ui->sourceUnitOfWavelengthFactor->setValue(1.);
+                ui->sourceUnitOfWavelengthFactor->setEnabled(true);
+        }
+
+}
+
+void ImportRawDataWizard::on_sourceUnitOfAmplitude_currentIndexChanged(int index) {
+        Q_UNUSED(index)
+
+        ui->sourceUnitOfAmplitudeFactor->setValue(1.);
+        ui->sourceUnitOfAmplitudeFactor->setEnabled(true);
+}
+
+void ImportRawDataWizard::on_applyConversionButton_pressed() {
+        ui->targetSamples->setRowCount(0);
+
+        const double wavefac = ui->sourceUnitOfWavelengthFactor->value();
+        const double ampfac = ui->sourceUnitOfAmplitudeFactor->value();
+
+        for (int y=0; y<ui->sourceSamples->rowCount(); ++y) {
+                // Get from source-table.
+                const QTableWidgetItem *waveit = ui->sourceSamples->item(y, 0);
+                const QTableWidgetItem *ampit = ui->sourceSamples->item(y, 1);
+
+                // Convert to double and scale.
+                const QVariant wavevar(waveit->text());
+                const QVariant ampvar(ampit->text());
+                const double wave = wavevar.value<double>() * wavefac;
+                const double amp = ampvar.value<double>() * ampfac;
+
+                // Add row.
+                const int currentRow = ui->targetSamples->rowCount();
+                ui->targetSamples->setRowCount(currentRow+1);
+
+                // Add non-editable items to new row.
+                QTableWidgetItem *targetwavit = new QTableWidgetItem(QString::number(wave));
+                targetwavit->setFlags(targetwavit->flags() & Qt::ItemIsEditable);
+                QTableWidgetItem *targetampit = new QTableWidgetItem(QString::number(amp));
+                targetampit->setFlags(targetampit->flags() & Qt::ItemIsEditable);
+
+                ui->targetSamples->setItem(currentRow, 0, targetwavit);
+                ui->targetSamples->setItem(currentRow, 1, targetampit);
+        }
 }
