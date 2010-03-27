@@ -116,6 +116,8 @@ inline real_t averageSpectrumSamples(const samples_t *lambda, const samples_t *v
 template <typename T, unsigned int N>
 bool SpectrumBase<T, N>::static_init_called = false;
 
+
+
 template <typename T, unsigned int N>
 inline void SpectrumBase<T, N>::static_init() {
 
@@ -224,6 +226,8 @@ inline SpectrumBase<real_t, N> SpectrumBase<real_t,N>::FromSampled(
         return r;
 }
 
+
+
 template <typename real_t, unsigned int N>
 inline SpectrumBase<real_t, N> SpectrumBase<real_t,N>::FromSampled(
         const real_t *v,
@@ -237,6 +241,26 @@ inline SpectrumBase<real_t, N> SpectrumBase<real_t,N>::FromSampled(
                 lambda[u] = lerp(u/(real_t)n, (real_t)lambdaStart, (real_t)lambdaEnd);
         }
         const SpectrumBase ret = SpectrumBase::FromSampled (v, &lambda[0], n);
+        return ret;
+}
+
+
+
+template <typename T, unsigned int N>
+template <unsigned int O>
+inline SpectrumBase<T, N>
+  SpectrumBase<T, N>::FromSpectrum(SpectrumBase<T,O> const &spec) {
+        // Quick hack as well.
+        std::vector<T> amplitude(N);
+        for (int u=0; u<N; ++u)
+                amplitude[u] = spec[u];
+
+        const SpectrumBase ret = SpectrumBase::FromSampled (
+                        &amplitude[0],
+                        SAMPLED_LAMBDA_START,
+                        SAMPLED_LAMBDA_END,
+                        N
+        );
         return ret;
 }
 

@@ -301,6 +301,9 @@ namespace redshift {
                         int n
                 );
 
+                template <unsigned int O>
+                static SpectrumBase FromSpectrum(SpectrumBase<T,O> const &spec);
+
                 static SpectrumBase FromRGB(color::RGB const &rgb) ;
                 template <typename U>
                 static SpectrumBase FromRGB(U R, U G, U B) {
