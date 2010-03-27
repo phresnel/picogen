@@ -40,7 +40,8 @@ public:
         void setAmplitude (double);
         double amplitude () const;
 
-        double wavelength () { return wavelength_; }
+        void setWavelength (double);
+        double wavelength () const;
 
 signals:
         void amplitudeChanged (double amplitude, double wavelength);
@@ -50,7 +51,7 @@ protected:
 
 private:
         Ui::SpectralSlider *ui;
-        const double wavelength_;
+        double wavelength_;
 
 private slots:
         void on_doubleSpinBox_valueChanged(double );

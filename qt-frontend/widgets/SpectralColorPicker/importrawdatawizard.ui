@@ -121,36 +121,46 @@
           <layout class="QHBoxLayout" name="horizontalLayout_3"/>
          </widget>
          <widget class="QWidget" name="page_3">
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="1" column="1">
-            <widget class="QRadioButton" name="radioWavAmp">
-             <property name="text">
-              <string>(Wavelength|Amplitude)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QRadioButton" name="radioAmpsWaves">
-             <property name="text">
-              <string>(Amplitudes)(Wavelengths)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QRadioButton" name="radioAmpWav">
-             <property name="text">
-              <string>(Amplitude|Wavelength)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QRadioButton" name="radioWavesAmps">
-             <property name="text">
-              <string>(Wavelengths)(Amplitudes)</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QWidget" name="">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>20</y>
+             <width>197</width>
+             <height>100</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QRadioButton" name="radioAmpsWaves">
+              <property name="text">
+               <string>(Amplitudes)(Wavelengths)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioWavesAmps">
+              <property name="text">
+               <string>(Wavelengths)(Amplitudes)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioAmpWav">
+              <property name="text">
+               <string>(Amplitude|Wavelength)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioWavAmp">
+              <property name="text">
+               <string>(Wavelength|Amplitude)</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </widget>
        </item>
@@ -233,28 +243,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>Sample Count</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="sourceUnitOfAmplitude_2">
-          <item>
-           <property name="text">
-            <string comment="custom">Keep</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Lower</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="3" column="2">
+        <item row="2" column="2">
          <widget class="QDoubleSpinBox" name="sourceAmplitudeCapMax">
           <property name="decimals">
            <number>8</number>
@@ -264,14 +253,14 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="2" column="0">
          <widget class="QCheckBox" name="sourceAmplitudeCapEnable">
           <property name="text">
            <string>Cap Input Amplitudes</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="2" column="1">
          <widget class="QDoubleSpinBox" name="sourceAmplitudeCapMin">
           <property name="decimals">
            <number>8</number>
@@ -425,6 +414,21 @@ p, li { white-space: pre-wrap; }
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QWizardPage" name="wizardPage_2">
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>140</y>
+      <width>291</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save lossless Copy to Repository</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

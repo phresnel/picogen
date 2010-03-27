@@ -76,6 +76,15 @@ double SpectralSlider::amplitude () const {
 }
 
 
+void SpectralSlider::setWavelength (double value) {
+        wavelength_ = value;
+        setTitle (QString::number(wavelength_));
+}
+
+double SpectralSlider::wavelength () const {
+        return wavelength_;
+}
+
 
 void SpectralSlider::on_verticalSlider_valueChanged(int value) {
         ui->doubleSpinBox->setValue(value / 100.f);

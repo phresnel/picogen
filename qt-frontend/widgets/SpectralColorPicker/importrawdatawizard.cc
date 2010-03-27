@@ -294,10 +294,25 @@ void ImportRawDataWizard::wizard_currentIdChanged (int id) {
                                 ui->sourceSamples->setItem(currentRow, 0, item);
                         }
                 }
+        } else if (id == 3) {
+                converted_.clear();
+                amplitudes_.clear();
+                wavelengths_.clear();
+                converted_.clear();
+                for (int r=0; r<ui->targetSamples->rowCount(); ++r) {
+                        const QVariant
+                                wav_ = ui->targetSamples->item(r,0)->text(),
+                                amp_ = ui->targetSamples->item(r,1)->text();
+                        const double
+                                wav = wav_.toDouble(),
+                                amp = amp_.toDouble();
+
+                        converted_.push_back(qMakePair(wav, amp));
+                        wavelengths_.push_back(wav);
+                        amplitudes_.push_back(amp);
+                }
         }
 }
-
-
 
 void ImportRawDataWizard::on_radioUniformRange_pressed() {
         ui->wavelengthDetailOptionsStack->setCurrentIndex(0);
@@ -407,4 +422,16 @@ void ImportRawDataWizard::on_applyConversionButton_pressed() {
 void ImportRawDataWizard::on_sourceAmplitudeCapEnable_toggled(bool checked) {
         ui->sourceAmplitudeCapMin->setEnabled(checked);
         ui->sourceAmplitudeCapMax->setEnabled(checked);
+}
+
+QVector<QPair<double, double> > const &ImportRawDataWizard::converted() const {
+        return converted_;
+}
+
+QVector<double> const &ImportRawDataWizard::amplitudes() const {
+        return amplitudes_;
+}
+
+QVector<double> const &ImportRawDataWizard::wavelengths() const {
+        return wavelengths_;
 }

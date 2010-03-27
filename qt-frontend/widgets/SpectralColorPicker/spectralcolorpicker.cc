@@ -125,7 +125,9 @@ void SpectralColorPicker::removeSpectralSliders() {
 
 
 
-void SpectralColorPicker::addSpectralSliders(unsigned int n) {
+void SpectralColorPicker::addSpectralSliders(
+        unsigned int n
+) {
         const unsigned int num_sliders = n;
         const double min = 400;
         const double max = 700;
@@ -150,5 +152,23 @@ void SpectralColorPicker::on_lockSampleCount_toggled(bool checked) {
 
 void SpectralColorPicker::on_importRawDataButton_pressed() {
         ImportRawDataWizard *wiz = new ImportRawDataWizard(this);
-        wiz->exec();
+        if (wiz->exec()) {
+                QVector<QPair<double,double> > const &
+                                converted = wiz->converted();
+                const int count = converted.count();
+
+                const Spectrum spec = Spectrum::FromSampled (
+                                        &wiz->amplitudes()[0],
+                                        &wiz->wavelengths()[0],
+                                        count
+                                );
+
+                removeSpectralSliders();
+                addSpectralSliders(converted.count());
+
+                for (int i=0; i<count; ++i) {
+                        sliders[i]->setWavelength (wiz->wavelengths()[i]);
+                        sliders[i]->setAmplitude (wiz->amplitudes()[i]);
+                }
+        }
 }
