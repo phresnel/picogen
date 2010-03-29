@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>64</width>
+    <width>82</width>
     <height>286</height>
    </rect>
   </property>
@@ -15,9 +15,18 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>TextLabel</string>
+    <widget class="QDoubleSpinBox" name="wavelength">
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="suffix">
+      <string>nm</string>
+     </property>
+     <property name="maximum">
+      <double>32768.000000000000000</double>
      </property>
     </widget>
    </item>
@@ -38,12 +47,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QDoubleSpinBox" name="doubleSpinBox">
+    <widget class="QDoubleSpinBox" name="amplitude">
      <property name="frame">
       <bool>true</bool>
      </property>
      <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::UpDownArrows</enum>
+      <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="decimals">
       <number>3</number>

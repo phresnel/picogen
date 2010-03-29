@@ -34,9 +34,6 @@ public:
         SpectralSlider(double wavelength, QWidget *parent = 0);
         ~SpectralSlider();
 
-        void setTitle (QString const &);
-        QString title () const;
-
         void setAmplitude (double);
         double amplitude () const;
 
@@ -51,10 +48,10 @@ protected:
 
 private:
         Ui::SpectralSlider *ui;
-        double wavelength_;
 
 private slots:
-        void on_doubleSpinBox_valueChanged(double );
+        void on_wavelength_valueChanged(double );
+        void on_amplitude_valueChanged(double );
         void on_verticalSlider_valueChanged(int value);
 };
 

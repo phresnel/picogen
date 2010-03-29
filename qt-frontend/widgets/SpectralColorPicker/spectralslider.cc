@@ -24,11 +24,11 @@
 
 SpectralSlider::SpectralSlider(double wavelength, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::SpectralSlider),
-    wavelength_(wavelength)
+    ui(new Ui::SpectralSlider)
 {
         ui->setupUi(this);
-        setTitle (QString::number(wavelength_));
+        setWavelength(wavelength);
+        setAmplitude(0.5);
 }
 
 
@@ -52,46 +52,37 @@ void SpectralSlider::changeEvent(QEvent *e) {
 
 
 
-void SpectralSlider::setTitle (QString const &text) {
-        ui->label->setText(text);
-}
-
-
-
-QString SpectralSlider::title () const {
-        return ui->label->text();
-}
-
-
-
 void SpectralSlider::setAmplitude (double value) {
-        ui->doubleSpinBox->setValue(value);
+        ui->amplitude->setValue(value);
         ui->verticalSlider->setValue(value * 100.f);
 }
 
 
 
 double SpectralSlider::amplitude () const {
-        return ui->doubleSpinBox->value();
+        return ui->amplitude->value();
 }
 
 
 void SpectralSlider::setWavelength (double value) {
-        wavelength_ = value;
-        setTitle (QString::number(wavelength_));
+        ui->wavelength->setValue(value);
 }
 
 double SpectralSlider::wavelength () const {
-        return wavelength_;
+        return ui->wavelength->value();
 }
 
 
 void SpectralSlider::on_verticalSlider_valueChanged(int value) {
-        ui->doubleSpinBox->setValue(value / 100.f);
-        emit amplitudeChanged(value / 100.f, wavelength_);
+        ui->amplitude->setValue(value / 100.f);
+        emit amplitudeChanged(ui->amplitude->value(), ui->wavelength->value());
 }
 
-void SpectralSlider::on_doubleSpinBox_valueChanged(double value) {
-        ui->verticalSlider->setValue(value * 100.f);
-        emit amplitudeChanged(value, wavelength_);
+void SpectralSlider::on_amplitude_valueChanged(double value) {
+        //ui->amplitude->setValue(value * 100.f);
+        emit amplitudeChanged(ui->amplitude->value(), ui->wavelength->value());
+}
+
+void SpectralSlider::on_wavelength_valueChanged(double ) {
+        emit amplitudeChanged(ui->amplitude->value(), ui->wavelength->value());
 }
