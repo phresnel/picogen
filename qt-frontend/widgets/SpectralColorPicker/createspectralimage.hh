@@ -23,7 +23,7 @@
 
 #include "redshift/include/setup.hh"
 
-inline QImage createSpectralImage () {
+inline QImage createSpectralImage (int height = 32) {
         // Below method is extremely wasteful, better write a
         // setAmplitude(wave,amp)-method for spectrum
         using redshift::ReferenceSpectrum;
@@ -36,7 +36,7 @@ inline QImage createSpectralImage () {
                 wavs[x] = redshift::SAMPLED_LAMBDA_START+x;
         }
 
-        QImage image (ReferenceSpectrum::num_components, 32, QImage::Format_RGB32);
+        QImage image (ReferenceSpectrum::num_components, height, QImage::Format_RGB32);
         for (int x=0; x<ReferenceSpectrum::num_components; ++x) {
 
                 ReferenceSpectrum::real_t

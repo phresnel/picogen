@@ -37,6 +37,7 @@ SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
 
         on_lockSampleCount_toggled(ui->lockSampleCount->checkState());
         addSpectralSliders(ui->sampleCount->value());
+        updatePixmap();
 }
 
 
@@ -60,10 +61,16 @@ void SpectralColorPicker::changeEvent(QEvent *e) {
 
 
 
-void SpectralColorPicker::amplitudeChanged (double amp, double wavelength) {
+void SpectralColorPicker::valueChanged (double amp, double wavelength) {
         Q_UNUSED(amp)
         Q_UNUSED(wavelength)
 
+        updatePixmap();
+}
+
+
+
+void SpectralColorPicker::updatePixmap() {
         using redshift::color::RGB;
         using redshift::color::SRGB;
 
@@ -82,9 +89,8 @@ void SpectralColorPicker::amplitudeChanged (double amp, double wavelength) {
                 B = B_ < 0 ? 0 : B_ > 255 ? 255 : B_
                 ;
 
-        QImage i(Spectrum::num_components,32,QImage::Format_RGB32);
+        QImage i(1,1,QImage::Format_RGB32);
         i.fill(QColor(R,G,B).rgb());
-
         ui->colorPreview->setPixmap(QPixmap::fromImage(i));
 }
 
@@ -137,8 +143,13 @@ void SpectralColorPicker::addSpectralSliders(
                 sliders.push_back(w);
                 ui->slidersLayout->addWidget(w);
 
-                connect (w, SIGNAL(amplitudeChanged(double,double)),
-                         this, SLOT(amplitudeChanged(double,double)));
+                connect (w, SIGNAL(valueChanged(double,double)),
+                         this, SLOT(valueChanged(double,double)));
+
+                connect (this, SIGNAL(minAmplitudeChanged(double)),
+                         w,          SLOT(minimumChanged(double)));
+                connect (this, SIGNAL(maxAmplitudeChanged(double)),
+                         w,          SLOT(maximumChanged(double)));
         }
 }
 
@@ -166,9 +177,34 @@ void SpectralColorPicker::on_importRawDataButton_pressed() {
                 removeSpectralSliders();
                 addSpectralSliders(converted.count());
 
+                ui->minAmp->setValue(0);
+                ui->maxAmp->setValue(1);
+                for (int i=0; i<count; ++i) {
+                        const double amp = wiz->amplitudes()[i];
+                        if (amp < ui->minAmp->value())
+                                ui->minAmp->setValue(amp);
+                        if (amp > ui->maxAmp->value())
+                                ui->maxAmp->setValue(amp);
+                }
+
+                emit minAmplitudeChanged(ui->minAmp->value());
+                emit maxAmplitudeChanged(ui->maxAmp->value());
+
                 for (int i=0; i<count; ++i) {
                         sliders[i]->setWavelength (wiz->wavelengths()[i]);
                         sliders[i]->setAmplitude (wiz->amplitudes()[i]);
                 }
         }
+}
+
+void SpectralColorPicker::on_maxAmp_editingFinished() {
+        if (ui->minAmp->value() > ui->maxAmp->value())
+                ui->maxAmp->setValue(ui->minAmp->value());
+        emit maxAmplitudeChanged(ui->maxAmp->value());
+}
+
+void SpectralColorPicker::on_minAmp_editingFinished() {
+        if (ui->minAmp->value() > ui->maxAmp->value())
+                ui->minAmp->setValue(ui->maxAmp->value());
+        emit minAmplitudeChanged(ui->minAmp->value());
 }

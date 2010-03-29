@@ -41,7 +41,11 @@ public:
         double wavelength () const;
 
 signals:
-        void amplitudeChanged (double amplitude, double wavelength);
+        void valueChanged (double amplitude, double wavelength);
+
+public slots:
+        void minimumChanged (double val);
+        void maximumChanged (double val);
 
 protected:
         void changeEvent(QEvent *e);

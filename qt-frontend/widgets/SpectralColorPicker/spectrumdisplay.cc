@@ -31,7 +31,7 @@ SpectrumDisplay::SpectrumDisplay(QWidget *parent) :
 {
         ui->setupUi(this);
 
-        spectralImage = createSpectralImage();
+        spectralImage = createSpectralImage(16);
         ui->label->setPixmap(QPixmap::fromImage(spectralImage));
 }
 
