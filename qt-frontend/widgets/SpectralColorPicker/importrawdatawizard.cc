@@ -121,6 +121,7 @@ void ImportRawDataWizard::on_openFileDialog_pressed() {
 
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
         dialog.setSidebarUrls(urls);
 
