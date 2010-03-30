@@ -686,22 +686,57 @@ namespace redshift { namespace scenefile {
                         template<typename Arch>
                         void serialize (Arch &arch) {
                                 using actuarius::pack;
+
+                                /*
                                 switch (type) {
                                 case move:
                                         arch & pack(x) & pack(y) & pack(z);
                                         break;
-                                case move_right: arch & pack(x); break;
-                                case move_left:  arch & pack(x); x = -x; break;
-                                case move_up:    arch & pack(y); break;
-                                case move_down:  arch & pack(y);  y = -y; break;
-                                case move_forward: arch & pack(z); break;
-                                case move_backward: arch & pack(z); z = -z; break;
+                                case move_right: arch & pack(x);            break;
+                                case move_left:  arch & pack(x); x = -x;    break;
+                                case move_up:    arch & pack(y);            break;
+                                case move_down:  arch & pack(y);  y = -y;   break;
+                                case move_forward: arch & pack(z);          break;
+                                case move_backward:
+                                        if (Arch::serialize)
+                                        arch & pack(z); z = -z; break;
+                                case yaw:
+                                case pitch:
+                                case roll:
+                                        arch & pack(angle);
+                                        break;
+                                };*/
+
+                                double left=0, right=0, up=0, down=0, forward=0, backward=0;
+
+                                if (Arch::serialize) {
+                                        right = x;   left = -x;
+                                        up = y;      down = -y;
+                                        forward = z; backward = -z;
+                                }
+
+                                switch (type) {
+                                case move:
+                                        arch & pack(right) & pack(up) & pack(forward);
+                                        break;
+                                case move_right:    arch & pack(right); break;
+                                case move_left:     arch & pack(left); break;
+                                case move_up:       arch & pack(up); break;
+                                case move_down:     arch & pack(down); break;
+                                case move_forward:  arch & pack(forward); break;
+                                case move_backward:  arch & pack(backward); break;
                                 case yaw:
                                 case pitch:
                                 case roll:
                                         arch & pack(angle);
                                         break;
                                 };
+
+                                if (Arch::deserialize) {
+                                        x = -left     + right;
+                                        y = -down     + up;
+                                        z = -backward + forward;
+                                }
                         }
 
                         Type type;
