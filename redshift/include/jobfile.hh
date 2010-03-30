@@ -36,28 +36,148 @@
 #include "../../actuarius/actuarius.hh"
 #include <cmath>
 
+
+#include <iostream>
+#include <cstdio>
 namespace redshift { namespace scenefile {
 
         // Rgb.
+        struct WavelengthAmplitudePair {
+                double wavelength;
+                double amplitude;
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack(wavelength) & pack(amplitude);
+                }
+        };
+
+        struct Spectrum {
+                std::vector<WavelengthAmplitudePair> samples;
+
+                redshift::Color toColor() const {
+                        typedef redshift::Color::real_t real_t;
+                        typedef std::vector<WavelengthAmplitudePair>::
+                                const_iterator iterator;
+
+                        std::vector<real_t> wavelengths;
+                        std::vector<real_t> amplitudes;
+
+                        for (iterator it = samples.begin();
+                             it != samples.end();
+                             ++it
+                        ) {
+                                wavelengths.push_back(it->wavelength);
+                                amplitudes.push_back(it->amplitude);
+                        }
+
+                        return Color::FromSampled (
+                                        &amplitudes[0],
+                                        &wavelengths[0],
+                                        samples.size());
+                }
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack(samples);
+                }
+        };
+
         struct Rgb {
                 double r,g,b;
-                std::vector<double> test;
+                std::vector<WavelengthAmplitudePair> test;
 
                 Rgb (double r, double g, double b) : r(r), g(g), b(b) {}
                 Rgb () : r(1), g(1), b(1) {}
+
+                redshift::Color toColor () const {
+                        return Color::FromRGB(r,g,b);
+                }
 
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {
                         using actuarius::pack;
                         arch & pack(r) & pack(g) & pack(b);
-                        arch & pack(test);
+                }
+        };
 
-                        for (int i=0; i<test.size(); ++i) {
-                                std::cout << " * " << test[i] << std::endl;
+        struct Color {
+                enum Type {
+                        RGB, Spectrum
+                };
+                static const actuarius::Enum<Type> Typenames;
+                Type type;
+
+                Rgb rgb;
+                scenefile::Spectrum spectrum;
+
+                Color () : type(RGB), rgb(0,1,1) {}
+                Color (double r, double g, double b) : type(RGB), rgb(r,g,b) {}
+
+                // to redshift
+                redshift::Color toColor() const {
+                        switch (type) {
+                        case RGB: return rgb.toColor();
+                        case Spectrum: return spectrum.toColor();
+                        }
+                        throw std::runtime_error("unknown color type in "
+                                "scenefile::Color::toColor()");
+                }
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        switch (type) {
+                        case RGB:
+                                arch & pack(rgb); break;
+                        case Spectrum:
+                                arch & pack(spectrum); break;
                         }
                 }
         };
+
+        struct ColorSum {
+                std::vector<Color> colors;
+
+        private:
+                Rgb defaultColor;
+        public:
+
+                ColorSum () {}
+                ColorSum (double r, double g, double b)
+                : defaultColor(r,g,b)
+                {}
+
+                redshift::Color toColor() const {
+                        typedef std::vector<Color>::const_iterator iterator;
+                        using namespace redshift;
+                        typedef redshift::Color RC;
+
+                        if (colors.size() == 0)
+                                return defaultColor.toColor();
+
+                        RC sum = RC(RC::real_t(0));
+                        for (iterator it=colors.begin(); it != colors.end();
+                             ++it
+                        ) {
+                                sum = sum + it->toColor();
+                        }
+                        return sum;
+                }
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack(&Color::type, Color::Typenames, colors);
+                }
+        };
+
         struct Normal {
                 double x,y,z;
 
@@ -150,7 +270,7 @@ namespace redshift { namespace scenefile {
                         double size;
                         unsigned int maxRecursion;
                         double lodFactor;
-                        Rgb color;
+                        ColorSum color;
 
                         LazyQuadtreeParams ()
                         : code("(+"
@@ -190,14 +310,14 @@ namespace redshift { namespace scenefile {
                                         size,
                                         maxRecursion,
                                         lodFactor,
-                                        redshift::Color::FromRGB(color.r, color.g, color.b)
+                                        color.toColor()
                                 ));
                         }
                 };
                 struct WaterPlaneParams {
                         std::string code;
                         double height;
-                        Rgb color;
+                        Color color;
 
                         WaterPlaneParams ()
                         : code("(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))")
@@ -216,13 +336,13 @@ namespace redshift { namespace scenefile {
                                 return shared_ptr<primitive::Primitive>(new WaterPlane(
                                         height,
                                         heightFunction,
-                                        redshift::Color::FromRGB(color.r,color.g,color.b)
+                                        color.toColor()
                                 ));
                         }
                 };
                 struct HorizonPlaneParams {
                         double height;
-                        Rgb color;
+                        Color color;
 
                         HorizonPlaneParams ()
                         : height(0)
@@ -235,7 +355,7 @@ namespace redshift { namespace scenefile {
 
                                 return shared_ptr<primitive::Primitive>(new HorizonPlane(
                                         height,
-                                        redshift::Color::FromRGB(color.r,color.g,color.b)
+                                        color.toColor()
                                 ));
                         }
                 };
@@ -285,16 +405,16 @@ namespace redshift { namespace scenefile {
                         switch (type) {
                         case homogeneous:
                                 return shared_ptr<VolumeRegion> (new volume::Homogeneous(
-                                        redshift::Color::FromRGB(sigma_a.r,sigma_a.g,sigma_a.b),
-                                        redshift::Color::FromRGB(sigma_s.r,sigma_s.g,sigma_s.b),
-                                        redshift::Color::FromRGB(Lve.r,Lve.g,Lve.b),
+                                        sigma_a.toColor(),
+                                        sigma_s.toColor(),
+                                        Lve.toColor(),
                                         hg
                                 ));
                         case exponential:
                                 return shared_ptr<VolumeRegion> (new volume::Exponential(
-                                        redshift::Color::FromRGB(sigma_a.r,sigma_a.g,sigma_a.b),
-                                        redshift::Color::FromRGB(sigma_s.r,sigma_s.g,sigma_s.b),
-                                        redshift::Color::FromRGB(Lve.r,Lve.g,Lve.b),
+                                        sigma_a.toColor(),
+                                        sigma_s.toColor(),
+                                        Lve.toColor(),
                                         hg,
                                         baseFactor,
                                         exponentFactor,
@@ -305,7 +425,7 @@ namespace redshift { namespace scenefile {
                         return shared_ptr<VolumeRegion>();
                 }
 
-                Rgb sigma_a, sigma_s, Lve;
+                Color sigma_a, sigma_s, Lve;
                 double hg;
 
                 Normal up; Point min;
@@ -404,8 +524,8 @@ namespace redshift { namespace scenefile {
                 Normal sunDirection;
                 double turbidity;
                 double sunSizeFactor;
-                Rgb sunColor;
-                Rgb skyFilter;
+                Color sunColor;
+                Color skyFilter;
 
 
                 Background ()

@@ -23,6 +23,11 @@
 
 namespace redshift { namespace scenefile {
 
+        const actuarius::Enum<Color::Type> Color::Typenames =
+                ( actuarius::Nvp<Color::Type>(Color::RGB, "rgb")
+                | actuarius::Nvp<Color::Type>(Color::Spectrum, "spectrum")
+                );
+
         const actuarius::Enum<Object::Type> Object::Typenames =
                 ( actuarius::Nvp<Object::Type>(Object::water_plane, "water-plane")
                 | actuarius::Nvp<Object::Type>(Object::lazy_quadtree, "lazy-quadtree")
