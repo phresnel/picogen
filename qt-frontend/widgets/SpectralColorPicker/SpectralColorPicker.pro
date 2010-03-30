@@ -27,3 +27,4 @@ FORMS += mainwindow.ui \
     spectralcurve.ui \
     importrawdatawizard.ui
 LIBS += ../../../redshift/lib/libpicogen.a
+include(../../../upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/qtcolortriangle.pri)
