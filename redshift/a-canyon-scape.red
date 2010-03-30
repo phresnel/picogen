@@ -9,7 +9,7 @@ scene{
                 type:redshift;
             }
             volume-integrator{
-                type:single;
+                type:none;
                 step-size:600;
                 cutoff-distance:4000;
             }

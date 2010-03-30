@@ -41,6 +41,7 @@ namespace redshift { namespace scenefile {
         // Rgb.
         struct Rgb {
                 double r,g,b;
+                std::vector<double> test;
 
                 Rgb (double r, double g, double b) : r(r), g(g), b(b) {}
                 Rgb () : r(1), g(1), b(1) {}
@@ -50,6 +51,11 @@ namespace redshift { namespace scenefile {
                 void serialize (Arch &arch) {
                         using actuarius::pack;
                         arch & pack(r) & pack(g) & pack(b);
+                        arch & pack(test);
+
+                        for (int i=0; i<test.size(); ++i) {
+                                std::cout << " * " << test[i] << std::endl;
+                        }
                 }
         };
         struct Normal {
@@ -310,6 +316,10 @@ namespace redshift { namespace scenefile {
                 , sigma_s(0,0,0)
                 , Lve(0,0,0)
                 , hg(0)
+                , up(0,1,0)
+                , min(0,0,0)
+                , baseFactor(1.f)
+                , exponentFactor(0.05)
                 {}
 
                 // Serialization.
@@ -448,11 +458,13 @@ namespace redshift { namespace scenefile {
 
                         switch (type) {
                         case pss_sunsky:
+                                arch & actuarius::push_optional(true);
                                 arch & pack ("sun-direction", sunDirection);
                                 arch & pack ("sun-size-factor", sunSizeFactor);
                                 arch & pack ("turbidity", turbidity);
                                 arch & pack ("sun-color", sunColor);
                                 arch & pack ("sky-filter", skyFilter);
+                                arch & actuarius::pop_optional;
                                 break;
                         };
                 }
@@ -481,8 +493,12 @@ namespace redshift { namespace scenefile {
                         arch & pack ("height", height);
                         arch & pack ("samples-per-pixel", samplesPerPixel);
                         arch & pack ("surface-integrator", surfaceIntegrator);
-                        if (Arch::deserialize || volumeIntegrator.type != VolumeIntegrator::none)
-                                arch & pack ("volume-integrator", volumeIntegrator);
+                        if (Arch::deserialize || volumeIntegrator.type != VolumeIntegrator::none) {
+                                arch & actuarius::push_optional(true)
+                                     & pack ("volume-integrator", volumeIntegrator)
+                                     & actuarius::pop_optional
+                                ;
+                        }
                 }
         };
 
