@@ -18,36 +18,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef ACTUARIUS_HH_INCLUDED_20090919
-#define ACTUARIUS_HH_INCLUDED_20090919
+#ifndef CONTAINERREF_HH_INCLUDED_20100330
+#define CONTAINERREF_HH_INCLUDED_20100330
 
 namespace actuarius {
-        struct push_optional {
-                push_optional(bool op) : optional(op) {}
-                const bool optional;
-        };
-        struct pop_optional_ {};
-        namespace { pop_optional_ pop_optional; }
+
+//-----------------------------------------------------------------------------
+// nrp - name reference pair
+//-----------------------------------------------------------------------------
+template <typename T> struct containerref {
+        T &value;
+
+        containerref (T &value) : value (value) {}
+
+private:
+        containerref operator = (containerref const &) ;
+};
+
+template <typename T> containerref<T> make_containerref (T &value) {
+        return containerref<T> (value);
 }
 
-#include "bits/enum.hh"
-#include "bits/ref.hh"
-#include "bits/containerref.hh"
-#include "bits/name_ref_pair.hh"
-#include "bits/name_enum_ref_pair.hh"
-#include "bits/name_containerref_pair.hh"
-#include "bits/name_enum_containerref_pair.hh"
-#include "bits/name_ptr_ref_pair.hh"
-#include "bits/name_ptr_containerref_pair.hh"
-#include "bits/name_ptr_enum_ref_pair.hh"
-#include "bits/name_ptr_enum_containerref_pair.hh"
-#include "bits/ptr_enum_containerref_pair.hh"
-#include "bits/comment.hh"
-#include "bits/match_descriptors.hh"
-#include "bits/parsing.hh"
-#include "bits/traits.hh"
-#include "bits/oarchive.hh"
-#include "bits/iarchive.hh"
-#include "bits/pack.hh"
+}
 
-#endif // ACTUARIUS_HH_INCLUDED_20090919
+#endif // CONTAINERREF_HH_INCLUDED_20100330

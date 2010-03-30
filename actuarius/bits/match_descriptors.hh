@@ -26,7 +26,6 @@
 namespace actuarius { namespace detail {
         template <typename iterator_t>
         struct match_t {
-
                 match_t (iterator_t begin, iterator_t end)
                 : begin_(begin)
                 , end_(end)
@@ -213,6 +212,7 @@ namespace actuarius { namespace detail {
 
         template <typename iterator_t>
         class block_t {
+                typedef value_match_t<iterator_t> vm_t;
         public:
                 block_t (block_match_t<iterator_t> const &block)
                 : valid (true)
@@ -355,6 +355,20 @@ namespace actuarius { namespace detail {
                         ) {
                                 it->dump (r+1);
                         }
+                        for (int i=0; i<r; i++)
+                                std::cout << "  ";
+
+                        std::cout << "  value_count:" << value_count() << "\n";
+
+                        for (typename std::list<vm_t>::const_iterator it=values.begin();
+                             it!=values.end();
+                             ++it
+                        ) {
+                                for (int i=0; i<r; i++)
+                                        std::cout << " ";
+                                std::cout << "    " <<
+                                   std::string(it->value().begin(), it->value().end()) << "\n";
+                        }
                         if (r == 0) {
                                 std::cout << "-------------------------\n"
                                           << std::flush;
@@ -366,8 +380,6 @@ namespace actuarius { namespace detail {
                 }
 
         private:
-
-                typedef value_match_t<iterator_t> vm_t;
 
                 bool                        valid;
                 bool                        is_top_level_node;

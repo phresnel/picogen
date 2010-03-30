@@ -87,6 +87,20 @@ public:
         }
 
         template <typename T>
+        OArchive &operator & (containerref<T> val) {
+                path.push (path.top() + "?" + "/");
+
+                for (typename T::iterator it = val.value.begin();
+                     it!=val.value.end();
+                     ++it
+                ) {
+                        *this & make_ref (*it);
+                }
+                path.pop ();
+                return *this;
+        }
+
+        template <typename T>
         OArchive &operator & (necrp<T> val) {
                 path.push (path.top() + val.name + "/");
 
@@ -203,7 +217,28 @@ public:
                 return *this;
         }
 
-        // "iomanip"-style things
+        template <typename CONT, typename ADVICE_TYPE>
+        OArchive&
+        operator & (pecrp<CONT,ADVICE_TYPE> val) {
+
+                path.push (path.top() + "?" + "/");
+
+                for (typename CONT::iterator it = val.value.begin();
+                     it!=val.value.end();
+                     ++it
+                ) {
+                        out << indent() << val.enumDesc[(*it).*val.ptr] << "{\n";
+                        ++indendation;
+                        it->serialize (*this);
+                        --indendation;
+                        out << indent() << "}\n";
+                }
+                path.pop ();
+
+                return *this;
+        }
+
+
         // "iomanip" style things
         OArchive&
         operator& (push_optional rhs) {

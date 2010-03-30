@@ -71,8 +71,21 @@ namespace actuarius {
         //---------------------------------------------------------------------
         template <typename T>
         inline
-        ref<T> pack (T &value) {
+        typename detail::disable_if<
+                detail::is_container_type<T>,
+                ref<T>
+        >::type pack (T &value) {
                 return make_ref (value);
+        }
+
+        template <typename T>
+        inline
+        typename detail::enable_if<
+                detail::is_container_type<T>,
+                containerref<T>
+        >::type
+        pack (T &value) {
+                return make_containerref (value);
         }
 
 
@@ -139,9 +152,27 @@ namespace actuarius {
         //---------------------------------------------------------------------
         // Advice lists.
         //---------------------------------------------------------------------
+        template <typename T, typename ADVICE_TYPE>
+        inline
+        typename detail::disable_if<
+                detail::is_container_type<T>,
+                nprp<T,ADVICE_TYPE>
+        >::type
+        pack (
+                const char *name,
+                ADVICE_TYPE T::* ptr,
+                T &value
+        ) {
+                return make_nprp(name, ptr, value);
+        }
+
         template <typename CONT, typename ADVICE_TYPE>
         inline
-        npcrp<CONT,ADVICE_TYPE> pack (
+        typename detail::enable_if<
+                detail::is_container_type<CONT>,
+                npcrp<CONT,ADVICE_TYPE>
+        >::type
+        pack (
                 const char *name,
                 ADVICE_TYPE CONT::value_type::* ptr,
                 CONT &value
@@ -149,14 +180,47 @@ namespace actuarius {
                 return make_npcrp(name, ptr, value);
         }
 
+        template <typename T, typename ADVICE_TYPE>
+        inline
+        typename detail::disable_if<
+                detail::is_container_type<T>,
+                nperp<T,ADVICE_TYPE>
+        >::type
+        pack (
+                const char *name,
+                ADVICE_TYPE T::* ptr,
+                Enum<ADVICE_TYPE> enumDesc, T &value
+        ) {
+                return make_nperp(name, ptr, enumDesc, value);
+        }
+
         template <typename CONT, typename ADVICE_TYPE>
         inline
-        npecrp<CONT,ADVICE_TYPE> pack (
+        typename detail::enable_if<
+                detail::is_container_type<CONT>,
+                npecrp<CONT,ADVICE_TYPE>
+        >::type
+        pack (
                 const char *name,
                 ADVICE_TYPE CONT::value_type::* ptr,
-                Enum<ADVICE_TYPE> enumDesc, CONT &value
+                Enum<ADVICE_TYPE> enumDesc,
+                CONT &value
         ) {
                 return make_npecrp(name, ptr, enumDesc, value);
+        }
+
+        template <typename CONT, typename ADVICE_TYPE>
+        inline
+        typename detail::enable_if<
+                detail::is_container_type<CONT>,
+                pecrp<CONT,ADVICE_TYPE>
+        >::type
+        pack (
+                ADVICE_TYPE CONT::value_type::* ptr,
+                Enum<ADVICE_TYPE> enumDesc,
+                CONT &value
+        ) {
+                return make_pecrp(ptr, enumDesc, value);
         }
 }
 

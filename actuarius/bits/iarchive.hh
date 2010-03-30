@@ -59,7 +59,7 @@ public:
                   detail::match_t<iterator_t>(content.begin(),content.end())
                 ));
                 doc.set_as_top_level_node (true);
-                //doc.dump();
+                doc.dump();
 
                 optional.push(false);
         }
@@ -164,9 +164,24 @@ public:
                         child = doc.take_child (path.top())
                 ) {
                         val.value.push_back (typename T::value_type());
-
                         IArchive ia (*this, child);
                         ia & make_nrp (val.name, val.value.back());
+                }
+
+                path.pop ();
+                return *this;
+        }
+
+        template <typename T> IArchive
+        &operator & (containerref<T> val) {
+                path.push (path.top() + "?" + "/");
+
+                while (detail::block_t<iterator_t>
+                        child = doc.take_first_child ()
+                ) {
+                        val.value.push_back (typename T::value_type());
+                        IArchive ia (*this, child, false);
+                        ia & make_ref (val.value.back());
                 }
 
                 path.pop ();
@@ -235,19 +250,8 @@ public:
          >::type&
         operator & (ref<T> val) {
                 path.push (path.top() + "?" + "/");
-
-                if (detail::block_t<iterator_t>
-                        child = doc.take_first_child ()
-                ) {
-                        IArchive ia (*this, child, false);
-                        val.value.serialize (ia);
-                } else if (!optional.top()) {
-                        std::cerr << "warning: found nothing for "
-                                  << path.top()
-                                  << " (ref rec)"
-                                  << std::endl;
-                }
-
+                IArchive ia (*this, doc, false);
+                val.value.serialize(ia);
                 path.pop ();
                 return *this;
         }
@@ -316,16 +320,16 @@ public:
                 ) {
                         while (detail::block_t<iterator_t> child = block.take_first_child()) {
                                 // map id -> enum-value
-                                if (!val.enumDesc.exists (child.id().c_str())
-                                    && !optional.top()
-                                ){
-                                        std::cerr
-                                          << "warning: found nothing for "
-                                          << path.top()
-                                          << " for value '"
-                                          << child.id()
-                                          << "' (necrp)"
-                                          << std::endl;
+                                if (!val.enumDesc.exists (child.id().c_str())){
+                                        if (!optional.top()) {
+                                                std::cerr
+                                                  << "warning: found nothing for "
+                                                  << path.top()
+                                                  << " for value '"
+                                                  << child.id()
+                                                  << "' (necrp)"
+                                                  << std::endl;
+                                        }
                                         continue;
                                 }
                                 typename CONT::value_type value;
@@ -340,6 +344,38 @@ public:
                                   << path.top()
                                   << " (npecrp)"
                                   << std::endl;
+                }
+
+                path.pop ();
+                return *this;
+        }
+
+        template <typename CONT, typename ADVICE_TYPE>
+        IArchive&
+        operator & (pecrp<CONT,ADVICE_TYPE> val) {
+                using namespace detail;
+                path.push (path.top() + "?" + "/");
+
+                while (detail::block_t<iterator_t> child = doc.take_first_child()) {
+                        // map id -> enum-value
+                        if (!val.enumDesc.exists (child.id().c_str())){
+                                if (!optional.top()) {
+                                        std::cerr
+                                          << "warning: found nothing for "
+                                          << path.top()
+                                          << " for value '"
+                                          << child.id()
+                                          << "' (necrp)"
+                                          << std::endl;
+                                }
+                                continue;
+                        }
+                        typename CONT::value_type value;
+                        value.*val.ptr =
+                                val.enumDesc[child.id().c_str()];
+                        IArchive ia (*this, child, false);
+                        value.serialize (ia);
+                        val.value.push_back (value);
                 }
 
                 path.pop ();
