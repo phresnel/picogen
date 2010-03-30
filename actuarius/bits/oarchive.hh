@@ -202,6 +202,17 @@ public:
 
                 return *this;
         }
+
+        // "iomanip"-style things
+        // "iomanip" style things
+        OArchive&
+        operator& (push_optional rhs) {
+                return *this;
+        }
+        OArchive&
+        operator& (pop_optional_) {
+                return *this;
+        }
 private:
         int indendation;
         std::ostream &out;

@@ -60,13 +60,17 @@ public:
                 ));
                 doc.set_as_top_level_node (true);
                 //doc.dump();
+
+                optional.push(false);
         }
 
         IArchive (IArchive const & oa)
         : content(oa.content)
         , doc(oa.doc)
         , path(oa.path)
-        {}
+        {
+                optional.push(false);
+        }
 
         template <typename T>
          typename detail::disable_if<
@@ -82,7 +86,7 @@ public:
                 ) {
                         read_val (unescape_nonstring_terminal (value.value()),
                                 val.value);
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (nrp)"
@@ -107,7 +111,7 @@ public:
                 ) {
                         read_val(unescape_nonstring_terminal (value.value()),
                                 val.value);
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (ref)"
@@ -133,7 +137,7 @@ public:
                         // Check if it exists.
                         if (val.enumDesc.exists (key.c_str())) {
                                 val.value = val.enumDesc[key.c_str()];
-                        } else {
+                        } else if (!optional.top()) {
                                 std::cerr << "warning: found nothing for "
                                           << path.top()
                                           << " for value '"
@@ -141,7 +145,7 @@ public:
                                           << "' (nerp)"
                                           << std::endl;
                         }
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (nerp)"
@@ -186,7 +190,7 @@ public:
                         // Check if it exists.
                         if (val.enumDesc.exists (key.c_str())) {
                                 val.value.push_back(val.enumDesc[key.c_str()]);
-                        } else {
+                        } else if (!optional.top()) {
                                 std::cerr << "warning: found nothing for "
                                           << path.top()
                                           << " for value '"
@@ -213,7 +217,7 @@ public:
                 ) {
                         IArchive ia (*this, child, false);
                         val.value.serialize (ia);
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (nrp rec)"
@@ -237,7 +241,7 @@ public:
                 ) {
                         IArchive ia (*this, child, false);
                         val.value.serialize (ia);
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (ref rec)"
@@ -259,7 +263,7 @@ public:
                         std::stringstream ss;
                         ss << unescape_nonstring_terminal (value.value());
                         val.value = ss.str();
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (nrp)"
@@ -290,7 +294,7 @@ public:
                                 value.serialize (ia);
                                 val.value.push_back (value);
                         }
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (npecrp)"
@@ -312,7 +316,9 @@ public:
                 ) {
                         while (detail::block_t<iterator_t> child = block.take_first_child()) {
                                 // map id -> enum-value
-                                if (!val.enumDesc.exists (child.id().c_str())){
+                                if (!val.enumDesc.exists (child.id().c_str())
+                                    && !optional.top()
+                                ){
                                         std::cerr
                                           << "warning: found nothing for "
                                           << path.top()
@@ -329,7 +335,7 @@ public:
                                 value.serialize (ia);
                                 val.value.push_back (value);
                         }
-                } else {
+                } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
                                   << " (npecrp)"
@@ -340,10 +346,26 @@ public:
                 return *this;
         }
 
+
+        // "iomanip" style things
+        IArchive&
+        operator& (push_optional rhs) {
+                optional.push(rhs.optional);
+                return *this;
+        }
+        IArchive&
+        operator& (pop_optional_) {
+                optional.pop();
+                return *this;
+        }
+
+
 private:
         std::string content;
         detail::block_t<iterator_t> doc;
         std::stack<std::string> path;
+
+        std::stack<bool> optional;
 
         IArchive (
                 IArchive const & oa,
@@ -364,6 +386,8 @@ private:
                 else
                         doc = child;
                 path.push ("");
+
+                optional.push(false);
         }
 };
 }

@@ -21,6 +21,15 @@
 #ifndef ACTUARIUS_HH_INCLUDED_20090919
 #define ACTUARIUS_HH_INCLUDED_20090919
 
+namespace actuarius {
+        struct push_optional {
+                push_optional(bool op) : optional(op) {}
+                const bool optional;
+        };
+        struct pop_optional_ {};
+        namespace { pop_optional_ pop_optional; }
+}
+
 #include "bits/enum.hh"
 #include "bits/ref.hh"
 #include "bits/name_ref_pair.hh"
