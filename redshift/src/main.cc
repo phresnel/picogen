@@ -473,12 +473,12 @@ redshift::shared_ptr<redshift::Scene>
         shared_ptr<Camera> camera;
         if (scene.cameraCount()) {
                 camera = shared_ptr<Camera> (new Pinhole(
-                        renderBuffer, 0.5f,
+                        renderBuffer, 1,
                         scene.camera(0).toRedshiftTransform()
                 ));
         } else {
                 camera = shared_ptr<Camera> (new Pinhole(
-                        renderBuffer, 0.5f,
+                        renderBuffer, 1.0f,
                         Transform::translation(0.f,0.1f,0.f)
                 ));
         }
@@ -666,7 +666,7 @@ void read_angle_test() {
 
 
 int main (int argc, char *argv[]) {
-        freopen( "CON", "w", stdout );
+        //freopen( "CON", "w", stdout );
         redshift::static_init();
         const optional<Options> oo = parseOptions(argc,argv);
         if (!oo)

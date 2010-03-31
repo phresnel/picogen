@@ -41,14 +41,17 @@ bool PssAdapter::isInSunSolidAngle (Vector const & vector) const {
 }
 
 Color PssAdapter::query (Ray const &ray) const {
+        return Color(query_(ray));
+}
+
+redshift::background::PssSunSky::Spectrum
+PssAdapter::query_ (Ray const &ray) const {
         using redshift::background::PssSunSky;
 
         const real_t teh_sun = isInSunSolidAngle (ray.direction) ? 1.f : 0.f;
 
-        return Color(
-                preetham->GetSkySpectralRadiance (ray.direction)
-                + teh_sun * preetham->GetSunSpectralRadiance()
-        );
+        return preetham->GetSkySpectralRadiance (ray.direction)
+                + teh_sun * preetham->GetSunSpectralRadiance();
 }
 
 Color PssAdapter::getSunColor () const {
@@ -92,8 +95,12 @@ Color PssAdapter::diffuseQuery (
 Color PssAdapter::atmosphereShade (
         Color const &color, Ray const &ray, real_t distance
 ) const {
+
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));
+
+        /*if (distance == constants::infinity)
+                return color;*/
 
         typedef background::PssSunSky::Spectrum SSpectrum;
         SSpectrum attenuation(SSpectrum::noinit), inscatter(SSpectrum::noinit);
@@ -101,7 +108,8 @@ Color PssAdapter::atmosphereShade (
                 viewer, source,
                 attenuation, inscatter
         );
-        return color * Color(attenuation) + Color(inscatter);
+
+        return Color (SSpectrum(color) * attenuation + inscatter * (1.-attenuation));
 }
 
 } } // namespace redshift { namespace backgrounds {
