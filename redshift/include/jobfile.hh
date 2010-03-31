@@ -317,7 +317,7 @@ namespace redshift { namespace scenefile {
                 struct WaterPlaneParams {
                         std::string code;
                         double height;
-                        Color color;
+                        ColorSum color;
 
                         WaterPlaneParams ()
                         : code("(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))")
@@ -342,7 +342,7 @@ namespace redshift { namespace scenefile {
                 };
                 struct HorizonPlaneParams {
                         double height;
-                        Color color;
+                        ColorSum color;
 
                         HorizonPlaneParams ()
                         : height(0)
@@ -425,7 +425,7 @@ namespace redshift { namespace scenefile {
                         return shared_ptr<VolumeRegion>();
                 }
 
-                Color sigma_a, sigma_s, Lve;
+                ColorSum sigma_a, sigma_s, Lve;
                 double hg;
 
                 Normal up; Point min;
@@ -524,8 +524,8 @@ namespace redshift { namespace scenefile {
                 Normal sunDirection;
                 double turbidity;
                 double sunSizeFactor;
-                Color sunColor;
-                Color skyFilter;
+                ColorSum sunColor;
+                ColorSum skyFilter;
 
 
                 Background ()

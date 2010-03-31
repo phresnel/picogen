@@ -48,6 +48,8 @@ namespace redshift { namespace backgrounds {
                 Color getSunColor () const;
                 Color querySun (Ray const &ray) const;
         private:
+
+                redshift::background::PssSunSky::Spectrum query_ (Ray const &ray) const;
                 shared_ptr<redshift::background::PssSunSky> preetham;
                 real_t sunSizeFactor;
 
