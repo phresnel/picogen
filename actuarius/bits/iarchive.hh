@@ -59,8 +59,6 @@ public:
                   detail::match_t<iterator_t>(content.begin(),content.end())
                 ));
                 doc.set_as_top_level_node (true);
-                doc.dump();
-
                 optional.push(false);
         }
 
