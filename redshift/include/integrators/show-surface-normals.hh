@@ -41,7 +41,8 @@ namespace redshift {
                                         Color::FromRGB(
                                                 I->getShadingNormal().x+0.5,
                                                 I->getShadingNormal().y+0.5,
-                                                I->getShadingNormal().z+0.5
+                                                I->getShadingNormal().z+0.5,
+                                                IlluminantSpectrum
                                         ),
                                         I->getDistance()
                                 );
@@ -49,7 +50,8 @@ namespace redshift {
                                 Color const col = Color::FromRGB (
                                                 0.5+sample.primaryRay.direction.x,
                                                 0.5+sample.primaryRay.direction.y,
-                                                0.5+sample.primaryRay.direction.z);
+                                                0.5+sample.primaryRay.direction.z,
+                                                IlluminantSpectrum);
                                 return make_tuple (1.0, col, constants::infinity);
                         }
                 }

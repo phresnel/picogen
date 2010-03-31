@@ -61,7 +61,7 @@ void HeightmapRenderer::render (
                         h_ = (*function) (u, v)
                         ;
 
-                lock->setPixel (x,y, Color::FromRGB(h_,h_,h_));
+                lock->setPixel (x,y, Color::FromRGB(h_,h_,h_,ReflectanceSpectrum));
 
                 ++sampleNumber;
                 reporter->report (lock, sampleNumber, totalNumberOfSamples);

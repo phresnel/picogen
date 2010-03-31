@@ -36,7 +36,7 @@ Color PreethamAdapter::query (Ray const &ray) const {
 Color PreethamAdapter::diffuseQuery (
         Point const &poi, Normal const &normal, Random &rand
 ) const {
-        Color sum = Color::FromRGB (0,0,0);
+        Color sum (0);
         Ray ray;
         ray.position = poi;
 

@@ -191,6 +191,11 @@ namespace redshift {
         extern const real_t RGBIllum2SpectGreen[nRGB2SpectSamples];
         extern const real_t RGBIllum2SpectBlue[nRGB2SpectSamples];
 
+        enum SpectrumKind {
+                ReflectanceSpectrum,
+                IlluminantSpectrum
+        };
+
         template <typename real_t>
         extern bool spectrumSamplesSorted(const real_t *lambda, const real_t *vals, int n);
 
@@ -213,10 +218,15 @@ namespace redshift {
                 }
 
                 template <typename U>
-                explicit SpectrumBase (U f) : base(real_t(f)) {}
+                explicit SpectrumBase (U f) : base(real_t(f)) {
+                        //*this = FromRGB(real_t(f),real_t(f),real_t(f));
+                }
 
                 SpectrumBase (const real_t (&f)[base::num_components])
-                : base(f) {}
+                : base(f)
+                {
+                        //*this = FromRGB(f,f,f);
+                }
 
                 SpectrumBase (const SpectrumBase &rhs) : base(rhs) {
                 }
@@ -304,10 +314,10 @@ namespace redshift {
                 template <unsigned int O>
                 static SpectrumBase FromSpectrum(SpectrumBase<T,O> const &spec);
 
-                static SpectrumBase FromRGB(color::RGB const &rgb) ;
+                static SpectrumBase FromRGB(color::RGB const &rgb, SpectrumKind kind) ;
                 template <typename U>
-                static SpectrumBase FromRGB(U R, U G, U B) {
-                        return FromRGB(color::RGB(R,G,B));
+                static SpectrumBase FromRGB(U R, U G, U B, SpectrumKind kind) {
+                        return FromRGB(color::RGB(R,G,B), kind);
                 }
 
                 static SpectrumBase X, Y, Z;
@@ -326,6 +336,7 @@ namespace redshift {
                 static void static_init ();
         private:
                 static bool static_init_called;
+
 
                 /*void test_static_init() {
                         if (!static_init_called) {

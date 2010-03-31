@@ -113,8 +113,8 @@ static void Yxy_RGB (real_t *p_color, real_t Y, real_t x, real_t y) {
 namespace redshift { namespace background {
 Preetham::Preetham() :
         m_T (1.8), m_sunSolidAngleFactor (1),
-        m_sunColor (Color::FromRGB(100,100,100)),
-        m_colorFilter (Color::FromRGB(1,1,1)),
+        m_sunColor (Color::FromRGB(100,100,100,IlluminantSpectrum)),
+        m_colorFilter (Color::FromRGB(1,1,1,IlluminantSpectrum)),
         m_enableSunFalloffHack (false), m_enableFogHack (false) {
 }
 
@@ -306,7 +306,7 @@ Color Preetham::shade (Ray in_ray) const {
         /*real_t c[3];
         Yxy_RGB (c, Y, x, y);
         color.from_rgb (c[0],c[1],c[2]);*/
-        Color color = Color::FromRGB (color::xyY (x,y,Y).toRGB());
+        Color color = Color::FromRGB (color::xyY (x,y,Y).toRGB(), ReflectanceSpectrum);
         return color * m_colorFilter;
 }
 

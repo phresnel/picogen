@@ -95,7 +95,6 @@ Color PssAdapter::diffuseQuery (
 Color PssAdapter::atmosphereShade (
         Color const &color, Ray const &ray, real_t distance
 ) const {
-
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));
 
@@ -109,7 +108,8 @@ Color PssAdapter::atmosphereShade (
                 attenuation, inscatter
         );
 
-        return Color (SSpectrum(color) * attenuation + inscatter * (1.-attenuation));
+        //return Color (SSpectrum(color) * attenuation + inscatter * (1.-attenuation));
+        return Color (SSpectrum(color) * attenuation + inscatter);
 }
 
 } } // namespace redshift { namespace backgrounds {

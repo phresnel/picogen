@@ -138,7 +138,7 @@ namespace redshift {
 
 
 namespace redshift {
-        enum { spectrum_samples = 8 };
+        enum { spectrum_samples = 9 };
 }
 
 #include "basictypes/spectrum.hh"

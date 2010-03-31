@@ -213,12 +213,12 @@ void Scene::render (
                 aggregate->prepare(*this);
 
         // non-portable thread id visualisation
-        const Color threadCol[] = {
+        /*const Color threadCol[] = {
                 Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
                 Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
                 Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
                 Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f)
-        };
+        };*/
 
         const uint32_t userSalt = 0; // TODO: this should be exposed to job-level
 
@@ -237,7 +237,7 @@ void Scene::render (
                 #endif
                 for (int x_=0; x_<width; ++x_) {
                         const int x = x_;
-                        Color accu = Color::FromRGB(0,1,0);
+                        Color accu(0);
 
                         for (int i_=0; i_<(int)numAASamples; ++i_) {
                                 const int i = i_;
@@ -304,9 +304,9 @@ void Scene::render (
                         //-------------------------------------------------------------
                         // 4) PBRT:<add sample contribution to image> 28
                         //-------------------------------------------------------------
-                        if (0) {
+                        /*if (0) {
                                 accu = accu * threadCol[omp_get_thread_num()];
-                        }
+                        }*/
                         if (isnan (accu)) {
                                 std::cout << "NaN pixel at " << x << ":" << y << std::endl;
                         } else if (isinf (accu)) {

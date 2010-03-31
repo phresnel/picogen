@@ -267,9 +267,12 @@ inline SpectrumBase<T, N>
 
 
 template <typename T, unsigned int N>
-inline SpectrumBase<T,N> SpectrumBase<T,N>::FromRGB(color::RGB const &rgb) {
-        SpectrumBase r;
-    /*if (type == SPECTRUM_REFLECTANCE)*/ {
+inline SpectrumBase<T,N> SpectrumBase<T,N>::FromRGB(color::RGB const &rgb, SpectrumKind kind) {
+
+    // seems to be based on http://www.cs.utah.edu/~bes/papers/color/paper.pdf /phresnel
+    SpectrumBase r;
+    switch (kind) {
+    case ReflectanceSpectrum: {
         // Convert reflectance SpectrumBase to RGB
         if (rgb.R <= rgb.G && rgb.R <= rgb.B) {
             // Compute reflectance _SampledSpectrum_ with _rgb.R_ as minimum
@@ -308,47 +311,48 @@ inline SpectrumBase<T,N> SpectrumBase<T,N>::FromRGB(color::RGB const &rgb) {
             }
         }
         r *= typename SpectrumBase::real_t(.94);
-    }/*
-    else {
+    } break;
+    case IlluminantSpectrum: {
         // Convert illuminant SpectrumBase to RGB
-        if (rgb[0] <= rgb[1] && rgb[0] <= rgb[2]) {
-            // Compute illuminant _SampledSpectrum_ with _rgb[0]_ as minimum
-            r += rgb[0] * rgbIllum2SpectWhite;
-            if (rgb[1] <= rgb[2]) {
-                r += (rgb[1] - rgb[0]) * rgbIllum2SpectCyan;
-                r += (rgb[2] - rgb[1]) * rgbIllum2SpectBlue;
+        if (rgb.R <= rgb.G && rgb.R <= rgb.B) {
+            // Compute illuminant _SampledSpectrum_ with _rgb.R_ as minimum
+            r += rgb.R * rgbIllum2SpectWhite;
+            if (rgb.G <= rgb.B) {
+                r += (rgb.G - rgb.R) * rgbIllum2SpectCyan;
+                r += (rgb.B - rgb.G) * rgbIllum2SpectBlue;
             }
             else {
-                r += (rgb[2] - rgb[0]) * rgbIllum2SpectCyan;
-                r += (rgb[1] - rgb[2]) * rgbIllum2SpectGreen;
+                r += (rgb.B - rgb.R) * rgbIllum2SpectCyan;
+                r += (rgb.G - rgb.B) * rgbIllum2SpectGreen;
             }
         }
-        else if (rgb[1] <= rgb[0] && rgb[1] <= rgb[2]) {
-            // Compute illuminant _SampledSpectrum_ with _rgb[1]_ as minimum
-            r += rgb[1] * rgbIllum2SpectWhite;
-            if (rgb[0] <= rgb[2]) {
-                r += (rgb[0] - rgb[1]) * rgbIllum2SpectMagenta;
-                r += (rgb[2] - rgb[0]) * rgbIllum2SpectBlue;
+        else if (rgb.G <= rgb.R && rgb.G <= rgb.B) {
+            // Compute illuminant _SampledSpectrum_ with _rgb.G_ as minimum
+            r += rgb.G * rgbIllum2SpectWhite;
+            if (rgb.R <= rgb.B) {
+                r += (rgb.R - rgb.G) * rgbIllum2SpectMagenta;
+                r += (rgb.B - rgb.R) * rgbIllum2SpectBlue;
             }
             else {
-                r += (rgb[2] - rgb[1]) * rgbIllum2SpectMagenta;
-                r += (rgb[0] - rgb[2]) * rgbIllum2SpectRed;
+                r += (rgb.B - rgb.G) * rgbIllum2SpectMagenta;
+                r += (rgb.R - rgb.B) * rgbIllum2SpectRed;
             }
         }
         else {
-            // Compute illuminant _SampledSpectrum_ with _rgb[2]_ as minimum
-            r += rgb[2] * rgbIllum2SpectWhite;
-            if (rgb[0] <= rgb[1]) {
-                r += (rgb[0] - rgb[2]) * rgbIllum2SpectYellow;
-                r += (rgb[1] - rgb[0]) * rgbIllum2SpectGreen;
+            // Compute illuminant _SampledSpectrum_ with _rgb.B_ as minimum
+            r += rgb.B * rgbIllum2SpectWhite;
+            if (rgb.R <= rgb.G) {
+                r += (rgb.R - rgb.B) * rgbIllum2SpectYellow;
+                r += (rgb.G - rgb.R) * rgbIllum2SpectGreen;
             }
             else {
-                r += (rgb[1] - rgb[2]) * rgbIllum2SpectYellow;
-                r += (rgb[0] - rgb[1]) * rgbIllum2SpectRed;
+                r += (rgb.G - rgb.B) * rgbIllum2SpectYellow;
+                r += (rgb.R - rgb.G) * rgbIllum2SpectRed;
             }
         }
-        r *= .86445f;
-    }*/
+        r *= typename SpectrumBase::real_t(.86445f);
+    } break;
+    } // switch
     return clamp(r);
 }
 

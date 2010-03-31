@@ -94,8 +94,8 @@ namespace redshift { namespace scenefile {
                 Rgb (double r, double g, double b) : r(r), g(g), b(b) {}
                 Rgb () : r(1), g(1), b(1) {}
 
-                redshift::Color toColor () const {
-                        return Color::FromRGB(r,g,b);
+                redshift::Color toColor (SpectrumKind kind) const {
+                        return Color::FromRGB(r,g,b, kind);
                 }
 
                 // Serialization.
@@ -107,6 +107,7 @@ namespace redshift { namespace scenefile {
         };
 
         struct Color {
+
                 enum Type {
                         RGB, Spectrum
                 };
@@ -120,9 +121,9 @@ namespace redshift { namespace scenefile {
                 Color (double r, double g, double b) : type(RGB), rgb(r,g,b) {}
 
                 // to redshift
-                redshift::Color toColor() const {
+                redshift::Color toColor(SpectrumKind kind) const {
                         switch (type) {
-                        case RGB: return rgb.toColor();
+                        case RGB: return rgb.toColor(kind);
                         case Spectrum: return spectrum.toColor();
                         }
                         throw std::runtime_error("unknown color type in "
@@ -153,19 +154,19 @@ namespace redshift { namespace scenefile {
                 : defaultColor(r,g,b)
                 {}
 
-                redshift::Color toColor() const {
+                redshift::Color toColor(SpectrumKind kind) const {
                         typedef std::vector<Color>::const_iterator iterator;
                         using namespace redshift;
                         typedef redshift::Color RC;
 
                         if (colors.size() == 0)
-                                return defaultColor.toColor();
+                                return defaultColor.toColor(kind);
 
                         RC sum = RC(RC::real_t(0));
                         for (iterator it=colors.begin(); it != colors.end();
                              ++it
                         ) {
-                                sum = sum + it->toColor();
+                                sum = sum + it->toColor(kind);
                         }
                         return sum;
                 }
@@ -310,7 +311,7 @@ namespace redshift { namespace scenefile {
                                         size,
                                         maxRecursion,
                                         lodFactor,
-                                        color.toColor()
+                                        color.toColor(ReflectanceSpectrum)
                                 ));
                         }
                 };
@@ -336,7 +337,7 @@ namespace redshift { namespace scenefile {
                                 return shared_ptr<primitive::Primitive>(new WaterPlane(
                                         height,
                                         heightFunction,
-                                        color.toColor()
+                                        color.toColor(ReflectanceSpectrum)
                                 ));
                         }
                 };
@@ -355,7 +356,7 @@ namespace redshift { namespace scenefile {
 
                                 return shared_ptr<primitive::Primitive>(new HorizonPlane(
                                         height,
-                                        color.toColor()
+                                        color.toColor(ReflectanceSpectrum)
                                 ));
                         }
                 };
@@ -405,16 +406,16 @@ namespace redshift { namespace scenefile {
                         switch (type) {
                         case homogeneous:
                                 return shared_ptr<VolumeRegion> (new volume::Homogeneous(
-                                        sigma_a.toColor(),
-                                        sigma_s.toColor(),
-                                        Lve.toColor(),
+                                        sigma_a.toColor(IlluminantSpectrum),
+                                        sigma_s.toColor(IlluminantSpectrum),
+                                        Lve.toColor(IlluminantSpectrum),
                                         hg
                                 ));
                         case exponential:
                                 return shared_ptr<VolumeRegion> (new volume::Exponential(
-                                        sigma_a.toColor(),
-                                        sigma_s.toColor(),
-                                        Lve.toColor(),
+                                        sigma_a.toColor(IlluminantSpectrum),
+                                        sigma_s.toColor(IlluminantSpectrum),
+                                        Lve.toColor(IlluminantSpectrum),
                                         hg,
                                         baseFactor,
                                         exponentFactor,

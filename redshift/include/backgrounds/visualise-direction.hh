@@ -33,7 +33,8 @@ namespace redshift { namespace backgrounds {
                         return Color::FromRGB(
                                 ray.direction.x+.5f,
                                 ray.direction.y+.5f,
-                                ray.direction.z+.5f
+                                ray.direction.z+.5f,
+                                IlluminantSpectrum
                         );
                 }
         };

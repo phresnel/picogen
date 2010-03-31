@@ -325,16 +325,22 @@ PssSunSky::GetSkySpectralRadiance(
         PssSunSky::real_t theta,
         PssSunSky::real_t phi) const
 {
-        real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
-        // Compute xyY values
-        real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
-        real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
-        real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-        const Spectrum spect = ChromaticityToSpectrum(x,y);
-        // A simple luminance function would be more efficient.
-        const Spectrum ret = Y * spect / spect.y();
-
-        return ret;
+        if (turbidity>10) {
+                const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+                const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+                const real_t o = Y*(1+2.*cos(theta))/3.;
+                return Spectrum::FromRGB(o,o,o,IlluminantSpectrum);
+        } else {
+                const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+                // Compute xyY values
+                const real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
+                const real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
+                const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+                const Spectrum spect = ChromaticityToSpectrum(x,y);
+                // A simple luminance function would be more efficient.
+                const Spectrum ret = Y * spect / spect.y();
+                return ret;
+        }
 }
 
 color::xyY PssSunSky::GetSkySpectralRadiance_xyY(

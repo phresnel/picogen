@@ -77,7 +77,7 @@ void DrawScreen(SDL_Surface* screen) {
                 true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
                                         // happen if you try to use them....
         );*/
-        PssSunSky pss (Vector(1,1,1), 3, true);
+        PssSunSky pss (Vector(1,1,1), 20, true);
 
         using namespace redshift;
         using namespace color;
@@ -99,11 +99,13 @@ void DrawScreen(SDL_Surface* screen) {
                                 const Vector d = screenToHemisphereSat(u,v);
 
                                 #if 1
-                                const SpectrumBase<float> ssp = SpectrumBase<float>(pss.GetSkySpectralRadiance(d));
+                                PssSunSky::Spectrum ssp = pss.GetSkySpectralRadiance(d);
                                 const Vector viewer (0,0,0);
-                                const Vector at = viewer + d * real_t(0.f);
+                                const Vector at = viewer + d * real_t(10000.f);
                                 PssSunSky::Spectrum att(Spectrum::noinit), inscatter(Spectrum::noinit);
                                 pss.GetAtmosphericEffects (viewer, at, att, inscatter);
+
+                                //ssp = ssp*att + inscatter*(1.-att);
                                 /*const color::RGB rgbS = inscatter.toRGB();
                                 const color::RGB rgbX = ssp.toRGB();
                                 const color::RGB rgbR (200000,0,0);*/
@@ -118,7 +120,7 @@ void DrawScreen(SDL_Surface* screen) {
                                 std::cout << "\nrgb_:" << rgb.R << ' ' << rgb.G << ' ' << rgb.B << "\n";
                                 std::cout << "\n\n";
                                 exit(0);*/
-                                const SpectrumBase<float> tot = ssp;
+                                const PssSunSky::Spectrum tot = ssp;
                                 const RGB& rgb = tot.toRGB();
                                         /*(x%10)==0 ? rgbR :
                                         (x/10)%2==0 ? rgbS : rgbX*/;
@@ -132,9 +134,10 @@ void DrawScreen(SDL_Surface* screen) {
                                 sum.G += rgb.G;
                                 sum.B += rgb.B;
                         }
-                        const int r_ = (sum.R*0.00005)*255 / numSamples;
-                        const int g_ = (sum.G*0.00005)*255 / numSamples;
-                        const int b_ = (sum.B*0.00005)*255 / numSamples;
+                        const double fac = 1;//0.00005;
+                        const int r_ = (sum.R*fac)*255 / numSamples;
+                        const int g_ = (sum.G*fac)*255 / numSamples;
+                        const int b_ = (sum.B*fac)*255 / numSamples;
                         const int r = r_<0 ? 0 : r_>255 ? 255 : r_;
                         const int g = g_<0 ? 0 : g_>255 ? 255 : g_;
                         const int b = b_<0 ? 0 : b_>255 ? 255 : b_;
@@ -152,7 +155,7 @@ void DrawScreen(SDL_Surface* screen) {
 }
 
 
-int main(int /*argc*/, char* /*argv*/[])
+int main_(int /*argc*/, char* /*argv*/[])
 {
         //freopen( "CON", "w", stdout );
         redshift::static_init();
@@ -162,7 +165,7 @@ int main(int /*argc*/, char* /*argv*/[])
         using namespace color;
         using namespace background;
         PssSunSky pss (Vector(1,4,1), 1.9, true);
-
+/*
         PssSunSky::Spectrum white_(1);
         for (double f=0; f<30000; f+=1000) {
                 PssSunSky::Spectrum att_, inscatter_;
@@ -183,7 +186,7 @@ int main(int /*argc*/, char* /*argv*/[])
         }
 
 std::cout << "exiting from DrawScreen()." << std::endl;
-return 0;
+return 0;*/
 
 
         SDL_Surface *screen;
