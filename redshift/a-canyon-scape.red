@@ -1,17 +1,18 @@
 scene{
-    film-settings{color-scale:0.0125; convert-to-srgb:1;}
+    film-settings{color-scale:0.016; convert-to-srgb:1;}
+
     render-settings{
         prev-vol{
-            width:512;
-            height:171;
+            width:640;
+            height:480;
             samples-per-pixel:1;
             surface-integrator{
                 type:redshift;
             }
             volume-integrator{
                 type:none;
-                step-size:600;
-                cutoff-distance:4000;
+                step-size:1600;
+                cutoff-distance:40000
             }
         }
         prev-no-vol{
@@ -26,53 +27,59 @@ scene{
     cameras{
         aerial{
             transform{
-                move-up{1500}
-                move-forward{100}
-                yaw{0}
-                pitch{0}
+                move-right{10000}
+                move-up{250}
+                move-forward{-50000}
 
-                move-up{2000}
+                pitch{7}
+                roll{0}
             }
         }
     }
     objects{
+        water-plane{
+                color{rgb{0.2;0.4;0.2}}
+                height:20;
+        }
         lazy-quadtree{
-                color{0.85;1.0;0.85}
-                max-recursion:8;
-                lod-factor:0.000125;
-                size:50000;
-                code:
+                color{rgb{0.25;0.35;0.25}}
+                max-recursion:12;
+                lod-factor:0.0125;
+                size:1000000;
+                code:   /*(* 1000 (cos (* x 0.001)) (cos (* y 0.001)))*/
                         (defun foo (x y)
                                 ([LayeredNoise2d
                                         filter{cosine}
-                                        seed{5}
-                                        frequency{0.0002}
-                                        layercount{8}
-                                        persistence{0.5}
-                                ] (+ 100000 x) (+ 100000 y))
+                                        seed{3}
+                                        frequency{1}
+                                        layercount{14}
+                                        persistence{0.55}
+                                ] x y)
                         )
 
-                        (+ 2000 500 (* 5000  (foo x y)))
-                        /*(+ 300 (* (sin (* x 0.001)) (sin (* y 0.001))))*/
+                        (defun ridged (x y)
+                                (- 1 (abs (^ (foo x y) 2)))
+                        )
+
+                        (+ 0 (* 2000  (foo (* x 0.0001) (* 0.0001 y))))
                 ;
         }
-        water-plane{height:2010; }
     }
     backgrounds{
         pss-sunsky {
-                turbidity:1.9;
-                sun-direction{0.2;0.7;1.0}
+                turbidity:9.0;
+                sun-direction{2.0;1.3;1}
         }
     }
     volumes {
         exponential {
-                absorption{0.0007;0.0007;0.0007}
-                out-scatter{0.001;0.001;0.001}
-                emission{0.0006;0.0006;0.0006}
-                min{0;300;0}
+                absorption{rgb{0;0;0}}
+                out-scatter{rgb{0.01;0.01;0.01}}
+                emission{rgb{0.001;0.001;0.001}}
+                min{0;1700;0}
                 phase-function:0;
                 base-factor:1;
-                exponent-factor:0.005;
+                exponent-factor:0.009;
         }
     }
 }
