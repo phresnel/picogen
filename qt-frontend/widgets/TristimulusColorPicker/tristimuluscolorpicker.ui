@@ -449,6 +449,18 @@ p, li { white-space: pre-wrap; }
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>spinR</tabstop>
+  <tabstop>spinG</tabstop>
+  <tabstop>spinB</tabstop>
+  <tabstop>spinH</tabstop>
+  <tabstop>spinS</tabstop>
+  <tabstop>spinV</tabstop>
+  <tabstop>spinC</tabstop>
+  <tabstop>spinM</tabstop>
+  <tabstop>spinY</tabstop>
+  <tabstop>spinK</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

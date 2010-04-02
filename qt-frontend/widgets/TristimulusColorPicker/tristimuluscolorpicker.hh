@@ -13,26 +13,28 @@ class TristimulusColorPicker : public QWidget {
 public:
         TristimulusColorPicker(QWidget *parent = 0);
         ~TristimulusColorPicker();
-public slots:
-        void on_triangle_colorChanged(const QColor & color);
-signals:
-        void colorChanged (const QColor & color);
+
+        QColor color() const ;
+        void setColor (QColor const &color) ;
+
 protected:
         void changeEvent(QEvent *e);
 
+
 private:
-        Ui::TristimulusColorPicker *ui;        
-        void updateAllByRgb();
-        bool isInside_updateAllByRgb;
+        Ui::TristimulusColorPicker *ui;
+        bool isUpdating;        
+        QColor color_;
 
-        void updateAllByHsv();
-        bool isInside_updateAllByHsv;
 
-        void updateCmykSpins(QColor const &color);
-        void updateRgbSpins(QColor const &color);
-        void updateHsvSpins(QColor const &color);
+//------------------------------------------------------------------------------
+// Signals + Slots
+//------------------------------------------------------------------------------
+signals:
+        void colorChanged (const QColor & color);
 
-        void updateAllSpins(QColor const &color);
+public slots:
+        void on_triangle_colorChanged(const QColor & color);
 
 private slots:
         void on_spinR_valueChanged(int);
@@ -41,7 +43,14 @@ private slots:
 
         void on_spinH_valueChanged(int);
         void on_spinS_valueChanged(int);
-        void on_spinV_valueChanged(int);
+        void on_spinV_valueChanged(int);        
+
+        void on_spinC_valueChanged(int);
+        void on_spinM_valueChanged(int);
+        void on_spinY_valueChanged(int);
+        void on_spinK_valueChanged(int);
 };
+
+
 
 #endif // TRISTIMULUSCOLORPICKER_HH
