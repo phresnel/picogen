@@ -119,8 +119,8 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(objectTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(objectTypeEnumManager_valueChanged(QtProperty*,int)));
 
-        codeEditManager = new QtStringPropertyManager(this);
-        connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QString)),
+        codeEditManager = new QtVariantPropertyManager(this);
+        connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                 this, SLOT(code_valueChanged(QtProperty*,QString)));
 
         comboBoxFactory = new QtEnumEditorFactory(this);
@@ -132,7 +132,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
-        ui->settings->setFactoryForManager(codeEditManager, lineEditFactory);
 
         // Film Settings.
         {
@@ -425,12 +424,12 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         QtVariantProperty* height = variantManager->addProperty(QVariant::Double,"height");
                         t->addSubProperty(height);
                         height->setAttribute(QLatin1String("decimals"), 6);
-                        QtProperty* code = codeEditManager->addProperty("code");
+                        QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
                         t->addSubProperty(code);
                 } else if (type == "lazy-quadtree") {
                         t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
 
-                        QtProperty* code = codeEditManager->addProperty("code");
+                        QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
                         t->addSubProperty(code);
 
                         QtVariantProperty* maxrec = variantManager->addProperty(QVariant::Int,"max-recursion");
@@ -501,8 +500,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         if (isCode) {
                 ui->codeEditor->setEnabled(true);
                 ui->codeEditor->setVisible(true);
-                //ui->codeEditor->setCode(((QtVariantProperty*)current->property())->value().value<QString>());
-                ui->codeEditor->setCode(codeEditManager->value(current->property()));
+                ui->codeEditor->setCode(codeEditManager->value(current->property()).toString());
         } else {
                 ui->codeEditor->setEnabled(false);
                 ui->codeEditor->setVisible(false);

@@ -50,7 +50,7 @@ private:
         QtProperty *objectsProperty;
         QtEnumPropertyManager *transformEnumManager;
         QtEnumPropertyManager *objectTypeEnumManager;
-        QtStringPropertyManager *codeEditManager;
+        QtVariantPropertyManager *codeEditManager;
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void addRenderSettings (std::string const &name);
