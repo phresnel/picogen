@@ -1,10 +1,10 @@
 scene{
-    film-settings{color-scale:0.016; convert-to-srgb:1;}
+    film-settings{color-scale:0.023; convert-to-srgb:1;}
 
     render-settings{
         prev-vol{
-            width:640;
-            height:480;
+            width:800;
+            height:500;
             samples-per-pixel:1;
             surface-integrator{
                 type:redshift;
@@ -27,9 +27,9 @@ scene{
     cameras{
         aerial{
             transform{
-                move-right{10000}
-                move-up{250}
-                move-forward{-50000}
+                move-right{9000}
+                move-up{8000}
+                move-forward{-150000}
 
                 pitch{7}
                 roll{0}
@@ -37,38 +37,38 @@ scene{
         }
     }
     objects{
-        water-plane{
-                color{rgb{0.2;0.4;0.2}}
-                height:20;
+        horizon-plane{
+                color{rgb{0.5;0.5;0.5}}
+                height:2020;
         }
         lazy-quadtree{
-                color{rgb{0.25;0.35;0.25}}
+                color{rgb{0.6;0.4;0.2}}
                 max-recursion:12;
-                lod-factor:0.0125;
+                lod-factor:0.01;
                 size:1000000;
                 code:   /*(* 1000 (cos (* x 0.001)) (cos (* y 0.001)))*/
                         (defun foo (x y)
-                                ([LayeredNoise2d
+                                (^ (- 1 (abs ([LayeredNoise2d
                                         filter{cosine}
                                         seed{3}
-                                        frequency{1}
-                                        layercount{14}
+                                        frequency{0.1}
+                                        layercount{6}
                                         persistence{0.55}
-                                ] x y)
+                                ] (abs x) (abs y)))) 3)
                         )
 
                         (defun ridged (x y)
                                 (- 1 (abs (^ (foo x y) 2)))
                         )
 
-                        (+ 0 (* 2000  (foo (* x 0.0001) (* 0.0001 y))))
+                        (+ -1500 (* 9000  (foo (* x 0.0001) (* 0.0001 y))))
                 ;
         }
     }
     backgrounds{
         pss-sunsky {
-                turbidity:9.0;
-                sun-direction{2.0;1.3;1}
+                turbidity:2.7;
+                sun-direction{3.0;0.1;0}
         }
     }
     volumes {
