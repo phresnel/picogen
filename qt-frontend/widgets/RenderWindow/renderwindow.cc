@@ -21,8 +21,8 @@
 #include <stdexcept>
 #include <QImage>
 #include <QThread>
-#include <QMessageBox>
 #include <QResizeEvent>
+#include <QFont>
 
 #include "renderwindow.hh"
 #include "ui_renderwindow.h"
@@ -56,7 +56,7 @@ RenderWindowImpl::~RenderWindowImpl () {
 
 
 void RenderWindowImpl::report (
-        redshift::shared_ptr<redshift::RenderTargetLock const> rlock,
+        redshift::shared_ptr<redshift::RenderTargetLock const> /*rlock*/,
         int completed, int total
 ) {
         if (++reportW>20) {
@@ -85,10 +85,13 @@ void RenderWindowImpl::run() {
         try {
                 const scenefile::FilmSettings &fs = scenefile->filmSettings();
 
-                renderBuffer = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
+                const int width = scenefile->renderSettings(0).width,
+                          height =  scenefile->renderSettings(0).height;
+
+                renderBuffer = shared_ptr<ColorRenderTarget>(
+                                new ColorRenderTarget (width, height));
                 target = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (
-                                        scenefile->renderSettings(0).width,
-                                        scenefile->renderSettings(0).height,
+                                        width, height,
                                         fs.colorscale, fs.convertToSrgb));
 
                 redshift::shared_ptr<redshift::Scene> scene =
@@ -165,6 +168,13 @@ RenderWindow::~RenderWindow() {
 void RenderWindow::updateImage (QImage image, double percentage) {
         if (impl->error()) {
                 setWindowTitle ("Error");
+
+                QFont font;
+                font.setStyleHint (QFont::TypeWriter, QFont::PreferAntialias);
+                font.setFamily("Monospace");
+                font.setFixedPitch(true);
+                ui->pix->setFont(font);
+
                 ui->pix->setText(impl->errorMessage());
         } else {
                 if (percentage>=1) {
