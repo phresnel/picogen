@@ -208,3 +208,52 @@ void SpectralColorPicker::on_minAmp_editingFinished() {
                 ui->minAmp->setValue(ui->maxAmp->value());
         emit minAmplitudeChanged(ui->minAmp->value());
 }
+
+
+QVector<SpectralSample> SpectralColorPicker::samples () const {
+        const int count = sliders.count();
+        QVector<SpectralSample> samples(count);
+        foreach (SpectralSlider *slider, sliders) {
+                SpectralSample ss;
+                ss.amplitude = slider->amplitude();
+                ss.wavelength = slider->wavelength();
+                samples.push_back(ss);
+        }
+        return samples;
+}
+
+void SpectralColorPicker::setSamples (QVector<SpectralSample> samples) {
+        ui->lockSampleCount->setChecked(true);
+        on_lockSampleCount_toggled(ui->lockSampleCount->checkState());
+        removeSpectralSliders();
+        addSpectralSliders(samples.count());
+
+        const int count = samples.count();
+        QVector<double> amplitudes(count);
+        QVector<double> wavelengths(count);
+
+        foreach(SpectralSample sample, samples) {
+                amplitudes.push_back(sample.amplitude);
+                wavelengths.push_back(sample.wavelength);
+        }
+
+        ui->minAmp->setValue(0);
+        ui->maxAmp->setValue(1);
+        for (int i=0; i<count; ++i) {
+                const double amp = amplitudes[i];
+                if (amp < ui->minAmp->value())
+                        ui->minAmp->setValue(amp);
+                if (amp > ui->maxAmp->value())
+                        ui->maxAmp->setValue(amp);
+        }
+
+        emit minAmplitudeChanged(ui->minAmp->value());
+        emit maxAmplitudeChanged(ui->maxAmp->value());
+
+        for (int i=0; i<count; ++i) {
+                sliders[i]->setWavelength (wavelengths[i]);
+                sliders[i]->setAmplitude (amplitudes[i]);
+        }
+
+        updatePixmap();
+}

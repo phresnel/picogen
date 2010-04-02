@@ -30,6 +30,9 @@ namespace Ui {
     class SpectralColorPicker;
 }
 
+struct SpectralSample {
+        double wavelength, amplitude;
+};
 
 class SpectralSlider;
 class SpectralColorPicker : public QWidget {
@@ -39,6 +42,9 @@ public:
         ~SpectralColorPicker();
 
         typedef redshift::ReferenceSpectrum Spectrum;
+
+        QVector<SpectralSample> samples () const;
+        void setSamples (QVector<SpectralSample>);
 
 protected:
         void changeEvent(QEvent *e);

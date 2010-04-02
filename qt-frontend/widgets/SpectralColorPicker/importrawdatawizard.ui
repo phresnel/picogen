@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Import raw data</string>
   </property>
-  <widget class="QWizardPage" name="wizardPage1">
+  <widget class="QWizardPage" name="loadOrPastePage">
    <attribute name="pageId">
     <string notr="true">0</string>
    </attribute>
@@ -40,7 +40,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="wizardPage">
+  <widget class="QWizardPage" name="importFormatAndWavelengthCalc">
    <attribute name="pageId">
     <string notr="true">1</string>
    </attribute>
@@ -121,7 +121,7 @@
           <layout class="QHBoxLayout" name="horizontalLayout_3"/>
          </widget>
          <widget class="QWidget" name="page_3">
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>0</x>
@@ -169,7 +169,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="wizardPage2">
+  <widget class="QWizardPage" name="unitConversion">
    <attribute name="pageId">
     <string notr="true">2</string>
    </attribute>
@@ -415,7 +415,10 @@ p, li { white-space: pre-wrap; }
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="wizardPage_2">
+  <widget class="QWizardPage" name="saveToDatabase">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <widget class="QCheckBox" name="checkBox">
     <property name="geometry">
      <rect>
