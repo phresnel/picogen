@@ -86,8 +86,10 @@ void RenderWindowImpl::run() {
                 const scenefile::FilmSettings &fs = scenefile->filmSettings();
 
                 renderBuffer = shared_ptr<ColorRenderTarget>(new ColorRenderTarget (320, 240));
-                target = shared_ptr<QImageRenderTarget>(
-                                new QImageRenderTarget (320, 240, fs.colorscale, fs.convertToSrgb));
+                target = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (
+                                        scenefile->renderSettings(0).width,
+                                        scenefile->renderSettings(0).height,
+                                        fs.colorscale, fs.convertToSrgb));
 
                 redshift::shared_ptr<redshift::Scene> scene =
                                 sceneDescriptionToScene(*scenefile, renderBuffer);
@@ -96,7 +98,7 @@ void RenderWindowImpl::run() {
                         shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
                 UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
 
-                scene->render(rep, commandProcessor, 1);
+                scene->render(rep, commandProcessor, scenefile->renderSettings(0).samplesPerPixel);
 
         } catch (std::exception const &ex) {
                 error_ = true;
@@ -136,7 +138,8 @@ RenderWindow::RenderWindow(
         // It seems impossible to do proper resizing within updateImage
         // (I've tried to setMinimumSize() on pixmap, layout, myself, and also
         //  the others like repaint(), update(), and all permutations)
-        QPixmap map(320,240);
+        QPixmap map(scenefile->renderSettings(0).width,
+                    scenefile->renderSettings(0).height);
         map.fill(QColor(0,0,0));
         ui->pix->setPixmap(map);
 

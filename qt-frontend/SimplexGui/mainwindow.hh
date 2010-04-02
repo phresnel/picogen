@@ -50,7 +50,7 @@ private:
         QtProperty *objectsProperty;
         QtEnumPropertyManager *transformEnumManager;
         QtEnumPropertyManager *objectTypeEnumManager;
-
+        QtStringPropertyManager *codeEditManager;
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void addRenderSettings (std::string const &name);
@@ -60,6 +60,8 @@ private:
         void addObject ();
 
         QtBrowserItem * currentBrowserItem;
+
+        bool nonRecurseLock;
 private slots:
         void on_codeEditor_codeChanged();
         void on_editCodeButton_pressed();
@@ -71,9 +73,10 @@ private slots:
         void on_settings_currentItemChanged(QtBrowserItem * current);
 
         // non MOC
+        void code_valueChanged(QtProperty*, QString);
         void transformEnumManager_valueChanged(QtProperty*, int);
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
-        void rsTitleManager_valueChanged ( QtProperty *, const QString &);
+        void rsTitleManager_valueChanged (QtProperty *, const QString &);
 };
 
 #endif // MAINWINDOW_HH

@@ -86,7 +86,8 @@ namespace {
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    currentBrowserItem(0)
+    currentBrowserItem(0),
+    nonRecurseLock(false)
 {
         ui->setupUi(this);
 
@@ -118,6 +119,9 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(objectTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(objectTypeEnumManager_valueChanged(QtProperty*,int)));
 
+        codeEditManager = new QtStringPropertyManager(this);
+        connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QString)),
+                this, SLOT(code_valueChanged(QtProperty*,QString)));
 
         comboBoxFactory = new QtEnumEditorFactory(this);
         lineEditFactory = new QtLineEditFactory(this);
@@ -128,6 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
+        ui->settings->setFactoryForManager(codeEditManager, lineEditFactory);
 
         // Film Settings.
         {
@@ -180,7 +185,6 @@ MainWindow::MainWindow(QWidget *parent) :
                 objectsProperty = groupManager->addProperty("objects");
                 ui->settings->addProperty(objectsProperty);
 
-                addObject();
                 addObject();
         }
 
@@ -418,14 +422,15 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         t->addSubProperty(it);
                         it->setAttribute(QLatin1String("decimals"), 6);
                 } else if (type == "water-plane") {
-                        QtVariantProperty* it = variantManager->addProperty(QVariant::Double,"height");
-                        t->addSubProperty(it);
-                        it->setAttribute(QLatin1String("decimals"), 6);
-                        t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
+                        QtVariantProperty* height = variantManager->addProperty(QVariant::Double,"height");
+                        t->addSubProperty(height);
+                        height->setAttribute(QLatin1String("decimals"), 6);
+                        QtProperty* code = codeEditManager->addProperty("code");
+                        t->addSubProperty(code);
                 } else if (type == "lazy-quadtree") {
                         t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
 
-                        QtProperty* code = variantManager->addProperty(QVariant::String,"code");
+                        QtProperty* code = codeEditManager->addProperty("code");
                         t->addSubProperty(code);
 
                         QtVariantProperty* maxrec = variantManager->addProperty(QVariant::Int,"max-recursion");
@@ -496,7 +501,8 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         if (isCode) {
                 ui->codeEditor->setEnabled(true);
                 ui->codeEditor->setVisible(true);
-                ui->codeEditor->setCode(((QtVariantProperty*)current->property())->value().value<QString>());
+                //ui->codeEditor->setCode(((QtVariantProperty*)current->property())->value().value<QString>());
+                ui->codeEditor->setCode(codeEditManager->value(current->property()));
         } else {
                 ui->codeEditor->setEnabled(false);
                 ui->codeEditor->setVisible(false);
@@ -713,6 +719,22 @@ void MainWindow::on_editCodeButton_pressed() {
 void MainWindow::on_codeEditor_codeChanged() {
         // We assume that this can only be triggered if the current item
         // is some code.
-        ((QtVariantProperty*)currentBrowserItem->property())->
-                setValue(ui->codeEditor->code());
+        if (nonRecurseLock)
+                return;
+        nonRecurseLock = true;
+        codeEditManager->setValue(currentBrowserItem->property(),
+                                  ui->codeEditor->code());
+        nonRecurseLock = false;
+}
+
+
+
+void MainWindow::code_valueChanged(QtProperty*, QString code) {
+        // This is under the assumption that the code window is open for the
+        // property that just emitted this signal.
+        if (nonRecurseLock)
+                return;
+        nonRecurseLock = true;
+        ui->codeEditor->setCode(code);
+        nonRecurseLock = false;
 }
