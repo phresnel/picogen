@@ -11,3 +11,4 @@ HEADERS += mainwindow.hh \
 FORMS += mainwindow.ui \
     tristimuluscolorpicker.ui
 include(../../../upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/qtcolortriangle.pri)
+OTHER_FILES += tristimuluscolorpicker.pri

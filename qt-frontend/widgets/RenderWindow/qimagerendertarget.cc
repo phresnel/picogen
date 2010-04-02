@@ -100,7 +100,8 @@ struct QImageRenderTarget::QImageRenderTargetLock : redshift::RenderTargetLock {
                 qreal r, g, b, a;
                 QColor (display.display.pixel (x, y)).getRgbF (&r, &g, &b, &a);
                 return redshift::Color::FromRGB(
-                                real_t(r), real_t(g), real_t(b));
+                                real_t(r), real_t(g), real_t(b),
+                                redshift::ReflectanceSpectrum);
         }
 };
 
@@ -139,7 +140,8 @@ struct QImageRenderTarget::QImageRenderTargetConstLock
                 qreal r, g, b, a;
                 QColor (display.display.pixel (x, y)).getRgbF (&r, &g, &b, &a);
                 return redshift::Color::FromRGB(
-                                real_t(r), real_t(g), real_t(b));
+                                real_t(r), real_t(g), real_t(b),
+                                redshift::ReflectanceSpectrum);
         }
 };
 
