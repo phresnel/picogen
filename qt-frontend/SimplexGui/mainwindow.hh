@@ -7,7 +7,8 @@
 #include "qtpropertymanager.h"
 #include "qteditorfactory.h"
 
-#include "../../redshift/include/smart_ptr.hh"
+#include "redshift/include/smart_ptr.hh"
+#include "redshift/include/jobfile.hh"
 
 namespace Ui {
     class MainWindow;
@@ -32,7 +33,7 @@ protected:
 private:
         Ui::MainWindow *ui;
 
-        QtStringPropertyManager *rsTitleManager;        
+        QtStringPropertyManager *rsTitleManager;
 
         QtLineEditFactory *lineEditFactory;
 
@@ -44,17 +45,18 @@ private:
         QtEnumPropertyManager *enumManager;
         QtEnumEditorFactory *comboBoxFactory;
 
-        QtProperty *renderSettingsProperty;        
+        QtProperty *renderSettingsProperty;
         QtProperty *camerasProperty;
         QtProperty *objectsProperty;
-        QtEnumPropertyManager *transformEnumManager;        
+        QtEnumPropertyManager *transformEnumManager;
         QtEnumPropertyManager *objectTypeEnumManager;
 
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void addRenderSettings (std::string const &name);
         void addCamera (std::string const &name);
-        void addTransform (QtProperty *transformRoot);
+        void addTransform (QtProperty *transformRoot,
+                           redshift::scenefile::Camera::Transform::Type type);
         void addObject ();
 
         QtBrowserItem * currentBrowserItem;
@@ -71,7 +73,7 @@ private slots:
         // non MOC
         void transformEnumManager_valueChanged(QtProperty*, int);
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
-        void rsTitleManager_valueChanged ( QtProperty *, const QString &);        
+        void rsTitleManager_valueChanged ( QtProperty *, const QString &);
 };
 
 #endif // MAINWINDOW_HH

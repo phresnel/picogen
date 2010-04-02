@@ -271,12 +271,18 @@ void MainWindow::addCamera(const std::string &name) {
         camera->addSubProperty(transformRoot);
         camerasProperty->addSubProperty(camera);
 
-        addTransform (transformRoot);
+        addTransform (transformRoot, redshift::scenefile::Camera::Transform::move);
+        addTransform (transformRoot, redshift::scenefile::Camera::Transform::yaw);
+        addTransform (transformRoot, redshift::scenefile::Camera::Transform::pitch);
+        addTransform (transformRoot, redshift::scenefile::Camera::Transform::roll);
 }
 
 
 
-void MainWindow::addTransform (QtProperty *transformRoot) {
+void MainWindow::addTransform (QtProperty *transformRoot,
+                               redshift::scenefile::Camera::Transform::Type type) {
+        typedef redshift::scenefile::Camera::Transform Xf;
+
         QtProperty *transform = groupManager->addProperty("---");
         transformRoot->addSubProperty(transform);
 
@@ -285,17 +291,27 @@ void MainWindow::addTransform (QtProperty *transformRoot) {
         transform->addSubProperty(transformType);
 
         QStringList enumNames;
-        enumNames << "move"
-                  << "move-left"
-                  << "move-right"
-                  << "move-up"
-                  << "move-backward"
-                  << "move-forward"
-                  << "yaw"
-                  << "pitch"
-                  << "roll"
-                  ;
+        int i = 0, def = 0;
+        enumNames << "move";
+        if (type == Xf::move) def = i; i++;
+        enumNames << "move-left";
+        if (type == Xf::move_left) def = i; i++;
+        enumNames << "move-right";
+        if (type == Xf::move_right) def = i; i++;
+        enumNames << "move-up";
+        if (type == Xf::move_up) def = i; i++;
+        enumNames << "move-backward";
+        if (type == Xf::move_backward) def = i; i++;
+        enumNames << "move-forward";
+        if (type == Xf::move_forward) def = i; i++;
+        enumNames << "yaw";
+        if (type == Xf::yaw) def = i; i++;
+        enumNames << "pitch";
+        if (type == Xf::pitch) def = i; i++;
+        enumNames << "roll";
+        if (type == Xf::roll) def = i; i++;
         transformEnumManager->setEnumNames(transformType, enumNames);
+        transformEnumManager->setValue(transformType, def);
 }
 
 
@@ -407,7 +423,7 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         it->setAttribute(QLatin1String("decimals"), 6);
                         t->addSubProperty(variantManager->addProperty(QVariant::String,"code"));
                 } else if (type == "lazy-quadtree") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Color,"color"));
+                        t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
 
                         QtProperty* code = variantManager->addProperty(QVariant::String,"code");
                         t->addSubProperty(code);
@@ -674,7 +690,8 @@ void MainWindow::on_newRsButton_pressed() {
 void MainWindow::on_newTransformButton_pressed() {
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
-        addTransform (currentBrowserItem->property());
+        addTransform (currentBrowserItem->property(),
+                      redshift::scenefile::Camera::Transform::move);
 }
 
 

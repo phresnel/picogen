@@ -24,7 +24,8 @@ HEADERS += mainwindow.hh \
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui
-LIBS += ../../redshift/lib/libpicogen.a \
+LIBS += \
+    ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lboost_program_options \
     -lSDL
