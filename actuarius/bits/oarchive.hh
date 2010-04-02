@@ -241,7 +241,7 @@ public:
 
         // "iomanip" style things
         OArchive&
-        operator& (push_optional rhs) {
+        operator& (push_optional) {
                 return *this;
         }
         OArchive&
