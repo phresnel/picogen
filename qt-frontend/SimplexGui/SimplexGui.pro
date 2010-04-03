@@ -3,15 +3,12 @@
 # -------------------------------------------------
 TARGET = simplex-gui
 TEMPLATE = app
-
 DEFINES += __STDC_LIMIT_MACROS
-
 INCLUDEPATH += ../widgets/
 INCLUDEPATH += ../widgets/QuatschSourceEditor/
 INCLUDEPATH += ../widgets/SimpleInputBox/
 INCLUDEPATH += ../widgets/RenderWindow/
 INCLUDEPATH += ../../
-
 SOURCES += main.cc \
     mainwindow.cc \
     ../widgets/RenderWindow/renderwindow.cc \
@@ -20,16 +17,15 @@ SOURCES += main.cc \
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
-    ../widgets/QuatschSourceEditor/quatschsourceeditor.hh
+    ../widgets/QuatschSourceEditor/quatschsourceeditor.hh \
+    ../widgets/QuatschSourceEditor/quatsch-editor.hh
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui
-LIBS += \
-    ../../redshift/lib/libpicogen.a \
+LIBS += ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lboost_program_options \
     -lSDL
-
 include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
 include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)
 include(../widgets/TristimulusColorPicker/tristimuluscolorpicker.pri)

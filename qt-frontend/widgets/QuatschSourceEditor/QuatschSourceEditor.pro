@@ -11,4 +11,12 @@ HEADERS += mainwindow.hh \
     quatschsourceeditor.hh
 FORMS += mainwindow.ui \
     quatschsourceeditor.ui
-INCLUDEPATH += ../../../
+
+INCLUDEPATH += \
+        ../../../ \
+        ../../../redshift/include
+
+LIBS += ../../../redshift/lib/libpicogen.a \
+    -lgomp \
+    -lboost_program_options \
+    -lSDL

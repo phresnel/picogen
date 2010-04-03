@@ -62,6 +62,8 @@ class QuatschHighlighter : public QSyntaxHighlighter {
 public:
         QuatschHighlighter(QTextDocument *parent = 0);
 
+        void setFunctionNames (QStringList list);
+
 protected:
         void highlightBlock(const QString &text);
 
@@ -72,6 +74,7 @@ private:
                 QTextCharFormat format;
         };
         QVector<HighlightingRule> highlightingRules;
+        QVector<HighlightingRule> callHighlightingRules;
 
         QRegExp commentStartExpression;
         QRegExp commentEndExpression;
@@ -102,10 +105,12 @@ signals:
         void codeChanged () ;
 
 private slots:
+        void on_compileAndRunButton_pressed();
         void on_edit_textChanged ();
-        void matchParentheses();
+        void on_edit_cursorPositionChanged();
 
 private:
+        bool softLock;
         void closeEvent(QCloseEvent *event);
 
         bool matchLeftParenthesis(QTextBlock currentBlock, int index, int numRightParentheses);

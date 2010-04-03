@@ -23,6 +23,7 @@
 #include "quatschsourceeditor.hh"
 #include <QCloseEvent>
 
+#include "redshift/include/basictypes/quatsch-height-function.hh"
 
 
 TextBlockData::TextBlockData()
@@ -52,12 +53,12 @@ void TextBlockData::insert(ParenthesisInfo *info)
 
 
 QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
-: QWidget(parent), ui(new Ui::QuatschEditor)
+: QWidget(parent), ui(new Ui::QuatschEditor), softLock(false)
 {
         setAttribute(Qt::WA_DeleteOnClose);
         ui->setupUi(this);
 
-        highlighter = new QuatschHighlighter (ui->edit->document());
+        ui->status->setText("");
 
         QFont font;
         font.setStyleHint (QFont::TypeWriter, QFont::PreferAntialias);
@@ -66,13 +67,16 @@ QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
         font.setPointSize(9);
         ui->edit->setFont (font);
 
+        highlighter = new QuatschHighlighter (ui->edit->document());
         ui->edit->setText (
                 "// Example code:\n"
-                "(defun $main (x y) (if (< x y) x y))"
+                "(defun main (u v) (if (< u v) (sin u) (cos v)))\n"
+                "\n"
+                "(main x y)"
         );
-
-        connect(ui->edit, SIGNAL(cursorPositionChanged()),
-                this, SLOT(matchParentheses()));
+        on_edit_cursorPositionChanged();
+        on_edit_textChanged();
+        highlighter->rehighlight();
 }
 
 
@@ -90,7 +94,29 @@ QString QuatschSourceEditor::code () const {
 
 
 void QuatschSourceEditor::on_edit_textChanged () {
+        if (softLock)
+                return;
+        softLock = true;
+        QRegExp fundefs ("defun\\s+([A-Za-z\\-_][A-Za-z\\-_0-9]*)");
+
+        const QString code = ui->edit->toPlainText();
+
+        QStringList list;
+        int pos = 0;
+        while ((pos = fundefs.indexIn(code, pos)) != -1) {
+                list << fundefs.cap(1);
+                pos += fundefs.matchedLength();
+        }
+
+        /*QString str;
+        foreach (QString pattern, list) {
+                str += pattern;
+        }
+        ui->status->setText(str);*/
+        highlighter->setFunctionNames(list);
+
         emit codeChanged();
+        softLock = false;
 }
 
 
@@ -100,9 +126,15 @@ void QuatschSourceEditor::closeEvent(QCloseEvent *event) {
 
 
 
-// walk through and check that we don't exceed 80 chars per line
-void QuatschSourceEditor::matchParentheses()
+void QuatschSourceEditor::on_edit_cursorPositionChanged()
 {
+        const int col = 1 + ui->edit->textCursor().columnNumber();
+        const int line = 1 + ui->edit->textCursor().blockNumber();
+        ui->position->setText(
+                QString::number(line) + ":" + QString::number(col)
+        );
+
+
     bool match = false;
     QList<QTextEdit::ExtraSelection> selections;
     ui->edit->setExtraSelections(selections);
@@ -216,6 +248,10 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
 {
         HighlightingRule rule;
 
+
+        functionFormat.setFontItalic(true);
+        functionFormat.setForeground(QBrush(QColor(200,255,200)));
+
         keywordFormat.setForeground(QBrush(QColor(200,200,255)));
         //keywordFormat.setFontWeight(QFont::Bold);
         keywordFormat.setFontItalic(true);
@@ -292,15 +328,23 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
 
         multiLineCommentFormat.setForeground(QBrush(QColor(255,200,200)));
 
-        functionFormat.setFontItalic(true);
-        functionFormat.setForeground(QBrush(QColor(200,255,200)));
-        //rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
-        rule.pattern = QRegExp("\\$[A-Za-z\\-_][A-Za-z\\-_0-9]*\\b");
-        rule.format = functionFormat;
-        highlightingRules.append(rule);
-
         commentStartExpression = QRegExp("/\\*");
         commentEndExpression = QRegExp("\\*/");
+}
+
+
+
+void QuatschHighlighter::setFunctionNames (QStringList names) {
+        callHighlightingRules.clear();
+
+        HighlightingRule rule;
+        foreach (QString name, names) {
+                rule.pattern = QRegExp("\\b" + name + "\\b");
+                rule.format = functionFormat;
+                callHighlightingRules.append(rule);
+        }
+
+        rehighlight(); // should only happen when functions really changed
 }
 
 
@@ -340,6 +384,15 @@ void QuatschHighlighter::highlightBlock(const QString &text) {
                         index = text.indexOf(expression, index + length);
                 }
         }
+        foreach (HighlightingRule rule, callHighlightingRules) {
+                QRegExp expression(rule.pattern);
+                int index = text.indexOf(expression);
+                while (index >= 0) {
+                        int length = expression.matchedLength();
+                        setFormat(index, length, rule.format);
+                        index = text.indexOf(expression, index + length);
+                }
+        }
         setCurrentBlockState(0);
 
         int startIndex = 0;
@@ -359,5 +412,20 @@ void QuatschHighlighter::highlightBlock(const QString &text) {
                 setFormat(startIndex, commentLength, multiLineCommentFormat);
                 startIndex = text.indexOf(commentStartExpression,
                                                  startIndex + commentLength);
+        }
+}
+
+
+void QuatschSourceEditor::on_compileAndRunButton_pressed() {
+        std::stringstream errors;
+        try {
+                ui->status->setText("");
+                redshift::QuatschHeightFunction q (code().toStdString(), errors);
+        } catch (quatsch::general_exception const &ex) {
+                ui->status->setText (QString::fromStdString(
+                        ex.getMessage() + ":\n\n"
+                        + errors.str()));
+        } catch (std::exception const &e) {
+                ui->status->setText(e.what());
         }
 }
