@@ -26,10 +26,33 @@
 //#include "heightmap-layers.hh"
 
 #include <QSyntaxHighlighter>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
 #include <QHash>
 #include <QTextCharFormat>
+
+
+
+// Qt Quarterly 31
+struct ParenthesisInfo
+{
+    char character;
+    int position;
+};
+
+class TextBlockData : public QTextBlockUserData
+{
+public:
+    TextBlockData();
+
+    QVector<ParenthesisInfo *> parentheses();
+    void insert(ParenthesisInfo *info);
+
+private:
+    QVector<ParenthesisInfo *> m_parentheses;
+};
+
+
 
 
 // lifted from http://doc.trolltech.com/4.2/richtext-syntaxhighlighter.html
@@ -80,9 +103,14 @@ signals:
 
 private slots:
         void on_edit_textChanged ();
+        void matchParentheses();
 
 private:
         void closeEvent(QCloseEvent *event);
+
+        bool matchLeftParenthesis(QTextBlock currentBlock, int index, int numRightParentheses);
+        bool matchRightParenthesis(QTextBlock currentBlock, int index, int numLeftParentheses);
+        void createParenthesisSelection(int pos);
 
         Ui::QuatschEditor *ui;
         QuatschHighlighter *highlighter;

@@ -25,6 +25,30 @@
 
 
 
+TextBlockData::TextBlockData()
+{
+    // Nothing to do
+}
+
+QVector<ParenthesisInfo *> TextBlockData::parentheses()
+{
+    return m_parentheses;
+}
+
+void TextBlockData::insert(ParenthesisInfo *info)
+{
+    int i = 0;
+    while (i < m_parentheses.size() &&
+        info->position > m_parentheses.at(i)->position)
+        ++i;
+
+    m_parentheses.insert(i, info);
+}
+
+
+
+
+
 
 
 QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
@@ -46,6 +70,9 @@ QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
                 "// Example code:\n"
                 "(defun $main (x y) (if (< x y) x y))"
         );
+
+        connect(ui->edit, SIGNAL(cursorPositionChanged()),
+                this, SLOT(matchParentheses()));
 }
 
 
@@ -72,6 +99,112 @@ void QuatschSourceEditor::closeEvent(QCloseEvent *event) {
 }
 
 
+
+// walk through and check that we don't exceed 80 chars per line
+void QuatschSourceEditor::matchParentheses()
+{
+    bool match = false;
+    QList<QTextEdit::ExtraSelection> selections;
+    ui->edit->setExtraSelections(selections);
+
+    TextBlockData *data = static_cast<TextBlockData *>(
+                    ui->edit->textCursor().block().userData());
+
+    if (data) {
+        QVector<ParenthesisInfo *> infos = data->parentheses();
+
+        int pos = ui->edit->textCursor().block().position();
+        for (int i = 0; i < infos.size(); ++i) {
+            ParenthesisInfo *info = infos.at(i);
+
+            int curPos = ui->edit->textCursor().position() -
+                         ui->edit->textCursor().block().position();
+            if (info->position == curPos - 1 && info->character == '(') {
+                if (matchLeftParenthesis(ui->edit->textCursor().block(), i + 1, 0))
+                    createParenthesisSelection(pos + info->position);
+            } else if (info->position == curPos - 1 && info->character == ')') {
+                if (matchRightParenthesis(ui->edit->textCursor().block(), i - 1, 0))
+                    createParenthesisSelection(pos + info->position);
+            }
+        }
+    }
+}
+
+bool QuatschSourceEditor::matchLeftParenthesis(QTextBlock currentBlock, int i, int numLeftParentheses)
+{
+    TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
+    QVector<ParenthesisInfo *> infos = data->parentheses();
+
+    int docPos = currentBlock.position();
+    for (; i < infos.size(); ++i) {
+        ParenthesisInfo *info = infos.at(i);
+
+        if (info->character == '(') {
+            ++numLeftParentheses;
+            continue;
+        }
+
+        if (info->character == ')' && numLeftParentheses == 0) {
+            createParenthesisSelection(docPos + info->position);
+            return true;
+        } else
+            --numLeftParentheses;
+    }
+
+    currentBlock = currentBlock.next();
+    if (currentBlock.isValid())
+        return matchLeftParenthesis(currentBlock, 0, numLeftParentheses);
+
+    return false;
+}
+
+bool QuatschSourceEditor::matchRightParenthesis(QTextBlock currentBlock, int i, int numRightParentheses)
+{
+    TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
+    QVector<ParenthesisInfo *> parentheses = data->parentheses();
+
+    int docPos = currentBlock.position();
+    for (; i > -1 && parentheses.size() > 0; --i) {
+        ParenthesisInfo *info = parentheses.at(i);
+        if (info->character == ')') {
+            ++numRightParentheses;
+            continue;
+        }
+        if (info->character == '(' && numRightParentheses == 0) {
+            createParenthesisSelection(docPos + info->position);
+            return true;
+        } else
+            --numRightParentheses;
+    }
+
+    currentBlock = currentBlock.previous();
+    if (currentBlock.isValid())
+        return matchRightParenthesis(currentBlock, 0, numRightParentheses);
+
+    return false;
+}
+
+void QuatschSourceEditor::createParenthesisSelection(int pos)
+{
+    QList<QTextEdit::ExtraSelection> selections = ui->edit->extraSelections();
+
+    QTextEdit::ExtraSelection selection;
+    QTextCharFormat format = selection.format;
+    format.setBackground(QBrush(QColor(150,180,150)));
+    format.setForeground(QBrush(QColor(200,255,200)));
+    format.setFontWeight(QFont::Bold);
+    format.setFontUnderline(true);
+    selection.format = format;
+
+    QTextCursor cursor = ui->edit->textCursor();
+    cursor.setPosition(pos);
+    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+    selection.cursor = cursor;
+
+    selections.append(selection);
+
+    ui->edit->setExtraSelections(selections);
+}
 
 
 
@@ -173,6 +306,31 @@ QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
 
 
 void QuatschHighlighter::highlightBlock(const QString &text) {
+        // ++ Qt Quarterly 31
+        TextBlockData *data = new TextBlockData;
+        int leftPos = text.indexOf('(');
+        while (leftPos != -1) {
+                ParenthesisInfo *info = new ParenthesisInfo;
+                info->character = '(';
+                info->position = leftPos;
+
+                data->insert(info);
+                leftPos = text.indexOf('(', leftPos + 1);
+        }
+        int rightPos = text.indexOf(')');
+        while (rightPos != -1) {
+                ParenthesisInfo *info = new ParenthesisInfo;
+                info->character = ')';
+                info->position = rightPos;
+
+                data->insert(info);
+
+                rightPos = text.indexOf(')', rightPos +1);
+        }
+        setCurrentBlockUserData(data);
+        // -- Qt Quarterly 31
+
+
         foreach (HighlightingRule rule, highlightingRules) {
                 QRegExp expression(rule.pattern);
                 int index = text.indexOf(expression);
