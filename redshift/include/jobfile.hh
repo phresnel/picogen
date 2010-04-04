@@ -31,9 +31,6 @@
 #include "basictypes/quatsch-height-function.hh"
 
 #include "../../actuarius/actuarius.hh"
-
-
-#include "../../actuarius/actuarius.hh"
 #include <cmath>
 
 

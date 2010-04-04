@@ -62,6 +62,8 @@ private:
                 Compiler::ConfigurableFunctionsMap addfuns;
                 addfuns.addSymbol ("Noise2d", noiseDesc);
                 addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
+
+                addfuns.addSymbol ("ValueNoise2d", layeredNoise2dDesc);
                 return addfuns;
         }
 
