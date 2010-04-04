@@ -110,7 +110,6 @@ private slots:
         void on_edit_cursorPositionChanged();
 
 private:
-        bool softLock;
         void closeEvent(QCloseEvent *event);
 
         bool matchLeftParenthesis(QTextBlock currentBlock, int index, int numRightParentheses);
@@ -119,6 +118,7 @@ private:
 
         Ui::QuatschEditor *ui;
         QuatschHighlighter *highlighter;
+        bool softLock;
 };
 
 
