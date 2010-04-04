@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         codeEditManager = new QtVariantPropertyManager(this);
         connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
-                this, SLOT(code_valueChanged(QtProperty*,QString)));
+                this, SLOT(code_valueChanged(QtProperty*, QVariant)));
 
         comboBoxFactory = new QtEnumEditorFactory(this);
         lineEditFactory = new QtLineEditFactory(this);
@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 item = variantManager->addProperty(
                                 QVariant::Double,
                                 QLatin1String("color-scale"));
-                item->setValue(1);
+                item->setValue(0.017);
                 item->setAttribute(QLatin1String("singleStep"), 0.01);
                 item->setAttribute(QLatin1String("decimals"), 6);
                 item->setAttribute(QLatin1String("minimum"), 0);
@@ -219,14 +219,14 @@ void MainWindow::addRenderSettings (std::string const &name) {
         it->setAttribute(QLatin1String("minimum"), 1);
         it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
         it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(800);
+        it->setValue(320);
         topItem->addSubProperty(it);
 
         it = variantManager->addProperty(QVariant::Int, "height");
         it->setAttribute(QLatin1String("minimum"), 1);
         it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
         it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(600);
+        it->setValue(240);
         topItem->addSubProperty(it);
 
         it = variantManager->addProperty(QVariant::Int, "samples-per-pixel");
@@ -358,7 +358,9 @@ void MainWindow::transformEnumManager_valueChanged(
                 // When tweaking here, also look at XCVBN
                 if (type == "move") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"right"));
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"up"));
+                        QtVariantProperty *tmp = variantManager->addProperty(QVariant::Double,"up");
+                        tmp->setValue(1.);
+                        t->addSubProperty(tmp);
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"forward"));
                 } else if (type == "move-left") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
@@ -489,12 +491,12 @@ void MainWindow::changeEvent(QEvent *e) {
 
 
 void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
+
         this->currentBrowserItem = current;
-        QString name = current->property()->propertyName();
+        QString name = (current==0) ? "" : current->property()->propertyName();
 
         // TODO: below are a bit fragile, but for now work very well.
         ui->newTransformButton->setEnabled(name == "transform");
-        ui->editCodeButton->setEnabled(name == "code");
 
         const bool isCode = name == "code";
         if (isCode) {
@@ -505,6 +507,15 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                 ui->codeEditor->setEnabled(false);
                 ui->codeEditor->setVisible(false);
         }
+
+        const QtProperty *parentProp = (current==0)
+                                     ? 0
+                                     : findParent(ui->settings->properties(),
+                                                  current->property());
+
+        ui->deleteObjectButton->setEnabled(
+                        (parentProp != 0)
+                        && (parentProp->propertyName() == "objects"));
 }
 
 
@@ -706,14 +717,6 @@ void MainWindow::on_newObjectButton_pressed() {
 
 
 
-void MainWindow::on_editCodeButton_pressed() {
-        /*QuatschSourceEditor *qe = new QuatschSourceEditor("// hello foo", this);
-        ui->mdiArea->addSubWindow(qe);
-        qe->show();*/
-}
-
-
-
 void MainWindow::on_codeEditor_codeChanged() {
         // We assume that this can only be triggered if the current item
         // is some code.
@@ -727,12 +730,19 @@ void MainWindow::on_codeEditor_codeChanged() {
 
 
 
-void MainWindow::code_valueChanged(QtProperty*, QString code) {
+void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
         // This is under the assumption that the code window is open for the
         // property that just emitted this signal.
         if (nonRecurseLock)
                 return;
         nonRecurseLock = true;
-        ui->codeEditor->setCode(code);
+        ui->codeEditor->setCode(code.toString());
         nonRecurseLock = false;
+}
+
+
+
+void MainWindow::on_deleteObjectButton_pressed() {
+        // assumed to signal everything needed for clean up
+        objectsProperty->removeSubProperty(currentBrowserItem->property());
 }

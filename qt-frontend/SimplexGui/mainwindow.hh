@@ -63,8 +63,8 @@ private:
 
         bool nonRecurseLock;
 private slots:
+        void on_deleteObjectButton_pressed();
         void on_codeEditor_codeChanged();
-        void on_editCodeButton_pressed();
         void on_newObjectButton_pressed();
         void on_newTransformButton_pressed();
         void on_newRsButton_pressed();
@@ -73,7 +73,7 @@ private slots:
         void on_settings_currentItemChanged(QtBrowserItem * current);
 
         // non MOC
-        void code_valueChanged(QtProperty*, QString);
+        void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
         void rsTitleManager_valueChanged (QtProperty *, const QString &);
