@@ -31,34 +31,42 @@
 namespace quatsch {
 
     template <typename T> class SymbolTable {
-            ::std::map < ::std::string, T> table;    
+            ::std::map < ::std::string, T> table;
         public:
-            
-            class already_defined_exception {
+
+            class already_defined_exception : public general_exception {
                     already_defined_exception ();
                 public:
                     const ::std::string symbol;
-                    already_defined_exception (const ::std::string &symbol) : symbol (symbol) {}
+                    already_defined_exception (const ::std::string &symbol)
+                    : general_exception("symbol \"" + symbol + "\" is already defined")
+                    , symbol (symbol) {}
+
+                    virtual ~already_defined_exception () throw () {}
             };
-            
-            class undefined_symbol_exception {
+
+            class undefined_symbol_exception : public general_exception {
                     undefined_symbol_exception ();
                 public:
                     const ::std::string symbol;
-                    undefined_symbol_exception (const ::std::string &symbol) : symbol (symbol) {}
+                    undefined_symbol_exception (const ::std::string &symbol)
+                    : general_exception("symbol \"" + symbol + "\" has not been defined")
+                    , symbol (symbol) {}
+
+                    virtual ~undefined_symbol_exception () throw () {}
             };
-            
+
             SymbolTable () : table () {
             }
-            
+
             virtual ~SymbolTable () {
                 table.clear();
             }
-            
+
             typedef typename ::std::map < ::std::string, T>::const_iterator const_iterator;
             const_iterator begin () const { return table.begin(); }
             const_iterator end () const { return table.end(); }
-            
+
             void addSymbol (const ::std::string &symname, const T &t) {
                 if (table.end() != table.find (symname))
                     throw already_defined_exception (symname);
@@ -81,10 +89,10 @@ namespace quatsch {
                 typename ::std::map < ::std::string, T>::iterator it = table.find (symname);
                 return it->second;
             }
-            
+
             T &operator [] (const ::std::string &symname) {
                 // Don't use map::operator [], as it would require the existence of T::T().
-                probeSymbol (symname);                
+                probeSymbol (symname);
                 typename ::std::map < ::std::string, T>::iterator it = table.find (symname);
                 return it->second;
             }
@@ -95,7 +103,7 @@ namespace quatsch {
                 typename ::std::map < ::std::string, T>::const_iterator it = table.find (symname);
                 return it->second;
             }
-            
+
             const T &operator [] (const ::std::string &symname) const {
                 // Don't use map::operator [], as it would require the existence of T::T().
                 probeSymbol (symname);

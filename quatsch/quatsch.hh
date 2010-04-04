@@ -31,10 +31,56 @@
 #include <vector>
 #include <string>
 
-#include "utility/symboltable.hh"
-
 #include <boost/shared_ptr.hpp>
 #include <boost/shared_array.hpp>
+
+
+namespace quatsch {
+        class general_exception : public std::exception {
+                const ::std::string code;
+                const ::std::string message;
+                const bool hasCode_;
+        public:
+
+                explicit general_exception (const ::std::string &message)
+                : code ("<code unavailable>"), message (message), hasCode_(false)
+                { }
+
+
+                explicit general_exception (
+                        const ::std::string &code,
+                        const ::std::string &message
+                )
+                : code (code), message (message), hasCode_(true) { }
+
+
+                virtual ~general_exception () throw () {}
+
+
+                const ::std::string &getMessage() const {
+                        return message;
+                }
+
+
+                const ::std::string &getCode() const {
+                        return code;
+                }
+
+
+                bool hasCode () const {
+                        return hasCode_;
+                }
+
+
+                // std::exception
+                virtual const char* what() const throw() {
+                        return message.c_str();
+                }
+        };
+}
+
+#include "utility/symboltable.hh"
+
 
 // Mother of all functions.
 namespace quatsch {
@@ -201,47 +247,6 @@ namespace quatsch {
                         return typename FUNCTION::FunctionPtr (
                                 new T (static_parms, runtime_parms)
                         );
-                }
-        };
-
-
-
-
-
-
-        class general_exception : public std::exception {
-                const ::std::string code;
-                const ::std::string message;
-        public:
-
-                explicit general_exception (const ::std::string &message)
-                : code ("<code unavailable>"), message (message)
-                { }
-
-
-                explicit general_exception (
-                        const ::std::string &code,
-                        const ::std::string &message
-                )
-                : code (code), message (message) { }
-
-
-                virtual ~general_exception () throw () {}
-
-
-                const ::std::string &getMessage() const {
-                        return message;
-                }
-
-
-                const ::std::string &getCode() const {
-                        return code;
-                }
-
-
-                // std::exception
-                virtual const char* what() const throw() {
-                        return message.c_str();
                 }
         };
 }
