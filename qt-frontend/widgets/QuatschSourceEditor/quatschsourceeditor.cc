@@ -424,13 +424,21 @@ void QuatschSourceEditor::on_compileAndRunButton_pressed() {
                 const unsigned int width = 128, height = 128;
                 QImage image (width, height, QImage::Format_RGB888);
 
+
+                const float centerX = ui->centerX->value();
+                const float centerY = ui->centerY->value();
+                const float edgeSize = ui->edgeSize->value();
+
                 float min = std::numeric_limits<float>::infinity(),
                       max = -std::numeric_limits<float>::infinity();
                 std::vector<float> values(width*height);
                 for (unsigned int y=0; y<height; ++y) {
-                        const float v = 100000*y/(float)height;
+                        const float v_ = (y/(float)height)-0.5f,
+                                    v = (v_*edgeSize) + centerY;
+
                         for (unsigned int x=0; x<width; ++x) {
-                                const float u = 100000*x/(float)width;
+                                const float u_ = (x/(float)width)-0.5f,
+                                            u = (u_*edgeSize) + centerX;
                                 const float h = q(u,v);
                                 if (h<min) min=h;
                                 if (h>max) max=h;
