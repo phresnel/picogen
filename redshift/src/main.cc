@@ -427,7 +427,7 @@ namespace {
                 ;
 
                 RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
-                shared_ptr<Scene> scene = sceneDescriptionToScene(scened, renderBuffer);
+                shared_ptr<Scene> scene = sceneDescriptionToScene(scened, renderBuffer, 0, 0);
 
 
                 RenderTarget::Ptr screenBuffer (new SdlRenderTarget(
@@ -462,7 +462,8 @@ namespace {
 redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (
         redshift::scenefile::Scene const &scene,
-        redshift::RenderTarget::Ptr renderBuffer
+        redshift::RenderTarget::Ptr renderBuffer,
+        int renderSettingsIndex, int cameraIndex
 ) {
         using namespace redshift;
         using namespace redshift::camera;
@@ -474,7 +475,7 @@ redshift::shared_ptr<redshift::Scene>
         if (scene.cameraCount()) {
                 camera = shared_ptr<Camera> (new Pinhole(
                         renderBuffer, 1,
-                        scene.camera(0).toRedshiftTransform()
+                        scene.camera(cameraIndex).toRedshiftTransform()
                 ));
         } else {
                 camera = shared_ptr<Camera> (new Pinhole(
@@ -556,7 +557,7 @@ redshift::shared_ptr<redshift::Scene>
 
                 volumeAgg,
                 shared_ptr<VolumeIntegrator>(
-                        scene.renderSettings(0)
+                        scene.renderSettings(renderSettingsIndex)
                                 .volumeIntegrator
                                 .toVolumeIntegrator())
 

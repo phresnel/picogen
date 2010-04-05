@@ -859,7 +859,8 @@ namespace redshift { namespace scenefile {
 redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (
         redshift::scenefile::Scene const &scene,
-        redshift::RenderTarget::Ptr renderBuffer
+        redshift::RenderTarget::Ptr renderBuffer,
+        int renderSettingsIndex, int cameraIndex
 );
 
 #endif // JOBFILE_HH_INCLUDED_20100318
