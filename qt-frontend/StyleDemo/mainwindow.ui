@@ -39,9 +39,18 @@ QScrollBar::add-page, QScrollBar::sub-page{
 	color:transparent;
 }
 
-QGraphicsView, QMdiArea, QTreeView, QTextEdit, QSpinBox, QDoubleSpinBox {
+QGraphicsView, QMdiArea, 
+QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
+QTreeView {
+	color:white;
 	border:2px solid #ccc;
 	border-radius:10px; 
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #717171, stop: 0.5 #505050,
+                                       stop: 0.6 #434343, stop:1 #757575);
+	alternate-background-color:#556;
+}
+QTreeView, QMdiArea, QTextEdit {
 	background-color:#556;
 	alternate-background-color:#556;
 }
@@ -147,7 +156,22 @@ QSplitter::handle:horizontal{
 QSplitter::handle:hover {
 	border:1px solid #faa;
 }
-</string>
+
+
+QComboBox::drop-down {
+     subcontrol-origin: padding;
+     subcontrol-position: top right;
+     width: 15px;
+
+     border-left-width: 1px;
+     border-left-color: darkgray;
+     border-left-style: solid;
+     border-top-right-radius: 3px;
+     border-bottom-right-radius: 3px;
+ }
+QComboBox QAbstractItemView {
+	background: gray;
+}</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="pushButton">
@@ -448,6 +472,31 @@ p, li { white-space: pre-wrap; }
       </item>
      </widget>
     </widget>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>440</y>
+      <width>171</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Foo</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Bar</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Frob</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
