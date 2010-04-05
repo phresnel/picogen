@@ -79,14 +79,17 @@ QMenuBar {
 	background: #aaa;
 }
 
-QMenu {
+/*QMenu {
 	border: 1px solid black;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #716161, stop: 0.5 #605050,
                                        stop: 0.52 #534343, stop:1 #756565);
-} QMenu::item {
+}*/ QMenu::item {
+	background-color: #452311;
 } QMenu::item:selected {
-	background-color: #654321;
+	background-color: #a59361;
+} QMenu::item:hover {
+	background-color: #a59361;
 }
 
 QPushButton {
