@@ -421,7 +421,7 @@ void QuatschSourceEditor::on_compileAndRunButton_pressed() {
         try {
                 ui->status->setText("");
                 redshift::QuatschHeightFunction q (code().toStdString(), errors);
-                const unsigned int width = 128, height = 128;
+                const unsigned int width = ui->imageSize->value(), height = width;
                 QImage image (width, height, QImage::Format_RGB888);
 
 
