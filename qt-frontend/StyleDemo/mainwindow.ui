@@ -39,7 +39,7 @@ QScrollBar::add-page, QScrollBar::sub-page{
 	color:transparent;
 }
 
-QGraphicsView, QMdiArea, QTreeView, QTextEdit {
+QGraphicsView, QMdiArea, QTreeView, QTextEdit, QSpinBox, QDoubleSpinBox {
 	border:2px solid #ccc;
 	border-radius:10px; 
 	background-color:#556;
@@ -113,7 +113,41 @@ QGroupBox {
 	subcontrol-origin: margin;
 	subcontrol-position: top center; /* position at the top center */
 	padding: 0 3px;
-}</string>
+}
+
+
+QSpinBox::up-arrow, QSpinBox::up-button,
+QDoubleSpinBox::up-arrow, QDoubleSpinBox::up-button {
+    width:0px;height:0px;
+}
+QSpinBox::down-arrow, QSpinBox::down-button,
+QDoubleSpinBox::down-arrow, QDoubleSpinBox::down-button {
+    width:0px;height:0px;
+}
+
+
+QSplitter::handle:vertical{
+	border: 1px solid transparent;
+	border-radius:4px;
+	height:5px;
+	background-color: 
+		qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #91b191, stop: 0.5 #607050,
+                                       stop: 0.6 #536343, stop:1 #91b191);
+}
+QSplitter::handle:horizontal{
+	border: 1px solid transparent;
+	border-radius:4px;
+	width:5px;
+	background-color: 
+		qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                       stop:0 #91b191, stop: 0.5 #607050,
+                                       stop: 0.6 #536343, stop:1 #91b191);
+}
+QSplitter::handle:hover {
+	border:1px solid #faa;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="pushButton">
@@ -158,58 +192,6 @@ QGroupBox {
      <string>disabled button</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>100</y>
-      <width>121</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>GroupBox</string>
-    </property>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>80</y>
-       <width>101</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>GroupBox</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_4">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>30</y>
-       <width>84</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>PushButton</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>60</y>
-       <width>58</width>
-       <height>15</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
@@ -222,90 +204,6 @@ QGroupBox {
     <property name="styleSheet">
      <string notr="true"/>
     </property>
-   </widget>
-   <widget class="QTreeWidget" name="treeWidget">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>150</y>
-      <width>211</width>
-      <height>151</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"/>
-    </property>
-    <attribute name="headerVisible">
-     <bool>true</bool>
-    </attribute>
-    <attribute name="headerDefaultSectionSize">
-     <number>100</number>
-    </attribute>
-    <attribute name="headerDefaultSectionSize">
-     <number>100</number>
-    </attribute>
-    <attribute name="headerVisible">
-     <bool>true</bool>
-    </attribute>
-    <column>
-     <property name="text">
-      <string>a</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>b</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>c</string>
-     </property>
-    </column>
-    <item>
-     <property name="text">
-      <string>item</string>
-     </property>
-     <property name="text">
-      <string>item</string>
-     </property>
-     <property name="text">
-      <string>item</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>item</string>
-     </property>
-     <property name="text">
-      <string>item</string>
-     </property>
-     <property name="text">
-      <string>item</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>item</string>
-     </property>
-     <property name="text">
-      <string>item</string>
-     </property>
-     <property name="text">
-      <string>item</string>
-     </property>
-     <item>
-      <property name="text">
-       <string>item</string>
-      </property>
-      <property name="text">
-       <string>item</string>
-      </property>
-      <property name="text">
-       <string>item</string>
-      </property>
-     </item>
-    </item>
    </widget>
    <widget class="QMdiArea" name="mdiArea">
     <property name="geometry">
@@ -337,27 +235,6 @@ QGroupBox {
      </property>
     </widget>
    </widget>
-   <widget class="QFrame" name="frame">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>150</y>
-      <width>181</width>
-      <height>151</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">	border:2px solid #ccc;
-	border-radius:10px; 
-	background-color:#555;</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
@@ -372,7 +249,7 @@ QGroupBox {
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;table style=&quot;-qt-table-type: root; margin-top:4px; margin-bottom:4px; margin-left:4px; margin-right:4px;&quot;&gt;
+&lt;table border=&quot;0&quot; style=&quot;-qt-table-type: root; margin-top:4px; margin-bottom:4px; margin-left:4px; margin-right:4px;&quot;&gt;
 &lt;tr&gt;
 &lt;td style=&quot;border: none;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
@@ -394,6 +271,183 @@ p, li { white-space: pre-wrap; }
     <property name="text">
      <string>TextLabel</string>
     </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>340</y>
+      <width>151</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="doubleSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>380</y>
+      <width>151</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QSplitter" name="splitter_2">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>140</y>
+      <width>381</width>
+      <height>198</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>GroupBox</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>101</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>GroupBox</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>30</y>
+        <width>84</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>60</y>
+        <width>58</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QFrame" name="frame">
+      <property name="styleSheet">
+       <string notr="true">	border:2px solid #ccc;
+	border-radius:10px; 
+	background-color:#555;</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="QTreeWidget" name="treeWidget">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerDefaultSectionSize">
+       <number>100</number>
+      </attribute>
+      <attribute name="headerDefaultSectionSize">
+       <number>100</number>
+      </attribute>
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>a</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>b</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>c</string>
+       </property>
+      </column>
+      <item>
+       <property name="text">
+        <string>item</string>
+       </property>
+       <property name="text">
+        <string>item</string>
+       </property>
+       <property name="text">
+        <string>item</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>item</string>
+       </property>
+       <property name="text">
+        <string>item</string>
+       </property>
+       <property name="text">
+        <string>item</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>item</string>
+       </property>
+       <property name="text">
+        <string>item</string>
+       </property>
+       <property name="text">
+        <string>item</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>item</string>
+        </property>
+        <property name="text">
+         <string>item</string>
+        </property>
+        <property name="text">
+         <string>item</string>
+        </property>
+       </item>
+      </item>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

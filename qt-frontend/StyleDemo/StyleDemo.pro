@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-03-22T09:23:35
 # -------------------------------------------------
-TARGET = StyleDemoTmp
+TARGET = StyleDemo
 TEMPLATE = app
 SOURCES += main.cc \
     mainwindow.cc \

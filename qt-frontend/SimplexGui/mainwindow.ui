@@ -34,7 +34,7 @@ QScrollBar::add-page, QScrollBar::sub-page{
 	color:transparent;
 }
 
-QGraphicsView, QMdiArea, QTreeView, QTextEdit {
+QGraphicsView, QMdiArea, QTreeView, QTextEdit, QSpinBox, QDoubleSpinBox {
 	border:2px solid #ccc;
 	border-radius:10px; 
 	background-color:#556;
@@ -108,7 +108,41 @@ QGroupBox {
 	subcontrol-origin: margin;
 	subcontrol-position: top center; /* position at the top center */
 	padding: 0 3px;
-}</string>
+}
+
+
+QSpinBox::up-arrow, QSpinBox::up-button,
+QDoubleSpinBox::up-arrow, QDoubleSpinBox::up-button {
+    width:0px;height:0px;
+}
+QSpinBox::down-arrow, QSpinBox::down-button,
+QDoubleSpinBox::down-arrow, QDoubleSpinBox::down-button {
+    width:0px;height:0px;
+}
+
+
+QSplitter::handle:vertical{
+	border: 1px solid transparent;
+	border-radius:4px;
+	height:5px;
+	background-color: 
+		qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #91b191, stop: 0.5 #607050,
+                                       stop: 0.6 #536343, stop:1 #91b191);
+}
+QSplitter::handle:horizontal{
+	border: 1px solid transparent;
+	border-radius:4px;
+	width:5px;
+	background-color: 
+		qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                       stop:0 #91b191, stop: 0.5 #607050,
+                                       stop: 0.6 #536343, stop:1 #91b191);
+}
+QSplitter::handle:hover {
+	border:1px solid #faa;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -129,7 +163,7 @@ QGroupBox {
       <property name="childrenCollapsible">
        <bool>false</bool>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <layout class="QGridLayout" name="gridLayout">
