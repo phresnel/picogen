@@ -495,8 +495,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         this->currentBrowserItem = current;
         QString name = (current==0) ? "" : current->property()->propertyName();
 
-        // TODO: below are a bit fragile, but for now work very well.
-        ui->newTransformButton->setEnabled(name == "transform");
+        // TODO: below are a bit fragile, but for now work very well.        x
 
         const bool isCode = name == "code";
         if (isCode) {
@@ -508,14 +507,41 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                 ui->codeEditor->setVisible(false);
         }
 
-        const QtProperty *parentProp = (current==0)
-                                     ? 0
-                                     : findParent(ui->settings->properties(),
-                                                  current->property());
+        QtProperty *parentProp = (current==0)
+                               ? 0
+                               : findParent(ui->settings->properties(),
+                                            current->property());
+        QtProperty *parentParentProp = (parentProp==0)
+                               ? 0
+                               : findParent(ui->settings->properties(),
+                                            parentProp);
 
         ui->deleteObjectButton->setEnabled(
                         (parentProp != 0)
                         && (parentProp->propertyName() == "objects"));
+
+        const bool isTransform = name  == "transform";
+        const bool isSubTransform = (parentProp != 0)
+                                 && (parentProp->propertyName() == "transform");
+        const bool isCamera    = name == "camera";
+
+        currentCameraProperty = 0;
+        currentTransformProperty = 0;
+
+        if (isSubTransform) {
+                currentCameraProperty = parentParentProp;
+                currentTransformProperty = parentProp;
+        }
+        if (isTransform) {
+                currentCameraProperty = parentProp;
+                currentTransformProperty = current->property();
+        }
+        if (isCamera) {
+                currentCameraProperty = current->property();
+        }
+
+        ui->deleteSubTransformButton->setEnabled(isSubTransform);
+        ui->newSubTransformButton->setEnabled(currentTransformProperty != 0);
 }
 
 
@@ -702,15 +728,6 @@ void MainWindow::on_newRsButton_pressed() {
 
 
 
-void MainWindow::on_newTransformButton_pressed() {
-        // We assume that newTransform can only clicked when the current-item
-        // is a transform.
-        addTransform (currentBrowserItem->property(),
-                      redshift::scenefile::Camera::Transform::move);
-}
-
-
-
 void MainWindow::on_newObjectButton_pressed() {
         addObject ();
 }
@@ -745,4 +762,21 @@ void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
 void MainWindow::on_deleteObjectButton_pressed() {
         // assumed to signal everything needed for clean up
         objectsProperty->removeSubProperty(currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_deleteSubTransformButton_pressed() {
+        // assumed to signal everything needed for clean up
+        currentTransformProperty->removeSubProperty(
+                        currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_newSubTransformButton_pressed() {
+        // We assume that newTransform can only clicked when the current-item
+        // is a transform.
+        addTransform (currentTransformProperty,
+                      redshift::scenefile::Camera::Transform::move);
 }
