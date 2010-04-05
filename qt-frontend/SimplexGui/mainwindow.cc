@@ -606,13 +606,8 @@ redshift::shared_ptr<redshift::scenefile::Scene>
         if (renderSettings.count()==0) {
                 throw std::runtime_error("No Render-Setting present.");
         }
-        const int renderSettingsIndex = ui->renderSettingConfig->currentIndex();
 
-        if (renderSettingsIndex>=0
-            && renderSettingsIndex < renderSettingsProperty->subProperties().count()
-        ) {
-                QtProperty *mooh = renderSettingsProperty->subProperties()[renderSettingsIndex];
-
+        foreach (QtProperty *mooh, renderSettingsProperty->subProperties()) {
                 Props subs = mooh->subProperties();
 
                 scenefile::RenderSettings rs;
@@ -633,9 +628,6 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
                 scene->addRenderSettings(rs);
         }
-        if (scene->renderSettingsCount()==0) {
-                throw std::runtime_error("No Render-Setting selected.");
-        }
 
 
 
@@ -645,12 +637,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 throw std::runtime_error("No Camera present.");
         }
 
-        const int cameraIndex = ui->cameraConfig->currentIndex();
-
-        if (cameraIndex>=0
-            && cameraIndex < camerasProperty->subProperties().count()
-        ) {
-                QtProperty *cam = camerasProperty->subProperties()[cameraIndex];
+        foreach (QtProperty *cam, camerasProperty->subProperties()) {
 
                 scenefile::Camera camera;
                 camera.title = cam->propertyName().toStdString();
@@ -773,7 +760,14 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
 
 void MainWindow::on_actionRender_triggered() {
         try {
-                RenderWindow *rw = new RenderWindow (createScene(), this);
+                const int
+                      renderSettings = ui->renderSettingConfig->currentIndex(),
+                      camera = ui->cameraConfig->currentIndex();
+
+                RenderWindow *rw = new RenderWindow (
+                                createScene(),
+                                renderSettings, camera,
+                                this);
                 ui->mdiArea->addSubWindow(rw);
                 rw->show();
         } catch (std::exception const &ex) {

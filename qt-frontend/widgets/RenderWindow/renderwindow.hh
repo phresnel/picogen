@@ -54,6 +54,7 @@ class RenderWindow : public QDialog {
         Q_OBJECT
 public:
         RenderWindow(redshift::shared_ptr<redshift::scenefile::Scene>,
+                     int renderSettings, int camera,
                      QWidget* parent=0);
         ~RenderWindow();
 
@@ -91,7 +92,8 @@ class RenderWindowImpl
 {
         Q_OBJECT
 public:
-        RenderWindowImpl (redshift::shared_ptr<redshift::scenefile::Scene>);
+        RenderWindowImpl (redshift::shared_ptr<redshift::scenefile::Scene>,
+                          int renderSettings, int camera);
         virtual ~RenderWindowImpl ();
 
         // redshift::interaction::ProgressReporter
@@ -111,6 +113,7 @@ signals:
 
 private:
         int reportW;
+        int renderSettings, camera;
         redshift::shared_ptr<redshift::QImageRenderTarget> target;
         redshift::shared_ptr<redshift::ColorRenderTarget> renderBuffer;
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;

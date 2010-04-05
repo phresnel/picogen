@@ -44,8 +44,10 @@
 // RenderWindowImpl
 //=============================================================================
 RenderWindowImpl::RenderWindowImpl (
-                redshift::shared_ptr<redshift::scenefile::Scene> scenefile
-) : scenefile(scenefile), error_(false), errorMessage_("") {
+                redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
+                int renderSettings, int camera
+) : renderSettings(renderSettings), camera(camera)
+  , scenefile(scenefile), error_(false), errorMessage_("") {
 }
 
 
@@ -85,8 +87,9 @@ void RenderWindowImpl::run() {
         try {
                 const scenefile::FilmSettings &fs = scenefile->filmSettings();
 
-                const int width = scenefile->renderSettings(0).width,
-                          height =  scenefile->renderSettings(0).height;
+                const int
+                      width = scenefile->renderSettings(renderSettings).width,
+                      height = scenefile->renderSettings(renderSettings).height;
 
                 renderBuffer = shared_ptr<ColorRenderTarget>(
                                 new ColorRenderTarget (width, height));
@@ -95,13 +98,17 @@ void RenderWindowImpl::run() {
                                         fs.colorscale, fs.convertToSrgb));
 
                 redshift::shared_ptr<redshift::Scene> scene =
-                                sceneDescriptionToScene(*scenefile, renderBuffer);
+                                sceneDescriptionToScene(*scenefile,
+                                                        renderBuffer,
+                                                        renderSettings, camera);
 
                 shared_ptr<interaction::ProgressReporter> rep =
                         shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
                 UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
 
-                scene->render(rep, commandProcessor, scenefile->renderSettings(0).samplesPerPixel);
+                scene->render(
+                     rep, commandProcessor,
+                     scenefile->renderSettings(renderSettings).samplesPerPixel);
 
         } catch (std::exception const &ex) {
                 error_ = true;
@@ -129,6 +136,7 @@ void RenderWindowImpl::run() {
 //=============================================================================
 RenderWindow::RenderWindow(
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
+        int renderSettings, int camera,
         QWidget *parent
 ) :
     QDialog(parent),
@@ -141,13 +149,13 @@ RenderWindow::RenderWindow(
         // It seems impossible to do proper resizing within updateImage
         // (I've tried to setMinimumSize() on pixmap, layout, myself, and also
         //  the others like repaint(), update(), and all permutations)
-        QPixmap map(scenefile->renderSettings(0).width,
-                    scenefile->renderSettings(0).height);
+        QPixmap map(scenefile->renderSettings(renderSettings).width,
+                    scenefile->renderSettings(renderSettings).height);
         map.fill(QColor(0,0,0));
         ui->pix->setPixmap(map);
 
         impl = redshift::shared_ptr<RenderWindowImpl>(
-                        new RenderWindowImpl(scenefile));
+                  new RenderWindowImpl(scenefile, renderSettings, camera));
 
         connect(
                 impl.get(), SIGNAL(updateImage (QImage, double)),
