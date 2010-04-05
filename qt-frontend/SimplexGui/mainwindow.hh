@@ -46,7 +46,10 @@ private:
         QtEnumEditorFactory *comboBoxFactory;
 
         QtProperty *renderSettingsProperty;
-        QtProperty *camerasProperty, *currentCameraProperty, *currentTransformProperty;
+        QtProperty *camerasProperty,
+                   *currentCameraProperty,
+                   *currentTransformProperty,
+                   *currentRenderSettingProperty;
         QtProperty *objectsProperty;
         QtEnumPropertyManager *transformEnumManager;
         QtEnumPropertyManager *objectTypeEnumManager;
@@ -63,6 +66,7 @@ private:
 
         bool nonRecurseLock;
 private slots:
+        void on_deleteRsButton_pressed();
         void on_deleteObjectButton_pressed();
         void on_deleteSubTransformButton_pressed();
         void on_codeEditor_codeChanged();

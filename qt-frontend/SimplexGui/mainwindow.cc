@@ -498,14 +498,6 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         // TODO: below are a bit fragile, but for now work very well.        x
 
         const bool isCode = name == "code";
-        if (isCode) {
-                ui->codeEditor->setEnabled(true);
-                ui->codeEditor->setVisible(true);
-                ui->codeEditor->setCode(codeEditManager->value(current->property()).toString());
-        } else {
-                ui->codeEditor->setEnabled(false);
-                ui->codeEditor->setVisible(false);
-        }
 
         QtProperty *parentProp = (current==0)
                                ? 0
@@ -520,28 +512,45 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                         (parentProp != 0)
                         && (parentProp->propertyName() == "objects"));
 
-        const bool isTransform = name  == "transform";
-        const bool isSubTransform = (parentProp != 0)
-                                 && (parentProp->propertyName() == "transform");
-        const bool isCamera    = name == "camera";
+        const bool isTransform      = name  == "transform";
+        const bool isSubTransform   = (parentProp != 0)
+                                      && (parentProp->propertyName()
+                                          == "transform");
+        const bool isCamera         = name == "camera";
+        const bool isRenderSetting  = (parentProp != 0)
+                                      && (parentProp == renderSettingsProperty);
 
-        currentCameraProperty = 0;
-        currentTransformProperty = 0;
+        currentCameraProperty        = 0;
+        currentTransformProperty     = 0;
+        currentRenderSettingProperty = 0;
 
         if (isSubTransform) {
-                currentCameraProperty = parentParentProp;
+                currentCameraProperty    = parentParentProp;
                 currentTransformProperty = parentProp;
         }
         if (isTransform) {
-                currentCameraProperty = parentProp;
+                currentCameraProperty    = parentProp;
                 currentTransformProperty = current->property();
         }
         if (isCamera) {
-                currentCameraProperty = current->property();
+                currentCameraProperty    = current->property();
+        }
+        if (isRenderSetting) {
+                currentRenderSettingProperty = current->property();
+        }
+
+        if (isCode) {
+                ui->codeEditor->setEnabled(true);
+                ui->codeEditor->setVisible(true);
+                ui->codeEditor->setCode(codeEditManager->value(current->property()).toString());
+        } else {
+                ui->codeEditor->setEnabled(false);
+                ui->codeEditor->setVisible(false);
         }
 
         ui->deleteSubTransformButton->setEnabled(isSubTransform);
         ui->newSubTransformButton->setEnabled(currentTransformProperty != 0);
+        ui->deleteRsButton->setEnabled(isRenderSetting);
 }
 
 
@@ -590,6 +599,14 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
 
                 scene->addRenderSettings(rs);
+        }
+        if (renderSettings.count()==0) {
+                /*scenefile::RenderSettings rs;
+                rs.width = 320;
+                rs.height = 240;
+                rs.samplesPerPixel = 1;
+                scene->addRenderSettings(rs);*/
+                throw std::runtime_error("No Render-Setting present.");
         }
 
         // Camera.
@@ -715,9 +732,15 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
 
 
 void MainWindow::on_actionRender_triggered() {
-        RenderWindow *rw = new RenderWindow (createScene(), this);
-        ui->mdiArea->addSubWindow(rw);
-        rw->show();
+        try {
+                RenderWindow *rw = new RenderWindow (createScene(), this);
+                ui->mdiArea->addSubWindow(rw);
+                rw->show();
+        } catch (std::exception const &ex) {
+                QMessageBox::critical(this, "Error", QString()+
+                                      "An exception occured:\n\n"
+                                      + ex.what());
+        }
 }
 
 
@@ -770,6 +793,13 @@ void MainWindow::on_deleteSubTransformButton_pressed() {
         // assumed to signal everything needed for clean up
         currentTransformProperty->removeSubProperty(
                         currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_deleteRsButton_pressed() {
+        // assumed to signal everything needed for clean up
+        renderSettingsProperty->removeSubProperty(currentRenderSettingProperty);
 }
 
 
