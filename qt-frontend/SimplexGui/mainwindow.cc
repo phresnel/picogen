@@ -262,6 +262,25 @@ void MainWindow::addRenderSettings (std::string const &name) {
         volumeIntegrator->addSubProperty(it);
 
         renderSettingsProperty->addSubProperty(topItem);
+        resyncRenderSettingConfig();
+}
+
+
+
+void MainWindow::resyncRenderSettingConfig () {
+        ui->renderSettingConfig->clear();
+        foreach (QtProperty *prop, renderSettingsProperty->subProperties()) {
+                ui->renderSettingConfig->addItem(prop->propertyName());
+        }
+}
+
+
+
+void MainWindow::resyncCameraConfig () {
+        ui->cameraConfig->clear();
+        foreach (QtProperty *prop, camerasProperty->subProperties()) {
+                ui->cameraConfig->addItem(prop->propertyName());
+        }
 }
 
 
@@ -278,6 +297,8 @@ void MainWindow::addCamera(const std::string &name) {
         addTransform (transformRoot, redshift::scenefile::Camera::Transform::yaw);
         addTransform (transformRoot, redshift::scenefile::Camera::Transform::pitch);
         addTransform (transformRoot, redshift::scenefile::Camera::Transform::roll);
+
+        resyncCameraConfig();
 }
 
 
@@ -473,6 +494,7 @@ void MainWindow::rsTitleManager_valueChanged (
         if (QtProperty *par = findParent (ui->settings->properties(), property)) {
                 par->setPropertyName(value);
         }
+        resyncRenderSettingConfig();
 }
 
 
@@ -495,10 +517,6 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         this->currentBrowserItem = current;
         QString name = (current==0) ? "" : current->property()->propertyName();
 
-        // TODO: below are a bit fragile, but for now work very well.        x
-
-        const bool isCode = name == "code";
-
         QtProperty *parentProp = (current==0)
                                ? 0
                                : findParent(ui->settings->properties(),
@@ -508,6 +526,10 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                                : findParent(ui->settings->properties(),
                                             parentProp);
 
+        // TODO: below are a bit fragile, but for now work very well.        x
+
+        const bool isCode = name == "code";
+
         ui->deleteObjectButton->setEnabled(
                         (parentProp != 0)
                         && (parentProp->propertyName() == "objects"));
@@ -516,7 +538,8 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         const bool isSubTransform   = (parentProp != 0)
                                       && (parentProp->propertyName()
                                           == "transform");
-        const bool isCamera         = name == "camera";
+        const bool isCamera         = (parentProp != 0)
+                                      && (parentProp == camerasProperty);
         const bool isRenderSetting  = (parentProp != 0)
                                       && (parentProp == renderSettingsProperty);
 
@@ -551,6 +574,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         ui->deleteSubTransformButton->setEnabled(isSubTransform);
         ui->newSubTransformButton->setEnabled(currentTransformProperty != 0);
         ui->deleteRsButton->setEnabled(isRenderSetting);
+        ui->deleteCameraButton->setEnabled(isCamera);
 }
 
 
@@ -579,7 +603,16 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
         // RenderSettings.
         const Props renderSettings = readSubProperties("render-settings", topProps);
-        foreach (Prop mooh, renderSettings) {
+        if (renderSettings.count()==0) {
+                throw std::runtime_error("No Render-Setting present.");
+        }
+        const int renderSettingsIndex = ui->renderSettingConfig->currentIndex();
+
+        if (renderSettingsIndex>=0
+            && renderSettingsIndex < renderSettingsProperty->subProperties().count()
+        ) {
+                QtProperty *mooh = renderSettingsProperty->subProperties()[renderSettingsIndex];
+
                 Props subs = mooh->subProperties();
 
                 scenefile::RenderSettings rs;
@@ -600,18 +633,25 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
                 scene->addRenderSettings(rs);
         }
-        if (renderSettings.count()==0) {
-                /*scenefile::RenderSettings rs;
-                rs.width = 320;
-                rs.height = 240;
-                rs.samplesPerPixel = 1;
-                scene->addRenderSettings(rs);*/
-                throw std::runtime_error("No Render-Setting present.");
+        if (scene->renderSettingsCount()==0) {
+                throw std::runtime_error("No Render-Setting selected.");
         }
+
+
 
         // Camera.
         const Props cameras = readSubProperties("cameras", topProps);
-        foreach (Prop cam, cameras) {
+        if (cameras.count()==0) {
+                throw std::runtime_error("No Camera present.");
+        }
+
+        const int cameraIndex = ui->cameraConfig->currentIndex();
+
+        if (cameraIndex>=0
+            && cameraIndex < camerasProperty->subProperties().count()
+        ) {
+                QtProperty *cam = camerasProperty->subProperties()[cameraIndex];
+
                 scenefile::Camera camera;
                 camera.title = cam->propertyName().toStdString();
 
@@ -800,6 +840,7 @@ void MainWindow::on_deleteSubTransformButton_pressed() {
 void MainWindow::on_deleteRsButton_pressed() {
         // assumed to signal everything needed for clean up
         renderSettingsProperty->removeSubProperty(currentRenderSettingProperty);
+        resyncRenderSettingConfig();
 }
 
 
@@ -809,4 +850,19 @@ void MainWindow::on_newSubTransformButton_pressed() {
         // is a transform.
         addTransform (currentTransformProperty,
                       redshift::scenefile::Camera::Transform::move);
+}
+
+
+
+void MainWindow::on_newCameraButton_pressed() {
+        addCamera("New Camera ");
+        resyncCameraConfig();
+}
+
+
+
+void MainWindow::on_deleteCameraButton_pressed() {
+        // assumed to signal everything needed for clean up
+        camerasProperty->removeSubProperty(currentCameraProperty);
+        resyncCameraConfig();
 }

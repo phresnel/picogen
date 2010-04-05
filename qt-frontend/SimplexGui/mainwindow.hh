@@ -56,6 +56,8 @@ private:
         QtVariantPropertyManager *codeEditManager;
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
+        void resyncRenderSettingConfig ();
+        void resyncCameraConfig ();
         void addRenderSettings (std::string const &name);
         void addCamera (std::string const &name);
         void addTransform (QtProperty *transformRoot,
@@ -66,6 +68,8 @@ private:
 
         bool nonRecurseLock;
 private slots:
+        void on_deleteCameraButton_pressed();
+        void on_newCameraButton_pressed();
         void on_deleteRsButton_pressed();
         void on_deleteObjectButton_pressed();
         void on_deleteSubTransformButton_pressed();
