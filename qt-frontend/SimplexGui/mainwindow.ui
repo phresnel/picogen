@@ -19,6 +19,7 @@
 	color: white;
 }
 
+QLabel{background-color:none;}
 
 QScrollBar::add-line, QScrollBar::sub-line {width:0;height:0;background:none;}
 QScrollBar{padding:1px 1px 1px 1px;}
