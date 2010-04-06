@@ -103,6 +103,8 @@ class PssSunSky {
 			       const Vector &source,
 			       Spectrum &atmAttenuation,
 			       Spectrum &atmInscatter ) const;
+
+    bool atmosphericEffectsEnabled() const { return atmInited; }
   private:
 				//// Copy Constructor (unimplemented)
     PssSunSky(const PssSunSky &);

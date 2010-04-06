@@ -95,6 +95,10 @@ Color PssAdapter::diffuseQuery (
 Color PssAdapter::atmosphereShade (
         Color const &color, Ray const &ray, real_t distance
 ) const {
+        if (!preetham->atmosphericEffectsEnabled()) {
+                return color;
+        }
+
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));
 
