@@ -107,8 +107,9 @@ PssSunSky::PssSunSky(
         int jd,       // julianDay
         real_t tOfDay,   // timeOfDay
         real_t turb,
+        real_t overcast,
         bool initAtmEffects // turbidity
-) : turbidity (turb)
+) : turbidity (turb), overcast (overcast)
 {
         /*latitude = lat;
         longitude = longi;
@@ -124,8 +125,9 @@ PssSunSky::PssSunSky(
 PssSunSky::PssSunSky(
         const Vector &direction,
         real_t turbidity,
+        real_t overcast,
         bool initAtmEffects
-) : turbidity (turbidity)
+) : turbidity (turbidity), overcast (overcast)
 {
         /*latitude = lat;
         longitude = longi;
@@ -325,12 +327,12 @@ PssSunSky::GetSkySpectralRadiance(
         PssSunSky::real_t theta,
         PssSunSky::real_t phi) const
 {
-        if (turbidity>10) {
+        if (overcast >= 0.9999) {
                 const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
                 const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
                 const real_t o = Y*(1+2.*cos(theta))/3.;
                 return Spectrum::FromRGB(o,o,o,IlluminantSpectrum);
-        } else {
+        } else if (overcast <= 0.0001) {
                 const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
                 // Compute xyY values
                 const real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
@@ -340,6 +342,26 @@ PssSunSky::GetSkySpectralRadiance(
                 // A simple luminance function would be more efficient.
                 const Spectrum ret = Y * spect / spect.y();
                 return ret;
+        } else {
+                // TODO: this is redundant
+                Spectrum over, clear;
+                {
+                        const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+                        const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+                        const real_t o = Y*(1+2.*cos(theta))/3.;
+                        over = Spectrum::FromRGB(o,o,o,IlluminantSpectrum);
+                }
+                {
+                        const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+                        // Compute xyY values
+                        const real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
+                        const real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
+                        const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+                        const Spectrum spect = ChromaticityToSpectrum(x,y);
+                        // A simple luminance function would be more efficient.
+                        clear = Y * spect / spect.y();
+                }
+                return clear*(1-overcast) + over*overcast;
         }
 }
 

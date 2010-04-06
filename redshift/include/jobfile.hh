@@ -522,6 +522,7 @@ namespace redshift { namespace scenefile {
                 Normal sunDirection;
                 double turbidity;
                 double sunSizeFactor;
+                double overcast;
                 ColorSum sunColor;
                 ColorSum skyFilter;
                 bool atmosphericEffects;
@@ -546,6 +547,7 @@ namespace redshift { namespace scenefile {
                                  new background::PssSunSky(
                                         normalize(Vector(sunDirection.x,sunDirection.y,sunDirection.z)),
                                         turbidity,
+                                        overcast,
                                         atmosphericEffects
                                 ));
                                 return shared_ptr<redshift::Background> (
@@ -582,6 +584,7 @@ namespace redshift { namespace scenefile {
                                 arch & pack ("sun-direction", sunDirection);
                                 arch & pack ("sun-size-factor", sunSizeFactor);
                                 arch & pack ("turbidity", turbidity);
+                                arch & pack ("overcast", overcast);
                                 arch & pack ("sun-color", sunColor);
                                 arch & pack ("sky-filter", skyFilter);
                                 arch & pack ("atmospheric-effects", atmosphericEffects);

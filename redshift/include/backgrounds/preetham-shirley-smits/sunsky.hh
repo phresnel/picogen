@@ -75,8 +75,8 @@ class PssSunSky {
 				// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
 				// [in] initAtmEffects  if atm effects are not initialized, bad things will
 				// happen if you try to use them....
-    PssSunSky(real_t latitude, real_t longitude, int timezone, int julianDay, real_t timeOfDay, real_t turbidity, bool initAtmEffects = true);
-    PssSunSky(Vector const & sunDirection, real_t turbidity, bool initAtmEffects=true) ;
+    PssSunSky(real_t latitude, real_t longitude, int timezone, int julianDay, real_t timeOfDay, real_t turbidity, real_t overcast, bool initAtmEffects = true);
+    PssSunSky(Vector const & sunDirection, real_t turbidity, real_t overcast, bool initAtmEffects=true) ;
 				// GROUP: Members
 				////  Position (actual Direction) of the sun
 				// South = +x,  East = +y, up = +z
@@ -148,6 +148,7 @@ class PssSunSky {
     int 	standardMeridian;
     */
     real_t 	turbidity;
+    real_t      overcast;
 				//// Sun Position Vector
     Vector 	toSun;
 				//// Sun Position
