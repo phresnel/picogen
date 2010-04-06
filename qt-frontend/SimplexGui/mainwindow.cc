@@ -39,6 +39,11 @@ namespace {
                 return T();
         }
 
+        template <typename T>
+        T readValue (QString name, QtProperty* prop) {
+                return readValue<T> (name, prop->subProperties());
+        }
+
 
         QString readValueText (QString name, QList<QtProperty*> list) {
                 foreach (QtProperty* looky, list) {
@@ -57,6 +62,10 @@ namespace {
                         }
                 }
                 return QList<QtProperty*>();
+        }
+
+        QList<QtProperty*> readSubProperties (QString name, QtProperty* prop) {
+                return readSubProperties(name, prop->subProperties());
         }
 
 
@@ -151,7 +160,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 item = variantManager->addProperty(
                                 QVariant::Double,
                                 QLatin1String("color-scale"));
-                item->setValue(0.017);
+                item->setValue(0.007);
                 item->setAttribute(QLatin1String("singleStep"), 0.01);
                 item->setAttribute(QLatin1String("decimals"), 6);
                 item->setAttribute(QLatin1String("minimum"), 0);
@@ -187,6 +196,80 @@ MainWindow::MainWindow(QWidget *parent) :
                 addObject();
         }
 
+        // Background.
+        {
+                QtProperty *it = groupManager->addProperty("backgrounds");
+                ui->settings->addProperty(it);
+
+                pssSunSkyProperty = groupManager->addProperty("pss-sunsky");
+                ui->settings->addProperty(pssSunSkyProperty);
+
+
+                // Sun Direction.
+                QtProperty *sunDir = groupManager->addProperty("sun-direction");
+                pssSunSkyProperty->addSubProperty(sunDir);
+
+                // TODO: write custom property for vectors
+                QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "right");
+                vp->setValue(1);
+                vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                vp->setAttribute(QLatin1String("decimals"), 3);
+                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                sunDir->addSubProperty(vp);
+
+                vp= variantManager->addProperty(QVariant::Double, "up");
+                vp->setValue(1);
+                vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                vp->setAttribute(QLatin1String("decimals"), 3);
+                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                sunDir->addSubProperty(vp);
+
+                vp = variantManager->addProperty(QVariant::Double, "forward");
+                vp->setValue(1);
+                vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                vp->setAttribute(QLatin1String("decimals"), 3);
+                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                sunDir->addSubProperty(vp);
+
+
+                // Turbidity.
+                vp = variantManager->addProperty(QVariant::Double, "turbidity");
+                vp->setValue(1);
+                vp->setAttribute(QLatin1String("singleStep"), 0.01);
+                vp->setAttribute(QLatin1String("decimals"), 3);
+                vp->setAttribute(QLatin1String("minimum"), 1.7);
+                vp->setAttribute(QLatin1String("maximum"), 30);
+                pssSunSkyProperty->addSubProperty(vp);
+
+                // Sun size.
+                vp = variantManager->addProperty(QVariant::Double, "sun-size-factor");
+                vp->setValue(1);
+                vp->setAttribute(QLatin1String("singleStep"), 1.0);
+                vp->setAttribute(QLatin1String("decimals"), 2);
+                vp->setAttribute(QLatin1String("minimum"), 0);
+                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                pssSunSkyProperty->addSubProperty(vp);
+
+
+                // Overcast.
+                vp = variantManager->addProperty(QVariant::Double, "overcast");
+                vp->setValue(1);
+                vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                vp->setAttribute(QLatin1String("decimals"), 2);
+                vp->setAttribute(QLatin1String("minimum"), 0);
+                vp->setAttribute(QLatin1String("maximum"), 1);
+                pssSunSkyProperty->addSubProperty(vp);
+
+                // Atmospheric Effects.
+                vp = variantManager->addProperty(QVariant::Bool, "atmospheric-effects");
+                vp->setValue(1);
+                pssSunSkyProperty->addSubProperty(vp);
+
+        }
+
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);
         ui->settings->setHeaderVisible(false);
@@ -201,6 +284,186 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+
+redshift::shared_ptr<redshift::scenefile::Scene>
+        MainWindow::createScene () const
+{
+        typedef QList<QtProperty*> Props;
+        typedef QtProperty* Prop;
+        typedef QtVariantProperty* VProp;
+
+
+        Props topProps = ui->settings->properties();
+
+        QString ret;
+        using namespace redshift;
+        shared_ptr<scenefile::Scene> scene = shared_ptr<scenefile::Scene>(
+                        new scenefile::Scene());
+
+        // FilmSettings.
+        const Props filmSettings = readSubProperties("film-settings", topProps);
+        scenefile::FilmSettings fs;
+        fs.colorscale = readValue<double>("color-scale", filmSettings);
+        fs.convertToSrgb = readValue<bool>("convert-to-srgb", filmSettings);
+        scene->setFilmSettings(fs);
+
+        // RenderSettings.
+        const Props renderSettings = readSubProperties("render-settings", topProps);
+        if (renderSettings.count()==0) {
+                throw std::runtime_error("No Render-Setting present.");
+        }
+
+        foreach (QtProperty *mooh, renderSettingsProperty->subProperties()) {
+                Props subs = mooh->subProperties();
+
+                scenefile::RenderSettings rs;
+                rs.width = readValue<unsigned int>("width", subs);
+                rs.height = readValue<unsigned int>("height", subs);
+                rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
+
+                Props vp = readSubProperties("volume-integrator", subs);
+                rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
+                rs.volumeIntegrator.cutoffDistance = readValue<double>("cutoff-distance", vp);
+                const QString integT = readValueText("type", vp);
+                if ("none" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::none;
+                else if ("emission" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::emission;
+                else if ("single" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
+
+                scene->addRenderSettings(rs);
+        }
+
+
+
+        // Camera.
+        const Props cameras = readSubProperties("cameras", topProps);
+        if (cameras.count()==0) {
+                throw std::runtime_error("No Camera present.");
+        }
+
+        foreach (QtProperty *cam, camerasProperty->subProperties()) {
+
+                scenefile::Camera camera;
+                camera.title = cam->propertyName().toStdString();
+
+                const Props xforms = readSubProperties("transform", cam->subProperties());
+                foreach (Prop xform, xforms) {
+                        typedef scenefile::Camera::Transform Xf;
+                        Xf transform;
+
+                        // When tweaking here, also look at XCVBN
+                        const Props xfsubs = xform->subProperties();
+                        const QString type = readValueText("type", xfsubs);
+
+
+                        if (type == "move") {
+                                transform.type = Xf::move;
+                                transform.x = readValue<double>("right", xfsubs);
+                                transform.y = readValue<double>("up", xfsubs);
+                                transform.z = readValue<double>("forward", xfsubs);
+                        } else if (type == "move-left") {
+                                transform.type = Xf::move_left;
+                                transform.x = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-right") {
+                                transform.type = Xf::move_right;
+                                transform.x = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-up") {
+                                transform.type = Xf::move_up;
+                                transform.y = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-down") {
+                                transform.type = Xf::move_down;
+                                transform.y = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-forward") {
+                                transform.type = Xf::move_forward;
+                                transform.z = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-backward") {
+                                transform.type = Xf::move_backward;
+                                transform.z = readValue<double>("distance", xfsubs);
+                        } else if (type == "yaw") {
+                                transform.type = Xf::yaw;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else if (type == "pitch") {
+                                transform.type = Xf::pitch;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else if (type == "roll") {
+                                transform.type = Xf::roll;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else {
+                                throw std::runtime_error(
+                                   (QString()
+                                   + "MainWindow::createScene () const: transform-type '"
+                                   + type
+                                   + "' not supported").toStdString().c_str());
+                        }
+                        camera.transforms.push_back(transform);
+                }
+
+                scene->addCamera(camera);
+        }
+
+
+        // Objects.
+        const Props objects = readSubProperties("objects", topProps);
+        foreach (Prop object, objects) {
+                using scenefile::Object;
+
+                const Props subs = object->subProperties();
+                const QString type = readValueText("type", subs);
+
+                scenefile::Object object;
+
+                if (type == "water-plane") {
+                        object.type = Object::water_plane;
+                        const std::string tmp = readValue<QString>("code", subs).toStdString();
+                        if(!tmp.empty())
+                                object.waterPlaneParams.code = tmp;
+                        //object.waterPlaneParams.color
+                        object.waterPlaneParams.height = readValue<double>("height", subs);
+                } else if (type == "horizon-plane") {
+                        object.type = Object::horizon_plane;
+                        //object.horizonPlaneParams.color
+                        object.horizonPlaneParams.height = readValue<double>("height", subs);
+                } else if (type == "lazy-quadtree") {
+                        object.type = Object::lazy_quadtree;
+                        const std::string tmp = readValue<QString>("code", subs).toStdString();
+                        if(!tmp.empty())
+                                object.lazyQuadtreeParams.code = tmp;
+                        //object.lazyQuadtreeParams.color;
+                        object.lazyQuadtreeParams.lodFactor = readValue<double>("lod-factor", subs);
+                        object.lazyQuadtreeParams.maxRecursion = readValue<unsigned int>("max-recursion", subs);
+                        object.lazyQuadtreeParams.size = readValue<double>("size", subs);
+                } else {
+                        throw std::runtime_error(
+                           (QString()
+                           + "MainWindow::createScene () const: object-type '"
+                           + type
+                           + "' not supported").toStdString().c_str());
+                }
+
+                scene->addObject(object);
+
+        }
+
+
+        // Background.
+        scenefile::Background sunsky;
+        const Props sunDir = readSubProperties("sun-direction", pssSunSkyProperty);
+        sunsky.sunDirection.x = readValue<double>("right", sunDir);
+        sunsky.sunDirection.y = readValue<double>("up", sunDir);
+        sunsky.sunDirection.z = readValue<double>("forward", sunDir);
+        sunsky.turbidity = readValue<double>("turbidity", pssSunSkyProperty);
+        sunsky.overcast = readValue<double>("overcast", pssSunSkyProperty);
+        sunsky.sunSizeFactor = readValue<double>("sun-size-factor", pssSunSkyProperty);
+        sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", pssSunSkyProperty);
+        scene->addBackground(sunsky);
+
+
+        return scene;
 }
 
 
@@ -575,173 +838,6 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         ui->newSubTransformButton->setEnabled(currentTransformProperty != 0);
         ui->deleteRsButton->setEnabled(isRenderSetting);
         ui->deleteCameraButton->setEnabled(isCamera);
-}
-
-
-
-redshift::shared_ptr<redshift::scenefile::Scene>
-        MainWindow::createScene () const
-{
-        typedef QList<QtProperty*> Props;
-        typedef QtProperty* Prop;
-        typedef QtVariantProperty* VProp;
-
-
-        Props topProps = ui->settings->properties();
-
-        QString ret;
-        using namespace redshift;
-        shared_ptr<scenefile::Scene> scene = shared_ptr<scenefile::Scene>(
-                        new scenefile::Scene());
-
-        // FilmSettings.
-        const Props filmSettings = readSubProperties("film-settings", topProps);
-        scenefile::FilmSettings fs;
-        fs.colorscale = readValue<double>("color-scale", filmSettings);
-        fs.convertToSrgb = readValue<bool>("convert-to-srgb", filmSettings);
-        scene->setFilmSettings(fs);
-
-        // RenderSettings.
-        const Props renderSettings = readSubProperties("render-settings", topProps);
-        if (renderSettings.count()==0) {
-                throw std::runtime_error("No Render-Setting present.");
-        }
-
-        foreach (QtProperty *mooh, renderSettingsProperty->subProperties()) {
-                Props subs = mooh->subProperties();
-
-                scenefile::RenderSettings rs;
-                rs.width = readValue<unsigned int>("width", subs);
-                rs.height = readValue<unsigned int>("height", subs);
-                rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
-
-                Props vp = readSubProperties("volume-integrator", subs);
-                rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
-                rs.volumeIntegrator.cutoffDistance = readValue<double>("cutoff-distance", vp);
-                const QString integT = readValueText("type", vp);
-                if ("none" == integT)
-                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::none;
-                else if ("emission" == integT)
-                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::emission;
-                else if ("single" == integT)
-                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
-
-                scene->addRenderSettings(rs);
-        }
-
-
-
-        // Camera.
-        const Props cameras = readSubProperties("cameras", topProps);
-        if (cameras.count()==0) {
-                throw std::runtime_error("No Camera present.");
-        }
-
-        foreach (QtProperty *cam, camerasProperty->subProperties()) {
-
-                scenefile::Camera camera;
-                camera.title = cam->propertyName().toStdString();
-
-                const Props xforms = readSubProperties("transform", cam->subProperties());
-                foreach (Prop xform, xforms) {
-                        typedef scenefile::Camera::Transform Xf;
-                        Xf transform;
-
-                        // When tweaking here, also look at XCVBN
-                        const Props xfsubs = xform->subProperties();
-                        const QString type = readValueText("type", xfsubs);
-
-
-                        if (type == "move") {
-                                transform.type = Xf::move;
-                                transform.x = readValue<double>("right", xfsubs);
-                                transform.y = readValue<double>("up", xfsubs);
-                                transform.z = readValue<double>("forward", xfsubs);
-                        } else if (type == "move-left") {
-                                transform.type = Xf::move_left;
-                                transform.x = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-right") {
-                                transform.type = Xf::move_right;
-                                transform.x = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-up") {
-                                transform.type = Xf::move_up;
-                                transform.y = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-down") {
-                                transform.type = Xf::move_down;
-                                transform.y = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-forward") {
-                                transform.type = Xf::move_forward;
-                                transform.z = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-backward") {
-                                transform.type = Xf::move_backward;
-                                transform.z = readValue<double>("distance", xfsubs);
-                        } else if (type == "yaw") {
-                                transform.type = Xf::yaw;
-                                transform.angle = readValue<double>("angle", xfsubs);
-                        } else if (type == "pitch") {
-                                transform.type = Xf::pitch;
-                                transform.angle = readValue<double>("angle", xfsubs);
-                        } else if (type == "roll") {
-                                transform.type = Xf::roll;
-                                transform.angle = readValue<double>("angle", xfsubs);
-                        } else {
-                                throw std::runtime_error(
-                                   (QString()
-                                   + "MainWindow::createScene () const: transform-type '"
-                                   + type
-                                   + "' not supported").toStdString().c_str());
-                        }
-                        camera.transforms.push_back(transform);
-                }
-
-                scene->addCamera(camera);
-        }
-
-
-        // Objects.
-        const Props objects = readSubProperties("objects", topProps);
-        foreach (Prop object, objects) {
-                using scenefile::Object;
-
-                const Props subs = object->subProperties();
-                const QString type = readValueText("type", subs);
-
-                scenefile::Object object;
-
-                if (type == "water-plane") {
-                        object.type = Object::water_plane;
-                        const std::string tmp = readValue<QString>("code", subs).toStdString();
-                        if(!tmp.empty())
-                                object.waterPlaneParams.code = tmp;
-                        //object.waterPlaneParams.color
-                        object.waterPlaneParams.height = readValue<double>("height", subs);
-                } else if (type == "horizon-plane") {
-                        object.type = Object::horizon_plane;
-                        //object.horizonPlaneParams.color
-                        object.horizonPlaneParams.height = readValue<double>("height", subs);
-                } else if (type == "lazy-quadtree") {
-                        object.type = Object::lazy_quadtree;
-                        const std::string tmp = readValue<QString>("code", subs).toStdString();
-                        if(!tmp.empty())
-                                object.lazyQuadtreeParams.code = tmp;
-                        //object.lazyQuadtreeParams.color;
-                        object.lazyQuadtreeParams.lodFactor = readValue<double>("lod-factor", subs);
-                        object.lazyQuadtreeParams.maxRecursion = readValue<unsigned int>("max-recursion", subs);
-                        object.lazyQuadtreeParams.size = readValue<double>("size", subs);
-                } else {
-                        throw std::runtime_error(
-                           (QString()
-                           + "MainWindow::createScene () const: object-type '"
-                           + type
-                           + "' not supported").toStdString().c_str());
-                }
-
-                scene->addObject(object);
-
-        }
-
-
-        return scene;
 }
 
 

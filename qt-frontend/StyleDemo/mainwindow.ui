@@ -30,9 +30,16 @@ QScrollBar::add-line, QScrollBar::sub-line {width:0;height:0;background:none;}
 QScrollBar{padding:1px 1px 1px 1px;}
 QScrollBar::handle{
 	border-radius:4px;
+}
+QScrollBar::handle:horizontal{
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #717171, stop: 0.5 #505050,
-                                       stop: 0.6 #434343, stop:1 #757575);
+                                       stop:0 #cbb, stop: 0.5 #505050,
+                                       stop: 0.6 #434343, stop:1 #caa);
+}
+QScrollBar::handle:vertical{
+	background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                       stop:0 #cbb, stop: 0.5 #505050,
+                                       stop: 0.6 #434343, stop:1 #caa);
 }
 QScrollBar::add-page, QScrollBar::sub-page{
 	background:none;

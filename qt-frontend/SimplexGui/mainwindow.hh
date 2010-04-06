@@ -50,7 +50,8 @@ private:
                    *currentCameraProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
-        QtProperty *objectsProperty;
+        QtProperty *objectsProperty,
+                   *pssSunSkyProperty;
         QtEnumPropertyManager *transformEnumManager;
         QtEnumPropertyManager *objectTypeEnumManager;
         QtVariantPropertyManager *codeEditManager;
