@@ -75,8 +75,8 @@ class PssSunSky {
 				// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
 				// [in] initAtmEffects  if atm effects are not initialized, bad things will
 				// happen if you try to use them....
-    PssSunSky(real_t latitude, real_t longitude, int timezone, int julianDay, real_t timeOfDay, real_t turbidity, real_t overcast, bool initAtmEffects = true);
-    PssSunSky(Vector const & sunDirection, real_t turbidity, real_t overcast, bool initAtmEffects=true) ;
+    PssSunSky(real_t latitude, real_t longitude, int timezone, int julianDay, real_t timeOfDay, real_t turbidity, real_t overcast, bool initAtmEffects);
+    PssSunSky(Vector const & sunDirection, real_t turbidity, real_t overcast, bool initAtmEffects) ;
 				// GROUP: Members
 				////  Position (actual Direction) of the sun
 				// South = +x,  East = +y, up = +z
@@ -90,10 +90,10 @@ class PssSunSky {
     real_t	GetSunSolidAngle() const;
 				//// Spectral radiance of the sky in the specified direction
     Spectrum  GetSkySpectralRadiance(const Vector &v) const;
-    color::xyY GetSkySpectralRadiance_xyY(const Vector &v) const;
+    //color::xyY GetSkySpectralRadiance_xyY(const Vector &v) const;
 				//// An alternate way of getting the sky's spectral radiance
     Spectrum  GetSkySpectralRadiance(real_t theta, real_t phi) const;
-    color::xyY GetSkySpectralRadiance_xyY(real_t theta, real_t phi) const;
+    //color::xyY GetSkySpectralRadiance_xyY(real_t theta, real_t phi) const;
 				////  Compute Atmospheric Perspective based on
 				// [in] viewer  Position of the viewer
 				// [in] source  Position of the distant point
@@ -132,6 +132,9 @@ class PssSunSky {
 				   phiv, real_t s) const;
 				////
     Spectrum GetNeta(real_t theta, real_t v) const;
+
+    Spectrum overcastSkySpectralRadiance (real_t theta, real_t phi) const;
+    Spectrum clearSkySpectralRadiance (real_t theta, real_t phi) const;
 				////
     void CalculateA0(real_t thetav, real_t phiv, Spectrum& A0_1, Spectrum& A0_2) const;
 				////

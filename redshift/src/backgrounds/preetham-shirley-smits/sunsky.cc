@@ -289,19 +289,6 @@ PssSunSky::Spectrum PssSunSky::GetSkySpectralRadiance(const Vector &varg) const
 }
 
 
-color::xyY PssSunSky::GetSkySpectralRadiance_xyY(const Vector &varg) const
-{
-        real_t theta, phi;
-        Vector v = normalize(varg);
-        if (v.up() < 0) return color::xyY(0,0,0);
-        if (v.up() < 0.001)
-                v = normalize(Vector(v.right(),0.001, v.ahead()));
-
-        theta = acos(v.up());
-        if (fabs(theta)< 1e-5) phi = 0;
-        else  phi = atan2(v.ahead(),v.right());
-        return GetSkySpectralRadiance_xyY(theta,phi);
-}
 
 inline PssSunSky::real_t PssSunSky::PerezFunction(
         const PssSunSky::real_t *lam,
@@ -322,59 +309,50 @@ inline PssSunSky::real_t PssSunSky::PerezFunction(
         return lvz* num/den;
 }
 
+
+
+PssSunSky::Spectrum
+PssSunSky::overcastSkySpectralRadiance(PssSunSky::real_t theta,
+                                       PssSunSky::real_t phi
+) const {
+        //const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+        //const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+        const real_t o = zenith_Y*((1+2.*cos(theta))/3);
+        return Spectrum::FromRGB(o,o,o,IlluminantSpectrum);
+}
+
+
+
+PssSunSky::Spectrum
+PssSunSky::clearSkySpectralRadiance (PssSunSky::real_t theta,
+                                     PssSunSky::real_t phi
+) const {
+        const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+        // Compute xyY values
+        const real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
+        const real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
+        const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+        const Spectrum spect = ChromaticityToSpectrum(x,y);
+        // A simple luminance function would be more efficient.
+        const Spectrum ret = Y * spect / spect.y();
+        return ret;
+}
+
+
+
 PssSunSky::Spectrum
 PssSunSky::GetSkySpectralRadiance(
         PssSunSky::real_t theta,
         PssSunSky::real_t phi) const
 {
         if (overcast >= 0.9999) {
-                const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
-                const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-                const real_t o = Y*(1+2.*cos(theta))/3.;
-                return Spectrum::FromRGB(o,o,o,IlluminantSpectrum);
+                return overcastSkySpectralRadiance(theta, phi);
         } else if (overcast <= 0.0001) {
-                const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
-                // Compute xyY values
-                const real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
-                const real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
-                const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-                const Spectrum spect = ChromaticityToSpectrum(x,y);
-                // A simple luminance function would be more efficient.
-                const Spectrum ret = Y * spect / spect.y();
-                return ret;
+                return clearSkySpectralRadiance(theta, phi);
         } else {
-                // TODO: this is redundant
-                Spectrum over, clear;
-                {
-                        const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
-                        const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-                        const real_t o = Y*(1+2.*cos(theta))/3.;
-                        over = Spectrum::FromRGB(o,o,o,IlluminantSpectrum);
-                }
-                {
-                        const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
-                        // Compute xyY values
-                        const real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
-                        const real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
-                        const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-                        const Spectrum spect = ChromaticityToSpectrum(x,y);
-                        // A simple luminance function would be more efficient.
-                        clear = Y * spect / spect.y();
-                }
-                return clear*(1-overcast) + over*overcast;
+                return clearSkySpectralRadiance(theta,phi) * (1-overcast)
+                      + overcastSkySpectralRadiance(theta,phi) * overcast;
         }
-}
-
-color::xyY PssSunSky::GetSkySpectralRadiance_xyY(
-        PssSunSky::real_t theta,
-        PssSunSky::real_t phi) const
-{
-        real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
-        // Compute xyY values
-        real_t x = PerezFunction(perez_x, theta, gamma, zenith_x);
-        real_t y = PerezFunction(perez_y, theta, gamma, zenith_y);
-        real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
-        return color::xyY (x,y,Y);
 }
 
 
@@ -543,8 +521,25 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source
                 return;
         }
 
-        attenuation = AttenuationFactor(h0, thetav, s);
-        inscatter   = InscatteredRadiance(h0, thetav, phiv, s);
+        // phresnel: below hack seems not right ...
+        /*if (overcast < 0.0001)*/ {
+                attenuation = AttenuationFactor(h0, thetav, s);
+                inscatter   = InscatteredRadiance(h0, thetav, phiv, s);
+        } /*else if (overcast > 0.9999) {
+                const double atty = AttenuationFactor(h0, thetav, s).y();
+                const double iny = InscatteredRadiance(h0, thetav, phiv, s).y();
+                attenuation = Spectrum::FromRGB(atty, atty, atty, IlluminantSpectrum);
+                inscatter   = Spectrum::FromRGB(iny, iny, iny, IlluminantSpectrum);
+        } else {
+                const Spectrum att = AttenuationFactor(h0, thetav, s);
+                const Spectrum in = InscatteredRadiance(h0, thetav, phiv, s);
+                const double atty = att.y();
+                const double iny = in.y();
+                attenuation = overcast*Spectrum::FromRGB(atty, atty, atty, IlluminantSpectrum);
+                            + (1-overcast)*att;
+                inscatter   = overcast*Spectrum::FromRGB(iny, iny, iny, IlluminantSpectrum)
+                            + (1-overcast)*in;
+        }*/
 }
 
 

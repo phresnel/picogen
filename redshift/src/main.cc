@@ -539,6 +539,7 @@ redshift::shared_ptr<redshift::Scene>
                 shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
                         Vector(1,.25,1),
                         7,
+                        0,
                         true
                 ));
                 background = shared_ptr<redshift::Background> (
