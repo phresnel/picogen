@@ -32,13 +32,13 @@ namespace redshift { namespace constants {
         long double const epsilon_value<long double>::value = 0.01L;
 
         // TODO: use infinity
-        float const infinity_value<float>::value = 10000000.0f;
-        double const infinity_value<double>::value = 10000000.0;
-        long double const infinity_value<long double>::value = 10000000.0L;
+        float const infinity_value<float>::value = std::numeric_limits<float>::infinity();
+        double const infinity_value<double>::value = std::numeric_limits<double>::infinity();
+        long double const infinity_value<long double>::value = std::numeric_limits<long double>::infinity();
 
-        float const real_max_value<float>::value = 10000000.0f;
-        double const real_max_value<double>::value = 10000000.0;
-        long double const real_max_value<long double>::value = 10000000.0L;
+        float const real_max_value<float>::value = std::numeric_limits<float>::max();
+        double const real_max_value<double>::value = std::numeric_limits<double>::max();
+        long double const real_max_value<long double>::value = std::numeric_limits<long double>::max();
 
         float const pi_value<float>::value = 3.141592654f;
         double const pi_value<double>::value = 3.141592654;

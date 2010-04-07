@@ -58,7 +58,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                 if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
-                        if (numAmbientSamples>0)
+                        if (false) if (numAmbientSamples>0)
                         for (numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
                                 const optional<tuple<Color,Vector> > v_ =
                                         bsdf->sample_f (

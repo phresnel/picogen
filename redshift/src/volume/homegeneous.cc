@@ -83,7 +83,11 @@ Color Homogeneous::tau (
         const Ray &r, const Interval &i,
         real_t step, real_t offset, Random& rand
 ) const {
-        return sigma_t(r.position,r.direction,rand) * i.mag();
+        const real_t min = i.min();
+        real_t max = i.max();
+        if (max == constants::infinity)
+                max = constants::real_max;
+        return sigma_t(r.position,r.direction,rand) * (max-min);
 }
 
 

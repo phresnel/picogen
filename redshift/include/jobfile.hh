@@ -522,6 +522,7 @@ namespace redshift { namespace scenefile {
                 Normal sunDirection;
                 double turbidity;
                 double sunSizeFactor;
+                double sunBrightnessFactor;
                 double overcast;
                 ColorSum sunColor;
                 ColorSum skyFilter;
@@ -533,6 +534,7 @@ namespace redshift { namespace scenefile {
                 , sunDirection(0,0.5,2)
                 , turbidity(2.5)
                 , sunSizeFactor(1)
+                , sunBrightnessFactor(1)
                 , sunColor(3,3,3)
                 , skyFilter(0.05,0.05,0.05)
                 , atmosphericEffects(true)
@@ -552,7 +554,7 @@ namespace redshift { namespace scenefile {
                                 ));
                                 return shared_ptr<redshift::Background> (
                                   new backgrounds::PssAdapter (
-                                        preetham, sunSizeFactor
+                                        preetham, sunSizeFactor, sunBrightnessFactor
                                 ));
                         #else
                                 shared_ptr<redshift::background::Preetham> preetham (
@@ -583,10 +585,11 @@ namespace redshift { namespace scenefile {
                                 arch & actuarius::push_optional(true);
                                 arch & pack ("sun-direction", sunDirection);
                                 arch & pack ("sun-size-factor", sunSizeFactor);
+                                arch & pack ("sun-brightness-factor", sunBrightnessFactor);
                                 arch & pack ("turbidity", turbidity);
                                 arch & pack ("overcast", overcast);
-                                arch & pack ("sun-color", sunColor);
-                                arch & pack ("sky-filter", skyFilter);
+                                /*arch & pack ("sun-color", sunColor);
+                                arch & pack ("sky-filter", skyFilter);*/
                                 arch & pack ("atmospheric-effects", atmosphericEffects);
                                 arch & actuarius::pop_optional;
                                 break;

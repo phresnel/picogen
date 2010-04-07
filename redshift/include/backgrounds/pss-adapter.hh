@@ -32,7 +32,8 @@ namespace redshift { namespace backgrounds {
         public:
                 PssAdapter (
                         shared_ptr<redshift::background::PssSunSky> preetham,
-                        real_t sunSizeFactor
+                        real_t sunSizeFactor,
+                        real_t sunBrightnessFactor
                 ) ;
                 Color query (Ray const &ray) const;
                 bool hasFastDiffuseQuery () const { return false; }
@@ -51,7 +52,7 @@ namespace redshift { namespace backgrounds {
 
                 redshift::background::PssSunSky::Spectrum query_ (Ray const &ray) const;
                 shared_ptr<redshift::background::PssSunSky> preetham;
-                real_t sunSizeFactor;
+                real_t sunSizeFactor, sunBrightnessFactor;
 
                 bool isInSunSolidAngle (Vector const &vec) const ;
         };

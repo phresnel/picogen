@@ -24,10 +24,12 @@ namespace redshift { namespace backgrounds {
 
 PssAdapter::PssAdapter (
         shared_ptr<redshift::background::PssSunSky> preetham,
-        real_t sunSizeFactor
+        real_t sunSizeFactor,
+        real_t sunBrightnessFactor
 )
 : preetham (preetham)
 , sunSizeFactor(sunSizeFactor)
+, sunBrightnessFactor(sunBrightnessFactor)
 {
 }
 
@@ -47,20 +49,18 @@ Color PssAdapter::query (Ray const &ray) const {
 redshift::background::PssSunSky::Spectrum
 PssAdapter::query_ (Ray const &ray) const {
         using redshift::background::PssSunSky;
-
-        const real_t teh_sun = isInSunSolidAngle (ray.direction) ? 1.f : 0.f;
-
         return preetham->GetSkySpectralRadiance (ray.direction)
-                + teh_sun * preetham->GetSunSpectralRadiance();
+                + querySun (ray);
 }
 
 Color PssAdapter::getSunColor () const {
-        return Color(preetham->GetSunSpectralRadiance());
+        return Color(sunBrightnessFactor*preetham->GetSunSpectralRadiance());
 }
 
 Color PssAdapter::querySun (Ray const &ray) const {
         const real_t teh_sun = isInSunSolidAngle (ray.direction)?1.f:0.f;
-        return getSunColor() * teh_sun;
+        return Color(sunBrightnessFactor*preetham->GetSunSpectralRadiance())
+                * teh_sun;
 }
 /*
 Color PssAdapter::diffuseQuery (
@@ -99,11 +99,11 @@ Color PssAdapter::atmosphereShade (
                 return color;
         }
 
+        if (distance == constants::infinity)
+                distance = 100000000;
+
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));
-
-        /*if (distance == constants::infinity)
-                return color;*/
 
         typedef background::PssSunSky::Spectrum SSpectrum;
         SSpectrum attenuation(SSpectrum::noinit), inscatter(SSpectrum::noinit);

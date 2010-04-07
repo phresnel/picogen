@@ -53,15 +53,20 @@ tuple<real_t,Color> SingleScattering::Li (
 	//if (!vr || !vr->IntersectP(ray, &t0, &t1)) return 0.f;
 
         // quirk: should cull against AABB here
+        const bool inf = interval.max()==constants::infinity;
         t0 = interval.min();
-        t1 = interval.max()>cutoffDistance?cutoffDistance:interval.max();
+        t1 = inf ? constants::real_max : interval.max();
 
 	// Do emission-only volume integration in _vr_
 	Color Lv = Color(0.f);
 
 	// Prepare for volume integration stepping
-	const int N = static_cast<int>(ceil((t1-t0) / stepSize)); // Ceil2Int(), PBRT p. 856 (A.3.4)
-        const real_t step = (t1 - t0) / N;
+	// TODO phresnel: I am not sure if ceil2int is really needed
+	const double  Nf      = (ceil((t1-t0) / stepSize));
+        const int     N       = inf ? (std::numeric_limits<int>::max()-1)
+                              : static_cast<int>(Nf);
+        const real_t  step    = inf ? stepSize
+                              : ((t1-t0) / N);
 
 	Color Tr = Color(1.f);
 	Point curr = ray(t0), prev;
@@ -88,11 +93,16 @@ tuple<real_t,Color> SingleScattering::Li (
                                 rand
                         );
 
-		Tr = Tr * exp(-stepTau);
+		Tr *= exp(-stepTau);
 
 		// Terminate if transmittance is small
 		if (Tr.y() < 0.05) {
 			const real_t continueProb = .5f;
+			if (rand() > continueProb) break;
+			Tr = Tr * (1/continueProb);
+		}
+		if (t0 > cutoffDistance) {
+		        const real_t continueProb = .5f;
 			if (rand() > continueProb) break;
 			Tr = Tr * (1/continueProb);
 		}
@@ -109,7 +119,7 @@ tuple<real_t,Color> SingleScattering::Li (
                                         scene,
                                         sunRay,
                                         sample,
-                                        Interval(0,cutoffDistance),
+                                        Interval(0,constants::infinity),
                                         rand
                                 );//TODO: quirk interval max
                         const Color T = get<1>(T_);

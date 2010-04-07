@@ -44,6 +44,13 @@ Color DensityRegion::tau (
 	while (t0 < t1) {
 		tau = tau + this->sigma_t(rn(t0), -rn.direction, rand);
 		t0 += stepSize;
+
+		const real_t cutoffDistance = 1000; // TODO: expose
+		if (t0 > cutoffDistance) {
+		        const real_t continueProb = .5f;
+			if (rand() > continueProb) break;
+			tau = tau * (1/continueProb);
+		}
 	}
 	return tau * stepSize;
 }

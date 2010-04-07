@@ -125,7 +125,7 @@ optional<Intersection> Scene::intersect(
 
 tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) const {
 
-        const Interval i (0, 100000); // TODO: quirk
+        const Interval i (0, constants::infinity); // TODO: quirk
 
         const tuple<real_t,Color>
                 T  = volumeIntegrator
@@ -166,7 +166,7 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
         const real_t distance = get<2>(Lo_);
         const bool didIntersect = distance != constants::infinity;
 
-        const Interval i (0, distance>10000?10000:distance); // TODO: quirk
+        const Interval i (0, distance); // TODO: quirk
 
         // Intersect volumes.
         const tuple<real_t,Color>

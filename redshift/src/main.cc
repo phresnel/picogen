@@ -543,7 +543,7 @@ redshift::shared_ptr<redshift::Scene>
                         true
                 ));
                 background = shared_ptr<redshift::Background> (
-                        new backgrounds::PssAdapter (pss,1));
+                        new backgrounds::PssAdapter (pss,1,1));
         }
         // ----------
 
