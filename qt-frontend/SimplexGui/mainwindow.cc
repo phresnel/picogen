@@ -238,7 +238,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 // Turbidity.
                 vp = variantManager->addProperty(QVariant::Double, "turbidity");
                 vp->setValue(1);
-                vp->setAttribute(QLatin1String("singleStep"), 0.01);
+                vp->setAttribute(QLatin1String("singleStep"), 0.25);
                 vp->setAttribute(QLatin1String("decimals"), 3);
                 vp->setAttribute(QLatin1String("minimum"), 1.7);
                 vp->setAttribute(QLatin1String("maximum"), 30);
@@ -256,7 +256,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 // Overcast.
                 vp = variantManager->addProperty(QVariant::Double, "overcast");
-                vp->setValue(1);
+                vp->setValue(0);
                 vp->setAttribute(QLatin1String("singleStep"), 0.05);
                 vp->setAttribute(QLatin1String("decimals"), 2);
                 vp->setAttribute(QLatin1String("minimum"), 0);
