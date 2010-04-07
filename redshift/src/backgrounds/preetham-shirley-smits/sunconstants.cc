@@ -286,7 +286,7 @@ PssSunSky::ComputeAttenuatedSunlight(
 	                                                                       // in wrong units.
 
     }
-    return Spectrum::FromSampled(data, 350,800,91);  // Converts to Spectrum
+    return Spectrum::FromSampled(data, 350,800,91) * (1-overcast);  // Converts to Spectrum
 //#endif
 }
 

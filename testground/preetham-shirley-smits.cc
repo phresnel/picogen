@@ -77,7 +77,8 @@ void DrawScreen(SDL_Surface* screen) {
                 true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
                                         // happen if you try to use them....
         );*/
-        PssSunSky pss (Vector(1,0.25,0), 15, 1., true);
+        PssSunSky pssA (Vector(0,0.25,1), 3, 0., true);
+        PssSunSky pssB (Vector(0,0.25,1), 3, 1, true);
 
         using namespace redshift;
         using namespace color;
@@ -88,6 +89,8 @@ void DrawScreen(SDL_Surface* screen) {
 
         for (unsigned int y=0; y<HEIGHT; ++y) {
                 for (unsigned int x=0; x<WIDTH; ++x) {
+                        PssSunSky &pss = x>WIDTH/2 ? pssA : pssB;
+
                         const int numSamples = 1;
                         RGB sum;
                         for (int i=0; i<numSamples; ++i) {
@@ -156,7 +159,7 @@ void DrawScreen(SDL_Surface* screen) {
 }
 
 
-int main(int /*argc*/, char* /*argv*/[])
+int main_(int /*argc*/, char* /*argv*/[])
 {
         //freopen( "CON", "w", stdout );
         redshift::static_init();
@@ -204,9 +207,9 @@ return 0;*/
 
         //freopen( "CON", "w", stdout );
 
-        while (!keypress) {
-                DrawScreen(screen);
+        DrawScreen(screen);
 
+        while (!keypress) {
                 while (SDL_PollEvent(&event)) {
                         switch (event.type) {
                         case SDL_QUIT:

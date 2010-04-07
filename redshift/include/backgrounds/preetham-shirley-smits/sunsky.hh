@@ -127,8 +127,14 @@ class PssSunSky {
 				// GROUP:  RiAtmPerspective.C Functions
 				////
     Spectrum AttenuationFactor(real_t h0, real_t thetav, real_t s) const;
+    Spectrum overcastAttenuationFactor(real_t h0, real_t thetav, real_t s) const;
+    Spectrum clearAttenuationFactor(real_t h0, real_t thetav, real_t s) const;
 				////
     Spectrum InscatteredRadiance(real_t h0, real_t thetav, real_t
+				   phiv, real_t s) const;
+    Spectrum overcastInscatteredRadiance(real_t h0, real_t thetav, real_t
+				   phiv, real_t s) const;
+    Spectrum clearInscatteredRadiance(real_t h0, real_t thetav, real_t
 				   phiv, real_t s) const;
 				////
     Spectrum GetNeta(real_t theta, real_t v) const;

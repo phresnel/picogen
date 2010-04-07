@@ -313,11 +313,12 @@ inline PssSunSky::real_t PssSunSky::PerezFunction(
 
 PssSunSky::Spectrum
 PssSunSky::overcastSkySpectralRadiance(PssSunSky::real_t theta,
-                                       PssSunSky::real_t phi
+                                       PssSunSky::real_t /*phi*/
 ) const {
-        //const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
-        //const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
+        /*const real_t gamma = RiAngleBetween(theta,phi,thetaS,phiS);
+        const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);*/
         const real_t o = zenith_Y*((1+2.*cos(theta))/3);
+        //return Spectrum(o);//::FromRGB(o,o,o,IlluminantSpectrum);
         return Spectrum::FromRGB(o,o,o,IlluminantSpectrum);
 }
 
@@ -521,25 +522,8 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source
                 return;
         }
 
-        // phresnel: below hack seems not right ...
-        /*if (overcast < 0.0001)*/ {
-                attenuation = AttenuationFactor(h0, thetav, s);
-                inscatter   = InscatteredRadiance(h0, thetav, phiv, s);
-        } /*else if (overcast > 0.9999) {
-                const double atty = AttenuationFactor(h0, thetav, s).y();
-                const double iny = InscatteredRadiance(h0, thetav, phiv, s).y();
-                attenuation = Spectrum::FromRGB(atty, atty, atty, IlluminantSpectrum);
-                inscatter   = Spectrum::FromRGB(iny, iny, iny, IlluminantSpectrum);
-        } else {
-                const Spectrum att = AttenuationFactor(h0, thetav, s);
-                const Spectrum in = InscatteredRadiance(h0, thetav, phiv, s);
-                const double atty = att.y();
-                const double iny = in.y();
-                attenuation = overcast*Spectrum::FromRGB(atty, atty, atty, IlluminantSpectrum);
-                            + (1-overcast)*att;
-                inscatter   = overcast*Spectrum::FromRGB(iny, iny, iny, IlluminantSpectrum)
-                            + (1-overcast)*in;
-        }*/
+        attenuation = AttenuationFactor(h0, thetav, s);
+        inscatter   = InscatteredRadiance(h0, thetav, phiv, s);
 }
 
 
@@ -555,12 +539,11 @@ inline real_t EvalFunc(real_t B, real_t x)
 
 
 PssSunSky::Spectrum
-PssSunSky::AttenuationFactor(
+PssSunSky::clearAttenuationFactor(
         PssSunSky::real_t h0,
         PssSunSky::real_t theta,
         PssSunSky::real_t s
-) const
-{
+) const {
         using std::cos;
         using std::exp;
         real_t costheta = cos(theta);
@@ -571,6 +554,36 @@ PssSunSky::AttenuationFactor(
 
         return (exp(-beta_p * constTerm_1) *
                 exp(-beta_m * constTerm_2));
+}
+
+PssSunSky::Spectrum
+PssSunSky::overcastAttenuationFactor(
+        PssSunSky::real_t h0,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t s
+) const {
+        const double atty = clearAttenuationFactor(h0, theta, s).y();
+        //return Spectrum(atty);
+        return Spectrum::FromRGB(atty, atty, atty, IlluminantSpectrum);
+}
+
+PssSunSky::Spectrum
+PssSunSky::AttenuationFactor(
+        PssSunSky::real_t h0,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t s
+) const {
+        if (overcast < 0.0001) {
+                return clearAttenuationFactor(h0, theta, s);
+        } else if (overcast > 0.9999) {
+                return overcastAttenuationFactor(h0, theta, s);
+        } else {
+                // TODO: clearAttenuationFactor is called twice below,
+                //       make an overload of overcastAtt.. which accepts a
+                //       spectrum
+                return (1-overcast)*clearAttenuationFactor(h0, theta, s)
+                        + overcast*overcastAttenuationFactor(h0, theta, s);
+        }
 }
 
 
@@ -643,7 +656,7 @@ inline void RiCalculateABCD(
 
 
 
-PssSunSky::Spectrum PssSunSky::InscatteredRadiance(
+PssSunSky::Spectrum PssSunSky::clearInscatteredRadiance(
         PssSunSky::real_t h0,
         PssSunSky::real_t theta,
         PssSunSky::real_t phi,
@@ -726,6 +739,36 @@ PssSunSky::Spectrum PssSunSky::InscatteredRadiance(
 
         return A0_1 * I_1
                 + A0_2 * I_2;
+}
+
+PssSunSky::Spectrum PssSunSky::overcastInscatteredRadiance(
+        PssSunSky::real_t h0,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t phi,
+        PssSunSky::real_t s
+) const {
+        const real_t y = clearInscatteredRadiance(h0, theta, phi, s).y();
+        //return Spectrum(y);//::FromRGB(iny, iny, iny, IlluminantSpectrum);
+        return Spectrum::FromRGB(y, y, y, IlluminantSpectrum);
+}
+
+PssSunSky::Spectrum PssSunSky::InscatteredRadiance(
+        PssSunSky::real_t h0,
+        PssSunSky::real_t theta,
+        PssSunSky::real_t phi,
+        PssSunSky::real_t s
+) const {
+        if (overcast < 0.0001) {
+                return clearInscatteredRadiance(h0, theta, phi, s);
+        } else if (overcast > 0.9999) {
+                return overcastInscatteredRadiance(h0, theta, phi, s);
+        } else {
+                // TODO: clearAttenuationFactor is called twice below,
+                //       make an overload of overcastAtt.. which accepts a
+                //       spectrum
+                return (1-overcast)*clearInscatteredRadiance(h0, theta, phi, s)
+                        + overcast*overcastInscatteredRadiance(h0, theta, phi, s);
+        }
 }
 
 } }
