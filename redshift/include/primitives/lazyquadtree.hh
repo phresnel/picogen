@@ -56,11 +56,16 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom) const;
 
                 void prepare (const Scene &scene) ;
+
+                void prune () ;
+                void setCurrentScanline (unsigned int) ;
+
         private:
 
                 LazyQuadtree();
                 LazyQuadtree(LazyQuadtree const&);
                 LazyQuadtree &operator = (LazyQuadtree const&);
+
 
                 shared_ptr<LazyQuadtreeImpl> impl;
                 shared_ptr<HeightFunction const> heightFun;

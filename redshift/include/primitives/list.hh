@@ -43,6 +43,9 @@ namespace redshift { namespace primitive {
 
                 void add (shared_ptr<Primitive> primitive) ;
                 void prepare (const Scene &scene);
+
+                void prune ();
+                void setCurrentScanline (unsigned int);
         private:
                 List(List const&);
                 List &operator = (List const&);

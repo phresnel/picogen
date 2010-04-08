@@ -97,4 +97,24 @@ void List::prepare (const Scene &scene) {
 
 
 
+void List::prune () {
+        for (Primitives::const_iterator it=primitives.begin();
+                it!=primitives.end(); ++it
+        ) {
+                (*it)->prune ();
+        }
+}
+
+
+
+void List::setCurrentScanline (unsigned int scanline) {
+        for (Primitives::const_iterator it=primitives.begin();
+                it!=primitives.end(); ++it
+        ) {
+                (*it)->setCurrentScanline (scanline);
+        }
+}
+
+
+
 } }

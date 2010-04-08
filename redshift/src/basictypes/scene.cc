@@ -229,6 +229,8 @@ void Scene::render (
 
         for (int y_=0; y_<height; ++y_) {
                 const int y = y_;
+                currentScanline_ = (unsigned int)y;
+                aggregate->setCurrentScanline ((unsigned int)y);
                 //#warning no multicore!
                 #ifndef NO_OMP_THREADING
                 #pragma omp parallel for \
@@ -326,6 +328,8 @@ void Scene::render (
                 reporter->report (lock, sampleNumber, totalNumberOfSamples);
                 ucp->tick();
                 userWantsToQuit = ucp->userWantsToQuit();
+
+                aggregate->prune ();
 
                 if (userWantsToQuit)
                         break;

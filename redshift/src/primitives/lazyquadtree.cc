@@ -144,6 +144,7 @@ namespace lazyquadtree {
                 mutable Mutex mute[4];
 
                 const real_t lodFactor;
+                mutable unsigned int lastUsedInScanline;
 
 
                 pair<real_t,Normal> intersect_triangle (
@@ -228,18 +229,23 @@ namespace lazyquadtree {
                                 );
                                 break;
                         };
-                        tmp->prepare(cameraPosition);
+                        tmp->prepare(cameraPosition, lastUsedInScanline);
                         children[index] = tmp;
                         ++initializedChildCount;
                 }
 
-                optional<pair<real_t,Normal> > traverse (RayDifferential const &ray, int child, real_t t0, real_t t1) const {
+                optional<pair<real_t,Normal> > traverse (
+                        RayDifferential const &ray,
+                        int child,
+                        real_t t0, real_t t1,
+                        unsigned int scanline
+                ) const {
                         if (t0<=t1) {
                                 if (!children[child]) {
                                         create_child (child); // assumed to be safe upon multiple calls
                                 }
                                 if (optional<pair<real_t,Normal> > dg =
-                                        children[child]->intersect(ray, t0, t1)
+                                        children[child]->intersect(ray, t0, t1, scanline)
                                 ) {
                                         return dg;
                                 }
@@ -318,6 +324,7 @@ namespace lazyquadtree {
                 , maxRecursion(maxRecursion_)
                 , initializedChildCount(0)
                 , lodFactor(lodFactor)
+                , lastUsedInScanline(lastUsedInScanline)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -335,7 +342,26 @@ namespace lazyquadtree {
                         if (!scene.getCamera()->hasCommonCenter()) {
                                 std::cerr << "LazyQuadtreeImpl: Camera has no common center. Results undefined" << std::endl;
                         } else {
-                                prepare (vector_cast<PointF>(scene.getCamera()->getCommonCenter()));
+                                prepare (vector_cast<PointF>(scene.getCamera()->getCommonCenter())
+                                        , scene.currentScanline()
+                                );
+                        }
+
+                        lastUsedInScanline = scene.currentScanline();
+                }
+
+                void prune (unsigned int currentScanline, const unsigned int depth=0) {
+                        for (int i=0; i<4; ++i) {
+                                if (children[i]) {
+                                        const unsigned int diff =
+                                                currentScanline-children[i]->lastUsedInScanline;
+                                        if (diff >= 2) {
+                                                delete children[i];
+                                                children[i] = 0;
+                                        } else if (depth < 10) {
+                                                children[i]->prune(currentScanline, depth+1);
+                                        }
+                                }
                         }
                 }
 
@@ -351,9 +377,10 @@ namespace lazyquadtree {
                         }
 
                 }
-                void prepare (PointF const & cameraPosition) {
+                void prepare (PointF const & cameraPosition, unsigned int currentScanline) {
 
                         this->cameraPosition = cameraPosition;
+                        this->lastUsedInScanline = currentScanline;
 
                         // If we once re-use an existing quadtree, we should
                         // also save the original bounding box, as LOD's must be
@@ -404,15 +431,18 @@ namespace lazyquadtree {
                         }
 
                         for (int i=0; i<4; ++i) {
-                                if (children[i]) children[i]->prepare (cameraPosition);
+                                if (children[i]) children[i]->prepare (cameraPosition, currentScanline);
                         }
 
                 }
 
                 optional<pair<real_t,Normal> > intersect (
                         RayDifferential const &ray,
-                        real_t minT, real_t maxT
+                        real_t minT, real_t maxT,
+                        unsigned int currentScanline
                 ) const {
+
+                        lastUsedInScanline = currentScanline;
                         /*if (!ray.hasDifferentials) std::cout << "?" << std::flush;
                         else                       std::cout << "!" << std::flush;*/
 
@@ -506,7 +536,7 @@ namespace lazyquadtree {
 
                         {
                                 for (int i=0; i<3; ++i) {
-                                        dg = traverse (ray, t[i].child, t[i].t0, t[i].t1);
+                                        dg = traverse (ray, t[i].child, t[i].t0, t[i].t1, currentScanline);
                                         if (dg) {
                                                 break;
                                         }
@@ -575,7 +605,7 @@ public:
                 const real_t minT = get<0>(*i);
                 const real_t maxT = get<1>(*i);
 
-                const optional<pair<real_t,Normal> > dg = primaryNode.intersect (ray, minT, maxT);
+                const optional<pair<real_t,Normal> > dg = primaryNode.intersect (ray, minT, maxT, currentScanline);
                 if (!dg)
                         return false;
 
@@ -610,6 +640,18 @@ public:
                 return bsdf;
         }
 
+
+
+        void prune () {
+                primaryNode.prune (currentScanline);
+        }
+
+
+
+        void setCurrentScanline (unsigned int s) {
+                currentScanline = s;
+        }
+
 private:
 
         shared_ptr<HeightFunction const> fun;
@@ -617,9 +659,10 @@ private:
         BoundingBox primaryFixpBB;
         lazyquadtree::Node primaryNode;
         Color color;
+        unsigned int currentScanline;
 
         BoundingBoxF initBB(const real_t size, const unsigned int numSamples) const {
-                real_t minh = 10000000.0f , maxh = -10000000.0f;
+                real_t minh = constants::real_max , maxh = -constants::real_max;
                 Random rand (123,45678,91011,121314);
                 const real_t size05 = size/2;
                 /*std::cout << "random sampling function (will take "
@@ -630,9 +673,17 @@ private:
                                 rand()*size-size05,
                                 rand()*size-size05
                         };
-                        const real_t h = (*fun)(uv[0],uv[1]);
-                        if (h < minh) minh = h;
-                        if (h > maxh) maxh = h;
+                        {
+                                const real_t h = (*fun)(uv[0],uv[1]);
+                                if (h < minh) minh = h;
+                                if (h > maxh) maxh = h;
+                        }
+                        // reusing random numbers:
+                        {
+                                const real_t h = (*fun)(uv[1],uv[0]);
+                                if (h < minh) minh = h;
+                                if (h > maxh) maxh = h;
+                        }
                 }
                 //std::cout << "done" << std::endl;
                 return BoundingBoxF (
@@ -711,5 +762,16 @@ void LazyQuadtree::prepare (const Scene &scene) {
         impl->prepare (scene);
 }
 
+
+
+void LazyQuadtree::prune () {
+        impl->prune ();
+}
+
+
+
+void LazyQuadtree::setCurrentScanline (unsigned int s) {
+        impl->setCurrentScanline (s);
+}
 
 } }
