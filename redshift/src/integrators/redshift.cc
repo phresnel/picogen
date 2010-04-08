@@ -55,7 +55,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                 Color spec = Color(0);
                 int numSamples = 1;
                 // diffuse
-                if (false) if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+                if (true) if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
                         if (numAmbientSamples>0)

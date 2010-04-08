@@ -465,11 +465,17 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source
         const real_t h0 = viewer.up();//1000 added to make sure ray doesnt
         //go below zero.
 
-        const Vector source = source_;
+        Vector source = source_;
         const Vector direction = normalize (source - viewer);
-        const real_t thetav = acos(direction.up());
-        const real_t phiv = atan2(direction.ahead(),direction.right());
-        const real_t s = length(viewer - source);
+
+        if (source.y < 0) {
+                const real_t s = viewer.y / -direction.y;
+                source = viewer + s * direction;
+        }
+
+        const real_t thetav    = acos (direction.up());
+        const real_t phiv      = atan2 (direction.ahead(), direction.right());
+        const real_t s         = length (viewer - source);
 
         // fix added (phresnel)/ would otherwise result in fault mem access if s==0
         if (s<=0) {
