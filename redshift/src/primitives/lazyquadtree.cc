@@ -148,13 +148,16 @@ namespace lazyquadtree {
                 real_t center_x, center_z;
                 real_t diagonal;
                 bool isLeaf;
-                mutable int initializedChildCount;
+
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
                 mutable Mutex mute[4];
 
                 const real_t lodFactor;
                 mutable unsigned int lastUsedInScanline;
                 //mutable NodeIndex &nodeIndex;
+
+                mutable bool hasExactBoundingBox; // once this is well defined, get rid of
+                                                  // initializedChildCount
 
 
                 pair<real_t,Normal> intersect_triangle (
@@ -245,7 +248,6 @@ namespace lazyquadtree {
                         };
                         tmp->prepare(cameraPosition, lastUsedInScanline);
                         children[index] = tmp;
-                        ++initializedChildCount;
                 }
 
                 optional<pair<real_t,Normal> > traverse (
@@ -302,25 +304,46 @@ namespace lazyquadtree {
                                         if (h < min_h) min_h = h;
                                         if (h > max_h) max_h = h;
                                 }
+
+                                hasExactBoundingBox = true;
+
+                                aabb.setMinimumY(min_h);
+                                aabb.setMaximumY(max_h);
+                                diagonal = length (aabb.getMaximum()-aabb.getMinimum());
+
+                                // propagate to parent
+                                if (parent) parent->refineBoundingBox();
+
                         } else {
-                                if (initializedChildCount < 4)
-                                        return;
+
+                                for (int i = 0; i<4; ++i) {
+                                        if (!children[i])
+                                                return;
+                                        if (!children[i]->hasExactBoundingBox)
+                                                return;
+                                }
+
 
                                 min_h = constants::real_max;
                                 max_h = -constants::real_max;
 
                                 for (int i=0; i<4; ++i) {
-                                        if (!children[i]) continue;
+                                        if (!children[i]) exit(0);
                                         if (children[i]->min_h < min_h)
                                                 min_h = children[i]->min_h;
                                         if (children[i]->max_h > max_h)
                                                 max_h = children[i]->max_h;
                                 }
+
+                                hasExactBoundingBox = true;
+
+                                aabb.setMinimumY(min_h);
+                                aabb.setMaximumY(max_h);
+                                diagonal = length (aabb.getMaximum()-aabb.getMinimum());
+
+                                // propagate to parent
+                                if (parent) parent->refineBoundingBox();
                         }
-                        aabb.setMinimumY(min_h);
-                        aabb.setMaximumY(max_h);
-                        diagonal = length (aabb.getMaximum()-aabb.getMinimum());
-                        if (parent) parent->refineBoundingBox();
                 }
         public:
                 Node (
@@ -337,10 +360,10 @@ namespace lazyquadtree {
                 , vertices(0)
                 , vertexCount(0)
                 , maxRecursion(maxRecursion_)
-                , initializedChildCount(0)
                 , lodFactor(lodFactor)
                 , lastUsedInScanline(lastUsedInScanline)
                 //, nodeIndex(nodeIndex)
+                , hasExactBoundingBox(false)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -397,7 +420,7 @@ namespace lazyquadtree {
                                         if (diff >= 2) {
                                                 delete children[i];
                                                 children[i] = 0;
-                                        } else if (depth < 5) {
+                                        } else if (depth < 7) {
                                                 children[i]->prune(currentScanline, depth+1);
                                         }
                                 }
