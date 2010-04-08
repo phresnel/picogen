@@ -20,6 +20,7 @@
 
 #include "../../include/primitives/lazyquadtree.hh"
 #include "../../include/material/lambertian.hh"
+#include "kallisto/types/cache.hh"
 
 #include <omp.h>
 
@@ -30,6 +31,14 @@ namespace redshift { namespace primitive {
 
 
 namespace lazyquadtree {
+
+        class Node;
+        void clearNode (const Node *);
+        typedef
+                kallisto::cache::mru_cache_index<const lazyquadtree::Node*,
+                                                 kallisto::cache::collect,
+                                                 clearNode>
+                NodeIndex;
 
         struct Vertex {
                 real_t u,v;
@@ -145,6 +154,7 @@ namespace lazyquadtree {
 
                 const real_t lodFactor;
                 mutable unsigned int lastUsedInScanline;
+                //mutable NodeIndex &nodeIndex;
 
 
                 pair<real_t,Normal> intersect_triangle (
@@ -189,7 +199,8 @@ namespace lazyquadtree {
                                         fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor
+                                        lodFactor/*,
+                                        nodeIndex*/
                                 );
                                 break;
                         case 1:
@@ -201,7 +212,8 @@ namespace lazyquadtree {
                                         fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor
+                                        lodFactor/*,
+                                        nodeIndex*/
                                 );
                                 break;
                         case 2:
@@ -213,7 +225,8 @@ namespace lazyquadtree {
                                         fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor
+                                        lodFactor/*,
+                                        nodeIndex*/
                                 );
                                 break;
                         case 3:
@@ -225,7 +238,8 @@ namespace lazyquadtree {
                                         fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor
+                                        lodFactor/*,
+                                        nodeIndex*/
                                 );
                                 break;
                         };
@@ -314,7 +328,8 @@ namespace lazyquadtree {
                         const HeightFunction &fun,
                         const int maxRecursion_,
                         Node *parent_,
-                        float lodFactor
+                        float lodFactor/*,
+                        NodeIndex &nodeIndex*/
                 )
                 : aabb(box)
                 , parent(parent_)
@@ -325,6 +340,7 @@ namespace lazyquadtree {
                 , initializedChildCount(0)
                 , lodFactor(lodFactor)
                 , lastUsedInScanline(lastUsedInScanline)
+                //, nodeIndex(nodeIndex)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -332,11 +348,34 @@ namespace lazyquadtree {
                 }
 
                 ~Node () {
+                        if (parent) {
+                                for (int i=0; i<4; ++i) {
+                                        if (parent->children[i] == this)
+                                                parent->children[i] = 0;
+                                }
+                        }
+                        /*if (nodeIndex.cached (this)) {
+                                nodeIndex.remove_index (this);
+                        }*/
                         for (int i=0; i<4; ++i) {
-                                delete children[i];
+                                if (children[i]) {
+                                        children[i]->parent = 0;
+                                        delete children[i];
+                                }
                         }
                         delete [] vertices;
                 }
+
+
+                /*void killChild (const Node *child) {
+                        for (int i=0; i<4; ++i) {
+                                if (child == children[i]) {
+                                        delete children[i];
+                                        children[i] = 0;
+                                        break;
+                                }
+                        }
+                }*/
 
                 void prepare (Scene const &scene) {
                         if (!scene.getCamera()->hasCommonCenter()) {
@@ -358,7 +397,7 @@ namespace lazyquadtree {
                                         if (diff >= 2) {
                                                 delete children[i];
                                                 children[i] = 0;
-                                        } else if (depth < 10) {
+                                        } else if (depth < 5) {
                                                 children[i]->prune(currentScanline, depth+1);
                                         }
                                 }
@@ -443,8 +482,6 @@ namespace lazyquadtree {
                 ) const {
 
                         lastUsedInScanline = currentScanline;
-                        /*if (!ray.hasDifferentials) std::cout << "?" << std::flush;
-                        else                       std::cout << "!" << std::flush;*/
 
                         struct Triangle {
                                 Vertex &a, &b, &c;
@@ -459,6 +496,8 @@ namespace lazyquadtree {
                                 return false;
 
                         if (isLeaf) {
+                                /*#pragma omp master
+                                if (parent) nodeIndex.load (this);*/
                                 return intersectLeaf (ray);
                         }
 
@@ -542,9 +581,21 @@ namespace lazyquadtree {
                                         }
                                 }
                         }
+                        /*#pragma omp master
+                        if (parent) nodeIndex.load (this);*/
+
                         return dg;
                 }
+
+
+                friend void clearNode (const Node *);
         };
+
+
+
+        void clearNode (const lazyquadtree::Node* p) {
+                delete p;
+        }
 }
 
 
@@ -570,22 +621,30 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , primaryNode(
+        , nodeIndex(0)//(1024*13) * 4)
+        , primaryNode(new lazyquadtree::Node(
                 primaryBB,
                 *fun.get(),
                 maxRecursion,
                 0,
-                lodFactor) // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+                lodFactor/*,
+                nodeIndex*/))     // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
         , color(color)
-        {}
+        {
+        }
+
+
+        ~LazyQuadtreeImpl() {
+                delete primaryNode;
+        }
 
 
 
         void prepare (const Scene &scene) {
-                primaryNode.prepare (scene);
+                primaryNode->prepare (scene);
         }
 
 
@@ -605,7 +664,7 @@ public:
                 const real_t minT = get<0>(*i);
                 const real_t maxT = get<1>(*i);
 
-                const optional<pair<real_t,Normal> > dg = primaryNode.intersect (ray, minT, maxT, currentScanline);
+                const optional<pair<real_t,Normal> > dg = primaryNode->intersect (ray, minT, maxT, currentScanline);
                 if (!dg)
                         return false;
 
@@ -643,7 +702,9 @@ public:
 
 
         void prune () {
-                primaryNode.prune (currentScanline);
+                primaryNode->prune (currentScanline);
+                //std::cout << nodeIndex.stride() << std::endl;
+                //nodeIndex.collect();
         }
 
 
@@ -657,7 +718,8 @@ private:
         shared_ptr<HeightFunction const> fun;
         BoundingBoxF primaryBB;
         BoundingBox primaryFixpBB;
-        lazyquadtree::Node primaryNode;
+        lazyquadtree::NodeIndex nodeIndex;
+        lazyquadtree::Node *primaryNode;
         Color color;
         unsigned int currentScanline;
 
@@ -665,9 +727,7 @@ private:
                 real_t minh = constants::real_max , maxh = -constants::real_max;
                 Random rand (123,45678,91011,121314);
                 const real_t size05 = size/2;
-                /*std::cout << "random sampling function (will take "
-                        << numSamples
-                        << " samples) ... " << std::flush;*/
+
                 for (unsigned int x=0; x<numSamples; ++x) {
                         const real_t uv[] = {
                                 rand()*size-size05,
@@ -685,7 +745,6 @@ private:
                                 if (h > maxh) maxh = h;
                         }
                 }
-                //std::cout << "done" << std::endl;
                 return BoundingBoxF (
                         PointF(-size05,minh,-size05),
                         PointF(size05,maxh,size05)
