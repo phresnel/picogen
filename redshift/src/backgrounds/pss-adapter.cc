@@ -36,7 +36,9 @@ PssAdapter::PssAdapter (
 bool PssAdapter::isInSunSolidAngle (Vector const & vector_) const {
         Vector const vector = normalize (vector_);
         const real_t
-                dotS = dot(vector, getSunDirection()),
+                dotS_ = dot(vector, getSunDirection()),
+                dotS = dotS_ > 1 ? 1 : dotS_, // this would be the case e.g. with
+                                              // normalize(Vector(1,1,0.1)) as input
                 alpha = acos (dotS),
                 sr = 2 * constants::pi * (1 - std::cos(alpha/2))
         ;
@@ -61,13 +63,6 @@ Color PssAdapter::getSunColor () const {
 Color PssAdapter::querySun (Ray const &ray) const {
         const Vector &vector = ray.direction;
         const real_t teh_sun = isInSunSolidAngle (vector)?1.f:0.f;
-
-        /*if (rand()%100 == 0) {
-                std::cout << vector.x << ":" << vector.y << ":" << vector.z << "/";
-                std::cout << getSunDirection().x << ":" << getSunDirection().y << ":" << getSunDirection().z << "/";
-                //std::cout << length(vector_) << ":" << length(getSunDirection()) << ":";
-                std::cout << teh_sun << "\n";
-        }*/
 
         return Color(sunBrightnessFactor*preetham->GetSunSpectralRadiance())
                 * teh_sun;
