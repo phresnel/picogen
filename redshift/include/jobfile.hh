@@ -249,9 +249,11 @@ namespace redshift { namespace scenefile {
                         } break;
                         case water_plane:
                                 arch
+                                & actuarius::push_optional(true)
                                 & pack("code", waterPlaneParams.code)
                                 & pack("height", waterPlaneParams.height)
                                 & pack("color", waterPlaneParams.color)
+                                & actuarius::pop_optional
                                 ;
                                 break;
                         case horizon_plane:
@@ -445,6 +447,7 @@ namespace redshift { namespace scenefile {
                 void serialize (Arch &arch) {
                         using actuarius::pack;
 
+                        arch & actuarius::push_optional(true);
                         switch (type) {
                         case homogeneous:
                                 arch & pack("absorption", sigma_a);
@@ -463,6 +466,7 @@ namespace redshift { namespace scenefile {
                                 arch & pack("exponent-factor", exponentFactor);
                                 break;
                         };
+                        arch & actuarius::pop_optional;
                 }
         };
 
@@ -602,12 +606,14 @@ namespace redshift { namespace scenefile {
         // RenderSettings.
         struct RenderSettings {
                 unsigned int width, height, samplesPerPixel;
+                unsigned int min_y, max_y;
                 std::string title;
                 SurfaceIntegrator surfaceIntegrator;
                 VolumeIntegrator volumeIntegrator;
 
                 RenderSettings ()
                 : width(800), height(600), samplesPerPixel(1)
+                , min_y(0), max_y(~0)
                 {}
 
                 // Serialization.
@@ -618,8 +624,12 @@ namespace redshift { namespace scenefile {
                         //arch & pack ("title", title);
                         arch & pack ("width", width);
                         arch & pack ("height", height);
+                        arch & actuarius::push_optional(true);
+                        arch & pack ("min-y", min_y);
+                        arch & pack ("max-y", max_y);
                         arch & pack ("samples-per-pixel", samplesPerPixel);
                         arch & pack ("surface-integrator", surfaceIntegrator);
+                        arch & actuarius::pop_optional;
                         if (Arch::deserialize || volumeIntegrator.type != VolumeIntegrator::none) {
                                 arch & actuarius::push_optional(true)
                                      & pack ("volume-integrator", volumeIntegrator)

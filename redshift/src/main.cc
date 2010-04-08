@@ -442,7 +442,11 @@ namespace {
                 ProgressReporter::Ptr reporter (
                           new RenderTargetCopyingReporter(renderBuffer, screenBuffer));
 
-                scene->render(reporter, commandProcessor, samplesPerPixel);
+                scene->render(
+                        reporter, commandProcessor,
+                        samplesPerPixel,
+                        scened.renderSettings(0).min_y,
+                        scened.renderSettings(0).max_y);
                 copy (renderBuffer, screenBuffer);
                 screenBuffer->flip();
 

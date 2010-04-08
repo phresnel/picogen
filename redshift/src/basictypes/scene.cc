@@ -176,7 +176,8 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode)
 void Scene::render (
         interaction::ProgressReporter::Ptr reporter,
         interaction::UserCommandProcessor::Ptr ucp,
-        unsigned int numAASamples_
+        unsigned int numAASamples_,
+        unsigned int minY, unsigned int maxY
 ) const {
 
         const uint32_t numAASamples = numAASamples_?numAASamples_:1;
@@ -202,7 +203,7 @@ void Scene::render (
         const int width = renderTarget->getWidth();
         const int height = renderTarget->getHeight();
 
-        for (int y_=0; y_<height; ++y_) {
+        for (int y_=minY; y_<height && y_<maxY; ++y_) {
                 const int y = y_;
                 currentScanline_ = (unsigned int)y;
                 aggregate->setCurrentScanline ((unsigned int)y);

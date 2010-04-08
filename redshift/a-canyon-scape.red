@@ -1,8 +1,10 @@
 scene{
-    film-settings{color-scale:0.02; convert-to-srgb:1;}
+    film-settings{color-scale:0.015; convert-to-srgb:1;}
 
     render-settings{
         prev-vol{
+            min-y:250;
+            max-y:260;
             width:500;
             height:300;
             samples-per-pixel:1;
@@ -67,9 +69,9 @@ scene{
     }
     backgrounds{
         pss-sunsky {
-                turbidity:2.0;
-                sun-direction{0.1;0.5;2.1}
-                sun-brightness-factor:1;
+                turbidity:3.0;
+                sun-direction{1.0;1.0;0.1}
+                sun-brightness-factor:10;
                 sun-size-factor:1;
                 overcast:0.0;
         }
