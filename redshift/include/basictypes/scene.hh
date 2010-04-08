@@ -41,6 +41,10 @@ namespace redshift {
 
         class Scene : DoFinalize(Scene) {
         public:
+                enum LiMode {
+                        volume_only,
+                        full
+                };
 
                 Scene(
                         shared_ptr<RenderTarget>,
@@ -68,8 +72,7 @@ namespace redshift {
                 shared_ptr<camera::Camera> getCamera ()       const;
                 shared_ptr<VolumeRegion>   getVolumeRegion () const;
 
-                tuple<real_t,Color> Li(Sample const&, Random &) const;
-                tuple<real_t,Color> Li_VolumeOnly(Sample const&, Random &) const;
+                tuple<real_t,Color> Li(Sample const&, Random &, LiMode mode = full) const;
 
                 unsigned int currentScanline () const { return currentScanline_; }
         private:

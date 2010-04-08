@@ -1,10 +1,10 @@
 scene{
-    film-settings{color-scale:0.023; convert-to-srgb:1;}
+    film-settings{color-scale:0.02; convert-to-srgb:1;}
 
     render-settings{
         prev-vol{
-            width:800;
-            height:500;
+            width:500;
+            height:300;
             samples-per-pixel:1;
             surface-integrator{
                 type:redshift;
@@ -28,7 +28,7 @@ scene{
         aerial{
             transform{
                 move-right{9000}
-                move-up{8000}
+                move-up{2050}
                 move-forward{-150000}
 
                 pitch{7}
@@ -37,7 +37,7 @@ scene{
         }
     }
     objects{
-        horizon-plane{
+        water-plane{
                 color{rgb{0.5;0.5;0.5}}
                 height:2020;
         }
@@ -52,7 +52,7 @@ scene{
                                         filter{cosine}
                                         seed{3}
                                         frequency{0.1}
-                                        layercount{6}
+                                        layercount{16}
                                         persistence{0.55}
                                 ] (abs x) (abs y)))) 3)
                         )
@@ -67,8 +67,11 @@ scene{
     }
     backgrounds{
         pss-sunsky {
-                turbidity:2.7;
-                sun-direction{3.0;0.1;0}
+                turbidity:2.0;
+                sun-direction{0.1;0.5;2.1}
+                sun-brightness-factor:1;
+                sun-size-factor:1;
+                overcast:0.0;
         }
     }
     volumes {

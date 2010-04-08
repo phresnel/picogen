@@ -81,7 +81,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                                         ray.direction = get<1>(*v_);
                                         Sample s = sample;
                                         s.primaryRay = ray;
-                                        const tuple<real_t,Color> L = scene.Li_VolumeOnly(s, rand);
+                                        const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
                                         /*if (ray.direction.y>0)*/ {
                                                 sum = sum +
                                                         //bg->query (ray)  *  get<0>(*v_);
@@ -138,7 +138,7 @@ tuple<real_t,Color,real_t> DirectLighting::Li (
                         const real_t d = max(
                           real_t(0), dot(sunDir,vector_cast<Vector>(normalS)));
 
-                        const tuple<real_t,Color> L = scene.Li_VolumeOnly(s, rand);
+                        const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
                         ret = ret + surfaceColor * get<1>(L) * d;
                 }
 

@@ -42,6 +42,7 @@ namespace redshift { namespace backgrounds {
                         Color const &, Ray const &, real_t
                 ) const;
                 bool hasAtmosphereShade () const { return true; }
+                bool isInSunSolidAngle (Vector const &) const;
 
                 // TODO: refactor the sun functions into a PreethamSunAdapter
                 bool hasSun () const { return true; }
@@ -54,7 +55,6 @@ namespace redshift { namespace backgrounds {
                 shared_ptr<redshift::background::PssSunSky> preetham;
                 real_t sunSizeFactor, sunBrightnessFactor;
 
-                bool isInSunSolidAngle (Vector const &vec) const ;
         };
 } }
 

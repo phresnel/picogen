@@ -149,7 +149,7 @@ void PssSunSky::InitRest (bool initAtmEffects) {
 
         toSun = Vector(cos(phiS)*sin(thetaS), cos(thetaS), sin(phiS)*sin(thetaS));
 
-        sunSpectralRad =  ComputeAttenuatedSunlight(thetaS, turbidity);
+        sunSpectralRad =  (1-overcast)*ComputeAttenuatedSunlight(thetaS, turbidity);
 
         sunSolidAngle =  0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
 

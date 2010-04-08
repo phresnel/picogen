@@ -33,7 +33,8 @@ PssAdapter::PssAdapter (
 {
 }
 
-bool PssAdapter::isInSunSolidAngle (Vector const & vector) const {
+bool PssAdapter::isInSunSolidAngle (Vector const & vector_) const {
+        Vector const vector = normalize (vector_);
         const real_t
                 dotS = dot(vector, getSunDirection()),
                 alpha = acos (dotS),
@@ -50,7 +51,7 @@ redshift::background::PssSunSky::Spectrum
 PssAdapter::query_ (Ray const &ray) const {
         using redshift::background::PssSunSky;
         return preetham->GetSkySpectralRadiance (ray.direction)
-                + querySun (ray);
+                /*+ querySun (ray)*/;
 }
 
 Color PssAdapter::getSunColor () const {
@@ -58,10 +59,20 @@ Color PssAdapter::getSunColor () const {
 }
 
 Color PssAdapter::querySun (Ray const &ray) const {
-        const real_t teh_sun = isInSunSolidAngle (ray.direction)?1.f:0.f;
+        const Vector &vector = ray.direction;
+        const real_t teh_sun = isInSunSolidAngle (vector)?1.f:0.f;
+
+        /*if (rand()%100 == 0) {
+                std::cout << vector.x << ":" << vector.y << ":" << vector.z << "/";
+                std::cout << getSunDirection().x << ":" << getSunDirection().y << ":" << getSunDirection().z << "/";
+                //std::cout << length(vector_) << ":" << length(getSunDirection()) << ":";
+                std::cout << teh_sun << "\n";
+        }*/
+
         return Color(sunBrightnessFactor*preetham->GetSunSpectralRadiance())
                 * teh_sun;
 }
+
 /*
 Color PssAdapter::diffuseQuery (
         Point const &poi, Normal const &normal, Random &rand

@@ -123,41 +123,10 @@ optional<Intersection> Scene::intersect(
 
 
 
-tuple<real_t,Color> Scene::Li_VolumeOnly(Sample const& sample, Random& rand) const {
-
-        const Interval i (0, constants::infinity); // TODO: quirk
-
-        const tuple<real_t,Color>
-                T  = volumeIntegrator
-                   ? volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand)
-                   : make_tuple(real_t(1), Color(real_t(1))),
-
-                Lv = volumeIntegrator
-                   ? volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand)
-                   : make_tuple(real_t(1), Color(real_t(0)))
-        ;
-
-        const Color atmosphere = background
-                        ? background->query(sample.primaryRay)
-                        : Color(0.5);
-
-        const Color ret_ = get<1>(T) * atmosphere + get<1>(Lv);
-        const Color ret =
-                background && background->hasAtmosphereShade()
-                ? background->atmosphereShade (ret_, sample.primaryRay, constants::infinity)
-                : ret_
-        ;
-
-
-        return make_tuple (1.f, ret);
-}
-
-
-
-tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
+tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode) const {
         // Intersect geometry.
         const tuple<real_t,Color,real_t>
-                Lo_ = aggregate
+                Lo_ = aggregate && mode==full
                     ? surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand)
                     : make_tuple(1., Color(0), constants::infinity)
         ;
@@ -180,17 +149,23 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand) const {
         ;
         const Color T = get<1>(T_), Lv = get<1>(Lv_);
 
-        // Background.
-        const Color atmosphere = background
-                        ? background->query(sample.primaryRay)
-                        : Color(0.5);
 
-        // Now either put atmo- or geom-color into eq.
         const Color
-                ret_ = T * (didIntersect ? Lo : atmosphere)  +  Lv,
-                ret = background && background->hasAtmosphereShade()
-                    ? background->atmosphereShade (ret_, sample.primaryRay, distance)
-                    : ret_
+                atmosphere_plus_sun     = background->query(sample.primaryRay)
+                                        + background->querySun(sample.primaryRay),
+                atmosphere_or_geom      = didIntersect ? Lo : (atmosphere_plus_sun),
+
+                // to volume == apply volume scattering onto sth.
+                atmosphere_or_geom_volumed = T * atmosphere_or_geom + Lv,
+
+                // to atmosphere == apply aerial perspective onto sth.
+                // but not onto sun, which is already attenuated inside PssSunSky
+                atmosphere_or_geom_atmosphered = background && background->hasAtmosphereShade()
+                    ? background->atmosphereShade (atmosphere_or_geom_volumed, sample.primaryRay, distance)
+                    : atmosphere_or_geom_volumed,
+
+                //
+                ret = atmosphere_or_geom_atmosphered
         ;
 
         return make_tuple (1.f, ret);

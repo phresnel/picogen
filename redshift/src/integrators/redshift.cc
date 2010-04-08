@@ -55,10 +55,10 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                 Color spec = Color(0);
                 int numSamples = 1;
                 // diffuse
-                if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+                if (false) if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
                         RayDifferential ray;
                         ray.position = poi;
-                        if (false) if (numAmbientSamples>0)
+                        if (numAmbientSamples>0)
                         for (numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
                                 const optional<tuple<Color,Vector> > v_ =
                                         bsdf->sample_f (
@@ -70,7 +70,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                         /*if (ray.direction.y>0)*/ {
                                                 Sample s = sample;
                                                 s.primaryRay = ray;
-                                                const tuple<real_t,Color> L = scene.Li_VolumeOnly(s, rand);
+                                                const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
 
                                                 sum = sum +
                                                         //bg->query (ray)  *  get<0>(*v_);
@@ -124,8 +124,10 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                     real_t(0),
                                     dot(sunDir,vector_cast<Vector>(normalS))
                                 );
-                                const tuple<real_t,Color> volumeLi = scene.Li_VolumeOnly(sunSample,rand);
-                                ret += surfaceColor * get<1>(volumeLi) * d;
+                                const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
+                                const Color color = get<1>(volumeLi);
+                                //const Color color = bg->querySun (sunSample.primaryRay);
+                                ret += surfaceColor * color * d;
                         }
                 }
 
