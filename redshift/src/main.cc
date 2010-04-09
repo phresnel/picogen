@@ -171,13 +171,14 @@ namespace {
                         ret.outputFile = "redshift-"+CurrentDate::AsPartOfFilename()+".bmp";
                         std::cout << "No output-file set, will write to '" << ret.outputFile << "'.\n";
                 }
-                std::string ext = filename_extension (ret.outputFile);
+                const std::string ext = filename_extension (ret.outputFile);
                 if (ret.doSaveOutput) {
                         if (ext == "bmp") {
                                 // okay
                         } else if (ext == "") {
-                                std::cout << "Missing filename extension for output file,  bmp.\n";
-                                ext = "bmp";
+                                std::cout << "Missing filename extension for output file, "
+                                             "will use bmp.\n";
+                                ret.outputFile += ".bmp";
                         } else {
                                 std::cout << "Unsupported filename extension for output file: " << ext << "\n";
                                 // TODO: --help extensions
