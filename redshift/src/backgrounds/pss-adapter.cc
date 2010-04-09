@@ -25,11 +25,15 @@ namespace redshift { namespace backgrounds {
 PssAdapter::PssAdapter (
         shared_ptr<redshift::background::PssSunSky> preetham,
         real_t sunSizeFactor,
-        real_t sunBrightnessFactor
+        real_t sunBrightnessFactor,
+        real_t atmosphereBrightnessFactor,
+        real_t atmosphericFxDistanceFactor
 )
 : preetham (preetham)
 , sunSizeFactor(sunSizeFactor)
 , sunBrightnessFactor(sunBrightnessFactor)
+, atmosphereBrightnessFactor(atmosphereBrightnessFactor)
+, atmosphericFxDistanceFactor(atmosphericFxDistanceFactor)
 {
 }
 
@@ -52,7 +56,7 @@ Color PssAdapter::query (Ray const &ray) const {
 redshift::background::PssSunSky::Spectrum
 PssAdapter::query_ (Ray const &ray) const {
         using redshift::background::PssSunSky;
-        return preetham->GetSkySpectralRadiance (ray.direction)
+        return Color(atmosphereBrightnessFactor*preetham->GetSkySpectralRadiance (ray.direction))
                 /*+ querySun (ray)*/;
 }
 
@@ -107,6 +111,7 @@ Color PssAdapter::atmosphereShade (
 
         if (distance == constants::infinity)
                 distance = 100000000;
+        distance *= atmosphericFxDistanceFactor;
 
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));

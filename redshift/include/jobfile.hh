@@ -549,6 +549,8 @@ namespace redshift { namespace scenefile {
                 double turbidity;
                 double sunSizeFactor;
                 double sunBrightnessFactor;
+                double atmosphereBrightnessFactor;
+                double atmosphericFxDistanceFactor;
                 double overcast;
                 ColorSum sunColor;
                 ColorSum skyFilter;
@@ -561,6 +563,8 @@ namespace redshift { namespace scenefile {
                 , turbidity(2.5)
                 , sunSizeFactor(1)
                 , sunBrightnessFactor(1)
+                , atmosphereBrightnessFactor(1)
+                , atmosphericFxDistanceFactor(1)
                 , sunColor(3,3,3)
                 , skyFilter(0.05,0.05,0.05)
                 , atmosphericEffects(true)
@@ -580,7 +584,9 @@ namespace redshift { namespace scenefile {
                                 ));
                                 return shared_ptr<redshift::Background> (
                                   new backgrounds::PssAdapter (
-                                        preetham, sunSizeFactor, sunBrightnessFactor
+                                        preetham,
+                                        sunSizeFactor, sunBrightnessFactor,
+                                        atmosphereBrightnessFactor, atmosphericFxDistanceFactor
                                 ));
                         #else
                                 shared_ptr<redshift::background::Preetham> preetham (
@@ -612,6 +618,8 @@ namespace redshift { namespace scenefile {
                                 arch & pack ("sun-direction", sunDirection);
                                 arch & pack ("sun-size-factor", sunSizeFactor);
                                 arch & pack ("sun-brightness-factor", sunBrightnessFactor);
+                                arch & pack ("atmosphere-brightness-factor", atmosphereBrightnessFactor);
+                                arch & pack ("atmospheric-effects-distance-factor", atmosphericFxDistanceFactor);
                                 arch & pack ("turbidity", turbidity);
                                 arch & pack ("overcast", overcast);
                                 /*arch & pack ("sun-color", sunColor);

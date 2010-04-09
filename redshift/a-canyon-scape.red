@@ -10,7 +10,7 @@ scene{
             samples-per-pixel:1;
             surface-integrator{
                 type:redshift;
-                ambient-samples:300;
+                ambient-samples:3;
             }
             volume-integrator{
                 type:none;
@@ -31,7 +31,7 @@ scene{
         aerial{
             transform{
                 move-right{9000}
-                move-up{2050}
+                move-up{1050}
                 move-forward{-150000}
 
                 pitch{7}
@@ -42,7 +42,7 @@ scene{
     objects{
         water-plane{
                 color{rgb{0.5;0.5;0.5}}
-                height:2020;
+                height:1020;
         }
         lazy-quadtree{
                 color{rgb{0.6;0.4;0.2}}
@@ -64,7 +64,7 @@ scene{
                                 (- 1 (abs (^ (foo x y) 2)))
                         )
 
-                        (+ -1500 (* 9000  (foo (* x 0.0001) (* 0.0001 y))))
+                        (+ -2500 (* 9000  (foo (* x 0.0001) (* 0.0001 y))))
                 ;
         }
     }
@@ -73,6 +73,8 @@ scene{
                 turbidity:3.0;
                 sun-direction{1.0;0.25;1.1}
                 sun-brightness-factor:1;
+                atmosphere-brightness-factor:1;
+                atmospheric-effects-distance-factor:50;
                 sun-size-factor:1;
                 overcast:0.0;
         }
