@@ -636,14 +636,14 @@ namespace redshift { namespace scenefile {
         // RenderSettings.
         struct RenderSettings {
                 unsigned int width, height, samplesPerPixel;
-                unsigned int min_y, max_y;
+                unsigned int min_y, max_y, userSeed;
                 std::string title;
                 SurfaceIntegrator surfaceIntegrator;
                 VolumeIntegrator volumeIntegrator;
 
                 RenderSettings ()
                 : width(800), height(600), samplesPerPixel(1)
-                , min_y(0), max_y(~0)
+                , min_y(0), max_y(~0), userSeed(0)
                 {}
 
                 // Serialization.
@@ -657,6 +657,7 @@ namespace redshift { namespace scenefile {
                         arch & actuarius::push_optional(true);
                         arch & pack ("min-y", min_y);
                         arch & pack ("max-y", max_y);
+                        arch & pack ("seed", userSeed);
                         arch & pack ("samples-per-pixel", samplesPerPixel);
                         arch & pack ("surface-integrator", surfaceIntegrator);
                         arch & actuarius::pop_optional;

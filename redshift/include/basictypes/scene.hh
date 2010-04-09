@@ -61,7 +61,8 @@ namespace redshift {
                         interaction::ProgressReporter::Ptr,
                         interaction::UserCommandProcessor::Ptr,
                         unsigned int samplePerPixel,
-                        unsigned int minY, unsigned int maxY
+                        unsigned int minY, unsigned int maxY,
+                        unsigned int userSeed
                 ) const ;
 
                 optional<Intersection> intersect(

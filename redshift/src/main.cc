@@ -171,12 +171,13 @@ namespace {
                         ret.outputFile = "redshift-"+CurrentDate::AsPartOfFilename()+".bmp";
                         std::cout << "No output-file set, will write to '" << ret.outputFile << "'.\n";
                 }
-                const std::string ext = filename_extension (ret.outputFile);
+                std::string ext = filename_extension (ret.outputFile);
                 if (ret.doSaveOutput) {
                         if (ext == "bmp") {
                                 // okay
                         } else if (ext == "") {
-                                std::cout << "Missing filename extension for output file, will use bmp.\n";
+                                std::cout << "Missing filename extension for output file,  bmp.\n";
+                                ext = "bmp";
                         } else {
                                 std::cout << "Unsupported filename extension for output file: " << ext << "\n";
                                 // TODO: --help extensions
@@ -446,7 +447,8 @@ namespace {
                         reporter, commandProcessor,
                         samplesPerPixel,
                         scened.renderSettings(0).min_y,
-                        scened.renderSettings(0).max_y);
+                        scened.renderSettings(0).max_y,
+                        scened.renderSettings(0).userSeed);
                 copy (renderBuffer, screenBuffer);
                 screenBuffer->flip();
 

@@ -5,12 +5,13 @@ scene{
         prev-vol{
             min-y:0;
             max-y:-1;
+            seed:1;
             width:500;
             height:300;
             samples-per-pixel:1;
             surface-integrator{
                 type:redshift;
-                ambient-samples:3;
+                ambient-samples:1;
             }
             volume-integrator{
                 type:none;
@@ -74,7 +75,7 @@ scene{
                 sun-direction{1.0;0.25;1.1}
                 sun-brightness-factor:1;
                 atmosphere-brightness-factor:1;
-                atmospheric-effects-distance-factor:50;
+                atmospheric-effects-distance-factor:1;
                 sun-size-factor:1;
                 overcast:0.0;
         }

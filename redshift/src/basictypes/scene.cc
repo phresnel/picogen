@@ -177,7 +177,8 @@ void Scene::render (
         interaction::ProgressReporter::Ptr reporter,
         interaction::UserCommandProcessor::Ptr ucp,
         unsigned int numAASamples_,
-        unsigned int minY, unsigned int maxY
+        unsigned int minY, unsigned int maxY,
+        unsigned int userSalt
 ) const {
 
         const uint32_t numAASamples = numAASamples_?numAASamples_:1;
@@ -195,8 +196,6 @@ void Scene::render (
                 Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f),
                 Color::FromRGB ((rand()%255)/255.f,(rand()%255)/255.f,(rand()%255)/255.f)
         };*/
-
-        const uint32_t userSalt = 0; // TODO: this should be exposed to job-level
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
 
