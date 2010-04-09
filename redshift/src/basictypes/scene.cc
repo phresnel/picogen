@@ -200,11 +200,11 @@ void Scene::render (
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
 
-        const int width = renderTarget->getWidth();
-        const int height = renderTarget->getHeight();
+        const unsigned int width = renderTarget->getWidth();
+        const unsigned int height = renderTarget->getHeight();
 
-        for (int y_=minY; y_<height && y_<maxY; ++y_) {
-                const int y = y_;
+        for (unsigned int y_=minY; y_<height && y_<maxY; ++y_) {
+                const unsigned int y = y_;
                 currentScanline_ = (unsigned int)y;
                 aggregate->setCurrentScanline ((unsigned int)y);
                 //#warning no multicore!
@@ -213,11 +213,11 @@ void Scene::render (
                         schedule(dynamic) \
                         reduction(+:sampleNumber)
                 #endif
-                for (int x_=0; x_<width; ++x_) {
-                        const int x = x_;
+                for (int x_=0; x_<(int)width; ++x_) { // OMP wants them signed
+                        const unsigned int x = (unsigned int)x_;
                         Color accu(0);
 
-                        for (int i_=0; i_<(int)numAASamples; ++i_) {
+                        for (unsigned int i_=0; i_<numAASamples; ++i_) {
                                 const int i = i_;
                                 redshift::Random rand;
 

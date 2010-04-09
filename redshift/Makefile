@@ -101,6 +101,7 @@ OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 
 OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
+OBJFILES += $(INTEGRATORSOBJDIR)/whitted.o
 OBJFILES += $(INTEGRATORSOBJDIR)/redshift.o
 OBJFILES += $(INTEGRATORSOBJDIR)/emission.o
 OBJFILES += $(INTEGRATORSOBJDIR)/single-scattering.o
@@ -261,6 +262,10 @@ $(SAMPLERSOBJDIR)/sampler.o: \
 ###############################################################################
 # integrators
 ###############################################################################
+
+$(INTEGRATORSOBJDIR)/whitted.o: \
+                     ./src/integrators/whitted.cc
+	$(CXX) -o $@ $<
 
 $(INTEGRATORSOBJDIR)/direct-lighting.o: \
                      ./src/integrators/direct-lighting.cc

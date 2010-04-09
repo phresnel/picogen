@@ -372,7 +372,8 @@ namespace redshift { namespace scenefile {
         // SurfaceIntegrator.
         struct SurfaceIntegrator {
                 enum Type {
-                        redshift
+                        redshift,
+                        whitted
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -380,6 +381,18 @@ namespace redshift { namespace scenefile {
                 SurfaceIntegrator ()
                 : type(redshift)
                 {}
+
+
+                shared_ptr<redshift::Integrator> toSurfaceIntegrator() const {
+                        typedef shared_ptr<redshift::Integrator> rett;
+                        switch (type) {
+                        case redshift:
+                                return rett(new RedshiftIntegrator(10/*ambient samples*/));
+                        case whitted:
+                                return rett(new WhittedIntegrator());
+                        };
+                        return shared_ptr<Integrator>();
+                }
 
                 // Serialization.
                 template<typename Arch>

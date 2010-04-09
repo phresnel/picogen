@@ -3,13 +3,13 @@ scene{
 
     render-settings{
         prev-vol{
-            min-y:250;
-            max-y:260;
+            min-y:0;
+            max-y:-1;
             width:500;
             height:300;
-            samples-per-pixel:1;
+            samples-per-pixel:10;
             surface-integrator{
-                type:redshift;
+                type:whitted;
             }
             volume-integrator{
                 type:none;
@@ -70,7 +70,7 @@ scene{
     backgrounds{
         pss-sunsky {
                 turbidity:3.0;
-                sun-direction{1.0;1.0;0.1}
+                sun-direction{1.0;0.2;0.1}
                 sun-brightness-factor:10;
                 sun-size-factor:1;
                 overcast:0.0;

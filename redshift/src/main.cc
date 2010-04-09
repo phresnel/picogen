@@ -558,7 +558,11 @@ redshift::shared_ptr<redshift::Scene>
                 background,
                 //shared_ptr<Background>(new backgrounds::Monochrome(Color::FromRGB(0.5,0.25,0.125))),
                 //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                shared_ptr<Integrator> (new RedshiftIntegrator(10/*ambient samples*/)),
+                //shared_ptr<Integrator> (new RedshiftIntegrator(10/*ambient samples*/)),
+                shared_ptr<Integrator>(
+                        scene.renderSettings(renderSettingsIndex)
+                                .surfaceIntegrator
+                                .toSurfaceIntegrator()),
 
                 volumeAgg,
                 shared_ptr<VolumeIntegrator>(

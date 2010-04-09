@@ -18,21 +18,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/integrators/redshift.hh"
+#include "../../include/integrators/whitted.hh"
 
 namespace redshift {
 
 
 
-RedshiftIntegrator::RedshiftIntegrator (unsigned int numAmbientSamples)
-: numAmbientSamples(numAmbientSamples)
-{
-}
+WhittedIntegrator::WhittedIntegrator ()
+{}
 
 
 
 
-tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
+tuple<real_t,Color,real_t> WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -50,37 +48,10 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                 const Point poi = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
-                //-- skylight begin -------------------------------------------
-                Color sum = Color(0);
-                Color spec = Color(0);
-                int numSamples = 1;
-                // diffuse
-                if (true) if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
-                        RayDifferential ray;
-                        ray.position = poi;
-                        if (numAmbientSamples>0)
-                        for (numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
-                                const optional<tuple<Color,Vector> > v_ =
-                                        bsdf->sample_f (
-                                                -ray.direction,
-                                                Bsdf::reflection, Bsdf::diffuse,
-                                                rand);
-                                if (v_) {
-                                        ray.direction = get<1>(*v_);
-                                        /*if (ray.direction.y>0)*/ {
-                                                Sample s = sample;
-                                                s.primaryRay = ray;
-                                                const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
 
-                                                sum = sum +
-                                                        //bg->query (ray)  *  get<0>(*v_);
-                                                        get<1>(L)  *  get<0>(*v_);
-                                        }
-                                }
-                        }
-                }
-                // spec
                 if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
+                        Color spec = Color(0);
+
                         Ray ray (poi, raydiff.direction);
                         const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
                                 -ray.direction,
@@ -93,21 +64,9 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                 r.primaryRay = ray;
                                 spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v);
                         }
-                }
 
-                const Color specularPlusAmbient =
-                        spec
-                        + (
-                                numSamples==0
-                                ? Color(0.0)
-                                : Color((sum / Color::real_t(numSamples)) * Color::real_t(constants::pi)
-                        )
-                ); // TODO: is this correct?
-                //-------------------------------------------------------------
-
-                Color ret = specularPlusAmbient;
-
-                if (bg->hasSun()) {
+                        return make_tuple(1.0f, spec, gd.getDistance());
+                } else if (bg->hasSun()) {
                         const Vector sunDir = bg->getSunDirection();
                         const Ray sunRay (poi,sunDir);
                         const Color surfaceColor = bsdf->f(
@@ -117,8 +76,8 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                 rand
                         );
 
-                        // Scene::Li_VolumeOnly() won't test for intersection,
-                        // so we must do it ourself.
+                        Color ret = Color(0);
+
                         if (!scene.doesIntersect (sunRay)) {
                                 Sample sunSample = sample;
                                 sunSample.primaryRay = sunRay;
@@ -129,25 +88,24 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                 );
                                 const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
                                 const Color color = get<1>(volumeLi);
-                                //const Color color = bg->querySun (sunSample.primaryRay);
                                 ret += surfaceColor * color * d;
                         }
+
+                        return make_tuple(1.0f, ret, gd.getDistance());
                 }
 
-                return make_tuple(1.0f, ret, gd.getDistance());
+                return make_tuple(1.0f, Color(0), gd.getDistance());
         } else {
                 return make_tuple (1.0,
                         Color(0),
                         constants::infinity
                 );
-                /*const tuple<real_t,Color> volumeLi = scene.Li_VolumeOnly(sample,rand);
-                return make_tuple (get<0>(volumeLi), get<1>(volumeLi), constants::infinity);*/
         }
 }
 
 
 
-tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
+tuple<real_t,Color,real_t> WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample, Random &rand
