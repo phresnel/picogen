@@ -323,6 +323,9 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 rs.width = readValue<unsigned int>("width", subs);
                 rs.height = readValue<unsigned int>("height", subs);
                 rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
+                rs.min_y = readValue<unsigned int>("min-y", subs);
+                rs.max_y = readValue<unsigned int>("max-y", subs);
+                rs.userSeed = readValue<unsigned int>("seed", subs);
 
                 Props vp = readSubProperties("volume-integrator", subs);
                 rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
@@ -497,6 +500,28 @@ void MainWindow::addRenderSettings (std::string const &name) {
         it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
         it->setAttribute(QLatin1String("singleStep"), 1);
         it->setValue(1);
+        topItem->addSubProperty(it);
+
+        it = variantManager->addProperty(QVariant::Int, "min-y");
+        it->setAttribute(QLatin1String("minimum"), 0);
+        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
+        it->setAttribute(QLatin1String("singleStep"), 1);
+        it->setValue(0);
+        topItem->addSubProperty(it);
+
+        it = variantManager->addProperty(QVariant::Int, "max-y");
+        it->setAttribute(QLatin1String("minimum"), 0);
+        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
+        it->setAttribute(QLatin1String("singleStep"), 1);
+        it->setValue(0xFFFFFF);
+        topItem->addSubProperty(it);
+
+        it = variantManager->addProperty(QVariant::Int, "seed");
+        it->setAttribute(QLatin1String("minimum"), 0);
+        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
+        it->setAttribute(QLatin1String("singleStep"), 1);
+        it->setValue(0);
+        it->setToolTip("Use this to configure another random seed for rendering.");
         topItem->addSubProperty(it);
 
 

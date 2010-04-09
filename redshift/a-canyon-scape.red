@@ -5,10 +5,10 @@ scene{
         prev-vol{
             min-y:0;
             max-y:-1;
-            seed:1;
+            seed:3;
             width:500;
             height:300;
-            samples-per-pixel:1;
+            samples-per-pixel:10;
             surface-integrator{
                 type:redshift;
                 ambient-samples:1;

@@ -108,7 +108,11 @@ void RenderWindowImpl::run() {
 
                 scene->render(
                      rep, commandProcessor,
-                     scenefile->renderSettings(renderSettings).samplesPerPixel);
+                     scenefile->renderSettings(renderSettings).samplesPerPixel,
+                     scenefile->renderSettings(renderSettings).min_y,
+                     scenefile->renderSettings(renderSettings).max_y,
+                     scenefile->renderSettings(renderSettings).userSeed
+                );
 
         } catch (std::exception const &ex) {
                 error_ = true;

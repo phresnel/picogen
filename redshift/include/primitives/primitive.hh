@@ -61,7 +61,7 @@ namespace redshift { namespace primitive {
                 virtual void prepare (const Scene &/*scene*/) {}
 
                 virtual void prune () {}
-                virtual void setCurrentScanline (unsigned int currentScanline) {}
+                virtual void setCurrentScanline (unsigned int) {}
 
                 virtual ~Primitive () {}
         };
