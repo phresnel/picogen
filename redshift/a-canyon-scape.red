@@ -1,5 +1,5 @@
 scene{
-    film-settings{color-scale:0.015; convert-to-srgb:1;}
+    film-settings{color-scale:0.022; convert-to-srgb:1;}
 
     render-settings{
         prev-vol{
@@ -7,9 +7,10 @@ scene{
             max-y:-1;
             width:500;
             height:300;
-            samples-per-pixel:10;
+            samples-per-pixel:1;
             surface-integrator{
-                type:whitted;
+                type:redshift;
+                ambient-samples:300;
             }
             volume-integrator{
                 type:none;
@@ -22,7 +23,7 @@ scene{
             height:300;
             samples-per-pixel:1;
             surface-integrator{
-                type:redshift;
+                type:whitted;
             }
         }
     }
@@ -54,7 +55,7 @@ scene{
                                         filter{cosine}
                                         seed{3}
                                         frequency{0.1}
-                                        layercount{16}
+                                        layercount{10}
                                         persistence{0.55}
                                 ] (abs x) (abs y)))) 3)
                         )
@@ -70,8 +71,8 @@ scene{
     backgrounds{
         pss-sunsky {
                 turbidity:3.0;
-                sun-direction{1.0;0.2;0.1}
-                sun-brightness-factor:10;
+                sun-direction{1.0;0.25;1.1}
+                sun-brightness-factor:1;
                 sun-size-factor:1;
                 overcast:0.0;
         }

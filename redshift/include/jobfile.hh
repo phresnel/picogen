@@ -378,8 +378,10 @@ namespace redshift { namespace scenefile {
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
 
+                unsigned int numAmbientSamples;
+
                 SurfaceIntegrator ()
-                : type(redshift)
+                : type(redshift), numAmbientSamples(10)
                 {}
 
 
@@ -387,7 +389,7 @@ namespace redshift { namespace scenefile {
                         typedef shared_ptr<redshift::Integrator> rett;
                         switch (type) {
                         case redshift:
-                                return rett(new RedshiftIntegrator(10/*ambient samples*/));
+                                return rett(new RedshiftIntegrator(numAmbientSamples));
                         case whitted:
                                 return rett(new WhittedIntegrator());
                         };
@@ -400,6 +402,13 @@ namespace redshift { namespace scenefile {
                         using actuarius::pack;
 
                         arch & pack("type", Typenames, type);
+
+                        switch (type) {
+                        case whitted: break;
+                        case redshift:
+                                arch & pack("ambient-samples", numAmbientSamples);
+                                break;
+                        }
                 }
         };
 
