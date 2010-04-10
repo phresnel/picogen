@@ -66,6 +66,8 @@ namespace redshift {
         public:
                 virtual ~VolumeRegion () {}
 
+                virtual Interval cull (const Ray &ray) const = 0;
+
                 // Absorption:
                 //   Absorption cross section.
                 virtual Color sigma_a (const Point &p, const Vector &w, Random& rand)const=0;
@@ -117,6 +119,8 @@ namespace redshift {
                 }
 
                 virtual ~DensityRegion () {}
+
+                virtual Interval cull (const Ray &ray) const = 0;
 
                 virtual real_t density(const Point &p, Random& rand) const = 0;
 

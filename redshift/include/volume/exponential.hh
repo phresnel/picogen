@@ -41,19 +41,27 @@ namespace redshift { namespace volume {
                         real_t baseFactor,
                         real_t exponentFactor,
                         Point  const & min,
-                        Vector const & up = Vector (0,1,0)
+                        Vector const & up,
+                        real_t epsilon
                 );
 
                 real_t density(const Point &p, Random& rand) const;
+
+                Interval cull (const Ray &ray) const ;
 
         private:
                 Exponential ();
                 Exponential (Exponential const &);
                 Exponential& operator = (Exponential const &);
 
+                real_t density (real_t h) const;
+
                 const real_t baseFactor, exponentFactor;
                 const Point min;
                 const Vector up;
+                const Plane upPlane;
+
+                Plane approximateUpperPlane (real_t epsilon) const ;
         };
 } }
 

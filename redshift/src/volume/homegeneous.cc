@@ -40,6 +40,12 @@ Homogeneous::Homogeneous (
 
 
 
+Interval Homogeneous::cull (const Ray &ray) const {
+        return Interval(constants::infinity, -constants::infinity);
+}
+
+
+
 // absorption
 Color Homogeneous::sigma_a (const Point &p, const Vector &w, Random& rand) const {
         return sigma_a_;

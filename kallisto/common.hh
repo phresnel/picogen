@@ -83,6 +83,8 @@ namespace kallisto {
 #include "types/ray_differential.hh"
 #include "traits/ray_differential_traits.hh"
 
+#include "types/plane.hh"
+
 #include "types/orthonormal_basis.hh"
 #include "traits/orthonormal_basis_traits.hh"
 

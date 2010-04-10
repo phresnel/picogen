@@ -441,7 +441,8 @@ namespace redshift { namespace scenefile {
                                         baseFactor,
                                         exponentFactor,
                                         redshift::Point(min.x, min.y, min.z),
-                                        redshift::Vector(up.x, up.y, up.z)
+                                        redshift::Vector(up.x, up.y, up.z),
+                                        epsilon
                                 ));
                         };
                         return shared_ptr<VolumeRegion>();
@@ -452,6 +453,7 @@ namespace redshift { namespace scenefile {
 
                 Normal up; Point min;
                 real_t baseFactor, exponentFactor;
+                double epsilon; // minimum supported density, required to build bounding volumes
 
                 Volume ()
                 : sigma_a(0,0,0)
@@ -462,6 +464,7 @@ namespace redshift { namespace scenefile {
                 , min(0,0,0)
                 , baseFactor(1.f)
                 , exponentFactor(0.05)
+                , epsilon(0.05)
                 {}
 
                 // Serialization.
@@ -486,6 +489,7 @@ namespace redshift { namespace scenefile {
                                 arch & pack("min", min);
                                 arch & pack("base-factor", baseFactor);
                                 arch & pack("exponent-factor", exponentFactor);
+                                arch & pack("epsilon", epsilon);
                                 break;
                         };
                         arch & actuarius::pop_optional;

@@ -36,6 +36,23 @@ void List::add (shared_ptr<VolumeRegion> volume) {
 
 
 
+Interval List::cull (const Ray &ray) const {
+        real_t min = constants::real_max;
+        real_t max = -constants::real_max;
+        for (const_iterator it = volumes.begin(); it!=volumes.end(); ++it) {
+                const Interval i = (*it)->cull(ray);
+
+                if (i.min() < min) min = i.min();
+                if (i.max() > max) max = i.max();
+
+                /*#pragma omp master
+                std::cout << "##" << i.min() << " < " << min << "=" <<  (i.min() < min) << " [" << min << "]" << std::endl;*/
+        }
+        return Interval(min, max);
+}
+
+
+
 // absorption
 Color List::sigma_a (const Point &p, const Vector &w, Random& rand) const {
         Color ret (0);

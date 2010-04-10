@@ -40,6 +40,7 @@ namespace redshift { namespace volume {
                         real_t henyeyGreensteinParameter
                 ) ;
 
+                Interval cull (const Ray &ray) const ;
 
                 Color sigma_a (const Point &p, const Vector &w, Random& rand) const;
                 Color sigma_s (const Point &p, const Vector &w, Random& rand) const;

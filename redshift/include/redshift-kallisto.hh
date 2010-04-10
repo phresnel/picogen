@@ -54,6 +54,7 @@ namespace redshift {
         typedef CartesianPointF PointF;
         typedef CartesianNormal Normal;
         typedef CartesianVector Vector;
+        typedef kallisto::Plane<real_t> Plane;
 
         typedef kallisto::Vector<kallisto::CARTESIAN,
                                 fixed_point_t> PointCompatibleVector;
@@ -67,6 +68,8 @@ namespace redshift {
         typedef kallisto::OrthonormalBasis<Vector>      OrthonormalBasis;
 
         using kallisto::intersect;
+        using kallisto::distance;
+        using kallisto::is_above;
         using kallisto::does_intersect;
         using kallisto::vector_cast;
         using kallisto::scalar_cast;

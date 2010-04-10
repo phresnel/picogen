@@ -33,21 +33,74 @@ Exponential::Exponential (
         real_t henyeyGreensteinParameter,
         real_t baseFactor, real_t exponentFactor,
         Point const & min,
-        Vector const & up
+        Vector const & up,
+        real_t epsilon
 )
 : DensityRegion (sigma_a, sigma_s, Lve, henyeyGreensteinParameter)
 , baseFactor(baseFactor)
 , exponentFactor(exponentFactor)
 , min(min)
-, up(up)
+, up(normalize(up))
+, upPlane (approximateUpperPlane(epsilon))
 {
+}
+
+
+
+Plane Exponential::approximateUpperPlane (real_t epsilon) const {
+        std::cout << "random sampling exponential volume...\n";
+
+        // TODONT: use a real root finder
+        real_t h;
+        int steps = 0;
+        for (h=1; density(h) > epsilon; ++steps, h+=h/32){}
+        std::cout << "approximate root at h=" << h
+                  << " in " << steps
+                  << " steps (density=" << density(h) << ")\n";
+
+        std::cout << "done!\n";
+
+        const Point through = min+up*h;
+        std::cout << "plane through: "
+                  << through.x << ", "
+                  << through.y << ", "
+                  << through.z << "\n";
+
+        return Plane(vector_cast<PointF>(through), up);
+}
+
+
+
+Interval Exponential::cull (const Ray &ray) const {
+        // TODO: take into account plane parallel planes
+        const real_t dist = intersect(ray, upPlane);
+
+        if (is_above(upPlane, ray.position)) {
+                if (dist >= 0) { // is above, pointing down
+                        return Interval(dist, constants::real_max);
+                } else { // is above, pointing up
+                        return Interval(constants::real_max,-constants::real_max);
+                }
+        } else {
+                if (dist >= 0) { // is below, pointing up
+                        return Interval(0, dist);
+                } else { // is below, pointing down
+                        return Interval(0, constants::real_max);
+                }
+        }
+}
+
+
+
+real_t Exponential::density (real_t h) const {
+        return baseFactor * std::exp (-exponentFactor * h);
 }
 
 
 
 real_t Exponential::density(const Point &p, Random& rand) const {
         const real_t h = dot (vector_cast<Vector>(p-min), up);
-        return baseFactor * std::exp (-exponentFactor * h);
+        return density (h);
 }
 
 
