@@ -10,13 +10,13 @@ scene {
                         height:300;
                         samples-per-pixel:1;
                         surface-integrator{
-                                type:redshift;
+                                type:whitted;
                                 ambient-samples:1;
                         }
                         volume-integrator{
-                                type:none;
-                                step-size:1600;
-                                cutoff-distance:40000
+                                type:single;
+                                step-size:40;
+                                cutoff-distance:1000000
                         }
                 }
                 prev-no-vol{
@@ -30,16 +30,22 @@ scene {
         }
         cameras{
                 aerial{
-                        front:4;
+                        front:1;
                         transform{
                                 move-right{9000}
-                                move-up{1050}
+                                move-up{1450}
                                 move-forward{-150000}
 
                                 pitch{-6}
                                 roll{0}
                         }
                 }
+                front{type:cubemap-front; transform{move{9000;1250;-150000}}}
+                right{type:cubemap-right; transform{move{9000;1250;-150000}}}
+                back{type:cubemap-back; transform{move{9000;1250;-150000}}}
+                left{type:cubemap-left; transform{move{9000;1250;-150000}}}
+                top{type:cubemap-top; transform{move{9000;1250;-150000}}}
+                bottom{type:cubemap-bottom; transform{move{9000;1250;-150000}}}
         }
         objects{
                 water-plane{
@@ -74,26 +80,24 @@ scene {
         }
         backgrounds{
                 pss-sunsky {
-                        turbidity:2.0;
-                        sun-direction{0.0;
-                                      0.125;
-                                      1.1}
-                        sun-brightness-factor:1;
-                        atmosphere-brightness-factor:0.1;
-                        atmospheric-effects-distance-factor:1;
-                        sun-size-factor:1;
+                        turbidity:3;
                         overcast:0.0;
+                        sun-direction{-0.1;0.1;1}
+                        atmospheric-effects:1;
+                        sun-brightness-factor:10;
+                        atmospheric-effects-distance-factor:1.0;
                 }
         }
         volumes {
-                exponential {
-                        absorption{rgb{0;0;0}}
-                        out-scatter{rgb{0.01;0.01;0.01}}
-                        emission{rgb{0.001;0.001;0.001}}
-                        min{0;1700;0}
+                homogeneous {
+                        absorption{rgb{5.15; 0.15; 0.15}}
+                        out-scatter{rgb{0.125;0.125;0.125}}
+                        emission{rgb{0.3;0.3;0.3}}
+                        min{0;1020;0}
                         phase-function:0;
-                        base-factor:1;
-                        exponent-factor:0.009;
+                        base-factor:1.0;
+                        exponent-factor:0.015;
+                        epsilon:0.01;
                 }
         }
 }

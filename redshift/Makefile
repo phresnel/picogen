@@ -120,6 +120,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/waterplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/list.o
 
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
+OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
 
 OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
 
@@ -339,6 +340,10 @@ $(PRIMITIVESOBJDIR)/booleanfield.o: \
 
 $(CAMERASOBJDIR)/pinhole.o: \
                      ./src/cameras/pinhole.cc
+	$(CXX) -o $@ $<
+
+$(CAMERASOBJDIR)/cubemapface.o: \
+                     ./src/cameras/cubemapface.cc
 	$(CXX) -o $@ $<
 
 

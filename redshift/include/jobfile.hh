@@ -25,6 +25,7 @@
 //#include "../include/rendertargets/sdlrendertarget.hh"
 //#include "../include/rendertargets/colorrendertarget.hh"
 #include "cameras/pinhole.hh"
+#include "cameras/cubemapface.hh"
 //#include "interaction/sdlcommandprocessor.hh"
 //#include "../include/interaction/rendertarget-copying-reporter.hh"
 #include "basictypes/height-function.hh"
@@ -863,6 +864,32 @@ namespace redshift { namespace scenefile {
                                 return shared_ptr<Camera> (new camera::Pinhole(
                                         film, pinholeParams.front,
                                         transforms.toRedshiftTransform()));
+
+                        case cubemap_left:
+                                return shared_ptr<Camera> (new camera::CubeMapFace(
+                                        film, camera::CubeMapFace::left,
+                                        transforms.toRedshiftTransform()));
+                        case cubemap_right:
+                                return shared_ptr<Camera> (new camera::CubeMapFace(
+                                        film, camera::CubeMapFace::right,
+                                        transforms.toRedshiftTransform()));
+                        case cubemap_bottom:
+                                return shared_ptr<Camera> (new camera::CubeMapFace(
+                                        film, camera::CubeMapFace::bottom,
+                                        transforms.toRedshiftTransform()));
+                        case cubemap_top:
+                                return shared_ptr<Camera> (new camera::CubeMapFace(
+                                        film, camera::CubeMapFace::top,
+                                        transforms.toRedshiftTransform()));
+                        case cubemap_front:
+                                return shared_ptr<Camera> (new camera::CubeMapFace(
+                                        film, camera::CubeMapFace::front,
+                                        transforms.toRedshiftTransform()));
+                        case cubemap_back:
+                                return shared_ptr<Camera> (new camera::CubeMapFace(
+                                        film, camera::CubeMapFace::back,
+                                        transforms.toRedshiftTransform()));
+
                         default:
                                 throw std::runtime_error("only  pinhole supported");
                         };
@@ -880,8 +907,13 @@ namespace redshift { namespace scenefile {
                         case pinhole:
                                 arch & pack ("front", pinholeParams.front);
                                 break;
-                        default:
-                                throw std::runtime_error("only  pinhole supported");
+                        case cubemap_front:
+                        case cubemap_back:
+                        case cubemap_left:
+                        case cubemap_right:
+                        case cubemap_bottom:
+                        case cubemap_top:
+                                break;
                         };
                 }
         };
