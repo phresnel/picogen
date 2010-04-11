@@ -48,7 +48,7 @@ namespace redshift {
 
                 Scene(
                         shared_ptr<RenderTarget>,
-                        shared_ptr<camera::Camera>,
+                        shared_ptr<Camera>,
                         shared_ptr<primitive::Primitive>,
                         shared_ptr<Background> bg ,
                         shared_ptr<Integrator> integrator,
@@ -71,7 +71,7 @@ namespace redshift {
                 bool doesIntersect (Ray const &ray)       const;
 
                 shared_ptr<Background>     getBackground ()   const;
-                shared_ptr<camera::Camera> getCamera ()       const;
+                shared_ptr<Camera>         getCamera ()       const;
                 shared_ptr<VolumeRegion>   getVolumeRegion () const;
 
                 tuple<real_t,Color> Li(Sample const&, Random &, LiMode mode = full) const;
@@ -90,7 +90,7 @@ namespace redshift {
 
                 //Scene scene;
                 shared_ptr<RenderTarget>         renderTarget;
-                shared_ptr<camera::Camera>       camera;
+                shared_ptr<Camera>               camera;
                 shared_ptr<primitive::Primitive> aggregate;
                 shared_ptr<Background>           background;
                 shared_ptr<Integrator>           surfaceIntegrator;

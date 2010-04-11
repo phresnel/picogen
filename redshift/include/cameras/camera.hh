@@ -24,25 +24,29 @@
 #include "../setup.hh"
 #include "../basictypes/sample.hh"
 
-namespace redshift { namespace camera {
-        class Camera {
-        public:
-                virtual bool hasCommonCenter () const = 0;
-                virtual Point getCommonCenter () const = 0;
+namespace redshift {
+        namespace camera {
+                class __attribute__((deprecated)) Camera { // deprecated, use redshift::Camera
+                public:
+                        virtual bool hasCommonCenter () const = 0;
+                        virtual Point getCommonCenter () const = 0;
 
-                virtual tuple<real_t,RayDifferential>
-                                generateRay (Sample const &) const = 0;
+                        virtual tuple<real_t,RayDifferential>
+                                        generateRay (Sample const &) const = 0;
 
-                Camera() : transform() {}
-                Camera(Transform const &xform) : transform(xform) {}
-                virtual ~Camera () {}
+                        Camera() : transform() {}
+                        Camera(Transform const &xform) : transform(xform) {}
+                        virtual ~Camera () {}
 
-                virtual void setTransform (Transform const &t) {
-                        transform = t;
-                }
-        protected:
-                Transform transform;
-        };
-} }
+                        virtual void setTransform (Transform const &t) {
+                                transform = t;
+                        }
+                protected:
+                        Transform transform;
+                };
+        }
+
+        using camera::Camera;
+}
 
 #endif // CAMERA_HH_INCLUDED_20090310

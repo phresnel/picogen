@@ -695,109 +695,113 @@ namespace redshift { namespace scenefile {
 
 
 
-        // Camera.
-        struct Camera {
-                struct Transform {
-                        enum Type {
-                                move,
-                                move_left,
-                                move_right,
-                                move_up,
-                                move_down,
-                                move_forward,
-                                move_backward,
+        // Transform.
+        struct Transform {
+                enum Type {
+                        move,
+                        move_left,
+                        move_right,
+                        move_up,
+                        move_down,
+                        move_forward,
+                        move_backward,
 
-                                yaw,
-                                pitch,
-                                roll
-                        };
-
-                        static const actuarius::Enum<Type> Typenames;
-
-                        redshift::Transform toRedshiftTransform () const {
-                                using redshift::Transform;
-                                const double to_radians = redshift::constants::pi/180;
-                                switch (type) {
-                                case move:
-                                case move_left:
-                                case move_right:
-                                case move_up:
-                                case move_down:
-                                case move_forward:
-                                case move_backward:  return Transform::translation(x,y,z);
-
-                                case yaw:   return Transform::rotationY(angle*to_radians);
-                                case pitch: return Transform::rotationX(angle*to_radians);
-                                case roll:  return Transform::rotationZ(angle*to_radians);
-                                };
-                                return redshift::Transform();
-                        }
-
-
-                        // Serialization.
-                        template<typename Arch>
-                        void serialize (Arch &arch) {
-                                using actuarius::pack;
-
-                                /*
-                                switch (type) {
-                                case move:
-                                        arch & pack(x) & pack(y) & pack(z);
-                                        break;
-                                case move_right: arch & pack(x);            break;
-                                case move_left:  arch & pack(x); x = -x;    break;
-                                case move_up:    arch & pack(y);            break;
-                                case move_down:  arch & pack(y);  y = -y;   break;
-                                case move_forward: arch & pack(z);          break;
-                                case move_backward:
-                                        if (Arch::serialize)
-                                        arch & pack(z); z = -z; break;
-                                case yaw:
-                                case pitch:
-                                case roll:
-                                        arch & pack(angle);
-                                        break;
-                                };*/
-
-                                double left=0, right=0, up=0, down=0, forward=0, backward=0;
-
-                                if (Arch::serialize) {
-                                        right = x;   left = -x;
-                                        up = y;      down = -y;
-                                        forward = z; backward = -z;
-                                }
-
-                                switch (type) {
-                                case move:
-                                        arch & pack(right) & pack(up) & pack(forward);
-                                        break;
-                                case move_right:    arch & pack(right); break;
-                                case move_left:     arch & pack(left); break;
-                                case move_up:       arch & pack(up); break;
-                                case move_down:     arch & pack(down); break;
-                                case move_forward:  arch & pack(forward); break;
-                                case move_backward:  arch & pack(backward); break;
-                                case yaw:
-                                case pitch:
-                                case roll:
-                                        arch & pack(angle);
-                                        break;
-                                };
-
-                                if (Arch::deserialize) {
-                                        x = -left     + right;
-                                        y = -down     + up;
-                                        z = -backward + forward;
-                                }
-                        }
-
-                        Type type;
-                        double x,y,z;
-                        double angle;
+                        yaw,
+                        pitch,
+                        roll
                 };
 
-                std::string title;
+                static const actuarius::Enum<Type> Typenames;
+
+                redshift::Transform toRedshiftTransform () const {
+                        using redshift::Transform;
+                        const double to_radians = redshift::constants::pi/180;
+                        switch (type) {
+                        case move:
+                        case move_left:
+                        case move_right:
+                        case move_up:
+                        case move_down:
+                        case move_forward:
+                        case move_backward:  return Transform::translation(x,y,z);
+
+                        case yaw:   return Transform::rotationY(angle*to_radians);
+                        case pitch: return Transform::rotationX(angle*to_radians);
+                        case roll:  return Transform::rotationZ(angle*to_radians);
+                        };
+                        return redshift::Transform();
+                }
+
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+
+                        /*
+                        switch (type) {
+                        case move:
+                                arch & pack(x) & pack(y) & pack(z);
+                                break;
+                        case move_right: arch & pack(x);            break;
+                        case move_left:  arch & pack(x); x = -x;    break;
+                        case move_up:    arch & pack(y);            break;
+                        case move_down:  arch & pack(y);  y = -y;   break;
+                        case move_forward: arch & pack(z);          break;
+                        case move_backward:
+                                if (Arch::serialize)
+                                arch & pack(z); z = -z; break;
+                        case yaw:
+                        case pitch:
+                        case roll:
+                                arch & pack(angle);
+                                break;
+                        };*/
+
+                        double left=0, right=0, up=0, down=0, forward=0, backward=0;
+
+                        if (Arch::serialize) {
+                                right = x;   left = -x;
+                                up = y;      down = -y;
+                                forward = z; backward = -z;
+                        }
+
+                        switch (type) {
+                        case move:
+                                arch & pack(right) & pack(up) & pack(forward);
+                                break;
+                        case move_right:    arch & pack(right); break;
+                        case move_left:     arch & pack(left); break;
+                        case move_up:       arch & pack(up); break;
+                        case move_down:     arch & pack(down); break;
+                        case move_forward:  arch & pack(forward); break;
+                        case move_backward:  arch & pack(backward); break;
+                        case yaw:
+                        case pitch:
+                        case roll:
+                                arch & pack(angle);
+                                break;
+                        };
+
+                        if (Arch::deserialize) {
+                                x = -left     + right;
+                                y = -down     + up;
+                                z = -backward + forward;
+                        }
+                }
+
+                Type type;
+                double x,y,z;
+                double angle;
+        };
+
+        class TransformList {
                 std::vector<Transform> transforms;
+        public:
+
+                void push_back (Transform const &t) {
+                        transforms.push_back (t);
+                }
 
                 redshift::Transform toRedshiftTransform () const {
                         typedef std::vector<Transform>::const_iterator iterator;
@@ -808,12 +812,77 @@ namespace redshift { namespace scenefile {
                         return ret;
                 }
 
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack (&Transform::type, Transform::Typenames, transforms);
+                }
+        };
+
+
+        // Camera.
+        struct Camera {
+
+                enum Type {
+                        pinhole,
+                        cubemap_left,
+                        cubemap_right,
+                        cubemap_front,
+                        cubemap_back,
+                        cubemap_bottom,
+                        cubemap_top
+                };
+                static const actuarius::Enum<Type> Typenames;
+
+                struct PinholeParams {
+                        double front;
+                        PinholeParams () : front(1) {}
+                };
+
+
+
+                std::string title;
+                TransformList transforms;
+                Type type;
+                PinholeParams pinholeParams;
+
+
+                Camera () : type(pinhole)
+                {}
+
+
+
+                shared_ptr<redshift::Camera> toRedshiftCamera (
+                        shared_ptr<redshift::RenderTarget> film
+                ) const {
+                        using redshift::Camera;
+
+                        switch (type) {
+                        case pinhole:
+                                return shared_ptr<Camera> (new camera::Pinhole(
+                                        film, pinholeParams.front,
+                                        transforms.toRedshiftTransform()));
+                        default:
+                                throw std::runtime_error("only  pinhole supported");
+                        };
+                }
+
 
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {
                         using actuarius::pack;
-                        arch & pack ("transform", &Transform::type, Transform::Typenames, transforms);
+                        arch & pack ("transform", transforms);
+                        arch & pack ("type", Typenames, type);
+
+                        switch (type) {
+                        case pinhole:
+                                arch & pack ("front", pinholeParams.front);
+                                break;
+                        default:
+                                throw std::runtime_error("only  pinhole supported");
+                        };
                 }
         };
 

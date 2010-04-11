@@ -480,10 +480,7 @@ redshift::shared_ptr<redshift::Scene>
 
         shared_ptr<Camera> camera;
         if (scene.cameraCount()) {
-                camera = shared_ptr<Camera> (new Pinhole(
-                        renderBuffer, 1,
-                        scene.camera(cameraIndex).toRedshiftTransform()
-                ));
+                camera = scene.camera(cameraIndex).toRedshiftCamera (renderBuffer);
         } else {
                 camera = shared_ptr<Camera> (new Pinhole(
                         renderBuffer, 1.0f,
@@ -508,30 +505,12 @@ redshift::shared_ptr<redshift::Scene>
         shared_ptr<VolumeRegion> volumeAgg (volumeList);
 
 
-        // atmosphere
-        /*shared_ptr<background::Preetham> preetham (new background::Preetham());
-        preetham->setSunDirection(Vector(-4.0,1.001,0.010));
-        preetham->setTurbidity(2.0f);
-        //preetham->setSunColor(redshift::Color(1.1,1,0.9)*17);
-        preetham->setSunColor(redshift::Color(1.1,1,0.9)*5);
-        preetham->setColorFilter(redshift::Color(1.0,1.0,1.0)*0.025);
-        preetham->enableFogHack (false, 0.00025f, 150000);
-        preetham->invalidate();*/
 
         // TODO: support arbitrary many backgrounds (Starsky!)
         shared_ptr<Background> background;
         if (scene.backgroundCount()) {
                 background = scene.background(0).toBackground();
         } else {
-                /*shared_ptr<background::Preetham> preetham (new background::Preetham());
-                preetham->setSunDirection(Vector(-4.0,1.001,0.010));
-                preetham->setTurbidity(2.0f);
-                preetham->setSunColor(Color::FromRGB(1.1,1.,0.9)*Color::real_t(5));
-                preetham->setColorFilter(Color::FromRGB(1.0,1.0,1.0)*Color::real_t(0.025));
-                preetham->enableFogHack (false, 0.00025f, 150000);
-                preetham->invalidate();
-                background = shared_ptr<redshift::Background> (
-                                new backgrounds::PreethamAdapter (preetham));*/
 
                 /*shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
                         30, // [in] lat Latitude (0-360)
@@ -559,9 +538,7 @@ redshift::shared_ptr<redshift::Scene>
                 camera,
                 agg,
                 background,
-                //shared_ptr<Background>(new backgrounds::Monochrome(Color::FromRGB(0.5,0.25,0.125))),
-                //shared_ptr<Background>(new backgrounds::VisualiseDirection())
-                //shared_ptr<Integrator> (new RedshiftIntegrator(10/*ambient samples*/)),
+
                 shared_ptr<Integrator>(
                         scene.renderSettings(renderSettingsIndex)
                                 .surfaceIntegrator
@@ -572,16 +549,6 @@ redshift::shared_ptr<redshift::Scene>
                         scene.renderSettings(renderSettingsIndex)
                                 .volumeIntegrator
                                 .toVolumeIntegrator())
-
-                /*
-                shared_ptr<VolumeRegion> (new volume::Exponential (
-                        0.0*Color::FromRGB(1,1,0.8)*0.00025, // absorption
-                        3*Color::FromRGB(1,1,1)*0.00025, // out scattering probability
-                        0.0*Color::FromRGB(1,1,1)*0.0001, // emission
-                        0.0 // Henyey Greenstein
-                        , 1.f, 0.125*0.0075f, Point(0.f,0.f,0.f)
-                )),
-                shared_ptr<VolumeIntegrator> (new SingleScattering(250.f))*/
         ));
 }
 
@@ -619,8 +586,8 @@ void read_and_render (Options const & options) {
 
                 Camera c;
                 c.title = "hello-world";
-                Camera::Transform t;
-                t.type = Camera::Transform::move;
+                Transform t;
+                t.type = Transform::move;
                 t.x = 6; t.y = 7; t.z = 8;
                 c.transforms.push_back (t);
                 scene.addCamera (c);

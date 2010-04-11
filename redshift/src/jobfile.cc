@@ -54,18 +54,27 @@ namespace redshift { namespace scenefile {
                 ( actuarius::Nvp<Background::Type>(Background::pss_sunsky, "pss-sunsky")
                 );
 
-        const actuarius::Enum<Camera::Transform::Type> Camera::Transform::Typenames =
-                ( actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move, "move")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_left, "move-left")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_right, "move-right")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_down, "move-down")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_up, "move-up")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_backward, "move-backward")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::move_forward, "move-forward")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::yaw, "yaw")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::pitch, "pitch")
-                | actuarius::Nvp<Camera::Transform::Type>(Camera::Transform::roll, "roll")
+        const actuarius::Enum<Transform::Type> Transform::Typenames =
+                ( actuarius::Nvp<Transform::Type>(Transform::move, "move")
+                | actuarius::Nvp<Transform::Type>(Transform::move_left, "move-left")
+                | actuarius::Nvp<Transform::Type>(Transform::move_right, "move-right")
+                | actuarius::Nvp<Transform::Type>(Transform::move_down, "move-down")
+                | actuarius::Nvp<Transform::Type>(Transform::move_up, "move-up")
+                | actuarius::Nvp<Transform::Type>(Transform::move_backward, "move-backward")
+                | actuarius::Nvp<Transform::Type>(Transform::move_forward, "move-forward")
+                | actuarius::Nvp<Transform::Type>(Transform::yaw, "yaw")
+                | actuarius::Nvp<Transform::Type>(Transform::pitch, "pitch")
+                | actuarius::Nvp<Transform::Type>(Transform::roll, "roll")
                 );
 
+        const actuarius::Enum<Camera::Type> Camera::Typenames =
+                ( actuarius::Nvp<Camera::Type>(Camera::pinhole, "pinhole")
+                | actuarius::Nvp<Camera::Type>(Camera::cubemap_left, "cubemap-left")
+                | actuarius::Nvp<Camera::Type>(Camera::cubemap_right, "cubemap-right")
+                | actuarius::Nvp<Camera::Type>(Camera::cubemap_bottom, "cubemap-bottom")
+                | actuarius::Nvp<Camera::Type>(Camera::cubemap_top, "cubemap-top")
+                | actuarius::Nvp<Camera::Type>(Camera::cubemap_front, "cubemap-front")
+                | actuarius::Nvp<Camera::Type>(Camera::cubemap_back, "cubemap-back")
+                );
 
 } }

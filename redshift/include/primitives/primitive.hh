@@ -31,7 +31,8 @@ namespace redshift {
         class Scene;
 }
 namespace redshift { namespace primitive {
-        class Primitive : public enable_shared_from_this<Primitive> {
+        class __attribute__((deprecated)) Primitive // deprecated: use redshift::Primitive
+        : public enable_shared_from_this<Primitive> {
         public:
                 // If only the information is need whether the ray hits or not.
                 virtual bool doesIntersect (RayDifferential const &ray)
@@ -66,5 +67,9 @@ namespace redshift { namespace primitive {
                 virtual ~Primitive () {}
         };
 } }
+
+namespace redshift {
+        using primitive::Primitive;
+}
 
 #endif // PRIMITIVE_H_INCLUDED_20090301
