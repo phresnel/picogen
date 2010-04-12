@@ -119,6 +119,8 @@ MainWindow::MainWindow(QWidget *parent) :
         menuBar()->addMenu(winMenu);
 
         // Properties
+        ui->settings->setAlternatingRowColors(false);
+
         variantManager = new QtVariantPropertyManager(this);
         rsTitleManager = new QtStringPropertyManager (this);
         connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
@@ -177,6 +179,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
                 ui->settings->addProperty(topItem);
+
+                ui->settings->setBackgroundColor(
+                                ui->settings->topLevelItem(topItem),
+                                QColor(130,110,90));
         }
 
         // Render Settings.
@@ -187,6 +193,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 addRenderSettings("preview");
                 addRenderSettings("production");
+
+                ui->settings->setBackgroundColor(
+                             ui->settings->topLevelItem(renderSettingsProperty),
+                             QColor(130,90,90));
         }
 
         // Camera Settings.
@@ -194,6 +204,10 @@ MainWindow::MainWindow(QWidget *parent) :
                 camerasProperty = groupManager->addProperty("cameras");
                 ui->settings->addProperty(camerasProperty);
                 addCamera("hello-world");
+
+                ui->settings->setBackgroundColor(
+                                ui->settings->topLevelItem(camerasProperty),
+                                QColor(110,110,110));
         }
 
         // Objects.
@@ -202,15 +216,19 @@ MainWindow::MainWindow(QWidget *parent) :
                 ui->settings->addProperty(objectsProperty);
 
                 addObject();
+                ui->settings->setBackgroundColor(
+                                ui->settings->topLevelItem(objectsProperty),
+                                QColor(90,130,90));
         }
 
         // Background.
         {
-                QtProperty *it = groupManager->addProperty("backgrounds");
-                ui->settings->addProperty(it);
+                QtProperty *backgroundsProperty =
+                                groupManager->addProperty("backgrounds");
+                ui->settings->addProperty(backgroundsProperty);
 
                 pssSunSkyProperty = groupManager->addProperty("pss-sunsky");
-                it->addSubProperty(pssSunSkyProperty);
+                backgroundsProperty->addSubProperty(pssSunSkyProperty);
                 collapse (ui->settings, pssSunSkyProperty);
 
 
@@ -276,6 +294,10 @@ MainWindow::MainWindow(QWidget *parent) :
                 vp = variantManager->addProperty(QVariant::Bool, "atmospheric-effects");
                 vp->setValue(1);
                 pssSunSkyProperty->addSubProperty(vp);
+
+                ui->settings->setBackgroundColor(
+                                ui->settings->topLevelItem(backgroundsProperty),
+                                QColor(90,90,130));
 
         }
 
