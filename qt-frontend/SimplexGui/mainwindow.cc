@@ -88,6 +88,14 @@ namespace {
                 }
                 return 0;
         }
+
+        void collapse (QtTreePropertyBrowser *browser,
+                       QtProperty* property
+        ) {
+                foreach (QtBrowserItem *item, browser->items (property)) {
+                        browser->setExpanded(item, false);
+                }
+        }
 }
 
 
@@ -202,7 +210,8 @@ MainWindow::MainWindow(QWidget *parent) :
                 ui->settings->addProperty(it);
 
                 pssSunSkyProperty = groupManager->addProperty("pss-sunsky");
-                ui->settings->addProperty(pssSunSkyProperty);
+                it->addSubProperty(pssSunSkyProperty);
+                collapse (ui->settings, pssSunSkyProperty);
 
 
                 // Sun Direction.
@@ -270,6 +279,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
         }
 
+        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
+                ui->settings->setExpanded(it, false);
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);
         ui->settings->setHeaderVisible(false);
@@ -356,7 +367,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
                 const Props xforms = readSubProperties("transform", cam->subProperties());
                 foreach (Prop xform, xforms) {
-                        typedef scenefile::Camera::Transform Xf;
+                        typedef scenefile::Transform Xf;
                         Xf transform;
 
                         // When tweaking here, also look at XCVBN
@@ -550,6 +561,7 @@ void MainWindow::addRenderSettings (std::string const &name) {
         volumeIntegrator->addSubProperty(it);
 
         renderSettingsProperty->addSubProperty(topItem);
+        collapse (ui->settings, topItem);
         resyncRenderSettingConfig();
 }
 
@@ -581,10 +593,12 @@ void MainWindow::addCamera(const std::string &name) {
         camera->addSubProperty(transformRoot);
         camerasProperty->addSubProperty(camera);
 
-        addTransform (transformRoot, redshift::scenefile::Camera::Transform::move);
-        addTransform (transformRoot, redshift::scenefile::Camera::Transform::yaw);
-        addTransform (transformRoot, redshift::scenefile::Camera::Transform::pitch);
-        addTransform (transformRoot, redshift::scenefile::Camera::Transform::roll);
+        collapse (ui->settings, camera);
+
+        addTransform (transformRoot, redshift::scenefile::Transform::move);
+        addTransform (transformRoot, redshift::scenefile::Transform::yaw);
+        addTransform (transformRoot, redshift::scenefile::Transform::pitch);
+        addTransform (transformRoot, redshift::scenefile::Transform::roll);
 
         resyncCameraConfig();
 }
@@ -592,8 +606,8 @@ void MainWindow::addCamera(const std::string &name) {
 
 
 void MainWindow::addTransform (QtProperty *transformRoot,
-                               redshift::scenefile::Camera::Transform::Type type) {
-        typedef redshift::scenefile::Camera::Transform Xf;
+                               redshift::scenefile::Transform::Type type) {
+        typedef redshift::scenefile::Transform Xf;
 
         QtProperty *transform = groupManager->addProperty("---");
         transformRoot->addSubProperty(transform);
@@ -631,6 +645,8 @@ void MainWindow::addTransform (QtProperty *transformRoot,
 void MainWindow::addObject () {
         QtProperty *object = groupManager->addProperty("---");
         objectsProperty->addSubProperty(object);
+
+        collapse (ui->settings, object);
 
         QtProperty *objectType = objectTypeEnumManager->addProperty("type");
         object->addSubProperty(objectType);
@@ -901,7 +917,7 @@ void MainWindow::on_actionRender_triggered() {
 
 
 void MainWindow::on_newRsButton_pressed() {
-        addRenderSettings ("new_setting");
+        addRenderSettings ("new-setting");
 }
 
 
@@ -964,13 +980,13 @@ void MainWindow::on_newSubTransformButton_pressed() {
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
         addTransform (currentTransformProperty,
-                      redshift::scenefile::Camera::Transform::move);
+                      redshift::scenefile::Transform::move);
 }
 
 
 
 void MainWindow::on_newCameraButton_pressed() {
-        addCamera("New Camera ");
+        addCamera("new-camera ");
         resyncCameraConfig();
 }
 

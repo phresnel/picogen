@@ -62,7 +62,7 @@ private:
         void addRenderSettings (std::string const &name);
         void addCamera (std::string const &name);
         void addTransform (QtProperty *transformRoot,
-                           redshift::scenefile::Camera::Transform::Type type);
+                           redshift::scenefile::Transform::Type type);
         void addObject ();
 
         QtBrowserItem * currentBrowserItem;
