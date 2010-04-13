@@ -18,21 +18,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// see qt quarterly 18
 
-#include <QtGui/QApplication>
-#include "mainwindow.hh"
-#include <QCleanlooksStyle>
+#ifndef COLOREDIT_H
+#define COLOREDIT_H
 
-#include "../../redshift/include/static_init.hh"
-int main(int argc, char *argv[])
+#include <QLineEdit>
+
+class ColorEdit : public QWidget
 {
-        QCleanlooksStyle *style = new QCleanlooksStyle ();
-        QApplication::setStyle(style);
+    Q_OBJECT
+public:
+    ColorEdit(QWidget *parent = 0);
+    void setFilePath(const QString &filePath) { if (theLineEdit->text() != filePath) theLineEdit->setText(filePath); }
+    QString filePath() const { return theLineEdit->text(); }
+    void setFilter(const QString &filter) { theFilter = filter; }
+    QString filter() const { return theFilter; }
+signals:
+    void filePathChanged(const QString &filePath);
+protected:
+    void focusInEvent(QFocusEvent *e);
+    void focusOutEvent(QFocusEvent *e);
+    void keyPressEvent(QKeyEvent *e);
+    void keyReleaseEvent(QKeyEvent *e);
+private slots:
+    void buttonClicked();
+private:
+    QLineEdit *theLineEdit;
+    QString theFilter;
+};
 
-        redshift::static_init();
-        QApplication a(argc, argv);
-        MainWindow w;
-        w.show();
-        const int ret = a.exec();
-        return ret;
-}
+#endif

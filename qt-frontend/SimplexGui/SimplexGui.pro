@@ -13,12 +13,18 @@ SOURCES += main.cc \
     mainwindow.cc \
     ../widgets/RenderWindow/renderwindow.cc \
     ../widgets/RenderWindow/qimagerendertarget.cc \
-    ../widgets/QuatschSourceEditor/quatschsourceeditor.cc
+    ../widgets/QuatschSourceEditor/quatschsourceeditor.cc \
+    coloreditmanager.cpp \
+    coloreditfactory.cpp \
+    coloredit.cpp
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.hh \
-    ../widgets/QuatschSourceEditor/quatsch-editor.hh
+    ../widgets/QuatschSourceEditor/quatsch-editor.hh \
+    coloreditmanager.h \
+    coloreditfactory.h \
+    coloredit.h
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui
