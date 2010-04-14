@@ -32,6 +32,15 @@ namespace Ui {
 
 struct SpectralSample {
         double wavelength, amplitude;
+
+        bool operator == (SpectralSample const & rhs) const {
+                return wavelength == rhs.wavelength
+                    && amplitude == rhs.amplitude;
+        }
+
+        bool operator != (SpectralSample const & rhs) const {
+                return !(*this == rhs);
+        }
 };
 
 class SpectralSlider;
@@ -44,7 +53,9 @@ public:
         typedef redshift::ReferenceSpectrum Spectrum;
 
         QVector<SpectralSample> samples () const;
-        void setSamples (QVector<SpectralSample>);
+        void setSamples (QVector<SpectralSample> const &);
+
+        //void setColor (redshift::Spectrum const &);
 
 protected:
         void changeEvent(QEvent *e);
@@ -60,6 +71,9 @@ private slots:
 signals:
         void maxAmplitudeChanged (double amp);
         void minAmplitudeChanged (double amp);
+
+        //void colorChanged (redshift::Spectrum const & samples);
+        void colorChanged (QVector<SpectralSample> const &samples);
 
 private:
         Ui::SpectralColorPicker *ui;

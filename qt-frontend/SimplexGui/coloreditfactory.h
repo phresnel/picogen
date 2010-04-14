@@ -26,15 +26,18 @@
 #include "qtpropertybrowser.h"
 #include "coloreditmanager.h"
 
+#include <QMdiArea>
+
 class ColorEdit;
 
 class ColorEditFactory : public QtAbstractEditorFactory<ColorEditManager>
 {
     Q_OBJECT
 public:
-    ColorEditFactory(QObject *parent = 0)
+    ColorEditFactory(QObject *parent = 0, QMdiArea *displayArea = 0)
         : QtAbstractEditorFactory<ColorEditManager>(parent)
-            { }
+        , displayArea(displayArea)
+        { }
     virtual ~ColorEditFactory();
 protected:
     virtual void connectPropertyManager(ColorEditManager *manager);
@@ -42,13 +45,14 @@ protected:
                 QWidget *parent);
     virtual void disconnectPropertyManager(ColorEditManager *manager);
 private slots:
-    void slotPropertyChanged(QtProperty *property, const QString &value);
-    void slotFilterChanged(QtProperty *property, const QString &filter);
-    void slotSetValue(const QString &value);
+    void slotPropertyChanged(QtProperty *property, const ColorPickerColor &value);
+    //void slotFilterChanged(QtProperty *property, const QString &filter);
+    void slotSetValue(const ColorPickerColor &value);
     void slotEditorDestroyed(QObject *object);
 private:
     QMap<QtProperty *, QList<ColorEdit *> > theCreatedEditors;
     QMap<ColorEdit *, QtProperty *> theEditorToProperty;
+    QMdiArea *displayArea;
 };
 
 #endif

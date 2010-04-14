@@ -33,23 +33,22 @@ ColorEditFactory::~ColorEditFactory()
 
 void ColorEditFactory::connectPropertyManager(ColorEditManager *manager)
 {
-    connect(manager, SIGNAL(valueChanged(QtProperty *, const QString &)),
-                this, SLOT(slotPropertyChanged(QtProperty *, const QString &)));
-    connect(manager, SIGNAL(filterChanged(QtProperty *, const QString &)),
-                this, SLOT(slotFilterChanged(QtProperty *, const QString &)));
+    connect(manager, SIGNAL(valueChanged(QtProperty *, const ColorPickerColor &)),
+                this, SLOT(slotPropertyChanged(QtProperty *, const ColorPickerColor &)));
 }
 
 QWidget *ColorEditFactory::createEditor(ColorEditManager *manager,
         QtProperty *property, QWidget *parent)
 {
-    ColorEdit *editor = new ColorEdit(parent);
-    editor->setFilePath(manager->value(property));
-    editor->setFilter(manager->filter(property));
+    ColorEdit *editor = new ColorEdit(parent, displayArea);
+    //editor->setFilePath(manager->value(property));
+    //editor->setFilter(manager->filter(property));
+    editor->setColor(manager->value(property));
     theCreatedEditors[property].append(editor);
     theEditorToProperty[editor] = property;
 
-    connect(editor, SIGNAL(filePathChanged(const QString &)),
-                this, SLOT(slotSetValue(const QString &)));
+    connect(editor, SIGNAL(colorChanged(const ColorPickerColor &)),
+                this, SLOT(slotSetValue(const ColorPickerColor &)));
     connect(editor, SIGNAL(destroyed(QObject *)),
                 this, SLOT(slotEditorDestroyed(QObject *)));
     return editor;
@@ -57,14 +56,12 @@ QWidget *ColorEditFactory::createEditor(ColorEditManager *manager,
 
 void ColorEditFactory::disconnectPropertyManager(ColorEditManager *manager)
 {
-    disconnect(manager, SIGNAL(valueChanged(QtProperty *, const QString &)),
-                this, SLOT(slotPropertyChanged(QtProperty *, const QString &)));
-    disconnect(manager, SIGNAL(filterChanged(QtProperty *, const QString &)),
-                this, SLOT(slotFilterChanged(QtProperty *, const QString &)));
+    disconnect(manager, SIGNAL(valueChanged(QtProperty *, const ColorPickerColor &)),
+                this, SLOT(slotPropertyChanged(QtProperty *, const ColorPickerColor &)));
 }
 
 void ColorEditFactory::slotPropertyChanged(QtProperty *property,
-                const QString &value)
+                const ColorPickerColor &value)
 {
     if (!theCreatedEditors.contains(property))
         return;
@@ -72,10 +69,10 @@ void ColorEditFactory::slotPropertyChanged(QtProperty *property,
     QList<ColorEdit *> editors = theCreatedEditors[property];
     QListIterator<ColorEdit *> itEditor(editors);
     while (itEditor.hasNext())
-        itEditor.next()->setFilePath(value);
+        itEditor.next()->setColor(value);
 }
 
-void ColorEditFactory::slotFilterChanged(QtProperty *property,
+/*void ColorEditFactory::slotFilterChanged(QtProperty *property,
             const QString &filter)
 {
     if (!theCreatedEditors.contains(property))
@@ -85,9 +82,9 @@ void ColorEditFactory::slotFilterChanged(QtProperty *property,
     QListIterator<ColorEdit *> itEditor(editors);
     while (itEditor.hasNext())
         itEditor.next()->setFilter(filter);
-}
+}*/
 
-void ColorEditFactory::slotSetValue(const QString &value)
+void ColorEditFactory::slotSetValue(const ColorPickerColor &value)
 {
     QObject *object = sender();
     QMap<ColorEdit *, QtProperty *>::ConstIterator itEditor =

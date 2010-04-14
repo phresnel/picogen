@@ -22,21 +22,21 @@
 
 #include "coloreditmanager.h"
 
-QString ColorEditManager::value(const QtProperty *property) const
+ColorPickerColor ColorEditManager::value(const QtProperty *property) const
 {
     if (!theValues.contains(property))
-        return QString();
+        return ColorPickerColor();
     return theValues[property].value;
 }
 
-QString ColorEditManager::filter(const QtProperty *property) const
+/*QString ColorEditManager::filter(const QtProperty *property) const
 {
     if (!theValues.contains(property))
         return QString();
     return theValues[property].filter;
-}
+}*/
 
-void ColorEditManager::setValue(QtProperty *property, const QString &val)
+void ColorEditManager::setValue(QtProperty *property, const ColorPickerColor &val)
 {
     if (!theValues.contains(property))
         return;
@@ -54,7 +54,7 @@ void ColorEditManager::setValue(QtProperty *property, const QString &val)
     emit valueChanged(property, data.value);
 }
 
-void ColorEditManager::setFilter(QtProperty *property, const QString &fil)
+/*void ColorEditManager::setFilter(QtProperty *property, const QString &fil)
 {
     if (!theValues.contains(property))
         return;
@@ -69,5 +69,5 @@ void ColorEditManager::setFilter(QtProperty *property, const QString &fil)
     theValues[property] = data;
 
     emit filterChanged(property, data.filter);
-}
+}*/
 

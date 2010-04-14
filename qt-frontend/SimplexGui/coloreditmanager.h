@@ -26,6 +26,8 @@
 #include "qtpropertybrowser.h"
 #include <QMap>
 
+#include "colorpicker.hh"
+
 class ColorEditManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
@@ -34,25 +36,27 @@ public:
         : QtAbstractPropertyManager(parent)
             { }
 
-    QString value(const QtProperty *property) const;
-    QString filter(const QtProperty *property) const;
+    /*QString value(const QtProperty *property) const;
+    QString filter(const QtProperty *property) const;*/
+
+    ColorPickerColor value (const QtProperty *property) const;
+
 
 public slots:
-    void setValue(QtProperty *property, const QString &val);
-    void setFilter(QtProperty *property, const QString &fil);
+    void setValue(QtProperty *property, const ColorPickerColor &val);
+    //void setFilter(QtProperty *property, const QString &fil);
 signals:
-    void valueChanged(QtProperty *property, const QString &val);
-    void filterChanged(QtProperty *property, const QString &fil);
+    void valueChanged(QtProperty *property, const ColorPickerColor &val);
+    //void filterChanged(QtProperty *property, const QString &fil);
 protected:
-    virtual QString valueText(const QtProperty *property) const { return value(property); }
+    virtual QString valueText(const QtProperty *property) const { return ":D";/*value(property);*/ }
     virtual void initializeProperty(QtProperty *property) { theValues[property] = Data(); }
     virtual void uninitializeProperty(QtProperty *property) { theValues.remove(property); }
 private:
 
     struct Data
     {
-        QString value;
-        QString filter;
+        ColorPickerColor value;
     };
 
     QMap<const QtProperty *, Data> theValues;

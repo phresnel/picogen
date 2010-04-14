@@ -159,6 +159,7 @@ void TristimulusColorPicker::setColor(QColor const &col) {
 
         color_ = col;
 
+        emit colorChanged (color_);
         isUpdating = false;
 }
 

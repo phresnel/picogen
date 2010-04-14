@@ -66,6 +66,15 @@ void SpectralColorPicker::valueChanged (double amp, double wavelength) {
         Q_UNUSED(wavelength)
 
         updatePixmap();
+
+        QVector<SpectralSample> samples;
+        foreach (SpectralSlider *slider, sliders) {
+                SpectralSample s;
+                s.amplitude = slider->amplitude();
+                s.wavelength = slider->wavelength();
+                samples.push_back(s);
+        }
+        emit colorChanged(samples);
 }
 
 
@@ -222,7 +231,7 @@ QVector<SpectralSample> SpectralColorPicker::samples () const {
         return samples;
 }
 
-void SpectralColorPicker::setSamples (QVector<SpectralSample> samples) {
+void SpectralColorPicker::setSamples (QVector<SpectralSample>  const & samples) {
         ui->lockSampleCount->setChecked(true);
         on_lockSampleCount_toggled(ui->lockSampleCount->checkState());
         removeSpectralSliders();
@@ -257,3 +266,7 @@ void SpectralColorPicker::setSamples (QVector<SpectralSample> samples) {
 
         updatePixmap();
 }
+
+/*void SpectralColorPicker::setColor (redshift::Spectrum const &) {
+
+}*/

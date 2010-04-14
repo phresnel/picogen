@@ -26,58 +26,85 @@
 #include <QFileDialog>
 #include <QFocusEvent>
 
-ColorEdit::ColorEdit(QWidget *parent)
-    : QWidget(parent)
+#include "redshift/include/setup.hh"
+
+ColorEdit::ColorEdit(QWidget *parent, QMdiArea *displayArea)
+    : QWidget(parent), displayArea(displayArea)
 {
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setMargin(0);
-    layout->setSpacing(0);
-    theLineEdit = new QLineEdit(this);
-    theLineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
-    QToolButton *button = new QToolButton(this);
-    button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred));
-    button->setText(QLatin1String("..."));
-    layout->addWidget(theLineEdit);
-    layout->addWidget(button);
-    theLineEdit->setFocusProxy(this);
-    setFocusPolicy(Qt::StrongFocus);
-    setAttribute(Qt::WA_InputMethodEnabled);
-    connect(theLineEdit, SIGNAL(textEdited(const QString &)),
-                this, SIGNAL(filePathChanged(const QString &)));
-    connect(button, SIGNAL(clicked()),
+        QHBoxLayout *layout = new QHBoxLayout(this);
+        layout->setMargin(0);
+        layout->setSpacing(0);
+        theLineEdit = new QLineEdit(this);
+        theLineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
+        QToolButton *button = new QToolButton(this);
+        button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred));
+        button->setText(QLatin1String("..."));
+        layout->addWidget(theLineEdit);
+        layout->addWidget(button);
+        theLineEdit->setFocusProxy(this);
+        setFocusPolicy(Qt::StrongFocus);
+        setAttribute(Qt::WA_InputMethodEnabled);
+
+        color_.mode = ColorPickerColor::Tristimulus;
+        color_.tristimulus = QColor(255,122,64);
+
+        /*connect(theLineEdit, SIGNAL(textEdited(const QString &)),
+                this, SIGNAL(filePathChanged(const QString &)));*/
+        connect(button, SIGNAL(clicked()),
                 this, SLOT(buttonClicked()));
 }
 
-void ColorEdit::buttonClicked()
-{
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose a file"), theLineEdit->text(), theFilter);
+void ColorEdit::buttonClicked() {
+        ColorPicker *picker = new ColorPicker(0);
+        picker->setColor (color_);
+        if (QDialog::Accepted == picker->exec() || true) {
+                //emit filePathChanged("okay");
+
+                if (color_ != picker->color()) {
+                        color_ = picker->color();
+                        if (color_.mode == ColorPickerColor::Tristimulus) {
+                                theLineEdit->setText(
+                                        QString::number(color_.tristimulus.red())
+                                        + ":" + QString::number(color_.tristimulus.green())
+                                        + ":" + QString::number(color_.tristimulus.blue()));
+                                emit colorChanged(color_);
+                        }
+                }
+        }
+        delete picker;
+
+    /*QString filePath = QFileDialog::getOpenFileName(this, tr("Choose a file"), theLineEdit->text(), theFilter);
     if (filePath.isNull())
         return;
     theLineEdit->setText(filePath);
-    emit filePathChanged(filePath);
+    emit filePathChanged(filePath);*/
 }
 
-void ColorEdit::focusInEvent(QFocusEvent *e)
-{
-    theLineEdit->event(e);
-    if (e->reason() == Qt::TabFocusReason || e->reason() == Qt::BacktabFocusReason) {
-        theLineEdit->selectAll();
-    }
-    QWidget::focusInEvent(e);
+void ColorEdit::setColor (ColorPickerColor const &col) {
+        color_ = col;
 }
 
-void ColorEdit::focusOutEvent(QFocusEvent *e)
-{
-    theLineEdit->event(e);
-    QWidget::focusOutEvent(e);
+ColorPickerColor ColorEdit::color () const {
+        return color_;
 }
 
-void ColorEdit::keyPressEvent(QKeyEvent *e)
-{
-    theLineEdit->event(e);
+void ColorEdit::focusInEvent(QFocusEvent *e) {
+        theLineEdit->event(e);
+        if (e->reason() == Qt::TabFocusReason || e->reason() == Qt::BacktabFocusReason) {
+                theLineEdit->selectAll();
+        }
+        QWidget::focusInEvent(e);
 }
 
-void ColorEdit::keyReleaseEvent(QKeyEvent *e)
-{
-    theLineEdit->event(e);
+void ColorEdit::focusOutEvent(QFocusEvent *e) {
+        theLineEdit->event(e);
+        QWidget::focusOutEvent(e);
+}
+
+void ColorEdit::keyPressEvent(QKeyEvent *e) {
+        theLineEdit->event(e);
+}
+
+void ColorEdit::keyReleaseEvent(QKeyEvent *e) {
+        theLineEdit->event(e);
 }

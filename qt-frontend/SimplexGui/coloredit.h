@@ -24,18 +24,23 @@
 #define COLOREDIT_H
 
 #include <QLineEdit>
+#include <QMdiArea>
+#include "colorpicker.hh"
 
 class ColorEdit : public QWidget
 {
     Q_OBJECT
 public:
-    ColorEdit(QWidget *parent = 0);
+    ColorEdit(QWidget *parent = 0, QMdiArea *displayArea = 0);
     void setFilePath(const QString &filePath) { if (theLineEdit->text() != filePath) theLineEdit->setText(filePath); }
     QString filePath() const { return theLineEdit->text(); }
     void setFilter(const QString &filter) { theFilter = filter; }
     QString filter() const { return theFilter; }
+
+    void setColor (ColorPickerColor const &);
+    ColorPickerColor color () const ;
 signals:
-    void filePathChanged(const QString &filePath);
+    void colorChanged(const ColorPickerColor &);
 protected:
     void focusInEvent(QFocusEvent *e);
     void focusOutEvent(QFocusEvent *e);
@@ -46,6 +51,10 @@ private slots:
 private:
     QLineEdit *theLineEdit;
     QString theFilter;
+
+    QMdiArea *displayArea;
+
+    ColorPickerColor color_;
 };
 
 #endif

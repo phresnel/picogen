@@ -149,6 +149,8 @@ MainWindow::MainWindow(QWidget *parent) :
         groupManager = new QtGroupPropertyManager(this);
         enumManager = new QtEnumPropertyManager(this);
 
+        colorEditManager = new ColorEditManager (this);
+        colorEditFactory = new ColorEditFactory (this, ui->mdiArea);
 
         transformEnumManager = new QtEnumPropertyManager(this);
         connect(transformEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
@@ -171,6 +173,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
+        ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
 
         // Film Settings.
         {
@@ -790,8 +793,12 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         t->addSubProperty(it);
                         it->setAttribute(QLatin1String("decimals"), 6);
 
-                        it = variantManager->addProperty(QVariant::UserType,"color");
-                        t->addSubProperty(it);
+                        QtProperty *colorTerms = groupManager->addProperty("material");
+                        t->addSubProperty(colorTerms);
+
+                        QtProperty *cit = colorEditManager->addProperty("color");
+                        colorTerms->addSubProperty(cit);
+
                         /*it->setAttribute(QLatin1String("color"), 6);*/
                 } else if (type == "water-plane") {
                         QtVariantProperty* height = variantManager->addProperty(QVariant::Double,"height");
