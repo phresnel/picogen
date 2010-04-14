@@ -62,12 +62,14 @@ void ColorEdit::buttonClicked() {
 
                 if (color_ != picker->color()) {
                         color_ = picker->color();
+                        emit colorChanged(color_);
                         if (color_.mode == ColorPickerColor::Tristimulus) {
                                 theLineEdit->setText(
                                         QString::number(color_.tristimulus.red())
                                         + ":" + QString::number(color_.tristimulus.green())
                                         + ":" + QString::number(color_.tristimulus.blue()));
-                                emit colorChanged(color_);
+                        } else {
+                                theLineEdit->setText("spectral{...}");
                         }
                 }
         }

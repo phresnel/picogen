@@ -71,13 +71,13 @@
   <customwidget>
    <class>TristimulusColorPicker</class>
    <extends>QWidget</extends>
-   <header location="global">tristimuluscolorpicker.h</header>
+   <header location="global">tristimuluscolorpicker.hh</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SpectralColorPicker</class>
    <extends>QWidget</extends>
-   <header location="global">spectralcolorpicker.h</header>
+   <header location="global">spectralcolorpicker.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

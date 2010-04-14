@@ -221,14 +221,14 @@ void SpectralColorPicker::on_minAmp_editingFinished() {
 
 QVector<SpectralSample> SpectralColorPicker::samples () const {
         const int count = sliders.count();
-        QVector<SpectralSample> samples(count);
+        QVector<SpectralSample> samples_;
         foreach (SpectralSlider *slider, sliders) {
                 SpectralSample ss;
                 ss.amplitude = slider->amplitude();
                 ss.wavelength = slider->wavelength();
-                samples.push_back(ss);
+                samples_.push_back(ss);
         }
-        return samples;
+        return samples_;
 }
 
 void SpectralColorPicker::setSamples (QVector<SpectralSample>  const & samples) {
@@ -238,8 +238,8 @@ void SpectralColorPicker::setSamples (QVector<SpectralSample>  const & samples) 
         addSpectralSliders(samples.count());
 
         const int count = samples.count();
-        QVector<double> amplitudes(count);
-        QVector<double> wavelengths(count);
+        QVector<double> amplitudes;
+        QVector<double> wavelengths;
 
         foreach(SpectralSample sample, samples) {
                 amplitudes.push_back(sample.amplitude);

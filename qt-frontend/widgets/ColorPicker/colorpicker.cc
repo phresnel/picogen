@@ -35,6 +35,9 @@ ColorPicker::ColorPicker(QWidget *parent) :
                  this, SLOT(tristimulusColorChanged(QColor)));
         connect (ui->spectralPicker, SIGNAL(colorChanged(QVector<SpectralSample> const &)),
                  this, SLOT(spectralColorChanged(QVector<SpectralSample> const &)));
+
+        color_.spectral = ui->spectralPicker->samples();
+        color_.tristimulus = ui->tristimulusPicker->color();
 }
 
 ColorPicker::~ColorPicker() {
