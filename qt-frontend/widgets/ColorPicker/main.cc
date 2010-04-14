@@ -26,9 +26,10 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.setCentralWidget(new ColorPicker ());
-    w.show();
-    return a.exec();
+        redshift::static_init();
+        QApplication a(argc, argv);
+        MainWindow w;
+        w.setCentralWidget(new ColorPicker ());
+        w.show();
+        return a.exec();
 }

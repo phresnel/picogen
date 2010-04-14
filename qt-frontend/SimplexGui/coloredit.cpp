@@ -34,13 +34,22 @@ ColorEdit::ColorEdit(QWidget *parent, QMdiArea *displayArea)
         QHBoxLayout *layout = new QHBoxLayout(this);
         layout->setMargin(0);
         layout->setSpacing(0);
+
         theLineEdit = new QLineEdit(this);
         theLineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
+
+        theLabel = new QLabel(this);
+        theLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
+        theLabel->setScaledContents(true);
+
         QToolButton *button = new QToolButton(this);
         button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred));
         button->setText(QLatin1String("..."));
-        layout->addWidget(theLineEdit);
+
+        //layout->addWidget(theLineEdit);
+        layout->addWidget(theLabel);
         layout->addWidget(button);
+
         theLineEdit->setFocusProxy(this);
         setFocusPolicy(Qt::StrongFocus);
         setAttribute(Qt::WA_InputMethodEnabled);
@@ -64,12 +73,19 @@ void ColorEdit::buttonClicked() {
                         color_ = picker->color();
                         emit colorChanged(color_);
                         if (color_.mode == ColorPickerColor::Tristimulus) {
-                                theLineEdit->setText(
+                                /*theLineEdit->setText(
                                         QString::number(color_.tristimulus.red())
                                         + ":" + QString::number(color_.tristimulus.green())
-                                        + ":" + QString::number(color_.tristimulus.blue()));
+                                        + ":" + QString::number(color_.tristimulus.blue()));*/
+                                QPixmap p = QPixmap(1,1);
+                                p.fill(color_.tristimulus);
+                                theLabel->setPixmap(p);
                         } else {
-                                theLineEdit->setText("spectral{...}");
+                                //theLineEdit->setText("spectral{...}");
+                                QPixmap p (1,1);
+                                QColor const col = color_.toQColor();
+                                p.fill(col);
+                                theLabel->setPixmap(p);
                         }
                 }
         }

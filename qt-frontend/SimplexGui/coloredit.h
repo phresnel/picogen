@@ -25,6 +25,7 @@
 
 #include <QLineEdit>
 #include <QMdiArea>
+#include <QLabel>
 #include "colorpicker.hh"
 
 class ColorEdit : public QWidget
@@ -49,6 +50,7 @@ protected:
 private slots:
     void buttonClicked();
 private:
+    QLabel *theLabel;
     QLineEdit *theLineEdit;
     QString theFilter;
 
