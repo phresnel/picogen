@@ -49,7 +49,8 @@ signals:
     void valueChanged(QtProperty *property, const ColorPickerColor &val);
     //void filterChanged(QtProperty *property, const QString &fil);
 protected:
-    virtual QString valueText(const QtProperty *property) const { return ":D";/*value(property);*/ }
+    virtual QString valueText(const QtProperty *property) const ;
+    virtual QIcon valueIcon(const QtProperty *property) const ;
     virtual void initializeProperty(QtProperty *property) { theValues[property] = Data(); }
     virtual void uninitializeProperty(QtProperty *property) { theValues.remove(property); }
 private:

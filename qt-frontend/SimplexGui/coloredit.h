@@ -33,10 +33,10 @@ class ColorEdit : public QWidget
     Q_OBJECT
 public:
     ColorEdit(QWidget *parent = 0, QMdiArea *displayArea = 0);
-    void setFilePath(const QString &filePath) { if (theLineEdit->text() != filePath) theLineEdit->setText(filePath); }
-    QString filePath() const { return theLineEdit->text(); }
-    void setFilter(const QString &filter) { theFilter = filter; }
-    QString filter() const { return theFilter; }
+    //void setFilePath(const QString &filePath) { if (theLineEdit->text() != filePath) theLineEdit->setText(filePath); }
+    //QString filePath() const { return theLineEdit->text(); }
+    //void setFilter(const QString &filter) { theFilter = filter; }
+    //QString filter() const { return theFilter; }
 
     void setColor (ColorPickerColor const &);
     ColorPickerColor color () const ;
@@ -50,9 +50,9 @@ protected:
 private slots:
     void buttonClicked();
 private:
-    QLabel *theLabel;
-    QLineEdit *theLineEdit;
-    QString theFilter;
+    //QLabel *theLabel;
+    //QLineEdit *theLineEdit;
+    //QString theFilter;
 
     QMdiArea *displayArea;
 

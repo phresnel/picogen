@@ -227,7 +227,7 @@ QComboBox QAbstractItemView {
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QPushButton" name="newSubTransformButton">
             <property name="enabled">
              <bool>false</bool>
@@ -237,7 +237,7 @@ QComboBox QAbstractItemView {
             </property>
            </widget>
           </item>
-          <item row="3" column="2">
+          <item row="4" column="2">
            <widget class="QPushButton" name="deleteSubTransformButton">
             <property name="enabled">
              <bool>false</bool>
@@ -257,7 +257,7 @@ QComboBox QAbstractItemView {
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QPushButton" name="newCameraButton">
             <property name="enabled">
              <bool>true</bool>
@@ -267,7 +267,7 @@ QComboBox QAbstractItemView {
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
+          <item row="3" column="2">
            <widget class="QPushButton" name="deleteCameraButton">
             <property name="enabled">
              <bool>false</bool>
@@ -276,6 +276,19 @@ QComboBox QAbstractItemView {
              <string>Delete Camera</string>
             </property>
            </widget>
+          </item>
+          <item row="2" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>

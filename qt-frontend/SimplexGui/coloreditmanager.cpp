@@ -21,6 +21,7 @@
 // based on qt quarterly 18
 
 #include "coloreditmanager.h"
+#include <QIcon>
 
 ColorPickerColor ColorEditManager::value(const QtProperty *property) const
 {
@@ -52,6 +53,36 @@ void ColorEditManager::setValue(QtProperty *property, const ColorPickerColor &va
 
     emit propertyChanged(property);
     emit valueChanged(property, data.value);
+}
+
+QString ColorEditManager::valueText(const QtProperty *property) const {
+        if (!theValues.contains(property))
+                return QString();
+
+        const ColorPickerColor data = theValues[property].value;
+        const QColor col = data.toQColor();
+        const QString asRgbString =
+                        QString::number(col.red()) + ", "
+                        + QString::number(col.green()) + ", "
+                        + QString::number(col.blue());
+
+        switch(data.mode) {
+        case ColorPickerColor::Spectral:
+                return QString ("spectral (rgb: " + asRgbString + ")");
+        case ColorPickerColor::Tristimulus:
+                return QString ("tristimulus (rgb: " + asRgbString + ")");
+        }
+}
+
+QIcon ColorEditManager::valueIcon(const QtProperty *property) const {
+        if (!theValues.contains(property))
+                return QIcon();
+        const ColorPickerColor data = theValues[property].value;
+        const QColor col = data.toQColor();
+
+        QPixmap p = QPixmap(16,16);
+        p.fill(col);
+        return QIcon(p);
 }
 
 /*void ColorEditManager::setFilter(QtProperty *property, const QString &fil)

@@ -799,6 +799,9 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         QtProperty *cit = colorEditManager->addProperty("color");
                         colorTerms->addSubProperty(cit);
 
+                        /*QtProperty *tit = variantManager->addProperty(QVariant::Color, "color");
+                        colorTerms->addSubProperty(tit);*/
+
                         /*it->setAttribute(QLatin1String("color"), 6);*/
                 } else if (type == "water-plane") {
                         QtVariantProperty* height = variantManager->addProperty(QVariant::Double,"height");

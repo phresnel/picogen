@@ -25,6 +25,7 @@
 #include <QToolButton>
 #include <QFileDialog>
 #include <QFocusEvent>
+#include <QSpacerItem>
 
 #include "redshift/include/setup.hh"
 
@@ -35,67 +36,33 @@ ColorEdit::ColorEdit(QWidget *parent, QMdiArea *displayArea)
         layout->setMargin(0);
         layout->setSpacing(0);
 
-        theLineEdit = new QLineEdit(this);
-        theLineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
-
-        theLabel = new QLabel(this);
-        theLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
-        theLabel->setScaledContents(true);
-
         QToolButton *button = new QToolButton(this);
         button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred));
         button->setText(QLatin1String("..."));
 
-        //layout->addWidget(theLineEdit);
-        layout->addWidget(theLabel);
-        layout->addWidget(button);
+        layout->addWidget(button, 0, Qt::AlignRight);
 
-        theLineEdit->setFocusProxy(this);
         setFocusPolicy(Qt::StrongFocus);
         setAttribute(Qt::WA_InputMethodEnabled);
 
         color_.mode = ColorPickerColor::Tristimulus;
         color_.tristimulus = QColor(255,122,64);
+        //emit colorChanged(color_);
 
-        /*connect(theLineEdit, SIGNAL(textEdited(const QString &)),
-                this, SIGNAL(filePathChanged(const QString &)));*/
         connect(button, SIGNAL(clicked()),
                 this, SLOT(buttonClicked()));
 }
 
 void ColorEdit::buttonClicked() {
-        ColorPicker *picker = new ColorPicker(0);
+        ColorPicker *picker = new ColorPicker(this);
         picker->setColor (color_);
-        if (QDialog::Accepted == picker->exec() || true) {
-                //emit filePathChanged("okay");
-
+        if (QDialog::Accepted == picker->exec()) {
                 if (color_ != picker->color()) {
                         color_ = picker->color();
                         emit colorChanged(color_);
-                        if (color_.mode == ColorPickerColor::Tristimulus) {
-                                /*theLineEdit->setText(
-                                        QString::number(color_.tristimulus.red())
-                                        + ":" + QString::number(color_.tristimulus.green())
-                                        + ":" + QString::number(color_.tristimulus.blue()));*/
-                                QPixmap p = QPixmap(1,1);
-                                p.fill(color_.tristimulus);
-                                theLabel->setPixmap(p);
-                        } else {
-                                //theLineEdit->setText("spectral{...}");
-                                QPixmap p (1,1);
-                                QColor const col = color_.toQColor();
-                                p.fill(col);
-                                theLabel->setPixmap(p);
-                        }
                 }
         }
         delete picker;
-
-    /*QString filePath = QFileDialog::getOpenFileName(this, tr("Choose a file"), theLineEdit->text(), theFilter);
-    if (filePath.isNull())
-        return;
-    theLineEdit->setText(filePath);
-    emit filePathChanged(filePath);*/
 }
 
 void ColorEdit::setColor (ColorPickerColor const &col) {
@@ -107,22 +74,22 @@ ColorPickerColor ColorEdit::color () const {
 }
 
 void ColorEdit::focusInEvent(QFocusEvent *e) {
-        theLineEdit->event(e);
+        //theLineEdit->event(e);
         if (e->reason() == Qt::TabFocusReason || e->reason() == Qt::BacktabFocusReason) {
-                theLineEdit->selectAll();
+                //theLineEdit->selectAll();
         }
         QWidget::focusInEvent(e);
 }
 
 void ColorEdit::focusOutEvent(QFocusEvent *e) {
-        theLineEdit->event(e);
+        //theLineEdit->event(e);
         QWidget::focusOutEvent(e);
 }
 
 void ColorEdit::keyPressEvent(QKeyEvent *e) {
-        theLineEdit->event(e);
+        //theLineEdit->event(e);
 }
 
 void ColorEdit::keyReleaseEvent(QKeyEvent *e) {
-        theLineEdit->event(e);
+        //theLineEdit->event(e);
 }

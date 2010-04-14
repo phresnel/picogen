@@ -56,13 +56,11 @@ void ColorPicker::changeEvent(QEvent *e) {
 }
 
 void ColorPicker::on_okayButton_pressed() {
-        setResult(QDialog::Accepted);
-        close();
+        accept();
 }
 
 void ColorPicker::on_cancelButton_pressed() {
-        setResult(QDialog::Rejected);
-        close();
+        reject();
 }
 
 void ColorPicker::setColor (ColorPickerColor const &color) {
