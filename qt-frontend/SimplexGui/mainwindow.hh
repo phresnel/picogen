@@ -79,8 +79,10 @@ private:
                    *currentRenderSettingProperty;
         QtProperty *objectsProperty,
                    *pssSunSkyProperty;
-        QtEnumPropertyManager *transformEnumManager;
-        QtEnumPropertyManager *objectTypeEnumManager;
+        QtEnumPropertyManager
+                        *transformEnumManager,
+                        *objectTypeEnumManager,
+                        *surfaceIntegratorTypeEnumManager;
         QtVariantPropertyManager *codeEditManager;
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
@@ -115,6 +117,7 @@ private slots:
         void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
+        void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
         void rsTitleManager_valueChanged (QtProperty *, const QString &);
 };
 

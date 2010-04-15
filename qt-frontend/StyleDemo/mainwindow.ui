@@ -111,13 +111,13 @@ QPushButton {
 	border: 2px solid #8f8f91;
 	border-radius: 6px;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #717171, stop: 0.5 #606060,
-                                       stop: 0.6 #535353, stop:1 #757575);
+                                       stop:0 #817171, stop: 0.5 #606060,
+                                       stop: 0.55 #333333, stop:1 #857575);
 } QPushButton:pressed {
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
 										stop:0.5 #717171, 
-										stop: 1 #606060,
-										stop: 0 #535353, 
+										stop: 1 #333,
+										stop: 0 #222, 
 										stop:0.6 #757575);
 } QPushButton:disabled {
 	color:gray;
@@ -189,6 +189,36 @@ QComboBox::drop-down {
  }
 QComboBox QAbstractItemView {
 	background: gray;
+}
+
+
+QTabWidget::pane { /* The tab widget frame */
+	border: 2px solid #777;
+	border-radius:4px;
+} QTabWidget::tab-bar {
+	left: 5px; /* move to the right by 5px */
+} QTabBar::tab {
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #669, stop: 0.5 #333,
+                                       stop: 0.55 #232323, stop:1 #669);
+        border: 2px solid #C4C4C3;
+        border-bottom-color: #C2C7CB; /* same as the pane color */
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        min-width: 8ex;
+        padding: 2px;
+        color:#ccc;
+} QTabBar::tab:selected, QTabBar::tab:hover {
+        background-color: 
+			qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #9191b1, stop: 0.5 #607050,
+                                       stop: 0.55 #334323, stop:1 #9191b1);
+        color:#fff;
+} QTabBar::tab:selected {
+        border-color: #9B9B9B;
+        border-bottom-color: #C2C7CB; /* same as pane color */
+} QTabBar::tab:!selected {
+        margin-top: 2px; /* make non-selected tabs look smaller */
 }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -276,30 +306,6 @@ QComboBox QAbstractItemView {
       <string>Subwindow</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QTextEdit" name="textEdit">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>350</y>
-      <width>311</width>
-      <height>171</height>
-     </rect>
-    </property>
-    <property name="html">
-     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;table border=&quot;0&quot; style=&quot;-qt-table-type: root; margin-top:4px; margin-bottom:4px; margin-left:4px; margin-right:4px;&quot;&gt;
-&lt;tr&gt;
-&lt;td style=&quot;border: none;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:600;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; color:#ff0000;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
@@ -515,6 +521,53 @@ p, li { white-space: pre-wrap; }
       <string>Frob</string>
      </property>
     </item>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>380</y>
+      <width>341</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Very long name that doesn't fit</string>
+     </attribute>
+     <widget class="QTextEdit" name="textEdit">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>20</y>
+        <width>221</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;table border=&quot;0&quot; style=&quot;-qt-table-type: root; margin-top:4px; margin-bottom:4px; margin-left:4px; margin-right:4px;&quot;&gt;
+&lt;tr&gt;
+&lt;td style=&quot;border: none;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:600;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; color:#ff0000;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;hallo welt&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Tab 2</string>
+     </attribute>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

@@ -179,6 +179,10 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(objectTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(objectTypeEnumManager_valueChanged(QtProperty*,int)));
 
+        surfaceIntegratorTypeEnumManager = new QtEnumPropertyManager(this);
+        connect(surfaceIntegratorTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
+                this, SLOT(surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*,int)));
+
         codeEditManager = new QtVariantPropertyManager(this);
         connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                 this, SLOT(code_valueChanged(QtProperty*, QVariant)));
@@ -191,6 +195,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
+        ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
 
@@ -438,6 +443,22 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 rs.max_y = readValue<unsigned int>("max-y", subs);
                 rs.userSeed = readValue<unsigned int>("seed", subs);
 
+                // Surface Integrator.
+                Props si = readSubProperties("surface-integrator", subs);
+                const QString sintegT = readValueText("type", si);
+                if("none" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::none;
+                } else if("whitted" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted;
+                } else if("redshift" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::redshift;
+                        rs.surfaceIntegrator.numAmbientSamples = readValue<int>("ambient-samples", si);
+                } else throw std::runtime_error((QString() + "The surface-integrator '" + sintegT + "' "
+                                             "is not supported. This is probably "
+                                             "an oversight by the incapable "
+                                             "programmers, please report this issue.").toStdString().c_str());
+
+                // Volume Integrator.
                 Props vp = readSubProperties("volume-integrator", subs);
                 rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
                 rs.volumeIntegrator.cutoffDistance = readValue<double>("cutoff-distance", vp);
@@ -448,6 +469,11 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         rs.volumeIntegrator.type = scenefile::VolumeIntegrator::emission;
                 else if ("single" == integT)
                         rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
+                else throw std::runtime_error((QString() +
+                                              "The volume-integrator '" + integT + "' "
+                                              "is not supported. This is probably "
+                                              "an oversight by the incapable "
+                                              "programmers, please report this issue.").toStdString().c_str());
 
                 scene->addRenderSettings(rs);
         }
@@ -508,11 +534,11 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                                 transform.type = Xf::roll;
                                 transform.angle = readValue<double>("angle", xfsubs);
                         } else {
-                                throw std::runtime_error(
-                                   (QString()
-                                   + "MainWindow::createScene () const: transform-type '"
-                                   + type
-                                   + "' not supported").toStdString().c_str());
+                                throw std::runtime_error((QString() +
+                                                      "The transform-type '" + type + "' "
+                                                      "is not supported. This is probably "
+                                                      "an oversight by the incapable "
+                                                      "programmers, please report this issue.").toStdString().c_str());
                         }
                         camera.transforms.push_back(transform);
                 }
@@ -556,11 +582,10 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         object.lazyQuadtreeParams.material = readMaterial (subs);
 
                 } else {
-                        throw std::runtime_error(
-                           (QString()
-                           + "MainWindow::createScene () const: object-type '"
-                           + type
-                           + "' not supported").toStdString().c_str());
+                        throw std::runtime_error((QString() + "The object-type '" + type + "' "
+                                              "is not supported. This is probably "
+                                              "an oversight by the incapable "
+                                              "programmers, please report this issue.").toStdString().c_str());
                 }
 
                 scene->addObject(object);
@@ -640,29 +665,41 @@ void MainWindow::addRenderSettings (std::string const &name) {
         topItem->addSubProperty(it);
 
 
-        QtProperty *volumeIntegrator = groupManager->addProperty("volume-integrator");
-        topItem->addSubProperty(volumeIntegrator);
+        {
+                QtProperty *surfaceIntegrator = groupManager
+                                                ->addProperty("surface-integrator");
+                topItem->addSubProperty(surfaceIntegrator);
 
-        QtProperty *integratorType = enumManager->addProperty("type");
-        QStringList enumNames;
-        enumNames << "none" << "emission" << "single";
-        enumManager->setEnumNames(integratorType, enumNames);
-        volumeIntegrator->addSubProperty(integratorType);
-        it = variantManager->addProperty(QVariant::Double, "step-size");
+                QtProperty *integratorType = surfaceIntegratorTypeEnumManager->addProperty("type");
+                QStringList enumNames;
+                enumNames << "none" << "whitted" << "redshift";
+                surfaceIntegratorTypeEnumManager->setEnumNames(integratorType, enumNames);
+                surfaceIntegrator->addSubProperty(integratorType);
+        }
+        {
+                QtProperty *volumeIntegrator = groupManager->addProperty("volume-integrator");
+                topItem->addSubProperty(volumeIntegrator);
 
-        it->setAttribute(QLatin1String("minimum"), 1.);
-        it->setAttribute(QLatin1String("maximum"), 32768.);
-        it->setAttribute(QLatin1String("singleStep"), 1.);
-        it->setAttribute(QLatin1String("decimals"), 1);
-        it->setValue(500);
-        volumeIntegrator->addSubProperty(it);
+                QtProperty *integratorType = enumManager->addProperty("type");
+                QStringList enumNames;
+                enumNames << "none" << "emission" << "single";
+                enumManager->setEnumNames(integratorType, enumNames);
+                volumeIntegrator->addSubProperty(integratorType);
+                it = variantManager->addProperty(QVariant::Double, "step-size");
+                it->setAttribute(QLatin1String("minimum"), 1.);
+                it->setAttribute(QLatin1String("maximum"), 32768.);
+                it->setAttribute(QLatin1String("singleStep"), 1.);
+                it->setAttribute(QLatin1String("decimals"), 1);
+                it->setValue(500);
+                volumeIntegrator->addSubProperty(it);
 
-        it = variantManager->addProperty(QVariant::Double, "cutoff-distance");
-        it->setAttribute(QLatin1String("minimum"), 1.);
-        it->setAttribute(QLatin1String("maximum"), 32768.);
-        it->setAttribute(QLatin1String("singleStep"), 1.);
-        it->setAttribute(QLatin1String("decimals"), 1);
-        volumeIntegrator->addSubProperty(it);
+                it = variantManager->addProperty(QVariant::Double, "cutoff-distance");
+                it->setAttribute(QLatin1String("minimum"), 1.);
+                it->setAttribute(QLatin1String("maximum"), 32768.);
+                it->setAttribute(QLatin1String("singleStep"), 1.);
+                it->setAttribute(QLatin1String("decimals"), 1);
+                volumeIntegrator->addSubProperty(it);
+        }
 
         renderSettingsProperty->addSubProperty(topItem);
         collapse (ui->settings, topItem);
@@ -809,13 +846,11 @@ void MainWindow::transformEnumManager_valueChanged(
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
                 } else if (type == "roll") {
                         t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
-                } else {
-                        throw std::runtime_error(
-                           (QString()
-                           + "MainWindow::transformEnumManager_valueChanged(): type '"
-                           + type
-                           + "' not supported").toStdString().c_str());
-                }
+                } else QMessageBox::critical(this, "Unsupported object",
+                                                  "The transform '" + type + "' "
+                                                  "is not supported. This is probably "
+                                                  "an oversight by the incapable "
+                                                  "programmers, please report this issue.");
 
         }
 }
@@ -833,84 +868,136 @@ void MainWindow::objectTypeEnumManager_valueChanged (
         //   +-----param*
 
         // We have 'type', now find 'parent'
-        if (QtProperty *t = findParent(ui->settings->properties(), prop)) {
-                const QStringList enumNames =
-                                objectTypeEnumManager->enumNames(prop);
-                const QString type = enumNames[index];
+        QtProperty *t = findParent(ui->settings->properties(), prop);
+        if (!t)
+                return;
 
-                t->setPropertyName(type);
+        const QStringList enumNames =
+                        objectTypeEnumManager->enumNames(prop);
+        const QString type = enumNames[index];
 
-                // Remove all properties not titled "type".
-                foreach (QtProperty *nt, t->subProperties()){
-                        if (nt->propertyName() != "type") {
-                                t->removeSubProperty(nt);
-                        }
+        t->setPropertyName(type);
+
+        // Remove all properties not titled "type" to make place for the right
+        // properties.
+        // TODO: maybe just make them invisible if that is possible.
+        foreach (QtProperty *nt, t->subProperties()){
+                if (nt->propertyName() != "type") {
+                        t->removeSubProperty(nt);
                 }
+        }
 
-                if (type == "horizon-plane") {
-                        QtVariantProperty* it = variantManager->addProperty(QVariant::Double,"height");
-                        t->addSubProperty(it);
-                        it->setAttribute(QLatin1String("decimals"), 6);
+        if (type == "horizon-plane") {
+                QtVariantProperty* it = variantManager->addProperty(QVariant::Double,"height");
+                t->addSubProperty(it);
+                it->setAttribute(QLatin1String("decimals"), 6);
 
-                        QtProperty *colorTerms = groupManager->addProperty("material");
-                        t->addSubProperty(colorTerms);
-                        QtProperty *cit = colorEditManager->addProperty("color");
-                        colorTerms->addSubProperty(cit);
+                QtProperty *colorTerms = groupManager->addProperty("material");
+                t->addSubProperty(colorTerms);
+                QtProperty *cit = colorEditManager->addProperty("color");
+                colorTerms->addSubProperty(cit);
 
-                        /*QtProperty *tit = variantManager->addProperty(QVariant::Color, "color");
-                        colorTerms->addSubProperty(tit);*/
+                /*QtProperty *tit = variantManager->addProperty(QVariant::Color, "color");
+                colorTerms->addSubProperty(tit);*/
 
-                        /*it->setAttribute(QLatin1String("color"), 6);*/
-                } else if (type == "water-plane") {
-                        QtVariantProperty* height = variantManager->addProperty(QVariant::Double,"height");
-                        t->addSubProperty(height);
-                        height->setAttribute(QLatin1String("decimals"), 6);
-                        QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
-                        t->addSubProperty(code);
+                /*it->setAttribute(QLatin1String("color"), 6);*/
+        } else if (type == "water-plane") {
+                QtVariantProperty* height = variantManager->addProperty(QVariant::Double,"height");
+                t->addSubProperty(height);
+                height->setAttribute(QLatin1String("decimals"), 6);
+                QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
+                t->addSubProperty(code);
 
-                        QtProperty *colorTerms = groupManager->addProperty("material");
-                        t->addSubProperty(colorTerms);
-                        QtProperty *cit = colorEditManager->addProperty("color");
-                        colorTerms->addSubProperty(cit);
-                } else if (type == "lazy-quadtree") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
+                QtProperty *colorTerms = groupManager->addProperty("material");
+                t->addSubProperty(colorTerms);
+                QtProperty *cit = colorEditManager->addProperty("color");
+                colorTerms->addSubProperty(cit);
+        } else if (type == "lazy-quadtree") {
+                t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
 
-                        QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
-                        t->addSubProperty(code);
+                QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
+                t->addSubProperty(code);
 
-                        QtVariantProperty* maxrec = variantManager->addProperty(QVariant::Int,"max-recursion");
-                        maxrec->setToolTip("Be careful. Slowly approach values beyond 10. For preview renderings, values less than 10 seem to work well.");
-                        maxrec->setAttribute(QLatin1String("minimum"), 1);
-                        maxrec->setAttribute(QLatin1String("maximum"), 20);
-                        maxrec->setValue(7);
-                        t->addSubProperty(maxrec);
+                QtVariantProperty* maxrec = variantManager->addProperty(QVariant::Int,"max-recursion");
+                maxrec->setToolTip("Be careful. Slowly approach values beyond 10. For preview renderings, values less than 10 seem to work well.");
+                maxrec->setAttribute(QLatin1String("minimum"), 1);
+                maxrec->setAttribute(QLatin1String("maximum"), 20);
+                maxrec->setValue(7);
+                t->addSubProperty(maxrec);
 
-                        QtVariantProperty* lodfac = variantManager->addProperty(QVariant::Double,"lod-factor");
-                        lodfac->setToolTip("Very sensible factor. The smaller, the less detail-loss upon increasing distance.");
-                        lodfac->setAttribute(QLatin1String("minimum"), 0.000001);
-                        lodfac->setAttribute(QLatin1String("maximum"), 1);
-                        lodfac->setAttribute(QLatin1String("singleStep"), 0.00001);
-                        lodfac->setAttribute(QLatin1String("decimals"), 6);
-                        lodfac->setValue(0.000125);
-                        t->addSubProperty(lodfac);
+                QtVariantProperty* lodfac = variantManager->addProperty(QVariant::Double,"lod-factor");
+                lodfac->setToolTip("Very sensible factor. The smaller, the less detail-loss upon increasing distance.");
+                lodfac->setAttribute(QLatin1String("minimum"), 0.000001);
+                lodfac->setAttribute(QLatin1String("maximum"), 1);
+                lodfac->setAttribute(QLatin1String("singleStep"), 0.00001);
+                lodfac->setAttribute(QLatin1String("decimals"), 6);
+                lodfac->setValue(0.000125);
+                t->addSubProperty(lodfac);
 
-                        QtVariantProperty* size = variantManager->addProperty(QVariant::Double,"size");
-                        lodfac->setToolTip("Picogen's quadtree scales quite well. Feel free to try out very large values of 100k and bigger.");
-                        size->setAttribute(QLatin1String("minimum"), 1);
-                        size->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-                        size->setAttribute(QLatin1String("singleStep"), 1000);
-                        maxrec->setAttribute(QLatin1String("decimals"), 1);
-                        size->setValue(50000);
-                        t->addSubProperty(size);
+                QtVariantProperty* size = variantManager->addProperty(QVariant::Double,"size");
+                lodfac->setToolTip("Picogen's quadtree scales quite well. Feel free to try out very large values of 100k and bigger.");
+                size->setAttribute(QLatin1String("minimum"), 1);
+                size->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                size->setAttribute(QLatin1String("singleStep"), 1000);
+                maxrec->setAttribute(QLatin1String("decimals"), 1);
+                size->setValue(50000);
+                t->addSubProperty(size);
 
 
-                        QtProperty *colorTerms = groupManager->addProperty("material");
-                        t->addSubProperty(colorTerms);
-                        QtProperty *cit = colorEditManager->addProperty("color");
-                        colorTerms->addSubProperty(cit);
+                QtProperty *colorTerms = groupManager->addProperty("material");
+                t->addSubProperty(colorTerms);
+                QtProperty *cit = colorEditManager->addProperty("color");
+                colorTerms->addSubProperty(cit);
 
-                        //t->addSubProperty(variantManager->addProperty(QVariant::V,"color"));
+                //t->addSubProperty(variantManager->addProperty(QVariant::V,"color"));
+        } else {
+                QMessageBox::critical(this, "Unsupported object",
+                                      "The object-type '" + type + "' "
+                                      "is not supported. This is probably "
+                                      "an oversight by the incapable "
+                                      "programmers, please report this issue.");
+        }
+}
+
+
+
+void MainWindow::surfaceIntegratorTypeEnumManager_valueChanged(
+        QtProperty* prop, int index
+){
+        QtProperty *t = findParent(ui->settings->properties(), prop);
+        if (!t)
+                return;
+
+        const QStringList enumNames =
+                        surfaceIntegratorTypeEnumManager->enumNames(prop);
+        const QString type = enumNames[index];
+
+        // Remove all properties not titled "type" to make place for the right
+        // properties.
+        // TODO: maybe just make them invisible if that is possible.
+        foreach (QtProperty *nt, t->subProperties()){
+                if (nt->propertyName() != "type") {
+                        t->removeSubProperty(nt);
                 }
+        }
+
+        if (type == "none") {
+                // has no options.
+        } else if (type == "redshift") {
+                QtVariantProperty* numSamples = variantManager->addProperty(QVariant::Int,"ambient-samples");
+                numSamples->setToolTip("Low values give a noisy look, but yield faster renderings.");
+                numSamples->setAttribute(QLatin1String("minimum"), 1);
+                numSamples->setAttribute(QLatin1String("maximum"), 0xFFFF);
+                numSamples->setValue(10);
+                t->addSubProperty(numSamples);
+        } else if (type == "whitted") {
+                // has no options.
+        } else {
+                QMessageBox::critical(this, "Unsupported object",
+                                      "The object-type '" + type + "' "
+                                      "is not supported. This is probably "
+                                      "an oversight by the incapable "
+                                      "programmers, please report this issue.");
         }
 }
 
@@ -1012,10 +1099,15 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
         using namespace actuarius;
         using namespace redshift;
 
-        const shared_ptr<scenefile::Scene> scene = createScene ();
-        std::stringstream ss;
-        OArchive (ss) & pack("scene", *scene);
-        QMessageBox::information(this, QString("Teh codes"), ss.str().c_str());
+        try {
+                const shared_ptr<scenefile::Scene> scene = createScene ();
+                std::stringstream ss;
+                OArchive (ss) & pack("scene", *scene);
+                QMessageBox::information(this, QString("Teh codes"), ss.str().c_str());
+        } catch (std::exception const &e) {
+                QMessageBox::critical(this, "Critical",
+                                      e.what());
+        }
 }
 
 
