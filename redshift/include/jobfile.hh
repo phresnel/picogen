@@ -432,7 +432,8 @@ namespace redshift { namespace scenefile {
         struct SurfaceIntegrator {
                 enum Type {
                         redshift,
-                        whitted
+                        whitted,
+                        none
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -451,6 +452,8 @@ namespace redshift { namespace scenefile {
                                 return rett(new RedshiftIntegrator(numAmbientSamples));
                         case whitted:
                                 return rett(new WhittedIntegrator());
+                        case none:
+                                return rett(new NullIntegrator());
                         };
                         return shared_ptr<Integrator>();
                 }
@@ -467,6 +470,7 @@ namespace redshift { namespace scenefile {
                         case redshift:
                                 arch & pack("ambient-samples", numAmbientSamples);
                                 break;
+                        case none: break;
                         }
                 }
         };
@@ -584,7 +588,9 @@ namespace redshift { namespace scenefile {
                                         new SingleScattering(stepSize, cutoffDistance)
                                 );
                         case none:
-                                return shared_ptr<redshift::VolumeIntegrator>();
+                                return shared_ptr<redshift::VolumeIntegrator>(
+                                        new NullIntegrator()
+                                );
                         };
                         return shared_ptr<redshift::VolumeIntegrator>();
                 }

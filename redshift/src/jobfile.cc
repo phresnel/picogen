@@ -35,7 +35,8 @@ namespace redshift { namespace scenefile {
         );
 
         const actuarius::Enum<SurfaceIntegrator::Type> SurfaceIntegrator::Typenames =
-                ( actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::redshift, "redshift")
+                ( actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::none, "none")
+                | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::redshift, "redshift")
                 | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::whitted, "whitted")
                 );
 

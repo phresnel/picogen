@@ -105,6 +105,7 @@ namespace redshift{class RenderTarget;}
 #include "integrators/whitted.hh"
 #include "integrators/emission.hh"
 #include "integrators/single-scattering.hh"
+#include "integrators/null.hh"
 
 // volume/
 #include "volume/homogeneous.hh"

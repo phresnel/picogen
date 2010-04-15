@@ -6,15 +6,15 @@ scene {
 
         render-settings{
                 prev-vol{
-                        width:500;
-                        height:300;
+                        width:512;
+                        height:512;
                         samples-per-pixel:1;
                         surface-integrator{
-                                type:whitted;
+                                type:none;
                                 ambient-samples:1;
                         }
                         volume-integrator{
-                                type:single;
+                                type:none;
                                 step-size:40;
                                 cutoff-distance:1000000
                         }
@@ -90,7 +90,7 @@ scene {
                 pss-sunsky {
                         turbidity:3;
                         overcast:0.0;
-                        sun-direction{-0.1;0.2;1}
+                        sun-direction{-1.1;0.15;-1}
                         atmospheric-effects:1;
                         sun-brightness-factor:1;
                         atmospheric-effects-distance-factor:1.0;
