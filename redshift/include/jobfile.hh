@@ -104,7 +104,7 @@ namespace redshift { namespace scenefile {
                 }
         };
 
-        struct Color {
+        /*struct Color {
 
                 enum Type {
                         RGB, Spectrum
@@ -174,6 +174,62 @@ namespace redshift { namespace scenefile {
                 void serialize (Arch &arch) {
                         using actuarius::pack;
                         arch & pack(&Color::type, Color::Typenames, colors);
+                }
+        };*/
+
+        struct Color {
+
+                enum Type {
+                        RGB, Spectrum
+                };
+                static const actuarius::Enum<Type> Typenames;
+                Type type;
+
+                Rgb rgb;
+                scenefile::Spectrum spectrum;
+
+                Color () : type(RGB), rgb(0,1,1) {}
+                Color (double r, double g, double b) : type(RGB), rgb(r,g,b) {}
+
+                // to redshift
+                redshift::Color toColor(SpectrumKind kind) const {
+                        switch (type) {
+                        case RGB: return rgb.toColor(kind);
+                        case Spectrum: return spectrum.toColor();
+                        }
+                        throw std::runtime_error("unknown color type in "
+                                "scenefile::Color::toColor()");
+                }
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack ("type", type, Typenames);
+
+                        switch (type) {
+                        case RGB:
+                                arch & pack("rgb", rgb);
+                                break;
+                        case Spectrum:
+                                arch & pack("spectrum", spectrum);
+                                break;
+                        }
+                }
+        };
+
+        struct Material {
+                Color color;
+
+                Material (double r, double g, double b)
+                : color(r,g,b)
+                {
+                }
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack("color", color);
                 }
         };
 
@@ -245,7 +301,7 @@ namespace redshift { namespace scenefile {
                                 & pack("size", lazyQuadtreeParams.size)
                                 & pack("max-recursion", lazyQuadtreeParams.maxRecursion)
                                 & pack("lod-factor", lazyQuadtreeParams.lodFactor)
-                                & pack("color", lazyQuadtreeParams.color)
+                                & pack("material", lazyQuadtreeParams.material)
                                 ;
                         } break;
                         case water_plane:
@@ -253,14 +309,14 @@ namespace redshift { namespace scenefile {
                                 & actuarius::push_optional(true)
                                 & pack("code", waterPlaneParams.code)
                                 & pack("height", waterPlaneParams.height)
-                                & pack("color", waterPlaneParams.color)
+                                & pack("material", waterPlaneParams.material)
                                 & actuarius::pop_optional
                                 ;
                                 break;
                         case horizon_plane:
                                 arch
                                 & pack("height", horizonPlaneParams.height)
-                                & pack("color", horizonPlaneParams.color)
+                                & pack("material", horizonPlaneParams.material)
                                 ;
                                 break;
                         };
@@ -271,7 +327,7 @@ namespace redshift { namespace scenefile {
                         double size;
                         unsigned int maxRecursion;
                         double lodFactor;
-                        ColorSum color;
+                        Material material;
 
                         LazyQuadtreeParams ()
                         : code("(+"
@@ -282,7 +338,7 @@ namespace redshift { namespace scenefile {
                         , size(10000)
                         , maxRecursion(7)
                         , lodFactor(0.00125)
-                        , color(0.7,0.7,0.7)
+                        , material(0.7,0.7,0.7)
                         {}
 
                         shared_ptr<primitive::Primitive> toPrimitive() const {
@@ -311,19 +367,19 @@ namespace redshift { namespace scenefile {
                                         size,
                                         maxRecursion,
                                         lodFactor,
-                                        color.toColor(ReflectanceSpectrum)
+                                        material.color.toColor(ReflectanceSpectrum)
                                 ));
                         }
                 };
                 struct WaterPlaneParams {
                         std::string code;
                         double height;
-                        ColorSum color;
+                        Material material;
 
                         WaterPlaneParams ()
                         : code("(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))")
                         , height(0)
-                        , color(1,1,1)
+                        , material(1,1,1)
                         {}
 
                         shared_ptr<primitive::Primitive> toPrimitive() const {
@@ -337,17 +393,17 @@ namespace redshift { namespace scenefile {
                                 return shared_ptr<primitive::Primitive>(new WaterPlane(
                                         height,
                                         heightFunction,
-                                        color.toColor(ReflectanceSpectrum)
+                                        material.color.toColor(ReflectanceSpectrum)
                                 ));
                         }
                 };
                 struct HorizonPlaneParams {
                         double height;
-                        ColorSum color;
+                        Material material;
 
                         HorizonPlaneParams ()
                         : height(0)
-                        , color(1,1,1)
+                        , material(1,1,1)
                         {}
 
                         shared_ptr<primitive::Primitive> toPrimitive() const {
@@ -356,7 +412,7 @@ namespace redshift { namespace scenefile {
 
                                 return shared_ptr<primitive::Primitive>(new HorizonPlane(
                                         height,
-                                        color.toColor(ReflectanceSpectrum)
+                                        material.color.toColor(ReflectanceSpectrum)
                                 ));
                         }
                 };
@@ -449,7 +505,7 @@ namespace redshift { namespace scenefile {
                         return shared_ptr<VolumeRegion>();
                 }
 
-                ColorSum sigma_a, sigma_s, Lve;
+                Color sigma_a, sigma_s, Lve;
                 double hg;
 
                 Normal up; Point min;
@@ -557,8 +613,8 @@ namespace redshift { namespace scenefile {
                 double atmosphereBrightnessFactor;
                 double atmosphericFxDistanceFactor;
                 double overcast;
-                ColorSum sunColor;
-                ColorSum skyFilter;
+                Color sunColor;
+                Color skyFilter;
                 bool atmosphericEffects;
 
 

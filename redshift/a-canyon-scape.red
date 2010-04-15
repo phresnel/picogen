@@ -1,6 +1,6 @@
 scene {
         film-settings{
-                color-scale:0.022;
+                color-scale:0.019;
                 convert-to-srgb:1;
         }
 
@@ -48,14 +48,22 @@ scene {
                 bottom{type:cubemap-bottom; transform{move{9000;1250;-150000}}}
         }
         objects{
-                water-plane{
-                        color{rgb{0.5;
-                                  0.5;
-                                  0.5}}
-                        height:1020;
+                horizon-plane{
+                        material{
+                                color{
+                                        type:rgb;
+                                        rgb{0.5;0.5;0.5}
+                                }
+                        }
+                        height:1015;
                 }
                 lazy-quadtree{
-                        color{rgb{0.6;0.4;0.2}}
+                        material{
+                                color{
+                                        type:rgb;
+                                        rgb{0.6;0.3;0.15}
+                                }
+                        }
                         max-recursion:9;
                         lod-factor:0.01;
                         size:1000000;
@@ -82,17 +90,17 @@ scene {
                 pss-sunsky {
                         turbidity:3;
                         overcast:0.0;
-                        sun-direction{-0.1;0.1;1}
+                        sun-direction{-0.1;0.2;1}
                         atmospheric-effects:1;
-                        sun-brightness-factor:10;
+                        sun-brightness-factor:1;
                         atmospheric-effects-distance-factor:1.0;
                 }
         }
         volumes {
                 homogeneous {
-                        absorption{rgb{5.15; 0.15; 0.15}}
-                        out-scatter{rgb{0.125;0.125;0.125}}
-                        emission{rgb{0.3;0.3;0.3}}
+                        absorption{type:rgb; rgb{5.15; 0.15; 0.15}}
+                        out-scatter{type:rgb; rgb{0.125;0.125;0.125}}
+                        emission{type:rgb; rgb{0.3;0.3;0.3}}
                         min{0;1020;0}
                         phase-function:0;
                         base-factor:1.0;
