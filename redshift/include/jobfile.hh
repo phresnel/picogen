@@ -220,6 +220,8 @@ namespace redshift { namespace scenefile {
         struct Material {
                 Color color;
 
+                Material () : color(0,1,1) {}
+
                 Material (double r, double g, double b)
                 : color(r,g,b)
                 {

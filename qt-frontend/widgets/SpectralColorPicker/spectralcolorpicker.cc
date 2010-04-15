@@ -232,6 +232,9 @@ QVector<SpectralSample> SpectralColorPicker::samples () const {
 }
 
 void SpectralColorPicker::setSamples (QVector<SpectralSample>  const & samples) {
+        if (samples.size() == 0)
+                return;
+
         ui->lockSampleCount->setChecked(true);
         on_lockSampleCount_toggled(ui->lockSampleCount->checkState());
         removeSpectralSliders();

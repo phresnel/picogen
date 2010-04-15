@@ -92,6 +92,8 @@ private:
                            redshift::scenefile::Transform::Type type);
         void addObject ();
 
+        redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
+
         QtBrowserItem * currentBrowserItem;
 
         bool nonRecurseLock;

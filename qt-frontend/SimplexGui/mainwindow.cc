@@ -89,6 +89,20 @@ namespace {
         }
 
 
+        QtProperty* readSubProperty (QString name, QList<QtProperty*> list) {
+                foreach (QtProperty* looky, list) {
+                        if (name == looky->propertyName()) {
+                                return looky;
+                        }
+                }
+                return 0;
+        }
+
+        QtProperty* readSubProperty (QString name, QtProperty* prop) {
+                return readSubProperty (name, prop->subProperties());
+        }
+
+
         QtProperty *findParent(QtProperty *root, QtProperty* child) {
                 if (root == child)
                         return 0;
@@ -116,6 +130,11 @@ namespace {
                         browser->setExpanded(item, false);
                 }
         }
+
+
+
+
+
 }
 
 
@@ -344,6 +363,42 @@ MainWindow::~MainWindow()
 
 
 
+redshift::scenefile::Material
+MainWindow::readMaterial (
+                QList<QtProperty*> subs, QString name
+) const {
+        QtProperty *material = readSubProperty("material", subs);
+        if (!material) return redshift::scenefile::Material();
+        QtProperty *color = readSubProperty("color", material);
+        if (!color) return redshift::scenefile::Material();
+        const ColorPickerColor c = colorEditManager->value(color);
+
+        redshift::scenefile::Material ret;
+
+        switch (c.mode) {
+        case ColorPickerColor::Spectral:
+                ret.color.type = redshift::scenefile::Color::Spectrum;
+                foreach (SpectralSample ss, c.spectral) {
+                        redshift::scenefile::WavelengthAmplitudePair wap;
+                        wap.wavelength = ss.wavelength;
+                        wap.amplitude = ss.amplitude;
+                        ret.color.spectrum.samples.push_back(wap);
+                }
+                break;
+        case ColorPickerColor::Tristimulus:
+                ret.color.type = redshift::scenefile::Color::RGB;
+                QColor rgb = c.toQColor();
+                ret.color.rgb = redshift::scenefile::Rgb(rgb.redF(),
+                                                         rgb.greenF(),
+                                                         rgb.blueF());
+                break;
+        }
+
+        return ret;
+}
+
+
+
 redshift::shared_ptr<redshift::scenefile::Scene>
         MainWindow::createScene () const
 {
@@ -483,10 +538,12 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                                 object.waterPlaneParams.code = tmp;
                         //object.waterPlaneParams.color
                         object.waterPlaneParams.height = readValue<double>("height", subs);
+                        object.waterPlaneParams.material = readMaterial (subs);
                 } else if (type == "horizon-plane") {
                         object.type = Object::horizon_plane;
                         //object.horizonPlaneParams.color
                         object.horizonPlaneParams.height = readValue<double>("height", subs);
+                        object.horizonPlaneParams.material = readMaterial (subs);
                 } else if (type == "lazy-quadtree") {
                         object.type = Object::lazy_quadtree;
                         const std::string tmp = readValue<QString>("code", subs).toStdString();
@@ -496,6 +553,8 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         object.lazyQuadtreeParams.lodFactor = readValue<double>("lod-factor", subs);
                         object.lazyQuadtreeParams.maxRecursion = readValue<unsigned int>("max-recursion", subs);
                         object.lazyQuadtreeParams.size = readValue<double>("size", subs);
+                        object.lazyQuadtreeParams.material = readMaterial (subs);
+
                 } else {
                         throw std::runtime_error(
                            (QString()
@@ -795,7 +854,6 @@ void MainWindow::objectTypeEnumManager_valueChanged (
 
                         QtProperty *colorTerms = groupManager->addProperty("material");
                         t->addSubProperty(colorTerms);
-
                         QtProperty *cit = colorEditManager->addProperty("color");
                         colorTerms->addSubProperty(cit);
 
@@ -809,6 +867,11 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         height->setAttribute(QLatin1String("decimals"), 6);
                         QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
                         t->addSubProperty(code);
+
+                        QtProperty *colorTerms = groupManager->addProperty("material");
+                        t->addSubProperty(colorTerms);
+                        QtProperty *cit = colorEditManager->addProperty("color");
+                        colorTerms->addSubProperty(cit);
                 } else if (type == "lazy-quadtree") {
                         t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
 
@@ -839,6 +902,12 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                         maxrec->setAttribute(QLatin1String("decimals"), 1);
                         size->setValue(50000);
                         t->addSubProperty(size);
+
+
+                        QtProperty *colorTerms = groupManager->addProperty("material");
+                        t->addSubProperty(colorTerms);
+                        QtProperty *cit = colorEditManager->addProperty("color");
+                        colorTerms->addSubProperty(cit);
 
                         //t->addSubProperty(variantManager->addProperty(QVariant::V,"color"));
                 }

@@ -66,14 +66,15 @@ void ColorPicker::on_cancelButton_pressed() {
 void ColorPicker::setColor (ColorPickerColor const &color) {
         this->color_ = color;
 
+        ui->tristimulusPicker->setColor(color.tristimulus);
+        ui->spectralPicker->setSamples(color.spectral);
+
         switch (color.mode) {
         case ColorPickerColor::Tristimulus:
                 ui->tabWidget->setCurrentIndex(0);
-                ui->tristimulusPicker->setColor(color.tristimulus);
                 break;
         case ColorPickerColor::Spectral:
                 ui->tabWidget->setCurrentIndex(1);
-                ui->spectralPicker->setSamples(color.spectral);
                 break;
         }
 }
