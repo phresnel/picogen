@@ -674,6 +674,7 @@ void MainWindow::addRenderSettings (std::string const &name) {
                 QStringList enumNames;
                 enumNames << "none" << "whitted" << "redshift";
                 surfaceIntegratorTypeEnumManager->setEnumNames(integratorType, enumNames);
+                surfaceIntegratorTypeEnumManager->setValue(integratorType, 1);
                 surfaceIntegrator->addSubProperty(integratorType);
         }
         {
