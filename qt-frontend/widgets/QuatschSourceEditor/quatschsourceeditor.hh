@@ -105,7 +105,7 @@ signals:
         void codeChanged () ;
 
 private slots:
-        void on_compileAndRunButton_pressed();
+        void on_compileAndRunButton_clicked();
         void on_edit_textChanged ();
         void on_edit_cursorPositionChanged();
 

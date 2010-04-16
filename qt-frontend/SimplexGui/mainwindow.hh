@@ -92,7 +92,9 @@ private:
         void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform const &);
-        void addObject ();
+
+        void initializeObjects();
+        void addObject (redshift::scenefile::Object const &);
 
         void initializeFilmSettings();
         void setFilmSettings(redshift::scenefile::FilmSettings const &);

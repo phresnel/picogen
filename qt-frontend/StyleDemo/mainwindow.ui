@@ -20,7 +20,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">* {
-	background: #333; 
+	background: #555; 
 	color: white;
 }
 

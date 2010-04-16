@@ -162,7 +162,30 @@ namespace {
 
 
 
+        ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
+                using redshift::scenefile::Color;
 
+                ColorPickerColor ret;
+
+                switch (c.type) {
+                case Color::RGB:
+                        ret.mode = ColorPickerColor::Tristimulus;
+                        ret.tristimulus.setRedF(c.rgb.r);
+                        ret.tristimulus.setGreenF(c.rgb.g);
+                        ret.tristimulus.setBlueF(c.rgb.b);
+                        break;
+                case Color::Spectrum:
+                        ret.mode = ColorPickerColor::Spectral;
+                        for (size_t i=0; i<c.spectrum.samples.size(); ++i) {
+                                SpectralSample ss;
+                                ss.wavelength = c.spectrum.samples[i].wavelength;
+                                ss.amplitude = c.spectrum.samples[i].amplitude;
+                                ret.spectral.push_back(ss);
+                        }
+                }
+
+                return ret;
+        }
 
 }
 
@@ -283,7 +306,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
         redshift::scenefile::Transform t;
         t.type = redshift::scenefile::Transform::move;
+        t.y = 1;
         cam.transforms.push_back(t);
+        t = redshift::scenefile::Transform();
         t.type = redshift::scenefile::Transform::yaw;
         cam.transforms.push_back(t);
         t.type = redshift::scenefile::Transform::pitch;
@@ -293,17 +318,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
         addCamera(cam);
 
+        initializeObjects();
 
-        // Objects.
-        {
-                objectsProperty = groupManager->addProperty("objects");
-                ui->settings->addProperty(objectsProperty);
+        redshift::scenefile::Object o;
+        o.type = redshift::scenefile::Object::lazy_quadtree;
+        o.lazyQuadtreeParams.lodFactor = 0.0123456789;
+        o.lazyQuadtreeParams.maxRecursion = 7;
+        o.lazyQuadtreeParams.size = 100001;
+        o.lazyQuadtreeParams.material.color.type = redshift::scenefile::Color::RGB;
+        o.lazyQuadtreeParams.material.color.rgb.r = 0.6;
+        o.lazyQuadtreeParams.material.color.rgb.g = 0.5;
+        o.lazyQuadtreeParams.material.color.rgb.b = 0.4;
+        o.lazyQuadtreeParams.code = "(sin 666)";
+        addObject(o);
 
-                addObject();
-                ui->settings->setBackgroundColor(
-                                ui->settings->topLevelItem(objectsProperty),
-                                QColor(90,130,90));
-        }
 
         // Background.
         {
@@ -461,6 +489,17 @@ void MainWindow::initializeCameraSettings () {
         ui->settings->setBackgroundColor(
                         ui->settings->topLevelItem(camerasProperty),
                         QColor(110,110,110));
+}
+
+
+
+void MainWindow::initializeObjects() {
+        objectsProperty = groupManager->addProperty("objects");
+        ui->settings->addProperty(objectsProperty);
+
+        ui->settings->setBackgroundColor(
+                        ui->settings->topLevelItem(objectsProperty),
+                        QColor(90,130,90));
 }
 
 
@@ -1038,7 +1077,7 @@ void MainWindow::addTransform (QtProperty *transformRoot,
 
 
 
-void MainWindow::addObject () {
+void MainWindow::addObject (redshift::scenefile::Object const &o) {
         QtProperty *object = groupManager->addProperty("---");
         objectsProperty->addSubProperty(object);
 
@@ -1054,6 +1093,45 @@ void MainWindow::addObject () {
                   << "lazy-quadtree"
                   ;
         objectTypeEnumManager->setEnumNames(objectType, enumNames);
+
+        QtProperty *tmp;
+
+        switch (o.type) {
+        case redshift::scenefile::Object::horizon_plane:
+                objectTypeEnumManager->setValue(objectType, 0);
+                objectTypeEnumManager_valueChanged(objectType, 0);
+
+                writeValue ("height", object, o.horizonPlaneParams.height);
+
+                tmp = readSubProperty("material", object);
+                tmp = readSubProperty("color", tmp);
+                colorEditManager->setValue(tmp, toColorPickerColor(o.horizonPlaneParams.material.color));
+                break;
+        case redshift::scenefile::Object::water_plane:
+                objectTypeEnumManager->setValue(objectType, 1);
+                objectTypeEnumManager_valueChanged(objectType, 1);
+
+                writeValue ("height", object, o.waterPlaneParams.height);
+                writeValue ("code", object, QString::fromStdString(o.waterPlaneParams.code));
+
+                tmp = readSubProperty("material", object);
+                tmp = readSubProperty("color", tmp);
+                colorEditManager->setValue(tmp, toColorPickerColor(o.waterPlaneParams.material.color));
+                break;
+        case redshift::scenefile::Object::lazy_quadtree:
+                objectTypeEnumManager->setValue(objectType, 2);
+                objectTypeEnumManager_valueChanged(objectType, 2);                
+
+                writeValue ("code", object, QString::fromStdString(o.lazyQuadtreeParams.code));
+                writeValue ("max-recursion", object, o.lazyQuadtreeParams.maxRecursion);
+                writeValue ("lod-factor", object, o.lazyQuadtreeParams.lodFactor);
+                writeValue ("size", object, o.lazyQuadtreeParams.size);
+
+                tmp = readSubProperty("material", object);
+                tmp = readSubProperty("color", tmp);
+                colorEditManager->setValue(tmp, toColorPickerColor(o.lazyQuadtreeParams.material.color));
+                break;
+        }
 }
 
 
@@ -1426,7 +1504,7 @@ void MainWindow::on_newRsButton_clicked() {
 
 
 void MainWindow::on_newObjectButton_clicked() {
-        addObject ();
+        //addObject ();
 }
 
 

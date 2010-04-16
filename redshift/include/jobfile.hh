@@ -782,13 +782,13 @@ namespace redshift { namespace scenefile {
                         using redshift::Transform;
                         const double to_radians = redshift::constants::pi/180;
                         switch (type) {
-                        case move:
+                        case move: return Transform::translation(x,y,z);
                         case move_left:
-                        case move_right:
+                        case move_right: return Transform::translation(x,0,0);
                         case move_up:
-                        case move_down:
+                        case move_down: return Transform::translation(0,y,0);
                         case move_forward:
-                        case move_backward:  return Transform::translation(x,y,z);
+                        case move_backward:  return Transform::translation(0,0,z);
 
                         case yaw:   return Transform::rotationY(angle*to_radians);
                         case pitch: return Transform::rotationX(angle*to_radians);
@@ -858,11 +858,22 @@ namespace redshift { namespace scenefile {
                 Type type;
                 double x,y,z;
                 double angle;
+
+                Transform ()
+                : type(move), x(0), y(0), z(0) {}
         };
 
         class TransformList {
                 std::vector<Transform> transforms;
         public:
+
+                Transform operator [] (int i) const {
+                        return transforms [i];
+                }
+
+                int size () const {
+                        return transforms.size();
+                }
 
                 void push_back (Transform const &t) {
                         transforms.push_back (t);
