@@ -106,22 +106,24 @@ private:
         QString sceneToCode();
 
         bool nonRecurseLock;
-private slots:
+private slots:        
+        void on_deleteCameraButton_clicked();
+        void on_newCameraButton_clicked();
+        void on_deleteRsButton_clicked();
+        void on_deleteObjectButton_clicked();
+        void on_deleteSubTransformButton_clicked();
+        void on_newObjectButton_clicked();
+        void on_newSubTransformButton_clicked();
+        void on_newRsButton_clicked();
+
         void on_actionSave_as_triggered();
         void on_actionSave_copy_as_triggered();
         void on_action_Save_triggered();
-        void on_deleteCameraButton_pressed();
-        void on_newCameraButton_pressed();
-        void on_deleteRsButton_pressed();
-        void on_deleteObjectButton_pressed();
-        void on_deleteSubTransformButton_pressed();
-        void on_codeEditor_codeChanged();
-        void on_newObjectButton_pressed();
-        void on_newSubTransformButton_pressed();
-        void on_newRsButton_pressed();
         void on_actionRender_triggered();
         void on_actionShow_redshift_job_code_triggered();
+
         void on_settings_currentItemChanged(QtBrowserItem * current);
+        void on_codeEditor_codeChanged();
 
         // non MOC
         void code_valueChanged(QtProperty*, QVariant);

@@ -55,6 +55,12 @@ QTreeView {
                                        stop: 0.6 #434343, stop:1 #757575);
 	alternate-background-color:#556;
 }
+QLineEdit:focus, QSpinBox:focus, 
+QDoubleSpinBox:focus, QComboBox:focus {
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #719171, stop: 0.5 #506050,
+                                       stop: 0.6 #435343, stop:1 #759575);
+}
 QTreeView, QMdiArea, QTextEdit {
 	background-color:#556;
 	alternate-background-color:#556;
@@ -108,12 +114,6 @@ QPushButton {
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #817171, stop: 0.5 #606060,
                                        stop: 0.55 #333333, stop:1 #857575);
-} QPushButton:pressed {
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-										stop:0.5 #717171, 
-										stop: 1 #333,
-										stop: 0 #222, 
-										stop:0.6 #757575);
 } QPushButton:disabled {
 	color:gray;
 	background-color: black;
@@ -121,7 +121,11 @@ QPushButton {
 	border: 2px solid #afafc1;
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #999, stop: 0.5 #888,
-                                       stop: 0.6 #777, stop:1 #999);
+                                       stop: 0.55 #777, stop:1 #999);
+} QPushButton:pressed {
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #999, stop: 0.5 #555,
+                                       stop: 0.55 #444, stop:1 #999);
 }
 
 QGroupBox {
@@ -388,7 +392,7 @@ QTabWidget::pane { /* The tab widget frame */
      <x>0</x>
      <y>0</y>
      <width>768</width>
-     <height>19</height>
+     <height>16</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebugging">

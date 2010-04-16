@@ -1140,13 +1140,13 @@ void MainWindow::on_actionRender_triggered() {
 
 
 
-void MainWindow::on_newRsButton_pressed() {
+void MainWindow::on_newRsButton_clicked() {
         addRenderSettings ("new-setting");
 }
 
 
 
-void MainWindow::on_newObjectButton_pressed() {
+void MainWindow::on_newObjectButton_clicked() {
         addObject ();
 }
 
@@ -1177,14 +1177,14 @@ void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
 
 
 
-void MainWindow::on_deleteObjectButton_pressed() {
+void MainWindow::on_deleteObjectButton_clicked() {
         // assumed to signal everything needed for clean up
         objectsProperty->removeSubProperty(currentBrowserItem->property());
 }
 
 
 
-void MainWindow::on_deleteSubTransformButton_pressed() {
+void MainWindow::on_deleteSubTransformButton_clicked() {
         // assumed to signal everything needed for clean up
         currentTransformProperty->removeSubProperty(
                         currentBrowserItem->property());
@@ -1192,7 +1192,7 @@ void MainWindow::on_deleteSubTransformButton_pressed() {
 
 
 
-void MainWindow::on_deleteRsButton_pressed() {
+void MainWindow::on_deleteRsButton_clicked() {
         // assumed to signal everything needed for clean up
         renderSettingsProperty->removeSubProperty(currentRenderSettingProperty);
         resyncRenderSettingConfig();
@@ -1200,7 +1200,7 @@ void MainWindow::on_deleteRsButton_pressed() {
 
 
 
-void MainWindow::on_newSubTransformButton_pressed() {
+void MainWindow::on_newSubTransformButton_clicked() {
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
         addTransform (currentTransformProperty,
@@ -1209,14 +1209,14 @@ void MainWindow::on_newSubTransformButton_pressed() {
 
 
 
-void MainWindow::on_newCameraButton_pressed() {
+void MainWindow::on_newCameraButton_clicked() {
         addCamera("new-camera ");
         resyncCameraConfig();
 }
 
 
 
-void MainWindow::on_deleteCameraButton_pressed() {
+void MainWindow::on_deleteCameraButton_clicked() {
         // assumed to signal everything needed for clean up
         camerasProperty->removeSubProperty(currentCameraProperty);
         resyncCameraConfig();
