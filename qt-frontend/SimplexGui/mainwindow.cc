@@ -99,6 +99,9 @@ namespace {
                 }
                 return "";
         }
+        QString readValueText (QString name, QtProperty *prop) {
+                return readValueText(name, prop->subProperties());
+        }
 
 
         QList<QtProperty*> readSubProperties (QString name, QList<QtProperty*> list) {
@@ -209,6 +212,10 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(surfaceIntegratorTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*,int)));
 
+        cameraTypeEnumManager = new QtEnumPropertyManager(this);
+        connect(cameraTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
+                this, SLOT(cameraTypeEnumManager_valueChanged(QtProperty*,int)));
+
         codeEditManager = new QtVariantPropertyManager(this);
         connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                 this, SLOT(code_valueChanged(QtProperty*, QVariant)));
@@ -221,6 +228,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
+        ui->settings->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
@@ -266,16 +274,14 @@ MainWindow::MainWindow(QWidget *parent) :
         }
 
 
-        // Camera Settings.
-        {
-                camerasProperty = groupManager->addProperty("cameras");
-                ui->settings->addProperty(camerasProperty);
-                addCamera("hello-world");
+        initializeCameraSettings();
 
-                ui->settings->setBackgroundColor(
-                                ui->settings->topLevelItem(camerasProperty),
-                                QColor(110,110,110));
-        }
+        redshift::scenefile::Camera cam;
+        cam.title = "hello-world";
+        cam.type = redshift::scenefile::Camera::pinhole;
+        cam.pinholeParams.front = 1;
+        addCamera(cam);
+
 
         // Objects.
         {
@@ -438,6 +444,16 @@ void MainWindow::initializeRenderSettings() {
 
 
 
+void MainWindow::initializeCameraSettings () {
+        camerasProperty = groupManager->addProperty("cameras");
+        ui->settings->addProperty(camerasProperty);
+        ui->settings->setBackgroundColor(
+                        ui->settings->topLevelItem(camerasProperty),
+                        QColor(110,110,110));
+}
+
+
+
 redshift::scenefile::Material
 MainWindow::readMaterial (
                 QList<QtProperty*> subs, QString name
@@ -560,6 +576,32 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
                 scenefile::Camera camera;
                 camera.title = cam->propertyName().toStdString();
+
+                const QString type = readValueText("type", cam);
+                if (type == "pinhole") {
+                        camera.type = scenefile::Camera::pinhole;
+                        camera.pinholeParams.front = readValue<double>("front", cam);
+                } else if (type == "cubemap_left") {
+                        camera.type = scenefile::Camera::cubemap_left;
+                } else if (type == "cubemap_right") {
+                        camera.type = scenefile::Camera::cubemap_right;
+                } else if (type == "cubemap_bottom") {
+                        camera.type = scenefile::Camera::cubemap_bottom;
+                } else if (type == "cubemap_top") {
+                        camera.type = scenefile::Camera::cubemap_top;
+                } else if (type == "cubemap_front") {
+                        camera.type = scenefile::Camera::cubemap_front;
+                } else if (type == "cubemap_back") {
+                        camera.type = scenefile::Camera::cubemap_back;
+                } else {
+                        throw std::runtime_error((QString() +
+                              "Unsupported camera type",
+                              "The camera-type '" + type + "' "
+                              "is not supported. This is probably "
+                              "an oversight by the incapable "
+                              "programmers, please report this issue."
+                              ).toStdString().c_str());
+                }
 
                 const Props xforms = readSubProperties("transform", cam->subProperties());
                 foreach (Prop xform, xforms) {
@@ -848,13 +890,75 @@ void MainWindow::resyncCameraConfig () {
 
 
 
-void MainWindow::addCamera(const std::string &name) {
-        QtProperty *camera = groupManager->addProperty(name.c_str());
+void MainWindow::addCamera(redshift::scenefile::Camera const& c) {
+        using redshift::scenefile::Camera;
+
+        QtProperty *camera = groupManager->addProperty(c.title.c_str());
+        camerasProperty->addSubProperty(camera);
+
+        QtProperty *cameraType = cameraTypeEnumManager->addProperty("type");
+        QStringList enumNames;
+        enumNames << "pinhole"
+                  << "cubemap_left"
+                  << "cubemap_right"
+                  << "cubemap_bottom"
+                  << "cubemap_top"
+                  << "cubemap_front"
+                  << "cubemap_back"
+                  ;
+        cameraTypeEnumManager->setEnumNames(cameraType, enumNames);
+        camera->addSubProperty(cameraType);
+
+        // TODO: should not be hardcoded, enumNames should directly correspond
+        //       to redshift types
+        switch (c.type) {
+        case Camera::pinhole:
+                cameraTypeEnumManager->setValue(cameraType, 0);
+                cameraTypeEnumManager_valueChanged(cameraType, 0);
+                writeValue("front", camera, c.pinholeParams.front);
+                break;
+        case Camera::cubemap_left:
+                cameraTypeEnumManager->setValue(cameraType, 1);
+                cameraTypeEnumManager_valueChanged(cameraType, 1);
+                break;
+        case Camera::cubemap_right:
+                cameraTypeEnumManager->setValue(cameraType, 2);
+                cameraTypeEnumManager_valueChanged(cameraType, 2);
+                break;
+        case Camera::cubemap_bottom:
+                cameraTypeEnumManager->setValue(cameraType, 3);
+                cameraTypeEnumManager_valueChanged(cameraType, 3);
+                break;
+        case Camera::cubemap_top:
+                cameraTypeEnumManager->setValue(cameraType, 4);
+                cameraTypeEnumManager_valueChanged(cameraType, 4);
+                break;
+        case Camera::cubemap_front:
+                cameraTypeEnumManager->setValue(cameraType, 5);
+                cameraTypeEnumManager_valueChanged(cameraType, 5);
+                break;
+        case Camera::cubemap_back:
+                cameraTypeEnumManager->setValue(cameraType, 6);
+                cameraTypeEnumManager_valueChanged(cameraType, 6);
+                break;
+        default:
+                QMessageBox::warning(this,
+                  "Unsupported Camera Type",
+                  "It has been tried to set a camera type "
+                  "\""
+                  + QString::fromStdString(redshift::scenefile::Camera::Typenames[c.type])
+                  + "\", but this type is currently not supported here."
+                );
+                cameraTypeEnumManager->setValue(cameraType, 0);
+                cameraTypeEnumManager_valueChanged(cameraType, 0);
+                break;
+        };
+
+        //const QStringList enumNames = cameraTypeEnumManager->enumNames(prop);
+        //const QString type = enumNames[index];
 
         QtProperty *transformRoot = groupManager->addProperty("transform");
-
-        camera->addSubProperty(transformRoot);
-        camerasProperty->addSubProperty(camera);
+        camera->addSubProperty(transformRoot);        
 
         collapse (ui->settings, camera);
 
@@ -862,6 +966,8 @@ void MainWindow::addCamera(const std::string &name) {
         addTransform (transformRoot, redshift::scenefile::Transform::yaw);
         addTransform (transformRoot, redshift::scenefile::Transform::pitch);
         addTransform (transformRoot, redshift::scenefile::Transform::roll);
+
+        collapse (ui->settings, transformRoot);
 
         resyncCameraConfig();
 }
@@ -1125,6 +1231,52 @@ void MainWindow::surfaceIntegratorTypeEnumManager_valueChanged(
 
 
 
+void MainWindow::cameraTypeEnumManager_valueChanged(
+        QtProperty* prop, int index
+) {
+        QtProperty *t = findParent(ui->settings->properties(), prop);
+        if (!t)
+                return;
+
+        const QStringList enumNames = cameraTypeEnumManager->enumNames(prop);
+        const QString type = enumNames[index];
+
+        // Remove all properties not titled "type"/"transform" to make place for
+        // the right properties.
+        // TODO: maybe just make them invisible if that is possible.
+        foreach (QtProperty *nt, t->subProperties()){
+                if (nt->propertyName() != "type"
+                    && nt->propertyName() != "transform"
+                ) {
+                        t->removeSubProperty(nt);
+                }
+        }
+
+        if (type == "pinhole") {                
+                QtVariantProperty* front = variantManager->addProperty(QVariant::Double,"front");
+                front->setAttribute(QLatin1String("minimum"), 0.0001);
+                front->setAttribute(QLatin1String("singlestep"), 0.1);
+                front->setValue(1.);
+                t->addSubProperty(front);
+        } else if (type == "cubemap_left"
+                   || type == "cubemap_right"
+                   || type == "cubemap_bottom"
+                   || type == "cubemap_top"
+                   || type == "cubemap_front"
+                   || type == "cubemap_back"
+        ) {
+                // do nothing
+        } else {
+                QMessageBox::critical(this, "Unsupported camera type",
+                                      "The camera-type '" + type + "' "
+                                      "is not supported. This is probably "
+                                      "an oversight by the incapable "
+                                      "programmers, please report this issue.");
+        }
+}
+
+
+
 void MainWindow::rsTitleManager_valueChanged (
         QtProperty * property,
         const QString & value
@@ -1310,7 +1462,11 @@ void MainWindow::on_newSubTransformButton_clicked() {
 
 
 void MainWindow::on_newCameraButton_clicked() {
-        addCamera("new-camera ");
+        redshift::scenefile::Camera cam;
+        cam.title = "new-camera";
+        cam.type = redshift::scenefile::Camera::pinhole;
+        cam.pinholeParams.front = 1;
+        addCamera(cam);
         resyncCameraConfig();
 }
 

@@ -82,13 +82,14 @@ private:
         QtEnumPropertyManager
                         *transformEnumManager,
                         *objectTypeEnumManager,
+                        *cameraTypeEnumManager,
                         *surfaceIntegratorTypeEnumManager;
         QtVariantPropertyManager *codeEditManager;
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void resyncRenderSettingConfig ();
         void resyncCameraConfig ();        
-        void addCamera (std::string const &name);
+        void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform::Type type);
         void addObject ();
@@ -99,6 +100,8 @@ private:
         void initializeRenderSettings();                
         void addRenderSettings (std::string const &name,
                                 redshift::scenefile::RenderSettings const &rs);
+
+        void initializeCameraSettings ();
 
         redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
 
@@ -138,6 +141,7 @@ private slots:
         void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
+        void cameraTypeEnumManager_valueChanged(QtProperty*, int);
         void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
         void rsTitleManager_valueChanged (QtProperty *, const QString &);
 };
