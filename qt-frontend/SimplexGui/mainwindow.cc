@@ -29,6 +29,11 @@
 #include "qttreepropertybrowser.h"
 #include <QtStringPropertyManager>
 
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QTextStream>
+#include <QUrl>
+
 #include "simpleinputbox.hh"
 #include "renderwindow.hh"
 #include "quatschsourceeditor.hh"
@@ -356,6 +361,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
+        refreshWindowTitle();
         //menuBar()->repaint();
 }
 
@@ -1214,4 +1220,110 @@ void MainWindow::on_deleteCameraButton_pressed() {
         // assumed to signal everything needed for clean up
         camerasProperty->removeSubProperty(currentCameraProperty);
         resyncCameraConfig();
+}
+
+
+
+QString MainWindow::askForNewSaveFilename() {
+        again:
+        QFileDialog dialog(this);
+        dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setWindowTitle("Set a filename for saving");
+
+        QList<QUrl> urls = dialog.sidebarUrls();
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+        dialog.setSidebarUrls(urls);
+
+        if (dialog.exec()) {
+                QFile file (dialog.selectedFiles()[0]);
+                if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                        QMessageBox::warning(this, "Failed to save",
+                             "The file \"" + file.fileName() + "\" could not be"
+                             +" opened for writing. Please select another file "
+                             +" or one that does not exist yet.");
+                        goto again;
+                }
+                return dialog.selectedFiles()[0];
+        }
+        return "";
+}
+
+
+
+QString MainWindow::getAndUpdateSaveFilename() {
+        if (saveFilename == "") {
+                saveFilename = askForNewSaveFilename();
+                refreshWindowTitle();
+                return saveFilename;
+        }
+        return saveFilename;
+}
+
+
+
+void MainWindow::on_action_Save_triggered() {
+        QString code = sceneToCode();
+        QString file = getAndUpdateSaveFilename();
+        if (file == "")
+                return;
+
+        std::ofstream ofs (file.toStdString().c_str());
+        ofs << code.toStdString() << std::endl;
+}
+
+
+
+void MainWindow::on_actionSave_as_triggered() {
+        QString code = sceneToCode();
+        QString newName = askForNewSaveFilename();
+        if (newName == "") {
+                return;
+        }
+        saveFilename = newName;
+        refreshWindowTitle();
+
+        std::ofstream ofs (saveFilename.toStdString().c_str());
+        ofs << code.toStdString() << std::endl;
+}
+
+
+
+void MainWindow::on_actionSave_copy_as_triggered() {
+        QString code = sceneToCode();
+        QString file = askForNewSaveFilename();
+        if (file == "")
+                return;
+
+        //QTextStream out(&file, QIODevice::WriteOnly);
+        //out << code;
+        std::ofstream ofs (file.toStdString().c_str());
+        ofs << code.toStdString() << std::endl;
+}
+
+
+
+void MainWindow::refreshWindowTitle() {
+        const QString alpha = saveFilename == "" ? "<new scene>" : saveFilename;
+        setWindowTitle (alpha + " - picogen:SimplexGui");
+}
+
+
+
+QString MainWindow::sceneToCode() {
+        QString tehCodes;
+        try {
+                using namespace actuarius;
+                using namespace redshift;
+
+                const shared_ptr<scenefile::Scene> scene = createScene ();
+                std::stringstream ss;
+                OArchive (ss) & pack("scene", *scene);
+                return QString::fromStdString(ss.str());
+        } catch (std::exception const &e) {
+                QMessageBox::critical(this, "Critical",
+                                      e.what());
+                return "";
+        }
 }

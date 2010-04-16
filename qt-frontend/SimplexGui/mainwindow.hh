@@ -97,9 +97,19 @@ private:
         redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
 
         QtBrowserItem * currentBrowserItem;
+        QString saveFilename;
+
+        QString askForNewSaveFilename() ;
+        QString getAndUpdateSaveFilename();
+
+        void refreshWindowTitle();
+        QString sceneToCode();
 
         bool nonRecurseLock;
 private slots:
+        void on_actionSave_as_triggered();
+        void on_actionSave_copy_as_triggered();
+        void on_action_Save_triggered();
         void on_deleteCameraButton_pressed();
         void on_newCameraButton_pressed();
         void on_deleteRsButton_pressed();
