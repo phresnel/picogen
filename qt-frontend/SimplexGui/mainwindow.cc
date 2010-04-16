@@ -280,6 +280,17 @@ MainWindow::MainWindow(QWidget *parent) :
         cam.title = "hello-world";
         cam.type = redshift::scenefile::Camera::pinhole;
         cam.pinholeParams.front = 1;
+
+        redshift::scenefile::Transform t;
+        t.type = redshift::scenefile::Transform::move;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::yaw;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::pitch;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::roll;
+        cam.transforms.push_back(t);
+
         addCamera(cam);
 
 
@@ -952,20 +963,16 @@ void MainWindow::addCamera(redshift::scenefile::Camera const& c) {
                 cameraTypeEnumManager->setValue(cameraType, 0);
                 cameraTypeEnumManager_valueChanged(cameraType, 0);
                 break;
-        };
-
-        //const QStringList enumNames = cameraTypeEnumManager->enumNames(prop);
-        //const QString type = enumNames[index];
+        };        
 
         QtProperty *transformRoot = groupManager->addProperty("transform");
         camera->addSubProperty(transformRoot);        
 
         collapse (ui->settings, camera);
 
-        addTransform (transformRoot, redshift::scenefile::Transform::move);
-        addTransform (transformRoot, redshift::scenefile::Transform::yaw);
-        addTransform (transformRoot, redshift::scenefile::Transform::pitch);
-        addTransform (transformRoot, redshift::scenefile::Transform::roll);
+        for (int i=0; i<c.transforms.size(); ++i) {
+                addTransform (transformRoot, c.transforms[i]);
+        }
 
         collapse (ui->settings, transformRoot);
 
@@ -975,7 +982,7 @@ void MainWindow::addCamera(redshift::scenefile::Camera const& c) {
 
 
 void MainWindow::addTransform (QtProperty *transformRoot,
-                               redshift::scenefile::Transform::Type type) {
+                               redshift::scenefile::Transform const & t) {
         typedef redshift::scenefile::Transform Xf;
 
         QtProperty *transform = groupManager->addProperty("---");
@@ -988,25 +995,45 @@ void MainWindow::addTransform (QtProperty *transformRoot,
         QStringList enumNames;
         int i = 0, def = 0;
         enumNames << "move";
-        if (type == Xf::move) def = i; i++;
+        if (t.type == Xf::move) def = i; i++;
         enumNames << "move-left";
-        if (type == Xf::move_left) def = i; i++;
+        if (t.type == Xf::move_left) def = i; i++;
         enumNames << "move-right";
-        if (type == Xf::move_right) def = i; i++;
+        if (t.type == Xf::move_right) def = i; i++;
         enumNames << "move-up";
-        if (type == Xf::move_up) def = i; i++;
+        if (t.type == Xf::move_up) def = i; i++;
         enumNames << "move-backward";
-        if (type == Xf::move_backward) def = i; i++;
+        if (t.type == Xf::move_backward) def = i; i++;
         enumNames << "move-forward";
-        if (type == Xf::move_forward) def = i; i++;
+        if (t.type == Xf::move_forward) def = i; i++;
         enumNames << "yaw";
-        if (type == Xf::yaw) def = i; i++;
+        if (t.type == Xf::yaw) def = i; i++;
         enumNames << "pitch";
-        if (type == Xf::pitch) def = i; i++;
+        if (t.type == Xf::pitch) def = i; i++;
         enumNames << "roll";
-        if (type == Xf::roll) def = i; i++;
+        if (t.type == Xf::roll) def = i; i++;
         transformEnumManager->setEnumNames(transformType, enumNames);
         transformEnumManager->setValue(transformType, def);
+
+        switch (t.type) {
+        case Xf::move:
+                writeValue("right", transform, t.x);
+                writeValue("up", transform, t.y);
+                writeValue("forward", transform, t.z);
+                break;
+        case Xf::move_left: case Xf::move_right:
+                writeValue("distance", transform, t.x);
+                break;
+        case Xf::move_down: case Xf::move_up:
+                writeValue("distance", transform, t.y);
+                break;
+        case Xf::move_backward: case Xf::move_forward:
+                writeValue("distance", transform, t.z);
+                break;
+        case Xf::yaw: case Xf::pitch: case Xf::roll:
+                writeValue("angle", transform, t.angle);
+                break;
+        }
 }
 
 
@@ -1456,7 +1483,7 @@ void MainWindow::on_newSubTransformButton_clicked() {
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
         addTransform (currentTransformProperty,
-                      redshift::scenefile::Transform::move);
+                      redshift::scenefile::Transform());
 }
 
 
@@ -1466,6 +1493,17 @@ void MainWindow::on_newCameraButton_clicked() {
         cam.title = "new-camera";
         cam.type = redshift::scenefile::Camera::pinhole;
         cam.pinholeParams.front = 1;
+
+        redshift::scenefile::Transform t;
+        t.type = redshift::scenefile::Transform::move;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::yaw;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::pitch;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::roll;
+        cam.transforms.push_back(t);
+
         addCamera(cam);
         resyncCameraConfig();
 }

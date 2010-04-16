@@ -91,7 +91,7 @@ private:
         void resyncCameraConfig ();        
         void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
-                           redshift::scenefile::Transform::Type type);
+                           redshift::scenefile::Transform const &);
         void addObject ();
 
         void initializeFilmSettings();
