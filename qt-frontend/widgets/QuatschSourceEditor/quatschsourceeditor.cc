@@ -416,7 +416,7 @@ void QuatschHighlighter::highlightBlock(const QString &text) {
 }
 
 
-void QuatschSourceEditor::on_compileAndRunButton_pressed() {
+void QuatschSourceEditor::on_compileAndRunButton_clicked() {
         std::stringstream errors;
         try {
                 ui->status->setText("");
