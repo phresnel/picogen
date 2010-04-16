@@ -60,20 +60,20 @@ private:
 
 private slots:
         void on_sourceAmplitudeCapEnable_toggled(bool checked);
-        void on_applyConversionButton_pressed();
+        void on_applyConversionButton_clicked();
         void on_sourceUnitOfAmplitude_currentIndexChanged(int);
         void on_sourceUnitOfWavelength_currentIndexChanged(int);
         void on_sourceUnitOfAmplitudeFactor_editingFinished();
         void on_sourceUnitOfWavelengthFactor_editingFinished();
-        void on_radioWavAmp_pressed();
-        void on_radioAmpWav_pressed();
-        void on_radioWavesAmps_pressed();
-        void on_radioAmpsWaves_pressed();
-        void on_radioUniformRange_pressed();
-        void on_radioManual_pressed();
-        void on_radioFromRaw_pressed();
+        void on_radioWavAmp_clicked();
+        void on_radioAmpWav_clicked();
+        void on_radioWavesAmps_clicked();
+        void on_radioAmpsWaves_clicked();
+        void on_radioUniformRange_clicked();
+        void on_radioManual_clicked();
+        void on_radioFromRaw_clicked();
 
-        void on_openFileDialog_pressed();
+        void on_openFileDialog_clicked();
 
         // hmm, does not work automagically with on_ImportRawDataWizard_currentIdChanged
         void wizard_currentIdChanged (int id);

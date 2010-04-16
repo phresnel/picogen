@@ -170,7 +170,7 @@ void SpectralColorPicker::on_lockSampleCount_toggled(bool checked) {
 
 
 
-void SpectralColorPicker::on_importRawDataButton_pressed() {
+void SpectralColorPicker::on_importRawDataButton_clicked() {
         ImportRawDataWizard *wiz = new ImportRawDataWizard(this);
         if (wiz->exec()) {
                 QVector<QPair<double,double> > const &

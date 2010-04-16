@@ -63,7 +63,7 @@ protected:
 private slots:
         void on_minAmp_editingFinished();
         void on_maxAmp_editingFinished();
-        void on_importRawDataButton_pressed();
+        void on_importRawDataButton_clicked();
         void on_lockSampleCount_toggled(bool checked);
         void on_sampleCount_valueChanged(int );
         void valueChanged (double amplitude, double wavelength);

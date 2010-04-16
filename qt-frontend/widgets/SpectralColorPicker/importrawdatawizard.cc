@@ -77,10 +77,10 @@ ImportRawDataWizard::ImportRawDataWizard(QWidget *parent) :
                 SLOT(wizard_currentIdChanged(int)));
 
         ui->radioUniformRange->setEnabled(true);
-        on_radioUniformRange_pressed ();
+        on_radioUniformRange_clicked ();
 
         ui->radioWavAmp->setEnabled(true);
-        on_radioWavAmp_pressed ();
+        on_radioWavAmp_clicked ();
 
         ui->sourceUnitOfWavelength->setCurrentIndex(0);
         ui->sourceUnitOfAmplitude->setCurrentIndex(0);
@@ -113,7 +113,7 @@ void ImportRawDataWizard::changeEvent(QEvent *e) {
 
 
 
-void ImportRawDataWizard::on_openFileDialog_pressed() {
+void ImportRawDataWizard::on_openFileDialog_clicked() {
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::ExistingFile);
 
@@ -315,34 +315,34 @@ void ImportRawDataWizard::wizard_currentIdChanged (int id) {
         }
 }
 
-void ImportRawDataWizard::on_radioUniformRange_pressed() {
+void ImportRawDataWizard::on_radioUniformRange_clicked() {
         ui->wavelengthDetailOptionsStack->setCurrentIndex(0);
         wavelengthImportMode = uniform_range;
 }
 
-void ImportRawDataWizard::on_radioManual_pressed() {
+void ImportRawDataWizard::on_radioManual_clicked() {
         ui->wavelengthDetailOptionsStack->setCurrentIndex(1);
         wavelengthImportMode = manual;
 }
 
-void ImportRawDataWizard::on_radioFromRaw_pressed() {
+void ImportRawDataWizard::on_radioFromRaw_clicked() {
         ui->wavelengthDetailOptionsStack->setCurrentIndex(2);
         wavelengthImportMode = from_raw_data;
 }
 
-void ImportRawDataWizard::on_radioAmpsWaves_pressed() {
+void ImportRawDataWizard::on_radioAmpsWaves_clicked() {
         rawLayout = amplitudes_wavelengths;
 }
 
-void ImportRawDataWizard::on_radioWavesAmps_pressed() {
+void ImportRawDataWizard::on_radioWavesAmps_clicked() {
         rawLayout = wavelengths_amplitudes;
 }
 
-void ImportRawDataWizard::on_radioAmpWav_pressed() {
+void ImportRawDataWizard::on_radioAmpWav_clicked() {
         rawLayout = amplitude_wavelength;
 }
 
-void ImportRawDataWizard::on_radioWavAmp_pressed() {
+void ImportRawDataWizard::on_radioWavAmp_clicked() {
         rawLayout = wavelength_amplitude;
 }
 
@@ -379,7 +379,7 @@ void ImportRawDataWizard::on_sourceUnitOfAmplitude_currentIndexChanged(int index
         ui->sourceUnitOfAmplitudeFactor->setEnabled(true);
 }
 
-void ImportRawDataWizard::on_applyConversionButton_pressed() {
+void ImportRawDataWizard::on_applyConversionButton_clicked() {
         ui->targetSamples->setRowCount(0);
 
         const double wavefac = ui->sourceUnitOfWavelengthFactor->value();
