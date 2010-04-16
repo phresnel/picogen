@@ -1120,22 +1120,7 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
 
 
 void MainWindow::on_actionRender_triggered() {
-        try {
-                const int
-                      renderSettings = ui->renderSettingConfig->currentIndex(),
-                      camera = ui->cameraConfig->currentIndex();
-
-                RenderWindow *rw = new RenderWindow (
-                                createScene(),
-                                renderSettings, camera,
-                                this);
-                ui->mdiArea->addSubWindow(rw);
-                rw->show();
-        } catch (std::exception const &ex) {
-                QMessageBox::critical(this, "Error", QString()+
-                                      "An exception occured:\n\n"
-                                      + ex.what());
-        }
+        render();
 }
 
 
@@ -1325,5 +1310,32 @@ QString MainWindow::sceneToCode() {
                 QMessageBox::critical(this, "Critical",
                                       e.what());
                 return "";
+        }
+}
+
+
+
+void MainWindow::on_renderButton_clicked() {
+        render();
+}
+
+
+
+void MainWindow::render() {
+        try {
+                const int
+                      renderSettings = ui->renderSettingConfig->currentIndex(),
+                      camera = ui->cameraConfig->currentIndex();
+
+                RenderWindow *rw = new RenderWindow (
+                                createScene(),
+                                renderSettings, camera,
+                                this);
+                ui->mdiArea->addSubWindow(rw);
+                rw->show();
+        } catch (std::exception const &ex) {
+                QMessageBox::critical(this, "Error", QString()+
+                                      "An exception occured:\n\n"
+                                      + ex.what());
         }
 }

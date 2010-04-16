@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/playStopPauseEtc">
+        <file>resources/nuove_play_24x24.png</file>
+    </qresource>
+</RCC>

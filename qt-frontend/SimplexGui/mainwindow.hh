@@ -105,8 +105,11 @@ private:
         void refreshWindowTitle();
         QString sceneToCode();
 
+        void render();
+
         bool nonRecurseLock;
 private slots:        
+        void on_renderButton_clicked();
         void on_deleteCameraButton_clicked();
         void on_newCameraButton_clicked();
         void on_deleteRsButton_clicked();

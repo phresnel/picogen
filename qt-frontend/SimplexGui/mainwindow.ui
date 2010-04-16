@@ -355,6 +355,19 @@ QTabWidget::pane { /* The tab widget frame */
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <widget class="QLabel" name="label">
             <property name="text">
              <string>Settings for next Render:</string>
@@ -362,10 +375,47 @@ QTabWidget::pane { /* The tab widget frame */
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="renderSettingConfig"/>
+           <widget class="QComboBox" name="renderSettingConfig">
+            <property name="minimumSize">
+             <size>
+              <width>128</width>
+              <height>0</height>
+             </size>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="cameraConfig"/>
+           <widget class="QComboBox" name="cameraConfig">
+            <property name="minimumSize">
+             <size>
+              <width>128</width>
+              <height>0</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="renderButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -478,6 +528,8 @@ QTabWidget::pane { /* The tab widget frame */
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
