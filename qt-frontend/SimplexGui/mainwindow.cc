@@ -781,7 +781,7 @@ void MainWindow::addRenderSettings (
         QtProperty *topItem = groupManager->addProperty(name.c_str());
         renderSettingsProperty->addSubProperty(topItem);
 
-        QtProperty *title = rsTitleManager->addProperty("title");        
+        QtProperty *title = rsTitleManager->addProperty("title");
         rsTitleManager->setRegExp(title, QRegExp("([a-z0-9]|-|_)+", Qt::CaseInsensitive, QRegExp::RegExp));
         rsTitleManager->setValue(title, name.c_str());
         topItem->addSubProperty(title);
@@ -864,7 +864,7 @@ void MainWindow::addRenderSettings (
                           "\""
                           + QString::fromStdString(redshift::scenefile::SurfaceIntegrator::Typenames[rs.surfaceIntegrator.type])
                           + "\", but this type is currently not supported here."
-                        );                        
+                        );
                         surfaceIntegratorTypeEnumManager->setValue(integratorType, 0);
                         surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 0);
                 }
@@ -915,7 +915,7 @@ void MainWindow::addRenderSettings (
                         );
                         enumManager->setValue(integratorType, 0);
                 }
-        }        
+        }
         collapse (ui->settings, topItem);
         resyncRenderSettingConfig();
 }
@@ -1002,10 +1002,10 @@ void MainWindow::addCamera(redshift::scenefile::Camera const& c) {
                 cameraTypeEnumManager->setValue(cameraType, 0);
                 cameraTypeEnumManager_valueChanged(cameraType, 0);
                 break;
-        };        
+        };
 
         QtProperty *transformRoot = groupManager->addProperty("transform");
-        camera->addSubProperty(transformRoot);        
+        camera->addSubProperty(transformRoot);
 
         collapse (ui->settings, camera);
 
@@ -1081,8 +1081,6 @@ void MainWindow::addObject (redshift::scenefile::Object const &o) {
         QtProperty *object = groupManager->addProperty("---");
         objectsProperty->addSubProperty(object);
 
-        collapse (ui->settings, object);
-
         QtProperty *objectType = objectTypeEnumManager->addProperty("type");
         object->addSubProperty(objectType);
 
@@ -1120,7 +1118,7 @@ void MainWindow::addObject (redshift::scenefile::Object const &o) {
                 break;
         case redshift::scenefile::Object::lazy_quadtree:
                 objectTypeEnumManager->setValue(objectType, 2);
-                objectTypeEnumManager_valueChanged(objectType, 2);                
+                objectTypeEnumManager_valueChanged(objectType, 2);
 
                 writeValue ("code", object, QString::fromStdString(o.lazyQuadtreeParams.code));
                 writeValue ("max-recursion", object, o.lazyQuadtreeParams.maxRecursion);
@@ -1132,6 +1130,8 @@ void MainWindow::addObject (redshift::scenefile::Object const &o) {
                 colorEditManager->setValue(tmp, toColorPickerColor(o.lazyQuadtreeParams.material.color));
                 break;
         }
+
+        collapse (ui->settings, object);
 }
 
 
@@ -1357,7 +1357,7 @@ void MainWindow::cameraTypeEnumManager_valueChanged(
                 }
         }
 
-        if (type == "pinhole") {                
+        if (type == "pinhole") {
                 QtVariantProperty* front = variantManager->addProperty(QVariant::Double,"front");
                 front->setAttribute(QLatin1String("minimum"), 0.0001);
                 front->setAttribute(QLatin1String("singlestep"), 0.1);
@@ -1504,7 +1504,9 @@ void MainWindow::on_newRsButton_clicked() {
 
 
 void MainWindow::on_newObjectButton_clicked() {
-        //addObject ();
+        redshift::scenefile::Object o;
+        o.type = redshift::scenefile::Object::horizon_plane;
+        addObject (o);
 }
 
 

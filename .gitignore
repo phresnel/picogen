@@ -37,6 +37,7 @@ qt-frontend/SimplexGui/Makefile.Debug
 qt-frontend/SimplexGui/Makefile.Release
 qt-frontend/SimplexGui/object_script.simplex-gui.Debug
 qt-frontend/SimplexGui/object_script.simplex-gui.Release
+qt-frontend/SimplexGui/qrc_resources.cpp
 
 qt-frontend/StyleDemo/Makefile
 qt-frontend/StyleDemo/debug
