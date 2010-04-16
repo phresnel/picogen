@@ -73,7 +73,7 @@ private:
         ColorEditFactory *colorEditFactory;
 
         QtProperty *renderSettingsProperty;
-        QtProperty *camerasProperty,
+        QtProperty *camerasProperty, *filmSettingsProperty,
                    *currentCameraProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
@@ -87,12 +87,18 @@ private:
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void resyncRenderSettingConfig ();
-        void resyncCameraConfig ();
-        void addRenderSettings (std::string const &name);
+        void resyncCameraConfig ();        
         void addCamera (std::string const &name);
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform::Type type);
         void addObject ();
+
+        void initializeFilmSettings();
+        void setFilmSettings(redshift::scenefile::FilmSettings const &);
+
+        void initializeRenderSettings();                
+        void addRenderSettings (std::string const &name,
+                                redshift::scenefile::RenderSettings const &rs);
 
         redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
 

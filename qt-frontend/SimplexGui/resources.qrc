@@ -2,4 +2,11 @@
     <qresource prefix="/playStopPauseEtc">
         <file>resources/nuove_play_24x24.png</file>
     </qresource>
+    <qresource prefix="/property-tree">
+        <file alias="terrain16x16">resources/dellipack_terrain_16x16.png</file>
+        <file alias="film16x16">resources/fugue_film_16x16.png</file>
+        <file alias="brush16x16">resources/human_brush_16x16.png</file>
+        <file alias="background16x16">resources/human_weather_16x16.png</file>
+        <file alias="camera16x16">resources/realvista_camera_16x16.png</file>
+    </qresource>
 </RCC>

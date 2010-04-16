@@ -21,7 +21,6 @@ HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.hh \
-    ../widgets/QuatschSourceEditor/quatsch-editor.hh \
     coloreditmanager.h \
     coloreditfactory.h \
     coloredit.h
