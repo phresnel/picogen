@@ -55,11 +55,11 @@ void ColorPicker::changeEvent(QEvent *e) {
         }
 }
 
-void ColorPicker::on_okayButton_pressed() {
+void ColorPicker::on_okayButton_clicked() {
         accept();
 }
 
-void ColorPicker::on_cancelButton_pressed() {
+void ColorPicker::on_cancelButton_clicked() {
         reject();
 }
 

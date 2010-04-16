@@ -136,12 +136,12 @@ private:
 
 private slots:
     void on_tabWidget_currentChanged(int index);
-    void on_okayButton_pressed();
+    void on_okayButton_clicked();
     void tristimulusColorChanged (QColor);
     void spectralColorChanged (QVector<SpectralSample> const & c);
 
 private slots:
-    void on_cancelButton_pressed();
+    void on_cancelButton_clicked();
 };
 
 #endif // COLORPICKER_HH
