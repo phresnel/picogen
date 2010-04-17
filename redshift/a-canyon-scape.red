@@ -10,7 +10,7 @@ scene {
                         height:512;
                         samples-per-pixel:1;
                         surface-integrator{
-                                type:none;
+                                type:whitted;
                                 ambient-samples:1;
                         }
                         volume-integrator{
@@ -30,7 +30,7 @@ scene {
         }
         cameras{
                 aerial{
-                        front:1;
+                        front:1.1;
                         transform{
                                 move-right{9000}
                                 move-up{1450}

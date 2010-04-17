@@ -58,6 +58,7 @@ private:
         Ui::MainWindow *ui;
         void setupUi();
         void setDefaultScene();
+        void loadScene (redshift::scenefile::Scene const &scene);
 
         QtStringPropertyManager *rsTitleManager;
 
@@ -103,8 +104,7 @@ private:
         void setFilmSettings(redshift::scenefile::FilmSettings const &);
 
         void initializeRenderSettings();
-        void addRenderSettings (std::string const &name,
-                                redshift::scenefile::RenderSettings const &rs);
+        void addRenderSettings (redshift::scenefile::RenderSettings const &rs);
 
         void initializeCameraSettings ();
 

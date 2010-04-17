@@ -705,14 +705,15 @@ namespace redshift { namespace scenefile {
         // RenderSettings.
         struct RenderSettings {
                 unsigned int width, height, samplesPerPixel;
-                unsigned int min_y, max_y, userSeed;
+                unsigned int min_y, max_y;
+                unsigned int userSeed;
                 std::string title;
                 SurfaceIntegrator surfaceIntegrator;
                 VolumeIntegrator volumeIntegrator;
 
                 RenderSettings ()
                 : width(800), height(600), samplesPerPixel(1)
-                , min_y(0), max_y(~0), userSeed(0)
+                , min_y(0), max_y(0), userSeed(0)
                 {}
 
                 // Serialization.

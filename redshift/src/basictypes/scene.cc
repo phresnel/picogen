@@ -200,9 +200,12 @@ void Scene::render (
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
 
         const unsigned int width = renderTarget->getWidth();
-        const unsigned int height = renderTarget->getHeight();
+        const unsigned int height =
+                (minY<maxY && maxY<(unsigned int)renderTarget->getHeight())
+                ? maxY
+                : renderTarget->getHeight();
 
-        for (unsigned int y_=minY; y_<height && y_<maxY; ++y_) {
+        for (unsigned int y_=minY; y_<height; ++y_) {
                 const unsigned int y = y_;
                 currentScanline_ = (unsigned int)y;
                 aggregate->setCurrentScanline ((unsigned int)y);

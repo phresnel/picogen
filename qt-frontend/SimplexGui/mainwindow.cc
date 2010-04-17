@@ -205,7 +205,12 @@ MainWindow::MainWindow(QWidget *parent) :
         initializeObjects();
         initializeBackgrounds();
 
-        setDefaultScene();
+        //setDefaultScene();
+
+        redshift::scenefile::Scene scene;
+        std::ifstream ss("/home/smach/Projects/picogen/git/redshift/a-canyon-scape.red");
+        actuarius::IArchive (ss) & actuarius::pack("scene", scene);
+        loadScene (scene);
 
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
                 ui->settings->setExpanded(it, false);
@@ -289,6 +294,22 @@ void MainWindow::setupUi() {
 
 
 
+void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
+        setFilmSettings(scene.filmSettings());
+        for (unsigned int i=0; i<scene.renderSettingsCount(); ++i)
+                addRenderSettings(scene.renderSettings(i));
+        for (unsigned int i=0; i<scene.cameraCount(); ++i)
+                addCamera(scene.camera(i));
+        for (unsigned int i=0; i<scene.objectCount(); ++i)
+                addObject(scene.object(i));
+        //for (unsigned int i=0; i<scene.backgroundCount(); ++i)
+        if (scene.backgroundCount())
+                setBackground(scene.background(0));
+        //for ()
+}
+
+
+
 void MainWindow::setDefaultScene() {
         // - render settings
         {
@@ -306,8 +327,9 @@ void MainWindow::setDefaultScene() {
                 rs.volumeIntegrator.type = VolumeIntegrator::none;
                 rs.volumeIntegrator.cutoffDistance = 5000;
                 rs.volumeIntegrator.stepSize = 400;
+                rs.title = "preview";
 
-                addRenderSettings("preview", rs);
+                addRenderSettings(rs);
         }
         {
                 using namespace redshift::scenefile;
@@ -324,8 +346,9 @@ void MainWindow::setDefaultScene() {
                 rs.volumeIntegrator.type = VolumeIntegrator::none;
                 rs.volumeIntegrator.cutoffDistance = 50000;
                 rs.volumeIntegrator.stepSize = 70;
+                rs.title = "production";
 
-                addRenderSettings("production", rs);
+                addRenderSettings(rs);
         }
 
         // - camera
@@ -834,16 +857,15 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
 
 void MainWindow::addRenderSettings (
-        std::string const &name,
         redshift::scenefile::RenderSettings const &rs
 ) {
 
-        QtProperty *topItem = groupManager->addProperty(name.c_str());
+        QtProperty *topItem = groupManager->addProperty(QString::fromStdString(rs.title));
         renderSettingsProperty->addSubProperty(topItem);
 
         QtProperty *title = rsTitleManager->addProperty("title");
         rsTitleManager->setRegExp(title, QRegExp("([a-z0-9]|-|_)+", Qt::CaseInsensitive, QRegExp::RegExp));
-        rsTitleManager->setValue(title, name.c_str());
+        rsTitleManager->setValue(title, QString::fromStdString(rs.title));
         topItem->addSubProperty(title);
 
 
@@ -870,21 +892,18 @@ void MainWindow::addRenderSettings (
 
         it = variantManager->addProperty(QVariant::Int, "min-y");
         it->setAttribute(QLatin1String("minimum"), 0);
-        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
         it->setAttribute(QLatin1String("singleStep"), 1);
         it->setValue(rs.min_y);
         topItem->addSubProperty(it);
 
         it = variantManager->addProperty(QVariant::Int, "max-y");
         it->setAttribute(QLatin1String("minimum"), 0);
-        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
         it->setAttribute(QLatin1String("singleStep"), 1);
         it->setValue(rs.max_y);
         topItem->addSubProperty(it);
 
         it = variantManager->addProperty(QVariant::Int, "seed");
         it->setAttribute(QLatin1String("minimum"), 0);
-        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
         it->setAttribute(QLatin1String("singleStep"), 1);
         it->setValue(rs.userSeed);
         it->setToolTip("Use this to configure another random seed for rendering.");
@@ -940,7 +959,7 @@ void MainWindow::addRenderSettings (
                 volumeIntegrator->addSubProperty(integratorType);
                 it = variantManager->addProperty(QVariant::Double, "step-size");
                 it->setAttribute(QLatin1String("minimum"), 1.);
-                it->setAttribute(QLatin1String("maximum"), 32768.);
+                //it->setAttribute(QLatin1String("maximum"), 32768.);
                 it->setAttribute(QLatin1String("singleStep"), 1.);
                 it->setAttribute(QLatin1String("decimals"), 1);
                 it->setValue(rs.volumeIntegrator.stepSize);
@@ -948,7 +967,7 @@ void MainWindow::addRenderSettings (
 
                 it = variantManager->addProperty(QVariant::Double, "cutoff-distance");
                 it->setAttribute(QLatin1String("minimum"), 1.);
-                it->setAttribute(QLatin1String("maximum"), 32768.);
+                //it->setAttribute(QLatin1String("maximum"), 32768.);
                 it->setAttribute(QLatin1String("singleStep"), 1.);
                 it->setAttribute(QLatin1String("decimals"), 1);
                 it->setValue(rs.volumeIntegrator.cutoffDistance);
@@ -1558,7 +1577,9 @@ void MainWindow::on_actionRender_triggered() {
 
 
 void MainWindow::on_newRsButton_clicked() {
-        addRenderSettings ("new-setting", redshift::scenefile::RenderSettings());
+        redshift::scenefile::RenderSettings rs;
+        rs.title = "new-setting";
+        addRenderSettings (rs);
 }
 
 
