@@ -203,6 +203,7 @@ MainWindow::MainWindow(QWidget *parent) :
         initializeRenderSettings();
         initializeCameraSettings();
         initializeObjects();
+        initializeVolumes();
         initializeBackgrounds();
 
         //setDefaultScene();
@@ -266,6 +267,10 @@ void MainWindow::setupUi() {
         connect(objectTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(objectTypeEnumManager_valueChanged(QtProperty*,int)));
 
+        volumeTypeEnumManager = new QtEnumPropertyManager(this);
+        connect(volumeTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
+                this, SLOT(volumeTypeEnumManager_valueChanged(QtProperty*,int)));
+
         surfaceIntegratorTypeEnumManager = new QtEnumPropertyManager(this);
         connect(surfaceIntegratorTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*,int)));
@@ -287,6 +292,7 @@ void MainWindow::setupUi() {
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
+        ui->settings->setFactoryForManager(volumeTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
@@ -302,7 +308,8 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
                 addCamera(scene.camera(i));
         for (unsigned int i=0; i<scene.objectCount(); ++i)
                 addObject(scene.object(i));
-        //for (unsigned int i=0; i<scene.backgroundCount(); ++i)
+        for (unsigned int i=0; i<scene.volumeCount(); ++i)
+                addVolume(scene.volume(i));
         if (scene.backgroundCount())
                 setBackground(scene.background(0));
         //for ()
@@ -457,9 +464,24 @@ void MainWindow::initializeObjects() {
 
 
 
+void MainWindow::initializeVolumes() {
+        volumesProperty = groupManager->addProperty("volumes");
+        ui->settings->addProperty(volumesProperty);
+
+        ui->settings->setBackgroundColor(
+                        ui->settings->topLevelItem(volumesProperty),
+                        QColor(120,120,160));
+}
+
+
+
 void MainWindow::initializeBackgrounds () {
         backgroundsProperty = groupManager->addProperty("backgrounds");
         ui->settings->addProperty(backgroundsProperty);
+
+        ui->settings->setBackgroundColor(
+                        ui->settings->topLevelItem(backgroundsProperty),
+                        QColor(90,90,130));
 }
 
 
@@ -478,7 +500,7 @@ void MainWindow::setBackground (
         QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "right");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         vp->setValue(b.sunDirection.x);
@@ -487,7 +509,7 @@ void MainWindow::setBackground (
         vp= variantManager->addProperty(QVariant::Double, "up");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         vp->setValue(b.sunDirection.y);
@@ -496,7 +518,7 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "forward");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         vp->setValue(b.sunDirection.z);
@@ -507,7 +529,7 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "turbidity");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.25);
-        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), 1.7);
         vp->setAttribute(QLatin1String("maximum"), 30);
         vp->setValue(b.turbidity);
@@ -517,7 +539,7 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "sun-size-factor");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 1.0);
-        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), 0);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         vp->setValue(b.sunSizeFactor);
@@ -527,7 +549,7 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "sun-brightness-factor");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), 0);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         vp->setValue(b.sunBrightnessFactor);
@@ -538,7 +560,7 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "atmosphere-brightness-factor");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), 0);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         vp->setValue(b.atmosphereBrightnessFactor);
@@ -549,7 +571,7 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "atmospheric-effects-distance-factor");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), 0);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         vp->setValue(b.atmosphericFxDistanceFactor);
@@ -560,7 +582,7 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "overcast");
         vp->setValue(0);
         vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), 0);
         vp->setAttribute(QLatin1String("maximum"), 1);
         vp->setValue(b.overcast);
@@ -570,11 +592,6 @@ void MainWindow::setBackground (
         vp = variantManager->addProperty(QVariant::Bool, "atmospheric-effects");
         vp->setValue(b.atmosphericEffects ? 1 : 0);
         pssSunSkyProperty->addSubProperty(vp);
-
-
-        ui->settings->setBackgroundColor(
-                        ui->settings->topLevelItem(backgroundsProperty),
-                        QColor(90,90,130));
 
         collapse (ui->settings, pssSunSkyProperty);
 }
@@ -1325,7 +1342,7 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                 QtProperty *cit = colorEditManager->addProperty("color");
                 colorTerms->addSubProperty(cit);
         } else if (type == "lazy-quadtree") {
-                t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
+                //t->addSubProperty(variantManager->addProperty(QVariant::UserType,"color"));
 
                 QtProperty* code = codeEditManager->addProperty(QVariant::String, "code");
                 t->addSubProperty(code);
@@ -1351,7 +1368,7 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                 size->setAttribute(QLatin1String("minimum"), 1);
                 size->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
                 size->setAttribute(QLatin1String("singleStep"), 1000);
-                maxrec->setAttribute(QLatin1String("decimals"), 1);
+                size->setAttribute(QLatin1String("decimals"), 1);
                 size->setValue(50000);
                 t->addSubProperty(size);
 
@@ -1365,6 +1382,106 @@ void MainWindow::objectTypeEnumManager_valueChanged (
         } else {
                 QMessageBox::critical(this, "Unsupported object",
                                       "The object-type '" + type + "' "
+                                      "is not supported. This is probably "
+                                      "an oversight by the incapable "
+                                      "programmers, please report this issue.");
+        }
+}
+
+
+
+void MainWindow::addVolume (redshift::scenefile::Volume const &v) {
+        QtProperty *volume = groupManager->addProperty("---");
+        volumesProperty->addSubProperty(volume);
+
+        QtProperty *volumeType = volumeTypeEnumManager->addProperty("type");
+        volume->addSubProperty(volumeType);
+
+
+        QStringList enumNames;
+        enumNames << "homogeneous"
+                  << "exponential"
+                  ;
+        volumeTypeEnumManager->setEnumNames(volumeType, enumNames);
+
+        QtProperty *tmp;
+
+        switch (v.type) {
+        case redshift::scenefile::Volume::homogeneous:
+                volumeTypeEnumManager->setValue(volumeType, 0);
+                volumeTypeEnumManager_valueChanged(volumeType, 0);
+                break;
+        case redshift::scenefile::Volume::exponential:
+                volumeTypeEnumManager->setValue(volumeType, 1);
+                volumeTypeEnumManager_valueChanged(volumeType, 1);
+                break;
+        }
+
+        tmp = readSubProperty("absorption", volume);
+        colorEditManager->setValue(tmp, toColorPickerColor(v.sigma_a));
+        tmp = readSubProperty("out-scatter", volume);
+        colorEditManager->setValue(tmp, toColorPickerColor(v.sigma_s));
+        tmp = readSubProperty("emission", volume);
+        colorEditManager->setValue(tmp, toColorPickerColor(v.Lve));
+        writeValue ("phase-function", volume, v.hg);
+
+        collapse (ui->settings, volume);
+}
+
+
+
+void MainWindow::volumeTypeEnumManager_valueChanged (
+        QtProperty* prop,
+        int index
+) {
+        QtProperty *t = findParent(ui->settings->properties(), prop);
+        if (!t)
+                return;
+
+        const QStringList enumNames =
+                        volumeTypeEnumManager->enumNames(prop);
+        const QString type = enumNames[index];
+
+        t->setPropertyName(type);
+
+        // Remove all properties not titled "type" to make place for the right
+        // properties.
+        // TODO: maybe just make them invisible if that is possible.
+        foreach (QtProperty *nt, t->subProperties()){
+                if (nt->propertyName() != "type") {
+                        t->removeSubProperty(nt);
+                }
+        }
+
+
+        // Common.
+        t->addSubProperty(colorEditManager->addProperty("absorption"));
+        t->addSubProperty(colorEditManager->addProperty("out-scatter"));
+        t->addSubProperty(colorEditManager->addProperty("emission"));
+
+        QtVariantProperty* hg = variantManager->addProperty(QVariant::Double,"phase-function");
+        hg->setAttribute(QLatin1String("minimum"), -1);
+        hg->setAttribute(QLatin1String("maximum"), 1);
+        hg->setAttribute(QLatin1String("singleStep"), 0.1);
+        hg->setAttribute(QLatin1String("decimals"), 5);
+        hg->setValue(0);
+        t->addSubProperty(hg);
+
+
+        if (type == "homogeneous") {
+
+        } else if (type == "exponential") {
+                /*
+                                arch & pack("up", up);
+                                arch & pack("min", min);
+                                arch & pack("base-factor", baseFactor);
+                                arch & pack("exponent-factor", exponentFactor);
+                                arch & pack("epsilon", epsilon);
+                */
+
+        } else {
+                QMessageBox::critical(this, "Unsupported volume",
+                                      "The volume-type '" + type + "' "
                                       "is not supported. This is probably "
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
