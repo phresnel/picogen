@@ -689,11 +689,11 @@ namespace redshift { namespace scenefile {
                                 arch & pack ("sun-brightness-factor", sunBrightnessFactor);
                                 arch & pack ("atmosphere-brightness-factor", atmosphereBrightnessFactor);
                                 arch & pack ("atmospheric-effects-distance-factor", atmosphericFxDistanceFactor);
+                                arch & pack ("atmospheric-effects", atmosphericEffects);
                                 arch & pack ("turbidity", turbidity);
                                 arch & pack ("overcast", overcast);
                                 /*arch & pack ("sun-color", sunColor);
                                 arch & pack ("sky-filter", skyFilter);*/
-                                arch & pack ("atmospheric-effects", atmosphericEffects);
                                 arch & actuarius::pop_optional;
                                 break;
                         };

@@ -88,7 +88,7 @@ private:
         redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void resyncRenderSettingConfig ();
-        void resyncCameraConfig ();        
+        void resyncCameraConfig ();
         void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform const &);
@@ -99,11 +99,15 @@ private:
         void initializeFilmSettings();
         void setFilmSettings(redshift::scenefile::FilmSettings const &);
 
-        void initializeRenderSettings();                
+        void initializeRenderSettings();
         void addRenderSettings (std::string const &name,
                                 redshift::scenefile::RenderSettings const &rs);
 
         void initializeCameraSettings ();
+
+        // this method won't have a long stay once multiple backgrounds
+        // (consider e.g. preetham + starfield + moon) are supported
+        void initializeBackgrounds (redshift::scenefile::Background const &);
 
         redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
 
@@ -119,7 +123,7 @@ private:
         void render();
 
         bool nonRecurseLock;
-private slots:        
+private slots:
         void on_renderButton_clicked();
         void on_deleteCameraButton_clicked();
         void on_newCameraButton_clicked();

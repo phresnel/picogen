@@ -332,86 +332,8 @@ MainWindow::MainWindow(QWidget *parent) :
         o.lazyQuadtreeParams.code = "(sin 666)";
         addObject(o);
 
+        initializeBackgrounds (redshift::scenefile::Background());
 
-        // Background.
-        {
-                QtProperty *backgroundsProperty =
-                                groupManager->addProperty("backgrounds");
-                ui->settings->addProperty(backgroundsProperty);
-
-                pssSunSkyProperty = groupManager->addProperty("pss-sunsky");
-                backgroundsProperty->addSubProperty(pssSunSkyProperty);
-                collapse (ui->settings, pssSunSkyProperty);
-
-
-                // Sun Direction.
-                QtProperty *sunDir = groupManager->addProperty("sun-direction");
-                pssSunSkyProperty->addSubProperty(sunDir);
-
-                // TODO: write custom property for vectors
-                QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "right");
-                vp->setValue(1);
-                vp->setAttribute(QLatin1String("singleStep"), 0.05);
-                vp->setAttribute(QLatin1String("decimals"), 3);
-                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
-                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-                sunDir->addSubProperty(vp);
-
-                vp= variantManager->addProperty(QVariant::Double, "up");
-                vp->setValue(1);
-                vp->setAttribute(QLatin1String("singleStep"), 0.05);
-                vp->setAttribute(QLatin1String("decimals"), 3);
-                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
-                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-                sunDir->addSubProperty(vp);
-
-                vp = variantManager->addProperty(QVariant::Double, "forward");
-                vp->setValue(1);
-                vp->setAttribute(QLatin1String("singleStep"), 0.05);
-                vp->setAttribute(QLatin1String("decimals"), 3);
-                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
-                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-                sunDir->addSubProperty(vp);
-
-
-                // Turbidity.
-                vp = variantManager->addProperty(QVariant::Double, "turbidity");
-                vp->setValue(1);
-                vp->setAttribute(QLatin1String("singleStep"), 0.25);
-                vp->setAttribute(QLatin1String("decimals"), 3);
-                vp->setAttribute(QLatin1String("minimum"), 1.7);
-                vp->setAttribute(QLatin1String("maximum"), 30);
-                pssSunSkyProperty->addSubProperty(vp);
-
-                // Sun size.
-                vp = variantManager->addProperty(QVariant::Double, "sun-size-factor");
-                vp->setValue(1);
-                vp->setAttribute(QLatin1String("singleStep"), 1.0);
-                vp->setAttribute(QLatin1String("decimals"), 2);
-                vp->setAttribute(QLatin1String("minimum"), 0);
-                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-                pssSunSkyProperty->addSubProperty(vp);
-
-
-                // Overcast.
-                vp = variantManager->addProperty(QVariant::Double, "overcast");
-                vp->setValue(0);
-                vp->setAttribute(QLatin1String("singleStep"), 0.05);
-                vp->setAttribute(QLatin1String("decimals"), 2);
-                vp->setAttribute(QLatin1String("minimum"), 0);
-                vp->setAttribute(QLatin1String("maximum"), 1);
-                pssSunSkyProperty->addSubProperty(vp);
-
-                // Atmospheric Effects.
-                vp = variantManager->addProperty(QVariant::Bool, "atmospheric-effects");
-                vp->setValue(1);
-                pssSunSkyProperty->addSubProperty(vp);
-
-                ui->settings->setBackgroundColor(
-                                ui->settings->topLevelItem(backgroundsProperty),
-                                QColor(90,90,130));
-
-        }
 
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
                 ui->settings->setExpanded(it, false);
@@ -500,6 +422,127 @@ void MainWindow::initializeObjects() {
         ui->settings->setBackgroundColor(
                         ui->settings->topLevelItem(objectsProperty),
                         QColor(90,130,90));
+}
+
+
+
+void MainWindow::initializeBackgrounds (
+        redshift::scenefile::Background const &b
+) {
+        QtProperty *backgroundsProperty =
+                        groupManager->addProperty("backgrounds");
+        ui->settings->addProperty(backgroundsProperty);
+
+        pssSunSkyProperty = groupManager->addProperty("pss-sunsky");
+        backgroundsProperty->addSubProperty(pssSunSkyProperty);
+
+        // Sun Direction.
+        QtProperty *sunDir = groupManager->addProperty("sun-direction");
+        pssSunSkyProperty->addSubProperty(sunDir);
+
+        // TODO: write custom property for vectors
+        QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "right");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setValue(b.sunDirection.x);
+        sunDir->addSubProperty(vp);
+
+        vp= variantManager->addProperty(QVariant::Double, "up");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setValue(b.sunDirection.y);
+        sunDir->addSubProperty(vp);
+
+        vp = variantManager->addProperty(QVariant::Double, "forward");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setValue(b.sunDirection.z);
+        sunDir->addSubProperty(vp);
+
+
+        // Turbidity.
+        vp = variantManager->addProperty(QVariant::Double, "turbidity");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 0.25);
+        vp->setAttribute(QLatin1String("decimals"), 3);
+        vp->setAttribute(QLatin1String("minimum"), 1.7);
+        vp->setAttribute(QLatin1String("maximum"), 30);
+        vp->setValue(b.turbidity);
+        pssSunSkyProperty->addSubProperty(vp);
+
+        // Sun size.
+        vp = variantManager->addProperty(QVariant::Double, "sun-size-factor");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 1.0);
+        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("minimum"), 0);
+        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setValue(b.sunSizeFactor);
+        pssSunSkyProperty->addSubProperty(vp);
+
+        // Sun brightness factor.
+        vp = variantManager->addProperty(QVariant::Double, "sun-brightness-factor");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 0.1);
+        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("minimum"), 0);
+        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setValue(b.sunBrightnessFactor);
+        pssSunSkyProperty->addSubProperty(vp);
+
+
+        // Atmosphere brightness factor.
+        vp = variantManager->addProperty(QVariant::Double, "atmosphere-brightness-factor");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 0.1);
+        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("minimum"), 0);
+        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setValue(b.atmosphereBrightnessFactor);
+        pssSunSkyProperty->addSubProperty(vp);
+
+
+        // Atmosphere effects distance factor.
+        vp = variantManager->addProperty(QVariant::Double, "atmospheric-effects-distance-factor");
+        vp->setValue(1);
+        vp->setAttribute(QLatin1String("singleStep"), 0.1);
+        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("minimum"), 0);
+        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setValue(b.atmosphericFxDistanceFactor);
+        pssSunSkyProperty->addSubProperty(vp);
+
+
+        // Overcast.
+        vp = variantManager->addProperty(QVariant::Double, "overcast");
+        vp->setValue(0);
+        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+        vp->setAttribute(QLatin1String("decimals"), 2);
+        vp->setAttribute(QLatin1String("minimum"), 0);
+        vp->setAttribute(QLatin1String("maximum"), 1);
+        vp->setValue(b.overcast);
+        pssSunSkyProperty->addSubProperty(vp);
+
+        // Atmospheric Effects.
+        vp = variantManager->addProperty(QVariant::Bool, "atmospheric-effects");
+        vp->setValue(b.atmosphericEffects ? 1 : 0);
+        pssSunSkyProperty->addSubProperty(vp);
+
+
+        ui->settings->setBackgroundColor(
+                        ui->settings->topLevelItem(backgroundsProperty),
+                        QColor(90,90,130));
+
+        collapse (ui->settings, pssSunSkyProperty);
 }
 
 
@@ -758,13 +801,19 @@ redshift::shared_ptr<redshift::scenefile::Scene>
         // Background.
         scenefile::Background sunsky;
         const Props sunDir = readSubProperties("sun-direction", pssSunSkyProperty);
+
         sunsky.sunDirection.x = readValue<double>("right", sunDir);
         sunsky.sunDirection.y = readValue<double>("up", sunDir);
         sunsky.sunDirection.z = readValue<double>("forward", sunDir);
+        sunsky.sunSizeFactor = readValue<double>("sun-size-factor", pssSunSkyProperty);
+        sunsky.sunBrightnessFactor = readValue<double>("sun-brightness-factor", pssSunSkyProperty);
+
+        sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", pssSunSkyProperty);
+        sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", pssSunSkyProperty);
+        sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", pssSunSkyProperty);
+
         sunsky.turbidity = readValue<double>("turbidity", pssSunSkyProperty);
         sunsky.overcast = readValue<double>("overcast", pssSunSkyProperty);
-        sunsky.sunSizeFactor = readValue<double>("sun-size-factor", pssSunSkyProperty);
-        sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", pssSunSkyProperty);
         scene->addBackground(sunsky);
 
 
