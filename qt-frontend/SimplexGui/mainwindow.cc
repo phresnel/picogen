@@ -197,6 +197,36 @@ MainWindow::MainWindow(QWidget *parent) :
     currentBrowserItem(0),
     nonRecurseLock(false)
 {
+        setupUi();
+
+        initializeFilmSettings();
+        initializeRenderSettings();
+        initializeCameraSettings();
+        initializeObjects();
+        initializeBackgrounds();
+
+        setDefaultScene();
+
+        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
+                ui->settings->setExpanded(it, false);
+        ui->settings->setRootIsDecorated(true);
+        //ui->settings->setIndentation(32);
+        ui->settings->setHeaderVisible(false);
+
+        refreshWindowTitle();
+        //menuBar()->repaint();
+}
+
+
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+
+
+void MainWindow::setupUi() {
         ui->setupUi(this);
 
         // code editor
@@ -255,10 +285,12 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
+}
 
-        initializeFilmSettings();
-        initializeRenderSettings();
 
+
+void MainWindow::setDefaultScene() {
+        // - render settings
         {
                 using namespace redshift::scenefile;
 
@@ -296,9 +328,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 addRenderSettings("production", rs);
         }
 
-
-        initializeCameraSettings();
-
+        // - camera
         redshift::scenefile::Camera cam;
         cam.title = "hello-world";
         cam.type = redshift::scenefile::Camera::pinhole;
@@ -318,40 +348,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
         addCamera(cam);
 
-        initializeObjects();
-
+        // - objects
         redshift::scenefile::Object o;
-        o.type = redshift::scenefile::Object::lazy_quadtree;
-        o.lazyQuadtreeParams.lodFactor = 0.0123456789;
-        o.lazyQuadtreeParams.maxRecursion = 7;
-        o.lazyQuadtreeParams.size = 100001;
-        o.lazyQuadtreeParams.material.color.type = redshift::scenefile::Color::RGB;
-        o.lazyQuadtreeParams.material.color.rgb.r = 0.6;
-        o.lazyQuadtreeParams.material.color.rgb.g = 0.5;
-        o.lazyQuadtreeParams.material.color.rgb.b = 0.4;
-        o.lazyQuadtreeParams.code = "(sin 666)";
+        o.type = redshift::scenefile::Object::horizon_plane;
+        o.horizonPlaneParams.height = 0;
+        o.horizonPlaneParams.material.color.type = redshift::scenefile::Color::RGB;
+        o.horizonPlaneParams.material.color.rgb.r = 0.6;
+        o.horizonPlaneParams.material.color.rgb.g = 0.5;
+        o.horizonPlaneParams.material.color.rgb.b = 0.4;
         addObject(o);
 
-        initializeBackgrounds (redshift::scenefile::Background());
-
-
-        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
-                ui->settings->setExpanded(it, false);
-        ui->settings->setRootIsDecorated(true);
-        //ui->settings->setIndentation(32);
-        ui->settings->setHeaderVisible(false);
-
-
-
-        refreshWindowTitle();
-        //menuBar()->repaint();
-}
-
-
-
-MainWindow::~MainWindow()
-{
-    delete ui;
+        // - background
+        setBackground (redshift::scenefile::Background());
 }
 
 
@@ -426,13 +434,16 @@ void MainWindow::initializeObjects() {
 
 
 
-void MainWindow::initializeBackgrounds (
+void MainWindow::initializeBackgrounds () {
+        backgroundsProperty = groupManager->addProperty("backgrounds");
+        ui->settings->addProperty(backgroundsProperty);
+}
+
+
+
+void MainWindow::setBackground (
         redshift::scenefile::Background const &b
 ) {
-        QtProperty *backgroundsProperty =
-                        groupManager->addProperty("backgrounds");
-        ui->settings->addProperty(backgroundsProperty);
-
         pssSunSkyProperty = groupManager->addProperty("pss-sunsky");
         backgroundsProperty->addSubProperty(pssSunSkyProperty);
 

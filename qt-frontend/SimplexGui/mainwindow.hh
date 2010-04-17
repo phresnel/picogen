@@ -56,6 +56,8 @@ protected:
 
 private:
         Ui::MainWindow *ui;
+        void setupUi();
+        void setDefaultScene();
 
         QtStringPropertyManager *rsTitleManager;
 
@@ -75,6 +77,7 @@ private:
         QtProperty *renderSettingsProperty;
         QtProperty *camerasProperty, *filmSettingsProperty,
                    *currentCameraProperty,
+                   *backgroundsProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
         QtProperty *objectsProperty,
@@ -105,9 +108,10 @@ private:
 
         void initializeCameraSettings ();
 
+        void initializeBackgrounds ();
         // this method won't have a long stay once multiple backgrounds
         // (consider e.g. preetham + starfield + moon) are supported
-        void initializeBackgrounds (redshift::scenefile::Background const &);
+        void setBackground (redshift::scenefile::Background const &);
 
         redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
 
