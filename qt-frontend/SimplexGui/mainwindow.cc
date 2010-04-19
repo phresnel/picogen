@@ -194,7 +194,8 @@ namespace {
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    currentBrowserItem(0),
+    pssSunSkyProperty(0),
+    currentBrowserItem(0),    
     nonRecurseLock(false)
 {
         setupUi();
@@ -209,7 +210,8 @@ MainWindow::MainWindow(QWidget *parent) :
         //setDefaultScene();
 
         redshift::scenefile::Scene scene;
-        std::ifstream ss("/home/smach/Projects/picogen/git/redshift/a-canyon-scape.red");
+        //std::ifstream ss("/home/smach/Projects/picogen/git/redshift/a-canyon-scape.red");
+        std::ifstream ss("../../../redshift/a-canyon-scape.red");
         actuarius::IArchive (ss) & actuarius::pack("scene", scene);
         loadScene (scene);
 
@@ -598,38 +600,50 @@ void MainWindow::setBackground (
 
 
 
-redshift::scenefile::Material
-MainWindow::readMaterial (
-                QList<QtProperty*> subs, QString name
+redshift::scenefile::Color
+MainWindow::readColor (
+        QList<QtProperty*> subs, QString name
 ) const {
-        QtProperty *material = readSubProperty("material", subs);
-        if (!material) return redshift::scenefile::Material();
-        QtProperty *color = readSubProperty("color", material);
-        if (!color) return redshift::scenefile::Material();
+        QtProperty *color = readSubProperty (name, subs);
+        if (!color) return redshift::scenefile::Color();
         const ColorPickerColor c = colorEditManager->value(color);
 
-        redshift::scenefile::Material ret;
+        redshift::scenefile::Color ret;
 
         switch (c.mode) {
         case ColorPickerColor::Spectral:
-                ret.color.type = redshift::scenefile::Color::Spectrum;
+                ret.type = redshift::scenefile::Color::Spectrum;
                 foreach (SpectralSample ss, c.spectral) {
                         redshift::scenefile::WavelengthAmplitudePair wap;
                         wap.wavelength = ss.wavelength;
                         wap.amplitude = ss.amplitude;
-                        ret.color.spectrum.samples.push_back(wap);
+                        ret.spectrum.samples.push_back(wap);
                 }
                 break;
         case ColorPickerColor::Tristimulus:
-                ret.color.type = redshift::scenefile::Color::RGB;
+                ret.type = redshift::scenefile::Color::RGB;
                 QColor rgb = c.toQColor();
-                ret.color.rgb = redshift::scenefile::Rgb(rgb.redF(),
-                                                         rgb.greenF(),
-                                                         rgb.blueF());
+                ret.rgb = redshift::scenefile::Rgb(rgb.redF(),
+                                                   rgb.greenF(),
+                                                   rgb.blueF());
                 break;
         }
 
         return ret;
+}
+
+
+
+redshift::scenefile::Material
+MainWindow::readMaterial (
+        QList<QtProperty*> subs, QString name
+) const {
+        QtProperty *material = readSubProperty("material", subs);
+        if (!material) return redshift::scenefile::Material();
+
+        redshift::scenefile::Material mat;
+        mat.color = readColor (material->subProperties(), "color");
+        return mat;
 }
 
 
@@ -853,10 +867,30 @@ redshift::shared_ptr<redshift::scenefile::Scene>
         foreach (Prop volume, volumes) {
                 using scenefile::Volume;
 
-                const Props subs = object->subProperties();
+                const Props subs = volume->subProperties();
                 const QString type = readValueText("type", subs);
 
                 scenefile::Volume volume;
+
+                volume.sigma_a = readColor(subs, "absorption");
+                volume.sigma_s = readColor(subs, "out-scatter");
+                volume.Lve     = readColor(subs, "emission");
+                volume.hg      = readValue<double> ("phase-function", subs);
+
+                /*t->addSubProperty(colorEditManager->addProperty("absorption"));
+                t->addSubProperty(colorEditManager->addProperty("out-scatter"));
+                t->addSubProperty(colorEditManager->addProperty("emission"));
+
+                QtVariantProperty* hg = variantManager->addProperty(QVariant::Double,"phase-function");
+                hg->setAttribute(QLatin1String("minimum"), -1);
+                hg->setAttribute(QLatin1String("maximum"), 1);
+                hg->setAttribute(QLatin1String("singleStep"), 0.1);
+                hg->setAttribute(QLatin1String("decimals"), 5);
+                hg->setValue(0);
+                t->addSubProperty(hg);*/
+
+                // Common Properties.
+
 
                 if (type == "homogeneous") {
                         volume.type = Volume::homogeneous;
@@ -879,29 +913,30 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                                               "programmers, please report this issue.").toStdString().c_str());
                 }
 
-                scene->addObject(object);
+                scene->addVolume(volume);
 
         }
 
 
         // Background.
-        scenefile::Background sunsky;
-        const Props sunDir = readSubProperties("sun-direction", pssSunSkyProperty);
+        if (pssSunSkyProperty) {
+                scenefile::Background sunsky;
+                const Props sunDir = readSubProperties("sun-direction", pssSunSkyProperty);
 
-        sunsky.sunDirection.x = readValue<double>("right", sunDir);
-        sunsky.sunDirection.y = readValue<double>("up", sunDir);
-        sunsky.sunDirection.z = readValue<double>("forward", sunDir);
-        sunsky.sunSizeFactor = readValue<double>("sun-size-factor", pssSunSkyProperty);
-        sunsky.sunBrightnessFactor = readValue<double>("sun-brightness-factor", pssSunSkyProperty);
+                sunsky.sunDirection.x = readValue<double>("right", sunDir);
+                sunsky.sunDirection.y = readValue<double>("up", sunDir);
+                sunsky.sunDirection.z = readValue<double>("forward", sunDir);
+                sunsky.sunSizeFactor = readValue<double>("sun-size-factor", pssSunSkyProperty);
+                sunsky.sunBrightnessFactor = readValue<double>("sun-brightness-factor", pssSunSkyProperty);
 
-        sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", pssSunSkyProperty);
-        sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", pssSunSkyProperty);
-        sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", pssSunSkyProperty);
+                sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", pssSunSkyProperty);
+                sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", pssSunSkyProperty);
+                sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", pssSunSkyProperty);
 
-        sunsky.turbidity = readValue<double>("turbidity", pssSunSkyProperty);
-        sunsky.overcast = readValue<double>("overcast", pssSunSkyProperty);
-        scene->addBackground(sunsky);
-
+                sunsky.turbidity = readValue<double>("turbidity", pssSunSkyProperty);
+                sunsky.overcast = readValue<double>("overcast", pssSunSkyProperty);
+                scene->addBackground(sunsky);
+        }
 
         return scene;
 }

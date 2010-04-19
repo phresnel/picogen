@@ -118,6 +118,7 @@ private:
         void setBackground (redshift::scenefile::Background const &);
 
         redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
+        redshift::scenefile::Color readColor (QList<QtProperty*> subs, QString name="color") const;
 
         QtBrowserItem * currentBrowserItem;
         QString saveFilename;
