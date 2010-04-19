@@ -195,7 +195,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     pssSunSkyProperty(0),
-    currentBrowserItem(0),    
+    currentBrowserItem(0),
     nonRecurseLock(false)
 {
         setupUi();
@@ -685,6 +685,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 Props subs = mooh->subProperties();
 
                 scenefile::RenderSettings rs;
+                rs.title = readValueText("title", subs).toStdString();
                 rs.width = readValue<unsigned int>("width", subs);
                 rs.height = readValue<unsigned int>("height", subs);
                 rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
@@ -886,7 +887,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
 
                 if (type == "homogeneous") {
-                        volume.type = Volume::homogeneous;                        
+                        volume.type = Volume::homogeneous;
                 } else if (type == "exponential") {
                         volume.type = Volume::exponential;
 
@@ -902,7 +903,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
                         volume.baseFactor = readValue<double>("base-factor", subs);
                         volume.exponentFactor = readValue<double>("exponent-factor", subs);
-                        volume.epsilon = readValue<double>("epsilon", subs);                        
+                        volume.epsilon = readValue<double>("epsilon", subs);
                 } else {
                         throw std::runtime_error((QString() + "The volume-type '" + type + "' "
                                               "is not supported. This is probably "
@@ -1994,7 +1995,7 @@ QString MainWindow::askForNewSaveFilename() {
                              +" opened for writing. Please select another file "
                              +" or one that does not exist yet.");
                         goto again;
-                }                
+                }
                 return name;
         }
         return "";
@@ -2146,7 +2147,7 @@ void MainWindow::on_actionLoad_triggered() {
 
         try {
                 std::ifstream ss(name.toStdString().c_str());
-                actuarius::IArchive (ss) & actuarius::pack("scene", scene);                
+                actuarius::IArchive (ss) & actuarius::pack("scene", scene);
                 loadScene (scene);
                 saveFilename = name;
                 refreshWindowTitle();
