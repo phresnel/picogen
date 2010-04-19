@@ -43,28 +43,31 @@ Exponential::Exponential (
 , up(normalize(up))
 , upPlane (approximateUpperPlane(epsilon))
 {
+        /*std::cout << "plane = {" << upPlane.normal.x
+                                 << ", " << upPlane.normal.y
+                                 << ", " << upPlane.normal.z
+                                 << ", " << upPlane.offset << "}\n";*/
 }
 
 
 
 Plane Exponential::approximateUpperPlane (real_t epsilon) const {
-        std::cout << "random sampling exponential volume...\n";
+        //std::cout << "random sampling exponential volume...\n";
 
         // TODONT: use a real root finder
         real_t h;
         int steps = 0;
         for (h=1; density(h) > epsilon; ++steps, h+=h/32){}
-        std::cout << "approximate root at h=" << h
+        /*std::cout << "approximate root at h=" << h
                   << " in " << steps
                   << " steps (density=" << density(h) << ")\n";
-
-        std::cout << "done!\n";
+        std::cout << "done!\n";*/
 
         const Point through = min+up*h;
-        std::cout << "plane through: "
+        /*std::cout << "plane through: "
                   << through.x << ", "
                   << through.y << ", "
-                  << through.z << "\n";
+                  << through.z << "\n";*/
 
         return Plane(vector_cast<PointF>(through), up);
 }
@@ -73,7 +76,8 @@ Plane Exponential::approximateUpperPlane (real_t epsilon) const {
 
 Interval Exponential::cull (const Ray &ray) const {
         // TODO: take into account plane parallel planes
-        const real_t dist = intersect(ray, upPlane);
+        const real_t dist = //(ray.position.y-1215.54)/-ray.direction.y;
+                intersect(ray, upPlane);
 
         if (is_above(upPlane, ray.position)) {
                 if (dist >= 0) { // is above, pointing down

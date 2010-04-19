@@ -120,6 +120,16 @@ namespace redshift {
                 {
                         assert_valid();
                 }
+
+                Interval (Interval const &rhs)
+                : min_(rhs.min_), max_(rhs.max_) {}
+
+                Interval & operator = (Interval const &rhs) {
+                        min_ = rhs.min_;
+                        max_ = rhs.max_;
+                        return *this;
+                }
+
                 void setMin (real_t min) { min_ = min; assert_valid(); }
                 void setMax (real_t max) { max_ = max; assert_valid(); }
                 real_t min() const { return min_; }

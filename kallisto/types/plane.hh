@@ -56,7 +56,7 @@ namespace kallisto {
                 // http://www.cs.princeton.edu/courses/archive/fall00/cs426/lectures/raycast/sld017.htm
                 const Vec P0 = vector_cast<Vec>(ray.position);
                 const real_t
-                        a = dot (P0, plane.normal) - plane.offset,
+                        a = dot (P0, plane.normal) + plane.offset,
                         b = dot (ray.direction, plane.normal),
                         t = -a / b;
                 return t;

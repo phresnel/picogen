@@ -56,15 +56,18 @@ tuple<real_t,Color> SingleScattering::Li (
         if (volumeInterval.max()<interval.max())
                 interval.setMax (volumeInterval.max());
 
-        if (interval.min()>=interval.max())
-                return make_tuple(1.f, Color(0));
 
         /*#pragma omp master
-        {
+        if (worldInterval.max() != constants::infinity) {
                 std::cout << "W " << worldInterval.min() << ".." << worldInterval.max() << std::endl;
                 std::cout << "V " << volumeInterval.min() << ".." << volumeInterval.max() << std::endl;
                 std::cout << "= " << interval.min() << ".." << interval.max() << std::endl;
         }*/
+
+
+        if (interval.min()>=interval.max())
+                return make_tuple(1.f, Color(0));
+
 
 	real_t t0, t1;
 	//if (!vr || !vr->IntersectP(ray, &t0, &t1)) return 0.f;
