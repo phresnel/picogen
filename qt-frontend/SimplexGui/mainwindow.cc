@@ -877,35 +877,27 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 volume.Lve     = readColor(subs, "emission");
                 volume.hg      = readValue<double> ("phase-function", subs);
 
-                /*t->addSubProperty(colorEditManager->addProperty("absorption"));
-                t->addSubProperty(colorEditManager->addProperty("out-scatter"));
-                t->addSubProperty(colorEditManager->addProperty("emission"));
-
-                QtVariantProperty* hg = variantManager->addProperty(QVariant::Double,"phase-function");
-                hg->setAttribute(QLatin1String("minimum"), -1);
-                hg->setAttribute(QLatin1String("maximum"), 1);
-                hg->setAttribute(QLatin1String("singleStep"), 0.1);
-                hg->setAttribute(QLatin1String("decimals"), 5);
-                hg->setValue(0);
-                t->addSubProperty(hg);*/
-
                 // Common Properties.
 
 
                 if (type == "homogeneous") {
-                        volume.type = Volume::homogeneous;
-
-                        /*const std::string tmp = readValue<QString>("code", subs).toStdString();
-                        if(!tmp.empty())
-                                object.waterPlaneParams.code = tmp;
-                        //object.waterPlaneParams.color
-                        object.waterPlaneParams.height = readValue<double>("height", subs);
-                        object.waterPlaneParams.material = readMaterial (subs);*/
+                        volume.type = Volume::homogeneous;                        
                 } else if (type == "exponential") {
                         volume.type = Volume::exponential;
-                        //object.horizonPlaneParams.color
-                        //object.horizonPlaneParams.height = readValue<double>("height", subs);
-                        //object.horizonPlaneParams.material = readMaterial (subs);
+
+                        Props v = readSubProperties("up", subs);
+                        volume.up.x = readValue<double>("right", v);
+                        volume.up.y = readValue<double>("up", v);
+                        volume.up.z = readValue<double>("forward", v);
+
+                        v = readSubProperties("min", subs);
+                        volume.min.x = readValue<double>("right", v);
+                        volume.min.y = readValue<double>("up", v);
+                        volume.min.z = readValue<double>("forward", v);
+
+                        volume.baseFactor = readValue<double>("base-factor", subs);
+                        volume.exponentFactor = readValue<double>("exponent-factor", subs);
+                        volume.epsilon = readValue<double>("epsilon", subs);                        
                 } else {
                         throw std::runtime_error((QString() + "The volume-type '" + type + "' "
                                               "is not supported. This is probably "
