@@ -514,7 +514,8 @@ namespace redshift { namespace scenefile {
                 Color sigma_a, sigma_s, Lve;
                 double hg;
 
-                Normal up; Point min;
+                Normal up;
+                Point min;
                 real_t baseFactor, exponentFactor;
                 double epsilon; // minimum supported density, required to build bounding volumes
 

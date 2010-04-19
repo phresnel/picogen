@@ -1404,7 +1404,7 @@ void MainWindow::addVolume (redshift::scenefile::Volume const &v) {
                   ;
         volumeTypeEnumManager->setEnumNames(volumeType, enumNames);
 
-        QtProperty *tmp;
+        QtProperty *tmp, *tmp2;
 
         switch (v.type) {
         case redshift::scenefile::Volume::homogeneous:
@@ -1414,6 +1414,20 @@ void MainWindow::addVolume (redshift::scenefile::Volume const &v) {
         case redshift::scenefile::Volume::exponential:
                 volumeTypeEnumManager->setValue(volumeType, 1);
                 volumeTypeEnumManager_valueChanged(volumeType, 1);
+
+                tmp = readSubProperty("up", volume);
+                writeValue ("right",   tmp, v.up.x);
+                writeValue ("up",      tmp, v.up.y);
+                writeValue ("forward", tmp, v.up.z);
+
+                tmp = readSubProperty("min", volume);
+                writeValue ("right",   tmp, v.min.x);
+                writeValue ("up",      tmp, v.min.y);
+                writeValue ("forward", tmp, v.min.z);
+
+                writeValue ("base-factor", volume, v.baseFactor);
+                writeValue ("exponent-factor", volume, v.exponentFactor);
+                writeValue ("epsilon", volume, v.epsilon);
                 break;
         }
 
@@ -1471,14 +1485,91 @@ void MainWindow::volumeTypeEnumManager_valueChanged (
         if (type == "homogeneous") {
 
         } else if (type == "exponential") {
-                /*
-                                arch & pack("up", up);
-                                arch & pack("min", min);
-                                arch & pack("base-factor", baseFactor);
-                                arch & pack("exponent-factor", exponentFactor);
-                                arch & pack("epsilon", epsilon);
-                */
+                {
+                        QtProperty *upVector = groupManager->addProperty("up");
+                        QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "right");
+                        vp->setValue(1);
+                        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                        vp->setAttribute(QLatin1String("decimals"), 5);
+                        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                        vp->setValue(0);
+                        upVector->addSubProperty(vp);
 
+                        vp= variantManager->addProperty(QVariant::Double, "up");
+                        vp->setValue(1);
+                        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                        vp->setAttribute(QLatin1String("decimals"), 5);
+                        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                        vp->setValue(1);
+                        upVector->addSubProperty(vp);
+
+                        vp = variantManager->addProperty(QVariant::Double, "forward");
+                        vp->setValue(1);
+                        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                        vp->setAttribute(QLatin1String("decimals"), 5);
+                        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                        vp->setValue(0);
+                        upVector->addSubProperty(vp);
+
+                        t->addSubProperty(upVector);
+                }
+                {
+                        QtProperty *minVector = groupManager->addProperty("min");
+                        QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "right");
+                        vp->setValue(1);
+                        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                        vp->setAttribute(QLatin1String("decimals"), 5);
+                        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                        vp->setValue(0);
+                        minVector->addSubProperty(vp);
+
+                        vp= variantManager->addProperty(QVariant::Double, "up");
+                        vp->setValue(1);
+                        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                        vp->setAttribute(QLatin1String("decimals"), 5);
+                        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                        vp->setValue(1);
+                        minVector->addSubProperty(vp);
+
+                        vp = variantManager->addProperty(QVariant::Double, "forward");
+                        vp->setValue(1);
+                        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                        vp->setAttribute(QLatin1String("decimals"), 5);
+                        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                        vp->setValue(0);
+                        minVector->addSubProperty(vp);
+
+                        t->addSubProperty(minVector);
+                }
+
+                QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "base-factor");
+                vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                vp->setAttribute(QLatin1String("decimals"), 5);
+                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                t->addSubProperty(vp);
+
+                vp = variantManager->addProperty(QVariant::Double, "exponent-factor");
+                vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                vp->setAttribute(QLatin1String("decimals"), 5);
+                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                t->addSubProperty(vp);
+
+                vp = variantManager->addProperty(QVariant::Double, "epsilon");
+                vp->setToolTip("The minimum desired density. This can then be used by picogen "
+                               "for calculating the boundary and thus enable optimiziations.");
+                vp->setAttribute(QLatin1String("singleStep"), 0.05);
+                vp->setAttribute(QLatin1String("decimals"), 5);
+                vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
+                vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+                t->addSubProperty(vp);
         } else {
                 QMessageBox::critical(this, "Unsupported volume",
                                       "The volume-type '" + type + "' "
