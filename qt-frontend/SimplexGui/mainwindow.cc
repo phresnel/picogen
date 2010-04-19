@@ -1951,9 +1951,11 @@ void MainWindow::on_deleteCameraButton_clicked() {
 
 QString MainWindow::askForNewSaveFilename() {
         again:
+
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::AnyFile);
         dialog.setWindowTitle("Set a filename for saving");
+        dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
 
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
@@ -1962,15 +1964,34 @@ QString MainWindow::askForNewSaveFilename() {
         dialog.setSidebarUrls(urls);
 
         if (dialog.exec()) {
-                QFile file (dialog.selectedFiles()[0]);
+                QString const name = dialog.selectedFiles()[0];
+
+                // Check if overwrites.
+                if (QFile::exists(name) &&
+                    QMessageBox::question(this, "Overwrite file?",
+                                          QString()+
+                                          "Do you rally want to overwrite the file "
+                                          + "\"" + name + "\"?",
+                                          QMessageBox::Yes | QMessageBox::No,
+                                          QMessageBox::No
+                                          ) == QMessageBox::No
+                ) {
+                        goto again;
+                }
+
+        /*QString name = QFileDialog::getSaveFileName(this, "Select a file to save to");
+        if (name != "") {*/
+
+                // Check if we can write.
+                QFile file (name);
                 if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
                         QMessageBox::warning(this, "Failed to save",
                              "The file \"" + file.fileName() + "\" could not be"
                              +" opened for writing. Please select another file "
                              +" or one that does not exist yet.");
                         goto again;
-                }
-                return dialog.selectedFiles()[0];
+                }                
+                return name;
         }
         return "";
 }
