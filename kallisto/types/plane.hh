@@ -29,13 +29,13 @@ namespace kallisto {
                 real_t offset;
 
                 Plane (Point<CARTESIAN, real_t> const & point,
-                       Vector<CARTESIAN, real_t> const & normal
+                       Vector<CARTESIAN, real_t> const & normal_
                 )
-                : normal (normal * (1/length(normal)))
+                : normal (normal_ * (1/length(normal_)))
                 , offset (
-                        -dot (normal,
+                        -dot (normal_,
                              vector_cast<Vector<CARTESIAN, real_t> >(point))
-                        * (1/length(normal)))
+                        * (1/length(normal_)))
                 {}
         };
 
