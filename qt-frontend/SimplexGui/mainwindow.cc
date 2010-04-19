@@ -199,24 +199,8 @@ MainWindow::MainWindow(QWidget *parent) :
     nonRecurseLock(false)
 {
         setupUi();
+        setDefaultScene();
 
-        initializeFilmSettings();
-        initializeRenderSettings();
-        initializeCameraSettings();
-        initializeObjects();
-        initializeVolumes();
-        initializeBackgrounds();
-
-        //setDefaultScene();
-
-        redshift::scenefile::Scene scene;
-        //std::ifstream ss("/home/smach/Projects/picogen/git/redshift/a-canyon-scape.red");
-        std::ifstream ss("../../../redshift/a-canyon-scape.red");
-        actuarius::IArchive (ss) & actuarius::pack("scene", scene);
-        loadScene (scene);
-
-        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
-                ui->settings->setExpanded(it, false);
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);
         ui->settings->setHeaderVisible(false);
@@ -230,6 +214,18 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+
+void MainWindow::initializeScene() {
+        ui->settings->clear();
+        initializeFilmSettings();
+        initializeRenderSettings();
+        initializeCameraSettings();
+        initializeObjects();
+        initializeVolumes();
+        initializeBackgrounds();
 }
 
 
@@ -303,6 +299,7 @@ void MainWindow::setupUi() {
 
 
 void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
+        initializeScene();
         setFilmSettings(scene.filmSettings());
         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i)
                 addRenderSettings(scene.renderSettings(i));
@@ -314,12 +311,16 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
                 addVolume(scene.volume(i));
         if (scene.backgroundCount())
                 setBackground(scene.background(0));
-        //for ()
+
+
+        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
+                ui->settings->setExpanded(it, false);
 }
 
 
 
 void MainWindow::setDefaultScene() {
+        initializeScene();
         // - render settings
         {
                 using namespace redshift::scenefile;
@@ -392,6 +393,10 @@ void MainWindow::setDefaultScene() {
 
         // - background
         setBackground (redshift::scenefile::Background());
+
+
+        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
+                ui->settings->setExpanded(it, false);
 }
 
 
@@ -1955,7 +1960,6 @@ QString MainWindow::askForNewSaveFilename() {
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::AnyFile);
         dialog.setWindowTitle("Set a filename for saving");
-        dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
 
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
@@ -1970,7 +1974,7 @@ QString MainWindow::askForNewSaveFilename() {
                 if (QFile::exists(name) &&
                     QMessageBox::question(this, "Overwrite file?",
                                           QString()+
-                                          "Do you rally want to overwrite the file "
+                                          "Do you really want to overwrite the file "
                                           + "\"" + name + "\"?",
                                           QMessageBox::Yes | QMessageBox::No,
                                           QMessageBox::No
@@ -2016,7 +2020,15 @@ void MainWindow::on_action_Save_triggered() {
                 return;
 
         std::ofstream ofs (file.toStdString().c_str());
-        ofs << code.toStdString() << std::endl;
+        if (ofs.is_open()) {
+                ofs << code.toStdString() << std::endl;
+        } else {
+                QMessageBox::warning(this, "Must use another filename",
+                                     "Cannot save the file as \""
+                                     + saveFilename + "\", please save "
+                                     "under another name.");
+                on_actionSave_as_triggered();
+        }
 }
 
 
@@ -2098,5 +2110,52 @@ void MainWindow::render() {
                 QMessageBox::critical(this, "Error", QString()+
                                       "An exception occured:\n\n"
                                       + ex.what());
+        }
+}
+
+
+
+void MainWindow::on_actionLoad_triggered() {
+        redshift::scenefile::Scene scene;
+        redshift::scenefile::Scene oldScene = *createScene();
+
+        // I somewhat find the OS' own file dialog to be disturbing
+        QFileDialog dialog(this);
+        dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setWindowTitle("Select a file to load");
+
+        QList<QUrl> urls = dialog.sidebarUrls();
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+        dialog.setSidebarUrls(urls);
+
+        if (!dialog.exec()) {
+                return;
+        }
+
+        const QString name = dialog.selectedFiles()[0];
+
+        if (!QFile::exists(name)) {
+                QMessageBox::critical(this,
+                      "Error upon loading",
+                      "The file \"" + name + "\" does not exist."
+                );
+                return;
+        }
+
+        try {
+                std::ifstream ss(name.toStdString().c_str());
+                actuarius::IArchive (ss) & actuarius::pack("scene", scene);                
+                loadScene (scene);
+                saveFilename = name;
+                refreshWindowTitle();
+        } catch (std::exception const &e){
+                loadScene(oldScene);
+                QMessageBox::critical(this,
+                      "Error upon loading",
+                      "The selected file \"" + name + "\" could not be loaded, "
+                      "are you sure this is a valid picogen file?"
+                      );
         }
 }

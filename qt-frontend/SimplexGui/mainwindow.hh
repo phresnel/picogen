@@ -117,6 +117,8 @@ private:
         // (consider e.g. preetham + starfield + moon) are supported
         void setBackground (redshift::scenefile::Background const &);
 
+        void initializeScene();
+
         redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
         redshift::scenefile::Color readColor (QList<QtProperty*> subs, QString name="color") const;
 
@@ -135,6 +137,7 @@ private:
 
         bool nonRecurseLock;
 private slots:
+        void on_actionLoad_triggered();
         void on_renderButton_clicked();
         void on_deleteCameraButton_clicked();
         void on_newCameraButton_clicked();
