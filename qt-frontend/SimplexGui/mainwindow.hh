@@ -143,8 +143,10 @@ private slots:
         void on_newCameraButton_clicked();
         void on_deleteRsButton_clicked();
         void on_deleteObjectButton_clicked();
+        void on_deleteVolumeButton_clicked();
         void on_deleteSubTransformButton_clicked();
         void on_newObjectButton_clicked();
+        void on_newVolumeButton_clicked();
         void on_newSubTransformButton_clicked();
         void on_newRsButton_clicked();
 

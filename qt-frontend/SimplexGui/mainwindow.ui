@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>807</width>
-    <height>474</height>
+    <width>877</width>
+    <height>493</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -287,7 +287,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="4" column="0">
             <widget class="QPushButton" name="newCameraButton">
              <property name="enabled">
               <bool>true</bool>
@@ -297,7 +297,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="4" column="1">
             <widget class="QPushButton" name="deleteCameraButton">
              <property name="enabled">
               <bool>false</bool>
@@ -307,7 +307,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="5" column="0">
             <widget class="QPushButton" name="newSubTransformButton">
              <property name="enabled">
               <bool>false</bool>
@@ -317,13 +317,33 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="5" column="1">
             <widget class="QPushButton" name="deleteSubTransformButton">
              <property name="enabled">
               <bool>false</bool>
              </property>
              <property name="text">
               <string>Delete Transform</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="newVolumeButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>New Volume</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="deleteVolumeButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Delete Volume</string>
              </property>
             </widget>
            </item>
@@ -484,8 +504,8 @@ QTabWidget::pane { /* The tab widget frame */
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>807</width>
-     <height>16</height>
+     <width>877</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebugging">

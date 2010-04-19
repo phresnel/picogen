@@ -1783,6 +1783,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         ui->deleteObjectButton->setEnabled(
                         (parentProp != 0)
                         && (parentProp->propertyName() == "objects"));
+        ui->deleteVolumeButton->setEnabled(
+                        (parentProp != 0)
+                        && (parentProp->propertyName() == "volumes"));
 
         const bool isTransform      = name  == "transform";
         const bool isSubTransform   = (parentProp != 0)
@@ -1868,6 +1871,14 @@ void MainWindow::on_newObjectButton_clicked() {
 
 
 
+void MainWindow::on_newVolumeButton_clicked() {
+        redshift::scenefile::Volume v;
+        v.type = redshift::scenefile::Volume::exponential;
+        addVolume (v);
+}
+
+
+
 void MainWindow::on_codeEditor_codeChanged() {
         // We assume that this can only be triggered if the current item
         // is some code.
@@ -1896,6 +1907,12 @@ void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
 void MainWindow::on_deleteObjectButton_clicked() {
         // assumed to signal everything needed for clean up
         objectsProperty->removeSubProperty(currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_deleteVolumeButton_clicked() {
+        volumesProperty->removeSubProperty(currentBrowserItem->property());
 }
 
 
