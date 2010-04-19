@@ -91,7 +91,6 @@ private:
                         *cameraTypeEnumManager,
                         *surfaceIntegratorTypeEnumManager;
         QtVariantPropertyManager *codeEditManager;
-        redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
 
         void resyncRenderSettingConfig ();
         void resyncCameraConfig ();
@@ -127,6 +126,8 @@ private:
         QString getAndUpdateSaveFilename();
 
         void refreshWindowTitle();
+
+        redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
         QString sceneToCode();
 
         void render();

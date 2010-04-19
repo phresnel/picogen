@@ -849,6 +849,41 @@ redshift::shared_ptr<redshift::scenefile::Scene>
         }
 
 
+        const Props volumes = readSubProperties("volumes", topProps);
+        foreach (Prop volume, volumes) {
+                using scenefile::Volume;
+
+                const Props subs = object->subProperties();
+                const QString type = readValueText("type", subs);
+
+                scenefile::Volume volume;
+
+                if (type == "homogeneous") {
+                        volume.type = Volume::homogeneous;
+
+                        /*const std::string tmp = readValue<QString>("code", subs).toStdString();
+                        if(!tmp.empty())
+                                object.waterPlaneParams.code = tmp;
+                        //object.waterPlaneParams.color
+                        object.waterPlaneParams.height = readValue<double>("height", subs);
+                        object.waterPlaneParams.material = readMaterial (subs);*/
+                } else if (type == "exponential") {
+                        volume.type = Volume::exponential;
+                        //object.horizonPlaneParams.color
+                        //object.horizonPlaneParams.height = readValue<double>("height", subs);
+                        //object.horizonPlaneParams.material = readMaterial (subs);
+                } else {
+                        throw std::runtime_error((QString() + "The volume-type '" + type + "' "
+                                              "is not supported. This is probably "
+                                              "an oversight by the incapable "
+                                              "programmers, please report this issue.").toStdString().c_str());
+                }
+
+                scene->addObject(object);
+
+        }
+
+
         // Background.
         scenefile::Background sunsky;
         const Props sunDir = readSubProperties("sun-direction", pssSunSkyProperty);
