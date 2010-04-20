@@ -21,11 +21,15 @@
 
 #include <QtGui/QApplication>
 #include "mainwindow.hh"
+#include "renderwindow.hh"
+#include <QMessageBox>
 #include <QCleanlooksStyle>
 
+#include <fstream>
+
 #include "../../redshift/include/static_init.hh"
-int main(int argc, char *argv[])
-{
+
+int simplexGui (int argc, char *argv[]) {
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
 
@@ -35,4 +39,48 @@ int main(int argc, char *argv[])
         w.show();
         const int ret = a.exec();
         return ret;
+}
+
+
+
+int productionRender (int argc, char *argv[]) {
+        QCleanlooksStyle *style = new QCleanlooksStyle ();
+        QApplication::setStyle(style);
+
+        redshift::static_init();
+        QApplication a(argc, argv);
+
+        QString name = "/home/smach/Desktop/like-a-bird-in-the-sky/like-a-bird-in-the-sky-less-heavy.red";
+        try {
+                redshift::scenefile::Scene scene;
+                std::ifstream ss(name.toStdString().c_str());
+                actuarius::IArchive (ss) & actuarius::pack("scene", scene);
+
+                redshift::shared_ptr<redshift::scenefile::Scene> pscene =
+                                redshift::shared_ptr<redshift::scenefile::Scene>(
+                                                new redshift::scenefile::Scene(scene)
+                                );
+
+                RenderWindow w (pscene, 0, 0, 0);
+                w.show();
+                const int ret = a.exec();
+                return ret;
+        } catch (std::exception const &e){
+                QMessageBox::critical(0,
+                      "Error upon loading",
+                      "The selected file \"" + name + "\" could not be loaded, "
+                      "are you sure this is a valid picogen file?"
+                      );
+                return -1;
+        }
+
+
+}
+
+
+
+int main(int argc, char *argv[]) {
+        if (!strcmp ("picogen-production-render", argv[0]))
+                return productionRender(argc, argv);
+        return simplexGui (argc, argv);
 }

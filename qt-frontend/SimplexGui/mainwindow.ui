@@ -519,6 +519,7 @@ QTabWidget::pane { /* The tab widget frame */
      <string>Render</string>
     </property>
     <addaction name="actionRender"/>
+    <addaction name="actionProduction_Render"/>
    </widget>
    <widget class="QMenu" name="menu_File">
     <property name="title">
@@ -551,7 +552,7 @@ QTabWidget::pane { /* The tab widget frame */
     <string>Render</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+V</string>
+    <string>Ctrl+F5, Return</string>
    </property>
   </action>
   <action name="action_Save">
@@ -591,6 +592,14 @@ QTabWidget::pane { /* The tab widget frame */
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionProduction_Render">
+   <property name="text">
+    <string>Production Render</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F5</string>
    </property>
   </action>
  </widget>

@@ -2177,3 +2177,23 @@ void MainWindow::on_actionLoad_triggered() {
                       );
         }
 }
+
+
+
+void MainWindow::on_actionProduction_Render_triggered() {
+        try {
+                const int
+                      renderSettings = ui->renderSettingConfig->currentIndex(),
+                      camera = ui->cameraConfig->currentIndex();
+
+                RenderWindow::RenderProcess (
+                                createScene(),
+                                renderSettings, camera,
+                                this
+                );
+        } catch (std::exception const &ex) {
+                QMessageBox::critical(this, "Error", QString()+
+                                      "An exception occured:\n\n"
+                                      + ex.what());
+        }
+}

@@ -58,6 +58,10 @@ public:
                      QWidget* parent=0);
         ~RenderWindow();
 
+        static void RenderProcess (redshift::shared_ptr<redshift::scenefile::Scene>,
+                              int renderSettings, int camera,
+                              QWidget* parent=0);
+
 protected:
         void changeEvent(QEvent *e);
 

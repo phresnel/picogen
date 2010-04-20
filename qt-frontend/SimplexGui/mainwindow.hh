@@ -137,6 +137,7 @@ private:
 
         bool nonRecurseLock;
 private slots:
+        void on_actionProduction_Render_triggered();
         void on_actionLoad_triggered();
         void on_renderButton_clicked();
         void on_deleteCameraButton_clicked();

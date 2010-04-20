@@ -23,6 +23,11 @@
 #include <QThread>
 #include <QResizeEvent>
 #include <QFont>
+#include <QProcess>
+#include <QFileDialog>
+#include <QUrl>
+#include <QDesktopServices>
+#include <QMessageBox>
 
 #include "renderwindow.hh"
 #include "ui_renderwindow.h"
@@ -138,6 +143,77 @@ void RenderWindowImpl::run() {
 //=============================================================================
 // RenderWindow
 //=============================================================================
+// TODO: this function should not be part of render-window, as it is specific to
+//       simplex-gui
+void RenderWindow::RenderProcess (redshift::shared_ptr<redshift::scenefile::Scene>,
+                                  int renderSettings, int camera,
+                                  QWidget* parent
+) {
+        again:
+
+        QFileDialog dialog(parent);
+        dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setWindowTitle("Set a filename for saving");
+
+        QList<QUrl> urls = dialog.sidebarUrls();
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+        dialog.setSidebarUrls(urls);
+
+        if (dialog.exec()) {
+                QString const name = dialog.selectedFiles()[0];
+
+                // Check if overwrites.
+                if (QFile::exists(name) &&
+                    QMessageBox::question(parent, "Overwrite file?",
+                                          QString()+
+                                          "Do you really want to overwrite the file "
+                                          + "\"" + name + "\"?",
+                                          QMessageBox::Yes | QMessageBox::No,
+                                          QMessageBox::No
+                                          ) == QMessageBox::No
+                ) {
+                        goto again;
+                }
+
+        /*QString name = QFileDialog::getSaveFileName(this, "Select a file to save to");
+        if (name != "") {*/
+
+                // Check if we can write.
+                QFile file (name);
+                if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                        QMessageBox::warning(parent, "Failed to save",
+                             "The file \"" + file.fileName() + "\" could not be"
+                             +" opened for writing. Please select another file "
+                             +" or one that does not exist yet.");
+                        goto again;
+                }
+
+                const pid_t childId = fork();
+                if (childId == -1) {
+                        std::cout << "no child created\n" << std::endl;
+                } else if (childId != 0) {
+                        std::cout << "I am the parent, my child is " << childId << "\n" << std::endl;
+                } else {
+                        std::cout << "I am the child!\n" << std::endl;
+                        execl("simplex-gui", "picogen-production-render", NULL);
+                        /*execl ("/home/smach/Projects/picogen/git/redshift/bin/redshift"
+                                ,"redshift"
+                                ,"-c0"
+                                ,"-r0"
+                                ,"-S0"
+                                ,"-p1"
+                                ,("-o" + name).toStdString().c_str()
+                                ,"/home/smach/Desktop/like-a-bird-in-the-sky/like-a-bird-in-the-sky-less-heavy.red"
+                                ,NULL
+                        );*/
+                }
+        }
+}
+
+
+
 RenderWindow::RenderWindow(
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
         int renderSettings, int camera,
