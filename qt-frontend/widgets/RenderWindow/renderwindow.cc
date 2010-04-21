@@ -149,11 +149,21 @@ void RenderWindow::RenderProcess (QString pathToSource,
                                   int renderSettings, int camera,
                                   QWidget* parent
 ) {
-        again:
-
         QFileDialog dialog(parent);
+        dialog.setWindowTitle("Set a target filename");
         dialog.setFileMode(QFileDialog::AnyFile);
-        dialog.setWindowTitle("Set a filename for saving");
+
+        QStringList nameFilters;
+        nameFilters << "Portable Network Graphics (*.png)"
+                    << "Bitmap (*.bmp)"
+                    << "JPEG (*.jpg *.jpeg)"
+                    << "Portable Pixmap (*.ppm)"
+                    << "Tagged Image File Format (*.tif *.tiff)"
+                    << "X11 Bitmap (*.xbm)"
+                    << "X11 Pixmap (*.xpm)"
+                    ;
+        dialog.setNameFilters(nameFilters);
+        dialog.setNameFilter();
 
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
@@ -161,8 +171,51 @@ void RenderWindow::RenderProcess (QString pathToSource,
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
         dialog.setSidebarUrls(urls);
 
+        again:
+
         if (dialog.exec()) {
-                QString const pathToTarget = dialog.selectedFiles()[0];
+                QString pathToTarget = dialog.selectedFiles()[0];
+
+                // Check extension.
+                if (pathToTarget.endsWith(".bmp", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".jpg", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".jpeg", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".png", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".ppm", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".tif", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".tiff", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".xbm", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".xpm", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.lastIndexOf('.')>=0){
+                        QMessageBox::information(parent,
+                           "Unsupported filename extension",
+                           "Please choose a filename with one of the following extensions:\n"
+                           " * .bmp\n"
+                           " * .jpg / .jpeg\n"
+                           " * .png\n"
+                           " * .ppm\n"
+                           " * .tif / .tiff\n"
+                           " * .xbm\n"
+                           " * .xpm\n"
+                        );
+                        goto again;
+                } else {
+                        // No filename given, so try to guess from file-dialog.
+                        if (dialog.selectedNameFilter().contains(".bmp"))
+                                pathToTarget += ".bmp";
+                        else if (dialog.selectedNameFilter().contains(".jpg"))
+                                pathToTarget += ".jpg";
+                        else if (dialog.selectedNameFilter().contains(".png"))
+                                pathToTarget += ".png";
+                        else if (dialog.selectedNameFilter().contains(".ppm"))
+                                pathToTarget += ".ppm";
+                        else if (dialog.selectedNameFilter().contains(".tif"))
+                                pathToTarget += ".tif";
+                        else if (dialog.selectedNameFilter().contains(".xbm"))
+                                pathToTarget += ".xbm";
+                        else if (dialog.selectedNameFilter().contains(".xpm"))
+                                pathToTarget += ".xpm";
+                }
 
                 // Check if overwrites.
                 if (QFile::exists(pathToTarget) &&
@@ -198,31 +251,6 @@ void RenderWindow::RenderProcess (QString pathToSource,
                 QProcess::startDetached(
                         "/home/smach/Projects/picogen/git/qt-frontend/SimplexGui/simplex-gui",
                         args);
-
-                #if 0
-                const pid_t childId = fork();
-                if (childId == -1) {
-                        std::cout << "no child created\n" << std::endl;
-                } else if (childId != 0) {
-                        std::cout << "I am the parent, my child is " << childId << "\n" << std::endl;
-                } else {
-                        std::cout << "I am the child!\n" << std::endl;
-
-                        execl("simplex-gui", "picogen-production-render",
-
-                              NULL);
-                        /*execl ("/home/smach/Projects/picogen/git/redshift/bin/redshift"
-                                ,"redshift"
-                                ,"-c0"
-                                ,"-r0"
-                                ,"-S0"
-                                ,"-p1"
-                                ,("-o" + name).toStdString().c_str()
-                                ,"/home/smach/Desktop/like-a-bird-in-the-sky/like-a-bird-in-the-sky-less-heavy.red"
-                                ,NULL
-                        );*/
-                }
-                #endif
         }
 }
 

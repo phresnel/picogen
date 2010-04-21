@@ -76,6 +76,7 @@ private:
 
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
         QString pathToTarget;
+        //const char *targetType;
 };
 
 
