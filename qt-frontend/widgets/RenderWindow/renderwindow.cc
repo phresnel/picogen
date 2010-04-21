@@ -163,7 +163,6 @@ void RenderWindow::RenderProcess (QString pathToSource,
                     << "X11 Pixmap (*.xpm)"
                     ;
         dialog.setNameFilters(nameFilters);
-        dialog.setNameFilter();
 
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
@@ -312,7 +311,7 @@ void RenderWindow::updateImage (QImage image, double percentage) {
                 if (percentage>=1) {
                         if ("" != pathToTarget) {
                                 setWindowTitle("saving " + pathToTarget);
-                                image.save(pathToTarget);
+                                image.save(pathToTarget, 0, 100);
                         }
 
                         setWindowTitle("Done.");
