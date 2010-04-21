@@ -149,12 +149,6 @@ void RenderWindow::RenderProcess (QString pathToSource,
                                   int renderSettings, int camera,
                                   QWidget* parent
 ) {
-        QStringList args;
-        args << "picogen-production-render";
-        args << pathToSource;
-        QProcess::startDetached("/home/smach/Projects/picogen/git/qt-frontend/SimplexGui/simplex-gui", args);
-        return;
-
         again:
 
         QFileDialog dialog(parent);
@@ -168,14 +162,14 @@ void RenderWindow::RenderProcess (QString pathToSource,
         dialog.setSidebarUrls(urls);
 
         if (dialog.exec()) {
-                QString const name = dialog.selectedFiles()[0];
+                QString const pathToTarget = dialog.selectedFiles()[0];
 
                 // Check if overwrites.
-                if (QFile::exists(name) &&
+                if (QFile::exists(pathToTarget) &&
                     QMessageBox::question(parent, "Overwrite file?",
                                           QString()+
                                           "Do you really want to overwrite the file "
-                                          + "\"" + name + "\"?",
+                                          + "\"" + pathToTarget + "\"?",
                                           QMessageBox::Yes | QMessageBox::No,
                                           QMessageBox::No
                                           ) == QMessageBox::No
@@ -187,7 +181,7 @@ void RenderWindow::RenderProcess (QString pathToSource,
         if (name != "") {*/
 
                 // Check if we can write.
-                QFile file (name);
+                QFile file (pathToTarget);
                 if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
                         QMessageBox::warning(parent, "Failed to save",
                              "The file \"" + file.fileName() + "\" could not be"
@@ -195,6 +189,15 @@ void RenderWindow::RenderProcess (QString pathToSource,
                              +" or one that does not exist yet.");
                         goto again;
                 }
+
+
+                QStringList args;
+                args << "picogen-production-render";
+                args << pathToSource;
+                args << pathToTarget;
+                QProcess::startDetached(
+                        "/home/smach/Projects/picogen/git/qt-frontend/SimplexGui/simplex-gui",
+                        args);
 
                 #if 0
                 const pid_t childId = fork();
@@ -228,11 +231,13 @@ void RenderWindow::RenderProcess (QString pathToSource,
 RenderWindow::RenderWindow(
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
         int renderSettings, int camera,
+        QString pathToTarget,
         QWidget *parent
 ) :
     QDialog(parent),
     ui(new Ui::RenderWindow),
-    scenefile(scenefile)
+    scenefile(scenefile),
+    pathToTarget(pathToTarget)
 {
         ui->setupUi(this);
 
@@ -277,6 +282,11 @@ void RenderWindow::updateImage (QImage image, double percentage) {
                 ui->pix->setText(impl->errorMessage());
         } else {
                 if (percentage>=1) {
+                        if ("" != pathToTarget) {
+                                setWindowTitle("saving " + pathToTarget);
+                                image.save(pathToTarget);
+                        }
+
                         setWindowTitle("Done.");
                 } else {
                         setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");

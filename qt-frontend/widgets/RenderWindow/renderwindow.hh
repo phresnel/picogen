@@ -55,6 +55,7 @@ class RenderWindow : public QDialog {
 public:
         RenderWindow(redshift::shared_ptr<redshift::scenefile::Scene>,
                      int renderSettings, int camera,
+                     QString targetFilename="",
                      QWidget* parent=0);
         ~RenderWindow();
 
@@ -74,6 +75,7 @@ private:
         friend class RenderWindowImpl;
 
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
+        QString pathToTarget;
 };
 
 

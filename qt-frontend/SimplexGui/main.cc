@@ -51,22 +51,34 @@ int productionRender (int argc, char *argv[]) {
         redshift::static_init();
         QApplication a(argc, argv);
 
-        const QString name =
+        const QString pathToSource =
                 argc>2
                 ? QString(argv[2])
                 : "";
-        if ("" == name) {
+        if ("" == pathToSource) {
                 QMessageBox::critical(0, "Missing argument",
                         "No source-file has been specified.");
                 return -1;
-        } else if (!QFile::exists(name)) {
+        } else if (!QFile::exists(pathToSource)) {
                 QMessageBox::critical(0, "File not found",
-                        "The source-file \"" + name + "\" has not been found.");
+                        "The source-file \"" + pathToSource + "\" has not been found.");
                 return -1;
         }
+
+
+        const QString pathToTarget =
+                argc>3
+                ? QString(argv[3])
+                : "";
+        if ("" == pathToTarget) {
+                QMessageBox::critical(0, "Missing argument",
+                        "No target-file has been specified.");
+                return -1;
+        }
+
         try {
                 redshift::scenefile::Scene scene;
-                std::ifstream ss(name.toStdString().c_str());
+                std::ifstream ss(pathToSource.toStdString().c_str());
                 actuarius::IArchive (ss) & actuarius::pack("scene", scene);
 
                 redshift::shared_ptr<redshift::scenefile::Scene> pscene =
@@ -74,14 +86,14 @@ int productionRender (int argc, char *argv[]) {
                                                 new redshift::scenefile::Scene(scene)
                                 );
 
-                RenderWindow w (pscene, 0, 0, 0);
+                RenderWindow w (pscene, 0, 0, pathToTarget, 0);
                 w.show();
                 const int ret = a.exec();
                 return ret;
         } catch (std::exception const &e){
                 QMessageBox::critical(0,
                       "Error upon loading",
-                      "The selected file \"" + name + "\" could not be loaded, "
+                      "The selected file \"" + pathToSource + "\" could not be loaded, "
                       "are you sure this is a valid picogen file?"
                       );
                 return -1;

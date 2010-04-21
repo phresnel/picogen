@@ -1977,7 +1977,7 @@ QString MainWindow::askForNewSaveFilename() {
 
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::AnyFile);
-        dialog.setWindowTitle("Set a filename for saving");
+        dialog.setWindowTitle("Set a filename for saving the scene");
 
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
@@ -2120,7 +2120,7 @@ void MainWindow::render() {
 
                 RenderWindow *rw = new RenderWindow (
                                 createScene(),
-                                renderSettings, camera,
+                                renderSettings, camera, "",
                                 this);
                 ui->mdiArea->addSubWindow(rw);
                 rw->show();
