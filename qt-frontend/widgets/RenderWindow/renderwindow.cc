@@ -145,10 +145,16 @@ void RenderWindowImpl::run() {
 //=============================================================================
 // TODO: this function should not be part of render-window, as it is specific to
 //       simplex-gui
-void RenderWindow::RenderProcess (redshift::shared_ptr<redshift::scenefile::Scene>,
+void RenderWindow::RenderProcess (QString pathToSource,
                                   int renderSettings, int camera,
                                   QWidget* parent
 ) {
+        QStringList args;
+        args << "picogen-production-render";
+        args << pathToSource;
+        QProcess::startDetached("/home/smach/Projects/picogen/git/qt-frontend/SimplexGui/simplex-gui", args);
+        return;
+
         again:
 
         QFileDialog dialog(parent);
@@ -190,6 +196,7 @@ void RenderWindow::RenderProcess (redshift::shared_ptr<redshift::scenefile::Scen
                         goto again;
                 }
 
+                #if 0
                 const pid_t childId = fork();
                 if (childId == -1) {
                         std::cout << "no child created\n" << std::endl;
@@ -197,7 +204,10 @@ void RenderWindow::RenderProcess (redshift::shared_ptr<redshift::scenefile::Scen
                         std::cout << "I am the parent, my child is " << childId << "\n" << std::endl;
                 } else {
                         std::cout << "I am the child!\n" << std::endl;
-                        execl("simplex-gui", "picogen-production-render", NULL);
+
+                        execl("simplex-gui", "picogen-production-render",
+
+                              NULL);
                         /*execl ("/home/smach/Projects/picogen/git/redshift/bin/redshift"
                                 ,"redshift"
                                 ,"-c0"
@@ -209,6 +219,7 @@ void RenderWindow::RenderProcess (redshift::shared_ptr<redshift::scenefile::Scen
                                 ,NULL
                         );*/
                 }
+                #endif
         }
 }
 

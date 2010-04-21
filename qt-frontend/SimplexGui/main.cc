@@ -23,6 +23,7 @@
 #include "mainwindow.hh"
 #include "renderwindow.hh"
 #include <QMessageBox>
+#include <QFile>
 #include <QCleanlooksStyle>
 
 #include <fstream>
@@ -50,7 +51,19 @@ int productionRender (int argc, char *argv[]) {
         redshift::static_init();
         QApplication a(argc, argv);
 
-        QString name = "/home/smach/Desktop/like-a-bird-in-the-sky/like-a-bird-in-the-sky-less-heavy.red";
+        const QString name =
+                argc>2
+                ? QString(argv[2])
+                : "";
+        if ("" == name) {
+                QMessageBox::critical(0, "Missing argument",
+                        "No source-file has been specified.");
+                return -1;
+        } else if (!QFile::exists(name)) {
+                QMessageBox::critical(0, "File not found",
+                        "The source-file \"" + name + "\" has not been found.");
+                return -1;
+        }
         try {
                 redshift::scenefile::Scene scene;
                 std::ifstream ss(name.toStdString().c_str());
@@ -80,7 +93,7 @@ int productionRender (int argc, char *argv[]) {
 
 
 int main(int argc, char *argv[]) {
-        if (!strcmp ("picogen-production-render", argv[0]))
+        if (argc>1 && !strcmp ("picogen-production-render", argv[1]))
                 return productionRender(argc, argv);
         return simplexGui (argc, argv);
 }

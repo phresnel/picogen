@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>877</width>
-    <height>493</height>
+    <height>515</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -552,7 +552,7 @@ QTabWidget::pane { /* The tab widget frame */
     <string>Render</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+F5, Return</string>
+    <string>Ctrl+F5</string>
    </property>
   </action>
   <action name="action_Save">
@@ -599,7 +599,7 @@ QTabWidget::pane { /* The tab widget frame */
     <string>Production Render</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+F5</string>
+    <string>Ctrl+F6</string>
    </property>
   </action>
  </widget>

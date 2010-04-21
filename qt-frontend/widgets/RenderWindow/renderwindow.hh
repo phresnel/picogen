@@ -58,7 +58,7 @@ public:
                      QWidget* parent=0);
         ~RenderWindow();
 
-        static void RenderProcess (redshift::shared_ptr<redshift::scenefile::Scene>,
+        static void RenderProcess (QString pathToSource,
                               int renderSettings, int camera,
                               QWidget* parent=0);
 

@@ -2182,12 +2182,27 @@ void MainWindow::on_actionLoad_triggered() {
 
 void MainWindow::on_actionProduction_Render_triggered() {
         try {
+                again:
+                if (saveFilename == "" || !QFile::exists(saveFilename)) {
+                        if (QMessageBox::Ok ==
+                                QMessageBox::question(this, "Unsaved scene",
+                                  "To do a production-render, the scene must be "
+                                  "saved first.",
+                                  QMessageBox::Ok | QMessageBox::Cancel,
+                                  QMessageBox::Ok
+                                )
+                        ) {
+                                on_action_Save_triggered();
+                                goto again;
+                        }
+                        return;
+                }
                 const int
                       renderSettings = ui->renderSettingConfig->currentIndex(),
                       camera = ui->cameraConfig->currentIndex();
 
                 RenderWindow::RenderProcess (
-                                createScene(),
+                                saveFilename,
                                 renderSettings, camera,
                                 this
                 );
