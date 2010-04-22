@@ -34,9 +34,9 @@ namespace redshift {
         public:
                 // Surface null
                 tuple<real_t,Color,real_t> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample, Random& rand
+                        const Scene &,
+                        const RayDifferential &,
+                        const Sample &, Random&
                 ) const {
                         return make_tuple (
                                 1.0,
@@ -47,18 +47,19 @@ namespace redshift {
 
                 // Volume null
                 tuple<real_t,Color> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample,
-                        const Interval &interval,
-                        Random& rand
+                        const Scene &,
+                        const RayDifferential &,
+                        const Sample &,
+                        const Interval &,
+                        Random&
                 ) const {
                         return make_tuple(1.f, Color(0));
                 }
-                tuple<real_t,Color> Transmittance(const Scene &scene,
-                        const Ray &ray, const Sample &sample,
-                        const Interval &interval,
-                        Random& rand
+                tuple<real_t,Color> Transmittance(
+                        const Scene &,
+                        const Ray &, const Sample &,
+                        const Interval &,
+                        Random&
                 ) const {
                         return make_tuple(1.f,Color(1));
                 }
