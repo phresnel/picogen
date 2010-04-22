@@ -252,6 +252,10 @@ void MainWindow::setupUi() {
         changed = true;
         ui->setupUi(this);
 
+
+        ui->actionShow_Command_Pile->setChecked(true);
+
+
         // code editor
         ui->codeEditor->setEnabled(false);
         ui->codeEditor->setVisible(false);
@@ -2448,4 +2452,11 @@ void MainWindow::on_actionDelete_Object_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
         objectsProperty->removeSubProperty(currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_actionShow_Command_Pile_triggered(bool checked) {
+        ui->commandPileGroupBox->setEnabled(checked);
+        ui->commandPileGroupBox->setVisible(checked);
 }
