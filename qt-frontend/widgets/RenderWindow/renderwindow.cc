@@ -290,9 +290,8 @@ void RenderWindow::RenderProcess (QString pathToSource,
         QStringList args;
         args << "picogen-production-render";
         args << pathToSource;
-        QProcess::startDetached(
-                //"/home/smach/Projects/picogen/git/qt-frontend/SimplexGui/simplex-gui",
-                "simplex-gui",
+        QProcess::startDetached(                
+                QApplication::applicationFilePath(),
                 args);
 }
 
@@ -416,7 +415,8 @@ void RenderWindow::resizeEvent (QResizeEvent *) {
                                 scaled,
                                 Qt::KeepAspectRatio,
                                 Qt::FastTransformation));
-                        setWindowTitle("Zoom: " + QString::number(zoom) + "%");
+                        if (zoom>=0 && zoom <= 100)
+                                setWindowTitle("Zoom: " + QString::number(zoom) + "%");
                 }
         }
 }
