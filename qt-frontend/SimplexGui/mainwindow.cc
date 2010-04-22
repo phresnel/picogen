@@ -308,7 +308,7 @@ void MainWindow::setupUi() {
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         //ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
-        ui->settings->setFactoryForManager(volumeTypeEnumManager, comboBoxFactory);
+        //ui->settings->setFactoryForManager(volumeTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
@@ -1836,8 +1836,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         settingsContextMenu.addAction(ui->actionAdd_Horizon_Plane);
         settingsContextMenu.addAction(ui->actionAdd_Water_Plane);
         settingsContextMenu.addAction(ui->actionAdd_Lazy_Quadtree);
-        settingsContextMenu.addSeparator();
-        settingsContextMenu.addAction(ui->actionNew_Volume);        
+        settingsContextMenu.addSeparator();        
+        settingsContextMenu.addAction(ui->actionAdd_Homogeneous_Volume);
+        settingsContextMenu.addAction(ui->actionAdd_Exponential_Volume);
         settingsContextMenu.addSeparator();
 
         this->currentBrowserItem = current;
@@ -1985,8 +1986,11 @@ void MainWindow::on_newLazyQuadtreeButton_clicked() {
 
 
 
-void MainWindow::on_newVolumeButton_clicked() {
-        on_actionNew_Volume_triggered();
+void MainWindow::on_newExponentialVolumeButton_clicked() {
+        on_actionAdd_Exponential_Volume_triggered();
+}
+void MainWindow::on_newHomogeneousVolumeButton_clicked() {
+        on_actionAdd_Homogeneous_Volume_triggered();
 }
 
 
@@ -2353,20 +2357,13 @@ void MainWindow::on_actionNew_Render_Setting_triggered() {
 
 
 
-void MainWindow::on_actionNew_Object_triggered() {
+void MainWindow::on_actionAdd_Homogeneous_Volume_triggered() {
         setChanged();
-        redshift::scenefile::Object o;
-        o.type = redshift::scenefile::Object::horizon_plane;
-        addObject (o);
+        redshift::scenefile::Volume v;
+        v.type = redshift::scenefile::Volume::homogeneous;
+        addVolume (v);
 }
-void MainWindow::on_actionDelete_Object_triggered() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        objectsProperty->removeSubProperty(currentBrowserItem->property());
-}
-
-
-void MainWindow::on_actionNew_Volume_triggered() {
+void MainWindow::on_actionAdd_Exponential_Volume_triggered() {
         setChanged();
         redshift::scenefile::Volume v;
         v.type = redshift::scenefile::Volume::exponential;
@@ -2431,21 +2428,20 @@ void MainWindow::on_actionAdd_Water_Plane_triggered() {
         o.type = redshift::scenefile::Object::water_plane;
         addObject (o);
 }
-
-
-
 void MainWindow::on_actionAdd_Horizon_Plane_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::horizon_plane;
         addObject (o);
 }
-
-
-
 void MainWindow::on_actionAdd_Lazy_Quadtree_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::lazy_quadtree;
         addObject (o);
+}
+void MainWindow::on_actionDelete_Object_triggered() {
+        setChanged();
+        // assumed to signal everything needed for clean up
+        objectsProperty->removeSubProperty(currentBrowserItem->property());
 }

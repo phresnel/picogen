@@ -267,7 +267,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
+           <item row="8" column="0">
             <widget class="QPushButton" name="newCameraButton">
              <property name="enabled">
               <bool>true</bool>
@@ -277,7 +277,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
+           <item row="8" column="1">
             <widget class="QPushButton" name="deleteCameraButton">
              <property name="enabled">
               <bool>false</bool>
@@ -287,7 +287,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
+           <item row="9" column="0">
             <widget class="QPushButton" name="newSubTransformButton">
              <property name="enabled">
               <bool>false</bool>
@@ -297,33 +297,13 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="8" column="1">
+           <item row="9" column="1">
             <widget class="QPushButton" name="deleteSubTransformButton">
              <property name="enabled">
               <bool>false</bool>
              </property>
              <property name="text">
               <string>Delete Transform</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QPushButton" name="newVolumeButton">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>New Volume</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QPushButton" name="deleteVolumeButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Delete Volume</string>
              </property>
             </widget>
            </item>
@@ -364,6 +344,36 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
              <property name="text">
               <string>Delete Object</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="newHomogeneousVolumeButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>New Homogeneous Volume</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QPushButton" name="newExponentialVolumeButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>New Exponential Volume</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QPushButton" name="deleteVolumeButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Delete Volume</string>
              </property>
             </widget>
            </item>
@@ -635,19 +645,9 @@ QTabWidget::pane { /* The tab widget frame */
     <string>Delete Render Setting</string>
    </property>
   </action>
-  <action name="actionNew_Object">
-   <property name="text">
-    <string>New Object</string>
-   </property>
-  </action>
   <action name="actionDelete_Object">
    <property name="text">
     <string>Delete Object</string>
-   </property>
-  </action>
-  <action name="actionNew_Volume">
-   <property name="text">
-    <string>New Volume</string>
    </property>
   </action>
   <action name="actionDelete_Volume">
@@ -688,6 +688,16 @@ QTabWidget::pane { /* The tab widget frame */
   <action name="actionAdd_Lazy_Quadtree">
    <property name="text">
     <string>Add Lazy-Quadtree (Terrain)</string>
+   </property>
+  </action>
+  <action name="actionAdd_Homogeneous_Volume">
+   <property name="text">
+    <string>Add Homogeneous Volume</string>
+   </property>
+  </action>
+  <action name="actionAdd_Exponential_Volume">
+   <property name="text">
+    <string>Add Exponential Volume</string>
    </property>
   </action>
  </widget>

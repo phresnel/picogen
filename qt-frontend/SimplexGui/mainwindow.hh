@@ -143,18 +143,20 @@ private:
         bool nonRecurseLock;
         QMenu settingsContextMenu;
 private slots:
+        void on_actionAdd_Homogeneous_Volume_triggered();
+        void on_actionAdd_Exponential_Volume_triggered();
+        void on_actionDelete_Volume_triggered();
+
         void on_actionAdd_Lazy_Quadtree_triggered();
         void on_actionAdd_Horizon_Plane_triggered();
         void on_actionAdd_Water_Plane_triggered();
+        void on_actionDelete_Object_triggered();
+
         void on_actionNew_Camera_triggered();
         void on_actionDelete_Camera_triggered();
+
         void on_actionNew_Sub_Transform_triggered();
         void on_actionDelete_Sub_Transform_triggered();
-
-        void on_actionDelete_Object_triggered();
-        void on_actionNew_Object_triggered();
-        void on_actionDelete_Volume_triggered();
-        void on_actionNew_Volume_triggered();
 
         void on_actionDelete_Render_Setting_triggered();
         void on_actionNew_Render_Setting_triggered();
@@ -173,7 +175,9 @@ private slots:
         void on_newWaterPlaneButton_clicked();
         void on_newLazyQuadtreeButton_clicked();
 
-        void on_newVolumeButton_clicked();
+        void on_newExponentialVolumeButton_clicked();
+        void on_newHomogeneousVolumeButton_clicked();
+
         void on_newSubTransformButton_clicked();
         void on_newRsButton_clicked();
 
