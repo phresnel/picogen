@@ -309,14 +309,17 @@ RenderWindow::RenderWindow(
 {
         ui->setupUi(this);
 
-        // The following 3 lines are to ensure that we are properly sized.
-        // It seems impossible to do proper resizing within updateImage
-        // (I've tried to setMinimumSize() on pixmap, layout, myself, and also
-        //  the others like repaint(), update(), and all permutations)
+        // Part 1 of my resizing nightmare (there is also Part 2).
+        //  The following lines shall ensure that upon initialization,
+        //  the pixmap-label is properly sized. Within the resize method,
+        //  we then set Ignore, so we can also shrink, not only grow.
         QPixmap map(scenefile->renderSettings(renderSettings).width,
                     scenefile->renderSettings(renderSettings).height);
         map.fill(QColor(0,0,0));
-        ui->pix->setPixmap(map);
+
+        ui->pix->setSizePolicy(QSizePolicy::Preferred,
+                               QSizePolicy::Preferred);
+        ui->pix->setPixmap(map);        
 
         impl = redshift::shared_ptr<RenderWindowImpl>(
                   new RenderWindowImpl(scenefile, renderSettings, camera));
@@ -339,7 +342,7 @@ RenderWindow::~RenderWindow() {
 
 
 void RenderWindow::updateImage (QImage image, double percentage) {
-        if (impl->error()) {
+        if (impl->error()) {                
                 setWindowTitle ("Error");
 
                 QFont font;
@@ -352,13 +355,16 @@ void RenderWindow::updateImage (QImage image, double percentage) {
                 ui->saveImageButton->setEnabled(false);
         } else {
                 this->image = image; // TODO: profile that assignment
-                if (percentage>=1) {
+                if (percentage>=1) {                        
                         setWindowTitle("Done (image not saved).");
                 } else {
                         setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
                 }
 
-                ui->pix->setPixmap(QPixmap::fromImage(image));
+                ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
+                        ui->pix->size(),
+                        Qt::KeepAspectRatio,
+                        Qt::FastTransformation));
         }
 }
 
@@ -369,7 +375,7 @@ void RenderWindow::changeEvent(QEvent *e) {
         switch (e->type()) {
         case QEvent::LanguageChange:
                 ui->retranslateUi(this);
-                break;
+                break;        
         default:
                 break;
         }
@@ -383,6 +389,35 @@ void RenderWindow::on_saveImageButton_clicked() {
                 setWindowTitle("saving " + path + "... ");
                 this->image.save(path, 0, 100);
                 setWindowTitle("Saved as " + path);
+        }
+}
+
+
+
+void RenderWindow::resizeEvent (QResizeEvent *) {
+        if (ui->pix->pixmap()) {
+                // Part 2 of my resizing nightmare. See also Part 1.
+                ui->pix->setSizePolicy(QSizePolicy::Ignored,
+                                       QSizePolicy::Ignored);
+
+                QSize scaled = image.size();
+                scaled.scale(ui->pix->size(), Qt::KeepAspectRatio);
+                
+                const double areaScaled = scaled.width() * scaled.height();
+                const double areaOrig = image.width() * image.height();
+                const double zoom = 100 * (areaScaled / areaOrig);
+                const double diff = fabs (zoom - 100);
+
+                if (diff < 10) {
+                        ui->pix->setPixmap(QPixmap::fromImage(this->image));
+                        setWindowTitle("Zoom: 100%");
+                } else {
+                        ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
+                                scaled,
+                                Qt::KeepAspectRatio,
+                                Qt::FastTransformation));
+                        setWindowTitle("Zoom: " + QString::number(zoom) + "%");
+                }
         }
 }
 

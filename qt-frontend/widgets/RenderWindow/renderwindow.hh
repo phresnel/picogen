@@ -65,10 +65,11 @@ public:
 
 protected:
         void changeEvent(QEvent *e);
+        void resizeEvent(QResizeEvent *);
 
 private slots:        
         void on_pauseButton_clicked(bool checked);
-        void on_saveImageButton_clicked();
+        void on_saveImageButton_clicked();        
         void updateImage (QImage image, double percentage);
 
 private:
