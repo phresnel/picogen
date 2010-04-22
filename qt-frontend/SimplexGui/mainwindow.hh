@@ -143,6 +143,9 @@ private:
         bool nonRecurseLock;
         QMenu settingsContextMenu;
 private slots:
+        void on_actionAdd_Lazy_Quadtree_triggered();
+        void on_actionAdd_Horizon_Plane_triggered();
+        void on_actionAdd_Water_Plane_triggered();
         void on_actionNew_Camera_triggered();
         void on_actionDelete_Camera_triggered();
         void on_actionNew_Sub_Transform_triggered();
@@ -165,7 +168,11 @@ private slots:
         void on_deleteObjectButton_clicked();
         void on_deleteVolumeButton_clicked();
         void on_deleteSubTransformButton_clicked();
-        void on_newObjectButton_clicked();
+
+        void on_newHorizonPlaneButton_clicked();
+        void on_newWaterPlaneButton_clicked();
+        void on_newLazyQuadtreeButton_clicked();
+
         void on_newVolumeButton_clicked();
         void on_newSubTransformButton_clicked();
         void on_newRsButton_clicked();

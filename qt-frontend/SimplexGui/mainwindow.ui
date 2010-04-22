@@ -267,27 +267,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="newObjectButton">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>New Object</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="deleteObjectButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Delete Object</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
+           <item row="7" column="0">
             <widget class="QPushButton" name="newCameraButton">
              <property name="enabled">
               <bool>true</bool>
@@ -297,7 +277,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="7" column="1">
             <widget class="QPushButton" name="deleteCameraButton">
              <property name="enabled">
               <bool>false</bool>
@@ -307,7 +287,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="8" column="0">
             <widget class="QPushButton" name="newSubTransformButton">
              <property name="enabled">
               <bool>false</bool>
@@ -317,7 +297,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="8" column="1">
             <widget class="QPushButton" name="deleteSubTransformButton">
              <property name="enabled">
               <bool>false</bool>
@@ -327,7 +307,7 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="5" column="0">
             <widget class="QPushButton" name="newVolumeButton">
              <property name="enabled">
               <bool>true</bool>
@@ -337,13 +317,53 @@ QTabWidget::pane { /* The tab widget frame */
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="5" column="1">
             <widget class="QPushButton" name="deleteVolumeButton">
              <property name="enabled">
               <bool>false</bool>
              </property>
              <property name="text">
               <string>Delete Volume</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="newHorizonPlaneButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>New Horizon-Plane</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="newLazyQuadtreeButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>New Lazy-Quadtree</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="newWaterPlaneButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>New Water-Plane</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="deleteObjectButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Delete Object</string>
              </property>
             </widget>
            </item>
@@ -653,6 +673,21 @@ QTabWidget::pane { /* The tab widget frame */
   <action name="actionDelete_Sub_Transform">
    <property name="text">
     <string>Delete Sub-Transform</string>
+   </property>
+  </action>
+  <action name="actionAdd_Water_Plane">
+   <property name="text">
+    <string>Add Water-Plane</string>
+   </property>
+  </action>
+  <action name="actionAdd_Horizon_Plane">
+   <property name="text">
+    <string>Add Horizon-Plane</string>
+   </property>
+  </action>
+  <action name="actionAdd_Lazy_Quadtree">
+   <property name="text">
+    <string>Add Lazy-Quadtree (Terrain)</string>
    </property>
   </action>
  </widget>

@@ -306,7 +306,7 @@ void MainWindow::setupUi() {
         ui->settings->setFactoryForManager(variantManager, variantFactory);
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
-        ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
+        //ui->settings->setFactoryForManager(objectTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(volumeTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
@@ -1832,7 +1832,11 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         settingsContextMenu.clear();
         settingsContextMenu.addAction(ui->actionNew_Render_Setting);
         settingsContextMenu.addAction(ui->actionNew_Camera);
-        settingsContextMenu.addAction(ui->actionNew_Object);
+        settingsContextMenu.addSeparator();
+        settingsContextMenu.addAction(ui->actionAdd_Horizon_Plane);
+        settingsContextMenu.addAction(ui->actionAdd_Water_Plane);
+        settingsContextMenu.addAction(ui->actionAdd_Lazy_Quadtree);
+        settingsContextMenu.addSeparator();
         settingsContextMenu.addAction(ui->actionNew_Volume);        
         settingsContextMenu.addSeparator();
 
@@ -1969,8 +1973,14 @@ void MainWindow::on_newRsButton_clicked() {
 
 
 
-void MainWindow::on_newObjectButton_clicked() {
-        on_actionNew_Object_triggered();
+void MainWindow::on_newWaterPlaneButton_clicked() {
+        on_actionAdd_Water_Plane_triggered();
+}
+void MainWindow::on_newHorizonPlaneButton_clicked() {
+        on_actionAdd_Horizon_Plane_triggered();
+}
+void MainWindow::on_newLazyQuadtreeButton_clicked() {
+        on_actionAdd_Lazy_Quadtree_triggered();
 }
 
 
@@ -2411,4 +2421,31 @@ void MainWindow::on_actionDelete_Sub_Transform_triggered() {
         // assumed to signal everything needed for clean up
         currentTransformProperty->removeSubProperty(
                         currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_actionAdd_Water_Plane_triggered() {
+        setChanged();
+        redshift::scenefile::Object o;
+        o.type = redshift::scenefile::Object::water_plane;
+        addObject (o);
+}
+
+
+
+void MainWindow::on_actionAdd_Horizon_Plane_triggered() {
+        setChanged();
+        redshift::scenefile::Object o;
+        o.type = redshift::scenefile::Object::horizon_plane;
+        addObject (o);
+}
+
+
+
+void MainWindow::on_actionAdd_Lazy_Quadtree_triggered() {
+        setChanged();
+        redshift::scenefile::Object o;
+        o.type = redshift::scenefile::Object::lazy_quadtree;
+        addObject (o);
 }
