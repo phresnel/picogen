@@ -202,6 +202,15 @@ MainWindow::MainWindow(QWidget *parent) :
         setupUi();
         setDefaultScene();
 
+        objectsMenu.addAction(ui->actionAdd_Horizon_Plane);
+        objectsMenu.addAction(ui->actionAdd_Water_Plane);
+        objectsMenu.addAction(ui->actionAdd_Lazy_Quadtree);
+        objectsMenu.setTitle("new object");
+
+        volumesMenu.addAction(ui->actionAdd_Homogeneous_Volume);
+        volumesMenu.addAction(ui->actionAdd_Exponential_Volume);
+        volumesMenu.setTitle("new volume");
+
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);
         ui->settings->setHeaderVisible(false);
@@ -1831,14 +1840,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
         settingsContextMenu.clear();
         settingsContextMenu.addAction(ui->actionNew_Render_Setting);
-        settingsContextMenu.addAction(ui->actionNew_Camera);
-        settingsContextMenu.addSeparator();
-        settingsContextMenu.addAction(ui->actionAdd_Horizon_Plane);
-        settingsContextMenu.addAction(ui->actionAdd_Water_Plane);
-        settingsContextMenu.addAction(ui->actionAdd_Lazy_Quadtree);
-        settingsContextMenu.addSeparator();        
-        settingsContextMenu.addAction(ui->actionAdd_Homogeneous_Volume);
-        settingsContextMenu.addAction(ui->actionAdd_Exponential_Volume);
+        settingsContextMenu.addAction(ui->actionNew_Camera);        
+        settingsContextMenu.addMenu(&objectsMenu);
+        settingsContextMenu.addMenu(&volumesMenu);
         settingsContextMenu.addSeparator();
 
         this->currentBrowserItem = current;

@@ -141,7 +141,7 @@ private:
         void setUnchanged ();
 
         bool nonRecurseLock;
-        QMenu settingsContextMenu;
+        QMenu settingsContextMenu, objectsMenu, volumesMenu;
 private slots:
         void on_actionAdd_Homogeneous_Volume_triggered();
         void on_actionAdd_Exponential_Volume_triggered();
