@@ -65,6 +65,31 @@ int productionRender (int argc, char *argv[]) {
                 return -1;
         }
 
+        const QString renderSettingsS =
+                argc>3
+                ? QString(argv[3])
+                        : "";
+
+        const QString cameraSettingsS =
+                argc>4
+                ? QString(argv[4])
+                        : "";
+
+        bool okayC, okayR;
+        const int renderSetting = renderSettingsS.toInt(&okayC);
+        const int cameraSetting = cameraSettingsS.toInt(&okayR);
+
+        if ("" == renderSettingsS || "" == cameraSettingsS
+            || cameraSetting<0 || renderSetting<0
+            || !okayC || !okayR
+        ) {
+                QMessageBox::critical(0, "Missing argument(s)",
+                  "Need an index [0..n] for the render setting and camera setting "
+                  "to be used."
+                );
+                return -1;
+        }
+
         try {
                 redshift::scenefile::Scene scene;
                 std::ifstream ss(pathToSource.toStdString().c_str());
@@ -75,7 +100,7 @@ int productionRender (int argc, char *argv[]) {
                                                 new redshift::scenefile::Scene(scene)
                                 );
 
-                RenderWindow w (pscene, 0, 0, 0);
+                RenderWindow w (pscene, renderSetting, cameraSetting, 0);
                 w.show();
                 const int ret = a.exec();
                 return ret;

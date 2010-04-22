@@ -675,7 +675,7 @@ redshift::scenefile::Material
 MainWindow::readMaterial (
         QList<QtProperty*> subs, QString name
 ) const {
-        QtProperty *material = readSubProperty("material", subs);
+        QtProperty *material = readSubProperty(name, subs);
         if (!material) return redshift::scenefile::Material();
 
         redshift::scenefile::Material mat;
@@ -1524,7 +1524,7 @@ void MainWindow::addVolume (redshift::scenefile::Volume const &v) {
                   ;
         volumeTypeEnumManager->setEnumNames(volumeType, enumNames);
 
-        QtProperty *tmp, *tmp2;
+        QtProperty *tmp;
 
         switch (v.type) {
         case redshift::scenefile::Volume::homogeneous:
@@ -2113,8 +2113,9 @@ void MainWindow::on_action_Save_triggered() {
                                      "another name.");
                 on_actionSave_as_triggered();
         }
-        
+
         setUnchanged();
+        refreshWindowTitle();
 }
 
 
@@ -2125,7 +2126,7 @@ void MainWindow::on_actionSave_as_triggered() {
         QString newName = askForNewSaveFilename();
         if (newName == "") {
                 return;
-        }        
+        }
 
         std::ofstream ofs (saveFilename.toStdString().c_str());
         if (ofs.is_open()) {
@@ -2138,7 +2139,7 @@ void MainWindow::on_actionSave_as_triggered() {
                                      "another name.");
                 goto again;
         }
-        
+
         setUnchanged();
 }
 
@@ -2293,9 +2294,7 @@ void MainWindow::on_actionProduction_Render_triggered() {
 
                 RenderWindow::RenderProcess (
                                 saveFilename,
-                                renderSettings, camera,
-                                this
-                );
+                                renderSettings, camera);
         } catch (std::exception const &ex) {
                 QMessageBox::critical(this, "Error", QString()+
                                       "An exception occured:\n\n"

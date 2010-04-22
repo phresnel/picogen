@@ -151,9 +151,9 @@ RenderWindowImpl::RenderWindowImpl (
                 int renderSettings, int camera
 ) : renderSettings(renderSettings), camera(camera)
   , scenefile(scenefile), error_(false), errorMessage_("")
+  , running(false)
   , wantsToQuit(false)
   , wantsToPause(false)
-  , running(false)
 {
 }
 
@@ -284,13 +284,14 @@ void RenderWindowImpl::saveQuit() {
 // TODO: this function should not be part of render-window, as it is specific to
 //       simplex-gui
 void RenderWindow::RenderProcess (QString pathToSource,
-                                  int renderSettings, int camera,
-                                  QWidget* parent
+                                  int renderSettings, int camera
 ) {
         QStringList args;
         args << "picogen-production-render";
         args << pathToSource;
-        QProcess::startDetached(                
+        args << QString::number(renderSettings);
+        args << QString::number(camera);
+        QProcess::startDetached(
                 QApplication::applicationFilePath(),
                 args);
 }
@@ -318,7 +319,7 @@ RenderWindow::RenderWindow(
 
         ui->pix->setSizePolicy(QSizePolicy::Preferred,
                                QSizePolicy::Preferred);
-        ui->pix->setPixmap(map);        
+        ui->pix->setPixmap(map);
 
         impl = redshift::shared_ptr<RenderWindowImpl>(
                   new RenderWindowImpl(scenefile, renderSettings, camera));
@@ -341,7 +342,7 @@ RenderWindow::~RenderWindow() {
 
 
 void RenderWindow::updateImage (QImage image, double percentage) {
-        if (impl->error()) {                
+        if (impl->error()) {
                 setWindowTitle ("Error");
 
                 QFont font;
@@ -354,7 +355,7 @@ void RenderWindow::updateImage (QImage image, double percentage) {
                 ui->saveImageButton->setEnabled(false);
         } else {
                 this->image = image; // TODO: profile that assignment
-                if (percentage>=1) {                        
+                if (percentage>=1) {
                         setWindowTitle("Done (image not saved).");
                 } else {
                         setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
@@ -374,7 +375,7 @@ void RenderWindow::changeEvent(QEvent *e) {
         switch (e->type()) {
         case QEvent::LanguageChange:
                 ui->retranslateUi(this);
-                break;        
+                break;
         default:
                 break;
         }
@@ -401,7 +402,7 @@ void RenderWindow::resizeEvent (QResizeEvent *) {
 
                 QSize scaled = image.size();
                 scaled.scale(ui->pix->size(), Qt::KeepAspectRatio);
-                
+
                 const double areaScaled = scaled.width() * scaled.height();
                 const double areaOrig = image.width() * image.height();
                 const double zoom = 100 * (areaScaled / areaOrig);

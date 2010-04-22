@@ -60,16 +60,15 @@ public:
         ~RenderWindow();
 
         static void RenderProcess (QString pathToSource,
-                              int renderSettings, int camera,
-                              QWidget* parent=0);
+                              int renderSettings, int camera);
 
 protected:
         void changeEvent(QEvent *e);
         void resizeEvent(QResizeEvent *);
 
-private slots:        
+private slots:
         void on_pauseButton_clicked(bool checked);
-        void on_saveImageButton_clicked();        
+        void on_saveImageButton_clicked();
         void updateImage (QImage image, double percentage);
 
 private:
@@ -143,7 +142,7 @@ private:
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
 
         bool error_;
-        QString errorMessage_;        
+        QString errorMessage_;
         volatile bool running;
 
         bool wantsToQuit;
