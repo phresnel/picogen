@@ -33,7 +33,7 @@ Intersection::Intersection ()
 
 
 Intersection::Intersection (
-        shared_ptr<redshift::primitive::Primitive const> prim,
+        shared_ptr<redshift::Primitive const> prim,
         DifferentialGeometry const &geom
 )
 : primitive(prim)
@@ -82,7 +82,7 @@ DifferentialGeometry Intersection::getDifferentialGeometry() const {
 
 
 
-shared_ptr<primitive::Primitive const> Intersection::getPrimitive () const {
+shared_ptr<Primitive const> Intersection::getPrimitive () const {
         return primitive;
 }
 

@@ -494,7 +494,7 @@ redshift::shared_ptr<redshift::Scene>
         for (unsigned int i=0; i<scene.objectCount(); ++i) {
                 list->add (scene.object(i).toPrimitive());
         }
-        shared_ptr<primitive::Primitive> agg (list);
+        shared_ptr<Primitive> agg (list);
 
 
         // Add volumes.

@@ -49,7 +49,7 @@ namespace redshift {
                 Scene(
                         shared_ptr<RenderTarget>,
                         shared_ptr<Camera>,
-                        shared_ptr<primitive::Primitive>,
+                        shared_ptr<Primitive>,
                         shared_ptr<Background> bg ,
                         shared_ptr<Integrator> integrator,
                         shared_ptr<VolumeRegion> volumeRegion,
@@ -93,7 +93,7 @@ namespace redshift {
                 //Scene scene;
                 shared_ptr<RenderTarget>         renderTarget;
                 shared_ptr<Camera>               camera;
-                shared_ptr<primitive::Primitive> aggregate;
+                shared_ptr<Primitive>            aggregate;
                 shared_ptr<Background>           background;
                 shared_ptr<Integrator>           surfaceIntegrator;
 

@@ -277,7 +277,7 @@ namespace redshift { namespace scenefile {
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
 
-                inline shared_ptr<primitive::Primitive> toPrimitive () const {
+                inline shared_ptr<Primitive> toPrimitive () const {
                         switch (type) {
                         case lazy_quadtree: return lazyQuadtreeParams.toPrimitive();
                         case water_plane: return waterPlaneParams.toPrimitive();
@@ -343,7 +343,7 @@ namespace redshift { namespace scenefile {
                         , material(0.7,0.7,0.7)
                         {}
 
-                        shared_ptr<primitive::Primitive> toPrimitive() const {
+                        shared_ptr<Primitive> toPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
@@ -364,7 +364,7 @@ namespace redshift { namespace scenefile {
                                                 + errors.str()
                                         );
                                 }
-                                return shared_ptr<primitive::Primitive>(new LazyQuadtree(
+                                return shared_ptr<Primitive>(new LazyQuadtree(
                                         heightFunction,
                                         size,
                                         maxRecursion,
@@ -384,7 +384,7 @@ namespace redshift { namespace scenefile {
                         , material(1,1,1)
                         {}
 
-                        shared_ptr<primitive::Primitive> toPrimitive() const {
+                        shared_ptr<Primitive> toPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
@@ -392,7 +392,7 @@ namespace redshift { namespace scenefile {
                                         shared_ptr<redshift::HeightFunction> (
                                                 new ::redshift::QuatschHeightFunction(code)
                                         );
-                                return shared_ptr<primitive::Primitive>(new WaterPlane(
+                                return shared_ptr<Primitive>(new WaterPlane(
                                         height,
                                         heightFunction,
                                         material.color.toColor(ReflectanceSpectrum)
@@ -408,11 +408,11 @@ namespace redshift { namespace scenefile {
                         , material(1,1,1)
                         {}
 
-                        shared_ptr<primitive::Primitive> toPrimitive() const {
+                        shared_ptr<Primitive> toPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
-                                return shared_ptr<primitive::Primitive>(new HorizonPlane(
+                                return shared_ptr<Primitive>(new HorizonPlane(
                                         height,
                                         material.color.toColor(ReflectanceSpectrum)
                                 ));
@@ -862,12 +862,32 @@ namespace redshift { namespace scenefile {
                 double angle;
 
                 Transform ()
-                : type(move), x(0), y(0), z(0) {}
+                : type(move), x(0), y(0), z(0), angle(0) {}
+
+                Transform (Transform const &rhs)
+                : type(rhs.type), x(rhs.x), y(rhs.y), z(rhs.z), angle(rhs.angle) {}
+
+                Transform &operator = (Transform const &rhs) {
+                        type = rhs.type;
+                        x = rhs.x;
+                        y = rhs.y;
+                        z = rhs.z;
+                        angle = rhs.angle;
+                        return *this;
+                }
         };
 
         class TransformList {
                 std::vector<Transform> transforms;
         public:
+
+                TransformList() {}
+                TransformList(TransformList const &rhs)
+                        : transforms(rhs.transforms) {}
+                TransformList &operator = (TransformList const &rhs) {
+                        transforms = rhs.transforms;
+                        return *this;
+                }
 
                 Transform operator [] (int i) const {
                         return transforms [i];

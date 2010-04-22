@@ -55,8 +55,8 @@ namespace redshift {
 
 Scene::Scene (
         shared_ptr<RenderTarget> rt,
-        shared_ptr<camera::Camera> cam,
-        shared_ptr<primitive::Primitive> prim_,
+        shared_ptr<Camera> cam,
+        shared_ptr<Primitive> prim_,
         shared_ptr<Background> bg,
         shared_ptr<Integrator> surfaceIntegrator,
         shared_ptr<VolumeRegion> volumeRegion_,
@@ -86,7 +86,7 @@ shared_ptr<Background> Scene::getBackground () const {
 
 
 
-shared_ptr<camera::Camera> Scene::getCamera () const {
+shared_ptr<Camera> Scene::getCamera () const {
         return camera;
 }
 

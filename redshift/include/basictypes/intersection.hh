@@ -25,7 +25,7 @@
 #include "../basictypes/differentialgeometry.hh"
 
 
-namespace redshift { namespace primitive { class Primitive; } }
+namespace redshift { class Primitive; }
 
 namespace redshift {
         DefineFinalizer(Intersection);
@@ -33,7 +33,7 @@ namespace redshift {
         class Intersection : DoFinalize(Intersection) {
         public:
                 Intersection (
-                        shared_ptr<redshift::primitive::Primitive const>,
+                        shared_ptr<redshift::Primitive const>,
                         DifferentialGeometry const &geom);
 
                 Intersection () ;
@@ -46,11 +46,11 @@ namespace redshift {
                 Normal getShadingNormal() const ;
                 DifferentialGeometry getDifferentialGeometry() const ;
 
-                shared_ptr<primitive::Primitive const> getPrimitive () const ;
+                shared_ptr<Primitive const> getPrimitive () const ;
 
         private:
 
-                shared_ptr<primitive::Primitive const> primitive;
+                shared_ptr<Primitive const> primitive;
                 DifferentialGeometry differentialGeometry;
         };
 }
