@@ -196,7 +196,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     pssSunSkyProperty(0),
     currentBrowserItem(0),
-    nonRecurseLock(false)
+    nonRecurseLock(false),
+    settingsContextMenu(this)
 {
         setupUi();
         setDefaultScene();
@@ -211,9 +212,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-MainWindow::~MainWindow()
-{
-    delete ui;
+MainWindow::~MainWindow() {
+        if (changed) {
+                if (QMessageBox::Yes == QMessageBox::question(
+                        this, "Unsaved data",
+                        "You have unsaved changes. Save now?",
+                        QMessageBox::Yes | QMessageBox::No)
+                ) {
+                        on_actionSave_as_triggered();
+                }
+        }
+        delete ui;
 }
 
 
@@ -1820,6 +1829,13 @@ void MainWindow::changeEvent(QEvent *e) {
 
 void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
+        settingsContextMenu.clear();
+        settingsContextMenu.addAction(ui->actionNew_Render_Setting);
+        settingsContextMenu.addAction(ui->actionNew_Camera);
+        settingsContextMenu.addAction(ui->actionNew_Object);
+        settingsContextMenu.addAction(ui->actionNew_Volume);        
+        settingsContextMenu.addSeparator();
+
         this->currentBrowserItem = current;
         QString name = (current==0) ? "" : current->property()->propertyName();
 
@@ -1832,16 +1848,28 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                                : findParent(ui->settings->properties(),
                                             parentProp);
 
-        // TODO: below are a bit fragile, but for now work very well.        x
+        // TODO: below are a bit fragile, but for now work very well.
 
         const bool isCode = name == "code";
 
-        ui->deleteObjectButton->setEnabled(
-                        (parentProp != 0)
-                        && (parentProp->propertyName() == "objects"));
-        ui->deleteVolumeButton->setEnabled(
-                        (parentProp != 0)
-                        && (parentProp->propertyName() == "volumes"));
+        if ((parentProp != 0)
+            && (parentProp->propertyName() == "objects")
+        ) {
+                ui->deleteObjectButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionDelete_Object);
+        } else {
+                ui->deleteObjectButton->setEnabled(false);
+        }
+
+        if ((parentProp != 0)
+             && (parentProp->propertyName() == "volumes")
+        ) {
+                ui->deleteVolumeButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionDelete_Volume);
+        } else {
+                ui->deleteVolumeButton->setEnabled(false);
+        }
+
 
         const bool isTransform      = name  == "transform";
         const bool isSubTransform   = (parentProp != 0)
@@ -1880,10 +1908,34 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                 ui->codeEditor->setVisible(false);
         }
 
-        ui->deleteSubTransformButton->setEnabled(isSubTransform);
-        ui->newSubTransformButton->setEnabled(currentTransformProperty != 0);
-        ui->deleteRsButton->setEnabled(isRenderSetting);
-        ui->deleteCameraButton->setEnabled(isCamera);
+        if (currentTransformProperty != 0) {
+                ui->newSubTransformButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionNew_Sub_Transform);
+        } else {
+                ui->newSubTransformButton->setEnabled(false);
+        }
+        if (isSubTransform) {
+                ui->deleteSubTransformButton->setEnabled (true);
+                settingsContextMenu.addAction(ui->actionDelete_Sub_Transform);
+        } else {
+                ui->deleteSubTransformButton->setEnabled (false);
+        }
+
+
+        if (isRenderSetting) {
+                ui->deleteRsButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionDelete_Render_Setting);
+        } else {
+                ui->deleteRsButton->setEnabled(false);
+        }
+
+
+        if (isCamera) {
+                ui->deleteCameraButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionDelete_Camera);
+        } else {
+                ui->deleteCameraButton->setEnabled(false);
+        }
 }
 
 
@@ -1912,28 +1964,19 @@ void MainWindow::on_actionRender_triggered() {
 
 
 void MainWindow::on_newRsButton_clicked() {
-        setChanged();
-        redshift::scenefile::RenderSettings rs;
-        rs.title = "new-setting";
-        addRenderSettings (rs);
+        on_actionNew_Render_Setting_triggered();
 }
 
 
 
 void MainWindow::on_newObjectButton_clicked() {
-        setChanged();
-        redshift::scenefile::Object o;
-        o.type = redshift::scenefile::Object::horizon_plane;
-        addObject (o);
+        on_actionNew_Object_triggered();
 }
 
 
 
 void MainWindow::on_newVolumeButton_clicked() {
-        setChanged();
-        redshift::scenefile::Volume v;
-        v.type = redshift::scenefile::Volume::exponential;
-        addVolume (v);
+        on_actionNew_Volume_triggered();
 }
 
 
@@ -1965,76 +2008,43 @@ void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
 
 
 void MainWindow::on_deleteObjectButton_clicked() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        objectsProperty->removeSubProperty(currentBrowserItem->property());
+        on_actionDelete_Object_triggered();
 }
 
 
 
 void MainWindow::on_deleteVolumeButton_clicked() {
-        setChanged();
-        volumesProperty->removeSubProperty(currentBrowserItem->property());
+        on_actionDelete_Volume_triggered();
 }
 
 
 
 void MainWindow::on_deleteSubTransformButton_clicked() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        currentTransformProperty->removeSubProperty(
-                        currentBrowserItem->property());
+        on_actionDelete_Sub_Transform_triggered();
 }
 
 
 
 void MainWindow::on_deleteRsButton_clicked() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        renderSettingsProperty->removeSubProperty(currentRenderSettingProperty);
-        resyncRenderSettingConfig();
+        on_actionDelete_Render_Setting_triggered();
 }
 
 
 
 void MainWindow::on_newSubTransformButton_clicked() {
-        setChanged();
-        // We assume that newTransform can only clicked when the current-item
-        // is a transform.
-        addTransform (currentTransformProperty,
-                      redshift::scenefile::Transform());
+        on_actionNew_Sub_Transform_triggered();
 }
 
 
 
 void MainWindow::on_newCameraButton_clicked() {
-        setChanged();
-        redshift::scenefile::Camera cam;
-        cam.title = "new-camera";
-        cam.type = redshift::scenefile::Camera::pinhole;
-        cam.pinholeParams.front = 1;
-
-        redshift::scenefile::Transform t;
-        t.type = redshift::scenefile::Transform::move;
-        cam.transforms.push_back(t);
-        t.type = redshift::scenefile::Transform::yaw;
-        cam.transforms.push_back(t);
-        t.type = redshift::scenefile::Transform::pitch;
-        cam.transforms.push_back(t);
-        t.type = redshift::scenefile::Transform::roll;
-        cam.transforms.push_back(t);
-
-        addCamera(cam);
-        resyncCameraConfig();
+        on_actionNew_Camera_triggered();
 }
 
 
 
 void MainWindow::on_deleteCameraButton_clicked() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        camerasProperty->removeSubProperty(currentCameraProperty);
-        resyncCameraConfig();
+        on_actionDelete_Camera_triggered();
 }
 
 
@@ -2128,7 +2138,7 @@ void MainWindow::on_actionSave_as_triggered() {
                 return;
         }
 
-        std::ofstream ofs (saveFilename.toStdString().c_str());
+        std::ofstream ofs (newName.toStdString().c_str());
         if (ofs.is_open()) {
                 ofs << code.toStdString() << std::endl;
                 saveFilename = newName;
@@ -2300,4 +2310,105 @@ void MainWindow::on_actionProduction_Render_triggered() {
                                       "An exception occured:\n\n"
                                       + ex.what());
         }
+}
+
+
+
+void MainWindow::on_settings_customContextMenuRequested(QPoint pos) {
+        settingsContextMenu.exec(ui->settings->mapToGlobal(pos));
+}
+
+
+
+void MainWindow::contextMenuEvent(QContextMenuEvent *event) {
+        /*QMenu menu(this);
+        menu.addAction(ui->actionLoad);
+        menu.exec(event->globalPos());*/
+}
+
+
+
+void MainWindow::on_actionDelete_Render_Setting_triggered() {
+        setChanged();
+        // assumed to signal everything needed for clean up
+        renderSettingsProperty->removeSubProperty(currentRenderSettingProperty);
+        resyncRenderSettingConfig();
+}
+void MainWindow::on_actionNew_Render_Setting_triggered() {
+        setChanged();
+        redshift::scenefile::RenderSettings rs;
+        rs.title = "new-setting";
+        addRenderSettings (rs);
+}
+
+
+
+void MainWindow::on_actionNew_Object_triggered() {
+        setChanged();
+        redshift::scenefile::Object o;
+        o.type = redshift::scenefile::Object::horizon_plane;
+        addObject (o);
+}
+void MainWindow::on_actionDelete_Object_triggered() {
+        setChanged();
+        // assumed to signal everything needed for clean up
+        objectsProperty->removeSubProperty(currentBrowserItem->property());
+}
+
+
+void MainWindow::on_actionNew_Volume_triggered() {
+        setChanged();
+        redshift::scenefile::Volume v;
+        v.type = redshift::scenefile::Volume::exponential;
+        addVolume (v);
+}
+void MainWindow::on_actionDelete_Volume_triggered() {
+        setChanged();
+        // assumed to signal everything needed for clean up
+        volumesProperty->removeSubProperty(currentBrowserItem->property());
+}
+
+
+
+void MainWindow::on_actionNew_Camera_triggered() {
+        setChanged();
+        redshift::scenefile::Camera cam;
+        cam.title = "new-camera";
+        cam.type = redshift::scenefile::Camera::pinhole;
+        cam.pinholeParams.front = 1;
+
+        redshift::scenefile::Transform t;
+        t.type = redshift::scenefile::Transform::move;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::yaw;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::pitch;
+        cam.transforms.push_back(t);
+        t.type = redshift::scenefile::Transform::roll;
+        cam.transforms.push_back(t);
+
+        addCamera(cam);
+        resyncCameraConfig();
+}
+void MainWindow::on_actionDelete_Camera_triggered() {
+        setChanged();
+        // assumed to signal everything needed for clean up
+        camerasProperty->removeSubProperty(currentCameraProperty);
+        resyncCameraConfig();
+}
+
+
+
+void MainWindow::on_actionNew_Sub_Transform_triggered() {
+        setChanged();
+        // We assume that newTransform can only clicked when the current-item
+        // is a transform.
+        addTransform (currentTransformProperty,
+                      redshift::scenefile::Transform());
+}
+void MainWindow::on_actionDelete_Sub_Transform_triggered() {
+        setChanged();
+        // assumed to signal everything needed for clean up
+        currentTransformProperty->removeSubProperty(
+                        currentBrowserItem->property());
 }

@@ -364,6 +364,9 @@ QTabWidget::pane { /* The tab widget frame */
             <height>324</height>
            </size>
           </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
          </widget>
         </item>
        </layout>
@@ -505,7 +508,7 @@ QTabWidget::pane { /* The tab widget frame */
      <x>0</x>
      <y>0</y>
      <width>877</width>
-     <height>19</height>
+     <height>16</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDebugging">
@@ -600,6 +603,56 @@ QTabWidget::pane { /* The tab widget frame */
    </property>
    <property name="shortcut">
     <string>Ctrl+F6</string>
+   </property>
+  </action>
+  <action name="actionNew_Render_Setting">
+   <property name="text">
+    <string>New Render Setting</string>
+   </property>
+  </action>
+  <action name="actionDelete_Render_Setting">
+   <property name="text">
+    <string>Delete Render Setting</string>
+   </property>
+  </action>
+  <action name="actionNew_Object">
+   <property name="text">
+    <string>New Object</string>
+   </property>
+  </action>
+  <action name="actionDelete_Object">
+   <property name="text">
+    <string>Delete Object</string>
+   </property>
+  </action>
+  <action name="actionNew_Volume">
+   <property name="text">
+    <string>New Volume</string>
+   </property>
+  </action>
+  <action name="actionDelete_Volume">
+   <property name="text">
+    <string>Delete Volume</string>
+   </property>
+  </action>
+  <action name="actionNew_Camera">
+   <property name="text">
+    <string>New Camera</string>
+   </property>
+  </action>
+  <action name="actionDelete_Camera">
+   <property name="text">
+    <string>Delete Camera</string>
+   </property>
+  </action>
+  <action name="actionNew_Sub_Transform">
+   <property name="text">
+    <string>New Sub-Transform</string>
+   </property>
+  </action>
+  <action name="actionDelete_Sub_Transform">
+   <property name="text">
+    <string>Delete Sub-Transform</string>
    </property>
   </action>
  </widget>

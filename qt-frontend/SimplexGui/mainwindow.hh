@@ -22,6 +22,7 @@
 #define MAINWINDOW_HH
 
 #include <QMainWindow>
+#include <QMenu>
 #include "qtvariantproperty.h"
 #include "QtStringPropertyManager"
 #include "qtpropertymanager.h"
@@ -53,6 +54,7 @@ public:
 
 protected:
         void changeEvent(QEvent *e);
+        void contextMenuEvent(QContextMenuEvent *event);
 
 private:
         Ui::MainWindow *ui;
@@ -139,7 +141,21 @@ private:
         void setUnchanged ();
 
         bool nonRecurseLock;
+        QMenu settingsContextMenu;
 private slots:
+        void on_actionNew_Camera_triggered();
+        void on_actionDelete_Camera_triggered();
+        void on_actionNew_Sub_Transform_triggered();
+        void on_actionDelete_Sub_Transform_triggered();
+
+        void on_actionDelete_Object_triggered();
+        void on_actionNew_Object_triggered();
+        void on_actionDelete_Volume_triggered();
+        void on_actionNew_Volume_triggered();
+
+        void on_actionDelete_Render_Setting_triggered();
+        void on_actionNew_Render_Setting_triggered();
+        void on_settings_customContextMenuRequested(QPoint pos);
         void on_actionProduction_Render_triggered();
         void on_actionLoad_triggered();
         void on_renderButton_clicked();
