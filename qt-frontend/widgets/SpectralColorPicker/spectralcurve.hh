@@ -37,6 +37,9 @@ public:
     ~SpectralCurve();
 
     void setSpectrum (SpectralColorPicker::Spectrum const &spectrum);
+    void setEnergyRange (double min, double max);
+    void setMinEnergy (double e);
+    void setMaxEnergy (double e);
 
 protected:
     void changeEvent(QEvent *e);
@@ -46,6 +49,7 @@ private:
     Ui::SpectralCurve *ui;
     QImage spectralImage;
     SpectralColorPicker::Spectrum spectrum;
+    double energyMin, energyMax;
 };
 
 #endif // SPECTRALCURVE_HH

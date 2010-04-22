@@ -200,7 +200,9 @@ void SpectralColorPicker::on_importRawDataButton_clicked() {
                 }
 
                 emit minAmplitudeChanged(ui->minAmp->value());
-                emit maxAmplitudeChanged(ui->maxAmp->value());                
+                emit maxAmplitudeChanged(ui->maxAmp->value());
+                ui->spectralCurve->setEnergyRange(ui->minAmp->value(),
+                                                  ui->maxAmp->value());
 
                 for (int i=0; i<count; ++i) {
                         sliders[i]->setWavelength (wiz->wavelengths()[i]);
@@ -209,13 +211,19 @@ void SpectralColorPicker::on_importRawDataButton_clicked() {
         }
 }
 
-void SpectralColorPicker::on_maxAmp_editingFinished() {
+void SpectralColorPicker::on_maxAmp_editingFinished() {        
+        ui->spectralCurve->setMaxEnergy(ui->maxAmp->value());
+        ui->spectralCurve->repaint();
+
         if (ui->minAmp->value() > ui->maxAmp->value())
                 ui->maxAmp->setValue(ui->minAmp->value());
         emit maxAmplitudeChanged(ui->maxAmp->value());
 }
 
 void SpectralColorPicker::on_minAmp_editingFinished() {
+        ui->spectralCurve->setMinEnergy(ui->minAmp->value());
+        ui->spectralCurve->repaint();
+
         if (ui->minAmp->value() > ui->maxAmp->value())
                 ui->minAmp->setValue(ui->maxAmp->value());
         emit minAmplitudeChanged(ui->minAmp->value());

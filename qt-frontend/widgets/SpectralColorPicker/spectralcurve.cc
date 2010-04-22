@@ -27,10 +27,11 @@
 
 SpectralCurve::SpectralCurve(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::SpectralCurve)
+    ui(new Ui::SpectralCurve),
+    energyMin(0), energyMax(1)
 {
     ui->setupUi(this);
-    spectralImage = createSpectralImage();
+    spectralImage = createSpectralImage(64);
 }
 
 
@@ -38,6 +39,25 @@ SpectralCurve::SpectralCurve(QWidget *parent) :
 SpectralCurve::~SpectralCurve()
 {
     delete ui;
+}
+
+
+
+void SpectralCurve::setEnergyRange(double min, double max) {
+        energyMin = min;
+        energyMax = max;
+}
+
+
+
+void SpectralCurve::setMinEnergy (double e) {
+        energyMin = e;
+}
+
+
+
+void SpectralCurve::setMaxEnergy (double e) {
+        energyMax = e;
 }
 
 
@@ -73,24 +93,30 @@ void SpectralCurve::paintEvent (QPaintEvent *e) {
         QPainterPath pp(QPointF(0,0));
         const int size = spectrum.size();
         for (int s=0; s<size; ++s) {
-                const double y0 = height()-height()*spectrum[s];
+                const double e = (spectrum[s]-energyMin)/(energyMax-energyMin);
+                const double y0 = height()-height()*e;
                 const double x0 = (s/(double)(size-1)) * width();
 
                 if (s==0) {
                         pp.moveTo(x0, y0);
                 }
                 pp.lineTo(x0, y0);
-
-                /*const double s1 = s+1<size ? s+1 : s;
-                const double y1 = height()-height()*spectrum[s1];
-                const double x1 = ((s1)/(double)(size-1)) * width();
-
-                const double s2 = s1+1<size ? s1+1 : s1;
-                const double y2 = height()-height()*spectrum[s2];
-                const double x2 = ((s2)/(double)(size-1)) * width();*/
-                //pp.cubicTo(x0, y0, x1, y1, x2, y2);
         }
+        const double e1 = (1-energyMin)/(energyMax-energyMin);
+        const double e0 = (0-energyMin)/(energyMax-energyMin);
         p.drawPath(pp);
+
+        QPainterPath mm;
+        mm.moveTo(0., height()-height()*e1);
+        mm.lineTo(width(), height()-height()*e1);
+        mm.moveTo(0., height()-height()*e0);
+        mm.lineTo(width(), height()-height()*e0);
+        p.setPen(QPen(QBrush(QColor(0,0,0,150)), 2.f));
+        p.drawPath(mm);
+
+        p.setPen(QPen(QBrush(QColor(255,255,255,150)), 2.f));
+        p.drawText(QPointF(0., (height()-height()*e1)+5), "1");
+        p.drawText(QPointF(0., (height()-height()*e0)+5), "0");
 
         e->accept();
 }
