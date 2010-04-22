@@ -65,17 +65,6 @@ int productionRender (int argc, char *argv[]) {
                 return -1;
         }
 
-
-        const QString pathToTarget =
-                argc>3
-                ? QString(argv[3])
-                : "";
-        if ("" == pathToTarget) {
-                QMessageBox::critical(0, "Missing argument",
-                        "No target-file has been specified.");
-                return -1;
-        }
-
         try {
                 redshift::scenefile::Scene scene;
                 std::ifstream ss(pathToSource.toStdString().c_str());
@@ -86,7 +75,7 @@ int productionRender (int argc, char *argv[]) {
                                                 new redshift::scenefile::Scene(scene)
                                 );
 
-                RenderWindow w (pscene, 0, 0, pathToTarget, 0);
+                RenderWindow w (pscene, 0, 0, 0);
                 w.show();
                 const int ret = a.exec();
                 return ret;

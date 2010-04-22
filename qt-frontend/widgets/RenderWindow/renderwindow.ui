@@ -13,7 +13,14 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QPushButton" name="saveImageButton">
+     <property name="text">
+      <string>Save image</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QLabel" name="pix">
      <property name="text">

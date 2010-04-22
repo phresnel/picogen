@@ -2120,7 +2120,7 @@ void MainWindow::render() {
 
                 RenderWindow *rw = new RenderWindow (
                                 createScene(),
-                                renderSettings, camera, "",
+                                renderSettings, camera,
                                 this);
                 ui->mdiArea->addSubWindow(rw);
                 rw->show();

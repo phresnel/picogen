@@ -40,6 +40,104 @@
 
 
 
+QString getImageSavePath (QWidget *parent) {
+        QFileDialog dialog(parent);
+        dialog.setWindowTitle("Set a target filename");
+        dialog.setFileMode(QFileDialog::AnyFile);
+
+        QStringList nameFilters;
+        nameFilters << "Portable Network Graphics (*.png)"
+                    << "Bitmap (*.bmp)"
+                    << "JPEG (*.jpg *.jpeg)"
+                    << "Portable Pixmap (*.ppm)"
+                    << "Tagged Image File Format (*.tif *.tiff)"
+                    << "X11 Bitmap (*.xbm)"
+                    << "X11 Pixmap (*.xpm)"
+                    ;
+        dialog.setNameFilters(nameFilters);
+
+        QList<QUrl> urls = dialog.sidebarUrls();
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+        dialog.setSidebarUrls(urls);
+
+        again:
+
+        if (dialog.exec()) {
+                QString pathToTarget = dialog.selectedFiles()[0];
+
+                // Check extension.
+                if (pathToTarget.endsWith(".bmp", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".jpg", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".jpeg", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".png", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".ppm", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".tif", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".tiff", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".xbm", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.endsWith(".xpm", Qt::CaseInsensitive)) {}
+                else if (pathToTarget.lastIndexOf('.')>=0){
+                        QMessageBox::information(parent,
+                           "Unsupported filename extension",
+                           "Please choose a filename with one of the following extensions:\n"
+                           " * .bmp\n"
+                           " * .jpg / .jpeg\n"
+                           " * .png\n"
+                           " * .ppm\n"
+                           " * .tif / .tiff\n"
+                           " * .xbm\n"
+                           " * .xpm\n"
+                        );
+                        goto again;
+                } else {
+                        // No filename given, so try to guess from file-dialog.
+                        if (dialog.selectedNameFilter().contains(".bmp"))
+                                pathToTarget += ".bmp";
+                        else if (dialog.selectedNameFilter().contains(".jpg"))
+                                pathToTarget += ".jpg";
+                        else if (dialog.selectedNameFilter().contains(".png"))
+                                pathToTarget += ".png";
+                        else if (dialog.selectedNameFilter().contains(".ppm"))
+                                pathToTarget += ".ppm";
+                        else if (dialog.selectedNameFilter().contains(".tif"))
+                                pathToTarget += ".tif";
+                        else if (dialog.selectedNameFilter().contains(".xbm"))
+                                pathToTarget += ".xbm";
+                        else if (dialog.selectedNameFilter().contains(".xpm"))
+                                pathToTarget += ".xpm";
+                }
+
+                // Check if overwrites.
+                if (QFile::exists(pathToTarget) &&
+                    QMessageBox::question(parent, "Overwrite file?",
+                                          QString()+
+                                          "Do you really want to overwrite the file "
+                                          + "\"" + pathToTarget + "\"?",
+                                          QMessageBox::Yes | QMessageBox::No,
+                                          QMessageBox::No
+                                          ) == QMessageBox::No
+                ) {
+                        goto again;
+                }
+
+        /*QString name = QFileDialog::getSaveFileName(this, "Select a file to save to");
+        if (name != "") {*/
+
+                // Check if we can write.
+                QFile file (pathToTarget);
+                if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                        QMessageBox::warning(parent, "Failed to save",
+                             "The file \"" + file.fileName() + "\" could not be"
+                             +" opened for writing. Please select another file "
+                             +" or one that does not exist yet.");
+                        goto again;
+                }
+
+                return pathToTarget;
+        }
+        return "";
+}
 
 
 
@@ -149,108 +247,13 @@ void RenderWindow::RenderProcess (QString pathToSource,
                                   int renderSettings, int camera,
                                   QWidget* parent
 ) {
-        QFileDialog dialog(parent);
-        dialog.setWindowTitle("Set a target filename");
-        dialog.setFileMode(QFileDialog::AnyFile);
-
-        QStringList nameFilters;
-        nameFilters << "Portable Network Graphics (*.png)"
-                    << "Bitmap (*.bmp)"
-                    << "JPEG (*.jpg *.jpeg)"
-                    << "Portable Pixmap (*.ppm)"
-                    << "Tagged Image File Format (*.tif *.tiff)"
-                    << "X11 Bitmap (*.xbm)"
-                    << "X11 Pixmap (*.xpm)"
-                    ;
-        dialog.setNameFilters(nameFilters);
-
-        QList<QUrl> urls = dialog.sidebarUrls();
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
-        dialog.setSidebarUrls(urls);
-
-        again:
-
-        if (dialog.exec()) {
-                QString pathToTarget = dialog.selectedFiles()[0];
-
-                // Check extension.
-                if (pathToTarget.endsWith(".bmp", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".jpg", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".jpeg", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".png", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".ppm", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".tif", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".tiff", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".xbm", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".xpm", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.lastIndexOf('.')>=0){
-                        QMessageBox::information(parent,
-                           "Unsupported filename extension",
-                           "Please choose a filename with one of the following extensions:\n"
-                           " * .bmp\n"
-                           " * .jpg / .jpeg\n"
-                           " * .png\n"
-                           " * .ppm\n"
-                           " * .tif / .tiff\n"
-                           " * .xbm\n"
-                           " * .xpm\n"
-                        );
-                        goto again;
-                } else {
-                        // No filename given, so try to guess from file-dialog.
-                        if (dialog.selectedNameFilter().contains(".bmp"))
-                                pathToTarget += ".bmp";
-                        else if (dialog.selectedNameFilter().contains(".jpg"))
-                                pathToTarget += ".jpg";
-                        else if (dialog.selectedNameFilter().contains(".png"))
-                                pathToTarget += ".png";
-                        else if (dialog.selectedNameFilter().contains(".ppm"))
-                                pathToTarget += ".ppm";
-                        else if (dialog.selectedNameFilter().contains(".tif"))
-                                pathToTarget += ".tif";
-                        else if (dialog.selectedNameFilter().contains(".xbm"))
-                                pathToTarget += ".xbm";
-                        else if (dialog.selectedNameFilter().contains(".xpm"))
-                                pathToTarget += ".xpm";
-                }
-
-                // Check if overwrites.
-                if (QFile::exists(pathToTarget) &&
-                    QMessageBox::question(parent, "Overwrite file?",
-                                          QString()+
-                                          "Do you really want to overwrite the file "
-                                          + "\"" + pathToTarget + "\"?",
-                                          QMessageBox::Yes | QMessageBox::No,
-                                          QMessageBox::No
-                                          ) == QMessageBox::No
-                ) {
-                        goto again;
-                }
-
-        /*QString name = QFileDialog::getSaveFileName(this, "Select a file to save to");
-        if (name != "") {*/
-
-                // Check if we can write.
-                QFile file (pathToTarget);
-                if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                        QMessageBox::warning(parent, "Failed to save",
-                             "The file \"" + file.fileName() + "\" could not be"
-                             +" opened for writing. Please select another file "
-                             +" or one that does not exist yet.");
-                        goto again;
-                }
-
-
-                QStringList args;
-                args << "picogen-production-render";
-                args << pathToSource;
-                args << pathToTarget;
-                QProcess::startDetached(
-                        "/home/smach/Projects/picogen/git/qt-frontend/SimplexGui/simplex-gui",
-                        args);
-        }
+        QStringList args;
+        args << "picogen-production-render";
+        args << pathToSource;
+        QProcess::startDetached(
+                //"/home/smach/Projects/picogen/git/qt-frontend/SimplexGui/simplex-gui",
+                "simplex-gui",
+                args);
 }
 
 
@@ -258,13 +261,11 @@ void RenderWindow::RenderProcess (QString pathToSource,
 RenderWindow::RenderWindow(
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
         int renderSettings, int camera,
-        QString pathToTarget,
         QWidget *parent
 ) :
     QDialog(parent),
     ui(new Ui::RenderWindow),
-    scenefile(scenefile),
-    pathToTarget(pathToTarget)
+    scenefile(scenefile)
 {
         ui->setupUi(this);
 
@@ -297,7 +298,7 @@ RenderWindow::~RenderWindow() {
 
 
 void RenderWindow::updateImage (QImage image, double percentage) {
-        if (impl->error()) {
+        if (impl->error()) {                
                 setWindowTitle ("Error");
 
                 QFont font;
@@ -307,14 +308,11 @@ void RenderWindow::updateImage (QImage image, double percentage) {
                 ui->pix->setFont(font);
 
                 ui->pix->setText(impl->errorMessage());
+                ui->saveImageButton->setEnabled(false);
         } else {
-                if (percentage>=1) {
-                        if ("" != pathToTarget) {
-                                setWindowTitle("saving " + pathToTarget);
-                                image.save(pathToTarget, 0, 100);
-                        }
-
-                        setWindowTitle("Done.");
+                this->image = image; // TODO: profile that assignment
+                if (percentage>=1) {                        
+                        setWindowTitle("Done (image not saved).");
                 } else {
                         setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
                 }
@@ -333,5 +331,14 @@ void RenderWindow::changeEvent(QEvent *e) {
                 break;
         default:
                 break;
+        }
+}
+
+void RenderWindow::on_saveImageButton_clicked() {
+        const QString path = getImageSavePath(this);
+        if ("" != path) {
+                setWindowTitle("saving " + path + "... ");
+                this->image.save(path, 0, 100);
+                setWindowTitle("Saved as " + path);
         }
 }
