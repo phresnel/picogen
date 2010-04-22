@@ -150,7 +150,11 @@ RenderWindowImpl::RenderWindowImpl (
                 redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
                 int renderSettings, int camera
 ) : renderSettings(renderSettings), camera(camera)
-  , scenefile(scenefile), error_(false), errorMessage_("") {
+  , scenefile(scenefile), error_(false), errorMessage_("")
+  , wantsToQuit(false)
+  , wantsToPause(false)
+  , running(false)
+{
 }
 
 
@@ -183,9 +187,8 @@ void RenderWindowImpl::reportDone () {
 void RenderWindowImpl::run() {
         using namespace redshift;
         using namespace redshift::interaction;
-        // --
 
-        using namespace redshift;
+        running = true;
 
         try {
                 const scenefile::FilmSettings &fs = scenefile->filmSettings();
@@ -201,13 +204,14 @@ void RenderWindowImpl::run() {
                                         fs.colorscale, fs.convertToSrgb));
 
                 redshift::shared_ptr<redshift::Scene> scene =
-                                sceneDescriptionToScene(*scenefile,
-                                                        renderBuffer,
-                                                        renderSettings, camera);
+                                        sceneDescriptionToScene(*scenefile,
+                                                renderBuffer,
+                                                renderSettings, camera);
 
                 shared_ptr<interaction::ProgressReporter> rep =
                         shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
-                UserCommandProcessor::Ptr commandProcessor (new PassiveCommandProcessor());
+                UserCommandProcessor::Ptr commandProcessor =
+                                UserCommandProcessor::Ptr(shared_from_this());
 
                 scene->render(
                      rep, commandProcessor,
@@ -229,12 +233,48 @@ void RenderWindowImpl::run() {
                         + "An unknown, critical exception occured";
                 emit updateImage (QImage(), 2);
         }
+
+
+        running = false;
 }
 
 
 
+void RenderWindowImpl::tick () {
+        // We are running in an extra thread + RenderWindow will update our
+        // state, so nothing to see here.
+}
 
 
+
+bool RenderWindowImpl::userWantsToQuit () const {
+        return wantsToQuit;
+}
+
+
+
+bool RenderWindowImpl::userWantsToPause () const {
+        return wantsToPause;
+}
+
+
+
+void RenderWindowImpl::setUserWantsToQuit (bool b) {
+        wantsToQuit = b;
+}
+
+
+
+void RenderWindowImpl::setUserWantsToPause (bool b) {
+        wantsToPause = b;
+}
+
+
+
+void RenderWindowImpl::saveQuit() {
+        setUserWantsToQuit(true);
+        while (running); // spin
+}
 
 
 
@@ -292,13 +332,14 @@ RenderWindow::RenderWindow(
 
 
 RenderWindow::~RenderWindow() {
+        impl->saveQuit();
         delete ui;
 }
 
 
 
 void RenderWindow::updateImage (QImage image, double percentage) {
-        if (impl->error()) {                
+        if (impl->error()) {
                 setWindowTitle ("Error");
 
                 QFont font;
@@ -311,7 +352,7 @@ void RenderWindow::updateImage (QImage image, double percentage) {
                 ui->saveImageButton->setEnabled(false);
         } else {
                 this->image = image; // TODO: profile that assignment
-                if (percentage>=1) {                        
+                if (percentage>=1) {
                         setWindowTitle("Done (image not saved).");
                 } else {
                         setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
@@ -334,6 +375,8 @@ void RenderWindow::changeEvent(QEvent *e) {
         }
 }
 
+
+
 void RenderWindow::on_saveImageButton_clicked() {
         const QString path = getImageSavePath(this);
         if ("" != path) {
@@ -341,4 +384,10 @@ void RenderWindow::on_saveImageButton_clicked() {
                 this->image.save(path, 0, 100);
                 setWindowTitle("Saved as " + path);
         }
+}
+
+
+
+void RenderWindow::on_pauseButton_clicked(bool checked) {
+        impl->setUserWantsToPause (checked);
 }

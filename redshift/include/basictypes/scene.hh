@@ -77,6 +77,8 @@ namespace redshift {
                 tuple<real_t,Color> Li(Sample const&, Random &, LiMode mode = full) const;
 
                 unsigned int currentScanline () const { return currentScanline_; }
+
+                bool running () const ;
         private:
                 // non copyable
                 // TODO use NonCopyable base class instead
@@ -98,6 +100,7 @@ namespace redshift {
                 shared_ptr<VolumeRegion>         volumeRegion;
                 shared_ptr<VolumeIntegrator>     volumeIntegrator;
 
+                mutable bool running_;
 
                 mutable unsigned int currentScanline_;
         };

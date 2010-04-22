@@ -26,8 +26,9 @@ namespace redshift { namespace interaction {
         public:
                 virtual void tick () = 0;
                 virtual bool userWantsToQuit () const = 0;
+                virtual bool userWantsToPause () const { return false; }
                 virtual ~UserCommandProcessor () {}
-                
+
                 typedef shared_ptr<UserCommandProcessor> Ptr;
                 typedef shared_ptr<UserCommandProcessor const> ConstPtr;
         };

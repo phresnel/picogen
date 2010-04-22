@@ -69,6 +69,7 @@ Scene::Scene (
 , surfaceIntegrator(surfaceIntegrator)
 , volumeRegion (volumeRegion_)
 , volumeIntegrator(volumeIntegrator_)
+, running_(false)
 {
 }
 
@@ -180,6 +181,7 @@ void Scene::render (
         unsigned int minY, unsigned int maxY,
         unsigned int userSalt
 ) const {
+        running_ = true;
 
         const uint32_t numAASamples = numAASamples_?numAASamples_:1;
         const real_t totalNumberOfSamples = static_cast<real_t>
@@ -302,19 +304,28 @@ void Scene::render (
                         // 5) Report Progress.
                         //-------------------------------------------------------------
                 }
-                bool userWantsToQuit = false;
                 reporter->report (lock, sampleNumber, totalNumberOfSamples);
                 ucp->tick();
-                userWantsToQuit = ucp->userWantsToQuit();
+                if (ucp->userWantsToQuit())
+                        break;
+
+                while (ucp->userWantsToPause() && !ucp->userWantsToQuit()) {
+                        ucp->tick();
+                }
+
+                if (ucp->userWantsToQuit())
+                        break;
 
                 aggregate->prune ();
-
-                if (userWantsToQuit)
-                        break;
         }
         reporter->reportDone ();
+        running_ = false;
 }
 
 
+
+bool Scene::running() const {
+        return running_;
+}
 
 } // namespace redshift

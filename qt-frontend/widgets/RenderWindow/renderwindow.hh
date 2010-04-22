@@ -27,6 +27,7 @@
 #include <QThread>
 #include "../../redshift/include/smart_ptr.hh"
 #include "../../redshift/include/interaction/progressreporter.hh"
+#include "../../redshift/include/interaction/usercommandprocessor.hh"
 
 namespace Ui {
     class RenderWindow;
@@ -65,7 +66,8 @@ public:
 protected:
         void changeEvent(QEvent *e);
 
-private slots:
+private slots:        
+        void on_pauseButton_clicked(bool checked);
         void on_saveImageButton_clicked();
         void updateImage (QImage image, double percentage);
 
@@ -91,9 +93,13 @@ public:
 };*/
 
 
+// Kind of a kitchen-sink of functionality.
+// Sidenote: This *should* be hidden in a source-file, but then moc+Q_OBJECT
+//           don't like that.
 class RenderWindowImpl
         : public QThread
         , public redshift::interaction::ProgressReporter
+        , public redshift::interaction::UserCommandProcessor
         , public redshift::enable_shared_from_this<RenderWindowImpl>
 {
         Q_OBJECT
@@ -102,10 +108,21 @@ public:
                           int renderSettings, int camera);
         virtual ~RenderWindowImpl ();
 
-        // redshift::interaction::ProgressReporter
+        void setUserWantsToQuit (bool) ;
+        void setUserWantsToPause (bool) ;
+        void saveQuit ();
+
+        // ProgressReporter
         void report (redshift::shared_ptr<redshift::RenderTargetLock const> rlock,
                      int completed, int total);
         void reportDone ();
+
+
+        // UserCommandProcessor
+        void tick () ;
+        bool userWantsToQuit () const ;
+        bool userWantsToPause () const ;
+
 
         // QThread
         void run();
@@ -125,7 +142,11 @@ private:
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
 
         bool error_;
-        QString errorMessage_;
+        QString errorMessage_;        
+        volatile bool running;
+
+        bool wantsToQuit;
+        bool wantsToPause;
 };
 
 #endif // RENDERWINDOW_HH
