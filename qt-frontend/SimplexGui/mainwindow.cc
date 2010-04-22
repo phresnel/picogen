@@ -231,6 +231,7 @@ void MainWindow::initializeScene() {
 
 
 void MainWindow::setupUi() {
+        changed = true;
         ui->setupUi(this);
 
         // code editor
@@ -247,14 +248,22 @@ void MainWindow::setupUi() {
         ui->settings->setAlternatingRowColors(false);
 
         variantManager = new QtVariantPropertyManager(this);
+        connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
+                 this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
+
         rsTitleManager = new QtStringPropertyManager (this);
         connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
                 this, SLOT(rsTitleManager_valueChanged(QtProperty*,const QString &)));
 
         groupManager = new QtGroupPropertyManager(this);
+
         enumManager = new QtEnumPropertyManager(this);
+        connect (enumManager, SIGNAL(valueChanged(QtProperty*,int)),
+                 this, SLOT(enumManager_valueChanged(QtProperty*,int)));
 
         colorEditManager = new ColorEditManager (this);
+        connect (colorEditManager, SIGNAL(valueChanged(QtProperty*,ColorPickerColor)),
+                 this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor)));
         colorEditFactory = new ColorEditFactory (this, ui->mdiArea);
 
         transformEnumManager = new QtEnumPropertyManager(this);
@@ -294,6 +303,26 @@ void MainWindow::setupUi() {
         ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
+
+        setUnchanged();
+}
+
+
+
+void MainWindow::setChanged() {
+        if (changed) return;
+        changed = true;
+        ui->menuBar->setStyleSheet("background-color:#A33;");
+        refreshWindowTitle();
+}
+
+
+
+void MainWindow::setUnchanged() {
+        if (!changed) return;
+        changed = false;
+        ui->menuBar->setStyleSheet("");
+        refreshWindowTitle();
 }
 
 
@@ -320,6 +349,7 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
 
 
 void MainWindow::setDefaultScene() {
+        changed = true;
         initializeScene();
         // - render settings
         {
@@ -397,6 +427,8 @@ void MainWindow::setDefaultScene() {
 
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
                 ui->settings->setExpanded(it, false);
+
+        setUnchanged();
 }
 
 
@@ -1304,6 +1336,7 @@ void MainWindow::transformEnumManager_valueChanged(
         QtProperty* prop,
         int index
 ) {
+        setChanged();
         if (QtProperty *t = findParent(ui->settings->properties(), prop)) {
                 const QStringList enumNames =
                                 transformEnumManager->enumNames(prop);
@@ -1354,10 +1387,29 @@ void MainWindow::transformEnumManager_valueChanged(
 
 
 
+void MainWindow::variantManager_valueChanged (QtProperty *, QVariant) {
+        setChanged();
+}
+
+
+
+void MainWindow::enumManager_valueChanged (QtProperty *, int) {
+        setChanged();
+}
+
+
+
+void MainWindow::colorEditManager_valueChanged(QtProperty *, ColorPickerColor) {
+        setChanged();
+}
+
+
+
 void MainWindow::objectTypeEnumManager_valueChanged (
         QtProperty* prop,
         int index
 ) {
+        setChanged();
         // parent
         //   |
         //   +-----type
@@ -1516,6 +1568,7 @@ void MainWindow::volumeTypeEnumManager_valueChanged (
         QtProperty* prop,
         int index
 ) {
+        setChanged();
         QtProperty *t = findParent(ui->settings->properties(), prop);
         if (!t)
                 return;
@@ -1652,6 +1705,7 @@ void MainWindow::volumeTypeEnumManager_valueChanged (
 void MainWindow::surfaceIntegratorTypeEnumManager_valueChanged(
         QtProperty* prop, int index
 ){
+        setChanged();
         QtProperty *t = findParent(ui->settings->properties(), prop);
         if (!t)
                 return;
@@ -1694,6 +1748,7 @@ void MainWindow::surfaceIntegratorTypeEnumManager_valueChanged(
 void MainWindow::cameraTypeEnumManager_valueChanged(
         QtProperty* prop, int index
 ) {
+        setChanged();
         QtProperty *t = findParent(ui->settings->properties(), prop);
         if (!t)
                 return;
@@ -1741,6 +1796,7 @@ void MainWindow::rsTitleManager_valueChanged (
         QtProperty * property,
         const QString & value
 ) {
+        setChanged();
         if (QtProperty *par = findParent (ui->settings->properties(), property)) {
                 par->setPropertyName(value);
         }
@@ -1856,6 +1912,7 @@ void MainWindow::on_actionRender_triggered() {
 
 
 void MainWindow::on_newRsButton_clicked() {
+        setChanged();
         redshift::scenefile::RenderSettings rs;
         rs.title = "new-setting";
         addRenderSettings (rs);
@@ -1864,6 +1921,7 @@ void MainWindow::on_newRsButton_clicked() {
 
 
 void MainWindow::on_newObjectButton_clicked() {
+        setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::horizon_plane;
         addObject (o);
@@ -1872,6 +1930,7 @@ void MainWindow::on_newObjectButton_clicked() {
 
 
 void MainWindow::on_newVolumeButton_clicked() {
+        setChanged();
         redshift::scenefile::Volume v;
         v.type = redshift::scenefile::Volume::exponential;
         addVolume (v);
@@ -1893,6 +1952,7 @@ void MainWindow::on_codeEditor_codeChanged() {
 
 
 void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
+        setChanged();
         // This is under the assumption that the code window is open for the
         // property that just emitted this signal.
         if (nonRecurseLock)
@@ -1905,6 +1965,7 @@ void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
 
 
 void MainWindow::on_deleteObjectButton_clicked() {
+        setChanged();
         // assumed to signal everything needed for clean up
         objectsProperty->removeSubProperty(currentBrowserItem->property());
 }
@@ -1912,12 +1973,14 @@ void MainWindow::on_deleteObjectButton_clicked() {
 
 
 void MainWindow::on_deleteVolumeButton_clicked() {
+        setChanged();
         volumesProperty->removeSubProperty(currentBrowserItem->property());
 }
 
 
 
 void MainWindow::on_deleteSubTransformButton_clicked() {
+        setChanged();
         // assumed to signal everything needed for clean up
         currentTransformProperty->removeSubProperty(
                         currentBrowserItem->property());
@@ -1926,6 +1989,7 @@ void MainWindow::on_deleteSubTransformButton_clicked() {
 
 
 void MainWindow::on_deleteRsButton_clicked() {
+        setChanged();
         // assumed to signal everything needed for clean up
         renderSettingsProperty->removeSubProperty(currentRenderSettingProperty);
         resyncRenderSettingConfig();
@@ -1934,6 +1998,7 @@ void MainWindow::on_deleteRsButton_clicked() {
 
 
 void MainWindow::on_newSubTransformButton_clicked() {
+        setChanged();
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
         addTransform (currentTransformProperty,
@@ -1943,6 +2008,7 @@ void MainWindow::on_newSubTransformButton_clicked() {
 
 
 void MainWindow::on_newCameraButton_clicked() {
+        setChanged();
         redshift::scenefile::Camera cam;
         cam.title = "new-camera";
         cam.type = redshift::scenefile::Camera::pinhole;
@@ -1965,6 +2031,7 @@ void MainWindow::on_newCameraButton_clicked() {
 
 
 void MainWindow::on_deleteCameraButton_clicked() {
+        setChanged();
         // assumed to signal everything needed for clean up
         camerasProperty->removeSubProperty(currentCameraProperty);
         resyncCameraConfig();
@@ -2023,7 +2090,6 @@ QString MainWindow::askForNewSaveFilename() {
 QString MainWindow::getAndUpdateSaveFilename() {
         if (saveFilename == "") {
                 saveFilename = askForNewSaveFilename();
-                refreshWindowTitle();
                 return saveFilename;
         }
         return saveFilename;
@@ -2043,25 +2109,37 @@ void MainWindow::on_action_Save_triggered() {
         } else {
                 QMessageBox::warning(this, "Must use another filename",
                                      "Cannot save the file as \""
-                                     + saveFilename + "\", please save "
-                                     "under another name.");
+                                     + saveFilename + "\", please use "
+                                     "another name.");
                 on_actionSave_as_triggered();
         }
+        
+        setUnchanged();
 }
 
 
 
 void MainWindow::on_actionSave_as_triggered() {
+        again:
         QString code = sceneToCode();
         QString newName = askForNewSaveFilename();
         if (newName == "") {
                 return;
-        }
-        saveFilename = newName;
-        refreshWindowTitle();
+        }        
 
         std::ofstream ofs (saveFilename.toStdString().c_str());
-        ofs << code.toStdString() << std::endl;
+        if (ofs.is_open()) {
+                ofs << code.toStdString() << std::endl;
+                saveFilename = newName;
+        } else {
+                QMessageBox::warning(this, "Must use another filename",
+                                     "Cannot save the file as \""
+                                     + saveFilename + "\", please use "
+                                     "another name.");
+                goto again;
+        }
+        
+        setUnchanged();
 }
 
 
@@ -2075,14 +2153,24 @@ void MainWindow::on_actionSave_copy_as_triggered() {
         //QTextStream out(&file, QIODevice::WriteOnly);
         //out << code;
         std::ofstream ofs (file.toStdString().c_str());
-        ofs << code.toStdString() << std::endl;
+        if (ofs.is_open()) {
+                ofs << code.toStdString() << std::endl;
+        } else {
+                QMessageBox::warning(this, "Must use another filename",
+                                     "Cannot save the file as \""
+                                     + saveFilename + "\", please use "
+                                     "another name.");
+        }
 }
 
 
 
 void MainWindow::refreshWindowTitle() {
         const QString alpha = saveFilename == "" ? "<new scene>" : saveFilename;
-        setWindowTitle (alpha + " - picogen:SimplexGui");
+        setWindowTitle (
+                alpha + (changed ? " * " : "")
+                + " - picogen:SimplexGui"
+                );
 }
 
 
@@ -2176,6 +2264,8 @@ void MainWindow::on_actionLoad_triggered() {
                       "are you sure this is a valid picogen file?"
                       );
         }
+
+        setUnchanged();
 }
 
 

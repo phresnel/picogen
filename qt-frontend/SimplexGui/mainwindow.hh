@@ -124,6 +124,7 @@ private:
 
         QtBrowserItem * currentBrowserItem;
         QString saveFilename;
+        bool changed;
 
         QString askForNewSaveFilename() ;
         QString getAndUpdateSaveFilename();
@@ -134,6 +135,8 @@ private:
         QString sceneToCode();
 
         void render();
+        void setChanged ();
+        void setUnchanged ();
 
         bool nonRecurseLock;
 private slots:
@@ -161,6 +164,10 @@ private slots:
         void on_codeEditor_codeChanged();
 
         // non MOC
+        void variantManager_valueChanged (QtProperty *, QVariant);
+        void enumManager_valueChanged (QtProperty *, int);
+        void colorEditManager_valueChanged (QtProperty *, ColorPickerColor);
+
         void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
