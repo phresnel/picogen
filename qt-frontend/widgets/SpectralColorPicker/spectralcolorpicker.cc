@@ -35,8 +35,8 @@ SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
 {
         ui->setupUi(this);
 
-        on_lockSampleCount_toggled(ui->lockSampleCount->checkState());
-        addSpectralSliders(ui->sampleCount->value());
+        on_lockSampleCount_toggled(ui->lockSampleCount->checkState());        
+        setSliderCount(ui->sampleCount->value());
         updatePixmap();
 }
 
@@ -106,8 +106,7 @@ void SpectralColorPicker::updatePixmap() {
 
 
 void SpectralColorPicker::on_sampleCount_valueChanged(int n) {
-        removeSpectralSliders();
-        addSpectralSliders(n);
+        setSliderCount(n);
 }
 
 
@@ -130,19 +129,24 @@ SpectralColorPicker::Spectrum SpectralColorPicker::spectrumFromSliders () const 
 
 
 
-void SpectralColorPicker::removeSpectralSliders() {
+void SpectralColorPicker::setSliderCount(
+        unsigned int n
+) {
+        // remove
         foreach (SpectralSlider *slider, sliders) {
                 ui->slidersLayout->removeWidget(slider);
                 delete slider;
         }
         sliders.clear();
-}
 
 
+        // add
+        disconnect (ui->sampleCount, SIGNAL(valueChanged(int)),
+                    this, SLOT(on_sampleCount_valueChanged(int)));
+        ui->sampleCount->setValue(n);
+        connect (ui->sampleCount, SIGNAL(valueChanged(int)),
+                 this, SLOT(on_sampleCount_valueChanged(int)));
 
-void SpectralColorPicker::addSpectralSliders(
-        unsigned int n
-) {
         const unsigned int num_sliders = n;
         const double min = 400;
         const double max = 700;
@@ -183,8 +187,7 @@ void SpectralColorPicker::on_importRawDataButton_clicked() {
                                         count
                                 );
 
-                removeSpectralSliders();
-                addSpectralSliders(converted.count());
+                setSliderCount(converted.count());
 
                 ui->minAmp->setValue(0);
                 ui->maxAmp->setValue(1);
@@ -197,7 +200,7 @@ void SpectralColorPicker::on_importRawDataButton_clicked() {
                 }
 
                 emit minAmplitudeChanged(ui->minAmp->value());
-                emit maxAmplitudeChanged(ui->maxAmp->value());
+                emit maxAmplitudeChanged(ui->maxAmp->value());                
 
                 for (int i=0; i<count; ++i) {
                         sliders[i]->setWavelength (wiz->wavelengths()[i]);
@@ -220,7 +223,6 @@ void SpectralColorPicker::on_minAmp_editingFinished() {
 
 
 QVector<SpectralSample> SpectralColorPicker::samples () const {
-        const int count = sliders.count();
         QVector<SpectralSample> samples_;
         foreach (SpectralSlider *slider, sliders) {
                 SpectralSample ss;
@@ -237,8 +239,8 @@ void SpectralColorPicker::setSamples (QVector<SpectralSample>  const & samples) 
 
         ui->lockSampleCount->setChecked(true);
         on_lockSampleCount_toggled(ui->lockSampleCount->checkState());
-        removeSpectralSliders();
-        addSpectralSliders(samples.count());
+
+        setSliderCount(samples.count());
 
         const int count = samples.count();
         QVector<double> amplitudes;

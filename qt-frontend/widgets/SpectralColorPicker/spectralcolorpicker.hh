@@ -79,8 +79,7 @@ private:
         Ui::SpectralColorPicker *ui;
         QVector<SpectralSlider*> sliders;
 
-        void removeSpectralSliders();
-        void addSpectralSliders(unsigned int i);
+        void setSliderCount(unsigned int i);
         Spectrum spectrumFromSliders () const;
 
         void updatePixmap();
