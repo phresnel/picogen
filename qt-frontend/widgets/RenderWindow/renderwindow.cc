@@ -416,7 +416,7 @@ void RenderWindow::resizeEvent (QResizeEvent *) {
                                 scaled,
                                 Qt::KeepAspectRatio,
                                 Qt::FastTransformation));
-                        if (zoom>=0 && zoom <= 100)
+                        if (zoom>=0 && zoom <= 1000000)
                                 setWindowTitle("Zoom: " + QString::number(zoom) + "%");
                 }
         }

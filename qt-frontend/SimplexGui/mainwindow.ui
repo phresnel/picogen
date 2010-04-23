@@ -574,7 +574,7 @@ QTabWidget::pane { /* The tab widget frame */
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
+              <iconset>
                <normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</iconset>
              </property>
              <property name="iconSize">
@@ -763,27 +763,27 @@ QTabWidget::pane { /* The tab widget frame */
   </action>
   <action name="actionAdd_Water_Plane">
    <property name="text">
-    <string>Add Water-Plane</string>
+    <string>Water-Plane</string>
    </property>
   </action>
   <action name="actionAdd_Horizon_Plane">
    <property name="text">
-    <string>Add Horizon-Plane</string>
+    <string>Horizon-Plane</string>
    </property>
   </action>
   <action name="actionAdd_Lazy_Quadtree">
    <property name="text">
-    <string>Add Lazy-Quadtree (Terrain)</string>
+    <string>Lazy-Quadtree (Terrain)</string>
    </property>
   </action>
   <action name="actionAdd_Homogeneous_Volume">
    <property name="text">
-    <string>Add Homogeneous Volume</string>
+    <string>Homogeneous</string>
    </property>
   </action>
   <action name="actionAdd_Exponential_Volume">
    <property name="text">
-    <string>Add Exponential Volume</string>
+    <string>Exponential</string>
    </property>
   </action>
   <action name="actionShow_Command_Pile">
@@ -813,8 +813,6 @@ QTabWidget::pane { /* The tab widget frame */
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

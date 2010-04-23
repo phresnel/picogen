@@ -205,11 +205,11 @@ MainWindow::MainWindow(QWidget *parent) :
         objectsMenu.addAction(ui->actionAdd_Horizon_Plane);
         objectsMenu.addAction(ui->actionAdd_Water_Plane);
         objectsMenu.addAction(ui->actionAdd_Lazy_Quadtree);
-        objectsMenu.setTitle("new object");
+        objectsMenu.setTitle("New Object");
 
         volumesMenu.addAction(ui->actionAdd_Homogeneous_Volume);
         volumesMenu.addAction(ui->actionAdd_Exponential_Volume);
-        volumesMenu.setTitle("new volume");
+        volumesMenu.setTitle("New Volume");
 
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);

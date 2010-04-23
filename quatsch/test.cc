@@ -22,7 +22,7 @@
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "kallisto/common.hh"
+#include "../kallisto/common.hh"
 
 #include <iostream>
 #include <vector>
@@ -48,8 +48,8 @@
 
 
 
-int main () {   
-    
+int main () {
+
         typedef quatsch::backend::est::Backend <double, const double *> backend_t;
 
         typedef backend_t::Function Function;
@@ -57,27 +57,27 @@ int main () {
         typedef backend_t::scalar_t scalar_t;
         typedef backend_t::parameters_t parameters_t;
 
-        typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;    
+        typedef quatsch::frontend::jux::Compiler <backend_t> Compiler;
 
         //::std::vector <::boost::shared_ptr <ICreateAdditionFunction <Function> > > configurableFunctions;
-        //configurableFunctions.push_back 
+        //configurableFunctions.push_back
 
 
         quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr noiseDesc (
                 new quatsch::CreateConfigurableFunction <
-                        quatsch :: configurable_functions :: Noise2d <Function, Compiler>,  
+                        quatsch :: configurable_functions :: Noise2d <Function, Compiler>,
                         Function
                 >
         );
         quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr layeredNoise2dDesc (
                 new quatsch::CreateConfigurableFunction <
-                        quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,  
+                        quatsch :: configurable_functions :: LayeredNoise2d <Function, Compiler>,
                         Function
                 >
         );
 
-    
-   
+
+
         ::std::string parameters = "x;y";
         ::std::string code = //"/* faculty function. */\n"
                 //"// functions \n"
@@ -104,27 +104,27 @@ int main () {
         params.push_back (6.0);*/
         scalar_t params [] = { 6.0 };
         ::std::cout << "r:" << (*fun) (params) << ::std::endl;
-    
+
         while (true) {
-        
+
                 std::stringstream errors;
                 try {
                         char s [1024];
-                        gets (s);        
-                
+                        gets (s);
+
                         Compiler::FunctionPtr fun (Compiler::compile (parameters, s, addfuns, errors));
-                
+
                         scalar_t r = (*fun) (params);
                         ::std::cout << "r:" << r << ::std::endl;
                         //compiler ("alpha;beta;gamma").compile (s);
                 } catch (std::exception const & e) {
                         ::std::cout << "general exception caught: \n"
                                     << errors.str()
-                                    << e.what()                                    
+                                    << e.what()
                                     << '\n';
                 }/* catch (...) {
                         ::std::cout << "caught unknown exception\n";
                 }*/
     };
-    
+
 }
