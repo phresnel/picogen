@@ -35,7 +35,7 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 #------------------------------------------------------------------------------
 # libs
 #------------------------------------------------------------------------------
-SDLLIBS := `sdl-config --static-libs`
+SDLLIBS := `sdl-config --static-libs` -lSDL_image
 BOOSTLIBS := -lboost_program_options
 LIBS   := $(SDLLIBS) $(BOOSTLIBS)
 
