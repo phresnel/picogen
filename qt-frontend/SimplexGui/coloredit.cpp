@@ -86,10 +86,10 @@ void ColorEdit::focusOutEvent(QFocusEvent *e) {
         QWidget::focusOutEvent(e);
 }
 
-void ColorEdit::keyPressEvent(QKeyEvent *e) {
+void ColorEdit::keyPressEvent(QKeyEvent *) {
         //theLineEdit->event(e);
 }
 
-void ColorEdit::keyReleaseEvent(QKeyEvent *e) {
+void ColorEdit::keyReleaseEvent(QKeyEvent *) {
         //theLineEdit->event(e);
 }

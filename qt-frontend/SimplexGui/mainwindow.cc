@@ -1844,7 +1844,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
         settingsContextMenu.clear();
         settingsContextMenu.addAction(ui->actionNew_Render_Setting);
-        settingsContextMenu.addAction(ui->actionNew_Camera);        
+        settingsContextMenu.addAction(ui->actionNew_Camera);
         settingsContextMenu.addMenu(&objectsMenu);
         settingsContextMenu.addMenu(&volumesMenu);
         settingsContextMenu.addSeparator();
@@ -2342,10 +2342,7 @@ void MainWindow::on_settings_customContextMenuRequested(QPoint pos) {
 
 
 
-void MainWindow::contextMenuEvent(QContextMenuEvent *event) {
-        /*QMenu menu(this);
-        menu.addAction(ui->actionLoad);
-        menu.exec(event->globalPos());*/
+void MainWindow::contextMenuEvent(QContextMenuEvent */*event*/) {
 }
 
 

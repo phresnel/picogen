@@ -33,7 +33,6 @@
 #include "../backend/est/backend.hh"
 
 #include "../../redshift/include/auxiliary/heightmap.hh"
-redshift::aux::Heightmap<float> foobar;
 
 #include <map>
 //#include <picogen/picogen.h>
