@@ -417,6 +417,7 @@ void QuatschHighlighter::highlightBlock(const QString &text) {
 
 void QuatschSourceEditor::on_compileAndRunButton_clicked() {
         std::stringstream errors;
+
         try {
                 ui->status->setText("");
                 redshift::QuatschHeightFunction q (code().toStdString(), errors);
@@ -454,15 +455,19 @@ void QuatschSourceEditor::on_compileAndRunButton_clicked() {
                         }
                 }
                 //ui->status->setScaledContents(true);
+                ui->status->setWordWrap(false);
                 ui->status->setPixmap(QPixmap::fromImage(image));
 
         } catch (quatsch::general_exception const &ex) {
+                ui->status->setWordWrap(true);
                 ui->status->setText (QString::fromStdString(
                         ex.getMessage() + ".\n\n"
                         + errors.str()));
         } catch (std::exception const &e) {
+                ui->status->setWordWrap(true);
                 ui->status->setText(e.what());
         } catch (...) {
+                ui->status->setWordWrap(true);
                 ui->status->setText("some weird exception occured");
         }
 }

@@ -68,6 +68,8 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
         //====---- - - -  -   -    -      -
         string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
 
+        width = height = depth = iwidth = iheight = idepth = 1;
+        filter = cubic;
         for (Map::const_iterator it=static_parameters.begin();
              it!=static_parameters.end();
              ++it
@@ -77,12 +79,15 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
                 if (name == string("width")) {
                         istringstream hmmm (static_parameters[name]);
                         hmmm >> width;
+                        iwidth = 1 / width;
                 } else if (name == string("height") ) {
                         istringstream hmmm (static_parameters[name]);
                         hmmm >> height;
+                        iheight = 1 / height;
                 } else if (name == string("depth")) {
                         istringstream hmmm (static_parameters[name]);
                         hmmm >> depth;
+                        idepth = 1 / depth;
                 } else if (name == string("filename")) {
                         istringstream hmmm (static_parameters[name]);
                         hmmm >> filename;
@@ -139,14 +144,14 @@ typename Heightmap <FUNCTION, COMPILER>::scalar_t
 Heightmap <FUNCTION, COMPILER>::operator () (
         const typename Heightmap <FUNCTION, COMPILER>::parameters_t& parameters
 ) const {
-        const scalar_t u = (*ufun) (parameters);
-        const scalar_t v = (*vfun) (parameters);
+        const scalar_t u = ((*ufun) (parameters) * iwidth) + scalar_t(.5);
+        const scalar_t v = ((*vfun) (parameters) * idepth) + scalar_t(.5);
 
         switch (filter) {
-        case nearest: return heightmap.nearest(u, v);
-        case bilinear: return heightmap.lerp(u, v);
-        case cosine: return heightmap.cosine(u, v);
-        case cubic: return heightmap.cubic(u, v);
+        case nearest: return height * heightmap.nearest(u, v);
+        case bilinear: return height * heightmap.lerp(u, v);
+        case cosine: return height * heightmap.cosine(u, v);
+        case cubic: return height * heightmap.cubic(u, v);
         }
         return 0.0;
 }

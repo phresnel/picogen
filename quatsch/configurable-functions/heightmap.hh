@@ -72,6 +72,7 @@ namespace quatsch {  namespace configurable_functions {
                 filter_t filter;
 
                 scalar_t width, height, depth;
+                scalar_t iwidth, iheight, idepth;
                 redshift::aux::Heightmap<scalar_t> heightmap;
 
         public:
