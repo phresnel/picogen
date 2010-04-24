@@ -19,4 +19,5 @@ INCLUDEPATH += \
 LIBS += ../../../redshift/lib/libpicogen.a \
     -lgomp \
     -lboost_program_options \
-    -lSDL
+    -lSDL -lSDL_image \
+    -lboost_filesystem

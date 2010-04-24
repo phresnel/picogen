@@ -192,6 +192,9 @@
         <property name="text">
          <string>status</string>
         </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>

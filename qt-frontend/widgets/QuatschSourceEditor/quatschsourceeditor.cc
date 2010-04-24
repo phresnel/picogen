@@ -25,7 +25,6 @@
 
 #include "redshift/include/basictypes/quatsch-height-function.hh"
 
-
 TextBlockData::TextBlockData()
 {
     // Nothing to do
