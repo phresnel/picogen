@@ -31,8 +31,8 @@ ColorPicker::ColorPicker(QWidget *parent) :
 
         on_tabWidget_currentChanged(ui->tabWidget->currentIndex());
 
-        connect (ui->tristimulusPicker, SIGNAL(colorChanged(QColor)),
-                 this, SLOT(tristimulusColorChanged(QColor)));
+        connect (ui->tristimulusPicker, SIGNAL(colorChanged(TristimulusColor)),
+                 this, SLOT(tristimulusColorChanged(TristimulusColor)));
         connect (ui->spectralPicker, SIGNAL(colorChanged(QVector<SpectralSample> const &)),
                  this, SLOT(spectralColorChanged(QVector<SpectralSample> const &)));
 
@@ -94,7 +94,7 @@ void ColorPicker::on_tabWidget_currentChanged(int index) {
         }
 }
 
-void ColorPicker::tristimulusColorChanged (QColor c) {
+void ColorPicker::tristimulusColorChanged (TristimulusColor c) {
         color_.tristimulus = c;
 }
 

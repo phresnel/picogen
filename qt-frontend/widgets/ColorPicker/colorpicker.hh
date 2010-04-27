@@ -27,6 +27,7 @@
 #include <QColor>
 #include <QVector>
 #include <spectralcolorpicker.hh>
+#include <tristimuluscolorpicker.hh>
 
 #include <fstream>
 
@@ -34,11 +35,12 @@ namespace Ui {
     class ColorPicker;
 }
 
+
 struct ColorPickerColor {
         enum Mode { Spectral, Tristimulus } mode;
 
         QVector<SpectralSample> spectral;
-        QColor tristimulus;
+        TristimulusColor tristimulus;
 
         ColorPickerColor () : mode(Tristimulus), spectral(), tristimulus() {}
         ColorPickerColor (ColorPickerColor const & rhs)
@@ -101,7 +103,7 @@ struct ColorPickerColor {
 
                 switch (mode) {
                 case Tristimulus:
-                        return tristimulus;
+                        return tristimulus.toQColor();
                 case Spectral: {
                                 const Spectrum s = toSpectrum();
                                 redshift::color::RGB rgb = s.toRGB();
@@ -137,7 +139,7 @@ private:
 private slots:
     void on_tabWidget_currentChanged(int index);
     void on_okayButton_clicked();
-    void tristimulusColorChanged (QColor);
+    void tristimulusColorChanged (TristimulusColor);
     void spectralColorChanged (QVector<SpectralSample> const & c);
 
 private slots:

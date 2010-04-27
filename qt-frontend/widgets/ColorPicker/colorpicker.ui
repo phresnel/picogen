@@ -51,6 +51,9 @@
        <property name="text">
         <string>Cancel</string>
        </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -58,8 +61,8 @@
        <property name="text">
         <string>OK</string>
        </property>
-       <property name="default">
-        <bool>true</bool>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
