@@ -66,9 +66,17 @@ private:
                                 Function
                         >
                 );
+
+                // libnoise
                 quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr libnoisePerlinDesc (
                         new quatsch::CreateConfigurableFunction <
                                 quatsch :: configurable_functions :: LibnoisePerlin <Function, Compiler>,
+                                Function
+                        >
+                );
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr libnoiseBillowDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: LibnoiseBillow <Function, Compiler>,
                                 Function
                         >
                 );
@@ -80,6 +88,7 @@ private:
 
                 // libnoise integration
                 addfuns.addSymbol ("LibnoisePerlin", libnoisePerlinDesc);
+                addfuns.addSymbol ("LibnoiseBillow", libnoiseBillowDesc);
 
                 // deprecated
                 //addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
