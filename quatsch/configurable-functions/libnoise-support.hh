@@ -33,8 +33,6 @@
 #include "../backend/est/backend.hh"
 
 #include <libnoise/noise.h>
-#include <libnoise/module/billow.h>
-#include <libnoise/module/cylinders.h>
 
 #include <map>
 
@@ -210,7 +208,7 @@ public:
 
                 // Any parameters set that we don't know?
                 if (nonExistantParameterNames != "") {
-                        throw general_exception ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                        throw general_exception ("the following parameters do not exist for 'LibnoiseBillow': "+nonExistantParameterNames);
                 }
         }
 
@@ -294,7 +292,7 @@ public:
 
                 // Any parameters set that we don't know?
                 if (nonExistantParameterNames != "") {
-                        throw general_exception ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                        throw general_exception ("the following parameters do not exist for 'LibnoiseCylinders': "+nonExistantParameterNames);
                 }
         }
 
@@ -389,7 +387,7 @@ public:
 
                 // Any parameters set that we don't know?
                 if (nonExistantParameterNames != "") {
-                        throw general_exception ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                        throw general_exception ("the following parameters do not exist for 'LibnoiseRidgedMulti': "+nonExistantParameterNames);
                 }
         }
 
@@ -473,7 +471,7 @@ public:
 
                 // Any parameters set that we don't know?
                 if (nonExistantParameterNames != "") {
-                        throw general_exception ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                        throw general_exception ("the following parameters do not exist for 'LibnoiseSpheres': "+nonExistantParameterNames);
                 }
         }
 
@@ -496,6 +494,99 @@ public:
 };
 
 
+
+
+
+
+
+template <typename FUNCTION, typename COMPILER>
+class LibnoiseVoronoi : public FUNCTION {
+private:
+        typedef FUNCTION function_t;
+        typedef typename function_t::FunctionPtr  FunctionPtr;
+        typedef typename function_t::scalar_t     scalar_t;
+        typedef typename function_t::parameters_t parameters_t;
+
+        typedef COMPILER compiler_t;
+
+        FunctionPtr ufun;
+        FunctionPtr vfun;
+
+        noise::module::Voronoi voronoi;
+
+public:
+        LibnoiseVoronoi (
+                ::std::map<std::string,std::string>&static_parameters,
+                ::std::vector <FunctionPtr> &runtime_parameters
+        ) {
+                {
+                        using namespace quatsch::backend::est;
+                        if (runtime_parameters.size() < 2)
+                                throw insufficient_number_of_operands_exception (2);
+                        if (runtime_parameters.size() > 2)
+                                throw too_many_operands_exception (2);
+
+                        ufun = runtime_parameters[0];
+                        vfun = runtime_parameters[1];
+                }
+
+
+                using namespace std;
+                typedef map<string,string> Map;
+
+                //====---- - - -  -   -    -      -
+                // Scan Parameters.
+                //====---- - - -  -   -    -      -
+                string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
+
+
+                for (Map::const_iterator it=static_parameters.begin();
+                     it!=static_parameters.end();
+                     ++it
+                ) {
+                        const string name = it->first;
+                        /// \todo Add some shorter Mnenomics.
+                        if (name == string("frequency")) {
+                                istringstream hmmm (static_parameters[name]);
+                                double tmp; hmmm >> tmp; voronoi.SetFrequency(tmp);
+                        } else if (name == string("displacement")) {
+                                istringstream hmmm (static_parameters[name]);
+                                double tmp; hmmm >> tmp; voronoi.SetDisplacement(tmp);
+                        } else if (name == string("enable-distance")) {
+                                istringstream hmmm (static_parameters[name]);
+                                bool tmp; hmmm >> tmp; voronoi.EnableDistance(tmp);
+                        } else if (name == string("seed")) {
+                                istringstream hmmm (static_parameters[name]);
+                                int tmp; hmmm >> tmp; voronoi.SetSeed(tmp);
+                        } else {
+                                nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
+                        }
+                }
+
+                // Any parameters set that we don't know?
+                if (nonExistantParameterNames != "") {
+                        throw general_exception ("the following parameters do not exist for 'LibnoiseVoroni': "+nonExistantParameterNames);
+                }
+        }
+
+        virtual ~LibnoiseVoronoi() {}
+
+        static ::std::string const & name () {
+                static const ::std::string name ("LibnoiseVoronoi");
+                return name;
+        }
+
+        static unsigned int parameterCount () {
+                return 2;
+        }
+
+        virtual scalar_t operator () (const parameters_t &parameters) const {
+                const scalar_t u = (*ufun) (parameters);
+                const scalar_t v = (*vfun) (parameters);
+                return voronoi.GetValue(u, v, 0.5);
+        }
+
+};
 
 
 
