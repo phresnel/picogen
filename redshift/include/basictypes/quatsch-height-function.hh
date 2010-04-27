@@ -104,6 +104,12 @@ private:
                                 Function
                         >
                 );
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr libnoiseTurbulenceDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: LibnoiseTurbulence <Function, Compiler>,
+                                Function
+                        >
+                );
 
                 Compiler::ConfigurableFunctionsMap addfuns;
                 addfuns.addSymbol ("Noise2d", noiseDesc);
@@ -117,6 +123,7 @@ private:
                 addfuns.addSymbol ("LibnoiseRidgedMulti", libnoiseRidgedMultiDesc);
                 addfuns.addSymbol ("LibnoiseSpheres", libnoiseSpheresDesc);
                 addfuns.addSymbol ("LibnoiseVoronoi", libnoiseVoronoiDesc);
+                //addfuns.addSymbol ("LibnoiseTurbulence", libnoiseTurbulenceDesc); //TODO: requires a source module (i.e. we should write a libnoise-module which accepts quatsch-code)
 
                 // deprecated
                 //addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
