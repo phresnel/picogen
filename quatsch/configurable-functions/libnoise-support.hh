@@ -315,6 +315,108 @@ public:
                 return mod.GetValue(u, v, 0.5);
         }
 };
+
+
+
+
+
+
+template <typename FUNCTION, typename COMPILER>
+class LibnoiseRidgedMulti : public FUNCTION {
+private:
+        typedef FUNCTION function_t;
+        typedef typename function_t::FunctionPtr  FunctionPtr;
+        typedef typename function_t::scalar_t     scalar_t;
+        typedef typename function_t::parameters_t parameters_t;
+
+        typedef COMPILER compiler_t;
+
+        FunctionPtr ufun;
+        FunctionPtr vfun;
+
+        noise::module::RidgedMulti mod;
+
+public:
+        LibnoiseRidgedMulti (
+                ::std::map<std::string,std::string>&static_parameters,
+                ::std::vector <FunctionPtr> &runtime_parameters
+        ) {
+                {
+                        using namespace quatsch::backend::est;
+                        if (runtime_parameters.size() < 2)
+                                throw insufficient_number_of_operands_exception (2);
+                        if (runtime_parameters.size() > 2)
+                                throw too_many_operands_exception (2);
+
+                        ufun = runtime_parameters[0];
+                        vfun = runtime_parameters[1];
+                }
+
+
+                using namespace std;
+                typedef map<string,string> Map;
+
+                //====---- - - -  -   -    -      -
+                // Scan Parameters.
+                //====---- - - -  -   -    -      -
+                string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
+
+
+                for (Map::const_iterator it=static_parameters.begin();
+                     it!=static_parameters.end();
+                     ++it
+                ) {
+                        const string name = it->first;
+                        /// \todo Add some shorter Mnenomics.
+                        if (name == string("frequency")) {
+                                istringstream hmmm (static_parameters[name]);
+                                double tmp; hmmm >> tmp; mod.SetFrequency(tmp);
+                        } else if (name == string("lacunarity")) {
+                                istringstream hmmm (static_parameters[name]);
+                                double tmp; hmmm >> tmp; mod.SetLacunarity(tmp);
+                        } else if (name == string("octave-count")) {
+                                istringstream hmmm (static_parameters[name]);
+                                double tmp; hmmm >> tmp; mod.SetOctaveCount(tmp);
+                        } else if (name == string("seed")) {
+                                istringstream hmmm (static_parameters[name]);
+                                int tmp; hmmm >> tmp; mod.SetSeed(tmp);
+                        } else {
+                                nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
+                        }
+                }
+
+                mod.SetNoiseQuality(noise::QUALITY_BEST);
+
+                // Any parameters set that we don't know?
+                if (nonExistantParameterNames != "") {
+                        throw general_exception ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                }
+        }
+
+        virtual ~LibnoiseRidgedMulti() {}
+
+        static ::std::string const & name () {
+                static const ::std::string name ("LibnoiseRidgedMulti");
+                return name;
+        }
+
+        static unsigned int parameterCount () {
+                return 2;
+        }
+
+        virtual scalar_t operator () (const parameters_t &parameters) const {
+                const scalar_t u = (*ufun) (parameters);
+                const scalar_t v = (*vfun) (parameters);
+                return mod.GetValue(u, v, 0.5);
+        }
+};
+
+
+
+
+
+
+
 } }
 
 

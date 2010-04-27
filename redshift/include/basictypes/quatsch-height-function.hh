@@ -86,6 +86,12 @@ private:
                                 Function
                         >
                 );
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr libnoiseRidgedMultiDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: LibnoiseRidgedMulti <Function, Compiler>,
+                                Function
+                        >
+                );
 
                 Compiler::ConfigurableFunctionsMap addfuns;
                 addfuns.addSymbol ("Noise2d", noiseDesc);
@@ -96,6 +102,7 @@ private:
                 addfuns.addSymbol ("LibnoisePerlin", libnoisePerlinDesc);
                 addfuns.addSymbol ("LibnoiseBillow", libnoiseBillowDesc);
                 addfuns.addSymbol ("LibnoiseCylinders", libnoiseCylindersDesc);
+                addfuns.addSymbol ("LibnoiseRidgedMulti", libnoiseRidgedMultiDesc);
 
                 // deprecated
                 //addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
