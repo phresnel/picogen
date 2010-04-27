@@ -21,8 +21,8 @@
 //    You should have received a copy  of  the  GNU General Public License
 //    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef QUATSCHHEIGHTMAP_HH_INCLUDED_20100424
-#define QUATSCHHEIGHTMAP_HH_INCLUDED_20100424
+#ifndef LIBNOISE_SUPPORT_HH_INCLUDED_20100427
+#define LIBNOISE_SUPPORT_HH_INCLUDED_20100427
 
 #include <boost/shared_array.hpp>
 //#include <picogen/picogen.h>
@@ -32,25 +32,14 @@
 #include "../frontend/jux.hh"
 #include "../backend/est/backend.hh"
 
-#include "../../redshift/include/auxiliary/heightmap.hh"
+#include <libnoise/noise.h>
 
 #include <map>
-//#include <picogen/picogen.h>
 
 namespace quatsch {  namespace configurable_functions {
 
         template <typename FUNCTION, typename COMPILER>
-        class Heightmap : public FUNCTION {
-                template <typename RT, typename T> static RT floor (const T &v) {
-                        assert (static_cast<int>(1.75) == 1);
-                        assert (static_cast<int>(1.5) == 1);
-                        assert (static_cast<int>(1.25) == 1);
-                        assert (static_cast<int>(-0.75) == 0);
-                        assert (static_cast<int>(-0.5) == 0);
-                        assert (static_cast<int>(-0.25) == 0);
-                        return static_cast <RT> (static_cast <int> (v<0 ? v-1 : v));
-                }
-
+        class LibnoisePerlin : public FUNCTION {
         private:
                 typedef FUNCTION function_t;
                 typedef typename function_t::FunctionPtr  FunctionPtr;
@@ -62,26 +51,16 @@ namespace quatsch {  namespace configurable_functions {
                 FunctionPtr ufun;
                 FunctionPtr vfun;
 
-                enum filter_t {
-                        nearest,
-                        bilinear,
-                        cosine,
-                        cubic
-                };
-                filter_t filter;
-
-                scalar_t width, height, depth;
-                scalar_t iwidth, iheight, idepth;
-                redshift::aux::Heightmap<scalar_t> heightmap;
+                noise::module::Perlin perlin;
 
         public:
-                Heightmap (
+                LibnoisePerlin (
                         ::std::map<std::string,std::string>&static_parameters,
                         ::std::vector <FunctionPtr> &runtime_parameters
                 );
 
                 static ::std::string const & name () {
-                        static const ::std::string name ("Heightmap");
+                        static const ::std::string name ("LibnoisePerlin");
                         return name;
                 }
 
@@ -89,34 +68,11 @@ namespace quatsch {  namespace configurable_functions {
                         return 2;
                 }
 
-                virtual ~Heightmap();
-                //virtual scalar_t operator () (const scalar_t * const parameters) const;
+                virtual ~LibnoisePerlin();
                 virtual scalar_t operator () (const parameters_t &) const;
 
         };
-
-        // Takes the average of all Hexels within a radius.
-        /*
-        class CircleFlatBlur2d : public BasicFunction {
-
-        private:
-            typedef ::picogen::scalar_t scalar_t;
-
-            BasicFunction *ufun, *vfun;
-
-            unsigned int noiseMapSize;
-            unsigned int noiseMapLayerCount;
-            scalar_t *noiseMap;
-
-        public:
-            Heightmap (std::map<std::string,std::string> &parameters, BasicFunction *ufun, BasicFunction *vfun);
-            virtual ~Heightmap();
-            virtual scalar_t operator () (const scalar_t * const parameters) const;
-
-        };
-        */
-
 } }
 
 
-#endif // QUATSCHHEIGHTMAP_HH_INCLUDED_20100424
+#endif // LIBNOISE_SUPPORT_HH_INCLUDED_20100427

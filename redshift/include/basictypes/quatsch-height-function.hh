@@ -30,6 +30,7 @@
 #include "../../quatsch/configurable-functions/noise2ddef.hh"
 #include "../../quatsch/configurable-functions/layerednoise2ddef.hh"
 #include "../../quatsch/configurable-functions/heightmapdef.hh"
+#include "../../quatsch/configurable-functions/libnoise-support-def.hh"
 
 namespace redshift {
 class QuatschHeightFunction : public redshift::HeightFunction {
@@ -65,13 +66,23 @@ private:
                                 Function
                         >
                 );
+                quatsch::ICreateConfigurableFunction<Function>::ConfigurableFunctionDescriptionPtr libnoisePerlinDesc (
+                        new quatsch::CreateConfigurableFunction <
+                                quatsch :: configurable_functions :: LibnoisePerlin <Function, Compiler>,
+                                Function
+                        >
+                );
 
                 Compiler::ConfigurableFunctionsMap addfuns;
                 addfuns.addSymbol ("Noise2d", noiseDesc);
                 addfuns.addSymbol ("ValueNoise2d", layeredNoise2dDesc);
                 addfuns.addSymbol ("Heightmap", heightmapDesc);
 
-                addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
+                // libnoise integration
+                addfuns.addSymbol ("LibnoisePerlin", libnoisePerlinDesc);
+
+                // deprecated
+                //addfuns.addSymbol ("LayeredNoise2d", layeredNoise2dDesc);
                 return addfuns;
         }
 
