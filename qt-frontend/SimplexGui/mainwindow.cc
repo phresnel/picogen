@@ -2117,6 +2117,7 @@ QString MainWindow::askForNewSaveFilename() {
                              +" or one that does not exist yet.");
                         goto again;
                 }
+
                 return name;
         }
         return "";
@@ -2127,6 +2128,7 @@ QString MainWindow::askForNewSaveFilename() {
 QString MainWindow::getAndUpdateSaveFilename() {
         if (saveFilename == "") {
                 saveFilename = askForNewSaveFilename();
+                QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                 return saveFilename;
         }
         return saveFilename;
@@ -2169,6 +2171,7 @@ void MainWindow::on_actionSave_as_triggered() {
         if (ofs.is_open()) {
                 ofs << code.toStdString() << std::endl;
                 saveFilename = newName;
+                QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
         } else {
                 QMessageBox::warning(this, "Must use another filename",
                                      "Cannot save the file as \""
@@ -2293,6 +2296,7 @@ void MainWindow::on_actionLoad_triggered() {
                 actuarius::IArchive (ss) & actuarius::pack("scene", scene);
                 loadScene (scene);
                 saveFilename = name;
+                QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                 refreshWindowTitle();
         } catch (std::exception const &e){
                 loadScene(oldScene);
