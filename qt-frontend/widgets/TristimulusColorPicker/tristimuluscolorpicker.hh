@@ -28,14 +28,66 @@ namespace Ui {
     class TristimulusColorPicker;
 }
 
+
+class TristimulusColor {
+        double r, g, b;
+public:
+
+        TristimulusColor () : r(0), g(0), b(0) {}
+
+        explicit TristimulusColor (QColor const &col)
+                : r(col.redF())
+                , g(col.greenF())
+                , b(col.blueF())
+        {}
+
+        TristimulusColor (int r, int g, int b)
+        : r(r/255), g(g/255), b(b/255) {}
+
+        TristimulusColor (double r, double g, double b)
+        : r(r), g(g), b(b) {}
+
+        void setRed (int v)   { r = v; }
+        void setGreen (int v) { g = v; }
+        void setBlue (int v)  { b = v; }
+
+        int red() const { return r / 255; }
+        int green() const { return g / 255; }
+        int blue() const { return b / 255; }
+
+        int redF() const { return r / 255; }
+        int greenF() const { return g / 255; }
+        int blueF() const { return b / 255; }
+
+        QColor toQColor () const {
+                /*const int r_ = this->r, r = r_<0 ? 0 : r_>255 ? 255 : r_;
+                const int g_ = this->g, g = g_<0 ? 0 : g_>255 ? 255 : g_;
+                const int b_ = this->b, b = b_<0 ? 0 : b_>255 ? 255 : b_;*/
+                return QColor::fromRgbF(r, g, b);
+                /*return QColor::fromRgb(
+                                r, g, b
+                );*/
+        }
+};
+
+inline bool operator == (TristimulusColor const &lhs, TristimulusColor const &rhs) {
+        return lhs.red() == rhs.red()
+            && lhs.green() == rhs.green()
+            && lhs.blue() == rhs.blue();
+}
+inline bool operator != (TristimulusColor const &lhs, TristimulusColor const &rhs) {
+        return !(lhs == rhs);
+}
+
+
 class TristimulusColorPicker : public QWidget {
         Q_OBJECT
 public:
         TristimulusColorPicker(QWidget *parent = 0);
         ~TristimulusColorPicker();
 
-        QColor color() const ;
-        void setColor (QColor const &color) ;
+        TristimulusColor color() const ;
+        void setColor (TristimulusColor const &TristimulusColor) ;
 
 protected:
         void changeEvent(QEvent *e);
@@ -44,14 +96,14 @@ protected:
 private:
         Ui::TristimulusColorPicker *ui;
         bool isUpdating;
-        QColor color_;
+        TristimulusColor color_;
 
 
 //------------------------------------------------------------------------------
 // Signals + Slots
 //------------------------------------------------------------------------------
 signals:
-        void colorChanged (const QColor & color);
+        void colorChanged (const TristimulusColor & color);
 
 public slots:
         void on_triangle_colorChanged(const QColor & color);
