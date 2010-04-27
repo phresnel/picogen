@@ -170,9 +170,11 @@ namespace {
                 switch (c.type) {
                 case Color::RGB:
                         ret.mode = ColorPickerColor::Tristimulus;
-                        ret.tristimulus.setRedF(c.rgb.r);
-                        ret.tristimulus.setGreenF(c.rgb.g);
-                        ret.tristimulus.setBlueF(c.rgb.b);
+                        ret.tristimulus = TristimulusColor(
+                                        (double)c.rgb.r,
+                                        (double)c.rgb.g,
+                                        (double)c.rgb.b
+                                        );
                         break;
                 case Color::Spectrum:
                         ret.mode = ColorPickerColor::Spectral;

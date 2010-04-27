@@ -46,7 +46,7 @@ ColorEdit::ColorEdit(QWidget *parent, QMdiArea *displayArea)
         setAttribute(Qt::WA_InputMethodEnabled);
 
         color_.mode = ColorPickerColor::Tristimulus;
-        color_.tristimulus = QColor(255,122,64);
+        color_.tristimulus = TristimulusColor(1.,0.5,0.25);
         //emit colorChanged(color_);
 
         connect(button, SIGNAL(clicked()),

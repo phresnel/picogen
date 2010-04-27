@@ -42,7 +42,7 @@ public:
         {}
 
         TristimulusColor (int r, int g, int b)
-        : r(r/255), g(g/255), b(b/255) {}
+        : r(r/255.), g(g/255.), b(b/255.) {}
 
         TristimulusColor (double r, double g, double b)
         : r(r), g(g), b(b) {}
@@ -51,13 +51,13 @@ public:
         void setGreen (int v) { g = v; }
         void setBlue (int v)  { b = v; }
 
-        int red() const { return r / 255; }
-        int green() const { return g / 255; }
-        int blue() const { return b / 255; }
+        int red()   const { return r * 255; }
+        int green() const { return g * 255; }
+        int blue()  const { return b * 255; }
 
-        int redF() const { return r / 255; }
-        int greenF() const { return g / 255; }
-        int blueF() const { return b / 255; }
+        double redF()   const { return r; }
+        double greenF() const { return g; }
+        double blueF()  const { return b; }
 
         QColor toQColor () const {
                 /*const int r_ = this->r, r = r_<0 ? 0 : r_>255 ? 255 : r_;
@@ -68,16 +68,18 @@ public:
                                 r, g, b
                 );*/
         }
+
+
+        bool operator == (TristimulusColor const &rhs) const {
+                return r == rhs.r
+                    && g == rhs.g
+                    && b == rhs.b;
+        }
+        bool operator != (TristimulusColor const &rhs) const {
+                return !(*this == rhs);
+        }
 };
 
-inline bool operator == (TristimulusColor const &lhs, TristimulusColor const &rhs) {
-        return lhs.red() == rhs.red()
-            && lhs.green() == rhs.green()
-            && lhs.blue() == rhs.blue();
-}
-inline bool operator != (TristimulusColor const &lhs, TristimulusColor const &rhs) {
-        return !(lhs == rhs);
-}
 
 
 class TristimulusColorPicker : public QWidget {
