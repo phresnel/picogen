@@ -326,7 +326,7 @@ void MainWindow::setupUi() {
         ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
 
-        setUnchanged();
+        setChanged();
 }
 
 
@@ -366,6 +366,8 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
 
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
                 ui->settings->setExpanded(it, false);
+
+        setUnchanged();
 }
 
 
@@ -450,7 +452,7 @@ void MainWindow::setDefaultScene() {
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
                 ui->settings->setExpanded(it, false);
 
-        setUnchanged();
+        setChanged();
 }
 
 
@@ -589,10 +591,11 @@ void MainWindow::setBackground (
         // Turbidity.
         vp = variantManager->addProperty(QVariant::Double, "turbidity");
         vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.25);
+        vp->setAttribute(QLatin1String("singleStep"), 0.1);
         vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), 1.7);
+        vp->setAttribute(QLatin1String("minimum"), 0);
         vp->setAttribute(QLatin1String("maximum"), 30);
+        vp->setToolTip("For realism, use values between 2 and 10. But for artistic reasons, use any.");
         vp->setValue(b.turbidity);
         pssSunSkyProperty->addSubProperty(vp);
 
@@ -2306,7 +2309,7 @@ void MainWindow::on_actionLoad_triggered() {
 void MainWindow::on_actionProduction_Render_triggered() {
         try {
                 again:
-                if (saveFilename == "" || !QFile::exists(saveFilename)) {
+                if (changed) {
                         if (QMessageBox::Ok ==
                                 QMessageBox::question(this, "Unsaved scene",
                                   "To do a production-render, the scene must be "

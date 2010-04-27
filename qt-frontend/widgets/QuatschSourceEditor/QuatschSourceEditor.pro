@@ -21,4 +21,5 @@ LIBS += ../../../redshift/lib/libpicogen.a \
     -lboost_program_options \
     -lSDL -lSDL_image \
     -lboost_filesystem \
+    -lboost_system \
     -lnoise

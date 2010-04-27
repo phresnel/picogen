@@ -30,6 +30,8 @@
 
 #include "../../redshift/include/static_init.hh"
 
+#undef main // SDL fix
+
 int simplexGui (int argc, char *argv[]) {
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
