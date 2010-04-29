@@ -55,6 +55,7 @@ public:
 protected:
         void changeEvent(QEvent *e);
         void contextMenuEvent(QContextMenuEvent *event);
+        void closeEvent (QCloseEvent *);
 
 private:
         Ui::MainWindow *ui;

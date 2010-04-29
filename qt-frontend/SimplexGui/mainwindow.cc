@@ -242,15 +242,6 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
 
 
 MainWindow::~MainWindow() {
-        if (changed) {
-                if (QMessageBox::Yes == QMessageBox::question(
-                        this, "Unsaved data",
-                        "You have unsaved changes. Save now?",
-                        QMessageBox::Yes | QMessageBox::No)
-                ) {
-                        on_actionSave_as_triggered();
-                }
-        }
         delete ui;
 }
 
@@ -2520,4 +2511,26 @@ void MainWindow::on_actionNew_Scene_triggered() {
 
 void MainWindow::on_actionClose_triggered() {
         close();
+}
+
+
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+        if (changed) {
+                const int r = QMessageBox::question(
+                        this, "Unsaved data",
+                        "You have unsaved changes. Save now?",
+                        QMessageBox::Yes | QMessageBox::No
+                                | QMessageBox::Cancel);
+                if (QMessageBox::Yes == r) {
+                        on_actionSave_as_triggered();
+                        event->accept();
+                } else if (QMessageBox::No == r) {
+                        event->accept();
+                } else {
+                        event->ignore();
+                }
+        } else {
+                event->accept();
+        }
 }
