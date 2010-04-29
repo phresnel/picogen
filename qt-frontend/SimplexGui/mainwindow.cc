@@ -33,6 +33,7 @@
 #include <QDesktopServices>
 #include <QTextStream>
 #include <QUrl>
+#include <QProcess>
 
 #include "simpleinputbox.hh"
 #include "renderwindow.hh"
@@ -2507,4 +2508,10 @@ void MainWindow::on_actionDelete_Object_triggered() {
 void MainWindow::on_actionShow_Command_Pile_triggered(bool checked) {
         ui->commandPileGroupBox->setEnabled(checked);
         ui->commandPileGroupBox->setVisible(checked);
+}
+
+
+
+void MainWindow::on_actionNew_Scene_triggered() {
+        QProcess::startDetached(QApplication::applicationFilePath());
 }
