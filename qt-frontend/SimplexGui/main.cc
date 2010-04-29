@@ -37,8 +37,13 @@ int simplexGui (int argc, char *argv[]) {
         QApplication::setStyle(style);
 
         redshift::static_init();
+
+        QString initialFilename = "";
+        if (argc > 1) {
+                initialFilename = QString(argv[1]);
+        }
         QApplication a(argc, argv);
-        MainWindow w;
+        MainWindow w (initialFilename);
         w.show();
         const int ret = a.exec();
         return ret;

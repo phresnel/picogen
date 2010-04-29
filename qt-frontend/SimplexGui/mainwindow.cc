@@ -193,7 +193,7 @@ namespace {
 
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     pssSunSkyProperty(0),
@@ -202,7 +202,24 @@ MainWindow::MainWindow(QWidget *parent) :
     settingsContextMenu(this)
 {
         setupUi();
-        setDefaultScene();
+
+        if (initialFilename != "") {
+                try {
+                        redshift::scenefile::Scene scene;
+                        std::ifstream ss(initialFilename.toStdString().c_str());
+                        actuarius::IArchive (ss) & actuarius::pack("scene", scene);
+                        loadScene(scene);
+
+                        saveFilename = initialFilename;
+                        QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
+                        refreshWindowTitle();
+                        setUnchanged();
+                } catch (...) {
+                        setDefaultScene();
+                }
+        } else {
+                setDefaultScene();
+        }
 
         objectsMenu.addAction(ui->actionAdd_Horizon_Plane);
         objectsMenu.addAction(ui->actionAdd_Water_Plane);
