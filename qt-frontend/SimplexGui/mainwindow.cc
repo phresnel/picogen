@@ -2515,3 +2515,9 @@ void MainWindow::on_actionShow_Command_Pile_triggered(bool checked) {
 void MainWindow::on_actionNew_Scene_triggered() {
         QProcess::startDetached(QApplication::applicationFilePath());
 }
+
+
+
+void MainWindow::on_actionClose_triggered() {
+        close();
+}
