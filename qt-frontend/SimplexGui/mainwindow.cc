@@ -2083,6 +2083,12 @@ QString MainWindow::askForNewSaveFilename() {
         dialog.setFileMode(QFileDialog::AnyFile);
         dialog.setWindowTitle("Set a filename for saving the scene");
 
+        QStringList nameFilters;
+        nameFilters << "Picogen scene (*.picogen)"
+                    << "Everything (*)"
+                    ;
+        dialog.setNameFilters(nameFilters);
+
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
@@ -2090,7 +2096,20 @@ QString MainWindow::askForNewSaveFilename() {
         dialog.setSidebarUrls(urls);
 
         if (dialog.exec()) {
-                QString const name = dialog.selectedFiles()[0];
+                QString name = dialog.selectedFiles()[0];
+
+                // Check extension.
+                if (name.endsWith(".picogen", Qt::CaseInsensitive)) {}
+                else if (name.lastIndexOf('.')>=0){
+                        QMessageBox::information(this,
+                           "Unsupported filename extension",
+                           "Please choose a filename with one of the following extensions:\n"
+                           " * .picogen\n"
+                        );
+                        goto again;
+                } else {
+                        name += ".picogen";
+                }
 
                 // Check if overwrites.
                 if (QFile::exists(name) &&
@@ -2270,6 +2289,12 @@ void MainWindow::on_actionLoad_triggered() {
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::AnyFile);
         dialog.setWindowTitle("Select a file to load");
+
+        QStringList nameFilters;
+        nameFilters << "Picogen scene (*.picogen)"
+                    << "Everything (*)"
+                    ;
+        dialog.setNameFilters(nameFilters);
 
         QList<QUrl> urls = dialog.sidebarUrls();
         urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
