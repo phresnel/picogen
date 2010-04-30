@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-03-18T07:25:16
 # -------------------------------------------------
-TARGET = simplex-gui
+TARGET = picogen-simplex
 TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
 INCLUDEPATH += ../widgets/
