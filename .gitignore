@@ -32,7 +32,7 @@ qt-frontend/SimplexGui/qrc_qtpropertybrowser.cpp
 qt-frontend/SimplexGui/qteditorfactory.moc
 qt-frontend/SimplexGui/qtpropertymanager.moc
 qt-frontend/SimplexGui/qttreepropertybrowser.moc
-qt-frontend/SimplexGui/simplex-gui
+qt-frontend/SimplexGui/picogen-simplex
 qt-frontend/SimplexGui/Makefile.Debug
 qt-frontend/SimplexGui/Makefile.Release
 qt-frontend/SimplexGui/object_script.simplex-gui.Debug
