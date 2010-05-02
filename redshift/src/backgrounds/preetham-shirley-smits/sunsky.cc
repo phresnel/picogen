@@ -469,8 +469,9 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source
         const Vector direction = normalize (source - viewer);
 
         if (source.y < 0) {
-                const real_t s = viewer.y / -direction.y;
-                source = viewer + s * direction;
+                /*const real_t s = viewer.y / -direction.y;
+                source = viewer + s * direction;*/
+                source.y = 0;
         }
 
         const real_t thetav    = acos (direction.up());

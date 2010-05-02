@@ -484,7 +484,7 @@ void MainWindow::initializeFilmSettings() {
         item = variantManager->addProperty(
                         QVariant::Double,
                         QLatin1String("color-scale"));
-        item->setValue(0.007);
+        item->setValue(0.013);
         item->setAttribute(QLatin1String("singleStep"), 0.01);
         item->setAttribute(QLatin1String("decimals"), 6);
         item->setAttribute(QLatin1String("minimum"), 0);

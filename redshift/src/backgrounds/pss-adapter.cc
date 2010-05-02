@@ -103,11 +103,15 @@ Color PssAdapter::diffuseQuery (
 }*/
 
 Color PssAdapter::atmosphereShade (
-        Color const &color, Ray const &ray, real_t distance
+        Color const &color, Ray const &ray_, real_t distance
 ) const {
         if (!preetham->atmosphericEffectsEnabled()) {
                 return color;
         }
+
+        Ray ray = ray_;
+        /*if (ray.direction.y < 0)
+                ray.direction.y = 0;*/
 
         if (distance == constants::infinity)
                 distance = 100000000;

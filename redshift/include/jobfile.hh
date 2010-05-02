@@ -332,12 +332,15 @@ namespace redshift { namespace scenefile {
                         Material material;
 
                         LazyQuadtreeParams ()
-                        : code("(+"
-                                "  (* 600 (- 1 (abs ([LayeredNoise2d filter{cosine} seed{57} frequency{0.001} layercount{3} persistence{0.4}] x y))))"
-                                "  (* 70 ([LayeredNoise2d filter{cosine} seed{542} frequency{0.01} layercount{10} persistence{0.5}] x y))"
-                                "  -400"
-                                ") ")
-                        , size(10000)
+                        : code(
+                                "(* 1000\n"
+                                "   ([LibnoiseRidgedMulti\n"
+                                "     frequency{0.0001}\n"
+                                "     octave-count{12}\n"
+                                "    ] x y)\n"
+                                ")\n"
+                        )
+                        , size(50000)
                         , maxRecursion(7)
                         , lodFactor(0.00125)
                         , material(0.7,0.7,0.7)
@@ -379,7 +382,15 @@ namespace redshift { namespace scenefile {
                         Material material;
 
                         WaterPlaneParams ()
-                        : code("(* 0.05 ([LayeredNoise2d filter{cosine} seed{13} frequency{0.02} layercount{10} persistence{0.63}] x y))")
+                        : code("(* 0.1 \n"
+                               "   (- 1 \n"
+                               "      ([LibnoiseBillow\n"
+                               "        frequency{0.1}\n"
+                               "        octave-count{10}\n"
+                               "        persistence{0.5}\n"
+                               "       ] x y)"
+                               "   )"
+                               ")")
                         , height(0)
                         , material(1,1,1)
                         {}
