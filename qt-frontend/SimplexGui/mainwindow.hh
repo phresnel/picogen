@@ -144,7 +144,9 @@ private:
         bool nonRecurseLock;
         QMenu settingsContextMenu, objectsMenu, volumesMenu;
 private slots:
+        void on_actionMaximize_triggered();
         void on_actionClose_triggered();
+
         void on_actionNew_Scene_triggered();
         void on_actionShow_Command_Pile_triggered(bool checked);
         void on_actionAdd_Homogeneous_Volume_triggered();

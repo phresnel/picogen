@@ -237,6 +237,9 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
 
         refreshWindowTitle();
         //menuBar()->repaint();
+
+        ui->actionShow_Command_Pile->setChecked(false);
+        on_actionShow_Command_Pile_triggered (ui->actionShow_Command_Pile->isChecked());
 }
 
 
@@ -2533,4 +2536,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         } else {
                 event->accept();
         }
+}
+
+
+
+void MainWindow::on_actionMaximize_triggered() {
+        setWindowState(windowState() ^ Qt::WindowFullScreen);
 }
