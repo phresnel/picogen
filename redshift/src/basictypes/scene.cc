@@ -161,7 +161,8 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode)
 
                 // to atmosphere == apply aerial perspective onto sth.
                 // but not onto sun, which is already attenuated inside PssSunSky
-                atmosphere_or_geom_atmosphered = background && background->hasAtmosphereShade()
+                atmosphere_or_geom_atmosphered
+                    = (background && background->hasAtmosphereShade())
                     ? background->atmosphereShade (atmosphere_or_geom_volumed, sample.primaryRay, distance)
                     : atmosphere_or_geom_volumed,
 

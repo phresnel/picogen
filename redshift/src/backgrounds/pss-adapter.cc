@@ -103,19 +103,15 @@ Color PssAdapter::diffuseQuery (
 }*/
 
 Color PssAdapter::atmosphereShade (
-        Color const &color, Ray const &ray_, real_t distance
+        Color const &color, Ray const &ray, real_t distance
 ) const {
         if (!preetham->atmosphericEffectsEnabled()) {
                 return color;
         }
 
-        Ray ray = ray_;
-        /*if (ray.direction.y < 0)
-                ray.direction.y = 0;*/
-
         distance *= atmosphericFxDistanceFactor;
         if (distance == constants::infinity)
-                distance = 100000000;
+                distance = 10000000;
 
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));
@@ -128,7 +124,7 @@ Color PssAdapter::atmosphereShade (
         );
 
         //return Color (SSpectrum(color) * attenuation + inscatter * (1.-attenuation));
-        return Color (SSpectrum(color) * attenuation + inscatter);
+        return Color (SSpectrum(color) * attenuation) + inscatter;
 }
 
 } } // namespace redshift { namespace backgrounds {

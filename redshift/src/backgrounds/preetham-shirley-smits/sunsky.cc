@@ -464,16 +464,12 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &sourc
 
         Vector source = source_;
         Vector viewer = viewer_;
-        if (source.y < 0) { source.y = 0; }
-        if (viewer.y < 0) { viewer.y = 0; }
 
         const Vector diff = source - viewer;
         const Vector direction = normalize (diff);
 
-
         // Clean up the 1000 problem
-        const real_t h0 = viewer.up();//1000 added to make sure ray doesnt
-        //go below zero.
+        const real_t h0 = viewer.up();//1000 added to make sure ray doesnt go below zero.
 
 
         const real_t thetav    = acos (direction.up());
@@ -493,8 +489,14 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &sourc
         /*if (h0+s*cos(thetav) <= 0) {
                 attenuation = Spectrum(Spectrum::real_t(1));
                 inscatter = Spectrum(Spectrum::real_t(0));
+                #pragma omp master
+                {
                 std::cerr << "Warning: Ray going below earth's surface\n";
-                return;
+                std::cerr << std::fixed;
+                std::cerr << "source_ = {" << source_.x << ", " << source_.y << ", " << source_.z << "}\n";
+                std::cerr << "viewer_ = {" << viewer_.x << ", " << viewer_.y << ", " << viewer_.z <<  "}\n";
+                }
+                //return;
         }*/
 
         attenuation = AttenuationFactor(h0, thetav, s);
@@ -651,6 +653,7 @@ PssSunSky::Spectrum PssSunSky::clearInscatteredRadiance(
         GetA0fromTable(theta, phi, A0_1, A0_2);
 
         // approximation (< 0.3 for 1% accuracy)
+        /* phresnel/ disabled this, yields worse performance, but less visible artifacts
         if (fabs(B_1*s) < 0.3) {
                 real_t constTerm1 =  std::exp(-Alpha_1*h0);
                 real_t constTerm2 =  std::exp(-Alpha_2*h0);
@@ -665,6 +668,7 @@ PssSunSky::Spectrum PssSunSky::clearInscatteredRadiance(
 
                 return A0_1 * constTerm1 * I_1 + A0_2 * constTerm2 * I_2;
         }
+        */
 
         // Analytical approximation
         real_t A,B,C,D,H1,H2,K;
