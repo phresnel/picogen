@@ -124,7 +124,8 @@ Color PssAdapter::atmosphereShade (
         );
 
         //return Color (SSpectrum(color) * attenuation + inscatter * (1.-attenuation));
-        return Color (SSpectrum(color) * attenuation) + inscatter;
+        return Color (SSpectrum(color) * attenuation)
+               + inscatter;
 }
 
 } } // namespace redshift { namespace backgrounds {

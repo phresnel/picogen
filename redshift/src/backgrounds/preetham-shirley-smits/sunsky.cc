@@ -465,16 +465,18 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &sourc
         Vector source = source_;
         Vector viewer = viewer_;
 
+        int hack = 0;
+nervous:
         const Vector diff = source - viewer;
         const Vector direction = normalize (diff);
 
         // Clean up the 1000 problem
-        const real_t h0 = viewer.up();//1000 added to make sure ray doesnt go below zero.
+        real_t h0 = viewer.up();//1000 added to make sure ray doesnt go below zero.
 
 
         const real_t thetav    = acos (direction.up());
         const real_t phiv      = atan2 (direction.ahead(), direction.right());
-        const real_t s         = length (diff);
+        real_t s         = length (diff);
 
         // fix added (phresnel)/ would otherwise result in fault mem access if s==0
         if (s<=0) {
@@ -486,6 +488,29 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &sourc
         // This should be changed so that we don't need to worry about it.
         // phresnel: Test removed until further notice, app does not seem to worry
 
+        if (h0+s*cos(thetav) <= 0) {
+                /*
+                h0 + s*cos(thetav) = 0
+                s*cos(thetav) = -h0
+                s = -h0 / cos(thetav)
+                */
+                //s = -h0 / cos(thetav);
+
+                /*attenuation = Spectrum(Spectrum::real_t(1));
+                inscatter = Spectrum(Spectrum::real_t(0));
+                return;*/
+                //return GetAtmosphericEffects(viewer_, Vector(source_.x, -source_.y, source_.z), attenuation, inscatter);
+                if (hack == 0) {
+                        source.y = -source.y;
+                        ++hack;
+                        goto nervous;
+                } else if (hack == 1) {
+                        //s = -h0 / cos(thetav);
+                        attenuation = Spectrum(Spectrum::real_t(1));
+                        inscatter = Spectrum(Spectrum::real_t(0));
+                        return;
+                }
+        }
         /*if (h0+s*cos(thetav) <= 0) {
                 attenuation = Spectrum(Spectrum::real_t(1));
                 inscatter = Spectrum(Spectrum::real_t(0));
@@ -496,7 +521,7 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &sourc
                 std::cerr << "source_ = {" << source_.x << ", " << source_.y << ", " << source_.z << "}\n";
                 std::cerr << "viewer_ = {" << viewer_.x << ", " << viewer_.y << ", " << viewer_.z <<  "}\n";
                 }
-                //return;
+                return;
         }*/
 
         attenuation = AttenuationFactor(h0, thetav, s);
@@ -653,8 +678,9 @@ PssSunSky::Spectrum PssSunSky::clearInscatteredRadiance(
         GetA0fromTable(theta, phi, A0_1, A0_2);
 
         // approximation (< 0.3 for 1% accuracy)
-        /* phresnel/ disabled this, yields worse performance, but less visible artifacts
-        if (fabs(B_1*s) < 0.3) {
+        // phresnel: using the original variant yields visible borders between this and the next approximation
+        if (fabs(B_1*s) < 0.003) { // tweaked
+        //if (fabs(B_1*s) < 0.3) { // original
                 real_t constTerm1 =  std::exp(-Alpha_1*h0);
                 real_t constTerm2 =  std::exp(-Alpha_2*h0);
 
@@ -668,56 +694,48 @@ PssSunSky::Spectrum PssSunSky::clearInscatteredRadiance(
 
                 return A0_1 * constTerm1 * I_1 + A0_2 * constTerm2 * I_2;
         }
-        */
 
         // Analytical approximation
-        real_t A,B,C,D,H1,H2,K;
-        real_t u_f1, u_i1,u_f2, u_i2, int_f, int_i, fs, fdashs, fdash0;
-        real_t a1,b1,a2,b2;
-        real_t den1, den2;
+        {
+                real_t A,B,C,D,H1,H2,K;
+                real_t u_f1, u_i1,u_f2, u_i2, int_f, int_i, fs, fdashs, fdash0;
+                real_t a1,b1,a2,b2;
+                real_t den1, den2;
 
-        b1 = u_f1 = exp(-Alpha_1*(h0+s*costheta));
-        H1 = a1 = u_i1 = exp(-Alpha_1*h0);
-        b2 = u_f2 = exp(-Alpha_2*(h0+s*costheta));
-        H2 = a2 = u_i2 = exp(-Alpha_2*h0);
-        den1 = (a1-b1)*(a1-b1)*(a1-b1);
-        den2 = (a2-b2)*(a2-b2)*(a2-b2);
+                b1 = u_f1 = exp(-Alpha_1*(h0+s*costheta));
+                H1 = a1 = u_i1 = exp(-Alpha_1*h0);
+                b2 = u_f2 = exp(-Alpha_2*(h0+s*costheta));
+                H2 = a2 = u_i2 = exp(-Alpha_2*h0);
+                den1 = (a1-b1)*(a1-b1)*(a1-b1);
+                den2 = (a2-b2)*(a2-b2)*(a2-b2);
 
-        for (i = 0; i < Spectrum::num_components; i++) {
-                // for integral 1
-                K = beta_p[i]/(Alpha_1*costheta);
-                fdash0 = -beta_m[i]*H2;
-                fs = exp(-beta_m[i]/(Alpha_2*costheta)*(u_i2 - u_f2));
-                fdashs = -fs*beta_m[i]*u_f2;
+                for (i = 0; i < Spectrum::num_components; i++) {
+                        // for integral 1
+                        K = beta_p[i]/(Alpha_1*costheta);
+                        fdash0 = -beta_m[i]*H2;
+                        fs = exp(-beta_m[i]/(Alpha_2*costheta)*(u_i2 - u_f2));
+                        fdashs = -fs*beta_m[i]*u_f2;
 
-                RiCalculateABCD(a1,b1,fs,fdash0,fdashs,den1,A,B,C,D);
-                int_f = RiHelper1(A,B,C,D,H1,K, u_f1);
-                int_i = RiHelper1(A,B,C,D,H1,K, u_i1);
-                I_1[i] = (int_f - int_i)/(-Alpha_1*costheta);
+                        RiCalculateABCD(a1,b1,fs,fdash0,fdashs,den1,A,B,C,D);
+                        int_f = RiHelper1(A,B,C,D,H1,K, u_f1);
+                        int_i = RiHelper1(A,B,C,D,H1,K, u_i1);
+                        I_1[i] = (int_f - int_i)/(-Alpha_1*costheta);
 
-                // for integral 2
-                K = beta_m[i]/(Alpha_2*costheta);
-                fdash0 = -beta_p[i]*H1;
-                fs = exp(-beta_p[i]/(Alpha_1*costheta)*(u_i1 - u_f1));
-                fdashs = -fs*beta_p[i]*u_f1;
+                        // for integral 2
+                        K = beta_m[i]/(Alpha_2*costheta);
+                        fdash0 = -beta_p[i]*H1;
+                        fs = exp(-beta_p[i]/(Alpha_1*costheta)*(u_i1 - u_f1));
+                        fdashs = -fs*beta_p[i]*u_f1;
 
-                RiCalculateABCD(a2,b2,fs,fdash0, fdashs, den2, A,B,C,D);
-                int_f = RiHelper1(A,B,C,D,H2,K, u_f2);
-                int_i = RiHelper1(A,B,C,D,H2,K, u_i2);
-                I_2[i] = (int_f - int_i)/(-Alpha_2*costheta);
+                        RiCalculateABCD(a2,b2,fs,fdash0, fdashs, den2, A,B,C,D);
+                        int_f = RiHelper1(A,B,C,D,H2,K, u_f2);
+                        int_i = RiHelper1(A,B,C,D,H2,K, u_i2);
+                        I_2[i] = (int_f - int_i)/(-Alpha_2*costheta);
 
+                }
+                return A0_1 * I_1
+                     + A0_2 * I_2;
         }
-
-        /*const Spectrum molecular = A0_2 * I_2;
-        std::cout << molecular.y() << "\n";
-        static int p;
-        if (++p > 64*64) exit(0);
-        return Spectrum(I_2.y());
-        if (I_2.y()<0)
-                return Spectrum::FromRGB(color::RGB(0,0,0));*/
-
-        return A0_1 * I_1
-                + A0_2 * I_2;
 }
 
 PssSunSky::Spectrum PssSunSky::overcastInscatteredRadiance(
