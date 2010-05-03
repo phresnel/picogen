@@ -135,7 +135,6 @@ signals:
         void updateImage (QImage image, double percentage);
 
 private:
-        int reportW;
         int renderSettings, camera;
         redshift::shared_ptr<redshift::QImageRenderTarget> target;
         redshift::shared_ptr<redshift::ColorRenderTarget> renderBuffer;
@@ -147,6 +146,8 @@ private:
 
         bool wantsToQuit;
         bool wantsToPause;
+
+        int reportW;
 };
 
 #endif // RENDERWINDOW_HH

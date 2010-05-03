@@ -154,6 +154,7 @@ RenderWindowImpl::RenderWindowImpl (
   , running(false)
   , wantsToQuit(false)
   , wantsToPause(false)
+  , reportW(0)
 {
 }
 
