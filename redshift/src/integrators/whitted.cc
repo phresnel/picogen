@@ -35,7 +35,7 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
         const RayDifferential &raydiff,
         const Sample &sample,
         Random &rand,
-        const bool doMirror
+        const bool doMirror // TODO: I think that one can die
 ) const {
         const optional<Intersection> I (scene.intersect (raydiff));
         if (I) {

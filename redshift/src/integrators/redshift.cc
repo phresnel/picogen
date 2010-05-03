@@ -37,8 +37,107 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
         const RayDifferential &raydiff,
         const Sample &sample,
         Random &rand,
-        const bool doMirror
+        const bool doMirror // TODO: I think that one can die
 ) const {
+        const optional<Intersection> I (scene.intersect (raydiff));
+        if (I) {
+                const DifferentialGeometry gd = I->getDifferentialGeometry();
+                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
+                const real_t       distance = I->getDistance();
+                const shared_ptr<Background> bg (scene.getBackground());
+                const Normal normalG = gd.getGeometricNormal();
+                const Normal normalS = gd.getShadingNormal();
+                const Point poi = gd.getCenter()+
+                        vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
+
+
+                if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
+                        Color spec = Color(0);
+
+                        Ray ray (poi, raydiff.direction);
+                        const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
+                                -ray.direction,
+                                Bsdf::reflection, Bsdf::specular,
+                                rand);
+                        if (v_) {
+                                const tuple<Color,Vector> v = *v_;
+                                ray.direction = get<1>(v);
+                                Sample r = sample;
+                                r.primaryRay = ray;
+                                spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v);
+                        }
+
+                        return make_tuple(1.0f, spec, gd.getDistance());
+                } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+
+                        const Ray ray (poi, raydiff.direction);
+                        Color ret = Color(0);
+
+                        // Sunlight.
+                        if (bg->hasSun()) {
+                                const Vector sunDir = bg->getSunDirection();
+                                const Ray sunRay (poi,sunDir);
+                                const Color surfaceColor = bsdf->f(
+                                        -ray.direction,
+                                        sunDir,
+                                        Bsdf::reflection, Bsdf::diffuse,
+                                        rand
+                                );
+
+                                if (!scene.doesIntersect (sunRay)) {
+                                        Sample sunSample = sample;
+                                        sunSample.primaryRay = sunRay;
+
+                                        const real_t d = max(
+                                            real_t(0),
+                                            dot(sunDir,vector_cast<Vector>(normalS))
+                                        );
+                                        const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
+                                        const Color color = get<1>(volumeLi);
+                                        ret += surfaceColor * color * d;
+                                }
+                        }
+
+                        // Skylight.
+                        Color skylightSum = Color(0);
+                        for (int numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
+                                Ray skyRay (ray.position, ray.direction);
+                                again:
+                                const optional<tuple<Color,Vector> > v_ =
+                                        bsdf->sample_f (
+                                                -skyRay.direction,
+                                                Bsdf::reflection, Bsdf::diffuse,
+                                                rand);
+                                if (v_) {
+                                        if (bg->isInSunSolidAngle(get<1>(*v_))) goto again;
+
+                                        skyRay.direction = get<1>(*v_);
+                                        //if (skyRay.direction.y>0)
+                                        {
+                                                Sample s = sample;
+                                                s.primaryRay = skyRay;
+                                                const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
+
+                                                skylightSum += get<1>(L)  *  get<0>(*v_);
+                                        }
+                                }
+                        }
+
+                        if (numAmbientSamples > 0)
+                                ret += skylightSum * (1. / numAmbientSamples) * Color::real_t(constants::pi);
+
+                        // Done.
+                        return make_tuple(1.0f, ret, gd.getDistance());
+                }
+
+                return make_tuple(1.0f, Color(0), gd.getDistance());
+        } else {
+                return make_tuple (1.0,
+                        Color(0),
+                        constants::infinity
+                );
+        }
+        /*
         const optional<Intersection> I (scene.intersect (raydiff));
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
@@ -67,13 +166,13 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                                 rand);
                                 if (v_) {
                                         ray.direction = get<1>(*v_);
-                                        /*if (ray.direction.y>0)*/ {
+                                        //if (ray.direction.y>0)
+                                        {
                                                 Sample s = sample;
                                                 s.primaryRay = ray;
                                                 const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
 
                                                 sum = sum +
-                                                        //bg->query (ray)  *  get<0>(*v_);
                                                         get<1>(L)  *  get<0>(*v_);
                                         }
                                 }
@@ -129,7 +228,6 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                 );
                                 const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
                                 const Color color = get<1>(volumeLi);
-                                //const Color color = bg->querySun (sunSample.primaryRay);
                                 ret += surfaceColor * color * d;
                         }
                 }
@@ -140,9 +238,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         Color(0),
                         constants::infinity
                 );
-                /*const tuple<real_t,Color> volumeLi = scene.Li_VolumeOnly(sample,rand);
-                return make_tuple (get<0>(volumeLi), get<1>(volumeLi), constants::infinity);*/
-        }
+        }*/
 }
 
 

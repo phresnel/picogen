@@ -113,9 +113,9 @@ Color PssAdapter::atmosphereShade (
         /*if (ray.direction.y < 0)
                 ray.direction.y = 0;*/
 
+        distance *= atmosphericFxDistanceFactor;
         if (distance == constants::infinity)
                 distance = 100000000;
-        distance *= atmosphericFxDistanceFactor;
 
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));

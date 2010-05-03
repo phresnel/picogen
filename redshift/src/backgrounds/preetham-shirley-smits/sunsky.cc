@@ -457,26 +457,28 @@ void  PssSunSky::InitA0() const {
 //
 // ********************************************************/
 
-void PssSunSky::GetAtmosphericEffects(const Vector &viewer, const Vector &source_,
+void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &source_,
                 Spectrum &attenuation, Spectrum &inscatter ) const
 {
         assert(atmInited);
+
+        Vector source = source_;
+        Vector viewer = viewer_;
+        if (source.y < 0) { source.y = 0; }
+        if (viewer.y < 0) { viewer.y = 0; }
+
+        const Vector diff = source - viewer;
+        const Vector direction = normalize (diff);
+
+
         // Clean up the 1000 problem
         const real_t h0 = viewer.up();//1000 added to make sure ray doesnt
         //go below zero.
 
-        Vector source = source_;
-        const Vector direction = normalize (source - viewer);
-
-        if (source.y < 0) {
-                /*const real_t s = viewer.y / -direction.y;
-                source = viewer + s * direction;*/
-                source.y = 0;
-        }
 
         const real_t thetav    = acos (direction.up());
         const real_t phiv      = atan2 (direction.ahead(), direction.right());
-        const real_t s         = length (viewer - source);
+        const real_t s         = length (diff);
 
         // fix added (phresnel)/ would otherwise result in fault mem access if s==0
         if (s<=0) {
