@@ -447,14 +447,14 @@ void MainWindow::setDefaultScene() {
         addCamera(cam);
 
         // - objects
-        redshift::scenefile::Object o;
+        /*redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::horizon_plane;
         o.horizonPlaneParams.height = 0;
         o.horizonPlaneParams.material.color.type = redshift::scenefile::Color::RGB;
         o.horizonPlaneParams.material.color.rgb.r = 0.6;
         o.horizonPlaneParams.material.color.rgb.g = 0.5;
         o.horizonPlaneParams.material.color.rgb.b = 0.4;
-        addObject(o);
+        addObject(o);*/
 
         // - background
         setBackground (redshift::scenefile::Background());
