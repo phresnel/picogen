@@ -9,4 +9,11 @@
         <file alias="background16x16">resources/human_weather_16x16.png</file>
         <file alias="camera16x16">resources/realvista_camera_16x16.png</file>
     </qresource>
+    <qresource prefix="/Picohelp">
+        <file>resources/human_o2_media_backward.png.png</file>
+        <file>resources/human_o2_media_forward.png</file>
+        <file>resources/human_o2_zoom_minus.png</file>
+        <file>resources/human_o2_zoom_plus.png</file>
+        <file>resources/snow_zoom_reset.png</file>
+    </qresource>
 </RCC>
