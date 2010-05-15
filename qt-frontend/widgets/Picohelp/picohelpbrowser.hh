@@ -46,6 +46,7 @@ private:
         void recalcScrollbars ();
 private slots:
         void on_verticalScrollBar_valueChanged(int value);
+        void on_horizontalScrollBar_valueChanged(int value);
         void on_resetScalingButton_clicked();
         void on_biggerButton_clicked();
         void on_smallerButton_clicked();

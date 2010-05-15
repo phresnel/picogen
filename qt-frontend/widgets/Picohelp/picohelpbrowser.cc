@@ -105,6 +105,11 @@ void PicohelpBrowser::on_verticalScrollBar_valueChanged(int value) {
         QScrollBar &bar = *ui->verticalScrollBar;
         frame.setScrollPosition(QPoint(0,value));
 }
+void PicohelpBrowser::on_horizontalScrollBar_valueChanged(int value) {
+        QWebFrame &frame = *ui->webView->page()->mainFrame();
+        QScrollBar &bar = *ui->verticalScrollBar;
+        frame.setScrollPosition(QPoint(value,0));
+}
 
 
 
@@ -118,21 +123,40 @@ void PicohelpBrowser::on_webView_loadFinished(bool okay) {
 
 void PicohelpBrowser::recalcScrollbars() {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
-        QScrollBar &bar = *ui->verticalScrollBar;
+        QScrollBar &verticalBar = *ui->verticalScrollBar;
+        QScrollBar &horizontalBar = *ui->horizontalScrollBar;
 
         const int docHeight = frame.contentsSize().height();
         const int browserHeight = ui->webView->height();
-        const int pageStep = docHeight * ((double)browserHeight) / docHeight;
+        const int pageVerticalStep = docHeight * ((double)browserHeight) / docHeight;
 
         if (docHeight <= browserHeight) {
-                bar.setVisible(false);
-                return;
+                verticalBar.setVisible(false);
+        } else {
+                verticalBar.setVisible(true);
+
+                verticalBar.setVisible(true);
+                verticalBar.setPageStep(pageVerticalStep);
+
+                verticalBar.setMinimum(0);
+                verticalBar.setMaximum(docHeight - pageVerticalStep);
         }
-        bar.setVisible(true);
 
-        bar.setVisible(true);
-        bar.setPageStep(pageStep);
 
-        bar.setMinimum(0);
-        bar.setMaximum(docHeight - pageStep);
+
+        const int docWidth = frame.contentsSize().width();
+        const int browserWidth = ui->webView->width();
+        const int pageHorizontalStep = docWidth * ((double)browserWidth) / docWidth;
+
+        if (docWidth <= browserWidth) {
+                horizontalBar.setVisible(false);
+        } else {
+                horizontalBar.setVisible(true);
+
+                horizontalBar.setVisible(true);
+                horizontalBar.setPageStep(pageHorizontalStep);
+
+                horizontalBar.setMinimum(0);
+                horizontalBar.setMaximum(docWidth - pageHorizontalStep);
+        }
 }
