@@ -12,3 +12,4 @@ HEADERS += mainwindow.hh \
 FORMS += mainwindow.ui \
     picohelpbrowser.ui
 RESOURCES += ../../SimplexGui/resources.qrc
+OTHER_FILES += picohelp.pri

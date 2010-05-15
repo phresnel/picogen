@@ -30,11 +30,14 @@ FORMS += mainwindow.ui \
 LIBS += ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lnoise \
-    -lboost_program_options -lboost_filesystem -lboost_system \
-    -lSDL -lSDL_image
+    -lboost_program_options \
+    -lboost_filesystem \
+    -lboost_system \
+    -lSDL \
+    -lSDL_image
 include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
 include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)
 include(../widgets/ColorPicker/colorpicker.pri)
+include(../widgets/Picohelp/picohelp.pri)
 OTHER_FILES += HOWTO_New_Stuff.txt
 RESOURCES += resources.qrc
-

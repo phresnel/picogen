@@ -46,7 +46,7 @@ QScrollBar::add-page, QScrollBar::sub-page{
 
 QGraphicsView, QMdiArea, 
 QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
-QTreeView {
+QTreeView, QFrame#helpFrame {
 	color:white;
 	border:2px solid #ccc;
 	border-radius:10px; 
@@ -108,7 +108,7 @@ QMenuBar {
 	background-color: #a59361;
 }
 
-QPushButton {
+QPushButton:!flat {
 	border: 2px solid #8f8f91;
 	border-radius: 6px;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -448,6 +448,9 @@ QTabWidget::pane { /* The tab widget frame */
     </item>
     <item>
      <widget class="QSplitter" name="splitter">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -606,6 +609,32 @@ QTabWidget::pane { /* The tab widget frame */
          <height>0</height>
         </size>
        </property>
+      </widget>
+      <widget class="QFrame" name="helpFrame">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>4</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>4</number>
+        </property>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="PicohelpBrowser" name="widget" native="true"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -818,6 +847,12 @@ QTabWidget::pane { /* The tab widget frame */
    <class>QuatschSourceEditor</class>
    <extends>QWidget</extends>
    <header>quatschsourceeditor.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PicohelpBrowser</class>
+   <extends>QWidget</extends>
+   <header>picohelpbrowser.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
