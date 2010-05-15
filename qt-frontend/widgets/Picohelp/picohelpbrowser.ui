@@ -407,7 +407,7 @@ QTabWidget::pane { /* The tab widget frame */
         <number>0</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="browserLayout">
          <property name="spacing">
           <number>0</number>
          </property>

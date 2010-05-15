@@ -37,11 +37,13 @@ public:
 
 protected:
         void changeEvent(QEvent *e);
+        void resizeEvent(QResizeEvent *);
 
 private:
         Ui::PicohelpBrowser *ui;
         void gotoArticle (QString const &filename);
 
+        void recalcScrollbars ();
 private slots:
         void on_verticalScrollBar_valueChanged(int value);
         void on_resetScalingButton_clicked();

@@ -55,11 +55,14 @@ void PicohelpBrowser::changeEvent(QEvent *e) {
                 break;
         }
 }
+void PicohelpBrowser::resizeEvent(QResizeEvent *) {
+        recalcScrollbars();
+}
 
 
 
 void PicohelpBrowser::gotoArticle (QString const &filename) {
-        ui->webView->setUrl("help-content/" + filename);
+        ui->webView->load("help-content/" + filename);
 }
 
 
@@ -100,12 +103,7 @@ void PicohelpBrowser::on_resetScalingButton_clicked() {
 void PicohelpBrowser::on_verticalScrollBar_valueChanged(int value) {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
         QScrollBar &bar = *ui->verticalScrollBar;
-
         frame.setScrollPosition(QPoint(0,value));
-                /*(value / (double)bar.maximum())
-                *
-                frame.contentsSize().height()
-        ));*/
 }
 
 
@@ -113,13 +111,26 @@ void PicohelpBrowser::on_verticalScrollBar_valueChanged(int value) {
 void PicohelpBrowser::on_webView_loadFinished(bool okay) {
         if (!okay)
                 return;
+        recalcScrollbars();
+}
 
+
+
+void PicohelpBrowser::recalcScrollbars() {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
         QScrollBar &bar = *ui->verticalScrollBar;
 
         const int docHeight = frame.contentsSize().height();
         const int browserHeight = ui->webView->height();
         const int pageStep = docHeight * ((double)browserHeight) / docHeight;
+
+        if (docHeight <= browserHeight) {
+                bar.setVisible(false);
+                return;
+        }
+        bar.setVisible(true);
+
+        bar.setVisible(true);
         bar.setPageStep(pageStep);
 
         bar.setMinimum(0);
