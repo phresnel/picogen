@@ -31,7 +31,7 @@
  *
  */
 
-#include "../../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
+#include "backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <iostream>
 
 /*#ifndef RICOMMON_H

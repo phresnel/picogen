@@ -44,7 +44,7 @@
 #include <RiSpectralCurve.H>
 #endif*/
 
-#include "../../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
+#include "backgrounds/preetham-shirley-smits/sunsky.hh"
 
 
 namespace redshift { namespace background {

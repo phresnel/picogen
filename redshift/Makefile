@@ -62,9 +62,9 @@ CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++-4.3 -s -fopenmp
+LINK := g++ -s -fopenmp
 AR   := ar -rs
-CXX  := g++-4.3 -c $(CXXFLAGS) $(LIBS)
+CXX  := g++ -c $(CXXFLAGS) $(LIBS)
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
 AMALGAM := g++ $(CXXFLAGS) \
 	-combine -fwhole-program -funit-at-a-time -DAMALGAM \

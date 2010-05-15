@@ -23,7 +23,7 @@
  */
 
 
-#include "../../../include/backgrounds/preetham-shirley-smits/preetham.hh"
+#include "backgrounds/preetham-shirley-smits/preetham.hh"
 
 
 //using namespace picogen;
