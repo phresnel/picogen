@@ -37,3 +37,4 @@ include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtprop
 include(../widgets/ColorPicker/colorpicker.pri)
 OTHER_FILES += HOWTO_New_Stuff.txt
 RESOURCES += resources.qrc
+

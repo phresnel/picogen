@@ -36,7 +36,7 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 # libs
 #------------------------------------------------------------------------------
 SDLLIBS := `sdl-config --static-libs` -lSDL_image
-BOOSTLIBS := -lboost_program_options -lboost_filesystem
+BOOSTLIBS := -lboost_program_options -lboost_filesystem -lboost_system
 LIBS   := $(SDLLIBS) $(BOOSTLIBS) -lnoise
 
 
@@ -49,22 +49,20 @@ ifeq ($(COMPILE), "FAST_COMPILE")
 else ifeq ($(COMPILE), "DEBUG")
 	CXXFLAGS += -O0 -g
 else
-	CXXFLAGS += -O3 -march=native
+	CXXFLAGS += -O3 
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
 	CXXFLAGS += -ffast-math -fassociative-math
-	CXXFLAGS += -mfpmath=sse
+	#CXXFLAGS += -msse -mfpmath=sse	
 	CXXFLAGS += -fopenmp
-        # CXXFLAGS += -ftree-vectorizer-verbose=1
 endif
 
 CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
-# CXXFLAGS += -Wextra -Wshadow -pedantic
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s -fopenmp
+LINK := g++ -s -fopenmp -Wl,--enable-auto-import
 AR   := ar -rs
-CXX  := g++ -c $(CXXFLAGS) $(LIBS)
+CXX  := g++ -c $(CXXFLAGS) 
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
 AMALGAM := g++ $(CXXFLAGS) \
 	-combine -fwhole-program -funit-at-a-time -DAMALGAM \
@@ -112,7 +110,7 @@ OBJFILES += $(MATERIALOBJDIR)/lambertian.o
 OBJFILES += $(MATERIALOBJDIR)/mirror.o
 
 OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
-OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
+#OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
 OBJFILES += $(PRIMITIVESOBJDIR)/lazyquadtree.o
 OBJFILES += $(PRIMITIVESOBJDIR)/horizonplane.o

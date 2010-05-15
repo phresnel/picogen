@@ -1,17 +1,17 @@
 scene {
         film-settings{
-                color-scale:0.019;
-                convert-to-srgb:1;
+                color-scale:0.00005;
+                convert-to-srgb:0;
         }
 
         render-settings{
                 prev-vol{
                         width:512;
                         height:512;
-                        samples-per-pixel:1;
+                        samples-per-pixel:5;
                         surface-integrator{
-                                type:whitted;
-                                ambient-samples:1;
+                                type:redshift;
+                                ambient-samples:10;
                         }
                         volume-integrator{
                                 type:none;
@@ -48,34 +48,24 @@ scene {
                 bottom{type:cubemap-bottom; transform{move{9000;1250;-150000}}}
         }
         objects{
-                horizon-plane{
-                        material{
-                                color{
-                                        type:rgb;
-                                        rgb{0.5;0.5;0.5}
-                                }
-                        }
-                        height:1015;
-                }
                 lazy-quadtree{
                         material{
                                 color{
                                         type:rgb;
-                                        rgb{0.6;0.3;0.15}
+                                        rgb{1.0;1.0;1.0}
                                 }
                         }
-                        max-recursion:9;
+                        max-recursion:8;
                         lod-factor:0.01;
                         size:1000000;
                         code:   /*(* 1000 (cos (* x 0.001)) (cos (* y 0.001)))*/
                                 (defun foo (x y)
-                                 (^ (- 1 (abs ([LayeredNoise2d
-                                                filter{cosine}
+									([LibnoiseRidgedMulti
                                                 seed{3}
                                                 frequency{0.1}
-                                                layercount{10}
-                                                persistence{0.55}
-                                               ] (abs x) (abs y)))) 3)
+                                                octave-count{10}                                                
+												lacunarity{1.9}
+                                     ] (abs x) (abs y))
                                 )
 
                                 (defun ridged (x y)
@@ -88,10 +78,10 @@ scene {
         }
         backgrounds{
                 pss-sunsky {
-                        turbidity:3;
+                        turbidity:2;
                         overcast:0.0;
-                        sun-direction{-1.1;0.15;-1}
-                        atmospheric-effects:1;
+                        sun-direction{1;0.35;0}
+                        atmospheric-effects:0;
                         sun-brightness-factor:1;
                         atmospheric-effects-distance-factor:1.0;
                 }
