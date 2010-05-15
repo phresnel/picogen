@@ -18,7 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+#include <QWebPage>
+#include <QWebFrame>
 
 #include "picohelpbrowser.hh"
 #include "ui_picohelpbrowser.h"
@@ -30,6 +31,10 @@ PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
         ui->setupUi(this);
         ui->webView->page()->setLinkDelegationPolicy(
                         QWebPage::DelegateExternalLinks);
+        ui->webView->page()->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+        ui->webView->page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+
+        //ui->webView->page()->mainFrame()->setScrollBarPolicy();
 }
 
 
@@ -88,4 +93,35 @@ void PicohelpBrowser::on_biggerButton_clicked() {
 }
 void PicohelpBrowser::on_resetScalingButton_clicked() {
         ui->webView->setZoomFactor(1);
+}
+
+
+
+void PicohelpBrowser::on_verticalScrollBar_valueChanged(int value) {
+        QWebFrame &frame = *ui->webView->page()->mainFrame();
+        QScrollBar &bar = *ui->verticalScrollBar;
+
+        frame.setScrollPosition(QPoint(0,value));
+                /*(value / (double)bar.maximum())
+                *
+                frame.contentsSize().height()
+        ));*/
+}
+
+
+
+void PicohelpBrowser::on_webView_loadFinished(bool okay) {
+        if (!okay)
+                return;
+
+        QWebFrame &frame = *ui->webView->page()->mainFrame();
+        QScrollBar &bar = *ui->verticalScrollBar;
+
+        const int docHeight = frame.contentsSize().height();
+        const int browserHeight = ui->webView->height();
+        const int pageStep = docHeight * ((double)browserHeight) / docHeight;
+        bar.setPageStep(pageStep);
+
+        bar.setMinimum(0);
+        bar.setMaximum(docHeight - pageStep);
 }

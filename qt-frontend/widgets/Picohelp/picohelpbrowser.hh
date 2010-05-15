@@ -43,6 +43,7 @@ private:
         void gotoArticle (QString const &filename);
 
 private slots:
+        void on_verticalScrollBar_valueChanged(int value);
         void on_resetScalingButton_clicked();
         void on_biggerButton_clicked();
         void on_smallerButton_clicked();
@@ -51,6 +52,7 @@ private slots:
         void on_gotoReferencesButton_clicked();
         void on_gotoTutorialsButton_clicked();
         void on_gotoMainPageButton_clicked();
+        void on_webView_loadFinished(bool);
 };
 
 #endif // PICOHELPBROWSER_HH

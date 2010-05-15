@@ -51,7 +51,7 @@ QScrollBar::add-page, QScrollBar::sub-page{
 
 QGraphicsView, QMdiArea, 
 QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
-QTreeView {
+QTreeView, QFrame#helpFrame {
 	color:white;
 	border:2px solid #ccc;
 	border-radius:10px; 
