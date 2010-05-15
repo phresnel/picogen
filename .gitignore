@@ -71,6 +71,9 @@ qt-frontend/widgets/TristimulusColorPicker/release/
 qt-frontend/widgets/TristimulusColorPicker/object_script.SpectralColorPicker.Debug
 qt-frontend/widgets/TristimulusColorPicker/object_script.SpectralColorPicker.Release
 
+qt-frontend/widgets/Picohelp/Makefile
+qt-frontend/widgets/Picohelp/help-content
+
 
 
 upstream/*
