@@ -553,6 +553,13 @@ redshift::shared_ptr<redshift::Scene>
 }
 
 
+
+namespace redshift {
+        const char *getCompilationInfo () {
+                return PICOGEN_COMPILATION_INFO;
+        }
+}
+
 #ifndef PICOGENLIB
 
 void read_and_render (Options const & options) {

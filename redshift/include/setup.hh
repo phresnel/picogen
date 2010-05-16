@@ -23,6 +23,9 @@
 
 #include <utility>
 
+#include "meta/compiler.hh"
+
+
 #define DefineFinalizer(x) \
         class x##Finalize { \
         private: \
