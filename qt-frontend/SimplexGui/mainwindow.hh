@@ -144,6 +144,8 @@ private:
         bool nonRecurseLock;
         QMenu settingsContextMenu, objectsMenu, volumesMenu;
 private slots:
+        void on_actionActionShow_Contextual_Picohelp_triggered();
+        void on_actionShow_Picohelp_Browser_triggered(bool checked);
         void on_actionMaximize_triggered();
         void on_actionClose_triggered();
 

@@ -240,6 +240,9 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
 
         ui->actionShow_Command_Pile->setChecked(false);
         on_actionShow_Command_Pile_triggered (ui->actionShow_Command_Pile->isChecked());
+
+        ui->actionShow_Picohelp_Browser->setChecked(true);
+        on_actionShow_Picohelp_Browser_triggered (ui->actionShow_Picohelp_Browser->isChecked());
 }
 
 
@@ -2503,6 +2506,13 @@ void MainWindow::on_actionShow_Command_Pile_triggered(bool checked) {
         ui->commandPileGroupBox->setEnabled(checked);
         ui->commandPileGroupBox->setVisible(checked);
 }
+void MainWindow::on_actionShow_Picohelp_Browser_triggered(bool checked) {
+        ui->picohelp->setEnabled(checked);
+        ui->picohelp->setVisible(checked);
+}
+void MainWindow::on_actionActionShow_Contextual_Picohelp_triggered() {
+
+}
 
 
 
@@ -2554,3 +2564,4 @@ void MainWindow::on_actionShow_compiler_triggered() {
                 + QString("SimplexGui: ") + PICOGEN_COMPILATION_INFO
         );
 }
+

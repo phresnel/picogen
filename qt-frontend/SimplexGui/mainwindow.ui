@@ -634,7 +634,7 @@ QTabWidget::pane { /* The tab widget frame */
             <number>0</number>
            </property>
            <item>
-            <widget class="PicohelpBrowser" name="widget" native="true"/>
+            <widget class="PicohelpBrowser" name="picohelp" native="true"/>
            </item>
           </layout>
          </widget>
@@ -685,12 +685,16 @@ QTabWidget::pane { /* The tab widget frame */
      <string>View</string>
     </property>
     <addaction name="actionShow_Command_Pile"/>
+    <addaction name="actionShow_Picohelp_Browser"/>
     <addaction name="actionMaximize"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionShow_Picohelp_Browser"/>
+    <addaction name="actionActionShow_Contextual_Picohelp"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -855,6 +859,28 @@ QTabWidget::pane { /* The tab widget frame */
   <action name="actionShow_compiler">
    <property name="text">
     <string>Show compiler</string>
+   </property>
+  </action>
+  <action name="actionShow_Picohelp_Browser">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Picohelp</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Picohelp-Browser</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionActionShow_Contextual_Picohelp">
+   <property name="text">
+    <string>Show Context Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
  </widget>
