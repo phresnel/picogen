@@ -196,6 +196,8 @@ private slots:
         void on_settings_currentItemChanged(QtBrowserItem * current);
         void on_codeEditor_codeChanged();
 
+        void on_actionShow_compiler_triggered();
+
         // non MOC
         void variantManager_valueChanged (QtProperty *, QVariant);
         void enumManager_valueChanged (QtProperty *, int);

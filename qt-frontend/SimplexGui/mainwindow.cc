@@ -2543,3 +2543,14 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::on_actionMaximize_triggered() {
         setWindowState(windowState() ^ Qt::WindowFullScreen);
 }
+
+
+
+void MainWindow::on_actionShow_compiler_triggered() {
+        QMessageBox::information(
+                this,
+                "Compiler",
+                QString("renderer: ") + redshift::getCompilationInfo() + "\n"
+                + QString("SimplexGui: ") + PICOGEN_COMPILATION_INFO
+        );
+}

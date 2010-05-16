@@ -577,7 +577,7 @@ QTabWidget::pane { /* The tab widget frame */
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resources.qrc">
+              <iconset>
                <normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</iconset>
              </property>
              <property name="iconSize">
@@ -687,10 +687,23 @@ QTabWidget::pane { /* The tab widget frame */
     <addaction name="actionShow_Command_Pile"/>
     <addaction name="actionMaximize"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionShow_compiler"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menuDebugging"/>
    <addaction name="menuRender"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+   <addaction name="menuAbout"/>
   </widget>
   <action name="actionShow_redshift_job_code">
    <property name="text">
@@ -839,6 +852,11 @@ QTabWidget::pane { /* The tab widget frame */
     <string>F11</string>
    </property>
   </action>
+  <action name="actionShow_compiler">
+   <property name="text">
+    <string>Show compiler</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -861,8 +879,6 @@ QTabWidget::pane { /* The tab widget frame */
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
