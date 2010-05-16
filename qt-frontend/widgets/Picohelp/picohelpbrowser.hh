@@ -41,6 +41,8 @@ protected:
 
 private:
         Ui::PicohelpBrowser *ui;
+        QString helpRoot;
+
         void gotoArticle (QString const &filename);
 
         void recalcScrollbars ();

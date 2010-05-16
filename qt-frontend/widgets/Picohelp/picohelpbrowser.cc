@@ -26,13 +26,16 @@
 
 PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::PicohelpBrowser)
+    ui(new Ui::PicohelpBrowser),
+    helpRoot("/usr/share/picogen/help-content/")
 {
         ui->setupUi(this);
         ui->webView->page()->setLinkDelegationPolicy(
                         QWebPage::DelegateExternalLinks);
-        ui->webView->page()->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
-        ui->webView->page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+        ui->webView->page()->mainFrame()->setScrollBarPolicy(
+                        Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+        ui->webView->page()->mainFrame()->setScrollBarPolicy(
+                        Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
         //ui->webView->page()->mainFrame()->setScrollBarPolicy();
 }
@@ -62,7 +65,7 @@ void PicohelpBrowser::resizeEvent(QResizeEvent *) {
 
 
 void PicohelpBrowser::gotoArticle (QString const &filename) {
-        ui->webView->load("help-content/" + filename);
+        ui->webView->load(helpRoot + filename);
 }
 
 
@@ -103,12 +106,12 @@ void PicohelpBrowser::on_resetScalingButton_clicked() {
 void PicohelpBrowser::on_verticalScrollBar_valueChanged(int value) {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
         QScrollBar &bar = *ui->verticalScrollBar;
-        frame.setScrollPosition(QPoint(0,value));
+        frame.setScrollPosition(QPoint(frame.scrollPosition().x(),value));
 }
 void PicohelpBrowser::on_horizontalScrollBar_valueChanged(int value) {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
         QScrollBar &bar = *ui->verticalScrollBar;
-        frame.setScrollPosition(QPoint(value,0));
+        frame.setScrollPosition(QPoint(value,frame.scrollPosition().y()));
 }
 
 

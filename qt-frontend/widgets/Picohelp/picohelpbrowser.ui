@@ -291,7 +291,7 @@ QTabWidget::pane { /* The tab widget frame */
          <string>Go to previous page</string>
         </property>
         <property name="icon">
-         <iconset resource="../../SimplexGui/resources.qrc">
+         <iconset>
           <normaloff>:/Picohelp/resources/human_o2_media_backward.png.png</normaloff>:/Picohelp/resources/human_o2_media_backward.png.png</iconset>
         </property>
         <property name="flat">
@@ -311,7 +311,7 @@ QTabWidget::pane { /* The tab widget frame */
          <string>Go to next page</string>
         </property>
         <property name="icon">
-         <iconset resource="../../SimplexGui/resources.qrc">
+         <iconset>
           <normaloff>:/Picohelp/resources/human_o2_media_forward.png</normaloff>:/Picohelp/resources/human_o2_media_forward.png</iconset>
         </property>
         <property name="flat">
@@ -331,7 +331,7 @@ QTabWidget::pane { /* The tab widget frame */
          <string>Zoom out</string>
         </property>
         <property name="icon">
-         <iconset resource="../../SimplexGui/resources.qrc">
+         <iconset>
           <normaloff>:/Picohelp/resources/human_o2_zoom_minus.png</normaloff>:/Picohelp/resources/human_o2_zoom_minus.png</iconset>
         </property>
         <property name="flat">
@@ -351,7 +351,7 @@ QTabWidget::pane { /* The tab widget frame */
          <string>Reset zoom</string>
         </property>
         <property name="icon">
-         <iconset resource="../../SimplexGui/resources.qrc">
+         <iconset>
           <normaloff>:/Picohelp/resources/snow_zoom_reset.png</normaloff>:/Picohelp/resources/snow_zoom_reset.png</iconset>
         </property>
         <property name="flat">
@@ -374,7 +374,7 @@ QTabWidget::pane { /* The tab widget frame */
          <string notr="true"/>
         </property>
         <property name="icon">
-         <iconset resource="../../SimplexGui/resources.qrc">
+         <iconset>
           <normaloff>:/Picohelp/resources/human_o2_zoom_plus.png</normaloff>:/Picohelp/resources/human_o2_zoom_plus.png</iconset>
         </property>
         <property name="flat">
@@ -397,7 +397,7 @@ QTabWidget::pane { /* The tab widget frame */
        </property>
        <property name="url">
         <url>
-         <string>file:///home/smach/Desktop/picowiki-frobnicator/Frobnicator/foo/Main_Page.html</string>
+         <string>file:///usr/share/picogen/help-content/Main_Page.html</string>
         </url>
        </property>
        <property name="renderHints">
@@ -430,8 +430,6 @@ QTabWidget::pane { /* The tab widget frame */
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../SimplexGui/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
