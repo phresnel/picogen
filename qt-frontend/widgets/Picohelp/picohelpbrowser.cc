@@ -82,6 +82,15 @@ void PicohelpBrowser::on_gotoReferencesButton_clicked() {
 
 
 
+void PicohelpBrowser::gotoQuatsch(QuatschHelp q) {
+        switch (q) {
+        case QuatschReferencesOverview:
+                gotoArticle("References.html"); break;
+        }
+}
+
+
+
 void PicohelpBrowser::on_backButton_clicked() {
         ui->webView->back();
 }

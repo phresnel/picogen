@@ -30,8 +30,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QuatschSourceEditor *i = new QuatschSourceEditor(this);
-    setCentralWidget(i);
+    ui->editor->setPicohelpBrowser(ui->help);
+    //QuatschSourceEditor *i = new QuatschSourceEditor(this);
+    //setCentralWidget(i);
 }
 
 MainWindow::~MainWindow()

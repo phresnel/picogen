@@ -31,6 +31,8 @@
 #include <QHash>
 #include <QTextCharFormat>
 
+#include "../Picohelp/picohelpbrowser.hh"
+
 
 
 // Qt Quarterly 31
@@ -101,10 +103,15 @@ public:
         void setCode (QString code);
         QString code () const;
 
+        void setPicohelpBrowser (PicohelpBrowser *browser);
+
 signals:
         void codeChanged () ;
 
 private slots:
+        void on_help_clicked();
+        void contextHelpTriggered();
+
         void on_compileAndRunButton_clicked();
         void on_edit_textChanged ();
         void on_edit_cursorPositionChanged();
@@ -119,6 +126,8 @@ private:
         Ui::QuatschEditor *ui;
         QuatschHighlighter *highlighter;
         bool softLock;
+
+        PicohelpBrowser *helpBrowser;
 };
 
 

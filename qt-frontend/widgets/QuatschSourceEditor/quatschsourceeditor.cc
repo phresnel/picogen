@@ -52,7 +52,8 @@ void TextBlockData::insert(ParenthesisInfo *info)
 
 
 QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
-: QWidget(parent), ui(new Ui::QuatschEditor), softLock(false)
+: QWidget(parent), ui(new Ui::QuatschEditor), softLock(false),
+  helpBrowser(0)
 {
         setAttribute(Qt::WA_DeleteOnClose);
         ui->setupUi(this);
@@ -76,6 +77,17 @@ QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
         on_edit_cursorPositionChanged();
         on_edit_textChanged();
         highlighter->rehighlight();
+
+        QAction *helpAction = new QAction(this);
+        helpAction->setShortcut(QKeySequence("F1"));
+        connect(helpAction, SIGNAL(triggered()),
+                this, SLOT(contextHelpTriggered()));
+}
+
+
+
+void QuatschSourceEditor::setPicohelpBrowser(PicohelpBrowser *browser) {
+        this->helpBrowser = browser;
 }
 
 
@@ -88,6 +100,13 @@ void QuatschSourceEditor::setCode(QString code) {
 
 QString QuatschSourceEditor::code () const {
         return ui->edit->toPlainText();
+}
+
+
+
+void QuatschSourceEditor::contextHelpTriggered() {
+        if (helpBrowser)
+                helpBrowser->gotoQuatsch(PicohelpBrowser::QuatschReferencesOverview);
 }
 
 
@@ -470,4 +489,10 @@ void QuatschSourceEditor::on_compileAndRunButton_clicked() {
                 ui->status->setWordWrap(true);
                 ui->status->setText("some weird exception occured");
         }
+}
+
+
+
+void QuatschSourceEditor::on_help_clicked() {
+        contextHelpTriggered();
 }

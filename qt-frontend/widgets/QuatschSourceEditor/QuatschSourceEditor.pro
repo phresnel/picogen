@@ -11,15 +11,15 @@ HEADERS += mainwindow.hh \
     quatschsourceeditor.hh
 FORMS += mainwindow.ui \
     quatschsourceeditor.ui
-
-INCLUDEPATH += \
-        ../../../ \
-        ../../../redshift/include
-
+INCLUDEPATH += ../../../ \
+    ../../../redshift/include
 LIBS += ../../../redshift/lib/libpicogen.a \
     -lgomp \
     -lboost_program_options \
-    -lSDL -lSDL_image \
+    -lSDL \
+    -lSDL_image \
     -lboost_filesystem \
     -lboost_system \
     -lnoise
+include(../Picohelp/picohelp.pri)
+RESOURCES += ../../SimplexGui/resources.qrc

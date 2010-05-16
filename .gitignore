@@ -52,6 +52,7 @@ qt-frontend/widgets/QuatschSourceEditor/release
 qt-frontend/widgets/QuatschSourceEditor/Makefile.Debug
 qt-frontend/widgets/QuatschSourceEditor/Makefile.Release
 qt-frontend/widgets/QuatschSourceEditor/QuatschSourceEditor
+qt-frontend/widgets/QuatschSourceEditor/qrc_resources.cpp
 
 qt-frontend/widgets/SpectralColorPicker/SpectralColorPicker
 qt-frontend/widgets/SpectralColorPicker/Makefile

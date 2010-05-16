@@ -243,6 +243,8 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
 
         ui->actionShow_Picohelp_Browser->setChecked(true);
         on_actionShow_Picohelp_Browser_triggered (ui->actionShow_Picohelp_Browser->isChecked());
+
+        ui->codeEditor->setPicohelpBrowser(ui->picohelp);
 }
 
 

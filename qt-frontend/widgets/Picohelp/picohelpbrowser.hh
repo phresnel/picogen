@@ -35,6 +35,11 @@ public:
         PicohelpBrowser(QWidget *parent = 0);
         ~PicohelpBrowser();
 
+        enum QuatschHelp {
+                QuatschReferencesOverview
+        };
+        void gotoQuatsch(QuatschHelp);
+
 protected:
         void changeEvent(QEvent *e);
         void resizeEvent(QResizeEvent *);
