@@ -22,6 +22,7 @@
 #include "redshift/include/redshift.hh"
 #include "quatschsourceeditor.hh"
 #include <QCloseEvent>
+#include <QMessageBox>
 
 #include "redshift/include/basictypes/quatsch-height-function.hh"
 
@@ -105,8 +106,51 @@ QString QuatschSourceEditor::code () const {
 
 
 void QuatschSourceEditor::contextHelpTriggered() {
-        if (helpBrowser)
+        if (0 == helpBrowser)
+                return;
+
+        struct {
+                bool operator () (QChar c) const {
+                        return c == ' '
+                              || c == '\n'
+                              || c == '\t'
+                              || c == '('
+                              || c == ')'
+                              || c == '['
+                              || c == ']';
+                }
+        } isDelimiter;
+
+        if (ui->edit->hasFocus()) {
+                const QString plain = ui->edit->toPlainText();
+                int left = ui->edit->textCursor().position();
+                int right = ui->edit->textCursor().position();
+
+                // Find whole word.
+                while (left > 0 && !isDelimiter(plain[left-1])) {
+                        --left;
+                }
+                while (right < plain.length() && !isDelimiter(plain[right])) {
+                        ++right;
+                }
+                //QMessageBox::information(this, "", plain.mid(left, right-left));
+
+                const QString searchWord = plain.mid(left, right-left);
+
+                if (!helpBrowser->gotoQuatsch(searchWord)) {
+                        QMessageBox::information(this, "",
+                                "I am sorry, but I don't know what \"" + searchWord + "\" is."
+                        );
+                }
+
+        } else {
                 helpBrowser->gotoQuatsch(PicohelpBrowser::QuatschReferencesOverview);
+        }
+}
+
+
+
+void QuatschSourceEditor::on_edit_selectionChanged() {
 }
 
 

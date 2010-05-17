@@ -24,10 +24,81 @@
 #include "picohelpbrowser.hh"
 #include "ui_picohelpbrowser.h"
 
+
+
+namespace {
+        struct Index {
+                QStringList searchTerms;
+                QString url;
+
+                Index (QStringList terms, QString url)
+                        : url(url)
+                {
+                        foreach (QString s, terms)
+                                searchTerms = searchTerms << s.toLower();
+                }
+
+                Index () {}
+
+                Index &operator = (Index const &rhs) {
+                        searchTerms = rhs.searchTerms;
+                        url = rhs.url;
+                        return *this;
+                }
+
+                QString findUrl (QString searchTerm) const {
+                        for (int i=0; i<searchTerms.size(); ++i) {
+                                if (searchTerms[i] == searchTerm)
+                                        return url;
+                        }
+                        return "";
+                }
+        };
+
+        class Indices {
+                QVector<Index> indices;
+        public:
+                void push_back (Index const &index) {
+                        indices.push_back(index);
+                }
+
+                QString findUrl (QString searchTerm) const {
+                        searchTerm = searchTerm.toLower();
+                        foreach (Index i, indices) {
+                                const QString t = i.findUrl (searchTerm);
+                                if ("" != t)
+                                        return t;
+                        }
+                        return "";
+                }
+        };
+        //-----------------------------------------
+
+
+        Indices createQuatschIndices () {
+                Indices ret;
+
+                ret.push_back(Index(QStringList()<<"Libnoise", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Libnoise_Support"));
+                ret.push_back(Index(QStringList()<<"LibnoisePerlin", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Perlin"));
+                ret.push_back(Index(QStringList()<<"LibnoiseBillow", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Billow"));
+                ret.push_back(Index(QStringList()<<"LibnoiseRidgedMulti", "Quatsch-Jux_Reference_-_Configurable_Functions.html#RidgedMulti"));
+                ret.push_back(Index(QStringList()<<"LibnoiseVoronoi", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Voronoi"));
+                ret.push_back(Index(QStringList()<<"LibnoiseCylinders", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Cylinders"));
+                ret.push_back(Index(QStringList()<<"LibnoiseSpheres", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Spheres"));
+
+                return ret;
+        }
+
+        const Indices quatschIndices = createQuatschIndices();
+}
+
+
+
+
 PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PicohelpBrowser),
-    helpRoot("/usr/share/picogen/help-content/")
+    helpRoot("file:///usr/share/picogen/help-content/")
 {
         ui->setupUi(this);
         ui->webView->page()->setLinkDelegationPolicy(
@@ -88,6 +159,13 @@ void PicohelpBrowser::gotoQuatsch(QuatschHelp q) {
                 gotoArticle("References.html"); break;
         }
 }
+bool PicohelpBrowser::gotoQuatsch(QString searchTerm) {
+        const QString url = quatschIndices.findUrl(searchTerm);
+        if ("" == url)
+                return false;
+        gotoArticle(url);
+        return true;
+}
 
 
 
@@ -114,12 +192,10 @@ void PicohelpBrowser::on_resetScalingButton_clicked() {
 
 void PicohelpBrowser::on_verticalScrollBar_valueChanged(int value) {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
-        QScrollBar &bar = *ui->verticalScrollBar;
         frame.setScrollPosition(QPoint(frame.scrollPosition().x(),value));
 }
 void PicohelpBrowser::on_horizontalScrollBar_valueChanged(int value) {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
-        QScrollBar &bar = *ui->verticalScrollBar;
         frame.setScrollPosition(QPoint(value,frame.scrollPosition().y()));
 }
 

@@ -37,8 +37,10 @@ public:
 
         enum QuatschHelp {
                 QuatschReferencesOverview
+                //LibnoisePerlin
         };
         void gotoQuatsch(QuatschHelp);
+        bool gotoQuatsch(QString searchTerm);
 
 protected:
         void changeEvent(QEvent *e);
