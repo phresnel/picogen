@@ -540,3 +540,7 @@ void QuatschSourceEditor::on_compileAndRunButton_clicked() {
 void QuatschSourceEditor::on_help_clicked() {
         contextHelpTriggered();
 }
+
+void QuatschSourceEditor::on_interestingPrograms_clicked() {
+        helpBrowser->gotoQuatsch(PicohelpBrowser::QuatschInterestingPrograms);
+}

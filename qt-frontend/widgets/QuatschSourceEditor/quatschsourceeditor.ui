@@ -23,7 +23,7 @@
    <property name="margin">
     <number>0</number>
    </property>
-   <item row="2" column="1" colspan="2">
+   <item row="4" column="1" colspan="2">
     <widget class="QTextEdit" name="edit">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -42,27 +42,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QPushButton" name="compileAndRunButton">
-     <property name="text">
-      <string>Compile &amp;&amp; Run (CTRL+R)</string>
-     </property>
-     <property name="shortcut">
-      <string>Ctrl+R</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QPushButton" name="help">
-     <property name="text">
-      <string>Help</string>
-     </property>
-     <property name="shortcut">
-      <string>F1</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1" colspan="2">
+   <item row="7" column="1" colspan="2">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Preview Dimensions</string>
@@ -166,7 +146,7 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="1" colspan="2">
+   <item row="6" column="1" colspan="2">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Status</string>
@@ -187,7 +167,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="2">
+   <item row="5" column="2">
     <widget class="QLabel" name="position">
      <property name="font">
       <font>
@@ -205,8 +185,41 @@
      </property>
     </widget>
    </item>
+   <item row="3" column="1" colspan="2">
+    <widget class="QPushButton" name="compileAndRunButton">
+     <property name="text">
+      <string>Compile &amp;&amp; Run (CTRL+R)</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../../SimplexGui/resources.qrc">
+       <normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</iconset>
+     </property>
+     <property name="shortcut">
+      <string>Ctrl+R</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="help">
+     <property name="text">
+      <string>Help (F1)</string>
+     </property>
+     <property name="shortcut">
+      <string>F1</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QPushButton" name="interestingPrograms">
+     <property name="text">
+      <string>Interesting Programs</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../SimplexGui/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

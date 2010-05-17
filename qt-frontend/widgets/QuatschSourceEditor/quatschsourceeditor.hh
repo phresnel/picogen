@@ -109,6 +109,7 @@ signals:
         void codeChanged () ;
 
 private slots:
+        void on_interestingPrograms_clicked();
         void on_edit_selectionChanged();
         void on_help_clicked();
         void contextHelpTriggered();

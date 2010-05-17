@@ -78,6 +78,39 @@ namespace {
         Indices createQuatschIndices () {
                 Indices ret;
 
+                ret.push_back(Index(QStringList()
+                                    <<"+"<<"-"<<"*"<<"/"<<"^"
+                                    <<"sqrt"<<"min"<<"max"<<"/"<<"lerp"
+                                    <<"log"<<"log10"<<"exp"
+                             ,"Quatsch-Jux_Reference.html#Basics"));
+
+                ret.push_back(Index(QStringList()
+                                    <<"<"<<"<="<<">"<<">="
+                                    <<"="<<"!="
+                             ,"Quatsch-Jux_Reference.html#Predicates_.28Comparison.29"));
+
+                ret.push_back(Index(QStringList()
+                                    <<"[]"<<"[["<<"]["<<"]]"
+                             ,"Quatsch-Jux_Reference.html#Range-Predicates"));
+
+                ret.push_back(Index(QStringList()
+                                    <<"and"<<"or"<<"xor"<<"not"
+                             ,"Quatsch-Jux_Reference.html#Predicate_Combiners.2FMutators"));
+
+                ret.push_back(Index(QStringList()
+                                    <<"sin"<<"cos"
+                             ,"Quatsch-Jux_Reference.html#Trigonometric_Functions"));
+
+                ret.push_back(Index(QStringList()
+                                    <<"inv"<<"floor"<<"trunc"
+                                    <<"abs"<<"frac"<<"neg"
+                             ,"Quatsch-Jux_Reference.html#Other_Math_Functions"));
+
+                ret.push_back(Index(QStringList()
+                                    <<"if"
+                                    <<"defun"
+                             ,"Quatsch-Jux_Reference.html#Control_Flow"));
+
                 ret.push_back(Index(QStringList()<<"Libnoise", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Libnoise_Support"));
                 ret.push_back(Index(QStringList()<<"LibnoisePerlin", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Perlin"));
                 ret.push_back(Index(QStringList()<<"LibnoiseBillow", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Billow"));
@@ -157,6 +190,8 @@ void PicohelpBrowser::gotoQuatsch(QuatschHelp q) {
         switch (q) {
         case QuatschReferencesOverview:
                 gotoArticle("References.html"); break;
+        case QuatschInterestingPrograms:
+                gotoArticle("Interesting_quatsch_programs_-_dumps.html"); break;
         }
 }
 bool PicohelpBrowser::gotoQuatsch(QString searchTerm) {

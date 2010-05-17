@@ -36,8 +36,8 @@ public:
         ~PicohelpBrowser();
 
         enum QuatschHelp {
-                QuatschReferencesOverview
-                //LibnoisePerlin
+                QuatschReferencesOverview,
+                QuatschInterestingPrograms
         };
         void gotoQuatsch(QuatschHelp);
         bool gotoQuatsch(QString searchTerm);
