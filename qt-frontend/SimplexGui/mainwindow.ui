@@ -738,7 +738,6 @@ QTabWidget::pane { /* The tab widget frame */
      <string>Help</string>
     </property>
     <addaction name="actionShow_Picohelp_Browser"/>
-    <addaction name="actionActionShow_Contextual_Picohelp"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -917,14 +916,6 @@ QTabWidget::pane { /* The tab widget frame */
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
-   </property>
-  </action>
-  <action name="actionActionShow_Contextual_Picohelp">
-   <property name="text">
-    <string>Show Context Help</string>
-   </property>
-   <property name="shortcut">
-    <string>F1</string>
    </property>
   </action>
  </widget>

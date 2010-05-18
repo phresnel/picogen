@@ -42,6 +42,8 @@ public:
         void gotoQuatsch(QuatschHelp);
         bool gotoQuatsch(QString searchTerm);
 
+        void setHelpRoot (QString str);
+
 protected:
         void changeEvent(QEvent *e);
         void resizeEvent(QResizeEvent *);

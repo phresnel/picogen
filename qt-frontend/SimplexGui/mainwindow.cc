@@ -204,6 +204,14 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
 {
         setupUi();
 
+#ifdef _WIN32
+        ui->picohelp->setHelpRoot("file:///" + QApplication::applicationDirPath() + "/help-content/");
+#elif defined(linux)
+        ui->picohelp->setHelpRoot("file:///usr/share/picogen/help-content/");
+#else
+#error
+#endif
+
         if (initialFilename != "") {
                 try {
                         redshift::scenefile::Scene scene;
