@@ -276,8 +276,8 @@ void MainWindow::setupUi() {
 
 
         // code editor
-        ui->codeEditor->setEnabled(false);
-        ui->codeEditor->setVisible(false);
+        ui->codeEditorFrameOuter->setEnabled(false);
+        ui->codeEditorFrameOuter->setVisible(false);
 
         // WindowList
         QtWindowListMenu *winMenu = new QtWindowListMenu(menuBar());
@@ -1935,12 +1935,12 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         }
 
         if (isCode) {
-                ui->codeEditor->setEnabled(true);
-                ui->codeEditor->setVisible(true);
+                ui->codeEditorFrameOuter->setEnabled(true);
+                ui->codeEditorFrameOuter->setVisible(true);
                 ui->codeEditor->setCode(codeEditManager->value(current->property()).toString());
         } else {
-                ui->codeEditor->setEnabled(false);
-                ui->codeEditor->setVisible(false);
+                ui->codeEditorFrameOuter->setEnabled(false);
+                ui->codeEditorFrameOuter->setVisible(false);
         }
 
         if (currentTransformProperty != 0) {
