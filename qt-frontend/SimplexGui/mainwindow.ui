@@ -15,8 +15,8 @@
   </property>
   <property name="styleSheet">
    <string notr="true">* {
-	background: #555; 
-	color: white;
+        background: #555;
+        color: white;
 }
 
 QLabel{background-color:none;}
@@ -24,124 +24,124 @@ QLabel{background-color:none;}
 QScrollBar::add-line, QScrollBar::sub-line {width:0;height:0;background:none;}
 QScrollBar{padding:1px 1px 1px 1px;}
 QScrollBar::handle{
-	border-radius:4px;
+        border-radius:4px;
 }
 QScrollBar::handle:hover {
-	border:1px solid #edd;
+        border:1px solid #edd;
 }
 QScrollBar::handle:horizontal{
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #cbb, stop: 0.5 #505050,
                                        stop: 0.6 #434343, stop:1 #caa);
 }
 QScrollBar::handle:vertical{
-	background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
                                        stop:0 #cbb, stop: 0.5 #505050,
                                        stop: 0.6 #434343, stop:1 #caa);
 }
 QScrollBar::add-page, QScrollBar::sub-page{
-	background:none;
-	color:transparent;
+        background:none;
+        color:transparent;
 }
 
-QGraphicsView, QMdiArea, 
+QGraphicsView, QMdiArea,
 QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
 QTreeView, QFrame#helpFrame {
-	color:white;
-	border:2px solid #ccc;
-	border-radius:10px; 
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        color:white;
+        border:2px solid #ccc;
+        border-radius:10px;
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #717171, stop: 0.5 #505050,
                                        stop: 0.6 #434343, stop:1 #757575);
-	alternate-background-color:#556;
+        alternate-background-color:#556;
 }
 QFrame#helpFrame, QWidget#picohelp {
-	background-color:transparent;
+        background-color:transparent;
 }
-QLineEdit:focus, QSpinBox:focus, 
+QLineEdit:focus, QSpinBox:focus,
 QDoubleSpinBox:focus, QComboBox:focus {
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #719171, stop: 0.5 #506050,
                                        stop: 0.6 #435343, stop:1 #759575);
 }
 QTreeView, QMdiArea, QTextEdit {
-	background-color:#556;
-	alternate-background-color:#556;
+        background-color:#556;
+        alternate-background-color:#556;
 }
 QMdiArea::QFrame {
-	background-color:#222;
+        background-color:#222;
 }
 
 
 QHeaderView { background-color: transparent; }
 QHeaderView::section {
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #616161, stop: 0.5 #505050,
                                        stop: 0.6 #434343, stop:1 #656565);
-	color: white;
-	padding-left: 4px;
-	border: 1px solid #6c6c6c;
-	border-radius:5px;
+        color: white;
+        padding-left: 4px;
+        border: 1px solid #6c6c6c;
+        border-radius:5px;
  }
 
 QMenuBar {
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #889, stop:1 #aab);
  } QMenuBar::item  {
-	spacing: 3px; /* spacing between menu bar items */
-	padding: 1px 4px;
-	background: transparent;
-	border-radius: 4px;
+        spacing: 3px; /* spacing between menu bar items */
+        padding: 1px 4px;
+        background: transparent;
+        border-radius: 4px;
 } QMenuBar::item:selected { /* when selected using mouse or keyboard */
-	background: #b8b8b8;
+        background: #b8b8b8;
 } QMenuBar::item:pressed {
-	background: #aaa;
+        background: #aaa;
 }
 
 /*QMenu {
-	border: 1px solid black;
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        border: 1px solid black;
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #716161, stop: 0.5 #605050,
                                        stop: 0.52 #534343, stop:1 #756565);
 }*/ QMenu::item {
-	background-color: #452311;
+        background-color: #452311;
 } QMenu::item:selected {
-	background-color: #a59361;
+        background-color: #a59361;
 } QMenu::item:hover {
-	background-color: #a59361;
+        background-color: #a59361;
 }
 
 QPushButton:!flat {
-	border: 2px solid #8f8f91;
-	border-radius: 6px;
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        border: 2px solid #8f8f91;
+        border-radius: 6px;
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #817171, stop: 0.5 #606060,
                                        stop: 0.55 #333333, stop:1 #857575);
 } QPushButton:disabled {
-	color:gray;
-	background-color: black;
+        color:gray;
+        background-color: black;
 }  QPushButton:hover {
-	border: 2px solid #afafc1;
+        border: 2px solid #afafc1;
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #999, stop: 0.5 #888,
                                        stop: 0.55 #777, stop:1 #999);
 } QPushButton:pressed {
-	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #999, stop: 0.5 #555,
                                        stop: 0.55 #444, stop:1 #999);
 }
 
 QGroupBox {
-	 background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+         background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                        stop: 0 #555, stop: 1 #889);
-	border: 2px solid #CCC;
-	border-radius: 6px;
-	margin-top: 1ex; /* leave space at the top for the title */
+        border: 2px solid #CCC;
+        border-radius: 6px;
+        margin-top: 1ex; /* leave space at the top for the title */
 } QGroupBox::title {
-	color: orange;	
-	subcontrol-origin: margin;
-	subcontrol-position: top center; /* position at the top center */
-	padding: 0 3px;
+        color: orange;
+        subcontrol-origin: margin;
+        subcontrol-position: top center; /* position at the top center */
+        padding: 0 3px;
 }
 
 
@@ -156,25 +156,25 @@ QDoubleSpinBox::down-arrow, QDoubleSpinBox::down-button {
 
 
 QSplitter::handle:vertical{
-	border: 1px solid transparent;
-	border-radius:4px;
-	height:5px;
-	background-color: 
-		qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        border: 1px solid transparent;
+        border-radius:4px;
+        height:5px;
+        background-color:
+                qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #91b191, stop: 0.5 #607050,
                                        stop: 0.6 #536343, stop:1 #91b191);
 }
 QSplitter::handle:horizontal{
-	border: 1px solid transparent;
-	border-radius:4px;
-	width:5px;
-	background-color: 
-		qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        border: 1px solid transparent;
+        border-radius:4px;
+        width:5px;
+        background-color:
+                qlineargradient(x1:0, y1:0, x2:1, y2:0,
                                        stop:0 #91b191, stop: 0.5 #607050,
                                        stop: 0.6 #536343, stop:1 #91b191);
 }
 QSplitter::handle:hover {
-	border:1px solid #faa;
+        border:1px solid #faa;
 }
 
 
@@ -190,15 +190,15 @@ QComboBox::drop-down {
      border-bottom-right-radius: 3px;
  }
 QComboBox QAbstractItemView {
-	background: gray;
+        background: gray;
 }
 
 
 QTabWidget::pane { /* The tab widget frame */
-	border: 2px solid #777;
-	border-radius:4px;
+        border: 2px solid #777;
+        border-radius:4px;
 } QTabWidget::tab-bar {
-	left: 5px; /* move to the right by 5px */
+        left: 5px; /* move to the right by 5px */
 } QTabBar::tab {
         background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #669, stop: 0.5 #333,
@@ -211,8 +211,8 @@ QTabWidget::pane { /* The tab widget frame */
         padding: 2px;
         color:#ccc;
 } QTabBar::tab:selected, QTabBar::tab:hover {
-        background-color: 
-			qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        background-color:
+                        qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #9191b1, stop: 0.5 #607050,
                                        stop: 0.55 #334323, stop:1 #9191b1);
         color:#fff;
@@ -596,49 +596,6 @@ QTabWidget::pane { /* The tab widget frame */
         </item>
        </layout>
       </widget>
-      <widget class="QFrame" name="helpFrameOuter">
-       <property name="minimumSize">
-        <size>
-         <width>128</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="spacing">
-         <number>1</number>
-        </property>
-        <property name="leftMargin">
-         <number>4</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>4</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QFrame" name="helpFrame">
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="PicohelpBrowser" name="picohelp" native="true"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QFrame" name="codeEditorFrameOuter">
        <property name="enabled">
         <bool>false</bool>
@@ -679,6 +636,49 @@ QTabWidget::pane { /* The tab widget frame */
            </property>
            <item>
             <widget class="QuatschSourceEditor" name="codeEditor" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QFrame" name="helpFrameOuter">
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>1</number>
+        </property>
+        <property name="leftMargin">
+         <number>4</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QFrame" name="helpFrame">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="PicohelpBrowser" name="picohelp" native="true"/>
            </item>
           </layout>
          </widget>
