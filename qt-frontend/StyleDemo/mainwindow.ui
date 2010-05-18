@@ -60,6 +60,9 @@ QTreeView, QFrame#helpFrame {
                                        stop: 0.6 #434343, stop:1 #757575);
 	alternate-background-color:#556;
 }
+QFrame#helpFrame, QWidget#picohelp {
+	background-color:transparent;
+}
 QLineEdit:focus, QSpinBox:focus, 
 QDoubleSpinBox:focus, QComboBox:focus {
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,

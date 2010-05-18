@@ -2509,8 +2509,8 @@ void MainWindow::on_actionShow_Command_Pile_triggered(bool checked) {
         ui->commandPileGroupBox->setVisible(checked);
 }
 void MainWindow::on_actionShow_Picohelp_Browser_triggered(bool checked) {
-        ui->picohelp->setEnabled(checked);
-        ui->picohelp->setVisible(checked);
+        ui->helpFrameOuter->setEnabled(checked);
+        ui->helpFrameOuter->setVisible(checked);
 }
 void MainWindow::on_actionActionShow_Contextual_Picohelp_triggered() {
 
