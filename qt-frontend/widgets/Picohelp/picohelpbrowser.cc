@@ -24,6 +24,7 @@
 #include <QEvent>
 #include <QWheelEvent>
 #include <QKeyEvent>
+#include <QFile>
 
 #include <QUrl>
 
@@ -148,8 +149,20 @@ PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
                         Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
         ui->webView->installEventFilter(this);
-        /*connect(ui->webView, SIGNAL(urlChanged(QUrl)),
-                this, SLOT(urlChanged(QUrl)));*/
+
+#ifdef _WIN32
+        setHelpRoot("file:///" + QApplication::applicationDirPath() + "/help-content/");
+#elif defined(linux)
+        if (QFile::exists(QApplication::applicationDirPath() + "/help-content/")) {
+                setHelpRoot("file:///" + QApplication::applicationDirPath() + "/help-content/");
+        } else if (QFile::exists("file:///usr/share/picogen/help-content/"))  {
+                setHelpRoot("file:///usr/share/picogen/help-content/");
+        } else {
+                ui->webView->setHtml("No help-content found.");
+        }
+#else
+#error
+#endif
 }
 
 

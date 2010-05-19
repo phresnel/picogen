@@ -30,18 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
-#ifdef _WIN32
-    ui->help->setHelpRoot("file:///" + QApplication::applicationDirPath() + "/help-content/");
-#elif defined(linux)
-    ui->pico->setHelpRoot("file:///usr/share/picogen/help-content/");
-#else
-#error
-#endif
-
     ui->editor->setPicohelpBrowser(ui->help);
-    //QuatschSourceEditor *i = new QuatschSourceEditor(this);
-    //setCentralWidget(i);
 }
 
 MainWindow::~MainWindow()

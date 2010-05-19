@@ -28,14 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-#ifdef _WIN32
-    ui->centralWidget->setHelpRoot("file:///" + QApplication::applicationDirPath() + "/help-content/");
-#elif defined(linux)
-    ui->centralWidget->setHelpRoot("file:///usr/share/picogen/help-content/");
-#else
-#error
-#endif
 }
 
 MainWindow::~MainWindow()
