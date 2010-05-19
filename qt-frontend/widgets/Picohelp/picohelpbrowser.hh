@@ -47,6 +47,10 @@ public:
 protected:
         void changeEvent(QEvent *e);
         void resizeEvent(QResizeEvent *);
+        //void wheelEvent(QWheelEvent *) ;
+        void keyPressEvent(QKeyEvent *);
+        bool eventFilter(QObject *o, QEvent *e);
+
 
 private:
         Ui::PicohelpBrowser *ui;

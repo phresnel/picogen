@@ -21,6 +21,10 @@
 #include <QWebPage>
 #include <QWebFrame>
 
+#include <QEvent>
+#include <QWheelEvent>
+#include <QKeyEvent>
+
 #include "picohelpbrowser.hh"
 #include "ui_picohelpbrowser.h"
 
@@ -141,6 +145,7 @@ PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
         ui->webView->page()->mainFrame()->setScrollBarPolicy(
                         Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
+        ui->webView->installEventFilter(this);
         //ui->webView->page()->mainFrame()->setScrollBarPolicy();
 }
 
@@ -172,6 +177,52 @@ void PicohelpBrowser::changeEvent(QEvent *e) {
 void PicohelpBrowser::resizeEvent(QResizeEvent *) {
         recalcScrollbars();
 }
+void PicohelpBrowser::keyPressEvent(QKeyEvent *k) {
+        if (k->key() == Qt::Key_PageUp) {
+                ui->verticalScrollBar->setValue(
+                  ui->verticalScrollBar->value()
+                  - ui->verticalScrollBar->pageStep());
+                k->accept();
+        } else if (k->key() == Qt::Key_PageDown) {
+                ui->verticalScrollBar->setValue(
+                  ui->verticalScrollBar->value()
+                  + ui->verticalScrollBar->pageStep());
+                k->accept();
+        }
+}
+bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
+        if (e->type() == QEvent::Wheel) {
+                QWheelEvent *w = (QWheelEvent *)e;
+                if (w->modifiers().testFlag(Qt::ControlModifier)) {
+                        ui->webView->setZoomFactor(
+                          ui->webView->zoomFactor() *
+                          (1 + 0.001*w->delta())
+                        );
+                } else {
+                        if (w->orientation() == Qt::Vertical) {
+                                ui->verticalScrollBar->setValue(
+                                  ui->verticalScrollBar->value()
+                                - w->delta());
+                        } else {
+                                ui->horizontalScrollBar->setValue(
+                                  ui->horizontalScrollBar->value()
+                                - w->delta());
+                        }
+                }
+                return true;
+        } else if (e->type() == QEvent::KeyPress) {
+                QKeyEvent *k = (QKeyEvent *)e;
+                if (k->key() == Qt::Key_PageUp
+                    || k->key() == Qt::Key_PageDown) {
+                        keyPressEvent(k);
+                        return true;
+                }
+                return false;
+        }
+        return false;
+}
+/*void PicohelpBrowser::wheelEvent(QWheelEvent *) {
+}*/
 
 
 
@@ -267,6 +318,7 @@ void PicohelpBrowser::recalcScrollbars() {
 
                 verticalBar.setVisible(true);
                 verticalBar.setPageStep(pageVerticalStep);
+                verticalBar.setSingleStep(16);
 
                 verticalBar.setMinimum(0);
                 verticalBar.setMaximum(docHeight - pageVerticalStep);
@@ -285,6 +337,7 @@ void PicohelpBrowser::recalcScrollbars() {
 
                 horizontalBar.setVisible(true);
                 horizontalBar.setPageStep(pageHorizontalStep);
+                horizontalBar.setSingleStep(16);
 
                 horizontalBar.setMinimum(0);
                 horizontalBar.setMaximum(docWidth - pageHorizontalStep);
