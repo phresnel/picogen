@@ -30,7 +30,7 @@
 #include "picohelpbrowser.hh"
 #include "ui_picohelpbrowser.h"
 
-#include <QMessageBox>
+#include <cmath>
 
 namespace {
         struct Index {
@@ -214,6 +214,7 @@ bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
                           ui->webView->zoomFactor() *
                           (1 + 0.001*w->delta())
                         );
+                        recalcScrollbars();
                 } else {
                         if (w->orientation() == Qt::Vertical) {
                                 ui->verticalScrollBar->setValue(
@@ -318,12 +319,15 @@ void PicohelpBrowser::on_forwardButton_clicked() {
 
 void PicohelpBrowser::on_smallerButton_clicked() {
         ui->webView->setZoomFactor(ui->webView->zoomFactor()/1.125);
+        recalcScrollbars();
 }
 void PicohelpBrowser::on_biggerButton_clicked() {
         ui->webView->setZoomFactor(ui->webView->zoomFactor()*1.125);
+        recalcScrollbars();
 }
 void PicohelpBrowser::on_resetScalingButton_clicked() {
         ui->webView->setZoomFactor(1);
+        recalcScrollbars();
 }
 
 
@@ -354,7 +358,7 @@ void PicohelpBrowser::recalcScrollbars() {
 
         const int docHeight = frame.contentsSize().height();
         const int browserHeight = ui->webView->height();
-        const int pageVerticalStep = docHeight * ((double)browserHeight) / docHeight;
+        const int pageVerticalStep = browserHeight;
 
         if (docHeight <= browserHeight) {
                 verticalBar.setVisible(false);
