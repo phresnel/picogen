@@ -26,6 +26,7 @@ qt-frontend/widgets/ColorPicker/release/
 
 qt-frontend/SimplexGui/debug/
 qt-frontend/SimplexGui/release/
+qt-frontend/SimplexGui/help-content/
 qt-frontend/SimplexGui/Makefile
 qt-frontend/SimplexGui/Makefile
 qt-frontend/SimplexGui/qrc_qtpropertybrowser.cpp
@@ -47,11 +48,13 @@ qt-frontend/StyleDemo/Makefile.Debug
 qt-frontend/StyleDemo/Makefile.Release
 
 qt-frontend/widgets/QuatschSourceEditor/Makefile
+qt-frontend/widgets/QuatschSourceEditor/help-content/
 qt-frontend/widgets/QuatschSourceEditor/debug
 qt-frontend/widgets/QuatschSourceEditor/release
 qt-frontend/widgets/QuatschSourceEditor/Makefile.Debug
 qt-frontend/widgets/QuatschSourceEditor/Makefile.Release
 qt-frontend/widgets/QuatschSourceEditor/QuatschSourceEditor
+qt-frontend/widgets/QuatschSourceEditor/picogen-quatsch-editor
 qt-frontend/widgets/QuatschSourceEditor/qrc_resources.cpp
 
 qt-frontend/widgets/SpectralColorPicker/SpectralColorPicker
@@ -76,6 +79,7 @@ qt-frontend/widgets/Picohelp/Makefile
 qt-frontend/widgets/Picohelp/Makefile.Debug
 qt-frontend/widgets/Picohelp/Makefile.Release
 qt-frontend/widgets/Picohelp/Picohelp
+qt-frontend/widgets/Picohelp/picohelp
 qt-frontend/widgets/Picohelp/qrc_resources.cpp
 qt-frontend/widgets/Picohelp/help-content
 qt-frontend/widgets/Picohelp/debug/
