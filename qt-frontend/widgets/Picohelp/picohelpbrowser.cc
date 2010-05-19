@@ -191,6 +191,19 @@ void PicohelpBrowser::keyPressEvent(QKeyEvent *k) {
                   ui->verticalScrollBar->value()
                   + ui->verticalScrollBar->pageStep());
                 k->accept();
+        } else if (k->modifiers().testFlag(Qt::ControlModifier)) {
+                if (k->key() == Qt::Key_Plus) {
+                        on_biggerButton_clicked();
+                } else if (k->key() == Qt::Key_Minus) {
+                        on_smallerButton_clicked();
+                } else if (k->key() == Qt::Key_0) {
+                        on_resetScalingButton_clicked();
+                } else if (k->key() == Qt::Key_Home) {
+                        ui->verticalScrollBar->setValue(0);
+                } else if (k->key() == Qt::Key_End) {
+                        ui->verticalScrollBar->setValue(
+                                ui->verticalScrollBar->maximum());
+                }
         }
 }
 bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
@@ -216,9 +229,32 @@ bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
         } else if (e->type() == QEvent::KeyPress) {
                 QKeyEvent *k = (QKeyEvent *)e;
                 if (k->key() == Qt::Key_PageUp
-                    || k->key() == Qt::Key_PageDown) {
+                    || k->key() == Qt::Key_PageDown
+                    || (k->modifiers().testFlag(Qt::ControlModifier) &&
+                        (k->key() == Qt::Key_Plus ||
+                         k->key() == Qt::Key_Minus||
+                         k->key() == Qt::Key_0    ||
+                         k->key() == Qt::Key_End  ||
+                         k->key() == Qt::Key_Home))
+                ) {
                         keyPressEvent(k);
                         return true;
+                } else if (k->key() == Qt::Key_Up) {
+                        ui->verticalScrollBar->setValue(
+                          ui->verticalScrollBar->value()
+                          - ui->verticalScrollBar->singleStep());
+                } else if (k->key() == Qt::Key_Down) {
+                        ui->verticalScrollBar->setValue(
+                          ui->verticalScrollBar->value()
+                          + ui->verticalScrollBar->singleStep());
+                } else if (k->key() == Qt::Key_Left) {
+                        ui->horizontalScrollBar->setValue(
+                          ui->horizontalScrollBar->value()
+                          - ui->horizontalScrollBar->singleStep());
+                } else if (k->key() == Qt::Key_Right) {
+                        ui->horizontalScrollBar->setValue(
+                          ui->horizontalScrollBar->value()
+                          + ui->horizontalScrollBar->singleStep());
                 }
                 return false;
         }
