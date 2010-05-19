@@ -148,8 +148,8 @@ PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
                         Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
         ui->webView->installEventFilter(this);
-        connect(ui->webView, SIGNAL(urlChanged(QUrl)),
-                this, SLOT(urlChanged(QUrl)));
+        /*connect(ui->webView, SIGNAL(urlChanged(QUrl)),
+                this, SLOT(urlChanged(QUrl)));*/
 }
 
 
@@ -261,13 +261,19 @@ bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
         }
         return false;
 }
-void PicohelpBrowser::urlChanged (QUrl const & url) {
+void PicohelpBrowser::on_webView_urlChanged (QUrl const & url) {
         ui->verticalScrollBar->setValue(
           ui->webView->page()->mainFrame()->scrollPosition().y()
         );
         ui->horizontalScrollBar->setValue(
           ui->webView->page()->mainFrame()->scrollPosition().x()
         );
+}
+void PicohelpBrowser::on_webView_loadFinished(bool okay) {
+        if (!okay)
+                return;
+        recalcScrollbars();
+        on_webView_urlChanged (ui->webView->url()); // dirty
 }
 
 
@@ -339,14 +345,6 @@ void PicohelpBrowser::on_verticalScrollBar_valueChanged(int value) {
 void PicohelpBrowser::on_horizontalScrollBar_valueChanged(int value) {
         QWebFrame &frame = *ui->webView->page()->mainFrame();
         frame.setScrollPosition(QPoint(value,frame.scrollPosition().y()));
-}
-
-
-
-void PicohelpBrowser::on_webView_loadFinished(bool okay) {
-        if (!okay)
-                return;
-        recalcScrollbars();
 }
 
 

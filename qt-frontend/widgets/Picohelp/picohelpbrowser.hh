@@ -61,7 +61,8 @@ private:
         void recalcScrollbars ();
 private slots:
 
-        void urlChanged (QUrl const &);
+        void on_webView_urlChanged (QUrl const &);
+        void on_webView_loadFinished (bool);
 
         void on_verticalScrollBar_valueChanged(int value);
         void on_horizontalScrollBar_valueChanged(int value);
@@ -73,7 +74,6 @@ private slots:
         void on_gotoReferencesButton_clicked();
         void on_gotoTutorialsButton_clicked();
         void on_gotoMainPageButton_clicked();
-        void on_webView_loadFinished(bool);
 };
 
 #endif // PICOHELPBROWSER_HH
