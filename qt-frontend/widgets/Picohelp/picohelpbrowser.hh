@@ -28,6 +28,7 @@
 namespace Ui {
         class PicohelpBrowser;
 }
+class QUrl;
 
 class PicohelpBrowser : public QWidget {
         Q_OBJECT
@@ -47,7 +48,6 @@ public:
 protected:
         void changeEvent(QEvent *e);
         void resizeEvent(QResizeEvent *);
-        //void wheelEvent(QWheelEvent *) ;
         void keyPressEvent(QKeyEvent *);
         bool eventFilter(QObject *o, QEvent *e);
 
@@ -60,6 +60,9 @@ private:
 
         void recalcScrollbars ();
 private slots:
+
+        void urlChanged (QUrl const &);
+
         void on_verticalScrollBar_valueChanged(int value);
         void on_horizontalScrollBar_valueChanged(int value);
         void on_resetScalingButton_clicked();

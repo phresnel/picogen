@@ -25,10 +25,12 @@
 #include <QWheelEvent>
 #include <QKeyEvent>
 
+#include <QUrl>
+
 #include "picohelpbrowser.hh"
 #include "ui_picohelpbrowser.h"
 
-
+#include <QMessageBox>
 
 namespace {
         struct Index {
@@ -146,7 +148,8 @@ PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
                         Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
         ui->webView->installEventFilter(this);
-        //ui->webView->page()->mainFrame()->setScrollBarPolicy();
+        connect(ui->webView, SIGNAL(urlChanged(QUrl)),
+                this, SLOT(urlChanged(QUrl)));
 }
 
 
@@ -221,8 +224,14 @@ bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
         }
         return false;
 }
-/*void PicohelpBrowser::wheelEvent(QWheelEvent *) {
-}*/
+void PicohelpBrowser::urlChanged (QUrl const & url) {
+        ui->verticalScrollBar->setValue(
+          ui->webView->page()->mainFrame()->scrollPosition().y()
+        );
+        ui->horizontalScrollBar->setValue(
+          ui->webView->page()->mainFrame()->scrollPosition().x()
+        );
+}
 
 
 
