@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-05-13T09:20:23
 # -------------------------------------------------
 QT += webkit
-TARGET = Picohelp
+TARGET = picohelp
 TEMPLATE = app
 SOURCES += main.cc \
     mainwindow.cc \
