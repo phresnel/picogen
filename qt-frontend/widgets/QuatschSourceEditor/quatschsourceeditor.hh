@@ -107,6 +107,7 @@ public:
 
 signals:
         void codeChanged () ;
+        void helpBrowserVisibilityRequested();
 
 private slots:
         void on_interestingPrograms_clicked();

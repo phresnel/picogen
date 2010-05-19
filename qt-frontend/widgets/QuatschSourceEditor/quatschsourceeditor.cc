@@ -141,10 +141,13 @@ void QuatschSourceEditor::contextHelpTriggered() {
                         QMessageBox::information(this, "",
                                 "I am sorry, but I don't know what \"" + searchWord + "\" is."
                         );
+                } else {
+                        emit helpBrowserVisibilityRequested();
                 }
 
         } else {
                 helpBrowser->gotoQuatsch(PicohelpBrowser::QuatschReferencesOverview);
+                emit helpBrowserVisibilityRequested();
         }
 }
 

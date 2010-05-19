@@ -201,6 +201,8 @@ private slots:
         void on_actionShow_compiler_triggered();
 
         // non MOC
+        void helpBrowserVisibilityRequested();
+
         void variantManager_valueChanged (QtProperty *, QVariant);
         void enumManager_valueChanged (QtProperty *, int);
         void colorEditManager_valueChanged (QtProperty *, ColorPickerColor);

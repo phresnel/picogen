@@ -211,6 +211,8 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
 #else
 #error
 #endif
+        connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
+                this, SLOT(helpBrowserVisibilityRequested()));
 
         if (initialFilename != "") {
                 try {
@@ -2522,6 +2524,9 @@ void MainWindow::on_actionShow_Picohelp_Browser_triggered(bool checked) {
 }
 void MainWindow::on_actionActionShow_Contextual_Picohelp_triggered() {
 
+}
+void MainWindow::helpBrowserVisibilityRequested() {
+        on_actionShow_Picohelp_Browser_triggered(true);
 }
 
 
