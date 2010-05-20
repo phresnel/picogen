@@ -15,11 +15,11 @@ INCLUDEPATH += ../../../ \
     ../../../redshift/include
 LIBS += ../../../redshift/lib/libpicogen.a \
     -lgomp \
-    -lboost_program_options \
     -lSDL \
     -lSDL_image \
-    -lboost_filesystem \
-    -lboost_system \
-    -lnoise
+    -lnoise \
+    /usr/lib/libboost_program_options.a \
+    /usr/lib/libboost_filesystem.a  \
+    /usr/lib/libboost_system.a
 include(../Picohelp/picohelp.pri)
 RESOURCES += ../../SimplexGui/resources.qrc

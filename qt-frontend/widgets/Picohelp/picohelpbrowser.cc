@@ -155,7 +155,7 @@ PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
 #elif defined(linux)
         if (QFile::exists(QApplication::applicationDirPath() + "/help-content/")) {
                 setHelpRoot("file:///" + QApplication::applicationDirPath() + "/help-content/");
-        } else if (QFile::exists("file:///usr/share/picogen/help-content/"))  {
+        } else if (QFile::exists("/usr/share/picogen/help-content/"))  {
                 setHelpRoot("file:///usr/share/picogen/help-content/");
         } else {
                 ui->webView->setHtml("No help-content found.");

@@ -36,8 +36,10 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 # libs
 #------------------------------------------------------------------------------
 SDLLIBS := `sdl-config --static-libs` -lSDL_image
-BOOSTLIBS := -lboost_program_options -lboost_filesystem -lboost_system
-LIBS   := $(SDLLIBS) $(BOOSTLIBS) -lnoise
+BOOSTLIBS := /usr/lib/libboost_program_options.a \
+             /usr/lib/libboost_filesystem.a  \
+             /usr/lib/libboost_system.a
+LIBS   := $(SDLLIBS) -lnoise $(BOOSTLIBS)
 
 
 #------------------------------------------------------------------------------
