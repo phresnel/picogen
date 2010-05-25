@@ -13,13 +13,23 @@ FORMS += mainwindow.ui \
     quatschsourceeditor.ui
 INCLUDEPATH += ../../../ \
     ../../../redshift/include
-LIBS += ../../../redshift/lib/libpicogen.a \
+LIBS += ../../redshift/lib/libpicogen.a \
     -lgomp \
-    -lSDL \
-    -lSDL_image \
     -lnoise \
-    /usr/lib/libboost_program_options.a \
-    /usr/lib/libboost_filesystem.a  \
-    /usr/lib/libboost_system.a
+    -lSDL \
+    -lSDL_image
+unix{
+    LIBS += \
+        /usr/lib/libboost_program_options.a \
+        /usr/lib/libboost_filesystem.a  \
+        /usr/lib/libboost_system.a
+}
+windows {
+    LIBS += \
+        -lboost_program_options \
+        -lboost_filesystem  \
+        -lboost_system
+}
+
 include(../Picohelp/picohelp.pri)
 RESOURCES += ../../SimplexGui/resources.qrc

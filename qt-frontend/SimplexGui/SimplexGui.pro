@@ -31,10 +31,19 @@ LIBS += ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lnoise \
     -lSDL \
-    -lSDL_image \
-    /usr/lib/libboost_program_options.a \
-    /usr/lib/libboost_filesystem.a  \
-    /usr/lib/libboost_system.a
+    -lSDL_image
+unix{
+    LIBS += \
+        /usr/lib/libboost_program_options.a \
+        /usr/lib/libboost_filesystem.a  \
+        /usr/lib/libboost_system.a
+}
+windows {
+    LIBS += \
+        -lboost_program_options \
+        -lboost_filesystem  \
+        -lboost_system
+}
 include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)
 include(../../upstream/QtSolutions/qtpropertybrowser-2.5_1-opensource/src/qtpropertybrowser.pri)
 include(../widgets/ColorPicker/colorpicker.pri)
