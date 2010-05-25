@@ -2527,6 +2527,8 @@ void MainWindow::helpBrowserVisibilityRequested() {
 
 
 void MainWindow::on_actionNew_Scene_triggered() {
+        QStringList l;
+        l << QApplication::applicationFilePath(); // basically a fix for windoze
         QProcess::startDetached(QApplication::applicationFilePath());
 }
 
@@ -2585,5 +2587,6 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e) {
         ) {
                 ui->picohelp->gotoSimplexGuiPropertyEdit();
         }
+        // use dynamic property "picohelp-link" instead
         return false;
 }
