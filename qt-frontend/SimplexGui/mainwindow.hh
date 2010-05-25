@@ -56,6 +56,7 @@ protected:
         void changeEvent(QEvent *e);
         void contextMenuEvent(QContextMenuEvent *event);
         void closeEvent (QCloseEvent *);
+        bool eventFilter(QObject *o, QEvent *e);
 
 private:
         Ui::MainWindow *ui;

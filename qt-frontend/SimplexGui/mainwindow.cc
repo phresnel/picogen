@@ -34,6 +34,7 @@
 #include <QTextStream>
 #include <QUrl>
 #include <QProcess>
+#include <QKeyEvent>
 
 #include "simpleinputbox.hh"
 #include "renderwindow.hh"
@@ -237,6 +238,7 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
         ui->settings->setRootIsDecorated(true);
         //ui->settings->setIndentation(32);
         ui->settings->setHeaderVisible(false);
+        ui->settings->installEventFilter(this);
 
         refreshWindowTitle();
         //menuBar()->repaint();
@@ -2573,3 +2575,15 @@ void MainWindow::on_actionShow_compiler_triggered() {
         );
 }
 
+
+
+
+bool MainWindow::eventFilter(QObject *o, QEvent *e) {
+        if (o == (QObject*)ui->settings
+         && e->type() == QEvent::KeyPress
+         && ((QKeyEvent*)(e))->key() == Qt::Key_F1
+        ) {
+                ui->picohelp->gotoSimplexGuiPropertyEdit();
+        }
+        return false;
+}

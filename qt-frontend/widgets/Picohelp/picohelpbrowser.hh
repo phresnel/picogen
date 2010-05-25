@@ -42,6 +42,7 @@ public:
         };
         void gotoQuatsch(QuatschHelp);
         bool gotoQuatsch(QString searchTerm);
+        void gotoSimplexGuiPropertyEdit (QString searchTerm = "");
 
         void setHelpRoot (QString str);
 

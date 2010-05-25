@@ -217,6 +217,8 @@ void PicohelpBrowser::keyPressEvent(QKeyEvent *k) {
                         ui->verticalScrollBar->setValue(
                                 ui->verticalScrollBar->maximum());
                 }
+        } else if (k->key() == Qt::Key_F1) {
+                gotoArticle ("Picohelp.html");
         }
 }
 bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
@@ -323,6 +325,10 @@ bool PicohelpBrowser::gotoQuatsch(QString searchTerm) {
                 return false;
         gotoArticle(url);
         return true;
+}
+void PicohelpBrowser::gotoSimplexGuiPropertyEdit(QString searchTerm) {
+        if ("" == searchTerm)
+                gotoArticle("SimplexGUI_Property_Editor.html");
 }
 
 
