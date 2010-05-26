@@ -26,7 +26,7 @@ TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     ui(new Ui::TristimulusColorPicker),
     isUpdating(false)
 {
-        ui->setupUi(this);        
+        ui->setupUi(this);
         setColor(TristimulusColor(0,1,0));
 }
 
@@ -155,6 +155,6 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
 
         blockSignals(false);
         emit colorChanged (color_);
-        isUpdating = false;        
+        isUpdating = false;
 }
 

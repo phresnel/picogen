@@ -125,6 +125,7 @@ namespace {
                 ret.push_back(Index(QStringList()<<"LibnoiseVoronoi", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Voronoi"));
                 ret.push_back(Index(QStringList()<<"LibnoiseCylinders", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Cylinders"));
                 ret.push_back(Index(QStringList()<<"LibnoiseSpheres", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Spheres"));
+                ret.push_back(Index(QStringList()<<"Heightmap", "Quatsch-Jux_Reference_-_Configurable_Functions.html#Heightmap"));
 
                 return ret;
         }

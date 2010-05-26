@@ -83,7 +83,7 @@
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="decimals">
-      <number>3</number>
+      <number>5</number>
      </property>
      <property name="minimum">
       <double>0.000000000000000</double>
