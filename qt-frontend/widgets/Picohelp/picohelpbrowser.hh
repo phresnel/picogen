@@ -42,7 +42,11 @@ public:
         };
         void gotoQuatsch(QuatschHelp);
         bool gotoQuatsch(QString searchTerm);
-        void gotoSimplexGuiPropertyEdit (QString searchTerm = "");
+        bool gotoSimplexGuiPropertyEdit (QString searchTerm = "");
+        bool gotoSimplexGuiPropertyEdit (QString a, QString b,
+                                         QString c, QString d);
+
+        void gotoArticle (QString const &filename);
 
         void setHelpRoot (QString str);
 
@@ -56,8 +60,6 @@ protected:
 private:
         Ui::PicohelpBrowser *ui;
         QString helpRoot;
-
-        void gotoArticle (QString const &filename);
 
         void recalcScrollbars ();
 private slots:

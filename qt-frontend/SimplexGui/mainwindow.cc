@@ -262,6 +262,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::initializeScene() {
         ui->settings->clear();
+        ui->settings->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
         initializeFilmSettings();
         initializeRenderSettings();
         initializeCameraSettings();
@@ -2581,12 +2582,49 @@ void MainWindow::on_actionShow_compiler_triggered() {
 
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e) {
-        if (o == (QObject*)ui->settings
-         && e->type() == QEvent::KeyPress
+
+        if (e->type() == QEvent::KeyPress
          && ((QKeyEvent*)(e))->key() == Qt::Key_F1
         ) {
-                ui->picohelp->gotoSimplexGuiPropertyEdit();
+                const bool isOnPropertyBrowser = (QObject*)ui->settings == o;
+                const bool isBrowserItemSelected = 0 != currentBrowserItem;
+                if (isOnPropertyBrowser) {
+                        if (isBrowserItemSelected) {
+                                const QtProperty *p =
+                                        currentBrowserItem->property();
+                                const QString name =
+                                        p->propertyName();
+                                const QtBrowserItem *parent = currentBrowserItem
+                                                              ->parent();
+                                const QtBrowserItem *grandparent =
+                                                              parent ?
+                                                              parent->parent() :
+                                                              0;
+                                const QString pname =
+                                        parent ?
+                                        parent->property()->propertyName() :
+                                        "";
+                                const QString ppname =
+                                        grandparent ?
+                                        grandparent->property()->propertyName() :
+                                        "";
+                                QtBrowserItem *it = currentBrowserItem;
+                                while (it->parent() != 0) it = it->parent();
+                                const QString outer = it->property()->propertyName();
+
+                                if (ui->picohelp->gotoSimplexGuiPropertyEdit(
+                                        name, pname, ppname, outer
+                                )) {
+                                        return true;
+                                }
+                        }
+                }
+
+                QVariant helpFile = o->property("picohelp");
+                if (helpFile.isValid()) {
+                        ui->picohelp->gotoArticle(helpFile.toString());
+                        return true;
+                }
         }
-        // use dynamic property "picohelp-link" instead
         return false;
 }

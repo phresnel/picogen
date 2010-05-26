@@ -221,7 +221,7 @@ void PicohelpBrowser::keyPressEvent(QKeyEvent *k) {
                 gotoArticle ("Picohelp.html");
         }
 }
-bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
+bool PicohelpBrowser::eventFilter(QObject */*o*/, QEvent *e) {
         if (e->type() == QEvent::Wheel) {
                 QWheelEvent *w = (QWheelEvent *)e;
                 if (w->modifiers().testFlag(Qt::ControlModifier)) {
@@ -276,7 +276,7 @@ bool PicohelpBrowser::eventFilter(QObject *o, QEvent *e) {
         }
         return false;
 }
-void PicohelpBrowser::on_webView_urlChanged (QUrl const & url) {
+void PicohelpBrowser::on_webView_urlChanged (QUrl const & /*url*/) {
         ui->verticalScrollBar->setValue(
           ui->webView->page()->mainFrame()->scrollPosition().y()
         );
@@ -326,9 +326,57 @@ bool PicohelpBrowser::gotoQuatsch(QString searchTerm) {
         gotoArticle(url);
         return true;
 }
-void PicohelpBrowser::gotoSimplexGuiPropertyEdit(QString searchTerm) {
-        if ("" == searchTerm)
+bool PicohelpBrowser::gotoSimplexGuiPropertyEdit(QString searchTerm) {
+        if ("" == searchTerm) {
                 gotoArticle("SimplexGUI_Property_Editor.html");
+                return true;
+        }
+        return false;
+}
+bool PicohelpBrowser::gotoSimplexGuiPropertyEdit (
+        QString a, QString b, QString c, QString d
+) {
+        QString terms[4] = {a, b, c, d};
+        for (int i=0; i<4; ++i){
+                const QString base = "SimplexGUI_Property_Editor.html#";
+                if (terms[i] == "film-settings") {
+                        gotoArticle(base+"film-settings");
+                        return true;
+                }
+                if (terms[i] == "render-settings") {
+                        gotoArticle(base+"render-settings");
+                        return true;
+                }
+                if (terms[i] == "surface-integrator") {
+                        gotoArticle(base+"surface-integrator");
+                        return true;
+                }
+                if (terms[i] == "volume-integrator") {
+                        gotoArticle(base+"volume-integrator");
+                        return true;
+                }
+                if (terms[i] == "cameras") {
+                        gotoArticle(base+"cameras");
+                        return true;
+                }
+                if (terms[i] == "transform") {
+                        gotoArticle(base+"Camera-Transforms");
+                        return true;
+                }
+                if (terms[i] == "objects") {
+                        gotoArticle(base+"objects");
+                        return true;
+                }
+                if (terms[i] == "volumes") {
+                        gotoArticle(base+"volumes");
+                        return true;
+                }
+                if (terms[i] == "backgrounds") {
+                        gotoArticle(base+"backgrounds");
+                        return true;
+                }
+        }
+        return false;
 }
 
 
