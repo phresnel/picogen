@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=picogen-simplex
+Comment=Synthesize and render artificial terrain
+GenericName=Terrain Synthesizer and Renderer
+Categories=Application;Graphics;
+Exec=picogen-simplex %F
+Icon=picogen-simplex
+StartupNotify=false
+Terminal=false
+Type=Application
+MimeType=application/picogen-scene-file;
+

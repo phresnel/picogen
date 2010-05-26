@@ -1,0 +1,6 @@
+?package(hugin):\
+	needs="X11"\
+	section="Applications/Graphics"\
+	title="picogen-quatsch-editor"\
+	longtitle="Standalone quatsch editor for picogen"\
+	command="/usr/bin/picogen-quatsch-editor"

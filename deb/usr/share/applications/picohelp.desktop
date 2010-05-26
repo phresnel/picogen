@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=picohelp
+Comment=Synthesize and render artificial terrain
+GenericName=Standalone help browser for picogen
+Categories=Application;Graphics;
+Exec=picohelp
+StartupNotify=false
+Terminal=false
+Type=Application
+
+

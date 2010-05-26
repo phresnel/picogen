@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=picogen-quatsch-editor
+Comment=Synthesize and render artificial terrain
+GenericName=Standalone quatsch editor for picogen
+Categories=Application;Graphics;
+Exec=picogen-quatsch-editor
+StartupNotify=false
+Terminal=false
+Type=Application
+
+

@@ -1,0 +1,6 @@
+?package(hugin):\
+	needs="X11"\
+	section="Applications/Graphics"\
+	title="picogen-simplex"\
+	longtitle="Picogen, create and render artificial terrain"\
+	command="/usr/bin/picogen-simplex"

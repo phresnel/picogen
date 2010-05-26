@@ -1,0 +1,6 @@
+?package(hugin):\
+	needs="X11"\
+	section="Applications/Graphics"\
+	title="picohelp"\
+	longtitle="Standalone help browser for picogen"\
+	command="/usr/bin/picohelp"
