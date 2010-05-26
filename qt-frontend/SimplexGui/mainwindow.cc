@@ -1287,6 +1287,8 @@ void MainWindow::addTransform (QtProperty *transformRoot,
         if (t.type == Xf::move_right) def = i; i++;
         enumNames << "move-up";
         if (t.type == Xf::move_up) def = i; i++;
+        enumNames << "move-down";
+        if (t.type == Xf::move_down) def = i; i++;
         enumNames << "move-backward";
         if (t.type == Xf::move_backward) def = i; i++;
         enumNames << "move-forward";
