@@ -54,7 +54,7 @@ void SpectralSlider::changeEvent(QEvent *e) {
 
 void SpectralSlider::setAmplitude (double value) {
         ui->amplitude->setValue(value);
-        ui->verticalSlider->setValue(value * 100.f);
+        ui->verticalSlider->setValue(value * 100000.f);
 }
 
 
@@ -74,7 +74,7 @@ double SpectralSlider::wavelength () const {
 
 
 void SpectralSlider::on_verticalSlider_valueChanged(int value) {
-        ui->amplitude->setValue(value / 100.f);
+        ui->amplitude->setValue(value / 100000.f);
         emit valueChanged(ui->amplitude->value(), ui->wavelength->value());
 }
 
@@ -88,10 +88,10 @@ void SpectralSlider::on_wavelength_valueChanged(double) {
 
 void SpectralSlider::minimumChanged (double val) {
         ui->amplitude->setMinimum(val);
-        ui->verticalSlider->setMinimum(val * 100.);
+        ui->verticalSlider->setMinimum(val * 100000.);
 }
 
 void SpectralSlider::maximumChanged (double val) {
         ui->amplitude->setMaximum(val);
-        ui->verticalSlider->setMaximum(val * 100.);
+        ui->verticalSlider->setMaximum(val * 100000.);
 }

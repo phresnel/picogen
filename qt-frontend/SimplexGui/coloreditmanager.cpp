@@ -62,9 +62,9 @@ QString ColorEditManager::valueText(const QtProperty *property) const {
         const ColorPickerColor data = theValues[property].value;
         const QColor col = data.toQColor();
         const QString asRgbString =
-                        QString::number(col.red()) + ", "
-                        + QString::number(col.green()) + ", "
-                        + QString::number(col.blue());
+                        QString::number(col.redF()) + ", "
+                        + QString::number(col.greenF()) + ", "
+                        + QString::number(col.blueF());
 
         switch(data.mode) {
         case ColorPickerColor::Spectral:
