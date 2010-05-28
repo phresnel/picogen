@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>picogen:QuatschEditor</string>
   </property>
   <property name="styleSheet">
    <string notr="true">* {
@@ -456,7 +456,7 @@ margin-top: 2px; /* make non-selected tabs look smaller */
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>16</height>
+     <height>19</height>
     </rect>
    </property>
   </widget>
