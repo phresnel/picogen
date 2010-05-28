@@ -1,6 +1,7 @@
 [Desktop Entry]
-Name=picohelp
-Comment=Synthesize and render artificial terrain
+Name=Picogen:Picohelp
+Comment=Standalone help browser for picogen
+Icon=/usr/share/picogen/icons/picohelp.png
 GenericName=Standalone help browser for picogen
 Categories=Application;Graphics;
 Exec=picohelp
