@@ -1,5 +1,6 @@
 picogen (0.3.beta5); urgency=low
 
+  * new: context help for property-editor and help-browser
   * (windows): improve installer
   * (linux): improve .deb-package
     * use application/picogen instead of text/picogen
