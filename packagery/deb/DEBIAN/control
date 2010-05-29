@@ -1,0 +1,27 @@
+Package: picogen
+Version: 0.3.beta5
+Section: graphics
+Priority: optional
+Architecture: amd64
+Essential: no
+Depends: libgomp1,
+         libnoise | libnoise0,
+         libsdl1.2debian | libsdl1.2,
+         libsdl-image1.2,
+         libqt4-webkit (>= 4.6.2),
+         libqt4-core (>= 4.6.2),
+         libqt4-gui (>= 4.6.2)
+Pre-Depends:
+Recommends:
+Suggests:
+Installed-Size: 21504
+Conflicts:
+Replaces:
+Provides: picogen
+Description: Picogen is a free terrain synthesizer and renderer
+ .
+ Picogen is a free terrain synthesizer and renderer.
+ It is under heavy development, and it might be worth
+ looking at http://picogen.org and http://picogen.deviantart.com from time to time.
+Homepage:http://picogen.org
+Maintainer: Sebastian Mach [phresnel@gmail.com]

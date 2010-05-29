@@ -1,0 +1,12 @@
+picogen (C) 2010 Sebastian Mach (*1983),
+            http://picogen.org
+            http://phresnel.org
+
+
+Unless otherwise mentioned, the licensing terms of picogen-simplex.exe and the sub-folders
+herein are found in ...
+
+ -> LICENSE.GPL3.txt
+
+There may be additional license information files, typically coined "README-xxx.txt", e.g. 
+to check the license for SDL_image, see README-SDL_image.txt.

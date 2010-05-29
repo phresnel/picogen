@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Picogen:QuatschEditor
+Comment=Standalone quatsch editor for picogen
+GenericName=Standalone quatsch editor for picogen
+Categories=Application;Graphics;
+Exec=picogen-quatsch-editor
+Icon=/usr/share/picogen/icons/quatsch-editor.png
+StartupNotify=false
+Terminal=false
+Type=Application
+
+

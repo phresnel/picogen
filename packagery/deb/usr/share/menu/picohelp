@@ -1,0 +1,7 @@
+?package(picogen):\
+	needs="X11"\
+	section="Applications/Graphics"\
+	title="picohelp"\
+	longtitle="Standalone help browser for picogen"\
+	icon="/usr/share/picogen/icons/picohelp.png"\
+	command="/usr/bin/picohelp"

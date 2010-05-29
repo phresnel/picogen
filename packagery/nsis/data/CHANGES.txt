@@ -1,0 +1,26 @@
+picogen (0.3.beta5); urgency=low
+
+  * new: context help for property-editor and help-browser
+  * (windows): improve installer
+  * (linux): improve .deb-package
+    * use application/picogen instead of text/picogen
+    * provide icons for desktop entry
+  * fix (windows): File->New in SimplexGui doesn't work
+  * fix (windows): Add zlib1, libpng, libtiff, jpeg to distribution
+
+ -- Sebastian Mach <phresnel@gmail.com>  27 May 2010
+
+
+picogen (0.3.beta3); urgency=low
+
+  * fix (.deb-package): wrong/missing dependencies
+  * normalize qt-dependencies (.deb-package)
+
+ -- Sebastian Mach <phresnel@gmail.com>  20 May 2010
+
+
+picogen (0.3.beta2); urgency=low
+
+  * initial release
+
+ -- Sebastian Mach <phresnel@gmail.com>  19 May 2010
