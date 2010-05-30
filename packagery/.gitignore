@@ -1,5 +1,4 @@
-deb/usr/bin/
-deb/usr/share/picogen/help-content/
+deb/DEBS/
 nsis/data/*.dll
 nsis/data/*.exe
 nsis/data/help-content
