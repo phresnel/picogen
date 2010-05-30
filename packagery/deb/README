@@ -1,0 +1,5 @@
+Steps to create .deb-packages
+
+0) run "prepare-skeleton.sh <version>"
+1) ...
+2) profit
