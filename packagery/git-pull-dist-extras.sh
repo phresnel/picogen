@@ -2,7 +2,7 @@
 echo "Checking if DIST-EXTRAS/.git exists ..."
 if [ ! -d DIST-EXTRAS/.git ]; then
         echo "... does not, hence I will clone picogen into that folder now."
-        echo "THIS IS A VAST OPERATION, DO IT AS SELDOMLY AS POSSIBLE."
+        echo "THIS IS A VAST OPERATION, PLEASE KEEP THE DIST-EXTRAS DIRECTORY AFTER RUNNING."
         echo ""
         git clone git://gitorious.org/picogen/picogen.git DIST-EXTRAS
         echo "Switching to dist-extras."
