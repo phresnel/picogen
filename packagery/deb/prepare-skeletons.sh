@@ -1,4 +1,9 @@
-VERSION=${1:-"<missing version>"}
+VERSION=${1:-"missing_version"}
+
+function make_control {
+        cat control.template | \
+                sed -e "s/\$(VERSION)/${1}/" -e "s/\$(ARCH)/${2}/"
+}
 
 function make_arch {
         echo "putting ${1} to DEBS/${1}"
@@ -6,7 +11,7 @@ function make_arch {
 
         # copy deb and control
         cp -r deb.template/* DEBS/${1}/
-        ./make-control-file.sh ${VERSION} ${1} > DEBS/${1}/DEBIAN/control
+        make_control ${VERSION} ${1} > DEBS/${1}/DEBIAN/control
 
         # copy changelog and ensure unix line endings
         cp ../CHANGES.txt DEBS/${1}/DEBIAN/changelog
