@@ -1,4 +1,5 @@
 dist-extras/
+DIST-EXTRAS/
 deb/deb.template/usr/share/picogen/help-content/
 deb/DEBS/
 nsis/data/*.dll

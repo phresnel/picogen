@@ -1,8 +1,13 @@
 Steps to create .deb-packages
 
 0) run "prepare-skeleton.sh <version>"
-1) ensure there's a propery copy of dist-extras branch in ../
+1) ensure there's an up-to-date copy of dist-extras branch in ../
+   E.g. by running ../git-pull-dist-extras.sh.
+   Note that the folder must then be called DIST-EXTRAS (or just use ../git-pull-dist-extras.sh)
 2) run "merge-dist-extras-in.sh"
-
+3) provide binaries into each DEBS/*/usr/share/bin/
 x) ...
 x+1) profit
+
+
+2) and 3) are interchangeable.
