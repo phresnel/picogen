@@ -1,4 +1,9 @@
-VERSION=${1:-"missing_version"}
+VERSION=${1}
+
+if [ ! ${VERSION} ] ; then
+        echo "missing version."
+        exit
+fi
 
 function make_control {
         cat control.template | \
@@ -16,6 +21,9 @@ function make_arch {
         # copy changelog and ensure unix line endings
         cp ../CHANGES.txt DEBS/${1}/DEBIAN/changelog
         fromdos DEBS/${1}/DEBIAN/changelog
+
+        # write version to share/picogen
+        echo ${VERSION} > DEBS/${1}/usr/share/picogen/version
 }
 
 
