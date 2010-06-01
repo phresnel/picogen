@@ -185,9 +185,9 @@ void Scene::render (
         running_ = true;
 
         const uint32_t numAASamples = numAASamples_?numAASamples_:1;
-        const real_t totalNumberOfSamples = static_cast<real_t>
+        const uint64_t totalNumberOfSamples =
                 (renderTarget->getWidth() * renderTarget->getHeight() * numAASamples);
-        real_t sampleNumber = 0;
+        uint64_t sampleNumber = 0;
 
         if (aggregate)
                 aggregate->prepare(*this);
@@ -297,7 +297,7 @@ void Scene::render (
                         } else {
                                 Color c = accu*(Color::real_t(1)/numAASamples);
                                 lock->setPixel (x,y,c);
-                                ++sampleNumber;
+                                sampleNumber += numAASamples;
                         }
 
 

@@ -154,7 +154,7 @@ RenderWindowImpl::RenderWindowImpl (
   , running(false)
   , wantsToQuit(false)
   , wantsToPause(false)
-  , reportW(0)
+  , reportWatch()
 {
 }
 
@@ -169,10 +169,12 @@ void RenderWindowImpl::report (
         redshift::shared_ptr<redshift::RenderTargetLock const> /*rlock*/,
         int completed, int total
 ) {
-        if (++reportW>20) {
+        std::cerr << "renderwindow.cc: " << ((double)completed / (double)total) << " / "
+                << (100 * (double)completed / (double)total) << "%" << std::endl;
+        if (reportWatch() >= 1.) {
                 copy(renderBuffer, target);
-                emit updateImage(*target, (double)completed / total);
-                reportW = 0;
+                emit updateImage(*target, (double)completed / (double)total);
+                reportWatch.restart();
         }
 }
 

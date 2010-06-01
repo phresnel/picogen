@@ -28,6 +28,7 @@
 #include "../../redshift/include/smart_ptr.hh"
 #include "../../redshift/include/interaction/progressreporter.hh"
 #include "../../redshift/include/interaction/usercommandprocessor.hh"
+#include "../../redshift/include/auxiliary/stopwatch.hh"
 
 namespace Ui {
     class RenderWindow;
@@ -147,7 +148,7 @@ private:
         bool wantsToQuit;
         bool wantsToPause;
 
-        int reportW;
+        redshift::StopWatch reportWatch;
 };
 
 #endif // RENDERWINDOW_HH
