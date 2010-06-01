@@ -19,11 +19,15 @@ function make_arch {
         make_control ${VERSION} ${1} > DEBS/${1}/DEBIAN/control
 
         # copy changelog and ensure unix line endings
-        cp ../CHANGES.txt DEBS/${1}/DEBIAN/changelog
-        fromdos DEBS/${1}/DEBIAN/changelog
+        cp ../CHANGES.txt DEBS/${1}/usr/share/doc/picogen/changelog
+        #fromdos DEBS/${1}/usr/share/doc/picogen/changelog
+        gzip --best DEBS/${1}/usr/share/doc/picogen/changelog
 
         # write version to share/picogen
         echo ${VERSION} > DEBS/${1}/usr/share/picogen/version
+
+        # compress manpages
+        gzip --best DEBS/${1}/usr/share/man/man1/picogen.1
 }
 
 

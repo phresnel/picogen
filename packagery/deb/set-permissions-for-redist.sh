@@ -1,1 +1,1 @@
-chown -R root:root DEBS/*
+chown -R root:root DEBS/* 2>/dev/null || echo "FAILED. Run me as root."

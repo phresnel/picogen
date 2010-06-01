@@ -3,5 +3,5 @@
 	section="Applications/Graphics"\
 	title="picohelp"\
 	longtitle="Standalone help browser for picogen"\
-	icon="/usr/share/picogen/icons/picohelp.png"\
+	icon="/usr/share/picogen/icons/picohelp.xpm"\
 	command="/usr/bin/picohelp"
