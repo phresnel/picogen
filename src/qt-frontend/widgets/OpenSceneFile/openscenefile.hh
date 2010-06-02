@@ -32,7 +32,7 @@ class OpenSceneFile : public QDialog {
     Q_OBJECT
 public:
         enum Result { Cancel, OpenInNewInstance, OpenInCurrentInstance };
-        OpenSceneFile(QString const &path, QWidget *parent = 0);
+        OpenSceneFile(QString const &path, bool warnOnOverwrite, QWidget *parent = 0);
         ~OpenSceneFile();
 
         Result result () const { return result_; }
@@ -44,6 +44,7 @@ private:
         Ui::OpenSceneFile *ui;
         Result result_;
         const QString path;
+        const bool warnOnOverwrite;
 
 private slots:
         void on_cancel_clicked();

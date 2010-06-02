@@ -23,10 +23,14 @@
 #include "ui_openscenefile.h"
 #include <QMessageBox>
 
-OpenSceneFile::OpenSceneFile(QString const &path, QWidget *parent) :
+OpenSceneFile::OpenSceneFile(
+                QString const &path,
+                bool warnOnOverwrite,
+                QWidget *parent) :
     QDialog(parent),
     ui(new Ui::OpenSceneFile),
-    path(path)
+    path(path),
+    warnOnOverwrite(warnOnOverwrite)
 {
         ui->setupUi(this);
         result_ = Cancel;
@@ -61,7 +65,8 @@ void OpenSceneFile::on_newInstance_clicked() {
 
 
 void OpenSceneFile::on_currentInstance_clicked() {
-        if (QMessageBox::question(
+        if (!warnOnOverwrite ||
+            QMessageBox::question(
                 this, "Confirm",
                 "This will overwrite your current scene\n"
                 "without mercy, without return."

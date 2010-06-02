@@ -49,7 +49,7 @@ namespace redshift {
 class MainWindow : public QMainWindow {
         Q_OBJECT
 public:
-        MainWindow(QString initialFilename, QWidget *parent = 0);
+        MainWindow(QString openFileName, QString initialFilename, QWidget *parent = 0);
         ~MainWindow();
 
 protected:

@@ -196,7 +196,10 @@ namespace {
 
 
 
-MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
+MainWindow::MainWindow(
+                QString openFilename,
+                QString initialFilename,
+                QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     pssSunSkyProperty(0),
@@ -209,17 +212,21 @@ MainWindow::MainWindow(QString initialFilename, QWidget *parent) :
         connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
                 this, SLOT(helpBrowserVisibilityRequested()));
 
-        if (initialFilename != "") {
+        if (openFilename != "") {
                 try {
                         redshift::scenefile::Scene scene;
                         std::ifstream ss(initialFilename.toStdString().c_str());
                         actuarius::IArchive (ss) & actuarius::pack("scene", scene);
                         loadScene(scene);
 
-                        saveFilename = initialFilename;
+                        saveFilename = openFilename;
                         QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                         refreshWindowTitle();
-                        setUnchanged();
+
+                        //if (openFilename == initialFilename)
+                                setUnchanged();
+                        /*else
+                                setChanged();*/
                 } catch (...) {
                         setDefaultScene();
                 }
@@ -478,7 +485,7 @@ void MainWindow::setDefaultScene() {
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
                 ui->settings->setExpanded(it, false);
 
-        setChanged();
+        setUnchanged();
 }
 
 
@@ -2641,7 +2648,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e) {
 
 
 void MainWindow::on_picohelp_sceneFileClicked (QString const &path) {
-        OpenSceneFile f(path, this);
+        OpenSceneFile f(path, changed, this);
         f.exec();
 
         // TODO: unset path
@@ -2651,11 +2658,15 @@ void MainWindow::on_picohelp_sceneFileClicked (QString const &path) {
                 break;
         case OpenSceneFile::OpenInNewInstance: {
                 QStringList l;
+                l << "-e"; // <-- open existing as if new
                 l << path;
                 QProcess::startDetached(QApplication::applicationFilePath(), l);
         } break;
         case OpenSceneFile::OpenInCurrentInstance:
                 loadScene(path);
+                saveFilename = "";
+                setUnchanged();
+                refreshWindowTitle();
                 break;
         };
 
