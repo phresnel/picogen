@@ -152,8 +152,6 @@ namespace lazyquadtree {
 
                 Vector *vertices;
 
-                unsigned char vertexCount;
-
                 real_t center_x, center_z;
                 real_t diagonal;
 
@@ -167,7 +165,8 @@ namespace lazyquadtree {
                         bool isLeaf:1;
                         mutable bool hasExactBoundingBox:1 ; // once this is well defined, get rid of
                                                              // initializedChildCount
-                        unsigned char maxRecursion:6; // 0 = max recursion reached
+                        unsigned char maxRecursion : 6; // 0 = max recursion reached
+                        unsigned char vertexCount : 4;
                 };
 
                 const NodeStaticParameters &staticParameters;
@@ -368,10 +367,10 @@ namespace lazyquadtree {
                 : parent(parent_)
                 , aabb(box)
                 , vertices(0)
-                , vertexCount(0)
                 , lastUsedInScanline(0)
                 , hasExactBoundingBox(false)
                 , maxRecursion(maxRecursion_)
+                , vertexCount(0)
                 , staticParameters(staticParameters)
                 {
                         for (int i=0; i<4; ++i) {
