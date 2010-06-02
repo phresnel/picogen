@@ -136,29 +136,46 @@ namespace lazyquadtree {
 
 
 
-        class Node {
-                BoundingBoxF aabb;
-                mutable Node *parent;
-                mutable real_t min_h, max_h;
+        struct NodeStaticParameters {
+                NodeStaticParameters (const HeightFunction & fun, real_t lodFactor)
+                : fun(fun), lodFactor(lodFactor) {}
+
                 const HeightFunction &fun;
+                const real_t lodFactor;
+        };
+        class Node {
+                mutable Node *parent;
                 mutable Node *children[4];
+
+                BoundingBoxF aabb;
+                mutable real_t min_h, max_h;
+
                 Vector *vertices;
+
                 unsigned char vertexCount;
-                const int maxRecursion; // When 0, max recursion is reached.
+
                 real_t center_x, center_z;
                 real_t diagonal;
-                bool isLeaf;
 
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
                 mutable Mutex mute[4];
 
-                const real_t lodFactor;
                 mutable unsigned int lastUsedInScanline;
-                //mutable NodeIndex &nodeIndex;
 
-                mutable bool hasExactBoundingBox; // once this is well defined, get rid of
-                                                  // initializedChildCount
+                struct {
+                        bool isLeaf:1;
+                        mutable bool hasExactBoundingBox:1 ; // once this is well defined, get rid of
+                                                             // initializedChildCount
+                        unsigned char maxRecursion:6; // 0 = max recursion reached
+                };
 
+                const NodeStaticParameters &staticParameters;
+
+
+
+                real_t fun (real_t u, real_t v) const {
+                        return staticParameters.fun (u, v);
+                }
 
                 pair<real_t,Normal> intersect_triangle (
                         Ray const & ray,
@@ -199,11 +216,9 @@ namespace lazyquadtree {
                                          PointF(left, bottom, front),
                                          PointF(center_x, top, center_z)
                                         ),
-                                        fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor/*,
-                                        nodeIndex*/
+                                        staticParameters
                                 );
                                 break;
                         case 1:
@@ -212,11 +227,9 @@ namespace lazyquadtree {
                                                 PointF(center_x, bottom, front),
                                                 PointF(right, top, center_z)
                                         ),
-                                        fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor/*,
-                                        nodeIndex*/
+                                        staticParameters
                                 );
                                 break;
                         case 2:
@@ -225,11 +238,9 @@ namespace lazyquadtree {
                                                 PointF(left, bottom, center_z),
                                                 PointF(center_x, top, back)
                                         ),
-                                        fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor/*,
-                                        nodeIndex*/
+                                        staticParameters
                                 );
                                 break;
                         case 3:
@@ -238,11 +249,9 @@ namespace lazyquadtree {
                                                 PointF(center_x, bottom, center_z),
                                                 PointF(right, top, back)
                                         ),
-                                        fun,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
-                                        lodFactor/*,
-                                        nodeIndex*/
+                                        staticParameters
                                 );
                                 break;
                         };
@@ -348,22 +357,18 @@ namespace lazyquadtree {
         public:
                 Node (
                         const BoundingBoxF &box,
-                        const HeightFunction &fun,
                         const int maxRecursion_,
                         Node *parent_,
-                        float lodFactor/*,
-                        NodeIndex &nodeIndex*/
+                        NodeStaticParameters const &staticParameters
                 )
-                : aabb(box)
-                , parent(parent_)
-                , fun (fun)
+                : parent(parent_)
+                , aabb(box)
                 , vertices(0)
                 , vertexCount(0)
-                , maxRecursion(maxRecursion_)
-                , lodFactor(lodFactor)
-                , lastUsedInScanline(lastUsedInScanline)
-                //, nodeIndex(nodeIndex)
+                , lastUsedInScanline(0)
                 , hasExactBoundingBox(false)
+                , maxRecursion(maxRecursion_)
+                , staticParameters(staticParameters)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -417,7 +422,7 @@ namespace lazyquadtree {
                                 if (children[i]) {
                                         const unsigned int diff =
                                                 currentScanline-children[i]->lastUsedInScanline;
-                                        if (diff >= 2) {
+                                        if (diff >= 10) {
                                                 delete children[i];
                                                 children[i] = 0;
                                         } else if (depth < 7) {
@@ -432,7 +437,7 @@ namespace lazyquadtree {
                         // in relation to (cx,cz), we should be able to take the case of
                         // maxRecursion for neighbour nodes into account.
                         const real_t d = (length(PointF(cx,0,cz)-cameraPosition));
-                        if (((diagonal/(1+d))<lodFactor)) {
+                        if (((diagonal/(1+d))<staticParameters.lodFactor)) {
                                 return true;
                         } else {
                                 return false;
@@ -644,14 +649,14 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
+        , staticParameters(*fun.get(), lodFactor)
         , nodeIndex(0)//(1024*13) * 4)
         , primaryNode(new lazyquadtree::Node(
                 primaryBB,
-                *fun.get(),
                 maxRecursion,
                 0,
-                lodFactor/*,
-                nodeIndex*/))     // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
+                staticParameters))
+                                // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
                                 // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
                                 // horizonPlane y 25
                                 // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
@@ -741,6 +746,8 @@ private:
         shared_ptr<HeightFunction const> fun;
         BoundingBoxF primaryBB;
         BoundingBox primaryFixpBB;
+
+        lazyquadtree::NodeStaticParameters staticParameters;
         lazyquadtree::NodeIndex nodeIndex;
         lazyquadtree::Node *primaryNode;
         Color color;
@@ -798,6 +805,8 @@ LazyQuadtree::LazyQuadtree (
 : impl (new LazyQuadtreeImpl (fun, size, maxRecursion, lodFactor, color))
 , heightFun(fun)
 {
+        std::cout << "sizeof(Node)==" << sizeof(lazyquadtree::Node) << " (was 216)\n"
+                  << "sizeof(Node)/8==" << sizeof(lazyquadtree::Node)/8. << " (was 27)" << std::endl;
 }
 
 
