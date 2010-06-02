@@ -129,13 +129,13 @@ namespace kallisto { namespace random { namespace marsaglia {
 
 
         // -- Aggregates ------------------------------------------------------
-        class MWC : Znew, Wnew {
+        class MWC {
         public:
                 MWC (Znew const & znew_, Wnew const & wnew_)
-                : Znew(znew_), Wnew(wnew_)
+                : znew(znew_), wnew(wnew_)
                 {}
                 explicit MWC (uint32_t znew_, uint32_t wnew_)
-                : Znew(znew_), Wnew(wnew_)
+                : znew(znew_), wnew(wnew_)
                 {}
                 MWC () {}
 
@@ -150,41 +150,44 @@ namespace kallisto { namespace random { namespace marsaglia {
                         // orig: ((znew<<16)+wnew )
                         return (znew()<<16) + wnew();
                 }
+        private:
+                Znew znew;
+                Wnew wnew;
         };
 
-        class SHR3 : Jsr {
-                using Jsr::operator =;
-                using Jsr::operator uint32_t;
+        class SHR3 {
         public:
-                SHR3 (Jsr const &jsr_=Jsr()) : Jsr(jsr_) {}
-                explicit SHR3 (uint32_t jsr_) : Jsr(jsr_) {}
+                SHR3 (Jsr const &jsr_=Jsr()) : jsr(jsr_) {}
+                explicit SHR3 (uint32_t jsr_) : jsr(jsr_) {}
 
                 uint32_t operator () () { return shr3(); }
         protected:
                 uint32_t shr3 () {
                         // (jsr^=(jsr<<17), jsr^=(jsr>>13), jsr^=(jsr<<5))
-                        *this = *this ^ static_cast<uint32_t>(*this<<17);
-                        *this = *this ^ static_cast<uint32_t>(*this>>13);
-                        *this = *this ^ static_cast<uint32_t>(*this<<5);
-                        return *this;
+                        jsr = jsr ^ static_cast<uint32_t>(jsr<<17);
+                        jsr = jsr ^ static_cast<uint32_t>(jsr>>13);
+                        jsr = jsr ^ static_cast<uint32_t>(jsr<<5);
+                        return jsr;
                 }
+        private:
+                Jsr jsr;
         };
 
-        class CONG : Jcong {
-                using Jcong::operator =;
-                using Jcong::operator uint32_t;
+        class CONG  {
         public:
-                CONG (Jcong const &jcong_=Jcong()) : Jcong(jcong_) {}
-                explicit CONG (uint32_t jcong_) : Jcong(jcong_) {}
+                CONG (Jcong const &jcong_=Jcong()) : jcong(jcong_) {}
+                explicit CONG (uint32_t jcong_) : jcong(jcong_) {}
                 uint32_t operator () () { return cong(); }
         protected:
                 uint32_t cong () {
                         // orig: (jcong=69069*jcong+1234567)
-                        return *this = static_cast<uint32_t>(
-                                static_cast<uint32_t>(69069 * *this)
+                        return jcong = static_cast<uint32_t>(
+                                static_cast<uint32_t>(69069 * jcong)
                                 + 1234567
                         );
                 }
+        private:
+                Jcong jcong;
         };
 
         class KISS : MWC, CONG, SHR3 {
@@ -196,9 +199,9 @@ namespace kallisto { namespace random { namespace marsaglia {
                         uint32_t mwc_znew, uint32_t mwc_wnew,
                         uint32_t cong,
                         uint32_t shr3
-                ) : MWC(mwc_znew, mwc_wnew)
-                , CONG(cong)
-                , SHR3(shr3)
+                ) : mwc(mwc_znew, mwc_wnew)
+                , cong(cong)
+                , shr3(shr3)
                 {}
 
                 KISS () {}
@@ -212,13 +215,17 @@ namespace kallisto { namespace random { namespace marsaglia {
                         // orig: ((MWC^CONG)+SHR3)
                         return (mwc()^cong())+shr3();
                 }
+        private:
+                MWC mwc;
+                CONG cong;
+                SHR3 shr3;
         };
         // --------------------------------------------------------------------
 
 
         // -- Distributions ---------------------------------------------------
         // I think UNI should be a distribution, not an RNG on itself
-        class UNI : KISS {
+        class UNI {
         public:
                 //UNI () {}
                 //UNI (KISS const &kiss) : KISS(kiss) {}
@@ -227,19 +234,21 @@ namespace kallisto { namespace random { namespace marsaglia {
                         uint32_t mwc_znew, uint32_t mwc_wnew,
                         uint32_t cong,
                         uint32_t shr3
-                ) : KISS(mwc_znew, mwc_wnew, cong, shr3)
+                ) : kiss(mwc_znew, mwc_wnew, cong, shr3)
                 {}
 
                 double operator () () { return uni(); }
-                void skip (uint32_t count) { KISS::skip(count); }
+                void skip (uint32_t count) { kiss.skip(count); }
         protected:
                 double uni () {
                         return kiss() * 2.328306e-10;
                 }
+        private:
+                KISS kiss;
         };
 
         // I think VNI should be a distribution, not an RNG on itself
-        class VNI : KISS {
+        class VNI  {
         public:
                 //VNI () {}
                 //VNI (KISS const &kiss) : KISS(kiss) {}
@@ -247,10 +256,10 @@ namespace kallisto { namespace random { namespace marsaglia {
                         uint32_t mwc_znew, uint32_t mwc_wnew,
                         uint32_t cong,
                         uint32_t shr3
-                ) : KISS(mwc_znew, mwc_wnew, cong, shr3)
+                ) : kiss(mwc_znew, mwc_wnew, cong, shr3)
                 {}
                 double operator () () { return vni(); }
-                void skip (uint32_t count) { KISS::skip(count); }
+                void skip (uint32_t count) { kiss.skip(count); }
         protected:
                 double vni () {
                         // The original by Marsaglia converted kiss() to
@@ -271,6 +280,8 @@ namespace kallisto { namespace random { namespace marsaglia {
                         //
                         return kiss() * 4.656613e-10 - 1;
                 }
+        private:
+                KISS kiss;
         };
         // --------------------------------------------------------------------
 
