@@ -158,7 +158,8 @@ namespace lazyquadtree {
                 real_t diagonal;
 
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
-                mutable Mutex mute[4];
+                //mutable Mutex mute[4];
+                mutable Mutex mute;
 
                 mutable unsigned int lastUsedInScanline;
 
@@ -197,7 +198,8 @@ namespace lazyquadtree {
 
                 void create_child (int index) const {
 
-                        ScopedLock sl (mute[index]);
+                        ScopedLock sl (mute);
+                        #pragma omp flush
 
                         const real_t left  = aabb.getMinimumX();
                         const real_t right = aabb.getMaximumX();
@@ -257,6 +259,8 @@ namespace lazyquadtree {
                         };
                         tmp->prepare(cameraPosition, lastUsedInScanline);
                         children[index] = tmp;
+                        #pragma omp flush
+                        // TODO how to omp-flush children[i]?
                 }
 
                 optional<pair<real_t,Normal> > traverse (
@@ -807,6 +811,8 @@ LazyQuadtree::LazyQuadtree (
 {
         std::cout << "sizeof(Node)==" << sizeof(lazyquadtree::Node) << " (was 216)\n"
                   << "sizeof(Node)/8==" << sizeof(lazyquadtree::Node)/8. << " (was 27)" << std::endl;
+        std::cout << "sizeof(Node*)==" << sizeof(lazyquadtree::Node*) << std::endl;
+        std::cout << "sizeof(Mutex)==" << sizeof(Mutex) << std::endl;
 }
 
 

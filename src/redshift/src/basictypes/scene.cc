@@ -207,7 +207,7 @@ void Scene::render (
                 (minY<maxY && maxY<(unsigned int)renderTarget->getHeight())
                 ? maxY
                 : renderTarget->getHeight();
-
+//#define NO_OMP_THREADING
         for (unsigned int y_=minY; y_<height; ++y_) {
                 const unsigned int y = y_;
                 currentScanline_ = (unsigned int)y;
