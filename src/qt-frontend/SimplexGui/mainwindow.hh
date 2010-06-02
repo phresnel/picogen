@@ -63,6 +63,7 @@ private:
         void setupUi();
         void setDefaultScene();
         void loadScene (redshift::scenefile::Scene const &scene);
+        void loadScene (QString const &name);
 
         QtStringPropertyManager *rsTitleManager;
 
@@ -200,6 +201,8 @@ private slots:
         void on_codeEditor_codeChanged();
 
         void on_actionShow_compiler_triggered();
+
+        void on_picohelp_sceneFileClicked (QString const &);
 
         // non MOC
         void helpBrowserVisibilityRequested();

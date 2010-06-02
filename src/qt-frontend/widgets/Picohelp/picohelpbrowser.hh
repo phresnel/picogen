@@ -51,7 +51,7 @@ public:
         void setHelpRoot (QString str);
 
 signals:
-        void sceneFileClicked (QString path);
+        void sceneFileClicked (QString const &);
 
 protected:
         void changeEvent(QEvent *e);

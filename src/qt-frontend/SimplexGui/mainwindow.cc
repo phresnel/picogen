@@ -39,6 +39,7 @@
 #include "simpleinputbox.hh"
 #include "renderwindow.hh"
 #include "quatschsourceeditor.hh"
+#include "OpenSceneFile/openscenefile.hh"
 
 #include "redshift/include/jobfile.hh"
 
@@ -2307,8 +2308,6 @@ void MainWindow::render() {
 
 
 void MainWindow::on_actionLoad_triggered() {
-        redshift::scenefile::Scene scene;
-        redshift::scenefile::Scene oldScene = *createScene();
 
         // I somewhat find the OS' own file dialog to be disturbing
         QFileDialog dialog(this);
@@ -2332,6 +2331,15 @@ void MainWindow::on_actionLoad_triggered() {
         }
 
         const QString name = dialog.selectedFiles()[0];
+
+        loadScene (name);
+}
+
+
+
+void MainWindow::loadScene (QString const &name) {
+        redshift::scenefile::Scene scene;
+        redshift::scenefile::Scene oldScene = *createScene();
 
         if (!QFile::exists(name)) {
                 QMessageBox::critical(this,
@@ -2531,8 +2539,7 @@ void MainWindow::helpBrowserVisibilityRequested() {
 
 void MainWindow::on_actionNew_Scene_triggered() {
         QStringList l;
-        l << QApplication::applicationFilePath(); // basically a fix for windoze
-        QProcess::startDetached(QApplication::applicationFilePath());
+        QProcess::startDetached(QApplication::applicationFilePath(), l);
 }
 
 
@@ -2548,8 +2555,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
                 const int r = QMessageBox::question(
                         this, "Unsaved data",
                         "You have unsaved changes. Save now?",
-                        QMessageBox::Yes | QMessageBox::No
-                                | QMessageBox::Cancel);
+                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                        QMessageBox::Cancel);
                 if (QMessageBox::Yes == r) {
                         on_actionSave_as_triggered();
                         event->accept();
@@ -2629,4 +2636,27 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e) {
                 }
         }
         return false;
+}
+
+
+
+void MainWindow::on_picohelp_sceneFileClicked (QString const &path) {
+        OpenSceneFile f(path, this);
+        f.exec();
+
+        // TODO: unset path
+        switch (f.result()) {
+        case OpenSceneFile::Cancel:
+                // do nothing
+                break;
+        case OpenSceneFile::OpenInNewInstance: {
+                QStringList l;
+                l << path;
+                QProcess::startDetached(QApplication::applicationFilePath(), l);
+        } break;
+        case OpenSceneFile::OpenInCurrentInstance:
+                loadScene(path);
+                break;
+        };
+
 }

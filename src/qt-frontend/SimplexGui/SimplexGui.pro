@@ -15,6 +15,7 @@ SOURCES += main.cc \
     ../widgets/RenderWindow/renderwindow.cc \
     ../widgets/RenderWindow/qimagerendertarget.cc \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.cc \
+    ../widgets/OpenSceneFile/openscenefile.cc \
     coloreditmanager.cpp \
     coloreditfactory.cpp \
     coloredit.cpp
@@ -22,12 +23,14 @@ HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.hh \
+    ../widgets/OpenSceneFile/openscenefile.hh \
     coloreditmanager.h \
     coloreditfactory.h \
     coloredit.h
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
-    ../widgets/QuatschSourceEditor/quatschsourceeditor.ui
+    ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \
+    ../widgets/OpenSceneFile/openscenefile.ui
 LIBS += ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lnoise \

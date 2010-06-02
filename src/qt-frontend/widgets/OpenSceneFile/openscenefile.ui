@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OpenSceneFile</class>
+ <widget class="QDialog" name="OpenSceneFile">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>230</y>
+     <width>351</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Open New Instance, or overwrite current scene?</string>
+   </property>
+   <widget class="QPushButton" name="newInstance">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>22</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>New</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="currentInstance">
+    <property name="geometry">
+     <rect>
+      <x>92</x>
+      <y>22</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Overwrite</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cancel">
+    <property name="geometry">
+     <rect>
+      <x>259</x>
+      <y>21</y>
+      <width>77</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cancel</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>cancel</tabstop>
+  <tabstop>newInstance</tabstop>
+  <tabstop>currentInstance</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
