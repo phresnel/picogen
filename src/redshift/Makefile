@@ -62,7 +62,8 @@ CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s -fopenmp -Wl,--enable-auto-import
+LINK := g++ -s -fopenmp
+# -Wl,--enable-auto-import
 AR   := ar -rs
 CXX  := g++ -c $(CXXFLAGS)
 #  -fipa-pta -fipa-struct-reorg # gcc dies on them
