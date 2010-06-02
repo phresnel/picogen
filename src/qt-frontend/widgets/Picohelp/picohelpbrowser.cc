@@ -27,6 +27,7 @@
 #include <QFile>
 
 #include <QUrl>
+#include <QMessageBox>
 
 #include "picohelpbrowser.hh"
 #include "ui_picohelpbrowser.h"
@@ -143,7 +144,7 @@ PicohelpBrowser::PicohelpBrowser(QWidget *parent) :
 {
         ui->setupUi(this);
         ui->webView->page()->setLinkDelegationPolicy(
-                        QWebPage::DelegateExternalLinks);
+                        QWebPage::DelegateAllLinks);
         ui->webView->page()->mainFrame()->setScrollBarPolicy(
                         Qt::Horizontal, Qt::ScrollBarAlwaysOff);
         ui->webView->page()->mainFrame()->setScrollBarPolicy(
@@ -291,7 +292,16 @@ void PicohelpBrowser::on_webView_loadFinished(bool okay) {
         recalcScrollbars();
         on_webView_urlChanged (ui->webView->url()); // dirty
 }
-
+void PicohelpBrowser::on_webView_linkClicked (const QUrl &url) {
+        const QString local = url.toLocalFile();
+        if (!QFile::exists(local))
+                return;
+        if (local.endsWith(".picogen")) {
+                emit sceneFileClicked(local);
+        } else {
+                ui->webView->load(url);
+        }
+}
 
 
 void PicohelpBrowser::gotoArticle (QString const &filename) {

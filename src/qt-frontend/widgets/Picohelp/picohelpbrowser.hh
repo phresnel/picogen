@@ -50,6 +50,9 @@ public:
 
         void setHelpRoot (QString str);
 
+signals:
+        void sceneFileClicked (QString path);
+
 protected:
         void changeEvent(QEvent *e);
         void resizeEvent(QResizeEvent *);
@@ -66,6 +69,7 @@ private slots:
 
         void on_webView_urlChanged (QUrl const &);
         void on_webView_loadFinished (bool);
+        void on_webView_linkClicked (const QUrl &);
 
         void on_verticalScrollBar_valueChanged(int value);
         void on_horizontalScrollBar_valueChanged(int value);
