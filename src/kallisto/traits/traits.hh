@@ -199,9 +199,8 @@ struct Negrigate {};
 #include <iostream>
 int main () {
         // Yields 1 for all but Negrigate for
-        //   * g++ 4.3 (g++-4.3 (Debian 4.3.4-6) 4.3.4)
-        //   * g++ 4.4 (g++ (Debian 4.4.2-9) 4.4.3 20100108 (prerelease))
-        //   * g++ 4.5 (g++ (GCC) 4.5.0 20100306 (experimental))
+        //   * g++ 4.4.3
+        //   * MSVC 2010 (but MSVC will not be officially supported, on time shot)
         std::cout << "Foo: " << has_member_FOOO<Foo>::value << std::endl;
         std::cout << "Bar: " << has_member_FOOO<Bar>::value << std::endl;
         std::cout << "Frob: " << has_member_FOOO<Frob>::value << std::endl;
