@@ -317,7 +317,7 @@ void Scene::render (
                 if (ucp->userWantsToQuit())
                         break;
 
-                aggregate->prune ();
+                //aggregate->prune ();
         }
         reporter->reportDone ();
         running_ = false;
