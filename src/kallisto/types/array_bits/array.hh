@@ -83,7 +83,7 @@ namespace kallisto {
                 }
 
                 template <typename REP_>
-                array(const kallisto::array<T,N,RULES,REP_> &rhs) {
+                explicit array(const kallisto::array<T,N,RULES,REP_> &rhs) {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
                 }
 
@@ -126,7 +126,10 @@ namespace kallisto {
                 // other operation, we also don't make expr-assignment
                 // tweakable.
                 template<typename REP2>
-                void
+                typename traits::disable_if<
+                        traits::same_type<REP,REP2>,
+                        void
+                >::type
                 operator = (array<T,N,RULES,REP2> const &rhs) {
                         KALLISTO_ARRAY_FOREACHELEM(expr_rep[i] = rhs[i]);
                 }
