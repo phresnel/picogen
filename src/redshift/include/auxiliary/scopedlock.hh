@@ -21,8 +21,6 @@
 #ifndef SCOPEDLOCK_HH_INCLUDED_20100221
 #define SCOPEDLOCK_HH_INCLUDED_20100221
 
-#include <omp.h>
-
 #include "mutex.hh"
 namespace redshift {
         struct ScopedLock {
@@ -37,7 +35,6 @@ namespace redshift {
                 void operator=(const ScopedLock&);
                 ScopedLock(const ScopedLock&);
         };
-
 }
 
 #endif // SCOPEDLOCK_HH_INCLUDED_20100221

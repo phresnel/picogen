@@ -21,6 +21,7 @@
 #ifndef MUTEX_HH_INCLUDED_20100221
 #define MUTEX_HH_INCLUDED_20100221
 
+#ifdef _OPENMP
 #include <omp.h>
 
 namespace redshift {
@@ -40,5 +41,26 @@ namespace redshift {
                 omp_lock_t lock;
         };
 }
+#else
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+
+namespace redshift {
+        struct Mutex {
+                Mutex() {  }
+                ~Mutex() {  }
+                void Lock() { lock.lock(); }
+                void Unlock() { lock.unlock(); }
+
+                bool Test () {
+                        return !!lock.try_lock ();
+                }
+
+                //Mutex(const Mutex& ) { lock); }
+                //Mutex& operator= (const Mutex& ) { return *this; }
+        public:
+                boost::interprocess::interprocess_mutex lock;
+        };
+}
+#endif
 
 #endif // MUTEX_HH_INCLUDED_20100221

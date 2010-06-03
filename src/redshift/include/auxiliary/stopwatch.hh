@@ -21,6 +21,7 @@
 #ifndef STOPWATCH_HH_INCLUDED_20100125
 #define STOPWATCH_HH_INCLUDED_20100125
 
+#ifdef _OPENMP
 #include <omp.h>
 namespace redshift {
         class StopWatch {
@@ -53,5 +54,39 @@ namespace redshift {
 
         };
 }
+#else
+#include <ctime>
+namespace redshift {
+        class StopWatch {
+                double begin, end;
+                bool stopped;
+        public:
+                StopWatch ()
+                : begin (clock() / (double)CLOCKS_PER_SEC)
+                , stopped(false)
+                {}
+
+                void restart () {
+                        stopped = false;
+                        begin = clock() / (double)CLOCKS_PER_SEC;
+                }
+
+                double stop () {
+                        stopped = true;
+                        end = clock() / (double)CLOCKS_PER_SEC;
+                        return end-begin;
+                }
+
+                double operator () () const {
+                        if (stopped) {
+                                return end - begin;
+                        } else {
+                                return (clock() / (double)CLOCKS_PER_SEC) - begin;
+                        }
+                }
+
+        };
+}
+#endif
 
 #endif // STOPWATCH_HH_INCLUDED_20100125
