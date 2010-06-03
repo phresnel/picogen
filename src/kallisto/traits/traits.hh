@@ -102,95 +102,78 @@ namespace kallisto { namespace traits {
 ///////////////////////////////////////////////////////////////////////////////
 namespace kallisto { namespace traits { // << it is the intentention that counts
 
+// Neither gcc nor MSVC correctly evaluate the following tests.
+// E.g., MSVC will evaluate ((S*)0)->XXX) (see can_deref_C_to_XXX),
+// even if XXX is a static member.
+// That's the reason why I have not given any class a more meaningful name.
+
+struct YesNo {
+protected:
+        typedef char Yes;
+        class No { char c[2]; };
+};
+
+template <typename C, template <typename> class test, bool do_exec> struct test_closure {
+        enum { value = test<C>::value };
+};
+template <typename C, template <typename> class test> struct test_closure<C, test, false> {
+        enum { value = 0 };
+};
+
+
 #ifdef KALLISTO_IMPLEMENT_HAS_MEMBER_XXX
 # error "someone already defined KALLISTO_IMPLEMENT_HAS_MEMBER_XXX"
 #endif
 
-#define KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(XXX)                                \
-template <bool cond, typename S, template <typename> class probe>             \
-struct has_member_##XXX##_if_then {                                           \
-        enum { value = probe<S>::value };                                     \
-};                                                                            \
-                                                                              \
-template <typename S, template <typename> class probe>                        \
-struct has_member_##XXX##_if_then<false,S,probe> {                            \
-        enum { value = false };                                               \
-};                                                                            \
-                                                                              \
-template <typename C> class has_member_##XXX {                                \
-                                                                              \
-        typedef char Yes;                                                     \
-        class No { char c[2]; };                                              \
-                                                                              \
-        /*                                                                    \
-        // murk and merk allow us to encode expressions like                  \
-        // "sizeof(&T::XXX)" within argument lists, and still have someone    \
-        // take an int (see their ctors)                                      \
-        */                                                                    \
-        template <int>      struct murk { murk(int); };                       \
-        template <typename> struct merk { merk(int); };                       \
-                                                                              \
-                                                                              \
-        /*                                                                    \
-        // Test 0 yields true for XXX that are ...                            \
-        //                                                                    \
-        //   * member variables            -> "enum{} XXX;"                   \
-        //   * non-static member functions -> "void XXX (){}"                 \
-        //   * non-static member variables -> "static float XXX;"             \
-        //   * static member functions     -> "static void XXX (){}"          \
-        //   * static member variables     -> "static float XXX;"             \
-        //                                                                    \
-        // => Types may also be aggregates et al -> "struct K{};static K XXX;"\
-        */                                                                    \
-        template <typename S> static Yes test0(murk<sizeof(&S::XXX)>);        \
-        template <typename S> static No test0(...);                           \
-                                                                              \
-        /*                                                                    \
-        // Test 1 yields true for XXX that are ...                            \
-        //                                                                    \
-        //   * types -> "typedef void XXX; class XXX; struct XXX; enum XXX{};"\
-        */                                                                    \
-        template <typename S> static Yes test1(merk<typename S::XXX>);        \
-        template <typename S> static No test1(...);                           \
-                                                                              \
-                                                                              \
-        /*                                                                    \
-        // Test 2 _could_ yield true for ...                                  \
-        //                                                                    \
-        //   * rvalue constants            -> "enum{XXX};"  [!]               \
-        //   * non-static member variables -> "enum{}XXX;"                    \
-        //   * static member variables     -> "static float XXX;"             \
-        //                                                                    \
-        // ... but we can't run the test, even in SFINAE, when T::XXX happens \
-        // to be a non-static member function. Hence we only enable it        \
-        // once we captured the non-static member function, or when we have   \
-        // already proven that it is not one, and use it for ...              \
-        //                                                                    \
-        //   * rvalue constants            -> "enum{XXX};"                    \
-        //                                                                    \
-        // .                                                                  \
-        */                                                                    \
-        template <typename S> class test2 {                                   \
-                template <typename T> static Yes test(murk<sizeof(T::XXX)>);  \
-                template <typename T> static No test(...);                    \
-        public:                                                               \
-                enum { value = sizeof(Yes)==sizeof(test<S>(0)) };             \
-        };                                                                    \
-                                                                              \
-        enum { test0result = sizeof(Yes) == sizeof(test0<C>(0)) };            \
-        enum { test1result = sizeof(Yes) == sizeof(test1<C>(0)) };            \
-        enum { test2result = has_member_##XXX##_if_then<                      \
-                                !test0result&&!test1result,                   \
-                                C,                                            \
-                                test2                                         \
-                        >::value                                              \
-        };                                                                    \
-                                                                              \
-public:                                                                       \
-        enum {                                                                \
-                value = test0result || test1result || test2result             \
-        };                                                                    \
-                                                                              \
+#define KALLISTO_IMPLEMENT_HAS_MEMBER_XXX(XXX)                                 \
+                                                                               \
+template <typename C> struct has_type_##XXX : ::kallisto::traits::YesNo {      \
+        /* murk<> helps to let us call is_type() with an integer argument */   \
+        template <typename S> struct murk { murk(int); };                      \
+                                                                               \
+        template <typename S> static Yes is_type (murk<typename S::XXX>);      \
+        template <typename S> static No  is_type (...);                        \
+                                                                               \
+        enum { value = sizeof(Yes) == sizeof(is_type<C>(0)) };                 \
+};                                                                             \
+                                                                               \
+                                                                               \
+template <typename C> struct can_deref_C_to_##XXX : ::kallisto::traits::YesNo {\
+        /* murk<> helps to let us call is_type() with an integer argument */   \
+        template <int> struct murk { murk(int); };                             \
+                                                                               \
+        template<typename S> static Yes is_type (murk< sizeof(((S*)0)->XXX) >);\
+        template<typename S> static No  is_type (...);                         \
+                                                                               \
+        enum { value = sizeof(Yes) == sizeof(is_type<C>(0)) };                 \
+};                                                                             \
+                                                                               \
+template <typename C> struct can_take_address_of_##XXX                         \
+        : ::kallisto::traits::YesNo                                            \
+{                                                                              \
+        /* murk<> helps to let us call is_type() with an integer argument */   \
+        template <int> struct murk { murk(int); };                             \
+                                                                               \
+        template <typename S> static Yes is_type (murk< sizeof(&S::XXX) >);    \
+        template <typename S> static No  is_type (...);                        \
+                                                                               \
+        enum { value = sizeof(Yes) == sizeof(is_type<C>(0)) };                 \
+};                                                                             \
+                                                                               \
+template <typename C> struct has_member_##XXX {                                \
+private:                                                                       \
+        enum {                                                                 \
+        test0 = ::kallisto::traits::test_closure<                              \
+                                       C, has_type_##XXX, true>::value,        \
+        test1 = test0 ||                                                       \
+                ::kallisto::traits::test_closure<                              \
+                     C, can_deref_C_to_##XXX, !test0>::value,                  \
+        test2 = test1 ||                                                       \
+                ::kallisto::traits::test_closure<                              \
+                     C, can_take_address_of_##XXX, !test1>::value              \
+        };                                                                     \
+public:                                                                        \
+        enum { value = test2 };                                                \
 };
 
 #if 0
