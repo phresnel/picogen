@@ -55,15 +55,14 @@ else
 	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
 	CXXFLAGS += -ffast-math -fassociative-math
 	CXXFLAGS += -msse -mfpmath=sse
-	#CXXFLAGS += -fopenmp
+	CXXFLAGS += -fopenmp
 endif
 
 CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s
-#-fopenmp
+LINK := g++ -s -fopenmp
 # -Wl,--enable-auto-import
 AR   := ar -rs
 CXX  := g++ -c $(CXXFLAGS)
