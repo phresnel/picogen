@@ -38,6 +38,7 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
         const bool doMirror // TODO: I think that one can die
 ) const {
         const optional<Intersection> I (scene.intersect (raydiff));
+
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
@@ -53,16 +54,16 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                         Color spec = Color(0);
 
                         Ray ray (poi, raydiff.direction);
-                        const optional<tuple<Color,Vector> > v_ = bsdf->sample_f (
+                        const optional<tuple<Color,Vector,real_t> > v_ = bsdf->sample_f (
                                 -ray.direction,
                                 Bsdf::reflection, Bsdf::specular,
                                 rand);
                         if (v_) {
-                                const tuple<Color,Vector> v = *v_;
+                                const tuple<Color,Vector,real_t> v = *v_;
                                 ray.direction = get<1>(v);
                                 Sample r = sample;
                                 r.primaryRay = ray;
-                                spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v);
+                                spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v)  * (1/get<2>(v));
                         }
 
                         return make_tuple(1.0f, spec, gd.getDistance());
@@ -88,6 +89,7 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                                 );
                                 const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
                                 const Color color = get<1>(volumeLi);
+
                                 ret += surfaceColor * color * d;
                         }
 
@@ -100,7 +102,7 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                         Color(0),
                         constants::infinity
                 );
-        }
+        }        
 }
 
 

@@ -38,6 +38,7 @@ namespace redshift { namespace scenefile {
                 ( actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::none, "none")
                 | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::redshift, "redshift")
                 | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::whitted, "whitted")
+                | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::path, "path")
                 );
 
         const actuarius::Enum<Volume::Type> Volume::Typenames =

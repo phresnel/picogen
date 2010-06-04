@@ -58,7 +58,7 @@ Vector Bsdf::localToWorld (Vector const &v) const {
 
 
 
-optional<tuple<Color,Vector> > Bsdf::sample_f (
+optional<tuple<Color,Vector,real_t> > Bsdf::sample_f (
         const Vector &in_, Reflection r, Specular s, Random &rand
 ) const {
         const int nc = numComponents (r,s);
@@ -84,16 +84,12 @@ optional<tuple<Color,Vector> > Bsdf::sample_f (
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
                 if ((**it).is (r,s)) {
-                        const optional<tuple<Color,Vector> >ret = (**it).sample_f (in, rand);
-                        if (ret) {
-                                #warning get rid of above optional<> crap
-                                return make_tuple(
-                                        get<0>(*ret),
-                                        localToWorld (get<1>(*ret))
-                                );
-                        } else {
-                                return false;
-                        }
+                        const tuple<Color,Vector,real_t> ret = (**it).sample_f (in, rand);
+                        return make_tuple(
+                                get<0>(ret),
+                                localToWorld (get<1>(ret)),
+                                get<2>(ret)
+                        );                        
                 }
         }
 

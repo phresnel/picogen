@@ -710,6 +710,9 @@ public:
                 const real_t h =  (*fun)(voi.x,voi.z);
                 const Vector u = normalize (Vector(s, (*fun)(voi.x+s,voi.z) - h, 0));
                 const Vector v = normalize (Vector(0, (*fun)(voi.x,voi.z+s) - h, s));
+                /*const tuple<Vector,Vector,Vector> lcs = coordinateSystem(dg->second);
+                const Vector u = get<2>(lcs);
+                const Vector v = get<0>(lcs);*/
 
                 return DifferentialGeometry (
                         dg->first,

@@ -18,28 +18,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/integrators/redshift.hh"
+#include "../../include/integrators/path.hh"
 
 namespace redshift {
 
 
 
-RedshiftIntegrator::RedshiftIntegrator (unsigned int numAmbientSamples)
-: numAmbientSamples(numAmbientSamples)
+PathIntegrator::PathIntegrator ()
 {
 }
 
 
 
 
-tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
+tuple<real_t,Color,real_t> PathIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
-        Random &rand,
-        const bool doMirror // TODO: I think that one can die
+        Random &rand/*,
+        const bool doMirror // TODO: I think that one can die*/
 ) const {
         const optional<Intersection> I (scene.intersect (raydiff));
+
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
@@ -51,7 +51,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
 
-                if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
+                if (bsdf->is (Bsdf::reflection, Bsdf::specular)) {
                         Color spec = Color(0);
 
                         Ray ray (poi, raydiff.direction);
@@ -97,57 +97,42 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                         ret += surfaceColor * color * d;
                                 }
                         }
+			
+                        const optional<tuple<Color,Vector,real_t> > bsdfSample_ =
+                                bsdf->sample_f (
+                                        -ray.direction,
+                                        Bsdf::reflection, Bsdf::diffuse,
+                                        rand);
+                        
+                        if (bsdfSample_ && !bg->isInSunSolidAngle(get<1>(*bsdfSample_))) {
+                                
+                                const Color surfaceColor = get<0>(*bsdfSample_);
+                                const Ray skyRay (ray.position, get<1>(*bsdfSample_));                                
+                                const real_t pdf = get<2>(*bsdfSample_);
+                                
+                                Sample s = sample;
+                                s.primaryRay = skyRay;
+                                const tuple<real_t,Color> L = scene.Li(s, rand);
+                                const Color incomingLight = get<1>(L);
+                                
+                                const real_t d = max(real_t(0),
+                                    dot(skyRay.direction, vector_cast<Vector>(normalS))
+                                );
 
-                        // Skylight.
-                        Color skylightSum = Color(0);
-                        for (int numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
-                                Ray skyRay (ray.position, ray.direction);
-
-                                const optional<tuple<Color,Vector,real_t> > v_ =
-                                        bsdf->sample_f (
-                                                -skyRay.direction,
-                                                Bsdf::reflection, Bsdf::diffuse,
-                                                rand);
-                                if (v_ && !bg->isInSunSolidAngle(get<1>(*v_))) {
-                                        skyRay.direction = get<1>(*v_);
-                                        const real_t pdf = get<2>(*v_);
-                                        
-                                        Sample s = sample;
-                                        s.primaryRay = skyRay;
-                                        const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
-                                        
-                                        const real_t d = max(real_t(0),
-                                            dot(skyRay.direction, vector_cast<Vector>(normalS))
-                                        );
-
-                                        skylightSum += get<1>(L) * get<0>(*v_) * d*(1/pdf);
-                                }
-                        }
-
-                        if (numAmbientSamples > 0)
-                                ret += skylightSum * (1. / numAmbientSamples);
+                                ret += incomingLight*surfaceColor * d / pdf;                                
+                        }                        
 
                         // Done.
                         return make_tuple(1.0f, ret, gd.getDistance());
                 }
 
                 return make_tuple(1.0f, Color(0), gd.getDistance());
-        } else {
+        } else {        
                 return make_tuple (1.0,
                         Color(0),
                         constants::infinity
                 );
-        }        
-}
-
-
-
-tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
-        const Scene &scene,
-        const RayDifferential &raydiff,
-        const Sample &sample, Random &rand
-) const {
-        return Li(scene, raydiff, sample, rand, true);
+        }                
 }
 
 }

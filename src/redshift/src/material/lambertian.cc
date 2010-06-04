@@ -33,14 +33,12 @@ Lambertian::Lambertian (
 
 
 
-optional<tuple<Color,Vector> > Lambertian::sample_f (
-        const Vector &in, Random &rand
+tuple<Color,Vector,real_t> Lambertian::sample_f (
+        const Vector &out, Random &rand
 ) const {
         const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
-        const real_t &sx = get<0>(sphere);
-        const real_t &sy = get<1>(sphere);
-        const real_t &sz = get<2>(sphere);
-        return make_tuple (color, Vector(sx,sy,sz));
+        const Vector in (get<0>(sphere), get<1>(sphere), get<2>(sphere));
+        return make_tuple (f(out, in, rand), in, in.y * (1/constants::pi));
 }
 
 

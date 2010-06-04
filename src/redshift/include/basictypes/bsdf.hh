@@ -46,7 +46,7 @@ public:
         };
         //virtual bool hasAny (Reflection, Specular) const = 0;
 
-        optional<tuple<Color,Vector> > sample_f (
+        optional<tuple<Color,Vector,real_t> > sample_f (
                 const Vector &in, Reflection, Specular, Random &
         ) const;
 
@@ -104,7 +104,7 @@ public:
                 return ((reflection&r)==r) && ((specular&s)==s);
         }
 
-        virtual optional<tuple<Color,Vector> > sample_f (const Vector &in, Random &) const = 0;
+        virtual tuple<Color,Vector,real_t> sample_f (const Vector &in, Random &) const = 0;
         virtual Color f (const Vector &out, const Vector &in, Random &) const = 0;
 
 protected:

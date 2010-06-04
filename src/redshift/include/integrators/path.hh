@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2010  Sebastian Mach (*1983)
+// Copyright (C) 2010 Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,26 +18,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef LAMBERTIAN_HH_INCLUDED_20100119
-#define LAMBERTIAN_HH_INCLUDED_20100119
+#ifndef PATHINTEGRATOR_INCLUDED_20100604
+#define PATHINTEGRATOR_INCLUDED_20100604
 
 #include "../setup.hh"
+#include "../basictypes/scene.hh"
+#include "../basictypes/sample.hh"
+#include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
-namespace redshift { namespace bsdf {
-        class Lambertian : public Bxdf {
+namespace redshift {
+        DefineFinalizer(PathIntegrator);
+        class PathIntegrator
+        : public Integrator
+        , DoFinalize(PathIntegrator) {
         public:
-                Lambertian (Color const &color_);
+                virtual tuple<real_t,Color,real_t> Li (
+                        const Scene &scene,
+                        const RayDifferential &raydiff,
+                        const Sample &sample, Random& rand
+                ) const ;
 
-                virtual tuple<Color,Vector,real_t> sample_f (
-                        const Vector &in, Random &
-                ) const;
-
-                virtual Color f (const Vector &out, const Vector &in, Random &) const;
-
+                PathIntegrator ();
         private:
-                Color const color;
         };
-} }
+}
 
-#endif // LAMBERTIAN_HH_INCLUDED_20100119
+#endif // PATHINTEGRATOR_INCLUDED_20100316

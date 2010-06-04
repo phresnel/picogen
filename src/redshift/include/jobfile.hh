@@ -444,7 +444,8 @@ namespace redshift { namespace scenefile {
                 enum Type {
                         redshift,
                         whitted,
-                        none
+                        none,
+                        path
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -463,6 +464,8 @@ namespace redshift { namespace scenefile {
                                 return rett(new RedshiftIntegrator(numAmbientSamples));
                         case whitted:
                                 return rett(new WhittedIntegrator());
+						case path:
+                                return rett(new PathIntegrator());
                         case none:
                                 return rett(new NullIntegrator());
                         };
@@ -477,6 +480,7 @@ namespace redshift { namespace scenefile {
                         arch & pack("type", Typenames, type);
 
                         switch (type) {
+                        case path: break;
                         case whitted: break;
                         case redshift:
                                 arch & pack("ambient-samples", numAmbientSamples);

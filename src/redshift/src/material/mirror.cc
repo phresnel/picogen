@@ -31,12 +31,13 @@ Mirror::Mirror (Color const &color_)
 
 
 
-optional<tuple<Color,Vector> > Mirror::sample_f (
+tuple<Color,Vector,real_t> Mirror::sample_f (
         const Vector &in, Random &
 ) const {
         return make_tuple (
                 color,
-                Vector(-in.x, in.y, -in.z)
+                Vector(-in.x, in.y, -in.z),
+                1
         );
 }
 
