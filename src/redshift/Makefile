@@ -36,11 +36,9 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 # libs
 #------------------------------------------------------------------------------
 SDLLIBS := `sdl-config --static-libs` -lSDL_image
-BOOSTLIBS := /usr/lib/libboost_program_options.a \
-             /usr/lib/libboost_filesystem.a  \
-             /usr/lib/libboost_system.a
-LIBS   := $(SDLLIBS) -lnoise $(BOOSTLIBS)
+BOOSTLIBS := `./boost-libs.sh`
 
+LIBS   := $(SDLLIBS) -lnoise $(BOOSTLIBS)
 
 #------------------------------------------------------------------------------
 # compiler flags
@@ -62,7 +60,7 @@ CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s -fopenmp
+LINK := g++ -s -fopenmp -Wl,--subsystem,console
 # -Wl,--enable-auto-import
 AR   := ar -rs
 CXX  := g++ -c $(CXXFLAGS)
@@ -101,9 +99,10 @@ OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 
-OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
+#OBJFILES += $(INTEGRATORSOBJDIR)/direct-lighting.o
 OBJFILES += $(INTEGRATORSOBJDIR)/whitted.o
 OBJFILES += $(INTEGRATORSOBJDIR)/redshift.o
+OBJFILES += $(INTEGRATORSOBJDIR)/path.o
 OBJFILES += $(INTEGRATORSOBJDIR)/emission.o
 OBJFILES += $(INTEGRATORSOBJDIR)/single-scattering.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
@@ -144,7 +143,7 @@ all: redshift amalgam lib
 redshift: init-dir-tree redshift_
 
 redshift_: $(OBJDIR)/main.o $(OBJFILES)
-	$(LINK) -o $(BINDIR)/redshift $^ $(LIBS)
+	$(LINK) -o $(BINDIR)/redshift $^ $(LIBS)	
 
 
 
@@ -269,12 +268,16 @@ $(INTEGRATORSOBJDIR)/whitted.o: \
                      ./src/integrators/whitted.cc
 	$(CXX) -o $@ $<
 
-$(INTEGRATORSOBJDIR)/direct-lighting.o: \
-                     ./src/integrators/direct-lighting.cc
-	$(CXX) -o $@ $<
+#$(INTEGRATORSOBJDIR)/direct-lighting.o: \
+#                     ./src/integrators/direct-lighting.cc
+#	$(CXX) -o $@ $<
 
 $(INTEGRATORSOBJDIR)/redshift.o: \
                      ./src/integrators/redshift.cc
+	$(CXX) -o $@ $<
+
+$(INTEGRATORSOBJDIR)/path.o: \
+                     ./src/integrators/path.cc
 	$(CXX) -o $@ $<
 
 $(INTEGRATORSOBJDIR)/emission.o: \
