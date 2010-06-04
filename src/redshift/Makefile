@@ -60,7 +60,8 @@ CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s -fopenmp -Wl,--subsystem,console
+LINK := g++ -s -fopenmp
+#-Wl,--subsystem,console
 # -Wl,--enable-auto-import
 AR   := ar -rs
 CXX  := g++ -c $(CXXFLAGS)
@@ -143,7 +144,7 @@ all: redshift amalgam lib
 redshift: init-dir-tree redshift_
 
 redshift_: $(OBJDIR)/main.o $(OBJFILES)
-	$(LINK) -o $(BINDIR)/redshift $^ $(LIBS)	
+	$(LINK) -o $(BINDIR)/redshift $^ $(LIBS)
 
 
 
