@@ -488,18 +488,7 @@ nervous:
         // This should be changed so that we don't need to worry about it.
         // phresnel: Test removed until further notice, app does not seem to worry
 
-        if (h0+s*cos(thetav) <= 0) {
-                /*
-                h0 + s*cos(thetav) = 0
-                s*cos(thetav) = -h0
-                s = -h0 / cos(thetav)
-                */
-                //s = -h0 / cos(thetav);
-
-                /*attenuation = Spectrum(Spectrum::real_t(1));
-                inscatter = Spectrum(Spectrum::real_t(0));
-                return;*/
-                //return GetAtmosphericEffects(viewer_, Vector(source_.x, -source_.y, source_.z), attenuation, inscatter);
+        /*if (h0+s*cos(thetav) <= 0) {
                 if (hack == 0) {
                         source.y = -source.y;
                         ++hack;
@@ -510,19 +499,29 @@ nervous:
                         inscatter = Spectrum(Spectrum::real_t(0));
                         return;
                 }
-        }
-        /*if (h0+s*cos(thetav) <= 0) {
+        }*/
+        if (h0+s*cos(thetav) <= 0) {
                 attenuation = Spectrum(Spectrum::real_t(1));
                 inscatter = Spectrum(Spectrum::real_t(0));
-                #pragma omp master
+                /*#pragma omp critical
                 {
                 std::cerr << "Warning: Ray going below earth's surface\n";
                 std::cerr << std::fixed;
+                std::cerr << "s = " << s << "\n";
                 std::cerr << "source_ = {" << source_.x << ", " << source_.y << ", " << source_.z << "}\n";
                 std::cerr << "viewer_ = {" << viewer_.x << ", " << viewer_.y << ", " << viewer_.z <<  "}\n";
-                }
-                return;
-        }*/
+                }*/
+                //return;
+        } else {
+                /*#pragma omp critical
+                {
+                std::cerr << "Lucky:\n";
+                std::cerr << std::fixed;
+                std::cerr << "s = " << s << "\n";
+                std::cerr << "source_ = {" << source_.x << ", " << source_.y << ", " << source_.z << "}\n";
+                std::cerr << "viewer_ = {" << viewer_.x << ", " << viewer_.y << ", " << viewer_.z <<  "}\n";
+                }*/
+        }
 
         attenuation = AttenuationFactor(h0, thetav, s);
         inscatter   = InscatteredRadiance(h0, thetav, phiv, s);

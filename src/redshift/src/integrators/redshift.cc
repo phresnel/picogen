@@ -111,11 +111,11 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                 if (v_ && !bg->isInSunSolidAngle(get<1>(*v_))) {
                                         skyRay.direction = get<1>(*v_);
                                         const real_t pdf = get<2>(*v_);
-                                        
+
                                         Sample s = sample;
                                         s.primaryRay = skyRay;
                                         const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
-                                        
+
                                         const real_t d = max(real_t(0),
                                             dot(skyRay.direction, vector_cast<Vector>(normalS))
                                         );
@@ -137,7 +137,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         Color(0),
                         constants::infinity
                 );
-        }        
+        }
 }
 
 

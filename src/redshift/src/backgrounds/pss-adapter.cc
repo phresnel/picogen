@@ -113,6 +113,13 @@ Color PssAdapter::atmosphereShade (
         if (distance == constants::infinity)
                 distance = 10000000;
 
+        if (ray.direction.y < 0 && ray.position.y + ray.direction.y * distance < 0) {
+                // py + dy * d = 0
+                // dy * d = -py
+                // d      = -py / dy
+                distance = -ray.position.y / ray.direction.y;
+        }
+
         const Vector viewer = vector_cast<Vector>(ray.position);
         const Vector source = vector_cast<Vector>(ray(distance));
 

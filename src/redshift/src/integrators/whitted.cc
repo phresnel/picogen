@@ -41,29 +41,28 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
 
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
-                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
-                const real_t       distance = I->getDistance();
+                const shared_ptr<Bsdf> bsdf   = I->getPrimitive()->getBsdf (gd);
+                const real_t distance         = I->getDistance();
                 const shared_ptr<Background> bg (scene.getBackground());
-                const Normal normalG = gd.getGeometricNormal();
-                const Normal normalS = gd.getShadingNormal();
-                const Point poi = gd.getCenter()+
+                const Normal normalG          = gd.getGeometricNormal(),
+                             normalS          = gd.getShadingNormal();
+                const Point poi               = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
 
                 if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
-                        Color spec = Color(0);
+                        Color spec = Spectrum::noinit;
 
-                        Ray ray (poi, raydiff.direction);
-                        const optional<tuple<Color,Vector,real_t> > v_ = bsdf->sample_f (
-                                -ray.direction,
-                                Bsdf::reflection, Bsdf::specular,
-                                rand);
+                        const optional<tuple<Color,Vector,real_t> > v_ =
+                                bsdf->sample_f (-raydiff.direction,
+                                                Bsdf::reflection, Bsdf::specular,
+                                                rand);
                         if (v_) {
                                 const tuple<Color,Vector,real_t> v = *v_;
-                                ray.direction = get<1>(v);
                                 Sample r = sample;
-                                r.primaryRay = ray;
-                                spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v)  * (1/get<2>(v));
+                                r.primaryRay.position  = poi;
+                                r.primaryRay.direction = get<1>(v);
+                                spec = get<1>(scene.Li (r, rand));// * get<0>(v)  * (1/get<2>(v));
                         }
 
                         return make_tuple(1.0f, spec, gd.getDistance());
@@ -102,7 +101,7 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                         Color(0),
                         constants::infinity
                 );
-        }        
+        }
 }
 
 

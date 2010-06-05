@@ -25,6 +25,7 @@
 #include "../basictypes/intersection.hh"
 #include "../primitives/primitive.hh"
 #include "../material/lambertian.hh"
+#include "../material/mirror.hh"
 
 namespace redshift { namespace primitive {
 
