@@ -61,6 +61,7 @@ protected:
 private:
         Ui::MainWindow *ui;
         void setupUi();
+        void updateUi();
         void setDefaultScene();
         void loadScene (redshift::scenefile::Scene const &scene);
         void loadScene (QString const &name);

@@ -163,6 +163,26 @@ namespace {
                 }
         }
 
+
+        bool isFirst(QtProperty *root, QtBrowserItem* node) {
+                if (0 == root->subProperties().count())
+                        throw std::runtime_error("mainwindow.cc::isFirst() called on empty collection");
+                return root->subProperties().first() == node->property();
+
+        }
+        bool isLast(QtProperty *root, QtBrowserItem* node) {
+                if (0 == root->subProperties().count())
+                        throw std::runtime_error("mainwindow.cc::isFirst() called on empty collection");
+                return root->subProperties().last() == node->property();
+        }
+
+
+        /*QtBrowserItem *toBrowserItem (QtTreePropertyBrowser *browser, QtProperty *root, QtProperty *curr) {
+                foreach (QtBrowserItem *item, browser->items(root))
+                        if (item->property() == curr) return item;
+                return 0;
+        }*/
+
         void moveUp(QtTreePropertyBrowser *browser, QtProperty *root, QtBrowserItem* node) {
                 QtProperty *parent = findParent(root, node->property());
                 if (parent == 0)
@@ -173,9 +193,12 @@ namespace {
                         if (curr == node->property()) {
                                 if (prev == 0) return;
 
+                                const bool isExpandedPrev = browser->isExpanded(browser->items(prev)[0]);
+                                const bool isExpandedCurr = browser->isExpanded(browser->items(curr)[0]);
                                 parent->removeSubProperty(prev);
-                                parent->insertSubProperty(prev, curr);//node->property());
-                                collapse(browser, prev);
+                                parent->insertSubProperty(prev, curr);
+                                browser->setExpanded(browser->items(curr)[0], isExpandedCurr);
+                                browser->setExpanded(browser->items(prev)[0], isExpandedPrev);
                                 return;
                         }
                         prev = curr;
@@ -191,15 +214,19 @@ namespace {
                         if (prev == node->property()) {
                                 if (prev == 0) return;
 
+                                const bool isExpandedPrev = browser->isExpanded(browser->items(prev)[0]);
+                                const bool isExpandedCurr = browser->isExpanded(browser->items(curr)[0]);
+                                std::cerr << "prev:" << isExpandedPrev << std::endl;
+                                std::cerr << "curr:" << isExpandedCurr << std::endl;
                                 parent->removeSubProperty(prev);
                                 parent->insertSubProperty(prev, curr);
-                                collapse(browser, prev);
+                                browser->setExpanded(browser->items(curr)[0], isExpandedCurr);
+                                browser->setExpanded(browser->items(prev)[0], isExpandedPrev);
                                 return;
                         }
                         prev = curr;
                 }
         }
-
 
 
         ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
@@ -1215,6 +1242,8 @@ void MainWindow::addRenderSettings (
         }
         collapse (ui->settings, topItem);
         resyncRenderSettingConfig();
+
+        updateUi();
 }
 
 
@@ -1313,6 +1342,7 @@ void MainWindow::addCamera(redshift::scenefile::Camera const& c) {
         collapse (ui->settings, transformRoot);
 
         resyncCameraConfig();
+        updateUi();
 }
 
 
@@ -1372,6 +1402,8 @@ void MainWindow::addTransform (QtProperty *transformRoot,
                 writeValue("angle", transform, t.angle);
                 break;
         }
+
+        updateUi();
 }
 
 
@@ -1431,6 +1463,7 @@ void MainWindow::addObject (redshift::scenefile::Object const &o) {
         }
 
         collapse (ui->settings, object);
+        updateUi();
 }
 
 
@@ -1663,6 +1696,7 @@ void MainWindow::addVolume (redshift::scenefile::Volume const &v) {
         writeValue ("phase-function", volume, v.hg);
 
         collapse (ui->settings, volume);
+        updateUi();
 }
 
 
@@ -1923,6 +1957,12 @@ void MainWindow::changeEvent(QEvent *e) {
 
 
 
+void MainWindow::updateUi() {
+        on_settings_currentItemChanged(currentBrowserItem);
+}
+
+
+
 void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
         settingsContextMenu.clear();
@@ -1946,6 +1986,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
         // TODO: below are a bit fragile, but for now work very well.
 
+        ui->moveDownButton->setEnabled(false);
+        ui->moveUpButton->setEnabled(false);
+
         const bool isCode = name == "code";
 
         if ((parentProp != 0)
@@ -1953,6 +1996,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         ) {
                 ui->deleteObjectButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionDelete_Object);
+
+                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
         } else {
                 ui->deleteObjectButton->setEnabled(false);
         }
@@ -1962,6 +2008,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         ) {
                 ui->deleteVolumeButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionDelete_Volume);
+
+                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
         } else {
                 ui->deleteVolumeButton->setEnabled(false);
         }
@@ -1983,6 +2032,8 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         if (isSubTransform) {
                 currentCameraProperty    = parentParentProp;
                 currentTransformProperty = parentProp;
+                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
         }
         if (isTransform) {
                 currentCameraProperty    = parentProp;
@@ -1990,9 +2041,13 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         }
         if (isCamera) {
                 currentCameraProperty    = current->property();
+                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
         }
         if (isRenderSetting) {
                 currentRenderSettingProperty = current->property();
+                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
         }
 
         if (isCode) {
@@ -2720,8 +2775,14 @@ void MainWindow::on_picohelp_sceneFileClicked (QString const &path) {
 
 
 void MainWindow::on_moveUpButton_clicked() {
+        QtBrowserItem *tmp = currentBrowserItem;
         moveUp (ui->settings, currentBrowserItem->parent()->property(), currentBrowserItem);
+        ui->settings->setCurrentItem(tmp);
+        on_settings_currentItemChanged(tmp);
 }
 void MainWindow::on_moveDownButton_clicked() {
+        QtBrowserItem *tmp = currentBrowserItem;
         moveDown (ui->settings, currentBrowserItem->parent()->property(), currentBrowserItem);
+        ui->settings->setCurrentItem(tmp);
+        on_settings_currentItemChanged(tmp);
 }
