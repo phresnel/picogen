@@ -18,7 +18,8 @@ SOURCES += main.cc \
     ../widgets/OpenSceneFile/openscenefile.cc \
     coloreditmanager.cpp \
     coloreditfactory.cpp \
-    coloredit.cpp
+    coloredit.cpp \
+    propertybrowser-helpers.cc
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
@@ -26,7 +27,8 @@ HEADERS += mainwindow.hh \
     ../widgets/OpenSceneFile/openscenefile.hh \
     coloreditmanager.h \
     coloreditfactory.h \
-    coloredit.h
+    coloredit.h \
+    propertybrowser-helpers.hh
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \
