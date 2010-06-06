@@ -163,6 +163,43 @@ namespace {
                 }
         }
 
+        void moveUp(QtTreePropertyBrowser *browser, QtProperty *root, QtBrowserItem* node) {
+                QtProperty *parent = findParent(root, node->property());
+                if (parent == 0)
+                        return;
+
+                QtProperty *prev = 0;
+                foreach (QtProperty *curr, parent->subProperties()) {
+                        if (curr == node->property()) {
+                                if (prev == 0) return;
+
+                                parent->removeSubProperty(prev);
+                                parent->insertSubProperty(prev, curr);//node->property());
+                                collapse(browser, prev);
+                                return;
+                        }
+                        prev = curr;
+                }
+        }
+        void moveDown(QtTreePropertyBrowser *browser, QtProperty *root, QtBrowserItem* node) {
+                QtProperty *parent = findParent(root, node->property());
+                if (parent == 0)
+                        return;
+
+                QtProperty *prev = 0;
+                foreach (QtProperty *curr, parent->subProperties()) {
+                        if (prev == node->property()) {
+                                if (prev == 0) return;
+
+                                parent->removeSubProperty(prev);
+                                parent->insertSubProperty(prev, curr);
+                                collapse(browser, prev);
+                                return;
+                        }
+                        prev = curr;
+                }
+        }
+
 
 
         ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
@@ -2678,4 +2715,13 @@ void MainWindow::on_picohelp_sceneFileClicked (QString const &path) {
                 break;
         };
 
+}
+
+
+
+void MainWindow::on_moveUpButton_clicked() {
+        moveUp (ui->settings, currentBrowserItem->parent()->property(), currentBrowserItem);
+}
+void MainWindow::on_moveDownButton_clicked() {
+        moveDown (ui->settings, currentBrowserItem->parent()->property(), currentBrowserItem);
 }
