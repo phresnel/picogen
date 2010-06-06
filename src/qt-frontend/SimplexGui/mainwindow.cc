@@ -437,7 +437,7 @@ void MainWindow::setDefaultScene() {
                 rs.min_y = 0;
                 rs.max_y = 0xFFFFF;
                 rs.samplesPerPixel = 10;
-                rs.surfaceIntegrator.type = SurfaceIntegrator::redshift;
+                rs.surfaceIntegrator.type = SurfaceIntegrator::path;
                 rs.surfaceIntegrator.numAmbientSamples = 10;
                 rs.userSeed = 0;
                 rs.volumeIntegrator.type = VolumeIntegrator::none;
@@ -790,9 +790,11 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                         rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::none;
                 } else if("whitted" == sintegT) {
                         rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted;
-                } else if("redshift" == sintegT) {
-                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::redshift;
+                } else if("whitted_ambient" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted_ambient;
                         rs.surfaceIntegrator.numAmbientSamples = readValue<int>("ambient-samples", si);
+                } else if("path" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::path;
                 } else throw std::runtime_error((QString() + "The surface-integrator '" + sintegT + "' "
                                              "is not supported. This is probably "
                                              "an oversight by the incapable "
@@ -1092,7 +1094,7 @@ void MainWindow::addRenderSettings (
 
                 QtProperty *integratorType = surfaceIntegratorTypeEnumManager->addProperty("type");
                 QStringList enumNames;
-                enumNames << "none" << "whitted" << "redshift";
+                enumNames << "none" << "whitted" << "whitted_ambient" << "path";
                 surfaceIntegratorTypeEnumManager->setEnumNames(integratorType, enumNames);
 
                 surfaceIntegrator->addSubProperty(integratorType);
@@ -1107,9 +1109,13 @@ void MainWindow::addRenderSettings (
                         surfaceIntegratorTypeEnumManager->setValue(integratorType, 1);
                         surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 1);
                         break;
-                case redshift::scenefile::SurfaceIntegrator::redshift:
+                case redshift::scenefile::SurfaceIntegrator::whitted_ambient:
                         surfaceIntegratorTypeEnumManager->setValue(integratorType, 2);
                         surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 2);
+                        break;
+                case redshift::scenefile::SurfaceIntegrator::path:
+                        surfaceIntegratorTypeEnumManager->setValue(integratorType, 3);
+                        surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 3);
                         break;
                 default:
                         QMessageBox::warning(this,
@@ -1785,7 +1791,7 @@ void MainWindow::surfaceIntegratorTypeEnumManager_valueChanged(
 
         if (type == "none") {
                 // has no options.
-        } else if (type == "redshift") {
+        } else if (type == "whitted_ambient") {
                 QtVariantProperty* numSamples = variantManager->addProperty(QVariant::Int,"ambient-samples");
                 numSamples->setToolTip("Low values give a noisy look, but yield faster renderings.");
                 numSamples->setAttribute(QLatin1String("minimum"), 1);
@@ -1793,6 +1799,8 @@ void MainWindow::surfaceIntegratorTypeEnumManager_valueChanged(
                 numSamples->setValue(10);
                 t->addSubProperty(numSamples);
         } else if (type == "whitted") {
+                // has no options.
+        } else if (type == "path") {
                 // has no options.
         } else {
                 QMessageBox::critical(this, "Unsupported object",
