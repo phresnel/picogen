@@ -18,12 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef OBJECTPROPERTYBROWSER_HH
-#define OBJECTPROPERTYBROWSER_HH
+#ifndef VOLUMEPROPERTYBROWSER_HH
+#define VOLUMEPROPERTYBROWSER_HH
+
 
 namespace redshift {
         namespace scenefile {
-                class Object;
+                class Volume;
         }
 }
 class QtTreePropertyBrowser;
@@ -35,21 +36,20 @@ class ColorEditManager;
 
 #include <QObject>
 
-
-class ObjectPropertyBrowser : public QObject
+class VolumePropertyBrowser : public QObject
 {
         Q_OBJECT
 public:
-        ObjectPropertyBrowser(QWidget *,
+        VolumePropertyBrowser(QWidget *,
                               QtTreePropertyBrowser *,
                               QtGroupPropertyManager *,
                               QtVariantPropertyManager *,
                               QtVariantPropertyManager *codeEd,
                               ColorEditManager *
                              );
-        ~ObjectPropertyBrowser();
+        ~VolumePropertyBrowser();
 
-        void addObject (redshift::scenefile::Object const &);
+        void addVolume (redshift::scenefile::Volume const &);
         void remove (QtProperty *);
 
 signals:
@@ -57,18 +57,18 @@ signals:
         void sceneChanged();
 
 private:
-        void initializeScene();
+        void initializeScene ();
 
         QWidget *ownerWidget;
         QtTreePropertyBrowser *root;
-        QtEnumPropertyManager *objectTypeEnumManager;
+        QtEnumPropertyManager *volumeTypeEnumManager;
         QtGroupPropertyManager *groupManager;
         QtVariantPropertyManager *variantManager, *codeEditManager;
-        QtProperty *objectsProperty;
+        QtProperty *volumesProperty;
         ColorEditManager *colorEditManager;
 
 private slots:
-        void objectTypeEnumManager_valueChanged(QtProperty*, int);
+        void volumeTypeEnumManager_valueChanged(QtProperty*, int);
 };
 
-#endif // OBJECTPROPERTYBROWSER_HH
+#endif // VOLUMEPROPERTYBROWSER_HH

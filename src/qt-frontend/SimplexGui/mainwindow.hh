@@ -44,6 +44,7 @@ namespace redshift {
         }
 }
 class ObjectPropertyBrowser;
+class VolumePropertyBrowser;
 
 class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -65,6 +66,7 @@ private:
         void loadScene (QString const &name);
 
         ObjectPropertyBrowser *objectPropertyBrowser;
+        VolumePropertyBrowser *volumePropertyBrowser;
 
         QtStringPropertyManager *rsTitleManager;
 
@@ -87,11 +89,9 @@ private:
                    *backgroundsProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
-        QtProperty *volumesProperty,
-                   *pssSunSkyProperty;
+        QtProperty *pssSunSkyProperty;
         QtEnumPropertyManager
                         *transformEnumManager,
-                        *volumeTypeEnumManager,
                         *cameraTypeEnumManager,
                         *surfaceIntegratorTypeEnumManager;
         QtVariantPropertyManager *codeEditManager;
@@ -101,9 +101,6 @@ private:
         void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform const &);
-
-        void initializeVolumes ();
-        void addVolume (redshift::scenefile::Volume const &);
 
         void initializeFilmSettings();
         void setFilmSettings(redshift::scenefile::FilmSettings const &);
@@ -210,7 +207,6 @@ private slots:
 
         void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
-        void volumeTypeEnumManager_valueChanged(QtProperty*, int);
         void cameraTypeEnumManager_valueChanged(QtProperty*, int);
         void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
         void rsTitleManager_valueChanged (QtProperty *, const QString &);
