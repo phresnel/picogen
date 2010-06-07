@@ -18,51 +18,56 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef FILMSETTINGSPROPERTYBROWSER_HH
-#define FILMSETTINGSPROPERTYBROWSER_HH
+#ifndef BACKGROUNDSPROPERTYBROWSER_HH
+#define BACKGROUNDSPROPERTYBROWSER_HH
 
 namespace redshift {
         namespace scenefile {
-                class FilmSettings;
+                class Background;
         }
 }
-
 class QWidget;
-class QtProperty;
-class QtGroupPropertyManager;
+class QVariant;
 class QtTreePropertyBrowser;
 class QtVariantPropertyManager;
 class QtVariantEditorFactory;
+class QtGroupPropertyManager;
+class QtProperty;
 
 
 #include <QObject>
+#include <QList>
 
-class FilmSettingsPropertyBrowser : public QObject
+class BackgroundsPropertyBrowser : public QObject
 {
         Q_OBJECT
 public:
-        FilmSettingsPropertyBrowser(
-                QWidget *,
-                QtTreePropertyBrowser *
-                );
+        BackgroundsPropertyBrowser(QWidget *,
+                                   QtTreePropertyBrowser *);
 
-        void setFilmSettings(redshift::scenefile::FilmSettings const &);
+        // this method won't have a long stay once multiple backgrounds
+        // (consider e.g. preetham + starfield + moon) are supported
+        void setBackground (redshift::scenefile::Background const &);
 
+        QList<QtProperty*> subProperties();
 signals:
         void sceneChanged();
         void updateUi();
-
 private:
         void initialize();
 
         QWidget *ownerWidget;
         QtTreePropertyBrowser *root;
-        QtProperty *filmSettingsProperty;
+
+        QtProperty *backgroundsProperty,
+                   *pssSunSkyProperty;
+
         QtGroupPropertyManager *groupManager;
         QtVariantPropertyManager *variantManager;
         QtVariantEditorFactory *variantFactory;
 private slots:
-        void variantManager_valueChanged(QtProperty*,QVariant const &);
+        void variantManager_valueChanged(
+                        QtProperty*, QVariant const &);
 };
 
-#endif // FILMSETTINGSPROPERTYBROWSER_HH
+#endif // BACKGROUNDSPROPERTYBROWSER_HH

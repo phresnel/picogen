@@ -97,4 +97,5 @@ void FilmSettingsPropertyBrowser::variantManager_valueChanged(QtProperty*,
 void FilmSettingsPropertyBrowser::setFilmSettings(redshift::scenefile::FilmSettings const &fs) {
         writeValue<bool>("convert-to-srgb", filmSettingsProperty, fs.convertToSrgb);
         writeValue<double>("color-scale", filmSettingsProperty, fs.colorscale);
+        emit sceneChanged();
 }

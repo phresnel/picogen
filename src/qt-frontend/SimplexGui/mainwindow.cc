@@ -50,6 +50,7 @@
 #include "rendersettingspropertybrowser.hh"
 #include "cameraspropertybrowser.hh"
 #include "filmsettingspropertybrowser.hh"
+#include "backgroundspropertybrowser.hh"
 
 
 // TODO: this should be in a header
@@ -88,7 +89,7 @@ MainWindow::MainWindow(
                 QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    pssSunSkyProperty(0),
+    //pssSunSkyProperty(0),
     currentBrowserItem(0),
     nonRecurseLock(false),
     settingsContextMenu(this)
@@ -203,7 +204,11 @@ void MainWindow::initializeScene() {
         connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
 
-        initializeBackgrounds();
+        backgroundsPropertyBrowser = new BackgroundsPropertyBrowser(
+                                                this, ui->settings);
+        connect(backgroundsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(backgroundsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+
 }
 
 
@@ -291,7 +296,7 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
         for (unsigned int i=0; i<scene.volumeCount(); ++i)
                 volumePropertyBrowser->addVolume(scene.volume(i));
         if (scene.backgroundCount())
-                setBackground(scene.background(0));
+                backgroundsPropertyBrowser->setBackground(scene.background(0));
 
 
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
@@ -376,137 +381,13 @@ void MainWindow::setDefaultScene() {
         addObject(o);*/
 
         // - background
-        setBackground (redshift::scenefile::Background());
+        backgroundsPropertyBrowser->setBackground (redshift::scenefile::Background());
 
 
         foreach (QtBrowserItem *it, ui->settings->topLevelItems())
                 ui->settings->setExpanded(it, false);
 
         setUnchanged();
-}
-
-
-
-void MainWindow::initializeBackgrounds () {
-        backgroundsProperty = groupManager->addProperty("backgrounds");
-        ui->settings->addProperty(backgroundsProperty);
-
-        ui->settings->setBackgroundColor(
-                        ui->settings->topLevelItem(backgroundsProperty),
-                        QColor(90,90,130));
-}
-
-
-
-void MainWindow::setBackground (
-        redshift::scenefile::Background const &b
-) {
-        pssSunSkyProperty = groupManager->addProperty("pss-sunsky");
-        backgroundsProperty->addSubProperty(pssSunSkyProperty);
-
-        // Sun Direction.
-        QtProperty *sunDir = groupManager->addProperty("sun-direction");
-        pssSunSkyProperty->addSubProperty(sunDir);
-
-        // TODO: write custom property for vectors
-        QtVariantProperty *vp = variantManager->addProperty(QVariant::Double, "right");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.sunDirection.x);
-        sunDir->addSubProperty(vp);
-
-        vp= variantManager->addProperty(QVariant::Double, "up");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.sunDirection.y);
-        sunDir->addSubProperty(vp);
-
-        vp = variantManager->addProperty(QVariant::Double, "forward");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), -redshift::constants::infinity);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.sunDirection.z);
-        sunDir->addSubProperty(vp);
-
-
-        // Turbidity.
-        vp = variantManager->addProperty(QVariant::Double, "turbidity");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), 0);
-        vp->setAttribute(QLatin1String("maximum"), 30);
-        vp->setToolTip("For realism, use values between 2 and 10. But for artistic reasons, use any.");
-        vp->setValue(b.turbidity);
-        pssSunSkyProperty->addSubProperty(vp);
-
-        // Sun size.
-        vp = variantManager->addProperty(QVariant::Double, "sun-size-factor");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 1.0);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), 0);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.sunSizeFactor);
-        pssSunSkyProperty->addSubProperty(vp);
-
-        // Sun brightness factor.
-        vp = variantManager->addProperty(QVariant::Double, "sun-brightness-factor");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), 0);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.sunBrightnessFactor);
-        pssSunSkyProperty->addSubProperty(vp);
-
-
-        // Atmosphere brightness factor.
-        vp = variantManager->addProperty(QVariant::Double, "atmosphere-brightness-factor");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), 0);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.atmosphereBrightnessFactor);
-        pssSunSkyProperty->addSubProperty(vp);
-
-
-        // Atmosphere effects distance factor.
-        vp = variantManager->addProperty(QVariant::Double, "atmospheric-effects-distance-factor");
-        vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), 0);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.atmosphericFxDistanceFactor);
-        pssSunSkyProperty->addSubProperty(vp);
-
-
-        // Overcast.
-        vp = variantManager->addProperty(QVariant::Double, "overcast");
-        vp->setValue(0);
-        vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 5);
-        vp->setAttribute(QLatin1String("minimum"), 0);
-        vp->setAttribute(QLatin1String("maximum"), 1);
-        vp->setValue(b.overcast);
-        pssSunSkyProperty->addSubProperty(vp);
-
-        // Atmospheric Effects.
-        vp = variantManager->addProperty(QVariant::Bool, "atmospheric-effects");
-        vp->setValue(b.atmosphericEffects ? 1 : 0);
-        pssSunSkyProperty->addSubProperty(vp);
-
-        collapse (ui->settings, pssSunSkyProperty);
 }
 
 
@@ -825,23 +706,26 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
 
         // Background.
-        if (pssSunSkyProperty) {
-                scenefile::Background sunsky;
-                const Props sunDir = readSubProperties("sun-direction", pssSunSkyProperty);
+        const Props backgrounds = readSubProperties("backgrounds", topProps);
+        foreach (Prop bg, backgrounds) {
+                if (bg->propertyName() == "pss-sunsky") {
+                        scenefile::Background sunsky;
+                        const Props sunDir = readSubProperties("sun-direction", bg);
 
-                sunsky.sunDirection.x = readValue<double>("right", sunDir);
-                sunsky.sunDirection.y = readValue<double>("up", sunDir);
-                sunsky.sunDirection.z = readValue<double>("forward", sunDir);
-                sunsky.sunSizeFactor = readValue<double>("sun-size-factor", pssSunSkyProperty);
-                sunsky.sunBrightnessFactor = readValue<double>("sun-brightness-factor", pssSunSkyProperty);
+                        sunsky.sunDirection.x = readValue<double>("right", sunDir);
+                        sunsky.sunDirection.y = readValue<double>("up", sunDir);
+                        sunsky.sunDirection.z = readValue<double>("forward", sunDir);
+                        sunsky.sunSizeFactor = readValue<double>("sun-size-factor", bg);
+                        sunsky.sunBrightnessFactor = readValue<double>("sun-brightness-factor", bg);
 
-                sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", pssSunSkyProperty);
-                sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", pssSunSkyProperty);
-                sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", pssSunSkyProperty);
+                        sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", bg);
+                        sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", bg);
+                        sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", bg);
 
-                sunsky.turbidity = readValue<double>("turbidity", pssSunSkyProperty);
-                sunsky.overcast = readValue<double>("overcast", pssSunSkyProperty);
-                scene->addBackground(sunsky);
+                        sunsky.turbidity = readValue<double>("turbidity", bg);
+                        sunsky.overcast = readValue<double>("overcast", bg);
+                        scene->addBackground(sunsky);
+                }
         }
 
         return scene;

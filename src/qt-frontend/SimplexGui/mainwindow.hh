@@ -48,6 +48,7 @@ class VolumePropertyBrowser;
 class RenderSettingsPropertyBrowser;
 class CamerasPropertyBrowser;
 class FilmSettingsPropertyBrowser;
+class BackgroundsPropertyBrowser;
 
 class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -73,6 +74,7 @@ private:
         RenderSettingsPropertyBrowser *renderSettingsPropertyBrowser;
         CamerasPropertyBrowser *camerasPropertyBrowser;
         FilmSettingsPropertyBrowser *filmSettingsPropertyBrowser;
+        BackgroundsPropertyBrowser *backgroundsPropertyBrowser;
 
         QtLineEditFactory *lineEditFactory;
 
@@ -92,14 +94,8 @@ private:
                    *backgroundsProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
-        QtProperty *pssSunSkyProperty;
         QtVariantPropertyManager *codeEditManager;
 
-
-        void initializeBackgrounds ();
-        // this method won't have a long stay once multiple backgrounds
-        // (consider e.g. preetham + starfield + moon) are supported
-        void setBackground (redshift::scenefile::Background const &);
 
         void initializeScene();
 
