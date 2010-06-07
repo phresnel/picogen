@@ -30,10 +30,6 @@
 #include "qtpropertymanager.h"
 #include "qteditorfactory.h"
 
-#include "coloredit.h"
-#include "coloreditmanager.h"
-#include "coloreditfactory.h"
-
 #include "redshift/include/smart_ptr.hh"
 #include "redshift/include/jobfile.hh"
 
@@ -92,8 +88,6 @@ private:
         QtEnumPropertyManager *enumManager;
         QtEnumEditorFactory *comboBoxFactory;
 
-        ColorEditManager *colorEditManager;
-        ColorEditFactory *colorEditFactory;
 
         QtProperty *filmSettingsProperty,
                    *currentCameraProperty,
@@ -105,7 +99,7 @@ private:
 
         void initializeScene();
 
-        redshift::scenefile::Color readColor (QList<QtProperty*> subs, QString name="color") const;
+        //redshift::scenefile::Color readColor (QList<QtProperty*> subs, QString name="color") const;
 
         QtBrowserItem * currentBrowserItem;
         QString saveFilename;
@@ -190,7 +184,6 @@ private slots:
 
         void variantManager_valueChanged (QtProperty *, QVariant);
         void enumManager_valueChanged (QtProperty *, int);
-        void colorEditManager_valueChanged (QtProperty *, ColorPickerColor);
 
         void code_valueChanged(QtProperty*, QVariant);
 

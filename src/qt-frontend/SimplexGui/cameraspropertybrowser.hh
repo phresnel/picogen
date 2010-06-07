@@ -33,6 +33,7 @@ class QtProperty;
 class QtEnumPropertyManager;
 class QtEnumEditorFactory;
 class QtVariantPropertyManager;
+class QtVariantEditorFactory;
 class ColorEditManager;
 
 #include <QList>
@@ -42,11 +43,7 @@ class CamerasPropertyBrowser : public QObject {
         Q_OBJECT
 public:
         CamerasPropertyBrowser(QWidget *,
-                               QtTreePropertyBrowser *,
-                               QtGroupPropertyManager *,
-                               QtVariantPropertyManager *,
-                               QtVariantPropertyManager *codeEd,
-                               ColorEditManager *
+                               QtTreePropertyBrowser *
                               );
 
         void addCamera (redshift::scenefile::Camera const&);
@@ -66,6 +63,7 @@ private:
         QtTreePropertyBrowser *root;
         QtGroupPropertyManager *groupManager;
         QtVariantPropertyManager *variantManager;
+        QtVariantEditorFactory *variantFactory;
         QtProperty *camerasProperty;
 
         QtEnumEditorFactory *comboBoxFactory;
@@ -77,6 +75,7 @@ private:
 private slots:
         void cameraTypeEnumManager_valueChanged(QtProperty*, int);
         void transformEnumManager_valueChanged(QtProperty*, int);
+        void variantManager_valueChanged(QtProperty*, QVariant const &);
 };
 
 #endif // CAMERASPROPERTYBROWSER_HH

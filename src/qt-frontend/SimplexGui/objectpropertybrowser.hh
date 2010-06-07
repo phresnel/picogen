@@ -91,7 +91,6 @@ private:
 
 private slots:
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
-
         void colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&);
 };
 

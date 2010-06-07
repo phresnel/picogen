@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <QWidget>
+#include <QMdiArea>
 #include <QtTreePropertyBrowser>
 #include <QtProperty>
 #include <QtVariantPropertyManager>
@@ -28,6 +29,10 @@
 
 #include "redshift/include/jobfile.hh"
 
+#include "coloreditmanager.h"
+#include "coloreditfactory.h"
+#include "colorpicker.hh"
+
 #include "backgroundspropertybrowser.hh"
 
 
@@ -35,10 +40,12 @@
 
 BackgroundsPropertyBrowser::BackgroundsPropertyBrowser(
         QWidget * ownerWidget,
+        QMdiArea * displayArea,
         QtTreePropertyBrowser * root
 )
 : QObject(ownerWidget)
 , ownerWidget(ownerWidget)
+, displayArea(displayArea)
 , root(root)
 , groupManager(new QtGroupPropertyManager(this))
 {
@@ -54,6 +61,13 @@ void BackgroundsPropertyBrowser::initialize() {
         connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                  this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
         root->setFactoryForManager(variantManager, variantFactory);
+
+
+        colorEditManager = new ColorEditManager (this);
+        connect (colorEditManager, SIGNAL(valueChanged(QtProperty*,ColorPickerColor)),
+                 this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&)));
+        colorEditFactory = new ColorEditFactory (this, displayArea);
+        root->setFactoryForManager(colorEditManager, colorEditFactory);
 
 
         backgroundsProperty = groupManager->addProperty("backgrounds");
@@ -188,6 +202,66 @@ void BackgroundsPropertyBrowser::variantManager_valueChanged(
 
 
 
-QList<QtProperty*> BackgroundsPropertyBrowser::subProperties() {
-        return backgroundsProperty->subProperties();
+redshift::scenefile::Color
+BackgroundsPropertyBrowser::readColor (
+        QList<QtProperty*> subs, QString name
+) const {
+        QtProperty *color = readSubProperty (name, subs);
+        if (!color) return redshift::scenefile::Color();
+        const ColorPickerColor c = colorEditManager->value(color);
+
+        redshift::scenefile::Color ret;
+
+        switch (c.mode) {
+        case ColorPickerColor::Spectral:
+                ret.type = redshift::scenefile::Color::Spectrum;
+                foreach (SpectralSample ss, c.spectral) {
+                        redshift::scenefile::WavelengthAmplitudePair wap;
+                        wap.wavelength = ss.wavelength;
+                        wap.amplitude = ss.amplitude;
+                        ret.spectrum.samples.push_back(wap);
+                }
+                break;
+        case ColorPickerColor::Tristimulus:
+                ret.type = redshift::scenefile::Color::RGB;
+                QColor rgb = c.toQColor();
+                ret.rgb = redshift::scenefile::Rgb(rgb.redF(),
+                                                   rgb.greenF(),
+                                                   rgb.blueF());
+                break;
+        }
+
+        return ret;
+}
+
+
+
+void BackgroundsPropertyBrowser::addBackgroundsToScene (
+        redshift::scenefile::Scene &scene
+) const {
+        typedef QList<QtProperty*> Props;
+        typedef QtProperty* Prop;
+        using namespace redshift;
+
+        const Props backgrounds = readSubProperties("backgrounds", root->properties());
+        foreach (Prop bg, backgrounds) {
+                if (bg->propertyName() == "pss-sunsky") {
+                        scenefile::Background sunsky;
+                        const Props sunDir = readSubProperties("sun-direction", bg);
+
+                        sunsky.sunDirection.x = readValue<double>("right", sunDir);
+                        sunsky.sunDirection.y = readValue<double>("up", sunDir);
+                        sunsky.sunDirection.z = readValue<double>("forward", sunDir);
+                        sunsky.sunSizeFactor = readValue<double>("sun-size-factor", bg);
+                        sunsky.sunBrightnessFactor = readValue<double>("sun-brightness-factor", bg);
+
+                        sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", bg);
+                        sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", bg);
+                        sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", bg);
+
+                        sunsky.turbidity = readValue<double>("turbidity", bg);
+                        sunsky.overcast = readValue<double>("overcast", bg);
+                        scene.addBackground(sunsky);
+                }
+        }
 }

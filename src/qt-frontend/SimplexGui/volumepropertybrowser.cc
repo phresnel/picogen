@@ -20,6 +20,7 @@
 
 #include <QStringList>
 #include <QMessageBox>
+#include <QMdiArea>
 
 #include <QtTreePropertyBrowser>
 #include <QtProperty>
@@ -32,27 +33,26 @@
 #include "propertybrowser-helpers.hh"
 
 #include "coloreditmanager.h"
+#include "coloreditfactory.h"
+#include "colorpicker.hh"
 
 #include "volumepropertybrowser.hh"
 
 ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c);
 
+
+
 VolumePropertyBrowser::VolumePropertyBrowser(
                 QWidget *ownerWidget_,
+                QMdiArea *displayArea,
                 QtTreePropertyBrowser *root,
-                QtGroupPropertyManager *groupManager,
-                QtVariantPropertyManager *variantManager,
-                QtVariantPropertyManager *codeEditManager,
-                ColorEditManager *colorEditManager
+                QtVariantPropertyManager *codeEditManager
 )
 : QObject(ownerWidget_)
 , ownerWidget(ownerWidget_)
+, displayArea(displayArea)
 , root(root)
-, groupManager(groupManager)
-, variantManager(variantManager)
 , codeEditManager(codeEditManager)
-, volumesProperty(0)
-, colorEditManager(colorEditManager)
 {
         initializeScene();
 }
@@ -65,6 +65,24 @@ VolumePropertyBrowser::~VolumePropertyBrowser() {
 
 
 void VolumePropertyBrowser::initializeScene() {
+        groupManager = new QtGroupPropertyManager(this);
+
+        variantManager = new QtVariantPropertyManager(this);
+        variantFactory = new QtVariantEditorFactory(this);
+        connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
+                 this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
+        root->setFactoryForManager(variantManager, variantFactory);
+
+
+
+        colorEditManager = new ColorEditManager (this);
+        connect (colorEditManager, SIGNAL(valueChanged(QtProperty*,ColorPickerColor)),
+                 this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&)));
+        colorEditFactory = new ColorEditFactory (this, displayArea);
+        root->setFactoryForManager(colorEditManager, colorEditFactory);
+
+
+
         volumesProperty = groupManager->addProperty("volumes");
         root->addProperty(volumesProperty);
 
@@ -275,4 +293,103 @@ void VolumePropertyBrowser::volumeTypeEnumManager_valueChanged (
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
         }
+}
+
+
+
+void VolumePropertyBrowser::colorEditManager_valueChanged(
+        QtProperty*,
+        ColorPickerColor const&
+) {
+        emit sceneChanged();
+}
+
+
+
+void VolumePropertyBrowser::addVolumesToScene (
+        redshift::scenefile::Scene &scene
+) const {
+        typedef QList<QtProperty*> Props;
+        typedef QtProperty* Prop;
+        using namespace redshift;
+
+
+        const Props volumes = readSubProperties("volumes", root->properties());
+        foreach (Prop volume, volumes) {
+                using scenefile::Volume;
+
+                const Props subs = volume->subProperties();
+                const QString type = readValueText("type", subs);
+
+                scenefile::Volume volume;
+
+                volume.sigma_a = readColor(subs, "absorption");
+                volume.sigma_s = readColor(subs, "out-scatter");
+                volume.Lve     = readColor(subs, "emission");
+                volume.hg      = readValue<double> ("phase-function", subs);
+
+                // Common Properties.
+
+
+                if (type == "homogeneous") {
+                        volume.type = Volume::homogeneous;
+                } else if (type == "exponential") {
+                        volume.type = Volume::exponential;
+
+                        Props v = readSubProperties("up", subs);
+                        volume.up.x = readValue<double>("right", v);
+                        volume.up.y = readValue<double>("up", v);
+                        volume.up.z = readValue<double>("forward", v);
+
+                        v = readSubProperties("min", subs);
+                        volume.min.x = readValue<double>("right", v);
+                        volume.min.y = readValue<double>("up", v);
+                        volume.min.z = readValue<double>("forward", v);
+
+                        volume.baseFactor = readValue<double>("base-factor", subs);
+                        volume.exponentFactor = readValue<double>("exponent-factor", subs);
+                        volume.epsilon = readValue<double>("epsilon", subs);
+                } else {
+                        throw std::runtime_error((QString() + "The volume-type '" + type + "' "
+                                              "is not supported. This is probably "
+                                              "an oversight by the incapable "
+                                              "programmers, please report this issue.").toStdString().c_str());
+                }
+
+                scene.addVolume(volume);
+        }
+}
+
+
+
+redshift::scenefile::Color
+VolumePropertyBrowser::readColor (
+        QList<QtProperty*> subs, QString name
+) const {
+        QtProperty *color = readSubProperty (name, subs);
+        if (!color) return redshift::scenefile::Color();
+        const ColorPickerColor c = colorEditManager->value(color);
+
+        redshift::scenefile::Color ret;
+
+        switch (c.mode) {
+        case ColorPickerColor::Spectral:
+                ret.type = redshift::scenefile::Color::Spectrum;
+                foreach (SpectralSample ss, c.spectral) {
+                        redshift::scenefile::WavelengthAmplitudePair wap;
+                        wap.wavelength = ss.wavelength;
+                        wap.amplitude = ss.amplitude;
+                        ret.spectrum.samples.push_back(wap);
+                }
+                break;
+        case ColorPickerColor::Tristimulus:
+                ret.type = redshift::scenefile::Color::RGB;
+                QColor rgb = c.toQColor();
+                ret.rgb = redshift::scenefile::Rgb(rgb.redF(),
+                                                   rgb.greenF(),
+                                                   rgb.blueF());
+                break;
+        }
+
+        return ret;
 }

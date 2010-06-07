@@ -36,33 +36,24 @@
 
 CamerasPropertyBrowser::CamerasPropertyBrowser(
         QWidget *ownerWidget_,
-        QtTreePropertyBrowser *root,
-        QtGroupPropertyManager *groupManager,
-        QtVariantPropertyManager *variantManager,
-        QtVariantPropertyManager *codeEditManager,
-        ColorEditManager *colorEditManager
+        QtTreePropertyBrowser *root
         )
 : QObject(ownerWidget_)
 , ownerWidget(ownerWidget_)
 , root(root)
-, groupManager(groupManager)
-, variantManager(variantManager)
-, camerasProperty(0)
 {
         initializeScene();
 }
 
 
 
-QList<QtProperty*> CamerasPropertyBrowser::subProperties() {
-        return camerasProperty->subProperties();
-}
-
-
-
 void CamerasPropertyBrowser::initializeScene() {
-        comboBoxFactory = new QtEnumEditorFactory(this);
 
+        groupManager = new QtGroupPropertyManager(this);
+
+        variantManager = new QtVariantPropertyManager(this);
+        connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
+                 this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
 
         transformEnumManager = new QtEnumPropertyManager(this);
         connect(transformEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
@@ -72,8 +63,13 @@ void CamerasPropertyBrowser::initializeScene() {
         connect(cameraTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(cameraTypeEnumManager_valueChanged(QtProperty*,int)));
 
+
+        variantFactory = new QtVariantEditorFactory(this);
+        comboBoxFactory = new QtEnumEditorFactory(this);
+
         root->setFactoryForManager(transformEnumManager, comboBoxFactory);
         root->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
+        root->setFactoryForManager(variantManager, variantFactory);
 
 
         camerasProperty = groupManager->addProperty("cameras");
@@ -81,6 +77,12 @@ void CamerasPropertyBrowser::initializeScene() {
         root->setBackgroundColor(
                         root->topLevelItem(camerasProperty),
                         QColor(110,110,110));
+}
+
+
+
+QList<QtProperty*> CamerasPropertyBrowser::subProperties() {
+        return camerasProperty->subProperties();
 }
 
 
@@ -335,3 +337,10 @@ void CamerasPropertyBrowser::transformEnumManager_valueChanged(
 
 }
 
+
+
+void CamerasPropertyBrowser::variantManager_valueChanged(
+        QtProperty*, QVariant const &
+) {
+        emit sceneChanged();
+}

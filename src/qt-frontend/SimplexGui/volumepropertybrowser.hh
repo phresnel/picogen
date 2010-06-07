@@ -25,14 +25,20 @@
 namespace redshift {
         namespace scenefile {
                 class Volume;
+                class Scene;
+                class Color;
         }
 }
+class QMdiArea;
 class QtTreePropertyBrowser;
 class QtGroupPropertyManager;
 class QtProperty;
 class QtEnumPropertyManager;
 class QtVariantPropertyManager;
+class QtVariantEditorFactory;
 class ColorEditManager;
+class ColorEditFactory;
+class ColorPickerColor;
 
 #include <QObject>
 
@@ -41,16 +47,16 @@ class VolumePropertyBrowser : public QObject
         Q_OBJECT
 public:
         VolumePropertyBrowser(QWidget *,
+                              QMdiArea *,
                               QtTreePropertyBrowser *,
-                              QtGroupPropertyManager *,
-                              QtVariantPropertyManager *,
-                              QtVariantPropertyManager *codeEd,
-                              ColorEditManager *
+                              QtVariantPropertyManager *codeEd
                              );
         ~VolumePropertyBrowser();
 
         void addVolume (redshift::scenefile::Volume const &);
         void remove (QtProperty *);
+
+        void addVolumesToScene (redshift::scenefile::Scene &Scene) const;
 
 signals:
         void updateUi();
@@ -59,16 +65,25 @@ signals:
 private:
         void initializeScene ();
 
+        redshift::scenefile::Color readColor (
+                QList<QtProperty*> subs, QString name
+        ) const;
+
         QWidget *ownerWidget;
+        QMdiArea *displayArea;
         QtTreePropertyBrowser *root;
         QtEnumPropertyManager *volumeTypeEnumManager;
         QtGroupPropertyManager *groupManager;
         QtVariantPropertyManager *variantManager, *codeEditManager;
+        QtVariantEditorFactory *variantFactory;
         QtProperty *volumesProperty;
+
         ColorEditManager *colorEditManager;
+        ColorEditFactory *colorEditFactory;
 
 private slots:
         void volumeTypeEnumManager_valueChanged(QtProperty*, int);
+        void colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&);
 };
 
 #endif // VOLUMEPROPERTYBROWSER_HH

@@ -52,6 +52,7 @@
 #include "filmsettingspropertybrowser.hh"
 #include "backgroundspropertybrowser.hh"
 
+#include "coloredit.h"
 
 // TODO: this should be in a header
 ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
@@ -175,11 +176,7 @@ void MainWindow::initializeScene() {
 
 
         camerasPropertyBrowser = new CamerasPropertyBrowser(this,
-                                                            ui->settings,
-                                                            groupManager,
-                                                            variantManager,
-                                                            codeEditManager,
-                                                            colorEditManager);
+                                                            ui->settings);
         connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig()));
 
@@ -194,17 +191,15 @@ void MainWindow::initializeScene() {
 
 
         volumePropertyBrowser = new VolumePropertyBrowser (this,
+                                                           ui->mdiArea,
                                                            ui->settings,
-                                                           groupManager,
-                                                           variantManager,
-                                                           codeEditManager,
-                                                           colorEditManager);
+                                                           codeEditManager);
         connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
 
 
         backgroundsPropertyBrowser = new BackgroundsPropertyBrowser(
-                                                this, ui->settings);
+                                        this, ui->mdiArea, ui->settings);
         connect(backgroundsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(backgroundsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
 
@@ -243,11 +238,6 @@ void MainWindow::setupUi() {
         connect (enumManager, SIGNAL(valueChanged(QtProperty*,int)),
                  this, SLOT(enumManager_valueChanged(QtProperty*,int)));
 
-        colorEditManager = new ColorEditManager (this);
-        connect (colorEditManager, SIGNAL(valueChanged(QtProperty*,ColorPickerColor)),
-                 this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor)));
-        colorEditFactory = new ColorEditFactory (this, ui->mdiArea);
-
         codeEditManager = new QtVariantPropertyManager(this);
         connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                 this, SLOT(code_valueChanged(QtProperty*, QVariant)));
@@ -258,7 +248,6 @@ void MainWindow::setupUi() {
         variantFactory = new QtVariantEditorFactory(this);
         ui->settings->setFactoryForManager(variantManager, variantFactory);
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
-        ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
 
         setChanged();
 }
@@ -387,40 +376,6 @@ void MainWindow::setDefaultScene() {
                 ui->settings->setExpanded(it, false);
 
         setUnchanged();
-}
-
-
-
-redshift::scenefile::Color
-MainWindow::readColor (
-        QList<QtProperty*> subs, QString name
-) const {
-        QtProperty *color = readSubProperty (name, subs);
-        if (!color) return redshift::scenefile::Color();
-        const ColorPickerColor c = colorEditManager->value(color);
-
-        redshift::scenefile::Color ret;
-
-        switch (c.mode) {
-        case ColorPickerColor::Spectral:
-                ret.type = redshift::scenefile::Color::Spectrum;
-                foreach (SpectralSample ss, c.spectral) {
-                        redshift::scenefile::WavelengthAmplitudePair wap;
-                        wap.wavelength = ss.wavelength;
-                        wap.amplitude = ss.amplitude;
-                        ret.spectrum.samples.push_back(wap);
-                }
-                break;
-        case ColorPickerColor::Tristimulus:
-                ret.type = redshift::scenefile::Color::RGB;
-                QColor rgb = c.toQColor();
-                ret.rgb = redshift::scenefile::Rgb(rgb.redF(),
-                                                   rgb.greenF(),
-                                                   rgb.blueF());
-                break;
-        }
-
-        return ret;
 }
 
 
@@ -600,77 +555,11 @@ MainWindow::createScene () const
         // Objects.
         objectPropertyBrowser->addObjectsToScene(*scene);
 
-
         // Volumes.
-        const Props volumes = readSubProperties("volumes", topProps);
-        foreach (Prop volume, volumes) {
-                using scenefile::Volume;
-
-                const Props subs = volume->subProperties();
-                const QString type = readValueText("type", subs);
-
-                scenefile::Volume volume;
-
-                volume.sigma_a = readColor(subs, "absorption");
-                volume.sigma_s = readColor(subs, "out-scatter");
-                volume.Lve     = readColor(subs, "emission");
-                volume.hg      = readValue<double> ("phase-function", subs);
-
-                // Common Properties.
-
-
-                if (type == "homogeneous") {
-                        volume.type = Volume::homogeneous;
-                } else if (type == "exponential") {
-                        volume.type = Volume::exponential;
-
-                        Props v = readSubProperties("up", subs);
-                        volume.up.x = readValue<double>("right", v);
-                        volume.up.y = readValue<double>("up", v);
-                        volume.up.z = readValue<double>("forward", v);
-
-                        v = readSubProperties("min", subs);
-                        volume.min.x = readValue<double>("right", v);
-                        volume.min.y = readValue<double>("up", v);
-                        volume.min.z = readValue<double>("forward", v);
-
-                        volume.baseFactor = readValue<double>("base-factor", subs);
-                        volume.exponentFactor = readValue<double>("exponent-factor", subs);
-                        volume.epsilon = readValue<double>("epsilon", subs);
-                } else {
-                        throw std::runtime_error((QString() + "The volume-type '" + type + "' "
-                                              "is not supported. This is probably "
-                                              "an oversight by the incapable "
-                                              "programmers, please report this issue.").toStdString().c_str());
-                }
-
-                scene->addVolume(volume);
-
-        }
-
+        volumePropertyBrowser->addVolumesToScene(*scene);
 
         // Background.
-        const Props backgrounds = readSubProperties("backgrounds", topProps);
-        foreach (Prop bg, backgrounds) {
-                if (bg->propertyName() == "pss-sunsky") {
-                        scenefile::Background sunsky;
-                        const Props sunDir = readSubProperties("sun-direction", bg);
-
-                        sunsky.sunDirection.x = readValue<double>("right", sunDir);
-                        sunsky.sunDirection.y = readValue<double>("up", sunDir);
-                        sunsky.sunDirection.z = readValue<double>("forward", sunDir);
-                        sunsky.sunSizeFactor = readValue<double>("sun-size-factor", bg);
-                        sunsky.sunBrightnessFactor = readValue<double>("sun-brightness-factor", bg);
-
-                        sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", bg);
-                        sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", bg);
-                        sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", bg);
-
-                        sunsky.turbidity = readValue<double>("turbidity", bg);
-                        sunsky.overcast = readValue<double>("overcast", bg);
-                        scene->addBackground(sunsky);
-                }
-        }
+        backgroundsPropertyBrowser->addBackgroundsToScene(*scene);
 
         return scene;
 }
@@ -704,12 +593,6 @@ void MainWindow::variantManager_valueChanged (QtProperty *, QVariant) {
 
 
 void MainWindow::enumManager_valueChanged (QtProperty *, int) {
-        setChanged();
-}
-
-
-
-void MainWindow::colorEditManager_valueChanged(QtProperty *, ColorPickerColor) {
         setChanged();
 }
 

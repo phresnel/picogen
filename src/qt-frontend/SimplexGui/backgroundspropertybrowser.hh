@@ -24,15 +24,20 @@
 namespace redshift {
         namespace scenefile {
                 class Background;
+                class Scene;
+                class Color;
         }
 }
 class QWidget;
 class QVariant;
+class QMdiArea;
 class QtTreePropertyBrowser;
 class QtVariantPropertyManager;
 class QtVariantEditorFactory;
 class QtGroupPropertyManager;
 class QtProperty;
+class ColorEditManager;
+class ColorEditFactory;
 
 
 #include <QObject>
@@ -43,20 +48,26 @@ class BackgroundsPropertyBrowser : public QObject
         Q_OBJECT
 public:
         BackgroundsPropertyBrowser(QWidget *,
+                                   QMdiArea *,
                                    QtTreePropertyBrowser *);
 
         // this method won't have a long stay once multiple backgrounds
         // (consider e.g. preetham + starfield + moon) are supported
         void setBackground (redshift::scenefile::Background const &);
 
-        QList<QtProperty*> subProperties();
+        void addBackgroundsToScene (redshift::scenefile::Scene &Scene) const;
+
 signals:
         void sceneChanged();
         void updateUi();
 private:
         void initialize();
+        redshift::scenefile::Color readColor (
+                QList<QtProperty*> subs, QString name
+        ) const;
 
         QWidget *ownerWidget;
+        QMdiArea *displayArea;
         QtTreePropertyBrowser *root;
 
         QtProperty *backgroundsProperty,
@@ -65,9 +76,11 @@ private:
         QtGroupPropertyManager *groupManager;
         QtVariantPropertyManager *variantManager;
         QtVariantEditorFactory *variantFactory;
+
+        ColorEditManager *colorEditManager;
+        ColorEditFactory *colorEditFactory;
 private slots:
-        void variantManager_valueChanged(
-                        QtProperty*, QVariant const &);
+        void variantManager_valueChanged(QtProperty*, QVariant const &);
 };
 
 #endif // BACKGROUNDSPROPERTYBROWSER_HH
