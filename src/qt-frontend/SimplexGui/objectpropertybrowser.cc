@@ -83,6 +83,7 @@ void ObjectPropertyBrowser::initializeScene() {
 
 void ObjectPropertyBrowser::remove(QtProperty *property) {
         objectsProperty->removeSubProperty(property);
+        emit sceneChanged();
 }
 
 

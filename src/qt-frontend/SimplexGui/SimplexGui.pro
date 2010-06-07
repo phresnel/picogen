@@ -21,7 +21,8 @@ SOURCES += main.cc \
     coloredit.cpp \
     propertybrowser-helpers.cc \
     objectpropertybrowser.cc \
-    volumepropertybrowser.cc
+    volumepropertybrowser.cc \
+    rendersettingspropertybrowser.cc
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
@@ -32,7 +33,8 @@ HEADERS += mainwindow.hh \
     coloredit.h \
     propertybrowser-helpers.hh \
     objectpropertybrowser.hh \
-    volumepropertybrowser.hh
+    volumepropertybrowser.hh \
+    rendersettingspropertybrowser.hh
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \

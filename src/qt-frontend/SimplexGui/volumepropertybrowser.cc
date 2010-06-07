@@ -136,6 +136,7 @@ void VolumePropertyBrowser::addVolume (redshift::scenefile::Volume const &v) {
 
 void VolumePropertyBrowser::remove(QtProperty *property) {
         volumesProperty->removeSubProperty(property);
+        emit sceneChanged();
 }
 
 

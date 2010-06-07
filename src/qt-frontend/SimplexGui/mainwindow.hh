@@ -45,6 +45,7 @@ namespace redshift {
 }
 class ObjectPropertyBrowser;
 class VolumePropertyBrowser;
+class RenderSettingsPropertyBrowser;
 
 class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -67,6 +68,7 @@ private:
 
         ObjectPropertyBrowser *objectPropertyBrowser;
         VolumePropertyBrowser *volumePropertyBrowser;
+        RenderSettingsPropertyBrowser *renderSettingsPropertyBrowser;
 
         QtStringPropertyManager *rsTitleManager;
 
@@ -83,7 +85,6 @@ private:
         ColorEditManager *colorEditManager;
         ColorEditFactory *colorEditFactory;
 
-        QtProperty *renderSettingsProperty;
         QtProperty *camerasProperty, *filmSettingsProperty,
                    *currentCameraProperty,
                    *backgroundsProperty,
@@ -104,9 +105,6 @@ private:
 
         void initializeFilmSettings();
         void setFilmSettings(redshift::scenefile::FilmSettings const &);
-
-        void initializeRenderSettings();
-        void addRenderSettings (redshift::scenefile::RenderSettings const &rs);
 
         void initializeCameraSettings ();
 

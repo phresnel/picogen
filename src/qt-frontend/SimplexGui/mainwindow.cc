@@ -47,6 +47,7 @@
 
 #include "objectpropertybrowser.hh"
 #include "volumepropertybrowser.hh"
+#include "rendersettingspropertybrowser.hh"
 
 
 // TODO: this should be in a header
@@ -155,7 +156,18 @@ void MainWindow::initializeScene() {
         ui->settings->clear();
         ui->settings->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
         initializeFilmSettings();
-        initializeRenderSettings();
+
+        renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
+                        this,
+                        ui->settings,
+                        groupManager,
+                        variantManager,
+                        codeEditManager,
+                        colorEditManager);
+        connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+
+
         initializeCameraSettings();
 
         objectPropertyBrowser = new ObjectPropertyBrowser(this,
@@ -277,7 +289,7 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
         initializeScene();
         setFilmSettings(scene.filmSettings());
         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i)
-                addRenderSettings(scene.renderSettings(i));
+                renderSettingsPropertyBrowser->addRenderSettings(scene.renderSettings(i));
         for (unsigned int i=0; i<scene.cameraCount(); ++i)
                 addCamera(scene.camera(i));
         for (unsigned int i=0; i<scene.objectCount(); ++i)
@@ -317,7 +329,7 @@ void MainWindow::setDefaultScene() {
                 rs.volumeIntegrator.stepSize = 400;
                 rs.title = "preview";
 
-                addRenderSettings(rs);
+                renderSettingsPropertyBrowser->addRenderSettings(rs);
         }
         {
                 using namespace redshift::scenefile;
@@ -336,7 +348,7 @@ void MainWindow::setDefaultScene() {
                 rs.volumeIntegrator.stepSize = 70;
                 rs.title = "production";
 
-                addRenderSettings(rs);
+                renderSettingsPropertyBrowser->addRenderSettings(rs);
         }
 
         // - camera
@@ -414,18 +426,6 @@ void MainWindow::initializeFilmSettings() {
 void MainWindow::setFilmSettings(redshift::scenefile::FilmSettings const &fs) {
         writeValue<bool>("convert-to-srgb", filmSettingsProperty, fs.convertToSrgb);
         writeValue<double>("color-scale", filmSettingsProperty, fs.colorscale);
-}
-
-
-
-void MainWindow::initializeRenderSettings() {
-        QtProperty *topItem = groupManager->addProperty("render-settings");
-        renderSettingsProperty = topItem;
-        ui->settings->addProperty(topItem);
-
-        ui->settings->setBackgroundColor(
-                     ui->settings->topLevelItem(renderSettingsProperty),
-                     QColor(130,90,90));
 }
 
 
@@ -640,7 +640,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 throw std::runtime_error("No Render-Setting present.");
         }
 
-        foreach (QtProperty *mooh, renderSettingsProperty->subProperties()) {
+        foreach (QtProperty *mooh, renderSettingsPropertyBrowser->subProperties()) {
                 Props subs = mooh->subProperties();
 
                 scenefile::RenderSettings rs;
@@ -902,160 +902,9 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
 
 
-void MainWindow::addRenderSettings (
-        redshift::scenefile::RenderSettings const &rs
-) {
-
-        QtProperty *topItem = groupManager->addProperty(QString::fromStdString(rs.title));
-        renderSettingsProperty->addSubProperty(topItem);
-
-        QtProperty *title = rsTitleManager->addProperty("title");
-        rsTitleManager->setRegExp(title, QRegExp("([a-z0-9]|-|_)+", Qt::CaseInsensitive, QRegExp::RegExp));
-        rsTitleManager->setValue(title, QString::fromStdString(rs.title));
-        topItem->addSubProperty(title);
-
-
-        QtVariantProperty *it = variantManager->addProperty(QVariant::Int, "width");
-        it->setAttribute(QLatin1String("minimum"), 1);
-        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
-        it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(rs.width);
-        topItem->addSubProperty(it);
-
-        it = variantManager->addProperty(QVariant::Int, "height");
-        it->setAttribute(QLatin1String("minimum"), 1);
-        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
-        it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(rs.height);
-        topItem->addSubProperty(it);
-
-        it = variantManager->addProperty(QVariant::Int, "samples-per-pixel");
-        it->setAttribute(QLatin1String("minimum"), 1);
-        it->setAttribute(QLatin1String("maximum"), 0xFFFFFF);
-        it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(rs.samplesPerPixel);
-        topItem->addSubProperty(it);
-
-        it = variantManager->addProperty(QVariant::Int, "min-y");
-        it->setAttribute(QLatin1String("minimum"), 0);
-        it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(rs.min_y);
-        topItem->addSubProperty(it);
-
-        it = variantManager->addProperty(QVariant::Int, "max-y");
-        it->setAttribute(QLatin1String("minimum"), 0);
-        it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(rs.max_y);
-        topItem->addSubProperty(it);
-
-        it = variantManager->addProperty(QVariant::Int, "seed");
-        it->setAttribute(QLatin1String("minimum"), 0);
-        it->setAttribute(QLatin1String("singleStep"), 1);
-        it->setValue(rs.userSeed);
-        it->setToolTip("Use this to configure another random seed for rendering.");
-        topItem->addSubProperty(it);
-
-
-        {
-                QtProperty *surfaceIntegrator = groupManager
-                                                ->addProperty("surface-integrator");
-                topItem->addSubProperty(surfaceIntegrator);
-
-                QtProperty *integratorType = surfaceIntegratorTypeEnumManager->addProperty("type");
-                QStringList enumNames;
-                enumNames << "none" << "whitted" << "whitted_ambient" << "path";
-                surfaceIntegratorTypeEnumManager->setEnumNames(integratorType, enumNames);
-
-                surfaceIntegrator->addSubProperty(integratorType);
-
-
-                switch (rs.surfaceIntegrator.type) {
-                case redshift::scenefile::SurfaceIntegrator::none:
-                        surfaceIntegratorTypeEnumManager->setValue(integratorType, 0);
-                        surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 0);
-                        break;
-                case redshift::scenefile::SurfaceIntegrator::whitted:
-                        surfaceIntegratorTypeEnumManager->setValue(integratorType, 1);
-                        surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 1);
-                        break;
-                case redshift::scenefile::SurfaceIntegrator::whitted_ambient:
-                        surfaceIntegratorTypeEnumManager->setValue(integratorType, 2);
-                        surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 2);
-                        break;
-                case redshift::scenefile::SurfaceIntegrator::path:
-                        surfaceIntegratorTypeEnumManager->setValue(integratorType, 3);
-                        surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 3);
-                        break;
-                default:
-                        QMessageBox::warning(this,
-                          "Unsupported Surface Integrator",
-                          "It has been tried to load a surface integrator "
-                          "\""
-                          + QString::fromStdString(redshift::scenefile::SurfaceIntegrator::Typenames[rs.surfaceIntegrator.type])
-                          + "\", but this type is currently not supported here."
-                        );
-                        surfaceIntegratorTypeEnumManager->setValue(integratorType, 0);
-                        surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 0);
-                }
-        }
-        {
-                QtProperty *volumeIntegrator = groupManager->addProperty("volume-integrator");
-                topItem->addSubProperty(volumeIntegrator);
-
-                QtProperty *integratorType = enumManager->addProperty("type");
-                QStringList enumNames;
-                enumNames << "none" << "emission" << "single";
-                enumManager->setEnumNames(integratorType, enumNames);
-                volumeIntegrator->addSubProperty(integratorType);
-                it = variantManager->addProperty(QVariant::Double, "step-size");
-                it->setAttribute(QLatin1String("minimum"), 1.);
-                //it->setAttribute(QLatin1String("maximum"), 32768.);
-                it->setAttribute(QLatin1String("singleStep"), 1.);
-                it->setAttribute(QLatin1String("decimals"), 1);
-                it->setValue(rs.volumeIntegrator.stepSize);
-                volumeIntegrator->addSubProperty(it);
-
-                it = variantManager->addProperty(QVariant::Double, "cutoff-distance");
-                it->setAttribute(QLatin1String("minimum"), 1.);
-                //it->setAttribute(QLatin1String("maximum"), 32768.);
-                it->setAttribute(QLatin1String("singleStep"), 1.);
-                it->setAttribute(QLatin1String("decimals"), 1);
-                it->setValue(rs.volumeIntegrator.cutoffDistance);
-                volumeIntegrator->addSubProperty(it);
-
-
-                switch (rs.volumeIntegrator.type) {
-                case redshift::scenefile::VolumeIntegrator::none:
-                        enumManager->setValue(integratorType, 0);
-                        break;
-                case redshift::scenefile::VolumeIntegrator::emission:
-                        enumManager->setValue(integratorType, 1);
-                        break;
-                case redshift::scenefile::VolumeIntegrator::single:
-                        enumManager->setValue(integratorType, 2);
-                        break;
-                default:
-                        QMessageBox::warning(this,
-                          "Unsupported Volume Integrator",
-                          "It has been tried to load a volume integrator "
-                          "\""
-                          + QString::fromStdString(redshift::scenefile::VolumeIntegrator::Typenames[rs.volumeIntegrator.type])
-                          + "\", but this type is currently not supported here."
-                        );
-                        enumManager->setValue(integratorType, 0);
-                }
-        }
-        collapse (ui->settings, topItem);
-        resyncRenderSettingConfig();
-
-        updateUi();
-}
-
-
-
 void MainWindow::resyncRenderSettingConfig () {
         ui->renderSettingConfig->clear();
-        foreach (QtProperty *prop, renderSettingsProperty->subProperties()) {
+        foreach (QtProperty *prop, renderSettingsPropertyBrowser->subProperties()) {
                 ui->renderSettingConfig->addItem(prop->propertyName());
         }
 }
