@@ -51,6 +51,8 @@ public:
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform const & t);
         void remove (QtProperty *);
+        void removeTransform (QtProperty *transformRoot,
+                              QtProperty *subTransform);
 
         void addCamerasToScene (
                 redshift::scenefile::Scene &scene

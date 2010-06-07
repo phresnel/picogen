@@ -45,6 +45,7 @@
 
 #include "propertybrowser/propertybrowser-helpers.hh"
 
+#include <QtTreePropertyBrowser>
 #include "propertybrowser/objectpropertybrowser.hh"
 #include "propertybrowser/volumepropertybrowser.hh"
 #include "propertybrowser/rendersettingspropertybrowser.hh"
@@ -54,226 +55,79 @@
 
 #include "coloredit.h"
 
-// TODO: this should be in a header
-ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
-        using redshift::scenefile::Color;
 
-        ColorPickerColor ret;
-
-        switch (c.type) {
-        case Color::RGB:
-                ret.mode = ColorPickerColor::Tristimulus;
-                ret.tristimulus = TristimulusColor(
-                                (double)c.rgb.r,
-                                (double)c.rgb.g,
-                                (double)c.rgb.b
-                                );
-                break;
-        case Color::Spectrum:
-                ret.mode = ColorPickerColor::Spectral;
-                for (size_t i=0; i<c.spectrum.samples.size(); ++i) {
-                        SpectralSample ss;
-                        ss.wavelength = c.spectrum.samples[i].wavelength;
-                        ss.amplitude = c.spectrum.samples[i].amplitude;
-                        ret.spectral.push_back(ss);
-                }
-        }
-
-        return ret;
-}
-
-
-
-MainWindow::MainWindow(
-                QString openFilename,
-                QString initialFilename,
-                QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    //pssSunSkyProperty(0),
-    currentBrowserItem(0),
-    nonRecurseLock(false),
-    settingsContextMenu(this)
+ScenePropertyBrowser::ScenePropertyBrowser(
+        QWidget *ownerWidget,
+        QMdiArea *displayArea,
+        QtTreePropertyBrowser *root,
+        QtVariantPropertyManager *codeEditManager
+)
+: QObject(ownerWidget)
+, ownerWidget(ownerWidget)
+, displayArea(displayArea)
+, root(root)
+, codeEditManager(codeEditManager)
 {
-        setupUi();
+        initializeScene();
 
-        connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
-                this, SLOT(helpBrowserVisibilityRequested()));
-
-        if (openFilename != "") {
-                try {
-                        redshift::scenefile::Scene scene;
-                        std::ifstream ss(initialFilename.toStdString().c_str());
-                        actuarius::IArchive (ss) & actuarius::pack("scene", scene);
-                        loadScene(scene);
-
-                        saveFilename = openFilename;
-                        QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
-                        refreshWindowTitle();
-
-                        //if (openFilename == initialFilename)
-                                setUnchanged();
-                        /*else
-                                setChanged();*/
-                } catch (...) {
-                        setDefaultScene();
-                }
-        } else {
-                setDefaultScene();
-        }
-
-        objectsMenu.addAction(ui->actionAdd_Horizon_Plane);
-        objectsMenu.addAction(ui->actionAdd_Water_Plane);
-        objectsMenu.addAction(ui->actionAdd_Lazy_Quadtree);
-        objectsMenu.setTitle("New Object");
-
-        volumesMenu.addAction(ui->actionAdd_Homogeneous_Volume);
-        volumesMenu.addAction(ui->actionAdd_Exponential_Volume);
-        volumesMenu.setTitle("New Volume");
-
-        ui->settings->setRootIsDecorated(true);
-        //ui->settings->setIndentation(32);
-        ui->settings->setHeaderVisible(false);
-        ui->settings->installEventFilter(this);
-
-        refreshWindowTitle();
-        //menuBar()->repaint();
-
-        ui->actionShow_Command_Pile->setChecked(false);
-        on_actionShow_Command_Pile_triggered (ui->actionShow_Command_Pile->isChecked());
-
-        ui->actionShow_Picohelp_Browser->setChecked(true);
-        on_actionShow_Picohelp_Browser_triggered (ui->actionShow_Picohelp_Browser->isChecked());
-
-        ui->codeEditor->setPicohelpBrowser(ui->picohelp);
+        connect (root, SIGNAL(currentItemChanged(QtBrowserItem*)),
+                 this, SLOT(currentItemChanged(QtBrowserItem*)));
 }
 
 
 
-MainWindow::~MainWindow() {
-        delete ui;
-}
-
-
-
-void MainWindow::initializeScene() {
-        ui->settings->clear();
-        ui->settings->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
-
+void ScenePropertyBrowser::initializeScene() {
+        root->clear();
+        root->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
 
         filmSettingsPropertyBrowser = new FilmSettingsPropertyBrowser(
-                        this,
-                        ui->settings);
+                        ownerWidget,
+                        root);
         connect(filmSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
-        connect(filmSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+        connect(filmSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
         renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
-                        this,
-                        ui->settings);
+                        ownerWidget,
+                        root);
         connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
-        connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig()));
+        connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig_()));
 
 
-        camerasPropertyBrowser = new CamerasPropertyBrowser(this,
-                                                            ui->settings);
+        camerasPropertyBrowser = new CamerasPropertyBrowser(ownerWidget,
+                                                            root);
         connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
-        connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig()));
+        connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig_()));
 
 
-        objectPropertyBrowser = new ObjectPropertyBrowser(this,
-                                                          ui->mdiArea,
-                                                          ui->settings,
+        objectPropertyBrowser = new ObjectPropertyBrowser(ownerWidget,
+                                                          displayArea,
+                                                          root,
                                                           codeEditManager
                                                           );
         connect(objectPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
-        connect(objectPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+        connect(objectPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
-        volumePropertyBrowser = new VolumePropertyBrowser (this,
-                                                           ui->mdiArea,
-                                                           ui->settings,
+        volumePropertyBrowser = new VolumePropertyBrowser (ownerWidget,
+                                                           displayArea,
+                                                           root,
                                                            codeEditManager);
         connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
-        connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+        connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
         backgroundsPropertyBrowser = new BackgroundsPropertyBrowser(
-                                        this, ui->mdiArea, ui->settings);
+                                        ownerWidget, displayArea, root);
         connect(backgroundsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
-        connect(backgroundsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
-
+        connect(backgroundsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 }
 
 
 
-void MainWindow::setupUi() {
-        changed = true;
-        ui->setupUi(this);
-
-
-        ui->actionShow_Command_Pile->setChecked(true);
-
-
-        // code editor
-        ui->codeEditorFrameOuter->setEnabled(false);
-        ui->codeEditorFrameOuter->setVisible(false);
-
-        // WindowList
-        QtWindowListMenu *winMenu = new QtWindowListMenu(menuBar());
-        winMenu->attachToMdiArea(ui->mdiArea);
-        winMenu->setTitle("Windows");
-        menuBar()->addMenu(winMenu);
-
-        // Properties
-        ui->settings->setAlternatingRowColors(false);
-
-        variantManager = new QtVariantPropertyManager(this);
-        connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
-                 this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
-
-        groupManager = new QtGroupPropertyManager(this);
-
-        /*enumManager = new QtEnumPropertyManager(this);
-        connect (enumManager, SIGNAL(valueChanged(QtProperty*,int)),
-                 this, SLOT(enumManager_valueChanged(QtProperty*,int)));*/
-
-        codeEditManager = new QtVariantPropertyManager(this);
-        connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
-                this, SLOT(code_valueChanged(QtProperty*, QVariant)));
-
-        comboBoxFactory = new QtEnumEditorFactory(this);
-        lineEditFactory = new QtLineEditFactory(this);
-
-        variantFactory = new QtVariantEditorFactory(this);
-        ui->settings->setFactoryForManager(variantManager, variantFactory);
-        //ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
-
-        setChanged();
-}
-
-
-
-void MainWindow::setChanged() {
-        if (changed) return;
-        changed = true;
-        ui->menuBar->setStyleSheet("background-color:#A33;");
-        updateUi();
-}
-
-
-
-void MainWindow::setUnchanged() {
-        if (!changed) return;
-        changed = false;
-        ui->menuBar->setStyleSheet("");
-        updateUi();
-}
-
-
-
-void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
+void ScenePropertyBrowser::loadScene (redshift::scenefile::Scene const &scene) {
         initializeScene();
+
         filmSettingsPropertyBrowser->setFilmSettings(scene.filmSettings());
         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i)
                 renderSettingsPropertyBrowser->addRenderSettings(scene.renderSettings(i));
@@ -287,16 +141,91 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
                 backgroundsPropertyBrowser->setBackground(scene.background(0));
 
 
-        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
-                ui->settings->setExpanded(it, false);
+        foreach (QtBrowserItem *it, root->topLevelItems())
+                root->setExpanded(it, false);
 
-        setUnchanged();
+        emit asUnchanged();
 }
 
 
 
-void MainWindow::setDefaultScene() {
-        changed = true;
+void ScenePropertyBrowser::currentItemChanged(QtBrowserItem *current) {
+
+        currentBrowserItem_ = current;
+        QString name = (current==0) ? "" : current->property()->propertyName();
+
+        QtProperty *parentProp = (current==0)
+                               ? 0
+                               : findParent(root->properties(),
+                                            current->property());
+        QtProperty *parentParentProp = (parentProp==0)
+                               ? 0
+                               : findParent(root->properties(),
+                                            parentProp);
+
+        const bool isCode = name == "code";
+
+
+        const bool isTransform      = name  == "transform";
+        const bool isSubTransform   = (parentProp != 0)
+                                      && (parentProp->propertyName()
+                                          == "transform");
+        const bool isCamera         = (parentProp != 0)
+                                      && (parentProp->propertyName() == "cameras");
+        const bool isRenderSetting  = (parentProp != 0)
+                                      && (parentProp->propertyName()
+                                          == "render-settings");
+
+        currentCameraProperty_        = 0;
+        currentTransformProperty_     = 0;
+        currentRenderSettingProperty_ = 0;
+
+        // FROB
+        if (isSubTransform) {
+                currentCameraProperty_    = parentParentProp;
+                currentTransformProperty_ = parentProp;
+        }
+        if (isTransform) {
+                currentCameraProperty_    = parentProp;
+                currentTransformProperty_ = current->property();
+        }
+        if (isCamera) {
+                currentCameraProperty_    = current->property();
+        }
+        if (isRenderSetting) {
+                currentRenderSettingProperty_ = current->property();
+        }
+}
+
+
+
+QtBrowserItem *ScenePropertyBrowser::currentBrowserItem () const {
+        return currentBrowserItem_;
+}
+
+
+
+QtProperty *ScenePropertyBrowser::currentCameraProperty () const {
+        return currentCameraProperty_;
+}
+
+
+
+QtProperty *ScenePropertyBrowser::currentTransformProperty () const {
+        return currentTransformProperty_;
+}
+
+
+
+QtProperty *ScenePropertyBrowser::currentRenderSettingProperty () const {
+        return currentRenderSettingProperty_;
+}
+
+
+
+
+void ScenePropertyBrowser::setDefaultScene() {
+        // changed = true;
         initializeScene();
         // - render settings
         {
@@ -372,16 +301,17 @@ void MainWindow::setDefaultScene() {
         backgroundsPropertyBrowser->setBackground (redshift::scenefile::Background());
 
 
-        foreach (QtBrowserItem *it, ui->settings->topLevelItems())
-                ui->settings->setExpanded(it, false);
+        foreach (QtBrowserItem *it, root->topLevelItems())
+                root->setExpanded(it, false);
 
-        setUnchanged();
+        emit sceneChanged();
+        emit asUnchanged();
 }
 
 
 
 redshift::shared_ptr<redshift::scenefile::Scene>
-MainWindow::createScene () const
+ScenePropertyBrowser::createScene () const
 {
         using namespace redshift;
 
@@ -400,9 +330,299 @@ MainWindow::createScene () const
 
 
 
+QString ScenePropertyBrowser::sceneToCode() {
+        QString tehCodes;
+        try {
+                using namespace actuarius;
+                using namespace redshift;
+
+                const shared_ptr<scenefile::Scene> scene = createScene ();
+                std::stringstream ss;
+                OArchive (ss) & pack("scene", *scene);
+                return QString::fromStdString(ss.str());
+        } catch (std::exception const &e) {
+                QMessageBox::critical(ownerWidget, "Critical",
+                                      e.what());
+                return "";
+        }
+}
+
+
+
+/*void PropertyBrowser::removeCurrent() {
+        if (currentCameraProperty_ != 0)
+                camerasPropertyBrowser->remove(currentCameraProperty_);
+        else if (currentRenderSettingProperty_ != 0)
+                renderSettingsPropertyBrowser->remove(currentCameraProperty_);
+}*/
+
+
+
+void ScenePropertyBrowser::removeRenderSetting (QtProperty *property) {
+        renderSettingsPropertyBrowser->remove(property);
+}
+
+
+
+void ScenePropertyBrowser::removeCamera (QtProperty *property) {
+        camerasPropertyBrowser->remove(property);
+}
+
+
+
+void ScenePropertyBrowser::removeObject(QtProperty *property) {
+        objectPropertyBrowser->remove(property);
+}
+
+
+
+void ScenePropertyBrowser::removeVolume(QtProperty *property) {
+        volumePropertyBrowser->remove(property);
+}
+
+
+
+void ScenePropertyBrowser::removeTransform(QtProperty *transformRoot,
+                                      QtProperty *subTransform
+) {
+        camerasPropertyBrowser->removeTransform(transformRoot, subTransform);
+}
+
+
+
+void ScenePropertyBrowser::addObject (redshift::scenefile::Object const &ob) {
+        objectPropertyBrowser->addObject(ob);
+}
+
+
+
+void ScenePropertyBrowser::addVolume (redshift::scenefile::Volume const &vol) {
+        volumePropertyBrowser->addVolume(vol);
+}
+
+
+
+void ScenePropertyBrowser::addTransform(QtProperty *transformRoot,
+                                   redshift::scenefile::Transform const & t
+) {
+        camerasPropertyBrowser->addTransform(transformRoot, t);
+}
+
+
+
+void ScenePropertyBrowser::addRenderSettings (redshift::scenefile::RenderSettings const &rs) {
+        renderSettingsPropertyBrowser->addRenderSettings(rs);
+}
+
+
+
+void ScenePropertyBrowser::addCamera (redshift::scenefile::Camera const &cam) {
+        camerasPropertyBrowser->addCamera(cam);
+}
+
+
+
+QStringList ScenePropertyBrowser::renderSettingNames() const {
+        return renderSettingsPropertyBrowser->names();
+}
+
+
+
+QStringList ScenePropertyBrowser::cameraNames() const {
+        return camerasPropertyBrowser->names();
+}
+
+
+
+void ScenePropertyBrowser::updateUi_() {
+        emit updateUi();
+}
+
+
+
+void ScenePropertyBrowser::sceneChanged_() {
+        emit sceneChanged();
+}
+
+
+void ScenePropertyBrowser::resyncCameraConfig_() {
+        emit resyncCameraConfig();
+}
+
+
+void ScenePropertyBrowser::resyncRenderSettingConfig_() {
+        emit resyncRenderSettingConfig();
+}
+
+
+
+// TODO: this should be in a header
+ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
+        using redshift::scenefile::Color;
+
+        ColorPickerColor ret;
+
+        switch (c.type) {
+        case Color::RGB:
+                ret.mode = ColorPickerColor::Tristimulus;
+                ret.tristimulus = TristimulusColor(
+                                (double)c.rgb.r,
+                                (double)c.rgb.g,
+                                (double)c.rgb.b
+                                );
+                break;
+        case Color::Spectrum:
+                ret.mode = ColorPickerColor::Spectral;
+                for (size_t i=0; i<c.spectrum.samples.size(); ++i) {
+                        SpectralSample ss;
+                        ss.wavelength = c.spectrum.samples[i].wavelength;
+                        ss.amplitude = c.spectrum.samples[i].amplitude;
+                        ret.spectral.push_back(ss);
+                }
+        }
+
+        return ret;
+}
+
+
+
+MainWindow::MainWindow(
+                QString openFilename,
+                QString initialFilename,
+                QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    nonRecurseLock(false),
+    settingsContextMenu(this)
+{
+        setupUi();
+
+        propertyBrowser = new ScenePropertyBrowser(this,
+                                              ui->mdiArea,
+                                              ui->settings,
+                                              codeEditManager);
+        connect (propertyBrowser, SIGNAL(updateUi()),
+                 this,            SLOT(updateUi()));
+        connect (propertyBrowser, SIGNAL(sceneChanged()),
+                 this,            SLOT(setChanged()));
+        connect (propertyBrowser, SIGNAL(resyncCameraConfig()),
+                 this,            SLOT(resyncCameraConfig()));
+        connect (propertyBrowser, SIGNAL(resyncRenderSettingConfig()),
+                 this,            SLOT(resyncRenderSettingConfig()));
+        connect (propertyBrowser, SIGNAL(asUnchanged()),
+                 this,            SLOT(setUnchanged()));
+
+        connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
+                this, SLOT(helpBrowserVisibilityRequested()));
+
+        if (openFilename != "") {
+                try {
+                        redshift::scenefile::Scene scene;
+                        std::ifstream ss(initialFilename.toStdString().c_str());
+                        actuarius::IArchive (ss) & actuarius::pack("scene", scene);
+                        propertyBrowser->loadScene(scene);
+
+                        saveFilename = openFilename;
+                        QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
+                        refreshWindowTitle();
+
+                        //if (openFilename == initialFilename)
+                                setUnchanged();
+                        /*else
+                                setChanged();*/
+                } catch (...) {
+                        propertyBrowser->setDefaultScene();
+                }
+        } else {
+                propertyBrowser->setDefaultScene();
+        }
+
+        objectsMenu.addAction(ui->actionAdd_Horizon_Plane);
+        objectsMenu.addAction(ui->actionAdd_Water_Plane);
+        objectsMenu.addAction(ui->actionAdd_Lazy_Quadtree);
+        objectsMenu.setTitle("New Object");
+
+        volumesMenu.addAction(ui->actionAdd_Homogeneous_Volume);
+        volumesMenu.addAction(ui->actionAdd_Exponential_Volume);
+        volumesMenu.setTitle("New Volume");
+
+        ui->settings->setRootIsDecorated(true);
+        //ui->settings->setIndentation(32);
+        ui->settings->setHeaderVisible(false);
+        ui->settings->installEventFilter(this);
+
+        refreshWindowTitle();
+        //menuBar()->repaint();
+
+        ui->actionShow_Command_Pile->setChecked(false);
+        on_actionShow_Command_Pile_triggered (ui->actionShow_Command_Pile->isChecked());
+
+        ui->actionShow_Picohelp_Browser->setChecked(true);
+        on_actionShow_Picohelp_Browser_triggered (ui->actionShow_Picohelp_Browser->isChecked());
+
+        ui->codeEditor->setPicohelpBrowser(ui->picohelp);
+}
+
+
+
+MainWindow::~MainWindow() {
+        delete ui;
+}
+
+
+
+void MainWindow::setupUi() {
+        changed = true;
+        ui->setupUi(this);
+
+
+        ui->actionShow_Command_Pile->setChecked(true);
+
+
+        // code editor
+        ui->codeEditorFrameOuter->setEnabled(false);
+        ui->codeEditorFrameOuter->setVisible(false);
+
+        // WindowList
+        QtWindowListMenu *winMenu = new QtWindowListMenu(menuBar());
+        winMenu->attachToMdiArea(ui->mdiArea);
+        winMenu->setTitle("Windows");
+        menuBar()->addMenu(winMenu);
+
+        // Properties
+        ui->settings->setAlternatingRowColors(false);
+
+        codeEditManager = new QtVariantPropertyManager(this);
+        connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
+                this, SLOT(code_valueChanged(QtProperty*, QVariant)));
+
+
+        setChanged();
+}
+
+
+
+void MainWindow::setChanged() {
+        if (changed) return;
+        changed = true;
+        ui->menuBar->setStyleSheet("background-color:#A33;");
+        updateUi();
+}
+
+
+
+void MainWindow::setUnchanged() {
+        if (!changed) return;
+        changed = false;
+        ui->menuBar->setStyleSheet("");
+        updateUi();
+}
+
+
+
 void MainWindow::resyncRenderSettingConfig () {
         ui->renderSettingConfig->clear();
-        ui->renderSettingConfig->addItems(renderSettingsPropertyBrowser->names());
+        ui->renderSettingConfig->addItems(propertyBrowser->renderSettingNames());
         updateUi();
 }
 
@@ -410,7 +630,7 @@ void MainWindow::resyncRenderSettingConfig () {
 
 void MainWindow::resyncCameraConfig () {
         ui->cameraConfig->clear();
-        ui->cameraConfig->addItems(camerasPropertyBrowser->names());
+        ui->cameraConfig->addItems(propertyBrowser->cameraNames());
         updateUi();
 }
 
@@ -444,11 +664,11 @@ void MainWindow::changeEvent(QEvent *e) {
 
 void MainWindow::updateUi() {
         refreshWindowTitle();
-        on_settings_currentItemChanged(currentBrowserItem);
+        on_settings_currentItemChanged(propertyBrowser->currentBrowserItem());
 }
 
 
-
+// FROB
 void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
         settingsContextMenu.clear();
@@ -458,7 +678,6 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         settingsContextMenu.addMenu(&volumesMenu);
         settingsContextMenu.addSeparator();
 
-        this->currentBrowserItem = current;
         QString name = (current==0) ? "" : current->property()->propertyName();
 
         QtProperty *parentProp = (current==0)
@@ -483,8 +702,8 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                 ui->deleteObjectButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionDelete_Object);
 
-                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
+                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
         } else {
                 ui->deleteObjectButton->setEnabled(false);
         }
@@ -495,8 +714,8 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                 ui->deleteVolumeButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionDelete_Volume);
 
-                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
+                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
         } else {
                 ui->deleteVolumeButton->setEnabled(false);
         }
@@ -513,29 +732,19 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                                           == "render-settings");
                                       //(parentProp == renderSettingsProperty);
 
-        currentCameraProperty        = 0;
-        currentTransformProperty     = 0;
-        currentRenderSettingProperty = 0;
 
         if (isSubTransform) {
-                currentCameraProperty    = parentParentProp;
-                currentTransformProperty = parentProp;
-                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
+                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
         }
-        if (isTransform) {
-                currentCameraProperty    = parentProp;
-                currentTransformProperty = current->property();
-        }
+
         if (isCamera) {
-                currentCameraProperty    = current->property();
-                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
+                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
         }
         if (isRenderSetting) {
-                currentRenderSettingProperty = current->property();
-                ui->moveDownButton->setEnabled(!isLast(parentProp, currentBrowserItem));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, currentBrowserItem));
+                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
         }
 
         if (isCode) {
@@ -547,7 +756,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                 ui->codeEditorFrameOuter->setVisible(false);
         }
 
-        if (currentTransformProperty != 0) {
+        if (propertyBrowser->currentTransformProperty() != 0) {
                 ui->newSubTransformButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionNew_Sub_Transform);
         } else {
@@ -584,7 +793,7 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
         using namespace redshift;
 
         try {
-                const shared_ptr<scenefile::Scene> scene = createScene ();
+                const shared_ptr<scenefile::Scene> scene = propertyBrowser->createScene ();
                 std::stringstream ss;
                 OArchive (ss) & pack("scene", *scene);
                 QMessageBox::information(this, QString("Teh codes"), ss.str().c_str());
@@ -635,7 +844,7 @@ void MainWindow::on_codeEditor_codeChanged() {
         if (nonRecurseLock)
                 return;
         nonRecurseLock = true;
-        codeEditManager->setValue(currentBrowserItem->property(),
+        codeEditManager->setValue(propertyBrowser->currentBrowserItem()->property(),
                                   ui->codeEditor->code());
         nonRecurseLock = false;
 }
@@ -777,7 +986,7 @@ QString MainWindow::getAndUpdateSaveFilename() {
 
 
 void MainWindow::on_action_Save_triggered() {
-        QString code = sceneToCode();
+        QString code = propertyBrowser->sceneToCode();
         QString file = getAndUpdateSaveFilename();
         if (file == "")
                 return;
@@ -801,7 +1010,7 @@ void MainWindow::on_action_Save_triggered() {
 
 void MainWindow::on_actionSave_as_triggered() {
         again:
-        QString code = sceneToCode();
+        QString code = propertyBrowser->sceneToCode();
         QString newName = askForNewSaveFilename();
         if (newName == "") {
                 return;
@@ -826,7 +1035,7 @@ void MainWindow::on_actionSave_as_triggered() {
 
 
 void MainWindow::on_actionSave_copy_as_triggered() {
-        QString code = sceneToCode();
+        QString code = propertyBrowser->sceneToCode();
         QString file = askForNewSaveFilename();
         if (file == "")
                 return;
@@ -856,25 +1065,6 @@ void MainWindow::refreshWindowTitle() {
 
 
 
-QString MainWindow::sceneToCode() {
-        QString tehCodes;
-        try {
-                using namespace actuarius;
-                using namespace redshift;
-
-                const shared_ptr<scenefile::Scene> scene = createScene ();
-                std::stringstream ss;
-                OArchive (ss) & pack("scene", *scene);
-                return QString::fromStdString(ss.str());
-        } catch (std::exception const &e) {
-                QMessageBox::critical(this, "Critical",
-                                      e.what());
-                return "";
-        }
-}
-
-
-
 void MainWindow::on_renderButton_clicked() {
         render();
 }
@@ -888,7 +1078,7 @@ void MainWindow::render() {
                       camera = ui->cameraConfig->currentIndex();
 
                 RenderWindow *rw = new RenderWindow (
-                                createScene(),
+                                propertyBrowser->createScene(),
                                 renderSettings, camera,
                                 this);
                 ui->mdiArea->addSubWindow(rw);
@@ -934,7 +1124,7 @@ void MainWindow::on_actionLoad_triggered() {
 
 void MainWindow::loadScene (QString const &name) {
         redshift::scenefile::Scene scene;
-        redshift::scenefile::Scene oldScene = *createScene();
+        redshift::scenefile::Scene oldScene = *propertyBrowser->createScene();
 
         if (!QFile::exists(name)) {
                 QMessageBox::critical(this,
@@ -947,12 +1137,12 @@ void MainWindow::loadScene (QString const &name) {
         try {
                 std::ifstream ss(name.toStdString().c_str());
                 actuarius::IArchive (ss) & actuarius::pack("scene", scene);
-                loadScene (scene);
+                propertyBrowser->loadScene (scene);
                 saveFilename = name;
                 QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                 refreshWindowTitle();
         } catch (std::exception const &e){
-                loadScene(oldScene);
+                propertyBrowser->loadScene(oldScene);
                 QMessageBox::critical(this,
                       "Error upon loading",
                       "The selected file \"" + name + "\" could not be loaded, "
@@ -1012,14 +1202,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent */*event*/) {
 void MainWindow::on_actionDelete_Render_Setting_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        renderSettingsPropertyBrowser->remove(currentRenderSettingProperty);
+        propertyBrowser->removeRenderSetting(propertyBrowser->currentBrowserItem()->property());
         resyncRenderSettingConfig();
 }
 void MainWindow::on_actionNew_Render_Setting_triggered() {
         setChanged();
         redshift::scenefile::RenderSettings rs;
         rs.title = "new-setting";
-        renderSettingsPropertyBrowser->addRenderSettings (rs);
+        propertyBrowser->addRenderSettings (rs);
 }
 
 
@@ -1028,18 +1218,18 @@ void MainWindow::on_actionAdd_Homogeneous_Volume_triggered() {
         setChanged();
         redshift::scenefile::Volume v;
         v.type = redshift::scenefile::Volume::homogeneous;
-        volumePropertyBrowser->addVolume (v);
+        propertyBrowser->addVolume (v);
 }
 void MainWindow::on_actionAdd_Exponential_Volume_triggered() {
         setChanged();
         redshift::scenefile::Volume v;
         v.type = redshift::scenefile::Volume::exponential;
-        volumePropertyBrowser->addVolume (v);
+        propertyBrowser->addVolume (v);
 }
 void MainWindow::on_actionDelete_Volume_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        volumePropertyBrowser->remove(currentBrowserItem->property());
+        propertyBrowser->removeVolume(propertyBrowser->currentBrowserItem()->property());
 }
 
 
@@ -1061,13 +1251,13 @@ void MainWindow::on_actionNew_Camera_triggered() {
         t.type = redshift::scenefile::Transform::roll;
         cam.transforms.push_back(t);
 
-        camerasPropertyBrowser->addCamera(cam);
+        propertyBrowser->addCamera(cam);
         resyncCameraConfig();
 }
 void MainWindow::on_actionDelete_Camera_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        camerasPropertyBrowser->remove(currentCameraProperty);
+        propertyBrowser->removeCamera(propertyBrowser->currentBrowserItem()->property());
         resyncCameraConfig();
 }
 
@@ -1077,15 +1267,17 @@ void MainWindow::on_actionNew_Sub_Transform_triggered() {
         setChanged();
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
-        camerasPropertyBrowser->addTransform (
-                      currentTransformProperty,
-                      redshift::scenefile::Transform());
+        propertyBrowser->addTransform(
+                        propertyBrowser->currentTransformProperty(),
+                        redshift::scenefile::Transform());
 }
 void MainWindow::on_actionDelete_Sub_Transform_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        currentTransformProperty->removeSubProperty(
-                        currentBrowserItem->property());
+        propertyBrowser->removeTransform(
+                        propertyBrowser->currentTransformProperty(),
+                        propertyBrowser->currentBrowserItem()->property()
+        );
 }
 
 
@@ -1094,24 +1286,24 @@ void MainWindow::on_actionAdd_Water_Plane_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::water_plane;
-        objectPropertyBrowser->addObject (o);
+        propertyBrowser->addObject (o);
 }
 void MainWindow::on_actionAdd_Horizon_Plane_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::horizon_plane;
-        objectPropertyBrowser->addObject (o);
+        propertyBrowser->addObject (o);
 }
 void MainWindow::on_actionAdd_Lazy_Quadtree_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::lazy_quadtree;
-        objectPropertyBrowser->addObject (o);
+        propertyBrowser->addObject (o);
 }
 void MainWindow::on_actionDelete_Object_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        objectPropertyBrowser->remove(currentBrowserItem->property());
+        propertyBrowser->removeObject(propertyBrowser->currentBrowserItem()->property());
 }
 
 
@@ -1192,14 +1384,14 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e) {
          && ((QKeyEvent*)(e))->key() == Qt::Key_F1
         ) {
                 const bool isOnPropertyBrowser = (QObject*)ui->settings == o;
-                const bool isBrowserItemSelected = 0 != currentBrowserItem;
+                const bool isBrowserItemSelected = 0 != propertyBrowser->currentBrowserItem();
                 if (isOnPropertyBrowser) {
                         if (isBrowserItemSelected) {
                                 const QtProperty *p =
-                                        currentBrowserItem->property();
+                                        propertyBrowser->currentBrowserItem()->property();
                                 const QString name =
                                         p->propertyName();
-                                const QtBrowserItem *parent = currentBrowserItem
+                                const QtBrowserItem *parent = propertyBrowser->currentBrowserItem()
                                                               ->parent();
                                 const QtBrowserItem *grandparent =
                                                               parent ?
@@ -1213,7 +1405,7 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e) {
                                         grandparent ?
                                         grandparent->property()->propertyName() :
                                         "";
-                                QtBrowserItem *it = currentBrowserItem;
+                                QtBrowserItem *it = propertyBrowser->currentBrowserItem();
                                 while (it->parent() != 0) it = it->parent();
                                 const QString outer = it->property()->propertyName();
 
@@ -1264,14 +1456,14 @@ void MainWindow::on_picohelp_sceneFileClicked (QString const &path) {
 
 
 void MainWindow::on_moveUpButton_clicked() {
-        QtBrowserItem *tmp = currentBrowserItem;
-        moveUp (ui->settings, currentBrowserItem->parent()->property(), currentBrowserItem);
+        QtBrowserItem *tmp = propertyBrowser->currentBrowserItem();
+        moveUp (ui->settings, propertyBrowser->currentBrowserItem()->parent()->property(), propertyBrowser->currentBrowserItem());
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
 }
 void MainWindow::on_moveDownButton_clicked() {
-        QtBrowserItem *tmp = currentBrowserItem;
-        moveDown (ui->settings, currentBrowserItem->parent()->property(), currentBrowserItem);
+        QtBrowserItem *tmp = propertyBrowser->currentBrowserItem();
+        moveDown (ui->settings, propertyBrowser->currentBrowserItem()->parent()->property(), propertyBrowser->currentBrowserItem());
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
 }

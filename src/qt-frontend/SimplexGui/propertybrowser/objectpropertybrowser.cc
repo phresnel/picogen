@@ -379,3 +379,11 @@ ObjectPropertyBrowser::readMaterial (
         mat.color = readColor (material->subProperties(), "color");
         return mat;
 }
+
+
+
+void ObjectPropertyBrowser::variantManager_valueChanged(
+        QtProperty*, QVariant const &
+) {
+        emit sceneChanged();
+}

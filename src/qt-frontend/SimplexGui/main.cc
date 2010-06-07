@@ -28,7 +28,8 @@
 
 #include <fstream>
 
-#include "../../redshift/include/static_init.hh"
+#include "redshift/include/jobfile.hh"
+#include "redshift/include/static_init.hh"
 
 #undef main // SDL fix
 

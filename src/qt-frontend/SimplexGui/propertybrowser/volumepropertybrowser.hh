@@ -84,6 +84,7 @@ private:
 private slots:
         void volumeTypeEnumManager_valueChanged(QtProperty*, int);
         void colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&);
+        void variantManager_valueChanged(QtProperty*, QVariant const &);
 };
 
 #endif // VOLUMEPROPERTYBROWSER_HH

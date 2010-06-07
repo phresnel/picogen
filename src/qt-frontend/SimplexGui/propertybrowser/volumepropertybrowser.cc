@@ -393,3 +393,11 @@ VolumePropertyBrowser::readColor (
 
         return ret;
 }
+
+
+
+void VolumePropertyBrowser::variantManager_valueChanged(
+        QtProperty*, QVariant const &
+) {
+        emit sceneChanged();
+}

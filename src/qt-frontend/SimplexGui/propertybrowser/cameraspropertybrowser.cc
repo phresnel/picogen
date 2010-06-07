@@ -87,6 +87,15 @@ void CamerasPropertyBrowser::remove(QtProperty *property) {
 
 
 
+void CamerasPropertyBrowser::removeTransform (
+        QtProperty *transformRoot,
+        QtProperty *subTransform
+) {
+        transformRoot->removeSubProperty(subTransform);
+}
+
+
+
 void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
         using redshift::scenefile::Camera;
 
@@ -162,6 +171,7 @@ void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
 
         collapse (root, transformRoot);
 
+        emit sceneChanged();
         emit updateUi();
 }
 
@@ -224,6 +234,7 @@ void CamerasPropertyBrowser::addTransform (QtProperty *transformRoot,
                 break;
         }
 
+        emit sceneChanged();
         emit updateUi();
 }
 
