@@ -70,8 +70,6 @@ private:
         VolumePropertyBrowser *volumePropertyBrowser;
         RenderSettingsPropertyBrowser *renderSettingsPropertyBrowser;
 
-        QtStringPropertyManager *rsTitleManager;
-
         QtLineEditFactory *lineEditFactory;
 
         QtVariantPropertyManager *variantManager;
@@ -93,11 +91,9 @@ private:
         QtProperty *pssSunSkyProperty;
         QtEnumPropertyManager
                         *transformEnumManager,
-                        *cameraTypeEnumManager,
-                        *surfaceIntegratorTypeEnumManager;
+                        *cameraTypeEnumManager;
         QtVariantPropertyManager *codeEditManager;
 
-        void resyncRenderSettingConfig ();
         void resyncCameraConfig ();
         void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
@@ -206,11 +202,10 @@ private slots:
         void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
         void cameraTypeEnumManager_valueChanged(QtProperty*, int);
-        void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
-        void rsTitleManager_valueChanged (QtProperty *, const QString &);
 
         void updateUi();
         void setChanged ();
+        void resyncRenderSettingConfig ();
 };
 
 #endif // MAINWINDOW_HH

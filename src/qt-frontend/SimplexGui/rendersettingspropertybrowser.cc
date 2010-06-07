@@ -23,9 +23,13 @@
 
 #include <QtTreePropertyBrowser>
 #include <QtProperty>
+
 #include <QtGroupPropertyManager>
 #include <QtVariantPropertyManager>
 #include <QtEnumPropertyManager>
+#include <QtStringPropertyManager>
+
+#include <QtLineEditFactory>
 
 #include "redshift/include/jobfile.hh"
 
@@ -60,11 +64,31 @@ RenderSettingsPropertyBrowser::RenderSettingsPropertyBrowser(
 void RenderSettingsPropertyBrowser::initializeScene() {
         QtProperty *topItem = groupManager->addProperty("render-settings");
         renderSettingsProperty = topItem;
-        ui->settings->addProperty(topItem);
+        root->addProperty(topItem);
 
-        ui->settings->setBackgroundColor(
-                     ui->settings->topLevelItem(renderSettingsProperty),
+        root->setBackgroundColor(
+                     root->topLevelItem(renderSettingsProperty),
                      QColor(130,90,90));
+
+        rsTitleManager = new QtStringPropertyManager (this);
+        connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
+                this, SLOT(rsTitleManager_valueChanged(QtProperty*,const QString &)));
+
+        surfaceIntegratorTypeEnumManager = new QtEnumPropertyManager(this);
+        connect(surfaceIntegratorTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
+                this, SLOT(surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*,int)));
+
+        enumManager = new QtEnumPropertyManager(this);
+        connect (enumManager, SIGNAL(valueChanged(QtProperty*,int)),
+                 this, SLOT(enumManager_valueChanged(QtProperty*,int)));
+
+
+        comboBoxFactory = new QtEnumEditorFactory(this);
+        lineEditFactory = new QtLineEditFactory(this);
+
+        root->setFactoryForManager(rsTitleManager, lineEditFactory);
+        root->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
+        root->setFactoryForManager(enumManager, comboBoxFactory);
 }
 
 
@@ -160,7 +184,7 @@ void RenderSettingsPropertyBrowser::addRenderSettings (
                         surfaceIntegratorTypeEnumManager_valueChanged(integratorType, 3);
                         break;
                 default:
-                        QMessageBox::warning(this,
+                        QMessageBox::warning(ownerWidget,
                           "Unsupported Surface Integrator",
                           "It has been tried to load a surface integrator "
                           "\""
@@ -208,7 +232,7 @@ void RenderSettingsPropertyBrowser::addRenderSettings (
                         enumManager->setValue(integratorType, 2);
                         break;
                 default:
-                        QMessageBox::warning(this,
+                        QMessageBox::warning(ownerWidget,
                           "Unsupported Volume Integrator",
                           "It has been tried to load a volume integrator "
                           "\""
@@ -218,15 +242,70 @@ void RenderSettingsPropertyBrowser::addRenderSettings (
                         enumManager->setValue(integratorType, 0);
                 }
         }
-        collapse (ui->settings, topItem);
-        resyncRenderSettingConfig();
-
+        collapse (root, topItem);
         emit updateUi();
 }
 
 
 
-RenderSettingsPropertyBrowser::remove(QtProperty *property) {
+void RenderSettingsPropertyBrowser::remove(QtProperty *property) {
         renderSettingsProperty->removeSubProperty(property);
         emit sceneChanged();
+}
+
+
+
+void RenderSettingsPropertyBrowser::rsTitleManager_valueChanged (
+        QtProperty * property,
+        const QString & value
+) {
+        if (QtProperty *par = findParent (root->properties(), property)) {
+                par->setPropertyName(value);
+        }
+        emit sceneChanged();
+}
+
+
+
+void RenderSettingsPropertyBrowser::surfaceIntegratorTypeEnumManager_valueChanged(
+        QtProperty* prop, int index
+){
+        emit sceneChanged(); //setChanged();
+        QtProperty *t = findParent(root->properties(), prop);
+        if (!t)
+                return;
+
+        const QStringList enumNames =
+                        surfaceIntegratorTypeEnumManager->enumNames(prop);
+        const QString type = enumNames[index];
+
+        // Remove all properties not titled "type" to make place for the right
+        // properties.
+        // TODO: maybe just make them invisible if that is possible.
+        foreach (QtProperty *nt, t->subProperties()){
+                if (nt->propertyName() != "type") {
+                        t->removeSubProperty(nt);
+                }
+        }
+
+        if (type == "none") {
+                // has no options.
+        } else if (type == "whitted_ambient") {
+                QtVariantProperty* numSamples = variantManager->addProperty(QVariant::Int,"ambient-samples");
+                numSamples->setToolTip("Low values give a noisy look, but yield faster renderings.");
+                numSamples->setAttribute(QLatin1String("minimum"), 1);
+                numSamples->setAttribute(QLatin1String("maximum"), 0xFFFF);
+                numSamples->setValue(10);
+                t->addSubProperty(numSamples);
+        } else if (type == "whitted") {
+                // has no options.
+        } else if (type == "path") {
+                // has no options.
+        } else {
+                QMessageBox::critical(ownerWidget, "Unsupported object",
+                                      "The object-type '" + type + "' "
+                                      "is not supported. This is probably "
+                                      "an oversight by the incapable "
+                                      "programmers, please report this issue.");
+        }
 }

@@ -165,7 +165,7 @@ void MainWindow::initializeScene() {
                         codeEditManager,
                         colorEditManager);
         connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
-        connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+        connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig()));
 
 
         initializeCameraSettings();
@@ -219,10 +219,6 @@ void MainWindow::setupUi() {
         connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                  this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
 
-        rsTitleManager = new QtStringPropertyManager (this);
-        connect(rsTitleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
-                this, SLOT(rsTitleManager_valueChanged(QtProperty*,const QString &)));
-
         groupManager = new QtGroupPropertyManager(this);
 
         enumManager = new QtEnumPropertyManager(this);
@@ -237,10 +233,6 @@ void MainWindow::setupUi() {
         transformEnumManager = new QtEnumPropertyManager(this);
         connect(transformEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(transformEnumManager_valueChanged(QtProperty*,int)));
-
-        surfaceIntegratorTypeEnumManager = new QtEnumPropertyManager(this);
-        connect(surfaceIntegratorTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
-                this, SLOT(surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*,int)));
 
         cameraTypeEnumManager = new QtEnumPropertyManager(this);
         connect(cameraTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
@@ -258,8 +250,6 @@ void MainWindow::setupUi() {
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
-        ui->settings->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
-        ui->settings->setFactoryForManager(rsTitleManager, lineEditFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
 
         setChanged();
@@ -271,7 +261,7 @@ void MainWindow::setChanged() {
         if (changed) return;
         changed = true;
         ui->menuBar->setStyleSheet("background-color:#A33;");
-        refreshWindowTitle();
+        updateUi();
 }
 
 
@@ -280,7 +270,7 @@ void MainWindow::setUnchanged() {
         if (!changed) return;
         changed = false;
         ui->menuBar->setStyleSheet("");
-        refreshWindowTitle();
+        updateUi();
 }
 
 
@@ -907,6 +897,7 @@ void MainWindow::resyncRenderSettingConfig () {
         foreach (QtProperty *prop, renderSettingsPropertyBrowser->subProperties()) {
                 ui->renderSettingConfig->addItem(prop->propertyName());
         }
+        updateUi();
 }
 
 
@@ -1139,51 +1130,6 @@ void MainWindow::colorEditManager_valueChanged(QtProperty *, ColorPickerColor) {
 
 
 
-void MainWindow::surfaceIntegratorTypeEnumManager_valueChanged(
-        QtProperty* prop, int index
-){
-        setChanged();
-        QtProperty *t = findParent(ui->settings->properties(), prop);
-        if (!t)
-                return;
-
-        const QStringList enumNames =
-                        surfaceIntegratorTypeEnumManager->enumNames(prop);
-        const QString type = enumNames[index];
-
-        // Remove all properties not titled "type" to make place for the right
-        // properties.
-        // TODO: maybe just make them invisible if that is possible.
-        foreach (QtProperty *nt, t->subProperties()){
-                if (nt->propertyName() != "type") {
-                        t->removeSubProperty(nt);
-                }
-        }
-
-        if (type == "none") {
-                // has no options.
-        } else if (type == "whitted_ambient") {
-                QtVariantProperty* numSamples = variantManager->addProperty(QVariant::Int,"ambient-samples");
-                numSamples->setToolTip("Low values give a noisy look, but yield faster renderings.");
-                numSamples->setAttribute(QLatin1String("minimum"), 1);
-                numSamples->setAttribute(QLatin1String("maximum"), 0xFFFF);
-                numSamples->setValue(10);
-                t->addSubProperty(numSamples);
-        } else if (type == "whitted") {
-                // has no options.
-        } else if (type == "path") {
-                // has no options.
-        } else {
-                QMessageBox::critical(this, "Unsupported object",
-                                      "The object-type '" + type + "' "
-                                      "is not supported. This is probably "
-                                      "an oversight by the incapable "
-                                      "programmers, please report this issue.");
-        }
-}
-
-
-
 void MainWindow::cameraTypeEnumManager_valueChanged(
         QtProperty* prop, int index
 ) {
@@ -1231,19 +1177,6 @@ void MainWindow::cameraTypeEnumManager_valueChanged(
 
 
 
-void MainWindow::rsTitleManager_valueChanged (
-        QtProperty * property,
-        const QString & value
-) {
-        setChanged();
-        if (QtProperty *par = findParent (ui->settings->properties(), property)) {
-                par->setPropertyName(value);
-        }
-        resyncRenderSettingConfig();
-}
-
-
-
 void MainWindow::changeEvent(QEvent *e) {
         QMainWindow::changeEvent(e);
         switch (e->type()) {
@@ -1258,6 +1191,7 @@ void MainWindow::changeEvent(QEvent *e) {
 
 
 void MainWindow::updateUi() {
+        refreshWindowTitle();
         on_settings_currentItemChanged(currentBrowserItem);
 }
 
@@ -1323,7 +1257,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         const bool isCamera         = (parentProp != 0)
                                       && (parentProp == camerasProperty);
         const bool isRenderSetting  = (parentProp != 0)
-                                      && (parentProp == renderSettingsProperty);
+                                      && (parentProp->propertyName()
+                                          == "render-settings");
+                                      //(parentProp == renderSettingsProperty);
 
         currentCameraProperty        = 0;
         currentTransformProperty     = 0;
@@ -1824,14 +1760,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent */*event*/) {
 void MainWindow::on_actionDelete_Render_Setting_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        renderSettingsProperty->removeSubProperty(currentRenderSettingProperty);
+        renderSettingsPropertyBrowser->remove(currentRenderSettingProperty);
         resyncRenderSettingConfig();
 }
 void MainWindow::on_actionNew_Render_Setting_triggered() {
         setChanged();
         redshift::scenefile::RenderSettings rs;
         rs.title = "new-setting";
-        addRenderSettings (rs);
+        renderSettingsPropertyBrowser->addRenderSettings (rs);
 }
 
 

@@ -29,6 +29,7 @@
 #include <spectralcolorpicker.hh>
 #include <tristimuluscolorpicker.hh>
 
+#include <stdexcept>
 #include <fstream>
 
 namespace Ui {
@@ -117,6 +118,8 @@ struct ColorPickerColor {
                                 return QColor(r, g, b);
                         }
                 }
+                throw std::runtime_error(
+                        "unhandled mode in colorpicker.hh:toColor()");
         }
 };
 

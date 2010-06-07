@@ -31,6 +31,9 @@ class QtGroupPropertyManager;
 class QtProperty;
 class QtEnumPropertyManager;
 class QtVariantPropertyManager;
+class QtLineEditFactory;
+class QtStringPropertyManager;
+class QtEnumEditorFactory;
 class ColorEditManager;
 
 #include <QObject>
@@ -38,6 +41,7 @@ class ColorEditManager;
 
 class RenderSettingsPropertyBrowser : public QObject
 {
+        Q_OBJECT
 public:
         RenderSettingsPropertyBrowser(QWidget *,
                                       QtTreePropertyBrowser *,
@@ -59,11 +63,23 @@ private:
 
         QWidget *ownerWidget;
         QtTreePropertyBrowser *root;
-        QtEnumPropertyManager *volumeTypeEnumManager;
+        QtEnumPropertyManager
+                *volumeTypeEnumManager,
+                *surfaceIntegratorTypeEnumManager,
+                *enumManager;
         QtGroupPropertyManager *groupManager;
         QtVariantPropertyManager *variantManager, *codeEditManager;
         QtProperty *renderSettingsProperty;
+
+        QtLineEditFactory *lineEditFactory;
+        QtEnumEditorFactory *comboBoxFactory;
+
+        QtStringPropertyManager *rsTitleManager;
         ColorEditManager *colorEditManager;
+
+private slots:
+        void rsTitleManager_valueChanged (QtProperty *, const QString &);
+        void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
 };
 
 #endif // RENDERSETTINGSPROPERTYBROWSER_HH
