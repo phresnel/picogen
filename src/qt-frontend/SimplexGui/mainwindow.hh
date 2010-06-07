@@ -87,12 +87,10 @@ private:
                    *backgroundsProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
-        QtProperty /**objectsProperty*/
-                   *volumesProperty,
+        QtProperty *volumesProperty,
                    *pssSunSkyProperty;
         QtEnumPropertyManager
                         *transformEnumManager,
-                        /**objectTypeEnumManager*/
                         *volumeTypeEnumManager,
                         *cameraTypeEnumManager,
                         *surfaceIntegratorTypeEnumManager;
@@ -103,9 +101,6 @@ private:
         void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform const &);
-
-        /*void initializeObjects();
-        void addObject (redshift::scenefile::Object const &);*/
 
         void initializeVolumes ();
         void addVolume (redshift::scenefile::Volume const &);
@@ -215,7 +210,6 @@ private slots:
 
         void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
-        /*void objectTypeEnumManager_valueChanged(QtProperty*, int);*/
         void volumeTypeEnumManager_valueChanged(QtProperty*, int);
         void cameraTypeEnumManager_valueChanged(QtProperty*, int);
         void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
