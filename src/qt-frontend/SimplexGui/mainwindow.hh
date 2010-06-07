@@ -46,6 +46,7 @@ namespace redshift {
 class ObjectPropertyBrowser;
 class VolumePropertyBrowser;
 class RenderSettingsPropertyBrowser;
+class CamerasPropertyBrowser;
 
 class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -69,6 +70,7 @@ private:
         ObjectPropertyBrowser *objectPropertyBrowser;
         VolumePropertyBrowser *volumePropertyBrowser;
         RenderSettingsPropertyBrowser *renderSettingsPropertyBrowser;
+        CamerasPropertyBrowser *camerasPropertyBrowser;
 
         QtLineEditFactory *lineEditFactory;
 
@@ -83,26 +85,16 @@ private:
         ColorEditManager *colorEditManager;
         ColorEditFactory *colorEditFactory;
 
-        QtProperty *camerasProperty, *filmSettingsProperty,
+        QtProperty *filmSettingsProperty,
                    *currentCameraProperty,
                    *backgroundsProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
         QtProperty *pssSunSkyProperty;
-        QtEnumPropertyManager
-                        *transformEnumManager,
-                        *cameraTypeEnumManager;
         QtVariantPropertyManager *codeEditManager;
-
-        void resyncCameraConfig ();
-        void addCamera (redshift::scenefile::Camera const&);
-        void addTransform (QtProperty *transformRoot,
-                           redshift::scenefile::Transform const &);
 
         void initializeFilmSettings();
         void setFilmSettings(redshift::scenefile::FilmSettings const &);
-
-        void initializeCameraSettings ();
 
         void initializeBackgrounds ();
         // this method won't have a long stay once multiple backgrounds
@@ -200,12 +192,11 @@ private slots:
         void colorEditManager_valueChanged (QtProperty *, ColorPickerColor);
 
         void code_valueChanged(QtProperty*, QVariant);
-        void transformEnumManager_valueChanged(QtProperty*, int);
-        void cameraTypeEnumManager_valueChanged(QtProperty*, int);
 
         void updateUi();
         void setChanged ();
         void resyncRenderSettingConfig ();
+        void resyncCameraConfig ();
 };
 
 #endif // MAINWINDOW_HH

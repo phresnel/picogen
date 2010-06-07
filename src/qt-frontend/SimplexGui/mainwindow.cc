@@ -48,6 +48,7 @@
 #include "objectpropertybrowser.hh"
 #include "volumepropertybrowser.hh"
 #include "rendersettingspropertybrowser.hh"
+#include "cameraspropertybrowser.hh"
 
 
 // TODO: this should be in a header
@@ -168,7 +169,14 @@ void MainWindow::initializeScene() {
         connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig()));
 
 
-        initializeCameraSettings();
+        camerasPropertyBrowser = new CamerasPropertyBrowser(this,
+                                                            ui->settings,
+                                                            groupManager,
+                                                            variantManager,
+                                                            codeEditManager,
+                                                            colorEditManager);
+        connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig()));
 
         objectPropertyBrowser = new ObjectPropertyBrowser(this,
                                                           ui->settings,
@@ -230,14 +238,6 @@ void MainWindow::setupUi() {
                  this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor)));
         colorEditFactory = new ColorEditFactory (this, ui->mdiArea);
 
-        transformEnumManager = new QtEnumPropertyManager(this);
-        connect(transformEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
-                this, SLOT(transformEnumManager_valueChanged(QtProperty*,int)));
-
-        cameraTypeEnumManager = new QtEnumPropertyManager(this);
-        connect(cameraTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
-                this, SLOT(cameraTypeEnumManager_valueChanged(QtProperty*,int)));
-
         codeEditManager = new QtVariantPropertyManager(this);
         connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                 this, SLOT(code_valueChanged(QtProperty*, QVariant)));
@@ -248,8 +248,6 @@ void MainWindow::setupUi() {
         variantFactory = new QtVariantEditorFactory(this);
         ui->settings->setFactoryForManager(variantManager, variantFactory);
         ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
-        ui->settings->setFactoryForManager(transformEnumManager, comboBoxFactory);
-        ui->settings->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
         ui->settings->setFactoryForManager(colorEditManager, colorEditFactory);
 
         setChanged();
@@ -281,7 +279,7 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i)
                 renderSettingsPropertyBrowser->addRenderSettings(scene.renderSettings(i));
         for (unsigned int i=0; i<scene.cameraCount(); ++i)
-                addCamera(scene.camera(i));
+                camerasPropertyBrowser->addCamera(scene.camera(i));
         for (unsigned int i=0; i<scene.objectCount(); ++i)
                 objectPropertyBrowser->addObject(scene.object(i));
         for (unsigned int i=0; i<scene.volumeCount(); ++i)
@@ -359,7 +357,7 @@ void MainWindow::setDefaultScene() {
         t.type = redshift::scenefile::Transform::roll;
         cam.transforms.push_back(t);
 
-        addCamera(cam);
+        camerasPropertyBrowser->addCamera(cam);
 
         // - objects
         /*redshift::scenefile::Object o;
@@ -416,16 +414,6 @@ void MainWindow::initializeFilmSettings() {
 void MainWindow::setFilmSettings(redshift::scenefile::FilmSettings const &fs) {
         writeValue<bool>("convert-to-srgb", filmSettingsProperty, fs.convertToSrgb);
         writeValue<double>("color-scale", filmSettingsProperty, fs.colorscale);
-}
-
-
-
-void MainWindow::initializeCameraSettings () {
-        camerasProperty = groupManager->addProperty("cameras");
-        ui->settings->addProperty(camerasProperty);
-        ui->settings->setBackgroundColor(
-                        ui->settings->topLevelItem(camerasProperty),
-                        QColor(110,110,110));
 }
 
 
@@ -687,7 +675,7 @@ redshift::shared_ptr<redshift::scenefile::Scene>
                 throw std::runtime_error("No Camera present.");
         }
 
-        foreach (QtProperty *cam, camerasProperty->subProperties()) {
+        foreach (QtProperty *cam, camerasPropertyBrowser->subProperties()) {
 
                 scenefile::Camera camera;
                 camera.title = cam->propertyName().toStdString();
@@ -904,207 +892,11 @@ void MainWindow::resyncRenderSettingConfig () {
 
 void MainWindow::resyncCameraConfig () {
         ui->cameraConfig->clear();
-        foreach (QtProperty *prop, camerasProperty->subProperties()) {
+        foreach (QtProperty *prop, camerasPropertyBrowser->subProperties()) {
                 ui->cameraConfig->addItem(prop->propertyName());
         }
 }
 
-
-
-void MainWindow::addCamera(redshift::scenefile::Camera const& c) {
-        using redshift::scenefile::Camera;
-
-        QtProperty *camera = groupManager->addProperty(c.title.c_str());
-        camerasProperty->addSubProperty(camera);
-
-        QtProperty *cameraType = cameraTypeEnumManager->addProperty("type");
-        QStringList enumNames;
-        enumNames << "pinhole"
-                  << "cubemap_left"
-                  << "cubemap_right"
-                  << "cubemap_bottom"
-                  << "cubemap_top"
-                  << "cubemap_front"
-                  << "cubemap_back"
-                  ;
-        cameraTypeEnumManager->setEnumNames(cameraType, enumNames);
-        camera->addSubProperty(cameraType);
-
-        // TODO: should not be hardcoded, enumNames should directly correspond
-        //       to redshift types
-        switch (c.type) {
-        case Camera::pinhole:
-                cameraTypeEnumManager->setValue(cameraType, 0);
-                cameraTypeEnumManager_valueChanged(cameraType, 0);
-                writeValue("front", camera, c.pinholeParams.front);
-                break;
-        case Camera::cubemap_left:
-                cameraTypeEnumManager->setValue(cameraType, 1);
-                cameraTypeEnumManager_valueChanged(cameraType, 1);
-                break;
-        case Camera::cubemap_right:
-                cameraTypeEnumManager->setValue(cameraType, 2);
-                cameraTypeEnumManager_valueChanged(cameraType, 2);
-                break;
-        case Camera::cubemap_bottom:
-                cameraTypeEnumManager->setValue(cameraType, 3);
-                cameraTypeEnumManager_valueChanged(cameraType, 3);
-                break;
-        case Camera::cubemap_top:
-                cameraTypeEnumManager->setValue(cameraType, 4);
-                cameraTypeEnumManager_valueChanged(cameraType, 4);
-                break;
-        case Camera::cubemap_front:
-                cameraTypeEnumManager->setValue(cameraType, 5);
-                cameraTypeEnumManager_valueChanged(cameraType, 5);
-                break;
-        case Camera::cubemap_back:
-                cameraTypeEnumManager->setValue(cameraType, 6);
-                cameraTypeEnumManager_valueChanged(cameraType, 6);
-                break;
-        default:
-                QMessageBox::warning(this,
-                  "Unsupported Camera Type",
-                  "It has been tried to set a camera type "
-                  "\""
-                  + QString::fromStdString(redshift::scenefile::Camera::Typenames[c.type])
-                  + "\", but this type is currently not supported here."
-                );
-                cameraTypeEnumManager->setValue(cameraType, 0);
-                cameraTypeEnumManager_valueChanged(cameraType, 0);
-                break;
-        };
-
-        QtProperty *transformRoot = groupManager->addProperty("transform");
-        camera->addSubProperty(transformRoot);
-
-        collapse (ui->settings, camera);
-
-        for (int i=0; i<c.transforms.size(); ++i) {
-                addTransform (transformRoot, c.transforms[i]);
-        }
-
-        collapse (ui->settings, transformRoot);
-
-        resyncCameraConfig();
-        updateUi();
-}
-
-
-
-void MainWindow::addTransform (QtProperty *transformRoot,
-                               redshift::scenefile::Transform const & t) {
-        typedef redshift::scenefile::Transform Xf;
-
-        QtProperty *transform = groupManager->addProperty("---");
-        transformRoot->addSubProperty(transform);
-
-
-        QtProperty *transformType = transformEnumManager->addProperty("type");
-        transform->addSubProperty(transformType);
-
-        QStringList enumNames;
-        int i = 0, def = 0;
-        enumNames << "move";
-        if (t.type == Xf::move) def = i; i++;
-        enumNames << "move-left";
-        if (t.type == Xf::move_left) def = i; i++;
-        enumNames << "move-right";
-        if (t.type == Xf::move_right) def = i; i++;
-        enumNames << "move-up";
-        if (t.type == Xf::move_up) def = i; i++;
-        enumNames << "move-down";
-        if (t.type == Xf::move_down) def = i; i++;
-        enumNames << "move-backward";
-        if (t.type == Xf::move_backward) def = i; i++;
-        enumNames << "move-forward";
-        if (t.type == Xf::move_forward) def = i; i++;
-        enumNames << "yaw";
-        if (t.type == Xf::yaw) def = i; i++;
-        enumNames << "pitch";
-        if (t.type == Xf::pitch) def = i; i++;
-        enumNames << "roll";
-        if (t.type == Xf::roll) def = i; i++;
-        transformEnumManager->setEnumNames(transformType, enumNames);
-        transformEnumManager->setValue(transformType, def);
-
-        switch (t.type) {
-        case Xf::move:
-                writeValue("right", transform, t.x);
-                writeValue("up", transform, t.y);
-                writeValue("forward", transform, t.z);
-                break;
-        case Xf::move_left: case Xf::move_right:
-                writeValue("distance", transform, t.x);
-                break;
-        case Xf::move_down: case Xf::move_up:
-                writeValue("distance", transform, t.y);
-                break;
-        case Xf::move_backward: case Xf::move_forward:
-                writeValue("distance", transform, t.z);
-                break;
-        case Xf::yaw: case Xf::pitch: case Xf::roll:
-                writeValue("angle", transform, t.angle);
-                break;
-        }
-
-        updateUi();
-}
-
-
-
-void MainWindow::transformEnumManager_valueChanged(
-        QtProperty* prop,
-        int index
-) {
-        setChanged();
-        if (QtProperty *t = findParent(ui->settings->properties(), prop)) {
-                const QStringList enumNames =
-                                transformEnumManager->enumNames(prop);
-                const QString type = enumNames[index];
-
-                t->setPropertyName(type);
-
-                // Remove all properties not titled "type".
-                foreach (QtProperty *nt, t->subProperties()){
-                        if (nt->propertyName() != "type") {
-                                t->removeSubProperty(nt);
-                        }
-                }
-
-                // When tweaking here, also look at XCVBN
-                if (type == "move") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"right"));
-                        QtVariantProperty *tmp = variantManager->addProperty(QVariant::Double,"up");
-                        tmp->setValue(1.);
-                        t->addSubProperty(tmp);
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"forward"));
-                } else if (type == "move-left") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
-                } else if (type == "move-right") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
-                } else if (type == "move-up") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
-                } else if (type == "move-down") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
-                } else if (type == "move-forward") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
-                } else if (type == "move-backward") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"distance"));
-                } else if (type == "yaw") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
-                } else if (type == "pitch") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
-                } else if (type == "roll") {
-                        t->addSubProperty(variantManager->addProperty(QVariant::Double,"angle"));
-                } else QMessageBox::critical(this, "Unsupported object",
-                                                  "The transform '" + type + "' "
-                                                  "is not supported. This is probably "
-                                                  "an oversight by the incapable "
-                                                  "programmers, please report this issue.");
-
-        }
-}
 
 
 
@@ -1122,57 +914,6 @@ void MainWindow::enumManager_valueChanged (QtProperty *, int) {
 
 void MainWindow::colorEditManager_valueChanged(QtProperty *, ColorPickerColor) {
         setChanged();
-}
-
-
-
-
-
-
-
-void MainWindow::cameraTypeEnumManager_valueChanged(
-        QtProperty* prop, int index
-) {
-        setChanged();
-        QtProperty *t = findParent(ui->settings->properties(), prop);
-        if (!t)
-                return;
-
-        const QStringList enumNames = cameraTypeEnumManager->enumNames(prop);
-        const QString type = enumNames[index];
-
-        // Remove all properties not titled "type"/"transform" to make place for
-        // the right properties.
-        // TODO: maybe just make them invisible if that is possible.
-        foreach (QtProperty *nt, t->subProperties()){
-                if (nt->propertyName() != "type"
-                    && nt->propertyName() != "transform"
-                ) {
-                        t->removeSubProperty(nt);
-                }
-        }
-
-        if (type == "pinhole") {
-                QtVariantProperty* front = variantManager->addProperty(QVariant::Double,"front");
-                front->setAttribute(QLatin1String("minimum"), 0.0001);
-                front->setAttribute(QLatin1String("singlestep"), 0.1);
-                front->setValue(1.);
-                t->addSubProperty(front);
-        } else if (type == "cubemap_left"
-                   || type == "cubemap_right"
-                   || type == "cubemap_bottom"
-                   || type == "cubemap_top"
-                   || type == "cubemap_front"
-                   || type == "cubemap_back"
-        ) {
-                // do nothing
-        } else {
-                QMessageBox::critical(this, "Unsupported camera type",
-                                      "The camera-type '" + type + "' "
-                                      "is not supported. This is probably "
-                                      "an oversight by the incapable "
-                                      "programmers, please report this issue.");
-        }
 }
 
 
@@ -1255,7 +996,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                                       && (parentProp->propertyName()
                                           == "transform");
         const bool isCamera         = (parentProp != 0)
-                                      && (parentProp == camerasProperty);
+                                      && (parentProp->propertyName() == "cameras");
         const bool isRenderSetting  = (parentProp != 0)
                                       && (parentProp->propertyName()
                                           == "render-settings");
@@ -1809,13 +1550,13 @@ void MainWindow::on_actionNew_Camera_triggered() {
         t.type = redshift::scenefile::Transform::roll;
         cam.transforms.push_back(t);
 
-        addCamera(cam);
+        camerasPropertyBrowser->addCamera(cam);
         resyncCameraConfig();
 }
 void MainWindow::on_actionDelete_Camera_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        camerasProperty->removeSubProperty(currentCameraProperty);
+        camerasPropertyBrowser->remove(currentCameraProperty);
         resyncCameraConfig();
 }
 
@@ -1825,7 +1566,8 @@ void MainWindow::on_actionNew_Sub_Transform_triggered() {
         setChanged();
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
-        addTransform (currentTransformProperty,
+        camerasPropertyBrowser->addTransform (
+                      currentTransformProperty,
                       redshift::scenefile::Transform());
 }
 void MainWindow::on_actionDelete_Sub_Transform_triggered() {
