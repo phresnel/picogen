@@ -21,6 +21,8 @@
 #ifndef MAINWINDOW_HH
 #define MAINWINDOW_HH
 
+
+
 #include <QMainWindow>
 #include <QMenu>
 #include "qtvariantproperty.h"
@@ -34,6 +36,8 @@
 
 #include "redshift/include/smart_ptr.hh"
 #include "redshift/include/jobfile.hh"
+
+
 
 namespace Ui {
     class MainWindow;
@@ -49,6 +53,8 @@ class RenderSettingsPropertyBrowser;
 class CamerasPropertyBrowser;
 class FilmSettingsPropertyBrowser;
 class BackgroundsPropertyBrowser;
+
+
 
 class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -99,7 +105,6 @@ private:
 
         void initializeScene();
 
-        redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
         redshift::scenefile::Color readColor (QList<QtProperty*> subs, QString name="color") const;
 
         QtBrowserItem * currentBrowserItem;

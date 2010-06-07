@@ -159,20 +159,17 @@ void MainWindow::initializeScene() {
         ui->settings->clear();
         ui->settings->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
 
+
         filmSettingsPropertyBrowser = new FilmSettingsPropertyBrowser(
                         this,
-                        ui->settings
-                        );
+                        ui->settings);
         connect(filmSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(filmSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
 
+
         renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
                         this,
-                        ui->settings,
-                        groupManager,
-                        variantManager,
-                        codeEditManager,
-                        colorEditManager);
+                        ui->settings);
         connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig()));
 
@@ -186,14 +183,15 @@ void MainWindow::initializeScene() {
         connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig()));
 
+
         objectPropertyBrowser = new ObjectPropertyBrowser(this,
+                                                          ui->mdiArea,
                                                           ui->settings,
-                                                          groupManager,
-                                                          variantManager,
-                                                          codeEditManager,
-                                                          colorEditManager);
+                                                          codeEditManager
+                                                          );
         connect(objectPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(objectPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+
 
         volumePropertyBrowser = new VolumePropertyBrowser (this,
                                                            ui->settings,
@@ -203,6 +201,7 @@ void MainWindow::initializeScene() {
                                                            colorEditManager);
         connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
+
 
         backgroundsPropertyBrowser = new BackgroundsPropertyBrowser(
                                                 this, ui->settings);
@@ -426,22 +425,8 @@ MainWindow::readColor (
 
 
 
-redshift::scenefile::Material
-MainWindow::readMaterial (
-        QList<QtProperty*> subs, QString name
-) const {
-        QtProperty *material = readSubProperty(name, subs);
-        if (!material) return redshift::scenefile::Material();
-
-        redshift::scenefile::Material mat;
-        mat.color = readColor (material->subProperties(), "color");
-        return mat;
-}
-
-
-
 redshift::shared_ptr<redshift::scenefile::Scene>
-        MainWindow::createScene () const
+MainWindow::createScene () const
 {
         typedef QList<QtProperty*> Props;
         typedef QtProperty* Prop;
@@ -613,51 +598,10 @@ redshift::shared_ptr<redshift::scenefile::Scene>
 
 
         // Objects.
-        const Props objects = readSubProperties("objects", topProps);
-        foreach (Prop object, objects) {
-                using scenefile::Object;
-
-                const Props subs = object->subProperties();
-                const QString type = readValueText("type", subs);
-
-                scenefile::Object object;
-
-                if (type == "water-plane") {
-                        object.type = Object::water_plane;
-                        const std::string tmp = readValue<QString>("code", subs).toStdString();
-                        if(!tmp.empty())
-                                object.waterPlaneParams.code = tmp;
-                        //object.waterPlaneParams.color
-                        object.waterPlaneParams.height = readValue<double>("height", subs);
-                        object.waterPlaneParams.material = readMaterial (subs);
-                } else if (type == "horizon-plane") {
-                        object.type = Object::horizon_plane;
-                        //object.horizonPlaneParams.color
-                        object.horizonPlaneParams.height = readValue<double>("height", subs);
-                        object.horizonPlaneParams.material = readMaterial (subs);
-                } else if (type == "lazy-quadtree") {
-                        object.type = Object::lazy_quadtree;
-                        const std::string tmp = readValue<QString>("code", subs).toStdString();
-                        if(!tmp.empty())
-                                object.lazyQuadtreeParams.code = tmp;
-                        //object.lazyQuadtreeParams.color;
-                        object.lazyQuadtreeParams.lodFactor = readValue<double>("lod-factor", subs);
-                        object.lazyQuadtreeParams.maxRecursion = readValue<unsigned int>("max-recursion", subs);
-                        object.lazyQuadtreeParams.size = readValue<double>("size", subs);
-                        object.lazyQuadtreeParams.material = readMaterial (subs);
-
-                } else {
-                        throw std::runtime_error((QString() + "The object-type '" + type + "' "
-                                              "is not supported. This is probably "
-                                              "an oversight by the incapable "
-                                              "programmers, please report this issue.").toStdString().c_str());
-                }
-
-                scene->addObject(object);
-
-        }
+        objectPropertyBrowser->addObjectsToScene(*scene);
 
 
+        // Volumes.
         const Props volumes = readSubProperties("volumes", topProps);
         foreach (Prop volume, volumes) {
                 using scenefile::Volume;

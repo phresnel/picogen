@@ -20,41 +20,40 @@
 
 #include <QStringList>
 #include <QMessageBox>
+#include <QMdiArea>
 
 #include <QtTreePropertyBrowser>
 #include <QtProperty>
 
 #include <QtGroupPropertyManager>
-#include <QtVariantPropertyManager>
 #include <QtEnumPropertyManager>
 #include <QtStringPropertyManager>
+
+#include <QtVariantPropertyManager>
+#include <QtVariantEditorFactory>
 
 #include <QtLineEditFactory>
 
 #include "redshift/include/jobfile.hh"
-
 #include "propertybrowser-helpers.hh"
 
 #include "coloreditmanager.h"
+#include "coloreditfactory.h"
+#include "colorpicker.hh"
 
 #include "rendersettingspropertybrowser.hh"
 
+
+
 RenderSettingsPropertyBrowser::RenderSettingsPropertyBrowser(
         QWidget *ownerWidget_,
-        QtTreePropertyBrowser *root,
-        QtGroupPropertyManager *groupManager,
-        QtVariantPropertyManager *variantManager,
-        QtVariantPropertyManager *codeEditManager,
-        ColorEditManager *colorEditManager
+        QtTreePropertyBrowser *root
 )
 : QObject(ownerWidget_)
 , ownerWidget(ownerWidget_)
 , root(root)
-, groupManager(groupManager)
-, variantManager(variantManager)
-, codeEditManager(codeEditManager)
+, groupManager(new QtGroupPropertyManager(this))
 , renderSettingsProperty(0)
-, colorEditManager(colorEditManager)
 {
         initializeScene();
 }
@@ -62,6 +61,14 @@ RenderSettingsPropertyBrowser::RenderSettingsPropertyBrowser(
 
 
 void RenderSettingsPropertyBrowser::initializeScene() {
+        variantManager = new QtVariantPropertyManager(this);
+        variantFactory = new QtVariantEditorFactory(this);
+
+        connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
+                 this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
+        root->setFactoryForManager(variantManager, variantFactory);
+
+
         QtProperty *topItem = groupManager->addProperty("render-settings");
         renderSettingsProperty = topItem;
         root->addProperty(topItem);
@@ -308,4 +315,12 @@ void RenderSettingsPropertyBrowser::surfaceIntegratorTypeEnumManager_valueChange
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
         }
+}
+
+
+
+void RenderSettingsPropertyBrowser::variantManager_valueChanged(
+        QtProperty*, QVariant const &
+) {
+        emit sceneChanged();
 }

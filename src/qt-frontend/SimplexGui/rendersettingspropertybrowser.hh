@@ -31,10 +31,11 @@ class QtGroupPropertyManager;
 class QtProperty;
 class QtEnumPropertyManager;
 class QtVariantPropertyManager;
+class QtVariantEditorFactory;
 class QtLineEditFactory;
 class QtStringPropertyManager;
 class QtEnumEditorFactory;
-class ColorEditManager;
+
 
 #include <QObject>
 #include <QList>
@@ -44,11 +45,7 @@ class RenderSettingsPropertyBrowser : public QObject
         Q_OBJECT
 public:
         RenderSettingsPropertyBrowser(QWidget *,
-                                      QtTreePropertyBrowser *,
-                                      QtGroupPropertyManager *,
-                                      QtVariantPropertyManager *,
-                                      QtVariantPropertyManager *codeEd,
-                                      ColorEditManager *);
+                                      QtTreePropertyBrowser *);
 
         void addRenderSettings (redshift::scenefile::RenderSettings const &rs);
         void remove (QtProperty *);
@@ -68,18 +65,19 @@ private:
                 *surfaceIntegratorTypeEnumManager,
                 *enumManager;
         QtGroupPropertyManager *groupManager;
-        QtVariantPropertyManager *variantManager, *codeEditManager;
+        QtVariantPropertyManager *variantManager;
+        QtVariantEditorFactory *variantFactory;
         QtProperty *renderSettingsProperty;
 
         QtLineEditFactory *lineEditFactory;
         QtEnumEditorFactory *comboBoxFactory;
 
         QtStringPropertyManager *rsTitleManager;
-        ColorEditManager *colorEditManager;
 
 private slots:
         void rsTitleManager_valueChanged (QtProperty *, const QString &);
         void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
+        void variantManager_valueChanged(QtProperty*,QVariant const &);
 };
 
 #endif // RENDERSETTINGSPROPERTYBROWSER_HH

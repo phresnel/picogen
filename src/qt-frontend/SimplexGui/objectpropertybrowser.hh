@@ -21,36 +21,50 @@
 #ifndef OBJECTPROPERTYBROWSER_HH
 #define OBJECTPROPERTYBROWSER_HH
 
+
+
 namespace redshift {
         namespace scenefile {
                 class Object;
+                class Scene;
+
+                class Material;
+                class Color;
         }
 }
+class QMdiArea;
 class QtTreePropertyBrowser;
 class QtGroupPropertyManager;
 class QtProperty;
 class QtEnumPropertyManager;
 class QtVariantPropertyManager;
+class QtVariantEditorFactory;
 class ColorEditManager;
+class ColorEditFactory;
+class ColorPickerColor;
+
+
 
 #include <QObject>
+#include <QList>
+
 
 
 class ObjectPropertyBrowser : public QObject
 {
         Q_OBJECT
 public:
-        ObjectPropertyBrowser(QWidget *,
-                              QtTreePropertyBrowser *,
-                              QtGroupPropertyManager *,
-                              QtVariantPropertyManager *,
-                              QtVariantPropertyManager *codeEd,
-                              ColorEditManager *
+        ObjectPropertyBrowser(QWidget *ownerWidget,
+                              QMdiArea *displayArea,
+                              QtTreePropertyBrowser *root,
+                              QtVariantPropertyManager *codeEditManager
                              );
         ~ObjectPropertyBrowser();
 
         void addObject (redshift::scenefile::Object const &);
         void remove (QtProperty *);
+
+        void addObjectsToScene (redshift::scenefile::Scene &Scene) const;
 
 signals:
         void updateUi();
@@ -59,16 +73,26 @@ signals:
 private:
         void initializeScene();
 
+        redshift::scenefile::Material readMaterial (QList<QtProperty*> subs, QString name="material") const;
+        redshift::scenefile::Color readColor (QList<QtProperty*> subs, QString name="color") const;
+
         QWidget *ownerWidget;
+        QMdiArea *displayArea;
+
         QtTreePropertyBrowser *root;
         QtEnumPropertyManager *objectTypeEnumManager;
         QtGroupPropertyManager *groupManager;
         QtVariantPropertyManager *variantManager, *codeEditManager;
+        QtVariantEditorFactory *variantFactory;
         QtProperty *objectsProperty;
+
         ColorEditManager *colorEditManager;
+        ColorEditFactory *colorEditFactory;
 
 private slots:
         void objectTypeEnumManager_valueChanged(QtProperty*, int);
+
+        void colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&);
 };
 
 #endif // OBJECTPROPERTYBROWSER_HH

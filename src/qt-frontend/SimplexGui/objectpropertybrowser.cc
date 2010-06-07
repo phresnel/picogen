@@ -20,6 +20,7 @@
 
 #include <QStringList>
 #include <QMessageBox>
+#include <QMdiArea>
 
 #include <QtTreePropertyBrowser>
 #include <QtProperty>
@@ -32,6 +33,9 @@
 #include "propertybrowser-helpers.hh"
 
 #include "coloreditmanager.h"
+#include "coloreditfactory.h"
+#include "colorpicker.hh"
+
 #include "objectpropertybrowser.hh"
 
 ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c);
@@ -40,20 +44,17 @@ ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c);
 
 ObjectPropertyBrowser::ObjectPropertyBrowser(
                 QWidget *ownerWidget_,
+                QMdiArea *displayArea,
                 QtTreePropertyBrowser *root,
-                QtGroupPropertyManager *groupManager,
-                QtVariantPropertyManager *variantManager,
-                QtVariantPropertyManager *codeEditManager,
-                ColorEditManager *colorEditManager
+                QtVariantPropertyManager *codeEditManager
                 )
 : QObject(ownerWidget_)
 , ownerWidget(ownerWidget_)
+, displayArea(displayArea)
 , root(root)
-, groupManager(groupManager)
-, variantManager(variantManager)
+, groupManager(new QtGroupPropertyManager(this))
 , codeEditManager(codeEditManager)
 , objectsProperty(0)
-, colorEditManager(colorEditManager)
 {
         initializeScene();
 }
@@ -66,7 +67,23 @@ ObjectPropertyBrowser::~ObjectPropertyBrowser() {
 
 
 void ObjectPropertyBrowser::initializeScene() {
-        delete objectsProperty;
+
+        variantManager = new QtVariantPropertyManager(this);
+        variantFactory = new QtVariantEditorFactory(this);
+        connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
+                 this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
+        root->setFactoryForManager(variantManager, variantFactory);
+
+
+
+        colorEditManager = new ColorEditManager (this);
+        connect (colorEditManager, SIGNAL(valueChanged(QtProperty*,ColorPickerColor)),
+                 this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&)));
+        colorEditFactory = new ColorEditFactory (this, displayArea);
+        root->setFactoryForManager(colorEditManager, colorEditFactory);
+
+
+
         objectsProperty = groupManager->addProperty("objects");
         root->addProperty(objectsProperty);
 
@@ -249,4 +266,116 @@ void ObjectPropertyBrowser::objectTypeEnumManager_valueChanged (
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
         }
+}
+
+
+
+void ObjectPropertyBrowser::colorEditManager_valueChanged(
+        QtProperty*,
+        ColorPickerColor const&
+) {
+        emit sceneChanged();
+}
+
+
+
+void ObjectPropertyBrowser::addObjectsToScene (
+        redshift::scenefile::Scene &scene
+) const {
+        typedef QList<QtProperty*> Props;
+        typedef QtProperty* Prop;
+        using namespace redshift;
+
+
+        const Props objects = objectsProperty->subProperties();
+        //readSubProperties("objects", topProps);
+        foreach (Prop object, objects) {
+                using scenefile::Object;
+
+                const Props subs = object->subProperties();
+                const QString type = readValueText("type", subs);
+
+                scenefile::Object object;
+
+                if (type == "water-plane") {
+                        object.type = Object::water_plane;
+                        const std::string tmp = readValue<QString>("code", subs).toStdString();
+                        if(!tmp.empty())
+                                object.waterPlaneParams.code = tmp;
+                        //object.waterPlaneParams.color
+                        object.waterPlaneParams.height = readValue<double>("height", subs);
+                        object.waterPlaneParams.material = readMaterial (subs);
+                } else if (type == "horizon-plane") {
+                        object.type = Object::horizon_plane;
+                        //object.horizonPlaneParams.color
+                        object.horizonPlaneParams.height = readValue<double>("height", subs);
+                        object.horizonPlaneParams.material = readMaterial (subs);
+                } else if (type == "lazy-quadtree") {
+                        object.type = Object::lazy_quadtree;
+                        const std::string tmp = readValue<QString>("code", subs).toStdString();
+                        if(!tmp.empty())
+                                object.lazyQuadtreeParams.code = tmp;
+                        //object.lazyQuadtreeParams.color;
+                        object.lazyQuadtreeParams.lodFactor = readValue<double>("lod-factor", subs);
+                        object.lazyQuadtreeParams.maxRecursion = readValue<unsigned int>("max-recursion", subs);
+                        object.lazyQuadtreeParams.size = readValue<double>("size", subs);
+                        object.lazyQuadtreeParams.material = readMaterial (subs);
+
+                } else {
+                        throw std::runtime_error((QString() + "The object-type '" + type + "' "
+                                              "is not supported. This is probably "
+                                              "an oversight by the incapable "
+                                              "programmers, please report this issue.").toStdString().c_str());
+                }
+
+                scene.addObject(object);
+        }
+}
+
+
+
+redshift::scenefile::Color
+ObjectPropertyBrowser::readColor (
+        QList<QtProperty*> subs, QString name
+) const {
+        QtProperty *color = readSubProperty (name, subs);
+        if (!color) return redshift::scenefile::Color();
+        const ColorPickerColor c = colorEditManager->value(color);
+
+        redshift::scenefile::Color ret;
+
+        switch (c.mode) {
+        case ColorPickerColor::Spectral:
+                ret.type = redshift::scenefile::Color::Spectrum;
+                foreach (SpectralSample ss, c.spectral) {
+                        redshift::scenefile::WavelengthAmplitudePair wap;
+                        wap.wavelength = ss.wavelength;
+                        wap.amplitude = ss.amplitude;
+                        ret.spectrum.samples.push_back(wap);
+                }
+                break;
+        case ColorPickerColor::Tristimulus:
+                ret.type = redshift::scenefile::Color::RGB;
+                QColor rgb = c.toQColor();
+                ret.rgb = redshift::scenefile::Rgb(rgb.redF(),
+                                                   rgb.greenF(),
+                                                   rgb.blueF());
+                break;
+        }
+
+        return ret;
+}
+
+
+
+redshift::scenefile::Material
+ObjectPropertyBrowser::readMaterial (
+        QList<QtProperty*> subs, QString name
+) const {
+        QtProperty *material = readSubProperty(name, subs);
+        if (!material) return redshift::scenefile::Material();
+
+        redshift::scenefile::Material mat;
+        mat.color = readColor (material->subProperties(), "color");
+        return mat;
 }
