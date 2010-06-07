@@ -23,7 +23,8 @@ SOURCES += main.cc \
     objectpropertybrowser.cc \
     volumepropertybrowser.cc \
     rendersettingspropertybrowser.cc \
-    cameraspropertybrowser.cc
+    cameraspropertybrowser.cc \
+    filmsettingspropertybrowser.cc
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
@@ -36,7 +37,8 @@ HEADERS += mainwindow.hh \
     objectpropertybrowser.hh \
     volumepropertybrowser.hh \
     rendersettingspropertybrowser.hh \
-    cameraspropertybrowser.hh
+    cameraspropertybrowser.hh \
+    filmsettingspropertybrowser.hh
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \

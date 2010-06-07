@@ -47,6 +47,7 @@ class ObjectPropertyBrowser;
 class VolumePropertyBrowser;
 class RenderSettingsPropertyBrowser;
 class CamerasPropertyBrowser;
+class FilmSettingsPropertyBrowser;
 
 class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -71,6 +72,7 @@ private:
         VolumePropertyBrowser *volumePropertyBrowser;
         RenderSettingsPropertyBrowser *renderSettingsPropertyBrowser;
         CamerasPropertyBrowser *camerasPropertyBrowser;
+        FilmSettingsPropertyBrowser *filmSettingsPropertyBrowser;
 
         QtLineEditFactory *lineEditFactory;
 
@@ -93,8 +95,6 @@ private:
         QtProperty *pssSunSkyProperty;
         QtVariantPropertyManager *codeEditManager;
 
-        void initializeFilmSettings();
-        void setFilmSettings(redshift::scenefile::FilmSettings const &);
 
         void initializeBackgrounds ();
         // this method won't have a long stay once multiple backgrounds

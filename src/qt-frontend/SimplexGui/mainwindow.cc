@@ -49,6 +49,7 @@
 #include "volumepropertybrowser.hh"
 #include "rendersettingspropertybrowser.hh"
 #include "cameraspropertybrowser.hh"
+#include "filmsettingspropertybrowser.hh"
 
 
 // TODO: this should be in a header
@@ -156,7 +157,13 @@ MainWindow::~MainWindow() {
 void MainWindow::initializeScene() {
         ui->settings->clear();
         ui->settings->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
-        initializeFilmSettings();
+
+        filmSettingsPropertyBrowser = new FilmSettingsPropertyBrowser(
+                        this,
+                        ui->settings
+                        );
+        connect(filmSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(filmSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
 
         renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
                         this,
@@ -195,7 +202,6 @@ void MainWindow::initializeScene() {
                                                            colorEditManager);
         connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
         connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
-
 
         initializeBackgrounds();
 }
@@ -275,7 +281,7 @@ void MainWindow::setUnchanged() {
 
 void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
         initializeScene();
-        setFilmSettings(scene.filmSettings());
+        filmSettingsPropertyBrowser->setFilmSettings(scene.filmSettings());
         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i)
                 renderSettingsPropertyBrowser->addRenderSettings(scene.renderSettings(i));
         for (unsigned int i=0; i<scene.cameraCount(); ++i)
@@ -377,43 +383,6 @@ void MainWindow::setDefaultScene() {
                 ui->settings->setExpanded(it, false);
 
         setUnchanged();
-}
-
-
-
-void MainWindow::initializeFilmSettings() {
-        QtVariantProperty *item = 0;
-
-        filmSettingsProperty = groupManager->addProperty(QLatin1String("film-settings"));
-
-        // convert-to-srgb
-        item = variantManager->addProperty(
-                        QVariant::Bool,
-                        QLatin1String("convert-to-srgb"));
-        item->setValue(true);
-        filmSettingsProperty->addSubProperty(item);
-
-        // color-scale
-        item = variantManager->addProperty(
-                        QVariant::Double,
-                        QLatin1String("color-scale"));
-        item->setValue(0.013);
-        item->setAttribute(QLatin1String("singleStep"), 0.01);
-        item->setAttribute(QLatin1String("decimals"), 6);
-        item->setAttribute(QLatin1String("minimum"), 0);
-        item->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        filmSettingsProperty->addSubProperty(item);
-
-
-        ui->settings->addProperty(filmSettingsProperty);
-
-        ui->settings->setBackgroundColor(
-                        ui->settings->topLevelItem(filmSettingsProperty),
-                        QColor(130,110,90));
-}
-void MainWindow::setFilmSettings(redshift::scenefile::FilmSettings const &fs) {
-        writeValue<bool>("convert-to-srgb", filmSettingsProperty, fs.convertToSrgb);
-        writeValue<double>("color-scale", filmSettingsProperty, fs.colorscale);
 }
 
 
