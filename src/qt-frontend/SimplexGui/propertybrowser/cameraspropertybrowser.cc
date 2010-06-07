@@ -81,12 +81,6 @@ void CamerasPropertyBrowser::initializeScene() {
 
 
 
-QList<QtProperty*> CamerasPropertyBrowser::subProperties() {
-        return camerasProperty->subProperties();
-}
-
-
-
 void CamerasPropertyBrowser::remove(QtProperty *property) {
         camerasProperty->removeSubProperty(property);
 }
@@ -343,4 +337,114 @@ void CamerasPropertyBrowser::variantManager_valueChanged(
         QtProperty*, QVariant const &
 ) {
         emit sceneChanged();
+}
+
+
+
+void CamerasPropertyBrowser::addCamerasToScene (
+        redshift::scenefile::Scene &scene
+) const {
+        typedef QList<QtProperty*> Props;
+        typedef QtProperty* Prop;
+        using namespace redshift;
+
+        const Props cameras = readSubProperties("cameras", root->properties());
+        if (cameras.count()==0) {
+                throw std::runtime_error("No Camera present.");
+        }
+
+        foreach (QtProperty *cam, camerasProperty->subProperties()) {
+
+                scenefile::Camera camera;
+                camera.title = cam->propertyName().toStdString();
+
+                const QString type = readValueText("type", cam);
+                if (type == "pinhole") {
+                        camera.type = scenefile::Camera::pinhole;
+                        camera.pinholeParams.front = readValue<double>("front", cam);
+                } else if (type == "cubemap_left") {
+                        camera.type = scenefile::Camera::cubemap_left;
+                } else if (type == "cubemap_right") {
+                        camera.type = scenefile::Camera::cubemap_right;
+                } else if (type == "cubemap_bottom") {
+                        camera.type = scenefile::Camera::cubemap_bottom;
+                } else if (type == "cubemap_top") {
+                        camera.type = scenefile::Camera::cubemap_top;
+                } else if (type == "cubemap_front") {
+                        camera.type = scenefile::Camera::cubemap_front;
+                } else if (type == "cubemap_back") {
+                        camera.type = scenefile::Camera::cubemap_back;
+                } else {
+                        throw std::runtime_error((QString() +
+                              "Unsupported camera type",
+                              "The camera-type '" + type + "' "
+                              "is not supported. This is probably "
+                              "an oversight by the incapable "
+                              "programmers, please report this issue."
+                              ).toStdString().c_str());
+                }
+
+                const Props xforms = readSubProperties("transform", cam->subProperties());
+                foreach (Prop xform, xforms) {
+                        typedef scenefile::Transform Xf;
+                        Xf transform;
+
+                        // When tweaking here, also look at XCVBN
+                        const Props xfsubs = xform->subProperties();
+                        const QString type = readValueText("type", xfsubs);
+
+
+                        if (type == "move") {
+                                transform.type = Xf::move;
+                                transform.x = readValue<double>("right", xfsubs);
+                                transform.y = readValue<double>("up", xfsubs);
+                                transform.z = readValue<double>("forward", xfsubs);
+                        } else if (type == "move-left") {
+                                transform.type = Xf::move_left;
+                                transform.x = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-right") {
+                                transform.type = Xf::move_right;
+                                transform.x = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-up") {
+                                transform.type = Xf::move_up;
+                                transform.y = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-down") {
+                                transform.type = Xf::move_down;
+                                transform.y = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-forward") {
+                                transform.type = Xf::move_forward;
+                                transform.z = readValue<double>("distance", xfsubs);
+                        } else if (type == "move-backward") {
+                                transform.type = Xf::move_backward;
+                                transform.z = readValue<double>("distance", xfsubs);
+                        } else if (type == "yaw") {
+                                transform.type = Xf::yaw;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else if (type == "pitch") {
+                                transform.type = Xf::pitch;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else if (type == "roll") {
+                                transform.type = Xf::roll;
+                                transform.angle = readValue<double>("angle", xfsubs);
+                        } else {
+                                throw std::runtime_error((QString() +
+                                                      "The transform-type '" + type + "' "
+                                                      "is not supported. This is probably "
+                                                      "an oversight by the incapable "
+                                                      "programmers, please report this issue.").toStdString().c_str());
+                        }
+                        camera.transforms.push_back(transform);
+                }
+
+                scene.addCamera(camera);
+        }
+}
+
+
+
+QStringList CamerasPropertyBrowser::names() const {
+        QStringList ret;
+        foreach (QtProperty *cam, camerasProperty->subProperties())
+                ret << readValueText("title", cam->subProperties());
+        return ret;
 }

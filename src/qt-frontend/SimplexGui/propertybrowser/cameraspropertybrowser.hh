@@ -25,6 +25,7 @@ namespace redshift {
         namespace scenefile {
                 class Camera;
                 class Transform;
+                class Scene;
         }
 }
 class QtTreePropertyBrowser;
@@ -36,7 +37,7 @@ class QtVariantPropertyManager;
 class QtVariantEditorFactory;
 class ColorEditManager;
 
-#include <QList>
+#include <QStringList>
 #include <QObject>
 
 class CamerasPropertyBrowser : public QObject {
@@ -50,7 +51,12 @@ public:
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform const & t);
         void remove (QtProperty *);
-        QList<QtProperty*> subProperties();
+
+        void addCamerasToScene (
+                redshift::scenefile::Scene &scene
+        ) const;
+
+        QStringList names() const;
 
 signals:
         void updateUi();

@@ -99,3 +99,17 @@ void FilmSettingsPropertyBrowser::setFilmSettings(redshift::scenefile::FilmSetti
         writeValue<double>("color-scale", filmSettingsProperty, fs.colorscale);
         emit sceneChanged();
 }
+
+
+
+void FilmSettingsPropertyBrowser::addFilmSettingsToScene(
+        redshift::scenefile::Scene &scene
+) const {
+        using namespace redshift;
+        const QList<QtProperty*> filmSettings =
+                        readSubProperties("film-settings", root->properties());
+        scenefile::FilmSettings fs;
+        fs.colorscale = readValue<double>("color-scale", filmSettings);
+        fs.convertToSrgb = readValue<bool>("convert-to-srgb", filmSettings);
+        scene.setFilmSettings(fs);
+}

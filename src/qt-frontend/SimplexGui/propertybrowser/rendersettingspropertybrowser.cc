@@ -100,12 +100,6 @@ void RenderSettingsPropertyBrowser::initializeScene() {
 
 
 
-QList<QtProperty*> RenderSettingsPropertyBrowser::subProperties() {
-        return renderSettingsProperty->subProperties();
-}
-
-
-
 void RenderSettingsPropertyBrowser::addRenderSettings (
         redshift::scenefile::RenderSettings const &rs
 ) {
@@ -323,4 +317,76 @@ void RenderSettingsPropertyBrowser::variantManager_valueChanged(
         QtProperty*, QVariant const &
 ) {
         emit sceneChanged();
+}
+
+
+void RenderSettingsPropertyBrowser::addRenderSettingsToScene (
+        redshift::scenefile::Scene &scene
+) const {
+        typedef QList<QtProperty*> Props;
+        typedef QtProperty* Prop;
+        using namespace redshift;
+
+        const Props renderSettings = readSubProperties("render-settings", root->properties());
+        if (renderSettings.count()==0) {
+                throw std::runtime_error("No Render-Setting present.");
+        }
+
+        foreach (QtProperty *mooh, renderSettingsProperty->subProperties()) {
+                Props subs = mooh->subProperties();
+
+                scenefile::RenderSettings rs;
+                rs.title = readValueText("title", subs).toStdString();
+                rs.width = readValue<unsigned int>("width", subs);
+                rs.height = readValue<unsigned int>("height", subs);
+                rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
+                rs.min_y = readValue<unsigned int>("min-y", subs);
+                rs.max_y = readValue<unsigned int>("max-y", subs);
+                rs.userSeed = readValue<unsigned int>("seed", subs);
+
+                // Surface Integrator.
+                Props si = readSubProperties("surface-integrator", subs);
+                const QString sintegT = readValueText("type", si);
+                if("none" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::none;
+                } else if("whitted" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted;
+                } else if("whitted_ambient" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted_ambient;
+                        rs.surfaceIntegrator.numAmbientSamples = readValue<int>("ambient-samples", si);
+                } else if("path" == sintegT) {
+                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::path;
+                } else throw std::runtime_error((QString() + "The surface-integrator '" + sintegT + "' "
+                                             "is not supported. This is probably "
+                                             "an oversight by the incapable "
+                                             "programmers, please report this issue.").toStdString().c_str());
+
+                // Volume Integrator.
+                Props vp = readSubProperties("volume-integrator", subs);
+                rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
+                rs.volumeIntegrator.cutoffDistance = readValue<double>("cutoff-distance", vp);
+                const QString integT = readValueText("type", vp);
+                if ("none" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::none;
+                else if ("emission" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::emission;
+                else if ("single" == integT)
+                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
+                else throw std::runtime_error((QString() +
+                                              "The volume-integrator '" + integT + "' "
+                                              "is not supported. This is probably "
+                                              "an oversight by the incapable "
+                                              "programmers, please report this issue.").toStdString().c_str());
+
+                scene.addRenderSettings(rs);
+        }
+}
+
+
+
+QStringList RenderSettingsPropertyBrowser::names () const {
+        QStringList ret;
+        foreach (QtProperty *mooh, renderSettingsProperty->subProperties())
+                ret << readValueText("title", mooh->subProperties());
+        return ret;
 }

@@ -43,14 +43,14 @@
 
 #include "redshift/include/jobfile.hh"
 
-#include "propertybrowser-helpers.hh"
+#include "propertybrowser/propertybrowser-helpers.hh"
 
-#include "objectpropertybrowser.hh"
-#include "volumepropertybrowser.hh"
-#include "rendersettingspropertybrowser.hh"
-#include "cameraspropertybrowser.hh"
-#include "filmsettingspropertybrowser.hh"
-#include "backgroundspropertybrowser.hh"
+#include "propertybrowser/objectpropertybrowser.hh"
+#include "propertybrowser/volumepropertybrowser.hh"
+#include "propertybrowser/rendersettingspropertybrowser.hh"
+#include "propertybrowser/cameraspropertybrowser.hh"
+#include "propertybrowser/filmsettingspropertybrowser.hh"
+#include "propertybrowser/backgroundspropertybrowser.hh"
 
 #include "coloredit.h"
 
@@ -234,9 +234,9 @@ void MainWindow::setupUi() {
 
         groupManager = new QtGroupPropertyManager(this);
 
-        enumManager = new QtEnumPropertyManager(this);
+        /*enumManager = new QtEnumPropertyManager(this);
         connect (enumManager, SIGNAL(valueChanged(QtProperty*,int)),
-                 this, SLOT(enumManager_valueChanged(QtProperty*,int)));
+                 this, SLOT(enumManager_valueChanged(QtProperty*,int)));*/
 
         codeEditManager = new QtVariantPropertyManager(this);
         connect(codeEditManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
@@ -247,7 +247,7 @@ void MainWindow::setupUi() {
 
         variantFactory = new QtVariantEditorFactory(this);
         ui->settings->setFactoryForManager(variantManager, variantFactory);
-        ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
+        //ui->settings->setFactoryForManager(enumManager, comboBoxFactory);
 
         setChanged();
 }
@@ -383,182 +383,16 @@ void MainWindow::setDefaultScene() {
 redshift::shared_ptr<redshift::scenefile::Scene>
 MainWindow::createScene () const
 {
-        typedef QList<QtProperty*> Props;
-        typedef QtProperty* Prop;
-        typedef QtVariantProperty* VProp;
-
-
-        Props topProps = ui->settings->properties();
-
-        QString ret;
         using namespace redshift;
+
         shared_ptr<scenefile::Scene> scene = shared_ptr<scenefile::Scene>(
                         new scenefile::Scene());
 
-        // FilmSettings.
-        const Props filmSettings = readSubProperties("film-settings", topProps);
-        scenefile::FilmSettings fs;
-        fs.colorscale = readValue<double>("color-scale", filmSettings);
-        fs.convertToSrgb = readValue<bool>("convert-to-srgb", filmSettings);
-        scene->setFilmSettings(fs);
-
-        // RenderSettings.
-        const Props renderSettings = readSubProperties("render-settings", topProps);
-        if (renderSettings.count()==0) {
-                throw std::runtime_error("No Render-Setting present.");
-        }
-
-        foreach (QtProperty *mooh, renderSettingsPropertyBrowser->subProperties()) {
-                Props subs = mooh->subProperties();
-
-                scenefile::RenderSettings rs;
-                rs.title = readValueText("title", subs).toStdString();
-                rs.width = readValue<unsigned int>("width", subs);
-                rs.height = readValue<unsigned int>("height", subs);
-                rs.samplesPerPixel = readValue<unsigned int>("samples-per-pixel", subs);
-                rs.min_y = readValue<unsigned int>("min-y", subs);
-                rs.max_y = readValue<unsigned int>("max-y", subs);
-                rs.userSeed = readValue<unsigned int>("seed", subs);
-
-                // Surface Integrator.
-                Props si = readSubProperties("surface-integrator", subs);
-                const QString sintegT = readValueText("type", si);
-                if("none" == sintegT) {
-                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::none;
-                } else if("whitted" == sintegT) {
-                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted;
-                } else if("whitted_ambient" == sintegT) {
-                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted_ambient;
-                        rs.surfaceIntegrator.numAmbientSamples = readValue<int>("ambient-samples", si);
-                } else if("path" == sintegT) {
-                        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::path;
-                } else throw std::runtime_error((QString() + "The surface-integrator '" + sintegT + "' "
-                                             "is not supported. This is probably "
-                                             "an oversight by the incapable "
-                                             "programmers, please report this issue.").toStdString().c_str());
-
-                // Volume Integrator.
-                Props vp = readSubProperties("volume-integrator", subs);
-                rs.volumeIntegrator.stepSize = readValue<double>("step-size", vp);
-                rs.volumeIntegrator.cutoffDistance = readValue<double>("cutoff-distance", vp);
-                const QString integT = readValueText("type", vp);
-                if ("none" == integT)
-                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::none;
-                else if ("emission" == integT)
-                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::emission;
-                else if ("single" == integT)
-                        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::single;
-                else throw std::runtime_error((QString() +
-                                              "The volume-integrator '" + integT + "' "
-                                              "is not supported. This is probably "
-                                              "an oversight by the incapable "
-                                              "programmers, please report this issue.").toStdString().c_str());
-
-                scene->addRenderSettings(rs);
-        }
-
-
-
-        // Camera.
-        const Props cameras = readSubProperties("cameras", topProps);
-        if (cameras.count()==0) {
-                throw std::runtime_error("No Camera present.");
-        }
-
-        foreach (QtProperty *cam, camerasPropertyBrowser->subProperties()) {
-
-                scenefile::Camera camera;
-                camera.title = cam->propertyName().toStdString();
-
-                const QString type = readValueText("type", cam);
-                if (type == "pinhole") {
-                        camera.type = scenefile::Camera::pinhole;
-                        camera.pinholeParams.front = readValue<double>("front", cam);
-                } else if (type == "cubemap_left") {
-                        camera.type = scenefile::Camera::cubemap_left;
-                } else if (type == "cubemap_right") {
-                        camera.type = scenefile::Camera::cubemap_right;
-                } else if (type == "cubemap_bottom") {
-                        camera.type = scenefile::Camera::cubemap_bottom;
-                } else if (type == "cubemap_top") {
-                        camera.type = scenefile::Camera::cubemap_top;
-                } else if (type == "cubemap_front") {
-                        camera.type = scenefile::Camera::cubemap_front;
-                } else if (type == "cubemap_back") {
-                        camera.type = scenefile::Camera::cubemap_back;
-                } else {
-                        throw std::runtime_error((QString() +
-                              "Unsupported camera type",
-                              "The camera-type '" + type + "' "
-                              "is not supported. This is probably "
-                              "an oversight by the incapable "
-                              "programmers, please report this issue."
-                              ).toStdString().c_str());
-                }
-
-                const Props xforms = readSubProperties("transform", cam->subProperties());
-                foreach (Prop xform, xforms) {
-                        typedef scenefile::Transform Xf;
-                        Xf transform;
-
-                        // When tweaking here, also look at XCVBN
-                        const Props xfsubs = xform->subProperties();
-                        const QString type = readValueText("type", xfsubs);
-
-
-                        if (type == "move") {
-                                transform.type = Xf::move;
-                                transform.x = readValue<double>("right", xfsubs);
-                                transform.y = readValue<double>("up", xfsubs);
-                                transform.z = readValue<double>("forward", xfsubs);
-                        } else if (type == "move-left") {
-                                transform.type = Xf::move_left;
-                                transform.x = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-right") {
-                                transform.type = Xf::move_right;
-                                transform.x = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-up") {
-                                transform.type = Xf::move_up;
-                                transform.y = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-down") {
-                                transform.type = Xf::move_down;
-                                transform.y = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-forward") {
-                                transform.type = Xf::move_forward;
-                                transform.z = readValue<double>("distance", xfsubs);
-                        } else if (type == "move-backward") {
-                                transform.type = Xf::move_backward;
-                                transform.z = readValue<double>("distance", xfsubs);
-                        } else if (type == "yaw") {
-                                transform.type = Xf::yaw;
-                                transform.angle = readValue<double>("angle", xfsubs);
-                        } else if (type == "pitch") {
-                                transform.type = Xf::pitch;
-                                transform.angle = readValue<double>("angle", xfsubs);
-                        } else if (type == "roll") {
-                                transform.type = Xf::roll;
-                                transform.angle = readValue<double>("angle", xfsubs);
-                        } else {
-                                throw std::runtime_error((QString() +
-                                                      "The transform-type '" + type + "' "
-                                                      "is not supported. This is probably "
-                                                      "an oversight by the incapable "
-                                                      "programmers, please report this issue.").toStdString().c_str());
-                        }
-                        camera.transforms.push_back(transform);
-                }
-
-                scene->addCamera(camera);
-        }
-
-
-        // Objects.
+        filmSettingsPropertyBrowser->addFilmSettingsToScene(*scene);
+        renderSettingsPropertyBrowser->addRenderSettingsToScene(*scene);
+        camerasPropertyBrowser->addCamerasToScene(*scene);
         objectPropertyBrowser->addObjectsToScene(*scene);
-
-        // Volumes.
         volumePropertyBrowser->addVolumesToScene(*scene);
-
-        // Background.
         backgroundsPropertyBrowser->addBackgroundsToScene(*scene);
 
         return scene;
@@ -568,9 +402,7 @@ MainWindow::createScene () const
 
 void MainWindow::resyncRenderSettingConfig () {
         ui->renderSettingConfig->clear();
-        foreach (QtProperty *prop, renderSettingsPropertyBrowser->subProperties()) {
-                ui->renderSettingConfig->addItem(prop->propertyName());
-        }
+        ui->renderSettingConfig->addItems(renderSettingsPropertyBrowser->names());
         updateUi();
 }
 
@@ -578,9 +410,8 @@ void MainWindow::resyncRenderSettingConfig () {
 
 void MainWindow::resyncCameraConfig () {
         ui->cameraConfig->clear();
-        foreach (QtProperty *prop, camerasPropertyBrowser->subProperties()) {
-                ui->cameraConfig->addItem(prop->propertyName());
-        }
+        ui->cameraConfig->addItems(camerasPropertyBrowser->names());
+        updateUi();
 }
 
 

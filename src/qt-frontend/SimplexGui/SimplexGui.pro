@@ -19,13 +19,13 @@ SOURCES += main.cc \
     coloreditmanager.cpp \
     coloreditfactory.cpp \
     coloredit.cpp \
-    propertybrowser-helpers.cc \
-    objectpropertybrowser.cc \
-    volumepropertybrowser.cc \
-    rendersettingspropertybrowser.cc \
-    cameraspropertybrowser.cc \
-    filmsettingspropertybrowser.cc \
-    backgroundspropertybrowser.cc
+    propertybrowser/propertybrowser-helpers.cc \
+    propertybrowser/objectpropertybrowser.cc \
+    propertybrowser/volumepropertybrowser.cc \
+    propertybrowser/rendersettingspropertybrowser.cc \
+    propertybrowser/cameraspropertybrowser.cc \
+    propertybrowser/filmsettingspropertybrowser.cc \
+    propertybrowser/backgroundspropertybrowser.cc
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
@@ -35,12 +35,12 @@ HEADERS += mainwindow.hh \
     coloreditfactory.h \
     coloredit.h \
     propertybrowser-helpers.hh \
-    objectpropertybrowser.hh \
-    volumepropertybrowser.hh \
-    rendersettingspropertybrowser.hh \
-    cameraspropertybrowser.hh \
-    filmsettingspropertybrowser.hh \
-    backgroundspropertybrowser.hh
+    propertybrowser/objectpropertybrowser.hh \
+    propertybrowser/volumepropertybrowser.hh \
+    propertybrowser/rendersettingspropertybrowser.hh \
+    propertybrowser/cameraspropertybrowser.hh \
+    propertybrowser/filmsettingspropertybrowser.hh \
+    propertybrowser/backgroundspropertybrowser.hh
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \

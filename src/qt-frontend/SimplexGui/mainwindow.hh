@@ -85,7 +85,7 @@ private:
 
         QtGroupPropertyManager *groupManager;
 
-        QtEnumPropertyManager *enumManager;
+        //QtEnumPropertyManager *enumManager;
         QtEnumEditorFactory *comboBoxFactory;
 
 

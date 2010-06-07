@@ -24,6 +24,7 @@
 namespace redshift {
         namespace scenefile {
                 class RenderSettings;
+                class Scene;
         }
 }
 class QtTreePropertyBrowser;
@@ -38,7 +39,7 @@ class QtEnumEditorFactory;
 
 
 #include <QObject>
-#include <QList>
+#include <QStringList>
 
 class RenderSettingsPropertyBrowser : public QObject
 {
@@ -49,7 +50,9 @@ public:
 
         void addRenderSettings (redshift::scenefile::RenderSettings const &rs);
         void remove (QtProperty *);
-        QList<QtProperty*> subProperties();
+
+        void addRenderSettingsToScene (redshift::scenefile::Scene &Scene) const;
+        QStringList names () const ;
 
 signals:
         void updateUi();

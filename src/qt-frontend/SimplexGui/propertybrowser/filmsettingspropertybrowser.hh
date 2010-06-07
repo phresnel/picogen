@@ -24,6 +24,7 @@
 namespace redshift {
         namespace scenefile {
                 class FilmSettings;
+                class Scene;
         }
 }
 
@@ -47,6 +48,7 @@ public:
                 );
 
         void setFilmSettings(redshift::scenefile::FilmSettings const &);
+        void addFilmSettingsToScene(redshift::scenefile::Scene &) const;
 
 signals:
         void sceneChanged();
