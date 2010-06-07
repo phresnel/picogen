@@ -38,13 +38,12 @@
 namespace Ui {
     class MainWindow;
 }
-
-
 namespace redshift {
         namespace scenefile {
                 class Scene;
         }
 }
+class ObjectPropertyBrowser;
 
 class MainWindow : public QMainWindow {
         Q_OBJECT
@@ -61,10 +60,11 @@ protected:
 private:
         Ui::MainWindow *ui;
         void setupUi();
-        void updateUi();
         void setDefaultScene();
         void loadScene (redshift::scenefile::Scene const &scene);
         void loadScene (QString const &name);
+
+        ObjectPropertyBrowser *objectPropertyBrowser;
 
         QtStringPropertyManager *rsTitleManager;
 
@@ -87,12 +87,12 @@ private:
                    *backgroundsProperty,
                    *currentTransformProperty,
                    *currentRenderSettingProperty;
-        QtProperty *objectsProperty,
+        QtProperty /**objectsProperty*/
                    *volumesProperty,
                    *pssSunSkyProperty;
         QtEnumPropertyManager
                         *transformEnumManager,
-                        *objectTypeEnumManager,
+                        /**objectTypeEnumManager*/
                         *volumeTypeEnumManager,
                         *cameraTypeEnumManager,
                         *surfaceIntegratorTypeEnumManager;
@@ -104,8 +104,8 @@ private:
         void addTransform (QtProperty *transformRoot,
                            redshift::scenefile::Transform const &);
 
-        void initializeObjects();
-        void addObject (redshift::scenefile::Object const &);
+        /*void initializeObjects();
+        void addObject (redshift::scenefile::Object const &);*/
 
         void initializeVolumes ();
         void addVolume (redshift::scenefile::Volume const &);
@@ -141,7 +141,6 @@ private:
         QString sceneToCode();
 
         void render();
-        void setChanged ();
         void setUnchanged ();
 
         bool nonRecurseLock;
@@ -216,11 +215,14 @@ private slots:
 
         void code_valueChanged(QtProperty*, QVariant);
         void transformEnumManager_valueChanged(QtProperty*, int);
-        void objectTypeEnumManager_valueChanged(QtProperty*, int);
+        /*void objectTypeEnumManager_valueChanged(QtProperty*, int);*/
         void volumeTypeEnumManager_valueChanged(QtProperty*, int);
         void cameraTypeEnumManager_valueChanged(QtProperty*, int);
         void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
         void rsTitleManager_valueChanged (QtProperty *, const QString &);
+
+        void updateUi();
+        void setChanged ();
 };
 
 #endif // MAINWINDOW_HH

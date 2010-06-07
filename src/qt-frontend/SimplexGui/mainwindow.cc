@@ -45,36 +45,35 @@
 
 #include "propertybrowser-helpers.hh"
 
+#include "objectpropertybrowser.hh"
 
-namespace {
 
-        ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
-                using redshift::scenefile::Color;
+// TODO: this should be in a header
+ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
+        using redshift::scenefile::Color;
 
-                ColorPickerColor ret;
+        ColorPickerColor ret;
 
-                switch (c.type) {
-                case Color::RGB:
-                        ret.mode = ColorPickerColor::Tristimulus;
-                        ret.tristimulus = TristimulusColor(
-                                        (double)c.rgb.r,
-                                        (double)c.rgb.g,
-                                        (double)c.rgb.b
-                                        );
-                        break;
-                case Color::Spectrum:
-                        ret.mode = ColorPickerColor::Spectral;
-                        for (size_t i=0; i<c.spectrum.samples.size(); ++i) {
-                                SpectralSample ss;
-                                ss.wavelength = c.spectrum.samples[i].wavelength;
-                                ss.amplitude = c.spectrum.samples[i].amplitude;
-                                ret.spectral.push_back(ss);
-                        }
+        switch (c.type) {
+        case Color::RGB:
+                ret.mode = ColorPickerColor::Tristimulus;
+                ret.tristimulus = TristimulusColor(
+                                (double)c.rgb.r,
+                                (double)c.rgb.g,
+                                (double)c.rgb.b
+                                );
+                break;
+        case Color::Spectrum:
+                ret.mode = ColorPickerColor::Spectral;
+                for (size_t i=0; i<c.spectrum.samples.size(); ++i) {
+                        SpectralSample ss;
+                        ss.wavelength = c.spectrum.samples[i].wavelength;
+                        ss.amplitude = c.spectrum.samples[i].amplitude;
+                        ret.spectral.push_back(ss);
                 }
-
-                return ret;
         }
 
+        return ret;
 }
 
 
@@ -157,7 +156,15 @@ void MainWindow::initializeScene() {
         initializeFilmSettings();
         initializeRenderSettings();
         initializeCameraSettings();
-        initializeObjects();
+        //initializeObjects();
+        objectPropertyBrowser = new ObjectPropertyBrowser(this,
+                                                          ui->settings,
+                                                          groupManager,
+                                                          variantManager,
+                                                          codeEditManager,
+                                                          colorEditManager);
+        connect(objectPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(objectPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(setChanged()));
         initializeVolumes();
         initializeBackgrounds();
 }
@@ -208,9 +215,9 @@ void MainWindow::setupUi() {
         connect(transformEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(transformEnumManager_valueChanged(QtProperty*,int)));
 
-        objectTypeEnumManager = new QtEnumPropertyManager(this);
+        /*objectTypeEnumManager = new QtEnumPropertyManager(this);
         connect(objectTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
-                this, SLOT(objectTypeEnumManager_valueChanged(QtProperty*,int)));
+                this, SLOT(objectTypeEnumManager_valueChanged(QtProperty*,int)));*/
 
         volumeTypeEnumManager = new QtEnumPropertyManager(this);
         connect(volumeTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
@@ -273,7 +280,7 @@ void MainWindow::loadScene (redshift::scenefile::Scene const &scene) {
         for (unsigned int i=0; i<scene.cameraCount(); ++i)
                 addCamera(scene.camera(i));
         for (unsigned int i=0; i<scene.objectCount(); ++i)
-                addObject(scene.object(i));
+                objectPropertyBrowser->addObject(scene.object(i));
         for (unsigned int i=0; i<scene.volumeCount(); ++i)
                 addVolume(scene.volume(i));
         if (scene.backgroundCount())
@@ -432,14 +439,14 @@ void MainWindow::initializeCameraSettings () {
 
 
 
-void MainWindow::initializeObjects() {
+/*void MainWindow::initializeObjects() {
         objectsProperty = groupManager->addProperty("objects");
         ui->settings->addProperty(objectsProperty);
 
         ui->settings->setBackgroundColor(
                         ui->settings->topLevelItem(objectsProperty),
                         QColor(90,130,90));
-}
+}*/
 
 
 
@@ -1226,7 +1233,7 @@ void MainWindow::addTransform (QtProperty *transformRoot,
 }
 
 
-
+/*
 void MainWindow::addObject (redshift::scenefile::Object const &o) {
         QtProperty *object = groupManager->addProperty("---");
         objectsProperty->addSubProperty(object);
@@ -1284,7 +1291,7 @@ void MainWindow::addObject (redshift::scenefile::Object const &o) {
         collapse (ui->settings, object);
         updateUi();
 }
-
+*/
 
 
 void MainWindow::transformEnumManager_valueChanged(
@@ -1359,7 +1366,7 @@ void MainWindow::colorEditManager_valueChanged(QtProperty *, ColorPickerColor) {
 }
 
 
-
+#if 0
 void MainWindow::objectTypeEnumManager_valueChanged (
         QtProperty* prop,
         int index
@@ -1462,6 +1469,7 @@ void MainWindow::objectTypeEnumManager_valueChanged (
                                       "programmers, please report this issue.");
         }
 }
+#endif
 
 
 
@@ -2424,24 +2432,24 @@ void MainWindow::on_actionAdd_Water_Plane_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::water_plane;
-        addObject (o);
+        objectPropertyBrowser->addObject (o);
 }
 void MainWindow::on_actionAdd_Horizon_Plane_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::horizon_plane;
-        addObject (o);
+        objectPropertyBrowser->addObject (o);
 }
 void MainWindow::on_actionAdd_Lazy_Quadtree_triggered() {
         setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::lazy_quadtree;
-        addObject (o);
+        objectPropertyBrowser->addObject (o);
 }
 void MainWindow::on_actionDelete_Object_triggered() {
         setChanged();
         // assumed to signal everything needed for clean up
-        objectsProperty->removeSubProperty(currentBrowserItem->property());
+        objectPropertyBrowser->remove(currentBrowserItem->property());
 }
 
 

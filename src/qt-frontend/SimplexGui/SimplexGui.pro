@@ -19,7 +19,8 @@ SOURCES += main.cc \
     coloreditmanager.cpp \
     coloreditfactory.cpp \
     coloredit.cpp \
-    propertybrowser-helpers.cc
+    propertybrowser-helpers.cc \
+    objectpropertybrowser.cc
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
@@ -28,7 +29,8 @@ HEADERS += mainwindow.hh \
     coloreditmanager.h \
     coloreditfactory.h \
     coloredit.h \
-    propertybrowser-helpers.hh
+    propertybrowser-helpers.hh \
+    objectpropertybrowser.hh
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \
