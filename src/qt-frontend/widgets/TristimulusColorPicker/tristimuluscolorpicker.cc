@@ -28,7 +28,7 @@ TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     isUpdating(false)
 {
         ui->setupUi(this);
-        setColor(TristimulusColor::fromRgbf(0,1,0));
+        setColor(TristimulusColor::fromRgbf(0,1,0,1.));
 }
 
 TristimulusColorPicker::~TristimulusColorPicker() {
@@ -55,7 +55,7 @@ TristimulusColor TristimulusColorPicker::color() const {
 // Update by wheel
 //------------------------------------------------------------------------------
 void TristimulusColorPicker::on_triangle_colorChanged(const QColor & color) {
-        setColor(TristimulusColor(color));
+        setColor(TristimulusColor(color, color_.y()));
 }
 
 
@@ -91,7 +91,7 @@ void TristimulusColorPicker::on_spinH_valueChanged(double) {
 
         // 1) Build up QColor from boxes.
         QColor col = QColor::fromHsvF(h/360, s/255, v/255);
-        setColor (TristimulusColor(col));
+        setColor (TristimulusColor(col, color_.y()));
 
         // 2) Block signals or we'll never end.
         const bool
@@ -135,7 +135,7 @@ void TristimulusColorPicker::on_spinC_valueChanged(double) {
 
         // 1) Build up QColor from boxes.
         QColor col = QColor::fromCmykF(c/255, m/255, y/255, k/255);
-        setColor (TristimulusColor(col));
+        setColor (TristimulusColor(col,color_.y()));
 
         // 2) Block signals or we'll never end.
         const bool
@@ -172,6 +172,19 @@ void TristimulusColorPicker::on_spinK_valueChanged(double) {
 
 
 
+
+//------------------------------------------------------------------------------
+// Update by Brightness
+//------------------------------------------------------------------------------
+void TristimulusColorPicker::on_spinBrightness_valueChanged(double y) {
+        color_.setY(y);
+}
+
+
+
+
+
+
 void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
         if (isUpdating)
                 return;
@@ -185,7 +198,8 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
         ui->triangle->setColor(col);
         ui->triangle->blockSignals(prev);
 
-        drawColorPreview();
+        // BRIGHTNESS
+        ui->spinBrightness->setValue(col_.y());
 
         // RGB
         ui->spinR->blockSignals(true);
@@ -232,6 +246,7 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
 
 
         color_ = col_;
+        drawColorPreview();
 
         blockSignals(prevBlockSignals);
         emit colorChanged (color_);

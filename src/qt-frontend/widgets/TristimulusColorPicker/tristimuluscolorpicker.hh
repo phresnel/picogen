@@ -31,36 +31,38 @@ namespace Ui {
 
 class TristimulusColor {
         double r, g, b;
-        double y;
+        double y_;
 public:
 
-        TristimulusColor () : r(0), g(0), b(0), y(1) {}
+        TristimulusColor () : r(0), g(0), b(0), y_(1) {}
 
-        explicit TristimulusColor (QColor const &col)
+        explicit TristimulusColor (QColor const &col, double y)
                 : r(col.redF())
                 , g(col.greenF())
                 , b(col.blueF())
-                , y(1)
+                , y_(y)
         {}
 
-        static TristimulusColor fromRgb (int r, int g, int b) {
+        static TristimulusColor fromRgb (int r, int g, int b, double y) {
                 TristimulusColor ret;
                 ret.r = r / 255.;
                 ret.g = g / 255.;
                 ret.b = b / 255.;
+                ret.y_ = y;
                 return  ret;
         }
 
-        static TristimulusColor fromRgbf (double r, double g, double b) {
+        static TristimulusColor fromRgbf (double r, double g, double b, double y) {
                 TristimulusColor ret;
                 ret.r = r;
                 ret.g = g;
                 ret.b = b;
+                ret.y_ = y;
                 return  ret;
         }
 
-        void setY (double v) { y = v; }
-        double y () const { return y; }
+        void setY (double v) { y_ = v; }
+        double y () const { return y_; }
 
         void setRed (int v)   { r = v / 255.; }
         void setGreen (int v) { g = v / 255.; }
@@ -92,7 +94,9 @@ public:
         bool operator == (TristimulusColor const &rhs) const {
                 return r == rhs.r
                     && g == rhs.g
-                    && b == rhs.b;
+                    && b == rhs.b
+                    && y_ == rhs.y_
+                    ;
         }
         bool operator != (TristimulusColor const &rhs) const {
                 return !(*this == rhs);
@@ -131,6 +135,7 @@ public slots:
         void on_triangle_colorChanged(const QColor & color);
 
 private slots:
+        void on_spinBrightness_valueChanged(double );
         void on_spinR_valueChanged(double);
         void on_spinG_valueChanged(double);
         void on_spinB_valueChanged(double);
