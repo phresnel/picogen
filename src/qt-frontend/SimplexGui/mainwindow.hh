@@ -40,12 +40,7 @@ namespace redshift {
                 class Transform;
         }
 }
-class ObjectPropertyBrowser;
-class VolumePropertyBrowser;
-class RenderSettingsPropertyBrowser;
-class CamerasPropertyBrowser;
-class FilmSettingsPropertyBrowser;
-class BackgroundsPropertyBrowser;
+class ScenePropertyBrowser;
 
 class QtProperty;
 class QtBrowserItem;
@@ -53,81 +48,7 @@ class QtVariantPropertyManager;
 class QtTreePropertyBrowser;
 class QMdiArea;
 
-class ScenePropertyBrowser : public QObject {
-        Q_OBJECT
-public:
-        ScenePropertyBrowser(QWidget *ownerWidget,
-                        QMdiArea *displayArea,
-                        QtTreePropertyBrowser *root,
-                        QtVariantPropertyManager *codeEditManager
-                        );
 
-        void setDefaultScene();
-        void loadScene (redshift::scenefile::Scene const &scene);
-
-        redshift::shared_ptr<redshift::scenefile::Scene> createScene () const;
-        QString sceneToCode();
-
-        QStringList renderSettingNames() const;
-        QStringList cameraNames() const;
-
-        void addRenderSettings (redshift::scenefile::RenderSettings const &rs);
-        void addCamera (redshift::scenefile::Camera const &cam);
-        void addObject (redshift::scenefile::Object const &ob);
-        void addVolume (redshift::scenefile::Volume const &vol);
-
-        void addTransform(QtProperty *transformRoot,
-                          redshift::scenefile::Transform const & t);
-
-        void removeRenderSetting (QtProperty *);
-        void removeCamera (QtProperty *);
-        void removeObject (QtProperty *);
-        void removeVolume (QtProperty *);
-
-        void removeTransform(QtProperty *transformRoot,
-                             QtProperty *subTransform);
-
-        QtBrowserItem *currentBrowserItem () const;
-        QtProperty *currentCameraProperty () const;
-        QtProperty *currentTransformProperty () const;
-        QtProperty *currentRenderSettingProperty () const;
-
-signals:
-        void updateUi();
-        void sceneChanged();
-        void resyncCameraConfig();
-        void resyncRenderSettingConfig();
-        void asUnchanged();
-
-private:
-        void initializeBrowsers();
-
-        QWidget *ownerWidget;
-        QMdiArea *displayArea;
-        QtTreePropertyBrowser *root;
-        QtVariantPropertyManager *codeEditManager;
-
-        ObjectPropertyBrowser *objectPropertyBrowser;
-        VolumePropertyBrowser *volumePropertyBrowser;
-        RenderSettingsPropertyBrowser *renderSettingsPropertyBrowser;
-        CamerasPropertyBrowser *camerasPropertyBrowser;
-        FilmSettingsPropertyBrowser *filmSettingsPropertyBrowser;
-        BackgroundsPropertyBrowser *backgroundsPropertyBrowser;
-
-
-        QtProperty *currentCameraProperty_,
-                   *currentTransformProperty_,
-                   *currentRenderSettingProperty_;
-        QtBrowserItem * currentBrowserItem_;
-
-private slots:
-        void updateUi_();
-        void sceneChanged_();
-        void resyncCameraConfig_();
-        void resyncRenderSettingConfig_();
-
-        void currentItemChanged(QtBrowserItem * current);
-};
 
 
 class MainWindow : public QMainWindow {
