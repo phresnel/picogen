@@ -30,24 +30,12 @@
 namespace Ui {
     class MainWindow;
 }
-namespace redshift {
-        namespace scenefile {
-                class Scene;
-                class Object;
-                class Volume;
-                class RenderSettings;
-                class Camera;
-                class Transform;
-        }
-}
+
 class ScenePropertyBrowser;
 
 class QtProperty;
 class QtBrowserItem;
 class QtVariantPropertyManager;
-class QtTreePropertyBrowser;
-class QMdiArea;
-
 
 
 

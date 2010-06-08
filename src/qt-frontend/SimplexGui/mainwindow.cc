@@ -18,43 +18,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "qmessagebox.h"
 
-#include "mainwindow.hh"
-#include "ui_mainwindow.h"
+// Picogen.
+#include "redshift/include/jobfile.hh"
 
-#include "qtwindowlistmenu.h"
-#include "qtvariantproperty.h"
-#include "qtpropertymanager.h"
-#include "qttreepropertybrowser.h"
-#include <QtStringPropertyManager>
-
+// Qt.
+#include <QMessageBox>
+#include <QtWindowListMenu>
 #include <QFileDialog>
 #include <QDesktopServices>
-#include <QTextStream>
 #include <QUrl>
 #include <QProcess>
-#include <QKeyEvent>
 
+// qt-frontend
+#include "mainwindow.hh"
+#include "ui_mainwindow.h"
 #include "simpleinputbox.hh"
 #include "renderwindow.hh"
 #include "quatschsourceeditor.hh"
 #include "OpenSceneFile/openscenefile.hh"
-
-#include "redshift/include/jobfile.hh"
-
-#include "propertybrowser/propertybrowser-helpers.hh"
-
-//#include <QtTreePropertyBrowser>
-/*#include "propertybrowser/objectpropertybrowser.hh"
-#include "propertybrowser/volumepropertybrowser.hh"
-#include "propertybrowser/rendersettingspropertybrowser.hh"
-#include "propertybrowser/cameraspropertybrowser.hh"
-#include "propertybrowser/filmsettingspropertybrowser.hh"
-#include "propertybrowser/backgroundspropertybrowser.hh"*/
-
 #include "propertybrowser/scenepropertybrowser.hh"
-
+#include "propertybrowser/propertybrowser-helpers.hh"
 #include "coloredit.h"
 
 
