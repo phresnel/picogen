@@ -83,6 +83,7 @@ void CamerasPropertyBrowser::initializeScene() {
 
 void CamerasPropertyBrowser::remove(QtProperty *property) {
         camerasProperty->removeSubProperty(property);
+        emit sceneChanged();
 }
 
 
@@ -92,6 +93,7 @@ void CamerasPropertyBrowser::removeTransform (
         QtProperty *subTransform
 ) {
         transformRoot->removeSubProperty(subTransform);
+        emit sceneChanged();
 }
 
 
@@ -172,7 +174,6 @@ void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
         collapse (root, transformRoot);
 
         emit sceneChanged();
-        emit updateUi();
 }
 
 
@@ -235,7 +236,6 @@ void CamerasPropertyBrowser::addTransform (QtProperty *transformRoot,
         }
 
         emit sceneChanged();
-        emit updateUi();
 }
 
 
@@ -284,6 +284,7 @@ void CamerasPropertyBrowser::cameraTypeEnumManager_valueChanged(
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
         }
+        emit sceneChanged();
 }
 
 
@@ -339,7 +340,7 @@ void CamerasPropertyBrowser::transformEnumManager_valueChanged(
                                                   "programmers, please report this issue.");
 
         }
-
+        emit sceneChanged();
 }
 
 
@@ -456,6 +457,6 @@ void CamerasPropertyBrowser::addCamerasToScene (
 QStringList CamerasPropertyBrowser::names() const {
         QStringList ret;
         foreach (QtProperty *cam, camerasProperty->subProperties())
-                ret << readValueText("title", cam->subProperties());
+                ret << cam->propertyName();//readValueText("title", cam->subProperties());
         return ret;
 }

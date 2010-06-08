@@ -69,7 +69,6 @@ ScenePropertyBrowser::ScenePropertyBrowser(
 , codeEditManager(codeEditManager)
 {
         initializeScene();
-
         connect (root, SIGNAL(currentItemChanged(QtBrowserItem*)),
                  this, SLOT(currentItemChanged(QtBrowserItem*)));
 }
@@ -90,7 +89,7 @@ void ScenePropertyBrowser::initializeScene() {
         renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
                         ownerWidget,
                         root);
-        connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
+        connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(resyncRenderSettingConfig_()));
         connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig_()));
 
 
@@ -225,9 +224,14 @@ QtProperty *ScenePropertyBrowser::currentRenderSettingProperty () const {
 
 
 void ScenePropertyBrowser::setDefaultScene() {
+
+        const bool signalsBlocked = blockSignals(true);
+
         // changed = true;
         initializeScene();
+
         // - render settings
+        const bool blockRenderSettings = renderSettingsPropertyBrowser->blockSignals(true);
         {
                 using namespace redshift::scenefile;
 
@@ -266,8 +270,10 @@ void ScenePropertyBrowser::setDefaultScene() {
 
                 renderSettingsPropertyBrowser->addRenderSettings(rs);
         }
+        renderSettingsPropertyBrowser->blockSignals(blockRenderSettings);
 
         // - camera
+        const bool cameraSigsBlocked = camerasPropertyBrowser->blockSignals(true);
         redshift::scenefile::Camera cam;
         cam.title = "hello-world";
         cam.type = redshift::scenefile::Camera::pinhole;
@@ -287,6 +293,8 @@ void ScenePropertyBrowser::setDefaultScene() {
 
         camerasPropertyBrowser->addCamera(cam);
 
+        camerasPropertyBrowser->blockSignals(cameraSigsBlocked);
+
         // - objects
         /*redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::horizon_plane;
@@ -298,12 +306,15 @@ void ScenePropertyBrowser::setDefaultScene() {
         addObject(o);*/
 
         // - background
+        const bool bgblocked = backgroundsPropertyBrowser->blockSignals(true);
         backgroundsPropertyBrowser->setBackground (redshift::scenefile::Background());
+        backgroundsPropertyBrowser->blockSignals(bgblocked);
 
 
         foreach (QtBrowserItem *it, root->topLevelItems())
                 root->setExpanded(it, false);
 
+        blockSignals(signalsBlocked);
         emit sceneChanged();
         emit asUnchanged();
 }
@@ -435,23 +446,27 @@ QStringList ScenePropertyBrowser::cameraNames() const {
 
 
 void ScenePropertyBrowser::updateUi_() {
-        emit updateUi();
+        if (!signalsBlocked())
+                emit updateUi();
 }
 
 
 
 void ScenePropertyBrowser::sceneChanged_() {
-        emit sceneChanged();
+        if (!signalsBlocked())
+                emit sceneChanged();
 }
 
 
 void ScenePropertyBrowser::resyncCameraConfig_() {
-        emit resyncCameraConfig();
+        if (!signalsBlocked())
+                emit resyncCameraConfig();
 }
 
 
 void ScenePropertyBrowser::resyncRenderSettingConfig_() {
-        emit resyncRenderSettingConfig();
+        if (!signalsBlocked())
+                emit resyncRenderSettingConfig();
 }
 
 
@@ -465,7 +480,7 @@ ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
         switch (c.type) {
         case Color::RGB:
                 ret.mode = ColorPickerColor::Tristimulus;
-                ret.tristimulus = TristimulusColor(
+                ret.tristimulus = TristimulusColor::fromRgbf(
                                 (double)c.rgb.r,
                                 (double)c.rgb.g,
                                 (double)c.rgb.b
@@ -497,20 +512,11 @@ MainWindow::MainWindow(
 {
         setupUi();
 
+
         propertyBrowser = new ScenePropertyBrowser(this,
                                               ui->mdiArea,
                                               ui->settings,
                                               codeEditManager);
-        connect (propertyBrowser, SIGNAL(updateUi()),
-                 this,            SLOT(updateUi()));
-        connect (propertyBrowser, SIGNAL(sceneChanged()),
-                 this,            SLOT(setChanged()));
-        connect (propertyBrowser, SIGNAL(resyncCameraConfig()),
-                 this,            SLOT(resyncCameraConfig()));
-        connect (propertyBrowser, SIGNAL(resyncRenderSettingConfig()),
-                 this,            SLOT(resyncRenderSettingConfig()));
-        connect (propertyBrowser, SIGNAL(asUnchanged()),
-                 this,            SLOT(setUnchanged()));
 
         connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
                 this, SLOT(helpBrowserVisibilityRequested()));
@@ -561,6 +567,22 @@ MainWindow::MainWindow(
         on_actionShow_Picohelp_Browser_triggered (ui->actionShow_Picohelp_Browser->isChecked());
 
         ui->codeEditor->setPicohelpBrowser(ui->picohelp);
+
+        // connect signals
+        connect (propertyBrowser, SIGNAL(updateUi()),
+                 this,            SLOT(updateUi()));
+        connect (propertyBrowser, SIGNAL(sceneChanged()),
+                 this,            SLOT(setChanged()));
+        connect (propertyBrowser, SIGNAL(resyncCameraConfig()),
+                 this,            SLOT(resyncCameraConfig()));
+        connect (propertyBrowser, SIGNAL(resyncRenderSettingConfig()),
+                 this,            SLOT(resyncRenderSettingConfig()));
+        connect (propertyBrowser, SIGNAL(asUnchanged()),
+                 this,            SLOT(setUnchanged()));
+
+
+        resyncCameraConfig();
+        resyncRenderSettingConfig();
 }
 
 
@@ -623,7 +645,6 @@ void MainWindow::setUnchanged() {
 void MainWindow::resyncRenderSettingConfig () {
         ui->renderSettingConfig->clear();
         ui->renderSettingConfig->addItems(propertyBrowser->renderSettingNames());
-        updateUi();
 }
 
 
@@ -631,7 +652,6 @@ void MainWindow::resyncRenderSettingConfig () {
 void MainWindow::resyncCameraConfig () {
         ui->cameraConfig->clear();
         ui->cameraConfig->addItems(propertyBrowser->cameraNames());
-        updateUi();
 }
 
 

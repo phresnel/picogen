@@ -104,14 +104,15 @@ void RenderSettingsPropertyBrowser::addRenderSettings (
         redshift::scenefile::RenderSettings const &rs
 ) {
 
+        const bool block = blockSignals(true);
         QtProperty *topItem = groupManager->addProperty(QString::fromStdString(rs.title));
         renderSettingsProperty->addSubProperty(topItem);
 
         QtProperty *title = rsTitleManager->addProperty("title");
         rsTitleManager->setRegExp(title, QRegExp("([a-z0-9]|-|_)+", Qt::CaseInsensitive, QRegExp::RegExp));
+        // here it breaks
         rsTitleManager->setValue(title, QString::fromStdString(rs.title));
         topItem->addSubProperty(title);
-
 
         QtVariantProperty *it = variantManager->addProperty(QVariant::Int, "width");
         it->setAttribute(QLatin1String("minimum"), 1);
@@ -152,7 +153,6 @@ void RenderSettingsPropertyBrowser::addRenderSettings (
         it->setValue(rs.userSeed);
         it->setToolTip("Use this to configure another random seed for rendering.");
         topItem->addSubProperty(it);
-
 
         {
                 QtProperty *surfaceIntegrator = groupManager
@@ -243,15 +243,18 @@ void RenderSettingsPropertyBrowser::addRenderSettings (
                         enumManager->setValue(integratorType, 0);
                 }
         }
+
         collapse (root, topItem);
-        emit updateUi();
+        blockSignals(block);
+
+        if (!signalsBlocked()) emit sceneChanged();
 }
 
 
 
 void RenderSettingsPropertyBrowser::remove(QtProperty *property) {
         renderSettingsProperty->removeSubProperty(property);
-        emit sceneChanged();
+        if (!signalsBlocked()) emit sceneChanged();
 }
 
 
@@ -263,7 +266,8 @@ void RenderSettingsPropertyBrowser::rsTitleManager_valueChanged (
         if (QtProperty *par = findParent (root->properties(), property)) {
                 par->setPropertyName(value);
         }
-        emit sceneChanged();
+        if (!signalsBlocked())
+                emit sceneChanged();
 }
 
 
@@ -271,7 +275,7 @@ void RenderSettingsPropertyBrowser::rsTitleManager_valueChanged (
 void RenderSettingsPropertyBrowser::surfaceIntegratorTypeEnumManager_valueChanged(
         QtProperty* prop, int index
 ){
-        emit sceneChanged(); //setChanged();
+        //emit sceneChanged(); //setChanged();
         QtProperty *t = findParent(root->properties(), prop);
         if (!t)
                 return;
@@ -309,6 +313,8 @@ void RenderSettingsPropertyBrowser::surfaceIntegratorTypeEnumManager_valueChange
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
         }
+        if (!signalsBlocked())
+                emit sceneChanged();
 }
 
 
@@ -316,7 +322,8 @@ void RenderSettingsPropertyBrowser::surfaceIntegratorTypeEnumManager_valueChange
 void RenderSettingsPropertyBrowser::variantManager_valueChanged(
         QtProperty*, QVariant const &
 ) {
-        emit sceneChanged();
+        if (!signalsBlocked())
+                emit sceneChanged();
 }
 
 
@@ -397,5 +404,6 @@ void RenderSettingsPropertyBrowser::enumManager_valueChanged (
         QtProperty*,
         int
 ) {
-        emit sceneChanged();
+        if (!signalsBlocked())
+                emit sceneChanged();
 }
