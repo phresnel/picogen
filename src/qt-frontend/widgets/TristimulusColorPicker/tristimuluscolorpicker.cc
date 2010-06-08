@@ -185,6 +185,8 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
         ui->triangle->setColor(col);
         ui->triangle->blockSignals(prev);
 
+        drawColorPreview();
+
         // RGB
         ui->spinR->blockSignals(true);
         ui->spinR->setValue(col.redF() * 255);
@@ -236,3 +238,25 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
         isUpdating = false;
 }
 
+
+
+void TristimulusColorPicker::drawColorPreview() {
+        QImage img(ui->colorPreview->width(),32,QImage::Format_RGB32);
+        img.fill(color_.toQColor().rgb());
+        const QRgb black = 0U;
+        for (int i=0; i<img.height(); ++i) {
+                img.setPixel(0, i, black);
+                img.setPixel(img.width()-1, i, black);
+        }
+        for (int i=0; i<img.width(); ++i) {
+                img.setPixel(i, 0, black);
+                img.setPixel(i, img.height()-1, black);
+        }
+        ui->colorPreview->setPixmap(QPixmap::fromImage(img));
+}
+
+
+
+void TristimulusColorPicker::resizeEvent(QResizeEvent *) {
+        drawColorPreview();
+}

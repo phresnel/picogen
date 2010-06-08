@@ -31,14 +31,16 @@ namespace Ui {
 
 class TristimulusColor {
         double r, g, b;
+        double y;
 public:
 
-        TristimulusColor () : r(0), g(0), b(0) {}
+        TristimulusColor () : r(0), g(0), b(0), y(1) {}
 
         explicit TristimulusColor (QColor const &col)
                 : r(col.redF())
                 , g(col.greenF())
                 , b(col.blueF())
+                , y(1)
         {}
 
         static TristimulusColor fromRgb (int r, int g, int b) {
@@ -56,6 +58,9 @@ public:
                 ret.b = b;
                 return  ret;
         }
+
+        void setY (double v) { y = v; }
+        double y () const { return y; }
 
         void setRed (int v)   { r = v / 255.; }
         void setGreen (int v) { g = v / 255.; }
@@ -107,9 +112,10 @@ public:
 
 protected:
         void changeEvent(QEvent *e);
-
+        void resizeEvent(QResizeEvent *);
 
 private:
+        void drawColorPreview();
         Ui::TristimulusColorPicker *ui;
         bool isUpdating;
         TristimulusColor color_;
