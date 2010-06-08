@@ -41,15 +41,29 @@ public:
                 , b(col.blueF())
         {}
 
-        TristimulusColor (int r, int g, int b)
-        : r(r/255.), g(g/255.), b(b/255.) {}
+        static TristimulusColor fromRgb (int r, int g, int b) {
+                TristimulusColor ret;
+                ret.r = r / 255.;
+                ret.g = g / 255.;
+                ret.b = b / 255.;
+                return  ret;
+        }
 
-        TristimulusColor (double r, double g, double b)
-        : r(r), g(g), b(b) {}
+        static TristimulusColor fromRgbf (double r, double g, double b) {
+                TristimulusColor ret;
+                ret.r = r;
+                ret.g = g;
+                ret.b = b;
+                return  ret;
+        }
 
-        void setRed (int v)   { r = v; }
-        void setGreen (int v) { g = v; }
-        void setBlue (int v)  { b = v; }
+        void setRed (int v)   { r = v / 255.; }
+        void setGreen (int v) { g = v / 255.; }
+        void setBlue (int v)  { b = v / 255.; }
+
+        void setRedF (double v)   { r = v; }
+        void setGreenF (double v) { g = v; }
+        void setBlueF (double v)  { b = v; }
 
         int red()   const { return r * 255; }
         int green() const { return g * 255; }
@@ -59,14 +73,14 @@ public:
         double greenF() const { return g; }
         double blueF()  const { return b; }
 
+        bool isGray(double epsilon = 0.0001) const {
+                return r >= g-epsilon && r <= g+epsilon
+                    && r >= b-epsilon && r <= b+epsilon
+                ;
+        }
+
         QColor toQColor () const {
-                /*const int r_ = this->r, r = r_<0 ? 0 : r_>255 ? 255 : r_;
-                const int g_ = this->g, g = g_<0 ? 0 : g_>255 ? 255 : g_;
-                const int b_ = this->b, b = b_<0 ? 0 : b_>255 ? 255 : b_;*/
                 return QColor::fromRgbF(r, g, b);
-                /*return QColor::fromRgb(
-                                r, g, b
-                );*/
         }
 
 
@@ -111,18 +125,18 @@ public slots:
         void on_triangle_colorChanged(const QColor & color);
 
 private slots:
-        void on_spinR_valueChanged(int);
-        void on_spinG_valueChanged(int);
-        void on_spinB_valueChanged(int);
+        void on_spinR_valueChanged(double);
+        void on_spinG_valueChanged(double);
+        void on_spinB_valueChanged(double);
 
-        void on_spinH_valueChanged(int);
-        void on_spinS_valueChanged(int);
-        void on_spinV_valueChanged(int);
+        void on_spinH_valueChanged(double);
+        void on_spinS_valueChanged(double);
+        void on_spinV_valueChanged(double);
 
-        void on_spinC_valueChanged(int);
-        void on_spinM_valueChanged(int);
-        void on_spinY_valueChanged(int);
-        void on_spinK_valueChanged(int);
+        void on_spinC_valueChanged(double);
+        void on_spinM_valueChanged(double);
+        void on_spinY_valueChanged(double);
+        void on_spinK_valueChanged(double);
 };
 
 

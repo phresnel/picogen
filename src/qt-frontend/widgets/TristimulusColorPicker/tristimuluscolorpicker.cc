@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include <iostream>
 #include "tristimuluscolorpicker.hh"
 #include "ui_tristimuluscolorpicker.h"
 
@@ -27,7 +28,7 @@ TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     isUpdating(false)
 {
         ui->setupUi(this);
-        setColor(TristimulusColor(0,1,0));
+        setColor(TristimulusColor::fromRgbf(0,1,0));
 }
 
 TristimulusColorPicker::~TristimulusColorPicker() {
@@ -61,19 +62,19 @@ void TristimulusColorPicker::on_triangle_colorChanged(const QColor & color) {
 //------------------------------------------------------------------------------
 // Update by RGB spins
 //------------------------------------------------------------------------------
-void TristimulusColorPicker::on_spinR_valueChanged(int v) {
-        TristimulusColor col = (TristimulusColor)ui->triangle->color();
-        col.setRed(v);
+void TristimulusColorPicker::on_spinR_valueChanged(double v) {
+        TristimulusColor col = color_;
+        col.setRedF(v/255);
         setColor (col);
 }
-void TristimulusColorPicker::on_spinG_valueChanged(int v) {
-        TristimulusColor col = (TristimulusColor)ui->triangle->color();
-        col.setGreen(v);
+void TristimulusColorPicker::on_spinG_valueChanged(double v) {
+        TristimulusColor col = color_;
+        col.setGreenF(v/255);
         setColor (col);
 }
-void TristimulusColorPicker::on_spinB_valueChanged(int v) {
-        TristimulusColor col = (TristimulusColor)ui->triangle->color();
-        col.setBlue(v);
+void TristimulusColorPicker::on_spinB_valueChanged(double v) {
+        TristimulusColor col = color_;
+        col.setBlueF(v/255);
         setColor (col);
 }
 
@@ -81,20 +82,41 @@ void TristimulusColorPicker::on_spinB_valueChanged(int v) {
 //------------------------------------------------------------------------------
 // Update by HSV spins
 //------------------------------------------------------------------------------
-void TristimulusColorPicker::on_spinH_valueChanged(int v) {
-        QColor col = ui->triangle->color();
-        col = QColor::fromHsv(v, col.hsvSaturation(), col.value());
+void TristimulusColorPicker::on_spinH_valueChanged(double) {
+        // 0) Save box values. They might change during setColor().
+        const double
+                h = ui->spinH->value(),
+                s = ui->spinS->value(),
+                v = ui->spinV->value();
+
+        // 1) Build up QColor from boxes.
+        QColor col = QColor::fromHsvF(h/360, s/255, v/255);
         setColor (TristimulusColor(col));
+
+        // 2) Block signals or we'll never end.
+        const bool
+                H = ui->spinH->blockSignals(true),
+                S = ui->spinS->blockSignals(true),
+                V = ui->spinV->blockSignals(true),
+                T = ui->triangle->blockSignals(true);
+
+        // 3) setColor() might have changed the box values, so restore them,
+        //    and also restore the previous blocking state.
+        ui->spinH->setValue(h);
+        ui->spinS->setValue(s);
+        ui->spinV->setValue(v);
+        ui->triangle->setColor(col);
+
+        ui->spinH->blockSignals(H);
+        ui->spinS->blockSignals(S);
+        ui->spinV->blockSignals(V);
+        ui->triangle->blockSignals(T);
 }
-void TristimulusColorPicker::on_spinS_valueChanged(int v) {
-        QColor col = ui->triangle->color();
-        col = QColor::fromHsv(col.hsvHue(), v, col.value());
-        setColor (TristimulusColor(col));
+void TristimulusColorPicker::on_spinS_valueChanged(double v) {
+        on_spinH_valueChanged(double());
 }
-void TristimulusColorPicker::on_spinV_valueChanged(int v) {
-        QColor col = ui->triangle->color();
-        col = QColor::fromHsv(col.hsvHue(), col.hsvSaturation(), v);
-        setColor (TristimulusColor(col));
+void TristimulusColorPicker::on_spinV_valueChanged(double v) {
+        on_spinH_valueChanged(double());
 }
 
 
@@ -103,25 +125,48 @@ void TristimulusColorPicker::on_spinV_valueChanged(int v) {
 //------------------------------------------------------------------------------
 // Update by CMYK spins
 //------------------------------------------------------------------------------
-void TristimulusColorPicker::on_spinC_valueChanged(int v) {
-        QColor col = ui->triangle->color();
-        col = QColor::fromCmyk(v, col.magenta(), col.yellow(), col.black());
+void TristimulusColorPicker::on_spinC_valueChanged(double) {
+        // 0) Save box values. They might change during setColor().
+        const double
+                c = ui->spinC->value(),
+                m = ui->spinM->value(),
+                y = ui->spinY->value(),
+                k = ui->spinK->value();
+
+        // 1) Build up QColor from boxes.
+        QColor col = QColor::fromCmykF(c/255, m/255, y/255, k/255);
         setColor (TristimulusColor(col));
+
+        // 2) Block signals or we'll never end.
+        const bool
+                C = ui->spinC->blockSignals(true),
+                M = ui->spinM->blockSignals(true),
+                Y = ui->spinY->blockSignals(true),
+                K = ui->spinK->blockSignals(true),
+                T = ui->triangle->blockSignals(true);
+
+        // 3) setColor() might have changed the box values, so restore them,
+        //    and also restore the previous blocking state.
+        ui->spinC->setValue(c);
+        ui->spinM->setValue(m);
+        ui->spinY->setValue(y);
+        ui->spinK->setValue(k);
+        ui->triangle->setColor(col);
+
+        ui->spinC->blockSignals(C);
+        ui->spinM->blockSignals(M);
+        ui->spinY->blockSignals(Y);
+        ui->spinK->blockSignals(K);
+        ui->triangle->blockSignals(T);
 }
-void TristimulusColorPicker::on_spinM_valueChanged(int v) {
-        QColor col = ui->triangle->color();
-        col = QColor::fromCmyk(col.cyan(), v, col.yellow(), col.black());
-        setColor (TristimulusColor(col));
+void TristimulusColorPicker::on_spinM_valueChanged(double) {
+        on_spinC_valueChanged(double());
 }
-void TristimulusColorPicker::on_spinY_valueChanged(int v) {
-        QColor col = ui->triangle->color();
-        col = QColor::fromCmyk(col.cyan(), col.magenta(), v, col.black());
-        setColor (TristimulusColor(col));
+void TristimulusColorPicker::on_spinY_valueChanged(double) {
+        on_spinC_valueChanged(double());
 }
-void TristimulusColorPicker::on_spinK_valueChanged(int v) {
-        QColor col = ui->triangle->color();
-        col = QColor::fromCmyk(col.cyan(), col.magenta(), col.yellow(), v);
-        setColor (TristimulusColor(col));
+void TristimulusColorPicker::on_spinK_valueChanged(double) {
+        on_spinC_valueChanged(double());
 }
 
 
@@ -132,28 +177,61 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
                 return;
         isUpdating = true;
 
-        blockSignals(true);
-
+        const bool prevBlockSignals = blockSignals(true);
         const QColor col = col_.toQColor();
 
+
+        bool prev = ui->triangle->blockSignals(true);
         ui->triangle->setColor(col);
+        ui->triangle->blockSignals(prev);
 
-        ui->spinR->setValue(col.red());
-        ui->spinG->setValue(col.green());
-        ui->spinB->setValue(col.blue());
+        // RGB
+        ui->spinR->blockSignals(true);
+        ui->spinR->setValue(col.redF() * 255);
+        ui->spinR->blockSignals(prev);
 
-        ui->spinH->setValue(col.hsvHue());
-        ui->spinS->setValue(col.hsvSaturation());
-        ui->spinV->setValue(col.value());
+        prev = ui->spinG->blockSignals(true);
+        ui->spinG->setValue(col.greenF() * 255);
+        ui->spinG->blockSignals(prev);
 
-        ui->spinC->setValue(col.cyan());
-        ui->spinM->setValue(col.magenta());
-        ui->spinY->setValue(col.yellow());
-        ui->spinK->setValue(col.black());
+        prev = ui->spinB->blockSignals(true);
+        ui->spinB->setValue(col.blueF() * 255);
+        ui->spinB->blockSignals(prev);
+
+        // HSV
+        prev = ui->spinH->blockSignals(true);
+        ui->spinH->setValue(col.hsvHueF() * 360);
+        ui->spinH->blockSignals(prev);
+
+        prev = ui->spinS->blockSignals(true);
+        ui->spinS->setValue(col.hsvSaturationF() * 255);
+        ui->spinS->blockSignals(prev);
+
+        prev = ui->spinV->blockSignals(true);
+        ui->spinV->setValue(col.valueF() * 255);
+        ui->spinV->blockSignals(prev);
+
+        // CMYK
+        prev = ui->spinC->blockSignals(true);
+        ui->spinC->setValue(col.cyanF() * 255);
+        ui->spinC->blockSignals(prev);
+
+        prev = ui->spinM->blockSignals(true);
+        ui->spinM->setValue(col.magentaF() * 255);
+        ui->spinM->blockSignals(prev);
+
+        prev = ui->spinY->blockSignals(true);
+        ui->spinY->setValue(col.yellowF() * 255);
+        ui->spinY->blockSignals(prev);
+
+        prev = ui->spinK->blockSignals(true);
+        ui->spinK->setValue(col.blackF() * 255);
+        ui->spinK->blockSignals(prev);
+
 
         color_ = col_;
 
-        blockSignals(false);
+        blockSignals(prevBlockSignals);
         emit colorChanged (color_);
         isUpdating = false;
 }
