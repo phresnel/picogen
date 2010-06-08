@@ -67,18 +67,25 @@ ScenePropertyBrowser::ScenePropertyBrowser(
 , displayArea(displayArea)
 , root(root)
 , codeEditManager(codeEditManager)
+, objectPropertyBrowser(0)
+, volumePropertyBrowser(0)
+, renderSettingsPropertyBrowser(0)
+, camerasPropertyBrowser(0)
+, filmSettingsPropertyBrowser(0)
+, backgroundsPropertyBrowser(0)
 {
-        initializeScene();
+        initializeBrowsers();
         connect (root, SIGNAL(currentItemChanged(QtBrowserItem*)),
                  this, SLOT(currentItemChanged(QtBrowserItem*)));
 }
 
 
 
-void ScenePropertyBrowser::initializeScene() {
+void ScenePropertyBrowser::initializeBrowsers() {
         root->clear();
         root->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
 
+        delete filmSettingsPropertyBrowser;
         filmSettingsPropertyBrowser = new FilmSettingsPropertyBrowser(
                         ownerWidget,
                         root);
@@ -86,6 +93,7 @@ void ScenePropertyBrowser::initializeScene() {
         connect(filmSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
+        delete renderSettingsPropertyBrowser;
         renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
                         ownerWidget,
                         root);
@@ -93,12 +101,14 @@ void ScenePropertyBrowser::initializeScene() {
         connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig_()));
 
 
+        delete camerasPropertyBrowser;
         camerasPropertyBrowser = new CamerasPropertyBrowser(ownerWidget,
                                                             root);
         connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig_()));
 
 
+        delete objectPropertyBrowser;
         objectPropertyBrowser = new ObjectPropertyBrowser(ownerWidget,
                                                           displayArea,
                                                           root,
@@ -108,6 +118,7 @@ void ScenePropertyBrowser::initializeScene() {
         connect(objectPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
+        delete volumePropertyBrowser;
         volumePropertyBrowser = new VolumePropertyBrowser (ownerWidget,
                                                            displayArea,
                                                            root,
@@ -116,6 +127,7 @@ void ScenePropertyBrowser::initializeScene() {
         connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
+        delete backgroundsPropertyBrowser;
         backgroundsPropertyBrowser = new BackgroundsPropertyBrowser(
                                         ownerWidget, displayArea, root);
         connect(backgroundsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
@@ -125,9 +137,13 @@ void ScenePropertyBrowser::initializeScene() {
 
 
 void ScenePropertyBrowser::loadScene (redshift::scenefile::Scene const &scene) {
-        initializeScene();
+        const bool signalsBlocked = blockSignals(true);
+
+        initializeBrowsers();
 
         filmSettingsPropertyBrowser->setFilmSettings(scene.filmSettings());
+
+
         for (unsigned int i=0; i<scene.renderSettingsCount(); ++i)
                 renderSettingsPropertyBrowser->addRenderSettings(scene.renderSettings(i));
         for (unsigned int i=0; i<scene.cameraCount(); ++i)
@@ -143,6 +159,8 @@ void ScenePropertyBrowser::loadScene (redshift::scenefile::Scene const &scene) {
         foreach (QtBrowserItem *it, root->topLevelItems())
                 root->setExpanded(it, false);
 
+        blockSignals(signalsBlocked);
+        emit sceneChanged();
         emit asUnchanged();
 }
 
@@ -228,7 +246,7 @@ void ScenePropertyBrowser::setDefaultScene() {
         const bool signalsBlocked = blockSignals(true);
 
         // changed = true;
-        initializeScene();
+        initializeBrowsers();
 
         // - render settings
         const bool blockRenderSettings = renderSettingsPropertyBrowser->blockSignals(true);

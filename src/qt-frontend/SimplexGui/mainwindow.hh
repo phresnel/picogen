@@ -100,7 +100,7 @@ signals:
         void asUnchanged();
 
 private:
-        void initializeScene();
+        void initializeBrowsers();
 
         QWidget *ownerWidget;
         QMdiArea *displayArea;
