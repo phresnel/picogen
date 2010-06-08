@@ -265,3 +265,12 @@ void BackgroundsPropertyBrowser::addBackgroundsToScene (
                 }
         }
 }
+
+
+
+void BackgroundsPropertyBrowser::colorEditManager_valueChanged(
+        QtProperty*,
+        ColorPickerColor const&
+) {
+        emit sceneChanged();
+}

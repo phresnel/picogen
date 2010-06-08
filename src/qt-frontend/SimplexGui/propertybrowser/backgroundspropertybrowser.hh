@@ -38,6 +38,7 @@ class QtGroupPropertyManager;
 class QtProperty;
 class ColorEditManager;
 class ColorEditFactory;
+class ColorPickerColor;
 
 
 #include <QObject>
@@ -81,6 +82,7 @@ private:
         ColorEditFactory *colorEditFactory;
 private slots:
         void variantManager_valueChanged(QtProperty*, QVariant const &);
+        void colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&);
 };
 
 #endif // BACKGROUNDSPROPERTYBROWSER_HH

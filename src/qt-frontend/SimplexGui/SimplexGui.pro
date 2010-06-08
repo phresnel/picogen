@@ -26,7 +26,7 @@ SOURCES += main.cc \
     propertybrowser/cameraspropertybrowser.cc \
     propertybrowser/filmsettingspropertybrowser.cc \
     propertybrowser/backgroundspropertybrowser.cc \
-    scenepropertybrowser.cc
+    propertybrowser/scenepropertybrowser.cc
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
@@ -42,7 +42,7 @@ HEADERS += mainwindow.hh \
     propertybrowser/cameraspropertybrowser.hh \
     propertybrowser/filmsettingspropertybrowser.hh \
     propertybrowser/backgroundspropertybrowser.hh \
-    scenepropertybrowser.hh
+    propertybrowser/scenepropertybrowser.hh
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \

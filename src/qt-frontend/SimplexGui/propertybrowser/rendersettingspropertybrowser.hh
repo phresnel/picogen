@@ -78,6 +78,7 @@ private:
         QtStringPropertyManager *rsTitleManager;
 
 private slots:
+        void enumManager_valueChanged (QtProperty*, int);
         void rsTitleManager_valueChanged (QtProperty *, const QString &);
         void surfaceIntegratorTypeEnumManager_valueChanged(QtProperty*, int);
         void variantManager_valueChanged(QtProperty*,QVariant const &);

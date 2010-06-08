@@ -390,3 +390,12 @@ QStringList RenderSettingsPropertyBrowser::names () const {
                 ret << readValueText("title", mooh->subProperties());
         return ret;
 }
+
+
+
+void RenderSettingsPropertyBrowser::enumManager_valueChanged (
+        QtProperty*,
+        int
+) {
+        emit sceneChanged();
+}

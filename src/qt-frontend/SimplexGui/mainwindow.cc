@@ -83,20 +83,20 @@ void ScenePropertyBrowser::initializeScene() {
         filmSettingsPropertyBrowser = new FilmSettingsPropertyBrowser(
                         ownerWidget,
                         root);
-        connect(filmSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(filmSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(filmSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
         renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
                         ownerWidget,
                         root);
-        connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig_()));
 
 
         camerasPropertyBrowser = new CamerasPropertyBrowser(ownerWidget,
                                                             root);
-        connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig_()));
 
 
@@ -105,7 +105,7 @@ void ScenePropertyBrowser::initializeScene() {
                                                           root,
                                                           codeEditManager
                                                           );
-        connect(objectPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(objectPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(objectPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
@@ -113,13 +113,13 @@ void ScenePropertyBrowser::initializeScene() {
                                                            displayArea,
                                                            root,
                                                            codeEditManager);
-        connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
         backgroundsPropertyBrowser = new BackgroundsPropertyBrowser(
                                         ownerWidget, displayArea, root);
-        connect(backgroundsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi()));
+        connect(backgroundsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(backgroundsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 }
 
@@ -670,119 +670,100 @@ void MainWindow::updateUi() {
 
 // FROB
 void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
-
         settingsContextMenu.clear();
+        ui->moveDownButton->setEnabled(false);
+        ui->moveUpButton->setEnabled(false);
+
+        ui->deleteObjectButton->setEnabled(false);
+        ui->deleteVolumeButton->setEnabled(false);
+
+        ui->codeEditorFrameOuter->setEnabled(false);
+        ui->codeEditorFrameOuter->setVisible(false);
+
+        ui->newSubTransformButton->setEnabled(false);
+        ui->deleteSubTransformButton->setEnabled (false);
+        ui->deleteRsButton->setEnabled(false);
+        ui->deleteCameraButton->setEnabled(false);
+
+        if (current == 0)
+                return;
+
         settingsContextMenu.addAction(ui->actionNew_Render_Setting);
         settingsContextMenu.addAction(ui->actionNew_Camera);
         settingsContextMenu.addMenu(&objectsMenu);
         settingsContextMenu.addMenu(&volumesMenu);
         settingsContextMenu.addSeparator();
 
-        QString name = (current==0) ? "" : current->property()->propertyName();
+        QtProperty *parentProp =
+               (current->parent()==0)
+               ? 0
+               : current->parent()->property();
+        QtProperty *parentParentProp =
+               (current->parent()==0 || current->parent()->parent()==0)
+               ? 0
+               : current->
+                        parent()->
+                        parent()->property();
+               //: findParent(ui->settings->properties(),
+               //             parentProp);
 
-        QtProperty *parentProp = (current==0)
-                               ? 0
-                               : findParent(ui->settings->properties(),
-                                            current->property());
-        QtProperty *parentParentProp = (parentProp==0)
-                               ? 0
-                               : findParent(ui->settings->properties(),
-                                            parentProp);
-
-        // TODO: below are a bit fragile, but for now work very well.
-
-        ui->moveDownButton->setEnabled(false);
-        ui->moveUpButton->setEnabled(false);
-
-        const bool isCode = name == "code";
-
-        if ((parentProp != 0)
-            && (parentProp->propertyName() == "objects")
-        ) {
-                ui->deleteObjectButton->setEnabled(true);
-                settingsContextMenu.addAction(ui->actionDelete_Object);
-
-                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
-        } else {
-                ui->deleteObjectButton->setEnabled(false);
-        }
-
-        if ((parentProp != 0)
-             && (parentProp->propertyName() == "volumes")
-        ) {
-                ui->deleteVolumeButton->setEnabled(true);
-                settingsContextMenu.addAction(ui->actionDelete_Volume);
-
-                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
-        } else {
-                ui->deleteVolumeButton->setEnabled(false);
-        }
-
+        const QString name = current->property()->propertyName();
+        const QString parentName = (parentProp==0) ? "" : parentProp->propertyName();
+        const QString parentParentName = (parentParentProp==0) ? "" : parentParentProp->propertyName();
 
         const bool isTransform      = name  == "transform";
-        const bool isSubTransform   = (parentProp != 0)
-                                      && (parentProp->propertyName()
-                                          == "transform");
-        const bool isCamera         = (parentProp != 0)
-                                      && (parentProp->propertyName() == "cameras");
-        const bool isRenderSetting  = (parentProp != 0)
-                                      && (parentProp->propertyName()
-                                          == "render-settings");
-                                      //(parentProp == renderSettingsProperty);
+        const bool isSubTransform   = parentName ==  "transform";
+        const bool isCamera         = parentName == "cameras";
+        const bool isRenderSetting  = parentName =="render-settings";
+        const bool isVolume         = parentName == "volumes";
+        const bool isObject         = parentName == "objects";
+        const bool isCode           = name == "code";
 
 
-        if (isSubTransform) {
-                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
+        if (isSubTransform
+         || isCamera
+         || isRenderSetting
+         || isObject
+         || isVolume
+        ) {
+                ui->moveDownButton->setEnabled(!isLast(parentProp, current));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, current));
         }
 
-        if (isCamera) {
-                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
+        if (isObject) {
+                ui->deleteObjectButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionDelete_Object);
         }
-        if (isRenderSetting) {
-                ui->moveDownButton->setEnabled(!isLast(parentProp, propertyBrowser->currentBrowserItem()));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, propertyBrowser->currentBrowserItem()));
+
+        if (isVolume) {
+                ui->deleteVolumeButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionDelete_Volume);
         }
 
         if (isCode) {
                 ui->codeEditorFrameOuter->setEnabled(true);
                 ui->codeEditorFrameOuter->setVisible(true);
                 ui->codeEditor->setCode(codeEditManager->value(current->property()).toString());
-        } else {
-                ui->codeEditorFrameOuter->setEnabled(false);
-                ui->codeEditorFrameOuter->setVisible(false);
         }
 
         if (propertyBrowser->currentTransformProperty() != 0) {
                 ui->newSubTransformButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionNew_Sub_Transform);
-        } else {
-                ui->newSubTransformButton->setEnabled(false);
         }
         if (isSubTransform) {
                 ui->deleteSubTransformButton->setEnabled (true);
                 settingsContextMenu.addAction(ui->actionDelete_Sub_Transform);
-        } else {
-                ui->deleteSubTransformButton->setEnabled (false);
         }
 
 
         if (isRenderSetting) {
                 ui->deleteRsButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionDelete_Render_Setting);
-        } else {
-                ui->deleteRsButton->setEnabled(false);
         }
-
 
         if (isCamera) {
                 ui->deleteCameraButton->setEnabled(true);
                 settingsContextMenu.addAction(ui->actionDelete_Camera);
-        } else {
-                ui->deleteCameraButton->setEnabled(false);
         }
 }
 
