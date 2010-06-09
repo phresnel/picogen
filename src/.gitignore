@@ -66,7 +66,7 @@ qt-frontend/widgets/SpectralColorPicker/release/
 qt-frontend/widgets/SpectralColorPicker/object_script.SpectralColorPicker.Debug
 qt-frontend/widgets/SpectralColorPicker/object_script.SpectralColorPicker.Release
 
-qt-frontend/widgets/TristimulusColorPicker/SpectralColorPicker
+qt-frontend/widgets/TristimulusColorPicker/TristimulusColorPicker
 qt-frontend/widgets/TristimulusColorPicker/Makefile
 qt-frontend/widgets/TristimulusColorPicker/Makefile.Debug
 qt-frontend/widgets/TristimulusColorPicker/Makefile.Release
