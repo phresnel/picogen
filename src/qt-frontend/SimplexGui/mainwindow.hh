@@ -104,7 +104,6 @@ private slots:
         void on_actionDelete_Render_Setting_triggered();
         void on_actionNew_Render_Setting_triggered();
         void on_settings_customContextMenuRequested(QPoint pos);
-        void on_actionProduction_Render_triggered();
         void on_actionLoad_triggered();
         void on_renderButton_clicked();
         void on_deleteCameraButton_clicked();
@@ -127,7 +126,10 @@ private slots:
         void on_actionSave_as_triggered();
         void on_actionSave_copy_as_triggered();
         void on_action_Save_triggered();
+
         void on_actionRender_triggered();
+        void on_actionProduction_Render_triggered();
+
         void on_actionShow_redshift_job_code_triggered();
 
         void on_settings_currentItemChanged(QtBrowserItem * current);

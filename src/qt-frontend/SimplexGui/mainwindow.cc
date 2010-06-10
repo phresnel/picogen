@@ -649,7 +649,6 @@ void MainWindow::render() {
                 const int
                       renderSettings = ui->renderSettingConfig->currentIndex(),
                       camera = ui->cameraConfig->currentIndex();
-
                 RenderWindow *rw = new RenderWindow (
                                 propertyBrowser->createScene(),
                                 renderSettings, camera,

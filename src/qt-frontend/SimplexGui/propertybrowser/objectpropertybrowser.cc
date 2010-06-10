@@ -356,7 +356,7 @@ ObjectPropertyBrowser::readColor (
                 break;
         case ColorPickerColor::Tristimulus:
                 ret.type = redshift::scenefile::Color::RGB;
-                redshift::color::RGB rgb = c.toRGB();
+                redshift::color::RGB rgb = c.rgb();
                 ret.rgb.r = rgb.R;
                 ret.rgb.g = rgb.G;
                 ret.rgb.b = rgb.B;

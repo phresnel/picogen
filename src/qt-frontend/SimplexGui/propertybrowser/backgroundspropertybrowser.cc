@@ -224,10 +224,10 @@ BackgroundsPropertyBrowser::readColor (
                 break;
         case ColorPickerColor::Tristimulus:
                 ret.type = redshift::scenefile::Color::RGB;
-                QColor rgb = c.toQColor();
-                ret.rgb = redshift::scenefile::Rgb(rgb.redF(),
-                                                   rgb.greenF(),
-                                                   rgb.blueF());
+                redshift::color::RGB rgb = c.rgb();
+                ret.rgb.r = rgb.R;
+                ret.rgb.g = rgb.G;
+                ret.rgb.b = rgb.B;
                 break;
         }
 
