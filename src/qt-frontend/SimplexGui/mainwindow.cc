@@ -882,12 +882,14 @@ void MainWindow::on_actionDelete_Object_triggered() {
 
 
 void MainWindow::on_actionShow_Command_Pile_triggered(bool checked) {
-        ui->commandPileGroupBox->setEnabled(checked);
-        ui->commandPileGroupBox->setVisible(checked);
+        /*ui->commandPileGroupBox->setEnabled(checked);
+        ui->commandPileGroupBox->setVisible(checked);*/
+        if (checked) ui->commandPileGroupBox->show();
+        else         ui->commandPileGroupBox->hide();
 }
 void MainWindow::on_actionShow_Picohelp_Browser_triggered(bool checked) {
-        ui->helpFrameOuter->setEnabled(checked);
-        ui->helpFrameOuter->setVisible(checked);
+        if (checked) ui->helpFrameOuter->show();
+        else         ui->helpFrameOuter->hide();
 }
 void MainWindow::on_actionActionShow_Contextual_Picohelp_triggered() {
 
