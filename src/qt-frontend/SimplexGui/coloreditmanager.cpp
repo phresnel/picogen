@@ -60,17 +60,21 @@ QString ColorEditManager::valueText(const QtProperty *property) const {
                 return QString();
 
         const ColorPickerColor data = theValues[property].value;
-        const QColor col = data.toQColor();
+        //const QColor col = data.toQColor();
+        const redshift::color::RGB rgb = data.convertToRGB();
+
         const QString asRgbString =
-                        QString::number(col.redF()) + ", "
-                        + QString::number(col.greenF()) + ", "
-                        + QString::number(col.blueF());
+                        QString::number(rgb.R,'g',1) + ", "
+                        + QString::number(rgb.G,'g',1) + ", "
+                        + QString::number(rgb.B,'g',1);
 
         switch(data.mode) {
         case ColorPickerColor::Spectral:
-                return QString ("spectral (rgb: " + asRgbString + ")");
+                return QString ("S (rgb: " + asRgbString + ")");
         case ColorPickerColor::Tristimulus:
-                return QString ("tristimulus (rgb: " + asRgbString + ")");
+                return QString ("T (rgb: " + asRgbString + ")");
+        default:
+                return "?";
         }
 }
 
@@ -78,10 +82,13 @@ QIcon ColorEditManager::valueIcon(const QtProperty *property) const {
         if (!theValues.contains(property))
                 return QIcon();
         const ColorPickerColor data = theValues[property].value;
-        const QColor col = data.toQColor();
+        const redshift::color::RGB rgb = data.convertToRGB();
 
         QPixmap p = QPixmap(16,16);
-        p.fill(col);
+        // TODO: fill one half with normalized colours
+        p.fill(QColor::fromRgbF(rgb.R<0?0:rgb.R>1?1:rgb.R,
+                                rgb.G<0?0:rgb.G>1?1:rgb.G,
+                                rgb.B<0?0:rgb.B>1?1:rgb.B));
         return QIcon(p);
 }
 

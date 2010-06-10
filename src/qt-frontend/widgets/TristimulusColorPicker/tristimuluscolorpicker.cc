@@ -52,9 +52,9 @@ void TristimulusColorPicker::changeEvent(QEvent *e) {
 
 TristimulusColor TristimulusColorPicker::color() const {
         TristimulusColor scaledColor;
-        scaledColor.setRedF  (color_.redF()  /range + min);
-        scaledColor.setGreenF(color_.greenF()/range + min);
-        scaledColor.setBlueF (color_.blueF() /range + min);
+        scaledColor.setRedF  (color_.redF()  *range + min);
+        scaledColor.setGreenF(color_.greenF()*range + min);
+        scaledColor.setBlueF (color_.blueF() *range + min);
         return scaledColor;
 }
 
@@ -312,6 +312,7 @@ void TristimulusColorPicker::on_spinMin_valueChanged(double ) {
         max = ui->spinMax->value();
         range = max - min;
         drawColorPreview();
+        emit colorChanged(color());
 }
 void TristimulusColorPicker::on_spinMax_valueChanged(double ) {
         on_spinMin_valueChanged(double());

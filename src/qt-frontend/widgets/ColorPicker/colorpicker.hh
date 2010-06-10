@@ -73,7 +73,7 @@ struct ColorPickerColor {
                 return !(*this == rhs);
         }
 
-        redshift::ReferenceSpectrum toReferenceSpectrum () const {
+        redshift::ReferenceSpectrum referenceSpectrum () const {
                 std::vector<double> wavelengths;
                 std::vector<double> amplitudes;
                 foreach (SpectralSample sample, spectral) {
@@ -86,7 +86,7 @@ struct ColorPickerColor {
                                 wavelengths.size());
         }
 
-        redshift::Spectrum toSpectrum () const {
+        redshift::Spectrum spectrum () const {
                 std::vector<redshift::real_t> wavelengths;
                 std::vector<redshift::real_t> amplitudes;
                 foreach (SpectralSample sample, spectral) {
@@ -99,15 +99,31 @@ struct ColorPickerColor {
                                 wavelengths.size());
         }
 
-        QColor toQColor () const {
+        redshift::color::RGB rgb() const {
+                return redshift::color::RGB(
+                                tristimulus.redF(),
+                                tristimulus.greenF(),
+                                tristimulus.blueF());
+        }
+
+        redshift::color::RGB convertToRGB() const {
+                switch (mode) {
+                case Tristimulus:
+                        return rgb();
+                case Spectral:
+                        return spectrum().toRGB();
+                }
+                throw std::runtime_error(
+                        "unhandled mode in colorpicker.hh:convertToRGB()");
+        }
+        /*QColor toQColor () const {
                 using redshift::Spectrum;
 
                 switch (mode) {
                 case Tristimulus:
                         return tristimulus.toQColor();
                 case Spectral: {
-                                const Spectrum s = toSpectrum();
-                                redshift::color::RGB rgb = s.toRGB();
+                                const redshift::color::RGB rgb = toRGB();
                                 const int
                                         r_ = rgb.R * 255,
                                         g_ = rgb.G * 255,
@@ -120,7 +136,7 @@ struct ColorPickerColor {
                 }
                 throw std::runtime_error(
                         "unhandled mode in colorpicker.hh:toColor()");
-        }
+        }*/
 };
 
 class ColorPicker : public QDialog {
