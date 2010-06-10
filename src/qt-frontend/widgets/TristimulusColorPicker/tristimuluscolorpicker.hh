@@ -97,8 +97,10 @@ public:
                         return;
                 }
 
-                // -1.0 0 1.0  --> 0 0.5 1
-                // > range = 2
+                if (min > 0)
+                       min = 0;
+                if (max < 0)
+                       max = 0;
 
                 const double range = max - min;
                 color.r = (r - min) / range;
