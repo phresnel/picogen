@@ -31,38 +31,31 @@ namespace Ui {
 
 class TristimulusColor {
         double r, g, b;
-        double y_;
 public:
 
-        TristimulusColor () : r(0), g(0), b(0), y_(1) {}
+        TristimulusColor () : r(0), g(0), b(0) {}
 
-        explicit TristimulusColor (QColor const &col, double y)
+        explicit TristimulusColor (QColor const &col)
                 : r(col.redF())
                 , g(col.greenF())
                 , b(col.blueF())
-                , y_(y)
         {}
 
-        static TristimulusColor fromRgb (int r, int g, int b, double y) {
+        static TristimulusColor fromRgb (int r, int g, int b) {
                 TristimulusColor ret;
                 ret.r = r / 255.;
                 ret.g = g / 255.;
                 ret.b = b / 255.;
-                ret.y_ = y;
                 return  ret;
         }
 
-        static TristimulusColor fromRgbf (double r, double g, double b, double y) {
+        static TristimulusColor fromRgbf (double r, double g, double b) {
                 TristimulusColor ret;
                 ret.r = r;
                 ret.g = g;
                 ret.b = b;
-                ret.y_ = y;
                 return  ret;
         }
-
-        void setY (double v) { y_ = v; }
-        double y () const { return y_; }
 
         void setRed (int v)   { r = v / 255.; }
         void setGreen (int v) { g = v / 255.; }
@@ -86,8 +79,38 @@ public:
                 ;
         }
 
-        QColor toQColor () const {
-                return QColor::fromRgbF(r, g, b);
+        void makeConvertibleToQColor (
+                TristimulusColor &color, double &min, double &max
+        ) const {
+                min = r;
+                min = g<min ? g : min;
+                min = b<min ? b : min;
+
+                max = r;
+                max = g>max ? g : max;
+                max = b>max ? b : max;
+
+                if (min>=0 && max<=1) {
+                        min = 0;
+                        max = 1;
+                        color = *this;
+                        return;
+                }
+
+                // -1.0 0 1.0  --> 0 0.5 1
+                // > range = 2
+
+                const double range = max - min;
+                color.r = (r - min) / range;
+                color.g = (g - min) / range;
+                color.b = (b - min) / range;
+        }
+
+        QColor toQColor (double min=0, double max=1) const {
+                const double range = max - min;
+                return QColor::fromRgbF((r-min)/range,
+                                        (g-min)/range,
+                                        (b-min)/range);
         }
 
 
@@ -95,7 +118,6 @@ public:
                 return r == rhs.r
                     && g == rhs.g
                     && b == rhs.b
-                    && y_ == rhs.y_
                     ;
         }
         bool operator != (TristimulusColor const &rhs) const {
@@ -123,6 +145,9 @@ private:
         Ui::TristimulusColorPicker *ui;
         bool isUpdating;
         TristimulusColor color_;
+        double min, max, range;
+
+        void setColor_ (TristimulusColor const &TristimulusColor) ;
 
 
 //------------------------------------------------------------------------------
@@ -135,7 +160,9 @@ public slots:
         void on_triangle_colorChanged(const QColor & color);
 
 private slots:
-        void on_spinBrightness_valueChanged(double );
+        void on_spinMax_valueChanged(double );
+        void on_spinMin_valueChanged(double );
+
         void on_spinR_valueChanged(double);
         void on_spinG_valueChanged(double);
         void on_spinB_valueChanged(double);

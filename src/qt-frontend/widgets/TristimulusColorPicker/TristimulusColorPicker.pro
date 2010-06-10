@@ -12,3 +12,6 @@ FORMS += mainwindow.ui \
     tristimuluscolorpicker.ui
 include(../../../upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/qtcolortriangle.pri)
 OTHER_FILES += tristimuluscolorpicker.pri
+LIBS += ../../../redshift/lib/libpicogen.a
+INCLUDEPATH += ../../../
+DEFINES += __STDC_LIMIT_MACROS

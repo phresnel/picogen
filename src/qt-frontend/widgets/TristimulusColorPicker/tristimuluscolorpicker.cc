@@ -18,9 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "redshift/include/setup.hh"
+
 #include <iostream>
 #include "tristimuluscolorpicker.hh"
 #include "ui_tristimuluscolorpicker.h"
+
+#include "redshift/include/setup.hh"
 
 TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     QWidget(parent),
@@ -28,7 +32,7 @@ TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     isUpdating(false)
 {
         ui->setupUi(this);
-        setColor(TristimulusColor::fromRgbf(0,1,0,1.));
+        setColor(TristimulusColor::fromRgbf(0, 0, 2));
 }
 
 TristimulusColorPicker::~TristimulusColorPicker() {
@@ -47,7 +51,11 @@ void TristimulusColorPicker::changeEvent(QEvent *e) {
 }
 
 TristimulusColor TristimulusColorPicker::color() const {
-        return color_;
+        TristimulusColor scaledColor;
+        scaledColor.setRedF  (color_.redF()  /range + min);
+        scaledColor.setGreenF(color_.greenF()/range + min);
+        scaledColor.setBlueF (color_.blueF() /range + min);
+        return scaledColor;
 }
 
 
@@ -55,7 +63,7 @@ TristimulusColor TristimulusColorPicker::color() const {
 // Update by wheel
 //------------------------------------------------------------------------------
 void TristimulusColorPicker::on_triangle_colorChanged(const QColor & color) {
-        setColor(TristimulusColor(color, color_.y()));
+        setColor_(TristimulusColor(color));
 }
 
 
@@ -65,17 +73,17 @@ void TristimulusColorPicker::on_triangle_colorChanged(const QColor & color) {
 void TristimulusColorPicker::on_spinR_valueChanged(double v) {
         TristimulusColor col = color_;
         col.setRedF(v/255);
-        setColor (col);
+        setColor_ (col);
 }
 void TristimulusColorPicker::on_spinG_valueChanged(double v) {
         TristimulusColor col = color_;
         col.setGreenF(v/255);
-        setColor (col);
+        setColor_ (col);
 }
 void TristimulusColorPicker::on_spinB_valueChanged(double v) {
         TristimulusColor col = color_;
         col.setBlueF(v/255);
-        setColor (col);
+        setColor_ (col);
 }
 
 
@@ -91,7 +99,7 @@ void TristimulusColorPicker::on_spinH_valueChanged(double) {
 
         // 1) Build up QColor from boxes.
         QColor col = QColor::fromHsvF(h/360, s/255, v/255);
-        setColor (TristimulusColor(col, color_.y()));
+        setColor_ (TristimulusColor(col));
 
         // 2) Block signals or we'll never end.
         const bool
@@ -135,7 +143,7 @@ void TristimulusColorPicker::on_spinC_valueChanged(double) {
 
         // 1) Build up QColor from boxes.
         QColor col = QColor::fromCmykF(c/255, m/255, y/255, k/255);
-        setColor (TristimulusColor(col,color_.y()));
+        setColor_ (TristimulusColor(col));
 
         // 2) Block signals or we'll never end.
         const bool
@@ -172,34 +180,30 @@ void TristimulusColorPicker::on_spinK_valueChanged(double) {
 
 
 
-
-//------------------------------------------------------------------------------
-// Update by Brightness
-//------------------------------------------------------------------------------
-void TristimulusColorPicker::on_spinBrightness_valueChanged(double y) {
-        color_.setY(y);
+void TristimulusColorPicker::setColor(TristimulusColor const &from) {
+        TristimulusColor col_;
+        double min, max;
+        from.makeConvertibleToQColor(col_, min, max);
+        ui->spinMin->setValue(min);
+        ui->spinMax->setValue(max);
+        setColor_(col_);
 }
 
 
 
+void TristimulusColorPicker::setColor_(const TristimulusColor &from) {
 
-
-
-void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
         if (isUpdating)
                 return;
         isUpdating = true;
 
         const bool prevBlockSignals = blockSignals(true);
-        const QColor col = col_.toQColor();
 
+        const QColor col = from.toQColor();
 
         bool prev = ui->triangle->blockSignals(true);
         ui->triangle->setColor(col);
         ui->triangle->blockSignals(prev);
-
-        // BRIGHTNESS
-        ui->spinBrightness->setValue(col_.y());
 
         // RGB
         ui->spinR->blockSignals(true);
@@ -245,11 +249,12 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
         ui->spinK->blockSignals(prev);
 
 
-        color_ = col_;
+        color_ = from;
         drawColorPreview();
 
         blockSignals(prevBlockSignals);
-        emit colorChanged (color_);
+
+        emit colorChanged (color());
         isUpdating = false;
 }
 
@@ -257,21 +262,56 @@ void TristimulusColorPicker::setColor(TristimulusColor const &col_) {
 
 void TristimulusColorPicker::drawColorPreview() {
         QImage img(ui->colorPreview->width(),32,QImage::Format_RGB32);
+        QImage scaledImg(ui->scaledColorPreview->width(),32,QImage::Format_RGB32);
         img.fill(color_.toQColor().rgb());
+
+        double sr = color_.redF() * range + min;
+        double sg = color_.greenF() * range + min;
+        double sb = color_.blueF() * range + min;
+
+        const redshift::ReferenceSpectrum ref =
+                        redshift::ReferenceSpectrum::
+                        FromRGB(sr,sg,sb,redshift::ReflectanceSpectrum);
+        const redshift::color::RGB redRGB = ref.toRGB();
+
+        sr = redRGB.R;
+        sg = redRGB.G;
+        sb = redRGB.B;
+
+        scaledImg.fill(QColor::fromRgbF(
+                        sr<0 ? 0 : sr>1 ? 1 : sr,
+                        sg<0 ? 0 : sg>1 ? 1 : sg,
+                        sb<0 ? 0 : sb>1 ? 1 : sb).rgb());
         const QRgb black = 0U;
         for (int i=0; i<img.height(); ++i) {
                 img.setPixel(0, i, black);
                 img.setPixel(img.width()-1, i, black);
+                scaledImg.setPixel(0, i, black);
+                scaledImg.setPixel(img.width()-1, i, black);
         }
         for (int i=0; i<img.width(); ++i) {
                 img.setPixel(i, 0, black);
                 img.setPixel(i, img.height()-1, black);
+                scaledImg.setPixel(i, 0, black);
+                scaledImg.setPixel(i, img.height()-1, black);
         }
         ui->colorPreview->setPixmap(QPixmap::fromImage(img));
+        ui->scaledColorPreview->setPixmap(QPixmap::fromImage(scaledImg));
 }
 
 
 
 void TristimulusColorPicker::resizeEvent(QResizeEvent *) {
         drawColorPreview();
+}
+
+
+
+void TristimulusColorPicker::on_spinMin_valueChanged(double ) {
+        min = ui->spinMin->value();
+        max = ui->spinMax->value();
+        range = max - min;
+}
+void TristimulusColorPicker::on_spinMax_valueChanged(double ) {
+        on_spinMin_valueChanged(double());
 }
