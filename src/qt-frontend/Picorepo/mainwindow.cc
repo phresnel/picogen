@@ -1,6 +1,31 @@
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Copyright (C) 2010  Sebastian Mach (*1983)
+// * mail: phresnel/at/gmail/dot/com
+// * http://phresnel.org
+// * http://picogen.org
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
 #include <sstream>
+#include <cmath>
+#include "cover.hh"
+
+//#include "pictureflow-qt/pictureflow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -8,6 +33,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->graphicsView->setScene(new QGraphicsScene(this));
+
+    /*
+    PictureFlow *flow = new PictureFlow(this);
+    QString const base = "C:/Dokumente und Einstellungen/smach/Eigene Dateien/garbage/cc/picogen-picogen-master/picogen-picogen/repository/scenes/examples/calm-hills";
+    flow->addSlide(QImage(base+"/done.png"));
+    flow->addSlide(QImage(base+"/three hours.png"));
+    flow->addSlide(QImage(base+"/funkydots.png"));
+    flow->setReflectionEffect(PictureFlow::PlainReflection);
+    flow->setSlideSize(QSize(256,256));*/
+
+    //setCentralWidget(ui->graphicsView);
 }
 
 MainWindow::~MainWindow()
@@ -27,94 +63,45 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-#include <QGraphicsPixmapItem>
 
 void MainWindow::on_pushButton_clicked() {
-        QGraphicsScene *scene = ui->graphicsView->scene();//new QGraphicsScene(this);
+        QGraphicsScene *scene = ui->graphicsView->scene();
 
+        static bool init = true;
+        if (init) {
+                init = false;
 
+                /*
+                M.setMatrix(
+                        M.m11(), M.m12(), M.m13()*4,
+                        M.m21(), M.m22(), M.m23()*4,
+                        M.m31(), M.m32(), M.m33()
+                );
+                */
 
-        class Cover {
-        public:
-                Cover (QString const &filename, QGraphicsItem *parent=0) {
-                        QPixmap pix (filename);
-                        T.translate(-pix.width()*.5, -pix.height()*.5);
+                QString const base = "C:/Dokumente und Einstellungen/smach/Eigene Dateien/garbage/cc/picogen-picogen-master/picogen-picogen/repository/scenes/examples/calm-hills";
+                QString const a = base+"/done.png";
+                QString const b = base+"/three hours.png";
+                QString const c = base+"/funkydots.png";
 
-                        item_ = new QGraphicsPixmapItem(pix, parent);
-                        updateTransform();
+                const int count = 1;
+                for (int i=0; i<count; ++i) {
+                        Cover *cover = new Cover(a);
+                        /*const float
+                                f = i / (float)(count-1)
+                        ;
+                        cover->slide(2,0);
+                        cover->translate(-1,0);
+                        cover->rotate(-22.5f+f*45, Qt::ZAxis);*/
+                        scene->addItem(cover);
                 }
 
-                QTransform transform() const {
-                        return T*R;
-                }
+                scene->addLine(0,0, 1,0);
+                scene->addLine(0,0, 0,1);
 
-                QGraphicsItem *item() {
-                        return item_;
-                }
 
-                void rotate (qreal a, Qt::Axis axis = Qt::ZAxis) {
-                        R.rotate(a, axis);
-                        updateTransform();
-                }
+                ui->graphicsView->fitInView(-2,-2,4,4,Qt::KeepAspectRatio);
 
-                void translate (qreal x, qreal y) {
-                        T.translate(x, y);
-                        updateTransform();
-                }
-
-        private:
-
-                void updateTransform() {
-                        item_->setTransform(transform());
-                }
-                QTransform T, R;
-                QGraphicsItem *item_;
-        };
-
-        /*
-        M.setMatrix(
-                M.m11(), M.m12(), M.m13()*4,
-                M.m21(), M.m22(), M.m23()*4,
-                M.m31(), M.m32(), M.m33()
-        );
-        */
-
-        Cover *cover = new Cover ("/home/smach/Desktop/hmmmm_____skylighlighlight_by_greenhybrid.png");
-        cover->translate(-700, 0);
-        cover->rotate(-75, Qt::YAxis);
-        scene->addItem(cover->item());
-
-        Cover *cover2 = new Cover ("/home/smach/Desktop/hmmmm_____skylighlighlight_by_greenhybrid.png");
-        cover2->translate(700, 0);
-        cover2->rotate(75, Qt::YAxis);
-        scene->addItem(cover2->item());
-
-        scene->addLine(0,0, 100,0);
-        scene->addLine(0,0, 0,100);
-
-        /*
-         x' = m11*x + m21*y + dx
-         y' = m22*y + m12*x + dy
-         if (is not affine) {
-             w' = m13*x + m23*y + m33
-             x' /= w'
-             y' /= w'
-         }
-        */
-        QTransform P;
-        P.setMatrix(
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1
-        );
-        ui->graphicsView->setTransform(P);
-        ui->graphicsView->setSceneRect(QRectF(-10,-10, 20, 20));
-
-        //ui->graphicsView->setupViewport();
-
-        /*QTransform w;
-        w.translate(100,0);
-        ui->graphicsView->setTransform(w);*/
-
-        //ui->graphicsView->setScene(scene);
+        }
+        ui->graphicsView->update();
 }
