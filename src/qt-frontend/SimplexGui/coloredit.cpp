@@ -53,9 +53,12 @@ ColorEdit::ColorEdit(QWidget *parent, QMdiArea *displayArea)
                 this, SLOT(buttonClicked()));
 }
 
+#include <QGraphicsBlurEffect>
 void ColorEdit::buttonClicked() {
         ColorPicker *picker = new ColorPicker(this);
         picker->setColor (color_);
+
+        picker->setWindowModality(Qt::ApplicationModal);
         if (QDialog::Accepted == picker->exec()) {
                 if (color_ != picker->color()) {
                         color_ = picker->color();

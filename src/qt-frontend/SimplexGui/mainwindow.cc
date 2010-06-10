@@ -241,6 +241,28 @@ void MainWindow::enumManager_valueChanged (QtProperty *, int) {
 
 
 
+#include <QGraphicsBlurEffect>
+bool MainWindow::event(QEvent *e) {
+        switch (e->type()) {
+        case QEvent::WindowBlocked: {
+                QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+                blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
+                blur->setBlurRadius(5);
+                setGraphicsEffect(blur);
+                break;
+        }
+        case QEvent::WindowUnblocked: {
+                setGraphicsEffect(0);
+                break;
+        }
+        default:
+                break;
+        };
+        return QMainWindow::event(e);
+}
+
+
+
 void MainWindow::changeEvent(QEvent *e) {
         QMainWindow::changeEvent(e);
         switch (e->type()) {

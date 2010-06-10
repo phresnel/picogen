@@ -47,6 +47,7 @@ public:
 
 protected:
         void changeEvent(QEvent *e);
+        bool event(QEvent *event);
         void contextMenuEvent(QContextMenuEvent *event);
         void closeEvent (QCloseEvent *);
         bool eventFilter(QObject *o, QEvent *e);
