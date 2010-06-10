@@ -311,6 +311,7 @@ void TristimulusColorPicker::on_spinMin_valueChanged(double ) {
         min = ui->spinMin->value();
         max = ui->spinMax->value();
         range = max - min;
+        drawColorPreview();
 }
 void TristimulusColorPicker::on_spinMax_valueChanged(double ) {
         on_spinMin_valueChanged(double());
