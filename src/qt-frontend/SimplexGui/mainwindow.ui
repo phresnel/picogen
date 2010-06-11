@@ -607,7 +607,7 @@ QTabWidget::pane { /* The tab widget frame */
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset>
                 <normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</iconset>
               </property>
               <property name="iconSize">
@@ -732,12 +732,6 @@ QTabWidget::pane { /* The tab widget frame */
      <height>16</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuDebugging">
-    <property name="title">
-     <string>Debugging</string>
-    </property>
-    <addaction name="actionShow_redshift_job_code"/>
-   </widget>
    <widget class="QMenu" name="menuRender">
     <property name="title">
      <string>Render</string>
@@ -763,15 +757,9 @@ QTabWidget::pane { /* The tab widget frame */
      <string>View</string>
     </property>
     <addaction name="actionShow_Command_Pile"/>
-    <addaction name="actionShow_Picohelp_Browser"/>
     <addaction name="actionMaximize"/>
     <addaction name="separator"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="actionShow_Picohelp_Browser"/>
+    <addaction name="actionShow_PicoHelp"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -780,20 +768,10 @@ QTabWidget::pane { /* The tab widget frame */
     <addaction name="actionShow_compiler"/>
    </widget>
    <addaction name="menu_File"/>
-   <addaction name="menuDebugging"/>
    <addaction name="menuRender"/>
    <addaction name="menuView"/>
-   <addaction name="menuHelp"/>
    <addaction name="menuAbout"/>
   </widget>
-  <action name="actionShow_redshift_job_code">
-   <property name="text">
-    <string>Show redshift-job code</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+R</string>
-   </property>
-  </action>
   <action name="actionRender">
    <property name="text">
     <string>Render</string>
@@ -938,15 +916,12 @@ QTabWidget::pane { /* The tab widget frame */
     <string>Show compiler</string>
    </property>
   </action>
-  <action name="actionShow_Picohelp_Browser">
+  <action name="actionShow_PicoHelp">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Picohelp</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Picohelp-Browser</string>
+    <string>Show PicoHelp</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
@@ -974,8 +949,6 @@ QTabWidget::pane { /* The tab widget frame */
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

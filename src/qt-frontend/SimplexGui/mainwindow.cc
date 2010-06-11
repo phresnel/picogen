@@ -130,8 +130,8 @@ MainWindow::MainWindow(
         ui->actionShow_Command_Pile->setChecked(false);
         on_actionShow_Command_Pile_triggered (ui->actionShow_Command_Pile->isChecked());
 
-        ui->actionShow_Picohelp_Browser->setChecked(true);
-        on_actionShow_Picohelp_Browser_triggered (ui->actionShow_Picohelp_Browser->isChecked());
+        ui->actionShow_PicoHelp->setChecked(true);
+        on_actionShow_PicoHelp_triggered (ui->actionShow_PicoHelp->isChecked());
 
         ui->codeEditor->setPicohelpBrowser(ui->picohelp);
 
@@ -903,15 +903,12 @@ void MainWindow::on_actionShow_Command_Pile_triggered(bool checked) {
         if (checked) ui->commandPileGroupBox->show();
         else         ui->commandPileGroupBox->hide();
 }
-void MainWindow::on_actionShow_Picohelp_Browser_triggered(bool checked) {
+void MainWindow::on_actionShow_PicoHelp_triggered(bool checked) {
         if (checked) ui->helpFrameOuter->show();
         else         ui->helpFrameOuter->hide();
 }
-void MainWindow::on_actionActionShow_Contextual_Picohelp_triggered() {
-
-}
 void MainWindow::helpBrowserVisibilityRequested() {
-        on_actionShow_Picohelp_Browser_triggered(true);
+        on_actionShow_PicoHelp_triggered(true);
 }
 
 
