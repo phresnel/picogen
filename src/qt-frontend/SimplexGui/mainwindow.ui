@@ -111,6 +111,7 @@ QMenuBar {
         background-color: #a59361;
 }
 
+QPushButton { padding: 1px; padding-left: 2px; padding-right: 2px; }
 QPushButton:!flat {
         border: 2px solid #8f8f91;
         border-radius: 6px;
@@ -131,9 +132,10 @@ QPushButton:!flat {
                                        stop: 0.55 #444, stop:1 #999);
 }
 
-QGroupBox {
-         background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                       stop: 0 #555, stop: 1 #889);
+QGroupBox {		
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #716151, stop: 0.5 #403030,
+                                       stop: 0.52 #432323, stop:1 #756555);
         border: 2px solid #CCC;
         border-radius: 6px;
         margin-top: 1ex; /* leave space at the top for the title */
@@ -530,9 +532,6 @@ QTabWidget::pane { /* The tab widget frame */
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
            <property name="background">
             <brush brushstyle="BDiagPattern">
              <color alpha="255">
@@ -608,7 +607,7 @@ QTabWidget::pane { /* The tab widget frame */
                <string/>
               </property>
               <property name="icon">
-               <iconset>
+               <iconset resource="resources.qrc">
                 <normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</normaloff>:/playStopPauseEtc/resources/nuove_play_24x24.png</iconset>
               </property>
               <property name="iconSize">
@@ -975,6 +974,8 @@ QTabWidget::pane { /* The tab widget frame */
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
