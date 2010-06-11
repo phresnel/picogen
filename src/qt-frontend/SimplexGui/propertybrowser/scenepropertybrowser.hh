@@ -65,6 +65,7 @@ public:
                         QtTreePropertyBrowser *root,
                         QtVariantPropertyManager *codeEditManager
                         );
+        ~ScenePropertyBrowser();
 
         void setDefaultScene();
         void loadScene (redshift::scenefile::Scene const &scene);

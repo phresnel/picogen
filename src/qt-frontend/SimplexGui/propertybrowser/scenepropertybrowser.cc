@@ -36,7 +36,7 @@
 #include "volumepropertybrowser.hh"
 #include "rendersettingspropertybrowser.hh"
 #include "cameraspropertybrowser.hh"
-#include "filmSettingspropertybrowser.hh"
+#include "filmsettingspropertybrowser.hh"
 #include "backgroundspropertybrowser.hh"
 #include "propertybrowser-helpers.hh"
 
@@ -64,14 +64,26 @@ ScenePropertyBrowser::ScenePropertyBrowser(
 , backgroundsPropertyBrowser(0)
 {
         initializeBrowsers();
-        connect (root, SIGNAL(currentItemChanged(QtBrowserItem*)),
-                 this, SLOT(currentItemChanged(QtBrowserItem*)));
+}
+
+
+
+ScenePropertyBrowser::~ScenePropertyBrowser() {
+        delete objectPropertyBrowser;
+        delete volumePropertyBrowser;
+        delete renderSettingsPropertyBrowser;
+        delete camerasPropertyBrowser;
+        delete filmSettingsPropertyBrowser;
+        delete backgroundsPropertyBrowser;
 }
 
 
 
 void ScenePropertyBrowser::initializeBrowsers() {
         root->clear();
+
+        connect (root, SIGNAL(currentItemChanged(QtBrowserItem*)),
+                 this, SLOT(currentItemChanged(QtBrowserItem*)));
         root->setProperty("picohelp", "SimplexGUI_Property_Editor.html");
 
         delete filmSettingsPropertyBrowser;

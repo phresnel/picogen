@@ -27,6 +27,7 @@
 #include <QtVariantPropertyManager>
 #include <QtEnumPropertyManager>
 #include <QtEnumEditorFactory>
+#include <QtStringPropertyManager>
 #include <QList>
 
 #include "redshift/include/jobfile.hh"
@@ -47,9 +48,32 @@ CamerasPropertyBrowser::CamerasPropertyBrowser(
 
 
 
+CamerasPropertyBrowser::~CamerasPropertyBrowser() {
+        root->unsetFactoryForManager(transformEnumManager);
+        root->unsetFactoryForManager(cameraTypeEnumManager);
+        root->unsetFactoryForManager(variantManager);
+
+        delete groupManager;
+        delete variantManager;
+        delete variantFactory;
+
+        delete comboBoxFactory;
+
+        delete transformEnumManager;
+        delete cameraTypeEnumManager;
+
+        delete titleManager;
+}
+
+
+
 void CamerasPropertyBrowser::initializeScene() {
 
         groupManager = new QtGroupPropertyManager(this);
+
+        titleManager = new QtStringPropertyManager (this);
+        connect(titleManager, SIGNAL(valueChanged (QtProperty *, const QString &)),
+                this, SLOT(titleManager_valueChanged(QtProperty*,const QString &)));
 
         variantManager = new QtVariantPropertyManager(this);
         connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
@@ -103,6 +127,12 @@ void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
 
         QtProperty *camera = groupManager->addProperty(c.title.c_str());
         camerasProperty->addSubProperty(camera);
+
+        QtProperty *title = titleManager->addProperty("title");
+        titleManager->setRegExp(title, QRegExp("([a-z0-9]|-|_)+", Qt::CaseInsensitive, QRegExp::RegExp));
+        // here it breaks
+        titleManager->setValue(title, QString::fromStdString(c.title));
+        camera->addSubProperty(title);
 
         QtProperty *cameraType = cameraTypeEnumManager->addProperty("type");
         QStringList enumNames;
@@ -459,4 +489,17 @@ QStringList CamerasPropertyBrowser::names() const {
         foreach (QtProperty *cam, camerasProperty->subProperties())
                 ret << cam->propertyName();//readValueText("title", cam->subProperties());
         return ret;
+}
+
+
+
+void CamerasPropertyBrowser::titleManager_valueChanged (
+        QtProperty * property,
+        const QString & value
+) {
+        if (QtProperty *par = findParent (root->properties(), property)) {
+                par->setPropertyName(value);
+        }
+        if (!signalsBlocked())
+                emit sceneChanged();
 }

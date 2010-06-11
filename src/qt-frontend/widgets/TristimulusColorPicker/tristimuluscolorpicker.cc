@@ -120,10 +120,10 @@ void TristimulusColorPicker::on_spinH_valueChanged(double) {
         ui->spinV->blockSignals(V);
         ui->triangle->blockSignals(T);
 }
-void TristimulusColorPicker::on_spinS_valueChanged(double v) {
+void TristimulusColorPicker::on_spinS_valueChanged(double) {
         on_spinH_valueChanged(double());
 }
-void TristimulusColorPicker::on_spinV_valueChanged(double v) {
+void TristimulusColorPicker::on_spinV_valueChanged(double) {
         on_spinH_valueChanged(double());
 }
 

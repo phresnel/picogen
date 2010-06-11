@@ -52,10 +52,39 @@ RenderSettingsPropertyBrowser::RenderSettingsPropertyBrowser(
 : QObject(ownerWidget_)
 , ownerWidget(ownerWidget_)
 , root(root)
+, volumeTypeEnumManager(0)
+, surfaceIntegratorTypeEnumManager(0)
+, enumManager(0)
 , groupManager(new QtGroupPropertyManager(this))
+, variantManager(0)
+, variantFactory(0)
 , renderSettingsProperty(0)
+, lineEditFactory(0)
+, comboBoxFactory(0)
+, rsTitleManager(0)
 {
         initializeScene();
+}
+
+
+
+RenderSettingsPropertyBrowser::~RenderSettingsPropertyBrowser() {
+        root->unsetFactoryForManager(variantManager);
+        root->unsetFactoryForManager(rsTitleManager);
+        root->unsetFactoryForManager(surfaceIntegratorTypeEnumManager);
+        root->unsetFactoryForManager(enumManager);
+
+        delete volumeTypeEnumManager;
+        delete surfaceIntegratorTypeEnumManager;
+        delete enumManager;
+        delete groupManager;
+        delete variantManager;
+        delete variantFactory;
+
+        delete lineEditFactory;
+        delete comboBoxFactory;
+
+        delete rsTitleManager;
 }
 
 
@@ -66,7 +95,6 @@ void RenderSettingsPropertyBrowser::initializeScene() {
 
         connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                  this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
-        root->setFactoryForManager(variantManager, variantFactory);
 
 
         QtProperty *topItem = groupManager->addProperty("render-settings");
@@ -93,6 +121,7 @@ void RenderSettingsPropertyBrowser::initializeScene() {
         comboBoxFactory = new QtEnumEditorFactory(this);
         lineEditFactory = new QtLineEditFactory(this);
 
+        root->setFactoryForManager(variantManager, variantFactory);
         root->setFactoryForManager(rsTitleManager, lineEditFactory);
         root->setFactoryForManager(surfaceIntegratorTypeEnumManager, comboBoxFactory);
         root->setFactoryForManager(enumManager, comboBoxFactory);

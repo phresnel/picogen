@@ -121,7 +121,8 @@ int productionRender (int argc, char *argv[]) {
                 QMessageBox::critical(0,
                       "Error upon loading",
                       "The selected file \"" + pathToSource + "\" could not be loaded, "
-                      "are you sure this is a valid picogen file?"
+                      "are you sure this is a valid picogen file?\n\n"
+                      + QString("(exception: ")+e.what()+")"
                       );
                 return -1;
         }

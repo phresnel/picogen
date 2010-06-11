@@ -62,6 +62,17 @@ ObjectPropertyBrowser::ObjectPropertyBrowser(
 
 
 ObjectPropertyBrowser::~ObjectPropertyBrowser() {
+        root->unsetFactoryForManager(variantManager);
+        root->unsetFactoryForManager(colorEditManager);
+
+        delete objectTypeEnumManager;
+        delete groupManager;
+
+        delete variantManager;
+        delete variantFactory;
+
+        delete colorEditManager;
+        delete colorEditFactory;
 }
 
 
@@ -72,14 +83,14 @@ void ObjectPropertyBrowser::initializeScene() {
         variantFactory = new QtVariantEditorFactory(this);
         connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                  this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
-        root->setFactoryForManager(variantManager, variantFactory);
-
-
 
         colorEditManager = new ColorEditManager (this);
         connect (colorEditManager, SIGNAL(valueChanged(QtProperty*,ColorPickerColor)),
                  this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&)));
         colorEditFactory = new ColorEditFactory (this, displayArea);
+
+
+        root->setFactoryForManager(variantManager, variantFactory);
         root->setFactoryForManager(colorEditManager, colorEditFactory);
 
 

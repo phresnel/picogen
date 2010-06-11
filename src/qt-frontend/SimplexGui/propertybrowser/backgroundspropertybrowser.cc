@@ -54,6 +54,20 @@ BackgroundsPropertyBrowser::BackgroundsPropertyBrowser(
 
 
 
+BackgroundsPropertyBrowser::~BackgroundsPropertyBrowser() {
+        root->unsetFactoryForManager(variantManager);
+        root->unsetFactoryForManager(colorEditManager);
+
+        delete groupManager;
+        delete variantManager;
+        delete variantFactory;
+
+        delete colorEditManager;
+        delete colorEditFactory;
+}
+
+
+
 void BackgroundsPropertyBrowser::initialize() {
         variantManager = new QtVariantPropertyManager(this);
         variantFactory = new QtVariantEditorFactory(this);

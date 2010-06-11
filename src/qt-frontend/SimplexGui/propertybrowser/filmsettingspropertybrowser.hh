@@ -46,6 +46,7 @@ public:
                 QWidget *,
                 QtTreePropertyBrowser *
                 );
+        ~FilmSettingsPropertyBrowser();
 
         void setFilmSettings(redshift::scenefile::FilmSettings const &);
         void addFilmSettingsToScene(redshift::scenefile::Scene &) const;

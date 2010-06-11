@@ -51,6 +51,7 @@ public:
         BackgroundsPropertyBrowser(QWidget *,
                                    QMdiArea *,
                                    QtTreePropertyBrowser *);
+        ~BackgroundsPropertyBrowser();
 
         // this method won't have a long stay once multiple backgrounds
         // (consider e.g. preetham + starfield + moon) are supported

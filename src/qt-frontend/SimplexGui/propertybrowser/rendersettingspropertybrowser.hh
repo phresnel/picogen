@@ -47,6 +47,7 @@ class RenderSettingsPropertyBrowser : public QObject
 public:
         RenderSettingsPropertyBrowser(QWidget *,
                                       QtTreePropertyBrowser *);
+        ~RenderSettingsPropertyBrowser();
 
         void addRenderSettings (redshift::scenefile::RenderSettings const &rs);
         void remove (QtProperty *);

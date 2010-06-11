@@ -45,6 +45,15 @@ FilmSettingsPropertyBrowser::FilmSettingsPropertyBrowser(
 
 
 
+FilmSettingsPropertyBrowser::~FilmSettingsPropertyBrowser() {
+        root->unsetFactoryForManager(variantManager);
+        delete groupManager;
+        delete variantManager;
+        delete variantFactory;
+}
+
+
+
 void FilmSettingsPropertyBrowser::initialize() {
 
         variantManager = new QtVariantPropertyManager(this);

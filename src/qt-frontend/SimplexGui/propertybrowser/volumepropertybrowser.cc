@@ -60,6 +60,16 @@ VolumePropertyBrowser::VolumePropertyBrowser(
 
 
 VolumePropertyBrowser::~VolumePropertyBrowser() {
+        root->unsetFactoryForManager(variantManager);
+        root->unsetFactoryForManager(colorEditManager);
+
+        delete volumeTypeEnumManager;
+        delete groupManager;
+        delete variantManager;
+        delete variantFactory;
+
+        delete colorEditManager;
+        delete colorEditFactory;
 }
 
 
@@ -71,7 +81,6 @@ void VolumePropertyBrowser::initializeScene() {
         variantFactory = new QtVariantEditorFactory(this);
         connect (variantManager, SIGNAL(valueChanged(QtProperty*,QVariant)),
                  this, SLOT(variantManager_valueChanged(QtProperty*,QVariant)));
-        root->setFactoryForManager(variantManager, variantFactory);
 
 
 
@@ -79,8 +88,6 @@ void VolumePropertyBrowser::initializeScene() {
         connect (colorEditManager, SIGNAL(valueChanged(QtProperty*,ColorPickerColor)),
                  this, SLOT(colorEditManager_valueChanged(QtProperty*,ColorPickerColor const&)));
         colorEditFactory = new ColorEditFactory (this, displayArea);
-        root->setFactoryForManager(colorEditManager, colorEditFactory);
-
 
 
         volumesProperty = groupManager->addProperty("volumes");
@@ -93,6 +100,10 @@ void VolumePropertyBrowser::initializeScene() {
         volumeTypeEnumManager = new QtEnumPropertyManager(this);
         connect(volumeTypeEnumManager, SIGNAL(valueChanged (QtProperty *, int)),
                 this, SLOT(volumeTypeEnumManager_valueChanged(QtProperty*,int)));
+
+
+        root->setFactoryForManager(variantManager, variantFactory);
+        root->setFactoryForManager(colorEditManager, colorEditFactory);
 }
 
 

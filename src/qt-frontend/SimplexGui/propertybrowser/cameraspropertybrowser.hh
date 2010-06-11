@@ -35,6 +35,7 @@ class QtEnumPropertyManager;
 class QtEnumEditorFactory;
 class QtVariantPropertyManager;
 class QtVariantEditorFactory;
+class QtStringPropertyManager;
 class ColorEditManager;
 
 #include <QStringList>
@@ -46,6 +47,7 @@ public:
         CamerasPropertyBrowser(QWidget *,
                                QtTreePropertyBrowser *
                               );
+        ~CamerasPropertyBrowser();
 
         void addCamera (redshift::scenefile::Camera const&);
         void addTransform (QtProperty *transformRoot,
@@ -80,8 +82,11 @@ private:
                         *transformEnumManager,
                         *cameraTypeEnumManager;
 
+        QtStringPropertyManager *titleManager;
+
 private slots:
         void cameraTypeEnumManager_valueChanged(QtProperty*, int);
+        void titleManager_valueChanged (QtProperty *, const QString &);
         void transformEnumManager_valueChanged(QtProperty*, int);
         void variantManager_valueChanged(QtProperty*, QVariant const &);
 };
