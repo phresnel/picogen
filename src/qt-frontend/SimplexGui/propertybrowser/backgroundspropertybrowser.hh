@@ -61,7 +61,6 @@ public:
 
 signals:
         void sceneChanged();
-        void updateUi();
 private:
         void initialize();
         redshift::scenefile::Color readColor (

@@ -56,7 +56,6 @@ public:
         QStringList names () const ;
 
 signals:
-        void updateUi();
         void sceneChanged();
 
 private:

@@ -98,7 +98,6 @@ public:
         QtProperty *currentRenderSettingProperty () const;
 
 signals:
-        void updateUi();
         void sceneChanged();
         void resyncCameraConfig();
         void resyncRenderSettingConfig();
@@ -126,7 +125,7 @@ private:
         QtBrowserItem * currentBrowserItem_;
 
 private slots:
-        void updateUi_();
+        //void updateUi_();
         void sceneChanged_();
         void resyncCameraConfig_();
         void resyncRenderSettingConfig_();

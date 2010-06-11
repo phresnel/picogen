@@ -59,7 +59,6 @@ public:
         void addVolumesToScene (redshift::scenefile::Scene &Scene) const;
 
 signals:
-        void updateUi();
         void sceneChanged();
 
 private:

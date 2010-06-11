@@ -171,7 +171,7 @@ void ObjectPropertyBrowser::addObject (redshift::scenefile::Object const &o) {
         }
 
         collapse (root, object);
-        emit updateUi();
+        emit sceneChanged();
 }
 
 

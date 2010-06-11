@@ -158,7 +158,7 @@ void VolumePropertyBrowser::addVolume (redshift::scenefile::Volume const &v) {
         writeValue ("phase-function", volume, v.hg);
 
         collapse (root, volume);
-        updateUi();
+        emit sceneChanged();
 }
 
 
@@ -174,7 +174,6 @@ void VolumePropertyBrowser::volumeTypeEnumManager_valueChanged (
         QtProperty* prop,
         int index
 ) {
-        emit sceneChanged();
         QtProperty *t = findParent(root->properties(), prop);
         if (!t)
                 return;
@@ -304,6 +303,7 @@ void VolumePropertyBrowser::volumeTypeEnumManager_valueChanged (
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
         }
+        emit sceneChanged();
 }
 
 

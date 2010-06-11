@@ -53,7 +53,6 @@ public:
 
 signals:
         void sceneChanged();
-        void updateUi();
 
 private:
         void initialize();

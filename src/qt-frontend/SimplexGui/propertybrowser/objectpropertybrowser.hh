@@ -67,7 +67,6 @@ public:
         void addObjectsToScene (redshift::scenefile::Scene &Scene) const;
 
 signals:
-        void updateUi();
         void sceneChanged();
 
 private:

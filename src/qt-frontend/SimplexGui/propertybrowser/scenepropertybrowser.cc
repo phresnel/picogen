@@ -90,7 +90,6 @@ void ScenePropertyBrowser::initializeBrowsers() {
         filmSettingsPropertyBrowser = new FilmSettingsPropertyBrowser(
                         ownerWidget,
                         root);
-        connect(filmSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(filmSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
@@ -105,7 +104,6 @@ void ScenePropertyBrowser::initializeBrowsers() {
         delete camerasPropertyBrowser;
         camerasPropertyBrowser = new CamerasPropertyBrowser(ownerWidget,
                                                             root);
-        connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig_()));
         connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
@@ -116,7 +114,6 @@ void ScenePropertyBrowser::initializeBrowsers() {
                                                           root,
                                                           codeEditManager
                                                           );
-        connect(objectPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(objectPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
@@ -125,14 +122,12 @@ void ScenePropertyBrowser::initializeBrowsers() {
                                                            displayArea,
                                                            root,
                                                            codeEditManager);
-        connect(volumePropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(volumePropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
         delete backgroundsPropertyBrowser;
         backgroundsPropertyBrowser = new BackgroundsPropertyBrowser(
                                         ownerWidget, displayArea, root);
-        connect(backgroundsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(backgroundsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 }
 
@@ -465,10 +460,10 @@ QStringList ScenePropertyBrowser::cameraNames() const {
 
 
 
-void ScenePropertyBrowser::updateUi_() {
+/*void ScenePropertyBrowser::updateUi_() {
         if (!signalsBlocked())
                 emit updateUi();
-}
+}*/
 
 
 

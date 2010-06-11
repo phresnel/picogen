@@ -136,8 +136,6 @@ MainWindow::MainWindow(
         ui->codeEditor->setPicohelpBrowser(ui->picohelp);
 
         // connect signals
-        connect (propertyBrowser, SIGNAL(updateUi()),
-                 this,            SLOT(updateUi()));
         connect (propertyBrowser, SIGNAL(sceneChanged()),
                  this,            SLOT(setChanged()));
         connect (propertyBrowser, SIGNAL(resyncCameraConfig()),
