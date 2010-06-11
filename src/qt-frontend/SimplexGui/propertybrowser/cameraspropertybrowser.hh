@@ -36,6 +36,7 @@ class QtEnumEditorFactory;
 class QtVariantPropertyManager;
 class QtVariantEditorFactory;
 class QtStringPropertyManager;
+class QtLineEditFactory;
 class ColorEditManager;
 
 #include <QStringList>
@@ -75,6 +76,7 @@ private:
         QtVariantPropertyManager *variantManager;
         QtVariantEditorFactory *variantFactory;
         QtProperty *camerasProperty;
+        QtLineEditFactory *lineEditFactory;
 
         QtEnumEditorFactory *comboBoxFactory;
 

@@ -52,12 +52,14 @@ CamerasPropertyBrowser::~CamerasPropertyBrowser() {
         root->unsetFactoryForManager(transformEnumManager);
         root->unsetFactoryForManager(cameraTypeEnumManager);
         root->unsetFactoryForManager(variantManager);
+        root->unsetFactoryForManager(titleManager);
 
         delete groupManager;
         delete variantManager;
         delete variantFactory;
 
         delete comboBoxFactory;
+        delete lineEditFactory;
 
         delete transformEnumManager;
         delete cameraTypeEnumManager;
@@ -90,10 +92,12 @@ void CamerasPropertyBrowser::initializeScene() {
 
         variantFactory = new QtVariantEditorFactory(this);
         comboBoxFactory = new QtEnumEditorFactory(this);
+        lineEditFactory = new QtLineEditFactory(this);
 
         root->setFactoryForManager(transformEnumManager, comboBoxFactory);
         root->setFactoryForManager(cameraTypeEnumManager, comboBoxFactory);
         root->setFactoryForManager(variantManager, variantFactory);
+        root->setFactoryForManager(titleManager, lineEditFactory);
 
 
         camerasProperty = groupManager->addProperty("cameras");
@@ -130,7 +134,6 @@ void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
 
         QtProperty *title = titleManager->addProperty("title");
         titleManager->setRegExp(title, QRegExp("([a-z0-9]|-|_)+", Qt::CaseInsensitive, QRegExp::RegExp));
-        // here it breaks
         titleManager->setValue(title, QString::fromStdString(c.title));
         camera->addSubProperty(title);
 
@@ -288,6 +291,7 @@ void CamerasPropertyBrowser::cameraTypeEnumManager_valueChanged(
         foreach (QtProperty *nt, t->subProperties()){
                 if (nt->propertyName() != "type"
                     && nt->propertyName() != "transform"
+                    && nt->propertyName() != "title"
                 ) {
                         t->removeSubProperty(nt);
                 }
