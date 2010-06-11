@@ -1,3 +1,21 @@
+picogen (0.3~beta6) unstable; urgency=low
+
+  * fixes in deb-package:
+     - debs are now lintian clean
+        - add manpage
+        - set proper file permissions
+     - version numbering is now proper
+  * fixes in SimplexGui:
+     - oversights:
+        - sub-items in property-editor can be reordered now
+        - camera-names can now be edited
+     - the state is no longer "changed" directly after opening
+            SimplexGui
+     - change: the main-menu has been simplified
+  * the documentation has been slightly updated
+
+ -- Sebastian Mach <phresnel@gmail.com>  Sat, 12 Jun 2010 00:00:39 +0200
+
 picogen (0.3.beta5) unstable; urgency=low
 
   * new: context help for property-editor and help-browser
