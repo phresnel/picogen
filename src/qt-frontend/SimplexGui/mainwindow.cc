@@ -814,16 +814,22 @@ void MainWindow::on_deleteButton_clicked() {
         on_actionDelete_triggered();
 }
 void MainWindow::on_actionDelete_triggered() {
-        //ui->settings->removeProperty(propertyBrowser->currentBrowserItem()->property());
         QtProperty*    curr    = propertyBrowser->currentBrowserItem()->property();
         QtBrowserItem* parenti = propertyBrowser->currentBrowserItem()->parent();
         QtProperty*    parent  = parenti ? parenti->property() : 0;
 
         if (parent) {
-                parent->removeSubProperty(curr);
-                ui->settings->setCurrentItem(parenti);
+                if (QMessageBox::Yes == QMessageBox::question(
+                        this,
+                        "", "Delete \"" + curr->propertyName() + "\"?",
+                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                        QMessageBox::Cancel
+                )) {
+                        parent->removeSubProperty(curr);
+                        ui->settings->setCurrentItem(parenti);
+                        setChanged();
+                }
         }
-        setChanged();
 }
 
 
@@ -979,14 +985,14 @@ void MainWindow::on_moveUpButton_clicked() {
         moveUp (ui->settings, propertyBrowser->currentBrowserItem()->parent()->property(), propertyBrowser->currentBrowserItem());
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
-        //setChanged();
+        setChanged();
 }
 void MainWindow::on_moveDownButton_clicked() {
         QtBrowserItem *tmp = propertyBrowser->currentBrowserItem();
         moveDown (ui->settings, propertyBrowser->currentBrowserItem()->parent()->property(), propertyBrowser->currentBrowserItem());
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
-        //setChanged();
+        setChanged();
 }
 
 
