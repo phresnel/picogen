@@ -103,11 +103,6 @@ MainWindow::MainWindow(
                         saveFilename = openFilename;
                         QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                         refreshWindowTitle();
-
-                        //if (openFilename == initialFilename)
-                                setUnchanged();
-                        /*else
-                                setChanged();*/
                 } catch (...) {
                         propertyBrowser->setDefaultScene();
                 }
@@ -155,6 +150,8 @@ MainWindow::MainWindow(
 
         resyncCameraConfig();
         resyncRenderSettingConfig();
+
+        setUnchanged();
 }
 
 
