@@ -23,6 +23,10 @@ function make_arch {
         #fromdos DEBS/${1}/usr/share/doc/picogen/changelog
         gzip --best DEBS/${1}/usr/share/doc/picogen/changelog
 
+        mkdir -p DEBS/${1}/usr/bin/
+        echo "replace me with the corresponding binary" > DEBS/${1}/usr/bin/picogen-simplex
+        echo "replace me with the corresponding binary" > DEBS/${1}/usr/bin/picohelp
+        echo "replace me with the corresponding binary" > DEBS/${1}/usr/bin/picogen-quatsch-editor
 
         # write version to share/picogen
         echo ${VERSION} > DEBS/${1}/usr/share/picogen/version
