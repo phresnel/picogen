@@ -23,6 +23,7 @@ function make_arch {
         #fromdos DEBS/${1}/usr/share/doc/picogen/changelog
         gzip --best DEBS/${1}/usr/share/doc/picogen/changelog
 
+
         # write version to share/picogen
         echo ${VERSION} > DEBS/${1}/usr/share/picogen/version
 
