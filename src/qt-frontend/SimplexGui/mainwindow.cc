@@ -282,17 +282,12 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         settingsContextMenu.clear();
         ui->moveDownButton->setEnabled(false);
         ui->moveUpButton->setEnabled(false);
-
-        ui->deleteObjectButton->setEnabled(false);
-        ui->deleteVolumeButton->setEnabled(false);
+        ui->deleteButton->setEnabled(false);
 
         ui->codeEditorFrameOuter->setEnabled(false);
         ui->codeEditorFrameOuter->setVisible(false);
 
         ui->newSubTransformButton->setEnabled(false);
-        ui->deleteSubTransformButton->setEnabled (false);
-        ui->deleteRsButton->setEnabled(false);
-        ui->deleteCameraButton->setEnabled(false);
 
         if (current == 0)
                 return;
@@ -328,27 +323,6 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         const bool isObject         = parentName == "objects";
         const bool isCode           = name == "code";
 
-
-        if (isSubTransform
-         || isCamera
-         || isRenderSetting
-         || isObject
-         || isVolume
-        ) {
-                ui->moveDownButton->setEnabled(!isLast(parentProp, current));
-                ui->moveUpButton->setEnabled(!isFirst(parentProp, current));
-        }
-
-        if (isObject) {
-                ui->deleteObjectButton->setEnabled(true);
-                settingsContextMenu.addAction(ui->actionDelete_Object);
-        }
-
-        if (isVolume) {
-                ui->deleteVolumeButton->setEnabled(true);
-                settingsContextMenu.addAction(ui->actionDelete_Volume);
-        }
-
         if (isCode) {
                 ui->codeEditorFrameOuter->setEnabled(true);
                 ui->codeEditorFrameOuter->setVisible(true);
@@ -360,19 +334,20 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                 settingsContextMenu.addAction(ui->actionNew_Sub_Transform);
         }
         if (isSubTransform) {
-                ui->deleteSubTransformButton->setEnabled (true);
-                settingsContextMenu.addAction(ui->actionDelete_Sub_Transform);
+                ui->actionNew_Sub_Transform->setEnabled (true);
         }
 
 
-        if (isRenderSetting) {
-                ui->deleteRsButton->setEnabled(true);
-                settingsContextMenu.addAction(ui->actionDelete_Render_Setting);
-        }
-
-        if (isCamera) {
-                ui->deleteCameraButton->setEnabled(true);
-                settingsContextMenu.addAction(ui->actionDelete_Camera);
+        if (isSubTransform
+         || isCamera
+         || isRenderSetting
+         || isObject
+         || isVolume
+        ) {
+                ui->moveDownButton->setEnabled(!isLast(parentProp, current));
+                ui->moveUpButton->setEnabled(!isFirst(parentProp, current));
+                ui->deleteButton->setEnabled(true);
+                settingsContextMenu.addAction(ui->actionDelete);
         }
 }
 
@@ -454,30 +429,6 @@ void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
 
 
 
-void MainWindow::on_deleteObjectButton_clicked() {
-        on_actionDelete_Object_triggered();
-}
-
-
-
-void MainWindow::on_deleteVolumeButton_clicked() {
-        on_actionDelete_Volume_triggered();
-}
-
-
-
-void MainWindow::on_deleteSubTransformButton_clicked() {
-        on_actionDelete_Sub_Transform_triggered();
-}
-
-
-
-void MainWindow::on_deleteRsButton_clicked() {
-        on_actionDelete_Render_Setting_triggered();
-}
-
-
-
 void MainWindow::on_newSubTransformButton_clicked() {
         on_actionNew_Sub_Transform_triggered();
 }
@@ -486,12 +437,6 @@ void MainWindow::on_newSubTransformButton_clicked() {
 
 void MainWindow::on_newCameraButton_clicked() {
         on_actionNew_Camera_triggered();
-}
-
-
-
-void MainWindow::on_deleteCameraButton_clicked() {
-        on_actionDelete_Camera_triggered();
 }
 
 
@@ -788,12 +733,6 @@ void MainWindow::contextMenuEvent(QContextMenuEvent */*event*/) {
 
 
 
-void MainWindow::on_actionDelete_Render_Setting_triggered() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        propertyBrowser->removeRenderSetting(propertyBrowser->currentBrowserItem()->property());
-        resyncRenderSettingConfig();
-}
 void MainWindow::on_actionNew_Render_Setting_triggered() {
         setChanged();
         redshift::scenefile::RenderSettings rs;
@@ -814,11 +753,6 @@ void MainWindow::on_actionAdd_Exponential_Volume_triggered() {
         redshift::scenefile::Volume v;
         v.type = redshift::scenefile::Volume::exponential;
         propertyBrowser->addVolume (v);
-}
-void MainWindow::on_actionDelete_Volume_triggered() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        propertyBrowser->removeVolume(propertyBrowser->currentBrowserItem()->property());
 }
 
 
@@ -843,12 +777,6 @@ void MainWindow::on_actionNew_Camera_triggered() {
         propertyBrowser->addCamera(cam);
         resyncCameraConfig();
 }
-void MainWindow::on_actionDelete_Camera_triggered() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        propertyBrowser->removeCamera(propertyBrowser->currentBrowserItem()->property());
-        resyncCameraConfig();
-}
 
 
 
@@ -860,14 +788,7 @@ void MainWindow::on_actionNew_Sub_Transform_triggered() {
                         propertyBrowser->currentTransformProperty(),
                         redshift::scenefile::Transform());
 }
-void MainWindow::on_actionDelete_Sub_Transform_triggered() {
-        setChanged();
-        // assumed to signal everything needed for clean up
-        propertyBrowser->removeTransform(
-                        propertyBrowser->currentTransformProperty(),
-                        propertyBrowser->currentBrowserItem()->property()
-        );
-}
+
 
 
 
@@ -889,10 +810,20 @@ void MainWindow::on_actionAdd_Lazy_Quadtree_triggered() {
         o.type = redshift::scenefile::Object::lazy_quadtree;
         propertyBrowser->addObject (o);
 }
-void MainWindow::on_actionDelete_Object_triggered() {
+void MainWindow::on_deleteButton_clicked() {
+        on_actionDelete_triggered();
+}
+void MainWindow::on_actionDelete_triggered() {
+        //ui->settings->removeProperty(propertyBrowser->currentBrowserItem()->property());
+        QtProperty*    curr    = propertyBrowser->currentBrowserItem()->property();
+        QtBrowserItem* parenti = propertyBrowser->currentBrowserItem()->parent();
+        QtProperty*    parent  = parenti ? parenti->property() : 0;
+
+        if (parent) {
+                parent->removeSubProperty(curr);
+                ui->settings->setCurrentItem(parenti);
+        }
         setChanged();
-        // assumed to signal everything needed for clean up
-        propertyBrowser->removeObject(propertyBrowser->currentBrowserItem()->property());
 }
 
 
@@ -1057,3 +988,5 @@ void MainWindow::on_moveDownButton_clicked() {
         on_settings_currentItemChanged(tmp);
         //setChanged();
 }
+
+

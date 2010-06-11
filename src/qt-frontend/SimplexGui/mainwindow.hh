@@ -78,6 +78,7 @@ private:
 
         QMenu settingsContextMenu, objectsMenu, volumesMenu;
 private slots:
+        void on_deleteButton_clicked();
         void on_actionShow_PicoHelp_triggered(bool);
         void on_moveDownButton_clicked();
         void on_moveUpButton_clicked();
@@ -88,30 +89,22 @@ private slots:
         void on_actionShow_Command_Pile_triggered(bool checked);
         void on_actionAdd_Homogeneous_Volume_triggered();
         void on_actionAdd_Exponential_Volume_triggered();
-        void on_actionDelete_Volume_triggered();
 
         void on_actionAdd_Lazy_Quadtree_triggered();
         void on_actionAdd_Horizon_Plane_triggered();
         void on_actionAdd_Water_Plane_triggered();
-        void on_actionDelete_Object_triggered();
 
         void on_actionNew_Camera_triggered();
-        void on_actionDelete_Camera_triggered();
 
         void on_actionNew_Sub_Transform_triggered();
-        void on_actionDelete_Sub_Transform_triggered();
 
-        void on_actionDelete_Render_Setting_triggered();
+        void on_actionDelete_triggered();
+
         void on_actionNew_Render_Setting_triggered();
         void on_settings_customContextMenuRequested(QPoint pos);
         void on_actionLoad_triggered();
         void on_renderButton_clicked();
-        void on_deleteCameraButton_clicked();
         void on_newCameraButton_clicked();
-        void on_deleteRsButton_clicked();
-        void on_deleteObjectButton_clicked();
-        void on_deleteVolumeButton_clicked();
-        void on_deleteSubTransformButton_clicked();
 
         void on_newHorizonPlaneButton_clicked();
         void on_newWaterPlaneButton_clicked();
