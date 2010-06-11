@@ -98,8 +98,8 @@ void ScenePropertyBrowser::initializeBrowsers() {
         renderSettingsPropertyBrowser = new RenderSettingsPropertyBrowser(
                         ownerWidget,
                         root);
-        connect(renderSettingsPropertyBrowser, SIGNAL(updateUi()), this, SLOT(resyncRenderSettingConfig_()));
         connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncRenderSettingConfig_()));
+        connect(renderSettingsPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
         delete camerasPropertyBrowser;
@@ -107,6 +107,7 @@ void ScenePropertyBrowser::initializeBrowsers() {
                                                             root);
         connect(camerasPropertyBrowser, SIGNAL(updateUi()), this, SLOT(updateUi_()));
         connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(resyncCameraConfig_()));
+        connect(camerasPropertyBrowser, SIGNAL(sceneChanged()), this, SLOT(sceneChanged_()));
 
 
         delete objectPropertyBrowser;

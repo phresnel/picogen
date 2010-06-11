@@ -70,7 +70,7 @@ CamerasPropertyBrowser::~CamerasPropertyBrowser() {
 
 
 void CamerasPropertyBrowser::initializeScene() {
-
+        const bool blocked = blockSignals(true);
         groupManager = new QtGroupPropertyManager(this);
 
         titleManager = new QtStringPropertyManager (this);
@@ -105,12 +105,15 @@ void CamerasPropertyBrowser::initializeScene() {
         root->setBackgroundColor(
                         root->topLevelItem(camerasProperty),
                         QColor(110,110,110));
+        blockSignals(blocked);
 }
 
 
 
 void CamerasPropertyBrowser::remove(QtProperty *property) {
+        const bool blocked = blockSignals(true);
         camerasProperty->removeSubProperty(property);
+        blockSignals(blocked);
         emit sceneChanged();
 }
 
@@ -120,7 +123,9 @@ void CamerasPropertyBrowser::removeTransform (
         QtProperty *transformRoot,
         QtProperty *subTransform
 ) {
+        const bool blocked = blockSignals(true);
         transformRoot->removeSubProperty(subTransform);
+        blockSignals(blocked);
         emit sceneChanged();
 }
 
@@ -128,6 +133,8 @@ void CamerasPropertyBrowser::removeTransform (
 
 void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
         using redshift::scenefile::Camera;
+
+        const bool blocked = blockSignals(true);
 
         QtProperty *camera = groupManager->addProperty(c.title.c_str());
         camerasProperty->addSubProperty(camera);
@@ -206,6 +213,7 @@ void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
 
         collapse (root, transformRoot);
 
+        blockSignals(blocked);
         emit sceneChanged();
 }
 
@@ -215,6 +223,8 @@ void CamerasPropertyBrowser::addCamera(redshift::scenefile::Camera const& c) {
 void CamerasPropertyBrowser::addTransform (QtProperty *transformRoot,
                                redshift::scenefile::Transform const & t) {
         typedef redshift::scenefile::Transform Xf;
+
+        const bool blocked = blockSignals(true);
 
         QtProperty *transform = groupManager->addProperty("---");
         transformRoot->addSubProperty(transform);
@@ -268,6 +278,7 @@ void CamerasPropertyBrowser::addTransform (QtProperty *transformRoot,
                 break;
         }
 
+        blockSignals(blocked);
         emit sceneChanged();
 }
 
@@ -277,10 +288,11 @@ void CamerasPropertyBrowser::addTransform (QtProperty *transformRoot,
 void CamerasPropertyBrowser::cameraTypeEnumManager_valueChanged(
         QtProperty* prop, int index
 ) {
-        emit sceneChanged();
         QtProperty *t = findParent(root->properties(), prop);
         if (!t)
                 return;
+
+        const bool blocked = blockSignals(true);
 
         const QStringList enumNames = cameraTypeEnumManager->enumNames(prop);
         const QString type = enumNames[index];
@@ -318,6 +330,7 @@ void CamerasPropertyBrowser::cameraTypeEnumManager_valueChanged(
                                       "an oversight by the incapable "
                                       "programmers, please report this issue.");
         }
+        blockSignals(blocked);
         emit sceneChanged();
 }
 
@@ -327,7 +340,7 @@ void CamerasPropertyBrowser::transformEnumManager_valueChanged(
         QtProperty* prop,
         int index
 ) {
-        emit sceneChanged();
+        const bool blocked = blockSignals(true);
         if (QtProperty *t = findParent(root->properties(), prop)) {
                 const QStringList enumNames =
                                 transformEnumManager->enumNames(prop);
@@ -374,6 +387,8 @@ void CamerasPropertyBrowser::transformEnumManager_valueChanged(
                                                   "programmers, please report this issue.");
 
         }
+
+        blockSignals(blocked);
         emit sceneChanged();
 }
 

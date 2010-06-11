@@ -197,7 +197,7 @@ void MainWindow::setChanged() {
         if (changed) return;
         changed = true;
         ui->menuBar->setStyleSheet("background-color:#A33;");
-        updateUi();
+        refreshWindowTitle();
 }
 
 
@@ -206,7 +206,7 @@ void MainWindow::setUnchanged() {
         if (!changed) return;
         changed = false;
         ui->menuBar->setStyleSheet("");
-        updateUi();
+        refreshWindowTitle();
 }
 
 
@@ -1053,10 +1053,12 @@ void MainWindow::on_moveUpButton_clicked() {
         moveUp (ui->settings, propertyBrowser->currentBrowserItem()->parent()->property(), propertyBrowser->currentBrowserItem());
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
+        //setChanged();
 }
 void MainWindow::on_moveDownButton_clicked() {
         QtBrowserItem *tmp = propertyBrowser->currentBrowserItem();
         moveDown (ui->settings, propertyBrowser->currentBrowserItem()->parent()->property(), propertyBrowser->currentBrowserItem());
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
+        //setChanged();
 }
