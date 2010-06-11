@@ -68,7 +68,8 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
         //====---- - - -  -   -    -      -
         string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
 
-        width = height = depth = iwidth = iheight = idepth = 1;
+        width = height = depth = 1000;
+        iwidth = iheight = idepth = 1/1000;
         filter = cubic;
         for (Map::const_iterator it=static_parameters.begin();
              it!=static_parameters.end();
