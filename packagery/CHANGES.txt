@@ -12,11 +12,12 @@ picogen (0.3~beta6) unstable; urgency=low
      - the state is no longer "changed" directly after opening
             SimplexGui
      - change: the main-menu has been simplified
-  * the documentation has been slightly updated
+  * add: a path tracer has been added
+  * add: the documentation has been slightly updated
 
  -- Sebastian Mach <phresnel@gmail.com>  Sat, 12 Jun 2010 00:00:39 +0200
 
-picogen (0.3.beta5) unstable; urgency=low
+picogen (0.3~beta5) unstable; urgency=low
 
   * new: context help for property-editor and help-browser
   * (windows): improve installer
@@ -28,14 +29,14 @@ picogen (0.3.beta5) unstable; urgency=low
 
  -- Sebastian Mach <phresnel@gmail.com>  Thu, 27 May 2010 00:00:00 +0000
 
-picogen (0.3.beta3) unstable; urgency=low
+picogen (0.3~beta3) unstable; urgency=low
 
   * fix (.deb-package): wrong/missing dependencies
   * normalize qt-dependencies (.deb-package)
 
  -- Sebastian Mach <phresnel@gmail.com>  Thu, 20 May 2010 00:00:00 +0000
 
-picogen (0.3.beta2) unstable; urgency=low
+picogen (0.3~beta2) unstable; urgency=low
 
   * initial release
 
