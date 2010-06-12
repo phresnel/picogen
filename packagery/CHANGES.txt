@@ -14,6 +14,7 @@ picogen (0.3~beta6) unstable; urgency=low
      - change: the main-menu has been simplified
   * add: a path tracer has been added
   * add: the documentation has been slightly updated
+  * add: a set of four examples has been added
 
  -- Sebastian Mach <phresnel@gmail.com>  Sat, 12 Jun 2010 00:00:39 +0200
 
