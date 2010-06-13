@@ -49,7 +49,7 @@ int simplexGui (int argc, char *argv[]) {
                 }
         }
         QApplication a(argc, argv);
-        MainWindow w (initialFilename, initialFilename);
+        MainWindow w (openFilename, initialFilename);
         w.show();
         const int ret = a.exec();
         return ret;

@@ -93,17 +93,22 @@ MainWindow::MainWindow(
         connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
                 this, SLOT(helpBrowserVisibilityRequested()));
 
+        std::cerr << "openfilename: " << openFilename.toStdString() << std::endl;
+        std::cerr << "init-filename: " << initialFilename.toStdString() << std::endl;
         if (openFilename != "") {
                 try {
                         redshift::scenefile::Scene scene;
-                        std::ifstream ss(initialFilename.toStdString().c_str());
+                        std::ifstream ss(openFilename.toStdString().c_str());
                         actuarius::IArchive (ss) & actuarius::pack("scene", scene);
                         propertyBrowser->loadScene(scene);
 
-                        saveFilename = openFilename;
+                        saveFilename = initialFilename;
                         QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                         refreshWindowTitle();
                 } catch (...) {
+                        QMessageBox::critical(this, "Error",
+                                "An error occured while trying to open \""
+                                + openFilename + "\"");
                         propertyBrowser->setDefaultScene();
                 }
         } else {
