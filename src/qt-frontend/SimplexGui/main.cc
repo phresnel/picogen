@@ -45,7 +45,7 @@ int simplexGui (int argc, char *argv[]) {
                         openFilename = argc>2?QString(argv[2]):"";
                         initialFilename = "";
                 } else {
-                        openFilename = QString(argv[1]);
+                        openFilename = initialFilename = QString(argv[1]);
                 }
         }
         QApplication a(argc, argv);
