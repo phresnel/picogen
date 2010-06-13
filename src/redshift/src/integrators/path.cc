@@ -97,42 +97,46 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                         ret += surfaceColor * color * d;
                                 }
                         }
-			
+
                         const optional<tuple<Color,Vector,real_t> > bsdfSample_ =
                                 bsdf->sample_f (
                                         -ray.direction,
                                         Bsdf::reflection, Bsdf::diffuse,
                                         rand);
-                        
-                        if (bsdfSample_ && !bg->isInSunSolidAngle(get<1>(*bsdfSample_))) {
-                                
+
+                        // NOTE: no need to test whether ray is in sun solid angle,
+                        //       as incomingLight will be zero for all rays that
+                        //       don't intersect.
+                        if (bsdfSample_) {
+
                                 const Color surfaceColor = get<0>(*bsdfSample_);
-                                const Ray skyRay (ray.position, get<1>(*bsdfSample_));                                
+                                const Ray skyRay (ray.position, get<1>(*bsdfSample_));
                                 const real_t pdf = get<2>(*bsdfSample_);
-                                
+
                                 Sample s = sample;
                                 s.primaryRay = skyRay;
                                 const tuple<real_t,Color> L = scene.Li(s, rand);
                                 const Color incomingLight = get<1>(L);
-                                
-                                const real_t d = max(real_t(0),
+
+                                const real_t d = max(
+                                    real_t(0),
                                     dot(skyRay.direction, vector_cast<Vector>(normalS))
                                 );
 
-                                ret += incomingLight*surfaceColor * d / pdf;                                
-                        }                        
+                                ret += incomingLight*surfaceColor * d / pdf;
+                        }
 
                         // Done.
                         return make_tuple(1.0f, ret, gd.getDistance());
                 }
 
                 return make_tuple(1.0f, Color(0), gd.getDistance());
-        } else {        
+        } else {
                 return make_tuple (1.0,
                         Color(0),
                         constants::infinity
                 );
-        }                
+        }
 }
 
 }
