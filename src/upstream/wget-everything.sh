@@ -20,3 +20,19 @@ popd
 echo creating tarball of downloaded stuff
 tar -cf QtSolutions.tar QtSolutions
 gzip QtSolutions.tar
+
+
+
+mkdir -p QtApps-Widgets && pushd QtApps-Widgets
+
+
+echo getting QtCoverFlow
+wget http://th30z.netsons.org/wp-content/uploads/qtcoverflow.zip
+unzip qtcoverflow.zip
+rm qtcoverflow.zip
+
+popd
+
+echo creating tarball of downloaded stuff
+tar -cf QtApps-Widgets.tar QtApps-Widgets
+gzip QtApps-Widgets.tar
