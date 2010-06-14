@@ -5,6 +5,7 @@ TARGET = picogen-simplex
 RC_FILE = icon.rc
 TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
+INCLUDEPATH += ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/
 INCLUDEPATH += ../widgets/
 INCLUDEPATH += ../widgets/QuatschSourceEditor/
 INCLUDEPATH += ../widgets/SimpleInputBox/
@@ -26,7 +27,8 @@ SOURCES += main.cc \
     propertybrowser/cameraspropertybrowser.cc \
     propertybrowser/filmsettingspropertybrowser.cc \
     propertybrowser/backgroundspropertybrowser.cc \
-    propertybrowser/scenepropertybrowser.cc
+    propertybrowser/scenepropertybrowser.cc \
+    ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/pictureflow.cpp
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
     ../widgets/RenderWindow/qimagerendertarget.hh \
@@ -42,7 +44,10 @@ HEADERS += mainwindow.hh \
     propertybrowser/cameraspropertybrowser.hh \
     propertybrowser/filmsettingspropertybrowser.hh \
     propertybrowser/backgroundspropertybrowser.hh \
-    propertybrowser/scenepropertybrowser.hh
+    propertybrowser/scenepropertybrowser.hh \
+    ../../upstream/QtApps-Widgets/QtCoverFlow/coverflow.h \
+    ../../upstream/QtApps-Widgets/QtCoverFlow/coverflow_p.h \
+    ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/pictureflow.h
 FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \

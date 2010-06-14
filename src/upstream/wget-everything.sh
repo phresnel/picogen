@@ -23,16 +23,21 @@ gzip QtSolutions.tar
 
 
 
-mkdir -p QtApps-Widgets && pushd QtApps-Widgets
+mkdir -p qt-widgets && pushd qt-widgets
 
 
-echo getting QtCoverFlow
-wget http://th30z.netsons.org/wp-content/uploads/qtcoverflow.zip
-unzip qtcoverflow.zip
-rm qtcoverflow.zip
+#echo getting QtCoverFlow
+#wget http://th30z.netsons.org/wp-content/uploads/qtcoverflow.zip
+#unzip qtcoverflow.zip
+#rm qtcoverflow.zip
+
+echo getting qt-pictureflow
+wget http://pictureflow.googlecode.com/files/pictureflow-0.1.0.tar.gz
+tar -xzf pictureflow-0.1.0.tar.gz
+rm pictureflow-0.1.0.tar.gz
 
 popd
 
 echo creating tarball of downloaded stuff
-tar -cf QtApps-Widgets.tar QtApps-Widgets
-gzip QtApps-Widgets.tar
+tar -cf qt-widgets.tar qt-widgets
+gzip qt-widgets.tar

@@ -93,8 +93,6 @@ MainWindow::MainWindow(
         connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
                 this, SLOT(helpBrowserVisibilityRequested()));
 
-        std::cerr << "openfilename: " << openFilename.toStdString() << std::endl;
-        std::cerr << "init-filename: " << initialFilename.toStdString() << std::endl;
         if (openFilename != "") {
                 try {
                         redshift::scenefile::Scene scene;

@@ -18,10 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+#include "pictureflow.h"
 #include "openscenefile.hh"
 #include "ui_openscenefile.h"
 #include <QMessageBox>
+#include <QDir>
 
 OpenSceneFile::OpenSceneFile(
                 QString const &path,
@@ -34,6 +35,31 @@ OpenSceneFile::OpenSceneFile(
 {
         ui->setupUi(this);
         result_ = Cancel;
+
+        QDir previewDir = QFileInfo(path).absoluteDir();
+        previewDir.setPath(previewDir.path() + "/preview");
+        QStringList nameFilters;
+        // look into renderwindow.cc
+        nameFilters << "*.png"
+                    << "*.bmp"
+                    << "*.jpg" << "*.jpeg"
+                    << "*.ppm"
+                    << "*.tif"
+                    << "*.tiff"
+                    << "*.xbm"
+                    << "*.xpm";
+        previewDir.setNameFilters(nameFilters);
+        const QStringList thumbnails = previewDir.entryList(nameFilters, QDir::Files);
+
+        PictureFlow *covers = new PictureFlow(this);
+        covers->setSlideSize(QSize(320,240));
+
+        foreach (QString thumbnail, thumbnails) {
+                thumbnail = previewDir.path() + '/' + thumbnail;
+                covers->addSlide(QImage(thumbnail));
+        }
+        covers->setCenterIndex(covers->slideCount()/2);
+        ui->previewLayout->addWidget(covers);
 }
 
 
