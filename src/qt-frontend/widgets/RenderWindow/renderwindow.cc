@@ -208,7 +208,6 @@ void RenderWindowImpl::run() {
                                         sceneDescriptionToScene(*scenefile,
                                                 renderBuffer,
                                                 renderSettings, camera);
-                scenefile.reset();
 
                 shared_ptr<interaction::ProgressReporter> rep =
                         shared_ptr<redshift::interaction::ProgressReporter>(shared_from_this());
@@ -222,6 +221,8 @@ void RenderWindowImpl::run() {
                      scenefile->renderSettings(renderSettings).max_y,
                      scenefile->renderSettings(renderSettings).userSeed
                 );
+
+                scenefile.reset();
         } catch (std::exception const &ex) {
                 error_ = true;
                 errorMessage_ = QString()
