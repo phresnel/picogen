@@ -1,5 +1,6 @@
 picogen (0.3~beta6) unstable; urgency=low
 
+  * several oversights have been fixed
   * fixes in deb-package:
      - debs are now lintian clean
         - add manpage
@@ -16,7 +17,7 @@ picogen (0.3~beta6) unstable; urgency=low
   * add: the documentation has been slightly updated
   * add: a set of four examples has been added
 
- -- Sebastian Mach <phresnel@gmail.com>  Sat, 12 Jun 2010 00:00:39 +0200
+ -- Sebastian Mach <phresnel@gmail.com>  Tue, 15 Jun 2010 17:11:00 +0200
 
 picogen (0.3~beta5) unstable; urgency=low
 
