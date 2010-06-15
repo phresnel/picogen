@@ -41,6 +41,10 @@
 #include "propertybrowser/propertybrowser-helpers.hh"
 #include "coloredit.h"
 
+namespace {
+const char *str_new_scene = "<new scene>";
+}
+
 
 
 // TODO: this should be in a header
@@ -604,7 +608,7 @@ void MainWindow::on_actionSave_copy_as_triggered() {
 
 
 void MainWindow::refreshWindowTitle() {
-        const QString alpha = saveFilename == "" ? "<new scene>" : saveFilename;
+        const QString alpha = saveFilename == "" ? str_new_scene : saveFilename;
         setWindowTitle (
                 alpha + (changed ? " * " : "")
                 + " - picogen:SimplexGui"
@@ -705,7 +709,8 @@ void MainWindow::loadScene (QString const &name) {
 void MainWindow::on_actionProduction_Render_triggered() {
         try {
                 again:
-                if (changed) {
+                if (saveFilename == QString(str_new_scene)
+                    || !QFile::exists(saveFilename)) {
                         if (QMessageBox::Ok ==
                                 QMessageBox::question(this, "Unsaved scene",
                                   "To do a production-render, the scene must be "
