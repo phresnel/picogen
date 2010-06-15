@@ -213,15 +213,25 @@ void MainWindow::setUnchanged() {
 
 
 void MainWindow::resyncRenderSettingConfig () {
+        const int index = ui->renderSettingConfig->currentIndex();
         ui->renderSettingConfig->clear();
         ui->renderSettingConfig->addItems(propertyBrowser->renderSettingNames());
+        if (index > 0 && index < ui->renderSettingConfig->count())
+                ui->renderSettingConfig->setCurrentIndex(index);
+        else if (ui->renderSettingConfig->count() > 0)
+                ui->renderSettingConfig->setCurrentIndex(0);
 }
 
 
 
 void MainWindow::resyncCameraConfig () {
+        const int index = ui->cameraConfig->currentIndex();
         ui->cameraConfig->clear();
         ui->cameraConfig->addItems(propertyBrowser->cameraNames());
+        if (index > 0 && index < ui->cameraConfig->count())
+                ui->cameraConfig->setCurrentIndex(index);
+        else if (ui->cameraConfig->count() > 0)
+                ui->cameraConfig->setCurrentIndex(0);
 }
 
 
