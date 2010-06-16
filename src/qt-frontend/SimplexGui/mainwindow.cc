@@ -645,7 +645,17 @@ void MainWindow::render() {
 
 void MainWindow::on_actionLoad_triggered() {
 
-        // I somewhat find the OS' own file dialog to be disturbing
+        if (changed &&
+            QMessageBox::Yes !=
+                QMessageBox::question(this, "Unsaved scene",
+                  "There is unsaved data in your scene. Really proceed without saving?",
+                  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                  QMessageBox::Cancel)
+        ) {
+                return;
+        }
+
+        // I find the OS' own file dialog to be somewhat disturbing
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::AnyFile);
         dialog.setWindowTitle("Select a file to load");
