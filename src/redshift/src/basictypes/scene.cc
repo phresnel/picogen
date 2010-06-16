@@ -202,123 +202,147 @@ void Scene::render (
 
         shared_ptr<RenderTargetLock> lock (renderTarget->lock());
 
+
         const unsigned int width = renderTarget->getWidth();
         const unsigned int height =
                 (minY<maxY && maxY<(unsigned int)renderTarget->getHeight())
                 ? maxY
                 : renderTarget->getHeight();
 //#define NO_OMP_THREADING
+
+        // TODO: needs to be tested
+        const int
+                num_procs = omp_get_num_procs(),
+                samplesPerLine = numAASamples*width,
+                samplesBeforeReporting = 1000*num_procs, // ROUGHLY let each core calculate 1000 samples. badhack
+                step_ = samplesPerLine < samplesBeforeReporting
+                      ? width
+                      : samplesBeforeReporting / numAASamples,
+                step = (step_<10 ? 10 : step_)
+        ;
+
+
         for (unsigned int y_=minY; y_<height; ++y_) {
                 const unsigned int y = y_;
                 currentScanline_ = (unsigned int)y;
                 aggregate->setCurrentScanline ((unsigned int)y);
-                //#warning no multicore!
-                #ifndef NO_OMP_THREADING
-                #pragma omp parallel for \
-                        schedule(dynamic) \
-                        reduction(+:sampleNumber)
-                #endif
-                for (int x_=0; x_<(int)width; ++x_) { // OMP wants them signed
-                        const unsigned int x = (unsigned int)x_;
-                        Color accu(0);
 
-                        for (unsigned int i_=0; i_<numAASamples; ++i_) {
-                                const int i = i_;
-                                redshift::Random rand;
+                for (int left=0, right=step;
+                     left<(int)width;
+                     (left+=step), (right= left+step<(int)width ? left+step : width))
 
-                                // That's totally strange. g++ version 4.4 chokes
-                                // (the whole system if you don't kill -9 it)
-                                // if I directly construct rand, instead of using
-                                // the following assignment. But I failed to minimize
-                                // a testcase and haven't filed a report yet.
-                                rand = createRandom(x, y, userSalt, i);
+                //const int left = 0, right = width;
+                {
+                        //for (int left=0, right=(int)width;
+                        //#warning no multicore!
+                        #ifndef NO_OMP_THREADING
+                        #pragma omp parallel for \
+                                schedule(dynamic) \
+                                reduction(+:sampleNumber)
+                        #endif
+                        for (int x_=left; x_<right; ++x_) { // OMP wants them signed
+                                const unsigned int x = (unsigned int)x_;
+                                Color accu(0);
 
-                                const real_t u = rand(), v = rand();
-                                const real_t imageX = x+u;
-                                const real_t imageY = y+v;
+                                for (unsigned int i_=0; i_<numAASamples; ++i_) {
+                                        const int i = i_;
+                                        redshift::Random rand;
 
-                                const ImageCoordinates IC = ImageCoordinates(imageX, imageY);
-                                const LensCoordinates LC = LensCoordinates ();
+                                        // That's totally strange. g++ version 4.4 chokes
+                                        // (the whole system if you don't kill -9 it)
+                                        // if I directly construct rand, instead of using
+                                        // the following assignment. But I failed to minimize
+                                        // a testcase and haven't filed a report yet.
+                                        rand = createRandom(x, y, userSalt, i);
 
-                                Sample sample = Sample (IC, LC, renderTarget);
+                                        const real_t u = rand(), v = rand();
+                                        const real_t imageX = x+u;
+                                        const real_t imageY = y+v;
 
-                                //-------------------------------------------------------------
-                                // 1) Generate Primary Ray.
-                                //-------------------------------------------------------------
-                                const tuple<real_t,RayDifferential>
-                                                          primo = camera->generateRay (sample);
-                                const real_t & rayWeight (get<0>(primo));
-                                sample.primaryRay = get<1>(primo); // Will be modified, hence
-                                                                   // non-const non-ref.
+                                        const ImageCoordinates IC = ImageCoordinates(imageX, imageY);
+                                        const LensCoordinates LC = LensCoordinates ();
 
+                                        Sample sample = Sample (IC, LC, renderTarget);
 
-                                //-------------------------------------------------------------
-                                // 2) Generate Ray Differential.
-                                //-------------------------------------------------------------
-                                sample.imageCoordinates.u++;
-                                sample.primaryRay.rx = get<1>(camera->generateRay (sample));
-                                sample.imageCoordinates.u--;
-
-                                ++sample.imageCoordinates.v;
-                                sample.primaryRay.ry = get<1>(camera->generateRay (sample));
-                                --sample.imageCoordinates.v;
-
-                                sample.primaryRay.hasDifferentials= true;
+                                        //-------------------------------------------------------------
+                                        // 1) Generate Primary Ray.
+                                        //-------------------------------------------------------------
+                                        const tuple<real_t,RayDifferential>
+                                                                  primo = camera->generateRay (sample);
+                                        const real_t & rayWeight (get<0>(primo));
+                                        sample.primaryRay = get<1>(primo); // Will be modified, hence
+                                                                           // non-const non-ref.
 
 
-                                //-------------------------------------------------------------
-                                // 3) Evaluate Radiance Along Primary Ray.
-                                //-------------------------------------------------------------
-                                const tuple<real_t,Color> Ls_ = Li(sample, rand);
-                                const real_t Ls_alpha (get<0>(Ls_));
-                                const Color Ls_color  (get<1>(Ls_));
-                                const Color finalColor = rayWeight * Ls_color;
+                                        //-------------------------------------------------------------
+                                        // 2) Generate Ray Differential.
+                                        //-------------------------------------------------------------
+                                        sample.imageCoordinates.u++;
+                                        sample.primaryRay.rx = get<1>(camera->generateRay (sample));
+                                        sample.imageCoordinates.u--;
 
-                                if (isnan (finalColor)) {
-                                        std::cout << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;
-                                } else if (isinf (finalColor)) {
-                                        std::cout << "inf pixel at " << x << ":" << y << ":" << i << std::endl;
-                                } else {
-                                        accu = accu + finalColor;
+                                        ++sample.imageCoordinates.v;
+                                        sample.primaryRay.ry = get<1>(camera->generateRay (sample));
+                                        --sample.imageCoordinates.v;
+
+                                        sample.primaryRay.hasDifferentials= true;
+
+
+                                        //-------------------------------------------------------------
+                                        // 3) Evaluate Radiance Along Primary Ray.
+                                        //-------------------------------------------------------------
+                                        const tuple<real_t,Color> Ls_ = Li(sample, rand);
+                                        const real_t Ls_alpha (get<0>(Ls_));
+                                        const Color Ls_color  (get<1>(Ls_));
+                                        const Color finalColor = rayWeight * Ls_color;
+
+                                        if (isnan (finalColor)) {
+                                                std::cout << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;
+                                        } else if (isinf (finalColor)) {
+                                                std::cout << "inf pixel at " << x << ":" << y << ":" << i << std::endl;
+                                        } else {
+                                                accu = accu + finalColor;
+                                        }
+                                        //PBRT:<issue warning if unexpected radiance value returned>
                                 }
-                                //PBRT:<issue warning if unexpected radiance value returned>
+
+                                //-------------------------------------------------------------
+                                // 4) PBRT:<add sample contribution to image> 28
+                                //-------------------------------------------------------------
+                                /*if (0) {
+                                        accu = accu * threadCol[omp_get_thread_num()];
+                                }*/
+                                if (isnan (accu)) {
+                                        std::cout << "NaN pixel at " << x << ":" << y << std::endl;
+                                } else if (isinf (accu)) {
+                                        std::cout << "inf pixel at " << x << ":" << y << std::endl;
+                                } else {
+                                        Color c = accu*(Color::real_t(1)/numAASamples);
+                                        lock->setPixel (x,y,c);
+                                        sampleNumber += numAASamples;
+                                }
+
+
+                                //-------------------------------------------------------------
+                                // 5) Report Progress.
+                                //-------------------------------------------------------------
                         }
-
-                        //-------------------------------------------------------------
-                        // 4) PBRT:<add sample contribution to image> 28
-                        //-------------------------------------------------------------
-                        /*if (0) {
-                                accu = accu * threadCol[omp_get_thread_num()];
-                        }*/
-                        if (isnan (accu)) {
-                                std::cout << "NaN pixel at " << x << ":" << y << std::endl;
-                        } else if (isinf (accu)) {
-                                std::cout << "inf pixel at " << x << ":" << y << std::endl;
-                        } else {
-                                Color c = accu*(Color::real_t(1)/numAASamples);
-                                lock->setPixel (x,y,c);
-                                sampleNumber += numAASamples;
-                        }
-
-
-                        //-------------------------------------------------------------
-                        // 5) Report Progress.
-                        //-------------------------------------------------------------
-                }
-                reporter->report (lock, sampleNumber, totalNumberOfSamples);
-                ucp->tick();
-                if (ucp->userWantsToQuit())
-                        break;
-
-                while (ucp->userWantsToPause() && !ucp->userWantsToQuit()) {
+                        reporter->report (lock, sampleNumber, totalNumberOfSamples);
                         ucp->tick();
-                }
+                        if (ucp->userWantsToQuit())
+                                goto behind_the_big_spin;
 
-                if (ucp->userWantsToQuit())
-                        break;
+                        while (ucp->userWantsToPause() && !ucp->userWantsToQuit()) {
+                                ucp->tick();
+                        }
+
+                        if (ucp->userWantsToQuit())
+                                goto behind_the_big_spin;
+                }
 
                 //aggregate->prune ();
         }
+        behind_the_big_spin:
         reporter->reportDone ();
         running_ = false;
 }
