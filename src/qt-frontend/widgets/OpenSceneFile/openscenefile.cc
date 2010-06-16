@@ -60,6 +60,8 @@ OpenSceneFile::OpenSceneFile(
         }
         covers->setCenterIndex(covers->slideCount()/2);
         ui->previewLayout->addWidget(covers);
+
+        setWindowTitle("Scene Preview");
 }
 
 
