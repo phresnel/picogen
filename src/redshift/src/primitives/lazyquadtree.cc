@@ -24,6 +24,55 @@
 
 #include <omp.h>
 
+
+// TODO outsource this to auxiliary
+template <typename T, size_t CAPACITY, bool NEED_DESTRUCTION = true>
+class Chunk {
+        union Proxy { unsigned char raw[sizeof(T)]; };
+        Proxy data[CAPACITY];
+
+        size_t size;
+public:
+        Chunk() : size(0) {}
+        ~Chunk() {
+                if (NEED_DESTRUCTION) for (size_t i=0; i<size; ++i)
+                        ((T*)(void*)data[i].raw)->~T();
+        }
+        bool full() const { return size >= CAPACITY; }
+        void *alloc() {
+                const size_t s = size;
+                #pragma omp atomic
+                size++;
+                return data[s].raw;
+        }
+};
+
+
+template <typename T, size_t CHUNK_CAPACITY, bool NEED_DESTRUCTION = true>
+class MemoryPool {
+        typedef ::Chunk<T, CHUNK_CAPACITY, NEED_DESTRUCTION> Chunk;
+        std::list<Chunk> chunks;
+        redshift::Mutex mutex;
+public:
+        MemoryPool() {
+                chunks.push_back(Chunk());
+        }
+
+        void* alloc() {
+                void *ret = 0;
+                if (chunks.back().full()) {
+                        redshift::ScopedLock lock(mutex);
+                        #pragma omp flush
+                        if (chunks.back().full()) {
+                                chunks.push_back(Chunk());
+                        }
+                }
+                ret = chunks.back().alloc();
+                return ret;
+        }
+};
+
+
 //#############################################################################
 // LazyQuadtreeImpl
 //#############################################################################
@@ -33,12 +82,14 @@ namespace redshift { namespace primitive {
 namespace lazyquadtree {
 
         class Node;
-        void clearNode (const Node *);
+        typedef ::MemoryPool<Node, 1024, true> NodePool;
+
+        /*void clearNode (const Node *);
         typedef
                 kallisto::cache::mru_cache_index<const lazyquadtree::Node*,
                                                  kallisto::cache::collect,
                                                  clearNode>
-                NodeIndex;
+                NodeIndex;*/
 
         struct Vertex {
                 real_t u,v;
@@ -137,29 +188,31 @@ namespace lazyquadtree {
 
 
         struct NodeStaticParameters {
-                NodeStaticParameters (const HeightFunction & fun, real_t lodFactor)
-                : fun(fun), lodFactor(lodFactor) {}
+                NodeStaticParameters (const HeightFunction & fun, real_t lodFactor, NodePool *pools, Mutex *mutexes)
+                : fun(fun), lodFactor(lodFactor), pools(pools), mutexes(mutexes) {}
 
                 const HeightFunction &fun;
                 const real_t lodFactor;
+                NodePool *pools;
+                Mutex *mutexes;
         };
         class Node {
                 mutable Node *parent;
                 mutable Node *children[4];
 
                 BoundingBoxF aabb;
-                mutable real_t min_h, max_h;
+                mutable float min_h, max_h;
 
                 Vector *vertices;
 
-                real_t center_x, center_z;
-                real_t diagonal;
+                float center_x, center_z;
+                float diagonal;
 
                 PointF cameraPosition; // TODO should be a reference or shared_ptr<>
                 //mutable Mutex mute[4];
-                mutable Mutex mute;
+                //static Mutex mute[4];
 
-                mutable unsigned int lastUsedInScanline;
+                //mutable unsigned int lastUsedInScanline;
 
                 struct {
                         bool isLeaf:1;
@@ -170,8 +223,6 @@ namespace lazyquadtree {
                 };
 
                 const NodeStaticParameters &staticParameters;
-
-
 
                 real_t fun (real_t u, real_t v) const {
                         return staticParameters.fun (u, v);
@@ -197,9 +248,6 @@ namespace lazyquadtree {
 
                 void create_child (int index) const {
 
-                        ScopedLock sl (mute);
-                        #pragma omp flush
-
                         const real_t left  = aabb.getMinimumX();
                         const real_t right = aabb.getMaximumX();
                         const real_t front = aabb.getMinimumZ();
@@ -207,57 +255,39 @@ namespace lazyquadtree {
                         const real_t bottom= aabb.getMinimumY();
                         const real_t top   = aabb.getMaximumY();
 
-                        if (children[index])
-                                return;
                         Node *tmp;
+
+                        BoundingBoxF box;
                         switch (index) {
-                        case 0:
-                                tmp = new Node (
-                                        BoundingBoxF(
-                                         PointF(left, bottom, front),
-                                         PointF(center_x, top, center_z)
-                                        ),
-                                        maxRecursion-1,
-                                        const_cast<Node*>(this),
-                                        staticParameters
-                                );
+                        case 0: box = BoundingBoxF(PointF(left, bottom, front),
+                                                   PointF(center_x, top, center_z));
                                 break;
-                        case 1:
-                                tmp = new Node (
-                                        BoundingBoxF(
-                                                PointF(center_x, bottom, front),
-                                                PointF(right, top, center_z)
-                                        ),
-                                        maxRecursion-1,
-                                        const_cast<Node*>(this),
-                                        staticParameters
-                                );
+                        case 1: box = BoundingBoxF(PointF(center_x, bottom, front),
+                                                   PointF(right, top, center_z));
                                 break;
-                        case 2:
-                                tmp = new Node (
-                                        BoundingBoxF(
-                                                PointF(left, bottom, center_z),
-                                                PointF(center_x, top, back)
-                                        ),
-                                        maxRecursion-1,
-                                        const_cast<Node*>(this),
-                                        staticParameters
-                                );
+                        case 2: box = BoundingBoxF(PointF(left, bottom, center_z),
+                                                   PointF(center_x, top, back));
                                 break;
-                        case 3:
-                                tmp = new Node (
-                                        BoundingBoxF(
-                                                PointF(center_x, bottom, center_z),
-                                                PointF(right, top, back)
-                                        ),
-                                        maxRecursion-1,
-                                        const_cast<Node*>(this),
-                                        staticParameters
-                                );
+                        case 3: box = BoundingBoxF(PointF(center_x, bottom, center_z),
+                                                   PointF(right, top, back));
                                 break;
                         };
-                        tmp->prepare(cameraPosition, lastUsedInScanline);
+
+                        ScopedLock sl (staticParameters.mutexes[index]);
+                        #pragma omp flush
+
+                        if (children[index])
+                                return;
+
+                        tmp = new (staticParameters.pools[index].alloc())
+                                  Node (box,
+                                        maxRecursion-1,
+                                        const_cast<Node*>(this),
+                                        staticParameters);
+                        tmp->prepare(cameraPosition);
+
                         children[index] = tmp;
+
                         #pragma omp flush
                         // TODO how to omp-flush children[i]?
                 }
@@ -367,7 +397,6 @@ namespace lazyquadtree {
                 : parent(parent_)
                 , aabb(box)
                 , vertices(0)
-                , lastUsedInScanline(0)
                 , hasExactBoundingBox(false)
                 , maxRecursion(maxRecursion_)
                 , vertexCount(0)
@@ -379,21 +408,18 @@ namespace lazyquadtree {
                 }
 
                 ~Node () {
-                        if (parent) {
+                        /*if (parent) {
                                 for (int i=0; i<4; ++i) {
                                         if (parent->children[i] == this)
                                                 parent->children[i] = 0;
                                 }
                         }
-                        /*if (nodeIndex.cached (this)) {
-                                nodeIndex.remove_index (this);
-                        }*/
                         for (int i=0; i<4; ++i) {
                                 if (children[i]) {
                                         children[i]->parent = 0;
-                                        delete children[i];
+                                        //delete children[i];
                                 }
-                        }
+                        }*/
                         delete [] vertices;
                 }
 
@@ -412,16 +438,12 @@ namespace lazyquadtree {
                         if (!scene.getCamera()->hasCommonCenter()) {
                                 std::cerr << "LazyQuadtreeImpl: Camera has no common center. Results undefined" << std::endl;
                         } else {
-                                prepare (vector_cast<PointF>(scene.getCamera()->getCommonCenter())
-                                        , scene.currentScanline()
-                                );
+                                prepare (vector_cast<PointF>(scene.getCamera()->getCommonCenter()));
                         }
-
-                        lastUsedInScanline = scene.currentScanline();
                 }
 
                 void prune (unsigned int currentScanline, const unsigned int depth=0) {
-                        for (int i=0; i<4; ++i) {
+                        /*for (int i=0; i<4; ++i) {
                                 if (children[i]) {
                                         const unsigned int diff =
                                                 currentScanline-children[i]->lastUsedInScanline;
@@ -432,7 +454,7 @@ namespace lazyquadtree {
                                                 children[i]->prune(currentScanline, depth+1);
                                         }
                                 }
-                        }
+                        }*/
                 }
 
                 bool isALeaf (real_t diagonal, real_t cx, real_t cz, PointF const &cameraPosition) {
@@ -447,10 +469,9 @@ namespace lazyquadtree {
                         }
 
                 }
-                void prepare (PointF const & cameraPosition, unsigned int currentScanline) {
+                void prepare (PointF const & cameraPosition) {
 
                         this->cameraPosition = cameraPosition;
-                        this->lastUsedInScanline = currentScanline;
 
                         // If we once re-use an existing quadtree, we should
                         // also save the original bounding box, as LOD's must be
@@ -501,7 +522,7 @@ namespace lazyquadtree {
                         }
 
                         for (int i=0; i<4; ++i) {
-                                if (children[i]) children[i]->prepare (cameraPosition, currentScanline);
+                                if (children[i]) children[i]->prepare (cameraPosition);
                         }
 
                 }
@@ -511,8 +532,6 @@ namespace lazyquadtree {
                         real_t minT, real_t maxT,
                         unsigned int currentScanline
                 ) const {
-
-                        lastUsedInScanline = currentScanline;
 
                         struct Triangle {
                                 Vertex &a, &b, &c;
@@ -612,8 +631,6 @@ namespace lazyquadtree {
                                         }
                                 }
                         }
-                        /*#pragma omp master
-                        if (parent) nodeIndex.load (this);*/
 
                         return dg;
                 }
@@ -621,7 +638,6 @@ namespace lazyquadtree {
 
                 friend void clearNode (const Node *);
         };
-
 
 
         void clearNode (const lazyquadtree::Node* p) {
@@ -652,8 +668,7 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , staticParameters(*fun.get(), lodFactor)
-        , nodeIndex(0)//(1024*13) * 4)
+        , staticParameters(*fun.get(), lodFactor, pools, mutexes)
         , primaryNode(new lazyquadtree::Node(
                 primaryBB,
                 maxRecursion,
@@ -737,8 +752,6 @@ public:
 
         void prune () {
                 primaryNode->prune (currentScanline);
-                //std::cout << nodeIndex.stride() << std::endl;
-                //nodeIndex.collect();
         }
 
 
@@ -754,10 +767,12 @@ private:
         BoundingBox primaryFixpBB;
 
         lazyquadtree::NodeStaticParameters staticParameters;
-        lazyquadtree::NodeIndex nodeIndex;
         lazyquadtree::Node *primaryNode;
         Color color;
         unsigned int currentScanline;
+
+        lazyquadtree::NodePool pools[4];
+        Mutex mutexes[4];
 
         BoundingBoxF initBB(const real_t size, const unsigned int numSamples) const {
                 real_t minh = constants::real_max , maxh = -constants::real_max;
@@ -864,13 +879,11 @@ void LazyQuadtree::prepare (const Scene &scene) {
 
 
 void LazyQuadtree::prune () {
-        impl->prune ();
 }
 
 
 
 void LazyQuadtree::setCurrentScanline (unsigned int s) {
-        impl->setCurrentScanline (s);
 }
 
 } }
