@@ -200,8 +200,12 @@ namespace lazyquadtree {
                 mutable Node *parent;
                 mutable Node *children[4];
 
-                BoundingBoxF aabb;
-                mutable float min_h, max_h;
+                //BoundingBoxF aabb;
+                //mutable float min_h, max_h;
+
+                float bbMinX, bbMaxX;
+                mutable float bbMinY, bbMaxY;
+                float bbMinZ, bbMaxZ;
 
                 Vector *vertices;
 
@@ -248,12 +252,12 @@ namespace lazyquadtree {
 
                 void create_child (int index) const {
 
-                        const real_t left  = aabb.getMinimumX();
-                        const real_t right = aabb.getMaximumX();
-                        const real_t front = aabb.getMinimumZ();
-                        const real_t back  = aabb.getMaximumZ();
-                        const real_t bottom= aabb.getMinimumY();
-                        const real_t top   = aabb.getMaximumY();
+                        const real_t left  = bbMinX;
+                        const real_t right = bbMaxX;
+                        const real_t front = bbMinZ;
+                        const real_t back  = bbMaxZ;
+                        const real_t bottom= bbMinY;
+                        const real_t top   = bbMaxY;
 
                         Node *tmp;
 
@@ -329,29 +333,35 @@ namespace lazyquadtree {
 
                 void initBoundingBox () {
                         //return;
-                        min_h = aabb.getMinimumY();
-                        max_h = aabb.getMaximumY();
+                        //bbMinY = aabb.getMinimumY();
+                        //bbMaxY = aabb.getMaximumY();
                         //diagonal = length (aabb.getMaximum()-aabb.getMinimum());
-                        diagonal = std::sqrt(aabb.getWidth()*aabb.getWidth()
-                                 + aabb.getDepth()*aabb.getDepth());
+                        const real_t X = bbMaxX - bbMinX;
+                        const real_t Z = bbMaxZ - bbMinZ;
+                        /*diagonal = std::sqrt(aabb.getWidth()*aabb.getWidth()
+                                 + aabb.getDepth()*aabb.getDepth());*/
+                        diagonal = std::sqrt(X*X + Z*Z);
                 }
 
                 void refineBoundingBox () {
                         if (isLeaf) {
-                                min_h = constants::real_max;
-                                max_h = -constants::real_max;
+                                bbMinY = constants::real_max;
+                                bbMaxY = -constants::real_max;
 
                                 for (int i=0; i<vertexCount; ++i) {
                                         const real_t h = vertices[i].y;
-                                        if (h < min_h) min_h = h;
-                                        if (h > max_h) max_h = h;
+                                        if (h < bbMinY) bbMinY = h;
+                                        if (h > bbMaxY) bbMaxY = h;
                                 }
 
                                 hasExactBoundingBox = true;
 
-                                aabb.setMinimumY(min_h);
-                                aabb.setMaximumY(max_h);
-                                diagonal = length (aabb.getMaximum()-aabb.getMinimum());
+                                //aabb.setMinimumY(bbMinY);
+                                //aabb.setMaximumY(bbMaxY);
+                                const real_t X = bbMaxX-bbMinX;
+                                const real_t Y = bbMaxY-bbMinY;
+                                const real_t Z = bbMaxZ-bbMinZ;
+                                diagonal = std::sqrt(X*X + Y*Y + Z*Z);
 
                                 // propagate to parent
                                 if (parent) parent->refineBoundingBox();
@@ -366,22 +376,25 @@ namespace lazyquadtree {
                                 }
 
 
-                                min_h = constants::real_max;
-                                max_h = -constants::real_max;
+                                bbMinY = constants::real_max;
+                                bbMaxY = -constants::real_max;
 
                                 for (int i=0; i<4; ++i) {
-                                        if (!children[i]) exit(0);
-                                        if (children[i]->min_h < min_h)
-                                                min_h = children[i]->min_h;
-                                        if (children[i]->max_h > max_h)
-                                                max_h = children[i]->max_h;
+                                        if (children[i]->bbMinY < bbMinY)
+                                                bbMinY = children[i]->bbMinY;
+                                        if (children[i]->bbMaxY > bbMaxY)
+                                                bbMaxY = children[i]->bbMaxY;
                                 }
 
                                 hasExactBoundingBox = true;
 
-                                aabb.setMinimumY(min_h);
-                                aabb.setMaximumY(max_h);
-                                diagonal = length (aabb.getMaximum()-aabb.getMinimum());
+                                //aabb.setMinimumY(bbMinY);
+                                //aabb.setMaximumY(bbMaxY);
+                                //diagonal = length (aabb.getMaximum()-aabb.getMinimum());
+                                const real_t X = bbMaxX-bbMinX;
+                                const real_t Y = bbMaxY-bbMinY;
+                                const real_t Z = bbMaxZ-bbMinZ;
+                                diagonal = std::sqrt(X*X + Y*Y + Z*Z);
 
                                 // propagate to parent
                                 if (parent) parent->refineBoundingBox();
@@ -395,7 +408,10 @@ namespace lazyquadtree {
                         NodeStaticParameters const &staticParameters
                 )
                 : parent(parent_)
-                , aabb(box)
+                //, aabb(box)
+                , bbMinX(box.getMinimumX()), bbMaxX(box.getMaximumX())
+                , bbMinY(box.getMinimumY()), bbMaxY(box.getMaximumY())
+                , bbMinZ(box.getMinimumZ()), bbMaxZ(box.getMaximumZ())
                 , vertices(0)
                 , hasExactBoundingBox(false)
                 , maxRecursion(maxRecursion_)
@@ -478,21 +494,23 @@ namespace lazyquadtree {
                         // recalculated
                         initBoundingBox();
 
-                        const real_t min_x = aabb.getMinimumX();
-                        const real_t max_x = aabb.getMaximumX();
+                        const real_t min_x = bbMinX;//aabb.getMinimumX();
+                        const real_t max_x = bbMaxX;//aabb.getMaximumX();
                         const real_t c_x   = (min_x + max_x) / 2;
-                        const real_t min_z = aabb.getMinimumZ();
-                        const real_t max_z = aabb.getMaximumZ();
+                        const real_t min_z = bbMinZ;//aabb.getMinimumZ();
+                        const real_t max_z = bbMaxZ;//aabb.getMaximumZ();
                         const real_t c_z   = (min_z + max_z) / 2;
+                        const real_t bbDepth = bbMaxZ-bbMinZ;
+                        const real_t bbWidth = bbMaxX-bbMinX;
                         center_x = c_x;
                         center_z = c_z;
 
                         isLeaf = (maxRecursion==0) || isALeaf (this->diagonal, center_x, center_z, cameraPosition);
 
-                        const int a = !isALeaf (this->diagonal, center_x, center_z+aabb.getDepth(), cameraPosition);
-                        const int b = !isALeaf (this->diagonal, center_x+aabb.getWidth(), center_z, cameraPosition);
-                        const int c = !isALeaf (this->diagonal, center_x, center_z-aabb.getDepth(), cameraPosition);
-                        const int d = !isALeaf (this->diagonal, center_x-aabb.getWidth(), center_z, cameraPosition);
+                        const int a = !isALeaf (this->diagonal, center_x, center_z+bbDepth, cameraPosition);
+                        const int b = !isALeaf (this->diagonal, center_x+bbWidth, center_z, cameraPosition);
+                        const int c = !isALeaf (this->diagonal, center_x, center_z-bbDepth, cameraPosition);
+                        const int d = !isALeaf (this->diagonal, center_x-bbWidth, center_z, cameraPosition);
 
 
                         // Upon re-using LazyQuadtree, deletion shall only happen when the state of isLeaf
@@ -533,16 +551,16 @@ namespace lazyquadtree {
                         unsigned int currentScanline
                 ) const {
 
-                        struct Triangle {
-                                Vertex &a, &b, &c;
-                        };
                         // We can assume minT and maxT to be a correct interval on the xz plane.
                         // But we got to check for vertical intersection now.
                         const real_t p_h = scalar_cast<real_t>(ray.position.y);
                         const real_t min_h = p_h + minT * ray.direction.y;
                         const real_t max_h = p_h + maxT * ray.direction.y;
-                        if (((min_h < this->min_h) & (max_h < this->min_h))
-                           |((min_h > this->max_h) & (max_h > this->max_h)))
+
+
+                        // BOTTLENECK when this->aabb.get...?
+                        if (((min_h < bbMinY) & (max_h < bbMinY))
+                           |((min_h > bbMaxY) & (max_h > bbMaxY)))
                                 return false;
 
                         if (isLeaf) {
@@ -551,7 +569,7 @@ namespace lazyquadtree {
                                 return intersectLeaf (ray);
                         }
 
-                        // Find out which one to traverse.
+                        // Find out which ones to traverse.
                         const bool d_right = ray.direction.x >= 0;
                         const bool d_up    = ray.direction.z >= 0;
                         const real_t d_x = (center_x - scalar_cast<real_t>(ray.position.x)) / ray.direction.x;
