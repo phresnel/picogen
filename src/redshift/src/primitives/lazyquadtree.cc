@@ -201,9 +201,6 @@ namespace lazyquadtree {
                 mutable Node *parent;
                 mutable Node *children[4];
 
-                //BoundingBoxF aabb;
-                //mutable float min_h, max_h;
-
                 float bbMinX, bbMaxX;
                 mutable float bbMinY, bbMaxY;
                 float bbMinZ, bbMaxZ;
@@ -212,14 +209,6 @@ namespace lazyquadtree {
 
                 float centerX() const { return 0.5f*bbMinX + 0.5f*bbMaxX; }
                 float centerZ() const { return 0.5f*bbMinZ + 0.5f*bbMaxZ; }
-                //float center_x, center_z;
-                float diagonal;
-
-                //PointF cameraPosition; // TODO should be a reference or shared_ptr<>
-                //mutable Mutex mute[4];
-                //static Mutex mute[4];
-
-                //mutable unsigned int lastUsedInScanline;
 
                 struct {
                         bool isLeaf:1;
@@ -255,12 +244,6 @@ namespace lazyquadtree {
 
                 void create_child (int index) const {
 
-                        const real_t left  = bbMinX;
-                        const real_t right = bbMaxX;
-                        const real_t front = bbMinZ;
-                        const real_t back  = bbMaxZ;
-                        const real_t bottom= bbMinY;
-                        const real_t top   = bbMaxY;
                         const real_t center_x = centerX();
                         const real_t center_z = centerZ();
 
@@ -268,17 +251,17 @@ namespace lazyquadtree {
 
                         BoundingBoxF box;
                         switch (index) {
-                        case 0: box = BoundingBoxF(PointF(left, bottom, front),
-                                                   PointF(center_x, top, center_z));
+                        case 0: box = BoundingBoxF(PointF(bbMinX,   bbMinY, bbMinZ),
+                                                   PointF(center_x, bbMaxY, center_z));
                                 break;
-                        case 1: box = BoundingBoxF(PointF(center_x, bottom, front),
-                                                   PointF(right, top, center_z));
+                        case 1: box = BoundingBoxF(PointF(center_x, bbMinY, bbMinZ),
+                                                   PointF(bbMaxX,   bbMaxY, center_z));
                                 break;
-                        case 2: box = BoundingBoxF(PointF(left, bottom, center_z),
-                                                   PointF(center_x, top, back));
+                        case 2: box = BoundingBoxF(PointF(bbMinX,   bbMinY, center_z),
+                                                   PointF(center_x, bbMaxY, bbMaxZ));
                                 break;
-                        case 3: box = BoundingBoxF(PointF(center_x, bottom, center_z),
-                                                   PointF(right, top, back));
+                        case 3: box = BoundingBoxF(PointF(center_x, bbMinY, center_z),
+                                                   PointF(bbMaxX,   bbMaxY, bbMaxZ));
                                 break;
                         };
 
@@ -336,18 +319,6 @@ namespace lazyquadtree {
                         return false;
                 }
 
-                void initBoundingBox () {
-                        //return;
-                        //bbMinY = aabb.getMinimumY();
-                        //bbMaxY = aabb.getMaximumY();
-                        //diagonal = length (aabb.getMaximum()-aabb.getMinimum());
-                        const real_t X = bbMaxX - bbMinX;
-                        const real_t Z = bbMaxZ - bbMinZ;
-                        /*diagonal = std::sqrt(aabb.getWidth()*aabb.getWidth()
-                                 + aabb.getDepth()*aabb.getDepth());*/
-                        diagonal = std::sqrt(X*X + Z*Z);
-                }
-
                 void refineBoundingBox () {
                         if (isLeaf) {
                                 bbMinY = constants::real_max;
@@ -360,13 +331,6 @@ namespace lazyquadtree {
                                 }
 
                                 hasExactBoundingBox = true;
-
-                                //aabb.setMinimumY(bbMinY);
-                                //aabb.setMaximumY(bbMaxY);
-                                const real_t X = bbMaxX-bbMinX;
-                                const real_t Y = bbMaxY-bbMinY;
-                                const real_t Z = bbMaxZ-bbMinZ;
-                                diagonal = std::sqrt(X*X + Y*Y + Z*Z);
 
                                 // propagate to parent
                                 if (parent) parent->refineBoundingBox();
@@ -393,14 +357,6 @@ namespace lazyquadtree {
 
                                 hasExactBoundingBox = true;
 
-                                //aabb.setMinimumY(bbMinY);
-                                //aabb.setMaximumY(bbMaxY);
-                                //diagonal = length (aabb.getMaximum()-aabb.getMinimum());
-                                const real_t X = bbMaxX-bbMinX;
-                                const real_t Y = bbMaxY-bbMinY;
-                                const real_t Z = bbMaxZ-bbMinZ;
-                                diagonal = std::sqrt(X*X + Y*Y + Z*Z);
-
                                 // propagate to parent
                                 if (parent) parent->refineBoundingBox();
                         }
@@ -413,7 +369,6 @@ namespace lazyquadtree {
                         NodeStaticParameters const &staticParameters
                 )
                 : parent(parent_)
-                //, aabb(box)
                 , bbMinX(box.getMinimumX()), bbMaxX(box.getMaximumX())
                 , bbMinY(box.getMinimumY()), bbMaxY(box.getMaximumY())
                 , bbMinZ(box.getMinimumZ()), bbMaxZ(box.getMaximumZ())
@@ -444,17 +399,6 @@ namespace lazyquadtree {
                         delete [] vertices;
                 }
 
-
-                /*void killChild (const Node *child) {
-                        for (int i=0; i<4; ++i) {
-                                if (child == children[i]) {
-                                        delete children[i];
-                                        children[i] = 0;
-                                        break;
-                                }
-                        }
-                }*/
-
                 void prepare (Scene const &scene) {
                         if (!scene.getCamera()->hasCommonCenter()) {
                                 std::cerr << "LazyQuadtreeImpl: Camera has no common center. Results undefined" << std::endl;
@@ -464,26 +408,23 @@ namespace lazyquadtree {
                 }
 
                 void prune (unsigned int currentScanline, const unsigned int depth=0) {
-                        /*for (int i=0; i<4; ++i) {
-                                if (children[i]) {
-                                        const unsigned int diff =
-                                                currentScanline-children[i]->lastUsedInScanline;
-                                        if (diff >= 10) {
-                                                delete children[i];
-                                                children[i] = 0;
-                                        } else if (depth < 7) {
-                                                children[i]->prune(currentScanline, depth+1);
-                                        }
-                                }
-                        }*/
                 }
 
-                bool isALeaf (real_t diagonal, real_t cx, real_t cz, PointF const &cameraPosition) {
+                bool isALeaf (real_t diagonal, real_t cx, real_t cz) {
                         // Using maxRecursion and some reasoning about the camera position
                         // in relation to (cx,cz), we should be able to take the case of
                         // maxRecursion for neighbour nodes into account.
-                        const real_t d = (length(PointF(cx,0,cz)-cameraPosition));
-                        if (((diagonal/(1+d))<staticParameters.lodFactor)) {
+                        //const real_t d = (length(PointF(cx,0,cz)-staticParameters.cameraPosition));
+
+                        const real_t
+                                x  = cx - staticParameters.cameraPosition.x,
+                                z  = cz - staticParameters.cameraPosition.z,
+                                ds = x*x
+                                   + staticParameters.cameraPosition.y*staticParameters.cameraPosition.y
+                                   + z*z,
+                                d = std::sqrt(ds)
+                        ;
+                        if ((diagonal/(1+d)) < staticParameters.lodFactor) {
                                 return true;
                         } else {
                                 return false;
@@ -496,23 +437,22 @@ namespace lazyquadtree {
                         // If we once re-use an existing quadtree, we should
                         // also save the original bounding box, as LOD's must be
                         // recalculated
-                        initBoundingBox();
 
-                        const real_t min_x = bbMinX;//aabb.getMinimumX();
-                        const real_t max_x = bbMaxX;//aabb.getMaximumX();
-                        const real_t c_x   = (min_x + max_x) / 2;
-                        const real_t min_z = bbMinZ;//aabb.getMinimumZ();
-                        const real_t max_z = bbMaxZ;//aabb.getMaximumZ();
-                        const real_t c_z   = (min_z + max_z) / 2;
-                        const real_t bbDepth = bbMaxZ-bbMinZ;
-                        const real_t bbWidth = bbMaxX-bbMinX;
+                        const real_t
+                                c_x   = centerX(),
+                                c_z   = centerZ(),
+                                bbDepth = bbMaxZ-bbMinZ,
+                                bbWidth = bbMaxX-bbMinX,
+                                diagonal = std::sqrt(bbWidth*bbWidth + bbDepth*bbDepth)
+                        ;
 
-                        isLeaf = (maxRecursion==0) || isALeaf (this->diagonal, c_x, c_z, cameraPosition);
+                        isLeaf = (maxRecursion==0) || isALeaf (diagonal, c_x, c_z);
 
-                        const int a = !isALeaf (this->diagonal, c_x,         c_z+bbDepth, cameraPosition);
-                        const int b = !isALeaf (this->diagonal, c_x+bbWidth, c_z,         cameraPosition);
-                        const int c = !isALeaf (this->diagonal, c_x,         c_z-bbDepth, cameraPosition);
-                        const int d = !isALeaf (this->diagonal, c_x-bbWidth, c_z,         cameraPosition);
+                        // remove diagonal entirely from class-def?
+                        const int a = !isALeaf (diagonal, c_x,         c_z+bbDepth);
+                        const int b = !isALeaf (diagonal, c_x+bbWidth, c_z        );
+                        const int c = !isALeaf (diagonal, c_x,         c_z-bbDepth);
+                        const int d = !isALeaf (diagonal, c_x-bbWidth, c_z        );
 
 
                         // Upon re-using LazyQuadtree, deletion shall only happen when the state of isLeaf
@@ -525,14 +465,14 @@ namespace lazyquadtree {
                                 vertices = new Vector[vertexCount];
                                 vertices[i++] = Vector (c_x,   fun(c_x,     c_z),  c_z); // 0
 
-                                vertices[i++] = Vector (min_x, fun(min_x, max_z), max_z);  // 1
-                                if (a) vertices[i++] = Vector (c_x, fun(c_x, max_z), max_z);
-                                vertices[i++] = Vector (max_x, fun(max_x, max_z), max_z); // 2
-                                if (b) vertices[i++] = Vector (max_x, fun(max_x, c_z), c_z);
-                                vertices[i++] = Vector (max_x, fun(max_x, min_z), min_z); // 3
-                                if (c) vertices[i++] = Vector (c_x, fun(c_x, min_z), min_z);
-                                vertices[i++] = Vector (min_x, fun(min_x, min_z), min_z); // 4
-                                if (d) vertices[i++] = Vector (min_x, fun(min_x, c_z), c_z);
+                                vertices[i++] = Vector (bbMinX, fun(bbMinX, bbMaxZ), bbMaxZ);  // 1
+                                if (a) vertices[i++] = Vector (c_x, fun(c_x, bbMaxZ), bbMaxZ);
+                                vertices[i++] = Vector (bbMaxX, fun(bbMaxX, bbMaxZ), bbMaxZ); // 2
+                                if (b) vertices[i++] = Vector (bbMaxX, fun(bbMaxX, c_z), c_z);
+                                vertices[i++] = Vector (bbMaxX, fun(bbMaxX, bbMinZ), bbMinZ); // 3
+                                if (c) vertices[i++] = Vector (c_x, fun(c_x, bbMinZ), bbMinZ);
+                                vertices[i++] = Vector (bbMinX, fun(bbMinX, bbMinZ), bbMinZ); // 4
+                                if (d) vertices[i++] = Vector (bbMinX, fun(bbMinX, c_z), c_z);
                                 vertices[i++] = vertices[1]; // 5
                         }
 
