@@ -188,33 +188,57 @@ namespace lazyquadtree {
 
 
         struct NodeStaticParameters {
-                NodeStaticParameters (const HeightFunction & fun, real_t lodFactor, NodePool *pools, Mutex *mutexes)
-                : fun(fun), lodFactor(lodFactor), pools(pools), mutexes(mutexes) {}
+                NodeStaticParameters (
+                        const HeightFunction & fun, real_t lodFactor, NodePool *pools, Mutex *mutexes,
+                        real_t rootWidth, unsigned int maxRecursion
+                )
+                : fun(fun), lodFactor(lodFactor), pools(pools), mutexes(mutexes) {
+                        real_t width = rootWidth;
+                        const size_t s = maxRecursion+1;
+                        widths = new real_t[s];
+                        for (unsigned int i=0; i<s; ++i, width/=2) {
+                                widths[(s-1)-i] = width;
+                        }
+                        for (unsigned int i=0; i<s; ++i) {
+                                std::cout << i << ":" << widths[(s-1)-i] << std::endl;
+                        }
+                }
+
+                ~NodeStaticParameters() {
+                        delete [] widths;
+                }
 
                 const HeightFunction &fun;
                 const real_t lodFactor;
                 NodePool *pools;
                 Mutex *mutexes;
                 PointF cameraPosition;
+
+                real_t *widths;
         };
+
+
+
         class Node {
                 mutable Node *parent;
                 mutable Node *children[4];
 
-                float bbMinX_, bbMaxX_;
+                float bbMinX_;
                 mutable float bbMinY, bbMaxY;
-                float bbMinZ_, bbMaxZ_;
+                float bbMinZ_;
 
                 Vector *vertices;
 
+                const NodeStaticParameters &staticParameters;
+
                 float bbMinX() const { return bbMinX_; }
-                float bbMaxX() const { return bbMaxX_; }
+                float bbMaxX() const { return bbMinX() + staticParameters.widths[maxRecursion]; }
                 float bbMinZ() const { return bbMinZ_; }
-                float bbMaxZ() const { return bbMaxZ_; }
+                float bbMaxZ() const { return bbMinZ() + staticParameters.widths[maxRecursion]; }
                 float centerX() const { return 0.5f*bbMinX() + 0.5f*bbMaxX(); }
                 float centerZ() const { return 0.5f*bbMinZ() + 0.5f*bbMaxZ(); }
-                float bbWidth() const { return bbMaxX()-bbMinX(); }
-                float bbDepth() const { return bbMaxZ()-bbMinZ(); }
+                float bbWidth() const { return staticParameters.widths[maxRecursion]; }
+                float bbDepth() const { return staticParameters.widths[maxRecursion]; }
 
                 struct {
                         bool isLeaf:1;
@@ -224,7 +248,6 @@ namespace lazyquadtree {
                         unsigned char vertexCount : 4;
                 };
 
-                const NodeStaticParameters &staticParameters;
 
                 real_t fun (real_t u, real_t v) const {
                         return staticParameters.fun (u, v);
@@ -380,9 +403,9 @@ namespace lazyquadtree {
                         NodeStaticParameters const &staticParameters
                 )
                 : parent(parent_)
-                , bbMinX_(box.getMinimumX()), bbMaxX_(box.getMaximumX())
+                , bbMinX_(box.getMinimumX())//, bbMaxX_(box.getMaximumX())
                 , bbMinY(box.getMinimumY()), bbMaxY(box.getMaximumY())
-                , bbMinZ_(box.getMinimumZ()), bbMaxZ_(box.getMaximumZ())
+                , bbMinZ_(box.getMinimumZ())//, bbMaxZ_(box.getMaximumZ())
                 , vertices(0)
                 , hasExactBoundingBox(false)
                 , maxRecursion(maxRecursion_)
@@ -392,6 +415,7 @@ namespace lazyquadtree {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
                         }
+                        //std::cout << "[" << (int)maxRecursion << "] " << bbMinX() << ":" << bbMaxX() << std::endl;
                 }
 
                 ~Node () {
@@ -645,7 +669,7 @@ public:
         , primaryFixpBB(
                 vector_cast<Point>(primaryBB.getMinimum()),
                 vector_cast<Point>(primaryBB.getMaximum()))
-        , staticParameters(*fun.get(), lodFactor, pools, mutexes)
+        , staticParameters(*fun.get(), lodFactor, pools, mutexes, size, maxRecursion)
         , primaryNode(new lazyquadtree::Node(
                 primaryBB,
                 maxRecursion,
