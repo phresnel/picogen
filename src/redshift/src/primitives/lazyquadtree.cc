@@ -201,14 +201,20 @@ namespace lazyquadtree {
                 mutable Node *parent;
                 mutable Node *children[4];
 
-                float bbMinX, bbMaxX;
+                float bbMinX_, bbMaxX_;
                 mutable float bbMinY, bbMaxY;
-                float bbMinZ, bbMaxZ;
+                float bbMinZ_, bbMaxZ_;
 
                 Vector *vertices;
 
-                float centerX() const { return 0.5f*bbMinX + 0.5f*bbMaxX; }
-                float centerZ() const { return 0.5f*bbMinZ + 0.5f*bbMaxZ; }
+                float bbMinX() const { return bbMinX_; }
+                float bbMaxX() const { return bbMaxX_; }
+                float bbMinZ() const { return bbMinZ_; }
+                float bbMaxZ() const { return bbMaxZ_; }
+                float centerX() const { return 0.5f*bbMinX() + 0.5f*bbMaxX(); }
+                float centerZ() const { return 0.5f*bbMinZ() + 0.5f*bbMaxZ(); }
+                float bbWidth() const { return bbMaxX()-bbMinX(); }
+                float bbDepth() const { return bbMaxZ()-bbMinZ(); }
 
                 struct {
                         bool isLeaf:1;
@@ -244,6 +250,11 @@ namespace lazyquadtree {
 
                 void create_child (int index) const {
 
+                        const real_t
+                                bbMinX = this->bbMinX(),
+                                bbMinZ = this->bbMinZ(),
+                                bbMaxX = this->bbMaxX(),
+                                bbMaxZ = this->bbMaxZ();
                         const real_t center_x = centerX();
                         const real_t center_z = centerZ();
 
@@ -369,9 +380,9 @@ namespace lazyquadtree {
                         NodeStaticParameters const &staticParameters
                 )
                 : parent(parent_)
-                , bbMinX(box.getMinimumX()), bbMaxX(box.getMaximumX())
+                , bbMinX_(box.getMinimumX()), bbMaxX_(box.getMaximumX())
                 , bbMinY(box.getMinimumY()), bbMaxY(box.getMaximumY())
-                , bbMinZ(box.getMinimumZ()), bbMaxZ(box.getMaximumZ())
+                , bbMinZ_(box.getMinimumZ()), bbMaxZ_(box.getMaximumZ())
                 , vertices(0)
                 , hasExactBoundingBox(false)
                 , maxRecursion(maxRecursion_)
@@ -441,8 +452,8 @@ namespace lazyquadtree {
                         const real_t
                                 c_x   = centerX(),
                                 c_z   = centerZ(),
-                                bbDepth = bbMaxZ-bbMinZ,
-                                bbWidth = bbMaxX-bbMinX,
+                                bbDepth = this->bbDepth(),
+                                bbWidth = this->bbWidth(),
                                 diagonal = std::sqrt(bbWidth*bbWidth + bbDepth*bbDepth)
                         ;
 
@@ -460,6 +471,12 @@ namespace lazyquadtree {
                         delete [] vertices;
                         vertexCount = 0;
                         if (isLeaf) {
+                                const real_t
+                                        bbMinX = this->bbMinX(),
+                                        bbMinZ = this->bbMinZ(),
+                                        bbMaxX = this->bbMaxX(),
+                                        bbMaxZ = this->bbMaxZ();
+
                                 vertexCount = 6 + a+ b+ c+ d;
                                 int i=0;
                                 vertices = new Vector[vertexCount];
