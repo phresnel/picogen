@@ -195,6 +195,7 @@ namespace lazyquadtree {
                 const real_t lodFactor;
                 NodePool *pools;
                 Mutex *mutexes;
+                PointF cameraPosition;
         };
         class Node {
                 mutable Node *parent;
@@ -209,10 +210,12 @@ namespace lazyquadtree {
 
                 Vector *vertices;
 
-                float center_x, center_z;
+                float centerX() const { return 0.5f*bbMinX + 0.5f*bbMaxX; }
+                float centerZ() const { return 0.5f*bbMinZ + 0.5f*bbMaxZ; }
+                //float center_x, center_z;
                 float diagonal;
 
-                PointF cameraPosition; // TODO should be a reference or shared_ptr<>
+                //PointF cameraPosition; // TODO should be a reference or shared_ptr<>
                 //mutable Mutex mute[4];
                 //static Mutex mute[4];
 
@@ -258,6 +261,8 @@ namespace lazyquadtree {
                         const real_t back  = bbMaxZ;
                         const real_t bottom= bbMinY;
                         const real_t top   = bbMaxY;
+                        const real_t center_x = centerX();
+                        const real_t center_z = centerZ();
 
                         Node *tmp;
 
@@ -288,7 +293,7 @@ namespace lazyquadtree {
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
                                         staticParameters);
-                        tmp->prepare(cameraPosition);
+                        tmp->prepare();
 
                         children[index] = tmp;
 
@@ -454,7 +459,7 @@ namespace lazyquadtree {
                         if (!scene.getCamera()->hasCommonCenter()) {
                                 std::cerr << "LazyQuadtreeImpl: Camera has no common center. Results undefined" << std::endl;
                         } else {
-                                prepare (vector_cast<PointF>(scene.getCamera()->getCommonCenter()));
+                                prepare ();
                         }
                 }
 
@@ -485,10 +490,9 @@ namespace lazyquadtree {
                         }
 
                 }
-                void prepare (PointF const & cameraPosition) {
+                void prepare () {
 
-                        this->cameraPosition = cameraPosition;
-
+                        const PointF &cameraPosition = staticParameters.cameraPosition;
                         // If we once re-use an existing quadtree, we should
                         // also save the original bounding box, as LOD's must be
                         // recalculated
@@ -502,15 +506,13 @@ namespace lazyquadtree {
                         const real_t c_z   = (min_z + max_z) / 2;
                         const real_t bbDepth = bbMaxZ-bbMinZ;
                         const real_t bbWidth = bbMaxX-bbMinX;
-                        center_x = c_x;
-                        center_z = c_z;
 
-                        isLeaf = (maxRecursion==0) || isALeaf (this->diagonal, center_x, center_z, cameraPosition);
+                        isLeaf = (maxRecursion==0) || isALeaf (this->diagonal, c_x, c_z, cameraPosition);
 
-                        const int a = !isALeaf (this->diagonal, center_x, center_z+bbDepth, cameraPosition);
-                        const int b = !isALeaf (this->diagonal, center_x+bbWidth, center_z, cameraPosition);
-                        const int c = !isALeaf (this->diagonal, center_x, center_z-bbDepth, cameraPosition);
-                        const int d = !isALeaf (this->diagonal, center_x-bbWidth, center_z, cameraPosition);
+                        const int a = !isALeaf (this->diagonal, c_x,         c_z+bbDepth, cameraPosition);
+                        const int b = !isALeaf (this->diagonal, c_x+bbWidth, c_z,         cameraPosition);
+                        const int c = !isALeaf (this->diagonal, c_x,         c_z-bbDepth, cameraPosition);
+                        const int d = !isALeaf (this->diagonal, c_x-bbWidth, c_z,         cameraPosition);
 
 
                         // Upon re-using LazyQuadtree, deletion shall only happen when the state of isLeaf
@@ -540,7 +542,7 @@ namespace lazyquadtree {
                         }
 
                         for (int i=0; i<4; ++i) {
-                                if (children[i]) children[i]->prepare (cameraPosition);
+                                if (children[i]) children[i]->prepare ();
                         }
 
                 }
@@ -572,8 +574,8 @@ namespace lazyquadtree {
                         // Find out which ones to traverse.
                         const bool d_right = ray.direction.x >= 0;
                         const bool d_up    = ray.direction.z >= 0;
-                        const real_t d_x = (center_x - scalar_cast<real_t>(ray.position.x)) / ray.direction.x;
-                        const real_t d_z = (center_z - scalar_cast<real_t>(ray.position.z)) / ray.direction.z;
+                        const real_t d_x = (centerX() - scalar_cast<real_t>(ray.position.x)) / ray.direction.x;
+                        const real_t d_z = (centerZ() - scalar_cast<real_t>(ray.position.z)) / ray.direction.z;
                         const bool upper_three = d_x > d_z;
 
                         // +----+----+
@@ -708,7 +710,9 @@ public:
 
 
         void prepare (const Scene &scene) {
-                primaryNode->prepare (scene);
+                staticParameters.cameraPosition =
+                        vector_cast<PointF>(scene.getCamera()->getCommonCenter());
+                primaryNode->prepare ();
         }
 
 
