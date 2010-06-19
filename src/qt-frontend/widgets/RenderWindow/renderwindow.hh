@@ -80,6 +80,7 @@ private:
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
         QImage image;
         double updateLatency;
+        redshift::StopWatch runtimeWatch;
 };
 
 

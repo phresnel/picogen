@@ -310,7 +310,8 @@ RenderWindow::RenderWindow(
     QDialog(parent),
     ui(new Ui::RenderWindow),
     scenefile(scenefile),
-    updateLatency(updateLatency)
+    updateLatency(updateLatency),
+    runtimeWatch()
 {
         ui->setupUi(this);
 
@@ -335,6 +336,7 @@ RenderWindow::RenderWindow(
         );
 
         scenefile.reset();
+        runtimeWatch.restart();
         impl->start();
 }
 
@@ -360,13 +362,30 @@ void RenderWindow::updateImage (QImage const &image, double percentage) {
                 ui->pix->setText(impl->errorMessage());
                 ui->saveImageButton->setEnabled(false);
         } else {
-                this->image = image; // TODO: profile that assignment
+                // Compose time string.
+                double minutes = runtimeWatch() / 60;
+                int hours = 0;
+                while (minutes >= 60) {
+                        ++hours;
+                        minutes -= 60;
+                }
+                QString timeS = "";
+                if (hours>0)
+                        timeS += QString::number(hours) + "h ";
+                timeS += QString::number((int)minutes) + "min ";
+                timeS += QString::number((int)(60*(minutes-(int)minutes))) + "sec";
+
+
+                // Set window title.
                 if (percentage>=1) {
-                        setWindowTitle("Done (image not saved).");
+                        setWindowTitle(timeS + " / " + "Done (image not saved).");
                 } else {
-                        setWindowTitle(QString::number(percentage*100, 'f', 3) + "%");
+                        setWindowTitle(timeS + " / " + QString::number(percentage*100, 'f', 3) + "%");
                 }
 
+
+                // Set image.
+                this->image = image; // TODO: profile that assignment
                 ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
                         ui->pix->size(),
                         Qt::KeepAspectRatio,
