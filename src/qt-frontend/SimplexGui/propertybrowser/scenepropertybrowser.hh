@@ -53,6 +53,7 @@ class BackgroundsPropertyBrowser;
 // Include.
 #include "redshift/include/smart_ptr.hh"
 #include <QObject>
+#include <QList>
 
 
 
@@ -60,12 +61,16 @@ class BackgroundsPropertyBrowser;
 class ScenePropertyBrowser : public QObject {
         Q_OBJECT
 public:
+        enum Filter { Expert, Simple, FocusOnQuality };
+
         ScenePropertyBrowser(QWidget *ownerWidget,
                         QMdiArea *displayArea,
                         QtTreePropertyBrowser *root,
                         QtVariantPropertyManager *codeEditManager
                         );
         ~ScenePropertyBrowser();
+
+        void filter(Filter filter);
 
         void setDefaultScene();
         void loadScene (redshift::scenefile::Scene const &scene);
@@ -110,6 +115,10 @@ private:
         QMdiArea *displayArea;
         QtTreePropertyBrowser *root;
         QtVariantPropertyManager *codeEditManager;
+
+        void filter(Filter filter,
+                    QString const & path,
+                    const QList<QtBrowserItem*> &items);
 
         ObjectPropertyBrowser *objectPropertyBrowser;
         VolumePropertyBrowser *volumePropertyBrowser;

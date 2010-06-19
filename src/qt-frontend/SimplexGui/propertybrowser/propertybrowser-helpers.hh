@@ -88,5 +88,6 @@ bool isLast(QtProperty *root, QtBrowserItem* node);
 void moveUp(QtTreePropertyBrowser *browser, QtProperty *root, QtBrowserItem* node);
 void moveDown(QtTreePropertyBrowser *browser, QtProperty *root, QtBrowserItem* node);
 
+//QtBrowserItem* toBrowserItem (QtProperty *);
 
 #endif // PROPERTYBROWSERHELPERS_HH

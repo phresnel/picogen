@@ -78,6 +78,10 @@ private:
 
         QMenu settingsContextMenu, objectsMenu, volumesMenu;
 private slots:
+        void on_focusQualitySettingsButton_clicked();
+        void on_setSimpleTreeFilterButton_clicked();
+        void on_setExpertTreeFilterButton_clicked();
+
         void on_deleteButton_clicked();
         void on_actionShow_PicoHelp_triggered(bool);
         void on_moveDownButton_clicked();

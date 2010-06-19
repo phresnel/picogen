@@ -47,6 +47,7 @@ const char *str_new_scene = "<new scene>";
 
 
 
+
 // TODO: this should be in a header
 ColorPickerColor toColorPickerColor (redshift::scenefile::Color const &c) {
         using redshift::scenefile::Color;
@@ -654,7 +655,6 @@ void MainWindow::on_actionLoad_triggered() {
         ) {
                 return;
         }
-
         // I find the OS' own file dialog to be somewhat disturbing
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::AnyFile);
@@ -1024,3 +1024,13 @@ void MainWindow::on_moveDownButton_clicked() {
 }
 
 
+
+void MainWindow::on_setExpertTreeFilterButton_clicked() {
+        propertyBrowser->filter(ScenePropertyBrowser::Expert);
+}
+void MainWindow::on_setSimpleTreeFilterButton_clicked() {
+        propertyBrowser->filter(ScenePropertyBrowser::Simple);
+}
+void MainWindow::on_focusQualitySettingsButton_clicked() {
+        propertyBrowser->filter(ScenePropertyBrowser::FocusOnQuality);
+}

@@ -47,6 +47,7 @@ class ColorPickerColor;
 
 #include <QObject>
 #include <QList>
+#include "scenepropertybrowser.hh"
 
 
 

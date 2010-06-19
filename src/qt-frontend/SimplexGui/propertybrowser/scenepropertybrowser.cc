@@ -25,6 +25,7 @@
 #include <QWidget>
 #include <QVariant>
 #include <QMessageBox>
+#include <QRegExp>
 
 // PropertyBrowser.
 #include <QtProperty>
@@ -460,17 +461,11 @@ QStringList ScenePropertyBrowser::cameraNames() const {
 
 
 
-/*void ScenePropertyBrowser::updateUi_() {
-        if (!signalsBlocked())
-                emit updateUi();
-}*/
-
-
-
 void ScenePropertyBrowser::sceneChanged_() {
         if (!signalsBlocked())
                 emit sceneChanged();
 }
+
 
 
 void ScenePropertyBrowser::resyncCameraConfig_() {
@@ -479,8 +474,55 @@ void ScenePropertyBrowser::resyncCameraConfig_() {
 }
 
 
+
 void ScenePropertyBrowser::resyncRenderSettingConfig_() {
         if (!signalsBlocked())
                 emit resyncRenderSettingConfig();
 }
 
+
+
+void ScenePropertyBrowser::filter(ScenePropertyBrowser::Filter filter) {
+        this->filter(filter, "/", root->topLevelItems());
+}
+
+
+
+void ScenePropertyBrowser::filter(
+        ScenePropertyBrowser::Filter filter,
+        QString const &parent_path,
+        const QList<QtBrowserItem*> &items
+) {
+        // TODO: could be unhardcoded
+        QList<QRegExp> excludeFilters, includeFilters;
+        switch (filter) {
+        case Expert:
+                break;
+        case Simple:
+                excludeFilters.push_back(QRegExp("/render-settings/.*/(min-y|max-y|seed)", Qt::CaseInsensitive, QRegExp::RegExp));
+                excludeFilters.push_back(QRegExp("/render-settings/.*/volume-integrator/(step-size|cutoff-distance)", Qt::CaseInsensitive, QRegExp::RegExp));
+                excludeFilters.push_back(QRegExp("/render-settings/.*/surface-integrator/(ambient-samples)", Qt::CaseInsensitive, QRegExp::RegExp));
+                break;
+        case FocusOnQuality:
+                excludeFilters.push_back(QRegExp(".*", Qt::CaseInsensitive, QRegExp::RegExp));
+                //includeFilters
+                break;
+        };
+
+        foreach(QtBrowserItem *item, items) {
+                const QtProperty *property = item->property();
+                const QString path = parent_path
+                                   + property->propertyName() + "/";
+                this->filter(filter,
+                             path,
+                             item->children());
+
+                root->setItemVisible(item, true);
+                foreach (QRegExp rx, excludeFilters) {
+                        if (rx.indexIn(path)>=0) {
+                                root->setItemVisible(item, false);
+                                break;
+                        }
+                }
+        }
+}
