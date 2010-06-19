@@ -57,7 +57,7 @@ class RenderWindow : public QDialog {
 public:
         RenderWindow(redshift::shared_ptr<redshift::scenefile::Scene>,
                      int renderSettings, int camera,
-                     QWidget* parent=0);
+                     QWidget* parent=0, double updateLatency=1.);
         ~RenderWindow();
 
         static void RenderProcess (QString pathToSource,
@@ -70,7 +70,7 @@ protected:
 private slots:
         void on_pauseButton_clicked(bool checked);
         void on_saveImageButton_clicked();
-        void updateImage (QImage image, double percentage);
+        void updateImage (QImage const &image, double percentage);
 
 private:
         Ui::RenderWindow *ui;
@@ -79,6 +79,7 @@ private:
 
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
         QImage image;
+        double updateLatency;
 };
 
 
@@ -106,7 +107,7 @@ class RenderWindowImpl
         Q_OBJECT
 public:
         RenderWindowImpl (redshift::shared_ptr<redshift::scenefile::Scene>,
-                          int renderSettings, int camera);
+                          int renderSettings, int camera, double latency);
         virtual ~RenderWindowImpl ();
 
         void setUserWantsToQuit (bool) ;
@@ -133,7 +134,7 @@ public:
 
 signals:
         // any percentage >= 1. is assumed to mean 100%
-        void updateImage (QImage image, double percentage);
+        void updateImage (QImage const &image, double percentage);
 
 private:
         int renderSettings, camera;
@@ -149,6 +150,7 @@ private:
         bool wantsToPause;
 
         redshift::StopWatch reportWatch;
+        double updateLatency;
 };
 
 #endif // RENDERWINDOW_HH

@@ -71,6 +71,7 @@ public:
         ~ScenePropertyBrowser();
 
         void filter(Filter filter);
+        Filter lastUsedFilter() const;
 
         void setDefaultScene();
         void loadScene (redshift::scenefile::Scene const &scene);
@@ -132,6 +133,8 @@ private:
                    *currentTransformProperty_,
                    *currentRenderSettingProperty_;
         QtBrowserItem * currentBrowserItem_;
+
+        Filter lastFilter_;
 
 private slots:
         //void updateUi_();

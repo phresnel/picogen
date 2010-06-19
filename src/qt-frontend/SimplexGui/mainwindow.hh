@@ -77,8 +77,10 @@ private:
         bool nonRecurseLock; // TODO: get rid of that
 
         QMenu settingsContextMenu, objectsMenu, volumesMenu;
+
+
 private slots:
-        void on_focusQualitySettingsButton_clicked();
+        //void on_focusQualitySettingsButton_clicked();
         void on_setSimpleTreeFilterButton_clicked();
         void on_setExpertTreeFilterButton_clicked();
 
@@ -127,7 +129,7 @@ private slots:
         void on_actionRender_triggered();
         void on_actionProduction_Render_triggered();
 
-        void on_actionShow_redshift_job_code_triggered();
+        //void on_actionShow_redshift_job_code_triggered();
 
         void on_settings_currentItemChanged(QtBrowserItem * current);
         void on_codeEditor_codeChanged();

@@ -112,8 +112,7 @@ int productionRender (int argc, char *argv[]) {
                                 redshift::shared_ptr<redshift::scenefile::Scene>(
                                                 new redshift::scenefile::Scene(scene)
                                 );
-
-                RenderWindow w (pscene, renderSetting, cameraSetting, 0);
+                RenderWindow w (pscene, renderSetting, cameraSetting, 0, 30.);
                 w.show();
                 const int ret = a.exec();
                 return ret;

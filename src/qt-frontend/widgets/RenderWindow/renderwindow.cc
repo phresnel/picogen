@@ -148,13 +148,14 @@ QString getImageSavePath (QWidget *parent) {
 //=============================================================================
 RenderWindowImpl::RenderWindowImpl (
                 redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
-                int renderSettings, int camera
+                int renderSettings, int camera, double updateLatency
 ) : renderSettings(renderSettings), camera(camera)
   , scenefile(scenefile), error_(false), errorMessage_("")
   , running(false)
   , wantsToQuit(false)
   , wantsToPause(false)
   , reportWatch()
+  , updateLatency(updateLatency)
 {
 }
 
@@ -169,7 +170,7 @@ void RenderWindowImpl::report (
         redshift::shared_ptr<redshift::RenderTargetLock const> /*rlock*/,
         int completed, int total
 ) {
-        if (reportWatch() >= 1.) {
+        if (reportWatch() >= updateLatency) {
                 copy(renderBuffer, target);
                 emit updateImage(*target, (double)completed / (double)total);
                 reportWatch.restart();
@@ -303,11 +304,13 @@ void RenderWindow::RenderProcess (QString pathToSource,
 RenderWindow::RenderWindow(
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
         int renderSettings, int camera,
-        QWidget *parent
+        QWidget *parent,
+        double updateLatency
 ) :
     QDialog(parent),
     ui(new Ui::RenderWindow),
-    scenefile(scenefile)
+    scenefile(scenefile),
+    updateLatency(updateLatency)
 {
         ui->setupUi(this);
 
@@ -324,11 +327,11 @@ RenderWindow::RenderWindow(
         ui->pix->setPixmap(map);
 
         impl = redshift::shared_ptr<RenderWindowImpl>(
-                  new RenderWindowImpl(scenefile, renderSettings, camera));
+          new RenderWindowImpl(scenefile, renderSettings, camera, updateLatency));
 
         connect(
-                impl.get(), SIGNAL(updateImage (QImage, double)),
-                this, SLOT(updateImage (QImage, double))
+                impl.get(), SIGNAL(updateImage (QImage const &, double)),
+                this, SLOT(updateImage (QImage const &, double))
         );
 
         scenefile.reset();
@@ -344,7 +347,7 @@ RenderWindow::~RenderWindow() {
 
 
 
-void RenderWindow::updateImage (QImage image, double percentage) {
+void RenderWindow::updateImage (QImage const &image, double percentage) {
         if (impl->error()) {
                 setWindowTitle ("Error");
 
@@ -368,6 +371,7 @@ void RenderWindow::updateImage (QImage image, double percentage) {
                         ui->pix->size(),
                         Qt::KeepAspectRatio,
                         Qt::FastTransformation));
+                //ui->pix->setPixmap(QPixmap::fromImage(image));
         }
 }
 

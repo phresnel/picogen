@@ -153,10 +153,7 @@ MainWindow::MainWindow(
         connect (propertyBrowser, SIGNAL(asUnchanged()),
                  this,            SLOT(setUnchanged()));
 
-
-        resyncCameraConfig();
-        resyncRenderSettingConfig();
-
+        on_setSimpleTreeFilterButton_clicked();
         setUnchanged();
 }
 
@@ -207,6 +204,7 @@ void MainWindow::setChanged() {
 
         resyncRenderSettingConfig();
         resyncCameraConfig();
+        propertyBrowser->filter(propertyBrowser->lastUsedFilter());
 }
 void MainWindow::setUnchanged() {
         if (!changed) return;
@@ -216,6 +214,7 @@ void MainWindow::setUnchanged() {
 
         resyncRenderSettingConfig();
         resyncCameraConfig();
+        propertyBrowser->filter(propertyBrowser->lastUsedFilter());
 }
 
 
@@ -371,7 +370,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
 
 
 
-void MainWindow::on_actionShow_redshift_job_code_triggered() {
+/*void MainWindow::on_actionShow_redshift_job_code_triggered() {
         using namespace actuarius;
         using namespace redshift;
 
@@ -384,7 +383,7 @@ void MainWindow::on_actionShow_redshift_job_code_triggered() {
                 QMessageBox::critical(this, "Critical",
                                       e.what());
         }
-}
+}*/
 
 
 
@@ -435,7 +434,6 @@ void MainWindow::on_codeEditor_codeChanged() {
 
 
 void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
-        setChanged();
         // This is under the assumption that the code window is open for the
         // property that just emitted this signal.
         if (nonRecurseLock)
@@ -443,6 +441,7 @@ void MainWindow::code_valueChanged(QtProperty*, QVariant code) {
         nonRecurseLock = true;
         ui->codeEditor->setCode(code.toString());
         nonRecurseLock = false;
+        setChanged();
 }
 
 
@@ -762,31 +761,30 @@ void MainWindow::contextMenuEvent(QContextMenuEvent */*event*/) {
 
 
 void MainWindow::on_actionNew_Render_Setting_triggered() {
-        setChanged();
         redshift::scenefile::RenderSettings rs;
         rs.title = "new-setting";
         propertyBrowser->addRenderSettings (rs);
+        setChanged();
 }
 
 
 
 void MainWindow::on_actionAdd_Homogeneous_Volume_triggered() {
-        setChanged();
         redshift::scenefile::Volume v;
         v.type = redshift::scenefile::Volume::homogeneous;
         propertyBrowser->addVolume (v);
+        setChanged();
 }
 void MainWindow::on_actionAdd_Exponential_Volume_triggered() {
-        setChanged();
         redshift::scenefile::Volume v;
         v.type = redshift::scenefile::Volume::exponential;
         propertyBrowser->addVolume (v);
+        setChanged();
 }
 
 
 
 void MainWindow::on_actionNew_Camera_triggered() {
-        setChanged();
         redshift::scenefile::Camera cam;
         cam.title = "new-camera";
         cam.type = redshift::scenefile::Camera::pinhole;
@@ -804,39 +802,40 @@ void MainWindow::on_actionNew_Camera_triggered() {
 
         propertyBrowser->addCamera(cam);
         resyncCameraConfig();
+        setChanged();
 }
 
 
 
 void MainWindow::on_actionNew_Sub_Transform_triggered() {
-        setChanged();
         // We assume that newTransform can only clicked when the current-item
         // is a transform.
         propertyBrowser->addTransform(
                         propertyBrowser->currentTransformProperty(),
                         redshift::scenefile::Transform());
+        setChanged();
 }
 
 
 
 
 void MainWindow::on_actionAdd_Water_Plane_triggered() {
-        setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::water_plane;
         propertyBrowser->addObject (o);
+        setChanged();
 }
 void MainWindow::on_actionAdd_Horizon_Plane_triggered() {
-        setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::horizon_plane;
         propertyBrowser->addObject (o);
+        setChanged();
 }
 void MainWindow::on_actionAdd_Lazy_Quadtree_triggered() {
-        setChanged();
         redshift::scenefile::Object o;
         o.type = redshift::scenefile::Object::lazy_quadtree;
         propertyBrowser->addObject (o);
+        setChanged();
 }
 void MainWindow::on_deleteButton_clicked() {
         on_actionDelete_triggered();
@@ -1021,7 +1020,6 @@ void MainWindow::on_moveDownButton_clicked() {
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
         setChanged();
-        //resync
 }
 
 
@@ -1032,6 +1030,6 @@ void MainWindow::on_setExpertTreeFilterButton_clicked() {
 void MainWindow::on_setSimpleTreeFilterButton_clicked() {
         propertyBrowser->filter(ScenePropertyBrowser::Simple);
 }
-void MainWindow::on_focusQualitySettingsButton_clicked() {
+/*void MainWindow::on_focusQualitySettingsButton_clicked() {
         propertyBrowser->filter(ScenePropertyBrowser::FocusOnQuality);
-}
+}*/

@@ -484,6 +484,7 @@ void ScenePropertyBrowser::resyncRenderSettingConfig_() {
 
 void ScenePropertyBrowser::filter(ScenePropertyBrowser::Filter filter) {
         this->filter(filter, "/", root->topLevelItems());
+        lastFilter_ = filter;
 }
 
 
@@ -525,4 +526,10 @@ void ScenePropertyBrowser::filter(
                         }
                 }
         }
+}
+
+
+
+ScenePropertyBrowser::Filter ScenePropertyBrowser::lastUsedFilter() const {
+        return lastFilter_;
 }
