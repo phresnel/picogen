@@ -204,15 +204,18 @@ void MainWindow::setChanged() {
         changed = true;
         ui->menuBar->setStyleSheet("background-color:#A33;");
         refreshWindowTitle();
+
+        resyncRenderSettingConfig();
+        resyncCameraConfig();
 }
-
-
-
 void MainWindow::setUnchanged() {
         if (!changed) return;
         changed = false;
         ui->menuBar->setStyleSheet("");
         refreshWindowTitle();
+
+        resyncRenderSettingConfig();
+        resyncCameraConfig();
 }
 
 
@@ -226,9 +229,6 @@ void MainWindow::resyncRenderSettingConfig () {
         else if (ui->renderSettingConfig->count() > 0)
                 ui->renderSettingConfig->setCurrentIndex(0);
 }
-
-
-
 void MainWindow::resyncCameraConfig () {
         const int index = ui->cameraConfig->currentIndex();
         ui->cameraConfig->clear();
@@ -1021,6 +1021,7 @@ void MainWindow::on_moveDownButton_clicked() {
         ui->settings->setCurrentItem(tmp);
         on_settings_currentItemChanged(tmp);
         setChanged();
+        //resync
 }
 
 
