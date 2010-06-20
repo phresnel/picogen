@@ -34,6 +34,7 @@
 #undef main // SDL fix
 
 int simplexGui (int argc, char *argv[]) {
+        std::clog << "attempting to run GUI" << std::endl;
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
 
@@ -58,6 +59,7 @@ int simplexGui (int argc, char *argv[]) {
 
 
 int productionRender (int argc, char *argv[]) {
+        std::clog << "attempting to start a production render" << std::endl;
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
 

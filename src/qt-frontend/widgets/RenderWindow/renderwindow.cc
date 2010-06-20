@@ -28,6 +28,7 @@
 #include <QUrl>
 #include <QDesktopServices>
 #include <QMessageBox>
+#include <QTime>
 
 #include "renderwindow.hh"
 #include "ui_renderwindow.h"
@@ -154,7 +155,7 @@ RenderWindowImpl::RenderWindowImpl (
   , running(false)
   , wantsToQuit(false)
   , wantsToPause(false)
-  , reportWatch()
+  , realTime()
   , updateLatency(updateLatency)
 {
 }
@@ -170,10 +171,10 @@ void RenderWindowImpl::report (
         redshift::shared_ptr<redshift::RenderTargetLock const> /*rlock*/,
         int completed, int total
 ) {
-        if (reportWatch() >= updateLatency) {
+        if (realTime() >= updateLatency) {
                 copy(renderBuffer, target);
                 emit updateImage(*target, (double)completed / (double)total);
-                reportWatch.restart();
+                realTime.restart();
         }
 }
 
@@ -294,9 +295,11 @@ void RenderWindow::RenderProcess (QString pathToSource,
         args << pathToSource;
         args << QString::number(renderSettings);
         args << QString::number(camera);
-        QProcess::startDetached(
-                QApplication::applicationFilePath(),
-                args);
+
+        const QString program = QApplication::applicationFilePath();
+        if (!QProcess::startDetached(program, args)) {
+                QMessageBox::information(0, "Nada.", "Sorry, but an error occured.");
+        }
 }
 
 
@@ -311,7 +314,7 @@ RenderWindow::RenderWindow(
     ui(new Ui::RenderWindow),
     scenefile(scenefile),
     updateLatency(updateLatency),
-    runtimeWatch()
+    realTime(), compTime()
 {
         ui->setupUi(this);
 
@@ -336,7 +339,8 @@ RenderWindow::RenderWindow(
         );
 
         scenefile.reset();
-        runtimeWatch.restart();
+        realTime.restart();
+        compTime.restart();
         impl->start();
 }
 
@@ -363,22 +367,42 @@ void RenderWindow::updateImage (QImage const &image, double percentage) {
                 ui->saveImageButton->setEnabled(false);
         } else {
                 // Compose time string.
-                double minutes = runtimeWatch() / 60;
-                int hours = 0;
-                while (minutes >= 60) {
-                        ++hours;
-                        minutes -= 60;
-                }
+
                 QString timeS = "";
-                if (hours>0)
-                        timeS += QString::number(hours) + "h ";
-                timeS += QString::number((int)minutes) + "min ";
-                timeS += QString::number((int)(60*(minutes-(int)minutes))) + "sec";
+                /*real*/ {
+                        double minutes = realTime() / 60.0;
+                        int hours = 0;
+                        while (minutes >= 60) {
+                                ++hours;
+                                minutes -= 60;
+                        }
+
+                        timeS += "real: ";
+                        if (hours>0)
+                                timeS += QString::number(hours) + "h ";
+                        if ((int)minutes>0)
+                                timeS += QString::number((int)minutes) + "min ";
+                        timeS += QString::number((int)(60*(minutes-(int)minutes))) + "sec";
+                }
+                /*comp time*/ {
+                        timeS += ", cpu time: ";
+                        double minutes = compTime() / 60.0;
+                        int hours = 0;
+                        while (minutes >= 60) {
+                                ++hours;
+                                minutes -= 60;
+                        }
+                        if (hours>0)
+                                timeS += QString::number(hours) + "h ";
+                        if ((int)minutes>0)
+                                timeS += QString::number((int)minutes) + "min ";
+                        timeS += QString::number((int)(60*(minutes-(int)minutes))) + "sec";
+                }
 
 
                 // Set window title.
                 if (percentage>=1) {
-                        setWindowTitle(timeS + " / " + "Done (image not saved).");
+                        setWindowTitle(timeS + " / " + "Done (unsaved).");
                 } else {
                         setWindowTitle(timeS + " / " + QString::number(percentage*100, 'f', 3) + "%");
                 }

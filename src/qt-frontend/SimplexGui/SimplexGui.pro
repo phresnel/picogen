@@ -5,6 +5,7 @@ TARGET = picogen-simplex
 RC_FILE = icon.rc
 TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
+QMAKE_CXXFLAGS += -fopenmp
 INCLUDEPATH += ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/
 INCLUDEPATH += ../widgets/
 INCLUDEPATH += ../widgets/QuatschSourceEditor/

@@ -25,10 +25,12 @@
 
 #include <QDialog>
 #include <QThread>
+
 #include "../../redshift/include/smart_ptr.hh"
 #include "../../redshift/include/interaction/progressreporter.hh"
 #include "../../redshift/include/interaction/usercommandprocessor.hh"
 #include "../../redshift/include/auxiliary/stopwatch.hh"
+#include "../../redshift/include/auxiliary/computationtime.hh"
 
 namespace Ui {
     class RenderWindow;
@@ -80,7 +82,8 @@ private:
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
         QImage image;
         double updateLatency;
-        redshift::StopWatch runtimeWatch;
+        redshift::StopWatch realTime;
+        redshift::ComputationTime compTime;
 };
 
 
@@ -150,7 +153,7 @@ private:
         bool wantsToQuit;
         bool wantsToPause;
 
-        redshift::StopWatch reportWatch;
+        redshift::StopWatch realTime;
         double updateLatency;
 };
 
