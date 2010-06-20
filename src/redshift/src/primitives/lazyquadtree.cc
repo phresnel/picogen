@@ -305,7 +305,7 @@ namespace lazyquadtree {
                         if (children[index])
                                 return;
 
-                        tmp = new (staticParameters.pools[index].alloc())
+                        tmp = new //(staticParameters.pools[index].alloc())
                                   Node (box,
                                         maxRecursion-1,
                                         const_cast<Node*>(this),
@@ -419,7 +419,7 @@ namespace lazyquadtree {
                 }
 
                 ~Node () {
-                        /*if (parent) {
+                        if (parent) {
                                 for (int i=0; i<4; ++i) {
                                         if (parent->children[i] == this)
                                                 parent->children[i] = 0;
@@ -427,10 +427,10 @@ namespace lazyquadtree {
                         }
                         for (int i=0; i<4; ++i) {
                                 if (children[i]) {
-                                        children[i]->parent = 0;
-                                        //delete children[i];
+                                        //children[i]->parent = 0;
+                                        delete children[i];
                                 }
-                        }*/
+                        }
                         delete [] vertices;
                 }
 
