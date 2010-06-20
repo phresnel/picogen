@@ -18,53 +18,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef STOPWATCH_HH_INCLUDED_20100125
-#define STOPWATCH_HH_INCLUDED_20100125
+#ifndef COMPUTATIONTIME_HH_INCLUDED_20100620
+#define COMPUTATIONTIME_HH_INCLUDED_20100620
 
-#ifdef _OPENMP
-#include <omp.h>
-namespace redshift {
-        class StopWatch {
-                double begin, end;
-                bool stopped;
-        public:
-                StopWatch ()
-                : begin (omp_get_wtime())
-                , stopped(false)
-                {}
-
-                void restart () {
-                        stopped = false;
-                        begin = omp_get_wtime();
-                }
-
-                double stop () {
-                        stopped = true;
-                        end = omp_get_wtime();
-                        return end-begin;
-                }
-
-                double operator () () const volatile {
-                        if (stopped) {
-                                return end - begin;
-                        } else {
-                                return omp_get_wtime() - begin;
-                        }
-                }
-
-        };
-}
-#else
-#pragma message "redshift:stopwatch.hh: falling back to clock(). Is this "\
-        "intentional? Otherwise, ensure that _OPENMP is defined. clock() is not"\
-        " what StopWatch intends to provide."
 #include <ctime>
 namespace redshift {
-        class StopWatch {
+        class ComputationTime {
                 double begin, end;
                 bool stopped;
         public:
-                StopWatch ()
+                ComputationTime ()
                 : begin (clock() / (double)CLOCKS_PER_SEC)
                 , stopped(false)
                 {}
@@ -90,6 +53,5 @@ namespace redshift {
 
         };
 }
-#endif
 
-#endif // STOPWATCH_HH_INCLUDED_20100125
+#endif // COMPUTATIONTIME_HH_INCLUDED_20100620
