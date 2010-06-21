@@ -13,11 +13,15 @@ picogen (0.3~beta6) unstable; urgency=low
      - the state is no longer "changed" directly after opening
             SimplexGui
      - change: the main-menu has been simplified
+  * add: 4 examples are included
   * add: a path tracer has been added
   * add: the documentation has been slightly updated
   * add: a set of four examples has been added
+  * change: performance and memory optimizations for quadtrees
+     - for several scenes, memory usage went to 80% for 64bit targets
+     - for several scenes, runtime went to 84%
 
- -- Sebastian Mach <phresnel@gmail.com>  Tue, 15 Jun 2010 17:11:00 +0200
+ -- Sebastian Mach <phresnel@gmail.com>  Mon, 21 Jun 2010 06:21:05 +0200
 
 picogen (0.3~beta5) unstable; urgency=low
 
