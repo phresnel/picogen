@@ -378,6 +378,18 @@ bool PicohelpBrowser::gotoSimplexGuiPropertyEdit (
                         gotoArticle(base+"objects");
                         return true;
                 }
+                if (terms[i] == "horizon-plane") {
+                        gotoArticle("Horizon-plane.html");
+                        return true;
+                }
+                if (terms[i] == "water-plane") {
+                        gotoArticle("Water-plane.html");
+                        return true;
+                }
+                if (terms[i] == "lazy-quadtree") {
+                        gotoArticle("Lazy-quadtree.html");
+                        return true;
+                }
                 if (terms[i] == "volumes") {
                         gotoArticle(base+"volumes");
                         return true;
