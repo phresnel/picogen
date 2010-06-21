@@ -258,7 +258,7 @@ bool MainWindow::event(QEvent *e) {
         switch (e->type()) {
         case QEvent::WindowBlocked: {
                 QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
-                blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
+                blur->setBlurHints(QGraphicsBlurEffect::PerformanceHint);
                 blur->setBlurRadius(5);
                 setGraphicsEffect(blur);
                 break;

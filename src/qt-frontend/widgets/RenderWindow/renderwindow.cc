@@ -157,6 +157,7 @@ RenderWindowImpl::RenderWindowImpl (
   , wantsToPause(false)
   , realTime()
   , updateLatency(updateLatency)
+  , firstReport(true)
 {
 }
 
@@ -171,10 +172,11 @@ void RenderWindowImpl::report (
         redshift::shared_ptr<redshift::RenderTargetLock const> /*rlock*/,
         int completed, int total
 ) {
-        if (realTime() >= updateLatency) {
+        if (firstReport || realTime() >= updateLatency) {
                 copy(renderBuffer, target);
                 emit updateImage(*target, (double)completed / (double)total);
                 realTime.restart();
+                firstReport = false;
         }
 }
 
@@ -410,11 +412,13 @@ void RenderWindow::updateImage (QImage const &image, double percentage) {
 
                 // Set image.
                 this->image = image; // TODO: profile that assignment
-                ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
-                        ui->pix->size(),
-                        Qt::KeepAspectRatio,
-                        Qt::FastTransformation));
-                //ui->pix->setPixmap(QPixmap::fromImage(image));
+                if (!this->image.size().isNull()) {
+                        ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
+                                ui->pix->size(),
+                                Qt::KeepAspectRatio,
+                                Qt::FastTransformation));
+                        //ui->pix->setPixmap(QPixmap::fromImage(image));
+                }
         }
 }
 
@@ -459,13 +463,15 @@ void RenderWindow::resizeEvent (QResizeEvent *) {
                 const double diff = fabs (zoom - 100);
 
                 if (diff < 10) {
-                        ui->pix->setPixmap(QPixmap::fromImage(this->image));
+                        if (!this->image.isNull())
+                                ui->pix->setPixmap(QPixmap::fromImage(this->image));
                         setWindowTitle("Zoom: 100%");
                 } else {
-                        ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
-                                scaled,
-                                Qt::KeepAspectRatio,
-                                Qt::FastTransformation));
+                        if (!this->image.isNull())
+                                ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
+                                        scaled,
+                                        Qt::KeepAspectRatio,
+                                        Qt::FastTransformation));
                         if (zoom>=0 && zoom <= 1000000)
                                 setWindowTitle("Zoom: " + QString::number(zoom) + "%");
                 }

@@ -155,6 +155,7 @@ private:
 
         redshift::StopWatch realTime;
         double updateLatency;
+        bool firstReport;
 };
 
 #endif // RENDERWINDOW_HH

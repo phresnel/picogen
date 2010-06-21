@@ -34,7 +34,7 @@
 #undef main // SDL fix
 
 int simplexGui (int argc, char *argv[]) {
-        std::clog << "attempting to run GUI" << std::endl;
+        //std::clog << "attempting to run GUI" << std::endl;
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
 
@@ -59,7 +59,7 @@ int simplexGui (int argc, char *argv[]) {
 
 
 int productionRender (int argc, char *argv[]) {
-        std::clog << "attempting to start a production render" << std::endl;
+        //std::clog << "attempting to start a production render" << std::endl;
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
 
@@ -114,7 +114,7 @@ int productionRender (int argc, char *argv[]) {
                                 redshift::shared_ptr<redshift::scenefile::Scene>(
                                                 new redshift::scenefile::Scene(scene)
                                 );
-                RenderWindow w (pscene, renderSetting, cameraSetting, 0, 30.);
+                RenderWindow w (pscene, renderSetting, cameraSetting, 0, 15.);
                 w.show();
                 const int ret = a.exec();
                 return ret;
