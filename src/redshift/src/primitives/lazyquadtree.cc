@@ -199,9 +199,9 @@ namespace lazyquadtree {
                         for (unsigned int i=0; i<s; ++i, width/=2) {
                                 widths[(s-1)-i] = width;
                         }
-                        for (unsigned int i=0; i<s; ++i) {
+                        /*for (unsigned int i=0; i<s; ++i) {
                                 std::cout << i << ":" << widths[(s-1)-i] << std::endl;
-                        }
+                        }*/
                 }
 
                 ~NodeStaticParameters() {
@@ -829,10 +829,12 @@ LazyQuadtree::LazyQuadtree (
 : impl (new LazyQuadtreeImpl (fun, size, maxRecursion, lodFactor, color))
 , heightFun(fun)
 {
+        /*
         std::cout << "sizeof(Node)==" << sizeof(lazyquadtree::Node) << " (was 216)\n"
                   << "sizeof(Node)/8==" << sizeof(lazyquadtree::Node)/8. << " (was 27)" << std::endl;
         std::cout << "sizeof(Node*)==" << sizeof(lazyquadtree::Node*) << std::endl;
         std::cout << "sizeof(Mutex)==" << sizeof(Mutex) << std::endl;
+        */
 }
 
 

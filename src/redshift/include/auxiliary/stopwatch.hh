@@ -33,6 +33,10 @@ namespace redshift {
                 , stopped(false)
                 {}
 
+                void set (double time) {
+                        begin = (*this)()-time;
+                }
+
                 void restart () {
                         stopped = false;
                         begin = omp_get_wtime();
@@ -72,6 +76,10 @@ namespace redshift {
                 void restart () {
                         stopped = false;
                         begin = clock() / (double)CLOCKS_PER_SEC;
+                }
+
+                void set (double time) {
+                        begin = (*this)()-time;
                 }
 
                 double stop () {

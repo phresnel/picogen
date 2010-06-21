@@ -233,6 +233,18 @@ void Scene::render (
 
                 //const int left = 0, right = width;
                 {
+                        reporter->report (lock, sampleNumber, totalNumberOfSamples);
+                        ucp->tick();
+                        if (ucp->userWantsToQuit())
+                                goto behind_the_big_spin;
+
+                        while (ucp->userWantsToPause() && !ucp->userWantsToQuit()) {
+                                ucp->tick();
+                        }
+
+                        if (ucp->userWantsToQuit())
+                                goto behind_the_big_spin;
+
                         //for (int left=0, right=(int)width;
                         //#warning no multicore!
                         #ifndef NO_OMP_THREADING
@@ -327,17 +339,6 @@ void Scene::render (
                                 // 5) Report Progress.
                                 //-------------------------------------------------------------
                         }
-                        reporter->report (lock, sampleNumber, totalNumberOfSamples);
-                        ucp->tick();
-                        if (ucp->userWantsToQuit())
-                                goto behind_the_big_spin;
-
-                        while (ucp->userWantsToPause() && !ucp->userWantsToQuit()) {
-                                ucp->tick();
-                        }
-
-                        if (ucp->userWantsToQuit())
-                                goto behind_the_big_spin;
                 }
 
                 //aggregate->prune ();
