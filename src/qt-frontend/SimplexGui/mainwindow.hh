@@ -55,6 +55,8 @@ protected:
 private:
         void setupUi();
         void loadScene (QString const &name);
+        bool isSaved() const ;
+        void refilter();
 
         QString askForNewSaveFilename() ;
         QString getAndUpdateSaveFilename();
@@ -77,7 +79,6 @@ private:
         bool nonRecurseLock; // TODO: get rid of that
 
         QMenu settingsContextMenu, objectsMenu, volumesMenu;
-
 
 private slots:
         //void on_focusQualitySettingsButton_clicked();

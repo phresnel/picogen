@@ -89,15 +89,6 @@ MainWindow::MainWindow(
 {
         setupUi();
 
-
-        propertyBrowser = new ScenePropertyBrowser(this,
-                                              ui->mdiArea,
-                                              ui->settings,
-                                              codeEditManager);
-
-        connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
-                this, SLOT(helpBrowserVisibilityRequested()));
-
         if (openFilename != "") {
                 try {
                         redshift::scenefile::Scene scene;
@@ -117,41 +108,6 @@ MainWindow::MainWindow(
         } else {
                 propertyBrowser->setDefaultScene();
         }
-
-        objectsMenu.addAction(ui->actionAdd_Horizon_Plane);
-        objectsMenu.addAction(ui->actionAdd_Water_Plane);
-        objectsMenu.addAction(ui->actionAdd_Lazy_Quadtree);
-        objectsMenu.setTitle("New Object");
-
-        volumesMenu.addAction(ui->actionAdd_Homogeneous_Volume);
-        volumesMenu.addAction(ui->actionAdd_Exponential_Volume);
-        volumesMenu.setTitle("New Volume");
-
-        ui->settings->setRootIsDecorated(true);
-        //ui->settings->setIndentation(32);
-        ui->settings->setHeaderVisible(false);
-        ui->settings->installEventFilter(this);
-
-        refreshWindowTitle();
-        //menuBar()->repaint();
-
-        ui->actionShow_Command_Pile->setChecked(false);
-        on_actionShow_Command_Pile_triggered (ui->actionShow_Command_Pile->isChecked());
-
-        ui->actionShow_PicoHelp->setChecked(true);
-        on_actionShow_PicoHelp_triggered (ui->actionShow_PicoHelp->isChecked());
-
-        ui->codeEditor->setPicohelpBrowser(ui->picohelp);
-
-        // connect signals
-        connect (propertyBrowser, SIGNAL(sceneChanged()),
-                 this,            SLOT(setChanged()));
-        connect (propertyBrowser, SIGNAL(resyncCameraConfig()),
-                 this,            SLOT(resyncCameraConfig()));
-        connect (propertyBrowser, SIGNAL(resyncRenderSettingConfig()),
-                 this,            SLOT(resyncRenderSettingConfig()));
-        connect (propertyBrowser, SIGNAL(asUnchanged()),
-                 this,            SLOT(setUnchanged()));
 
         on_setSimpleTreeFilterButton_clicked();
         setUnchanged();
@@ -191,30 +147,80 @@ void MainWindow::setupUi() {
                 this, SLOT(code_valueChanged(QtProperty*, QVariant)));
 
 
+
+        propertyBrowser = new ScenePropertyBrowser(this,
+                                              ui->mdiArea,
+                                              ui->settings,
+                                              codeEditManager);
+
+        connect(ui->codeEditor, SIGNAL(helpBrowserVisibilityRequested()),
+                this, SLOT(helpBrowserVisibilityRequested()));
+
+        objectsMenu.addAction(ui->actionAdd_Horizon_Plane);
+        objectsMenu.addAction(ui->actionAdd_Water_Plane);
+        objectsMenu.addAction(ui->actionAdd_Lazy_Quadtree);
+        objectsMenu.setTitle("New Object");
+
+        volumesMenu.addAction(ui->actionAdd_Homogeneous_Volume);
+        volumesMenu.addAction(ui->actionAdd_Exponential_Volume);
+        volumesMenu.setTitle("New Volume");
+
+        ui->settings->setRootIsDecorated(true);
+        //ui->settings->setIndentation(32);
+        ui->settings->setHeaderVisible(false);
+        ui->settings->installEventFilter(this);
+
+        refreshWindowTitle();
+        //menuBar()->repaint();
+
+        ui->actionShow_Command_Pile->setChecked(false);
+        on_actionShow_Command_Pile_triggered (ui->actionShow_Command_Pile->isChecked());
+
+        ui->actionShow_PicoHelp->setChecked(true);
+        on_actionShow_PicoHelp_triggered (ui->actionShow_PicoHelp->isChecked());
+
+        ui->codeEditor->setPicohelpBrowser(ui->picohelp);
+
+        // connect signals
+        connect (propertyBrowser, SIGNAL(sceneChanged()),
+                 this,            SLOT(setChanged()));
+        connect (propertyBrowser, SIGNAL(resyncCameraConfig()),
+                 this,            SLOT(resyncCameraConfig()));
+        connect (propertyBrowser, SIGNAL(resyncRenderSettingConfig()),
+                 this,            SLOT(resyncRenderSettingConfig()));
+        connect (propertyBrowser, SIGNAL(asUnchanged()),
+                 this,            SLOT(setUnchanged()));
+
         setChanged();
 }
 
 
 
 void MainWindow::setChanged() {
-        if (changed) return;
+        const bool prev = blockSignals(true);
+        resyncRenderSettingConfig();
+        resyncCameraConfig();
+        refilter();
+
+        //if (changed) return;
         changed = true;
         ui->menuBar->setStyleSheet("background-color:#A33;");
         refreshWindowTitle();
 
-        resyncRenderSettingConfig();
-        resyncCameraConfig();
-        propertyBrowser->filter(propertyBrowser->lastUsedFilter());
+        blockSignals(prev);
 }
 void MainWindow::setUnchanged() {
-        if (!changed) return;
+        const bool prev = blockSignals(true);
+        resyncRenderSettingConfig();
+        resyncCameraConfig();
+        refilter();
+
+        //if (!changed) return;
         changed = false;
         ui->menuBar->setStyleSheet("");
         refreshWindowTitle();
 
-        resyncRenderSettingConfig();
-        resyncCameraConfig();
-        propertyBrowser->filter(propertyBrowser->lastUsedFilter());
+        blockSignals(prev);
 }
 
 
@@ -1038,6 +1044,9 @@ void MainWindow::on_setSimpleTreeFilterButton_clicked() {
 /*void MainWindow::on_focusQualitySettingsButton_clicked() {
         propertyBrowser->filter(ScenePropertyBrowser::FocusOnQuality);
 }*/
+void MainWindow::refilter() {
+        propertyBrowser->filter(propertyBrowser->lastUsedFilter());
+}
 
 
 
