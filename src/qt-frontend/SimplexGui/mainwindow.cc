@@ -105,7 +105,7 @@ MainWindow::MainWindow(
                         actuarius::IArchive (ss) & actuarius::pack("scene", scene);
                         propertyBrowser->loadScene(scene);
 
-                        saveFilename = initialFilename;
+                        saveFilename = QFileInfo(initialFilename).absoluteFilePath();
                         QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                         refreshWindowTitle();
                 } catch (...) {
@@ -528,7 +528,7 @@ QString MainWindow::askForNewSaveFilename() {
 
 QString MainWindow::getAndUpdateSaveFilename() {
         if (saveFilename == "") {
-                saveFilename = askForNewSaveFilename();
+                saveFilename = QFileInfo(askForNewSaveFilename()).absoluteFilePath();
                 QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                 return saveFilename;
         }
@@ -571,7 +571,7 @@ void MainWindow::on_actionSave_as_triggered() {
         std::ofstream ofs (newName.toStdString().c_str());
         if (ofs.is_open()) {
                 ofs << code.toStdString() << std::endl;
-                saveFilename = newName;
+                saveFilename = QFileInfo(newName).absoluteFilePath();
                 QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
         } else {
                 QMessageBox::warning(this, "Must use another filename",
@@ -608,7 +608,13 @@ void MainWindow::on_actionSave_copy_as_triggered() {
 
 
 void MainWindow::refreshWindowTitle() {
-        const QString alpha = saveFilename == "" ? str_new_scene : saveFilename;
+        // saveFilename should be absolute. We shorten the window title
+        // by relating it to the home directory, if applicable.
+        QString alpha = saveFilename == "" ? str_new_scene : saveFilename;
+        QString home = QDesktopServices().storageLocation(QDesktopServices::HomeLocation);
+        if (alpha.startsWith(home)) {
+                alpha = "~" + alpha.right(alpha.length()-home.length());
+        }
         setWindowTitle (
                 alpha + (changed ? " * " : "")
                 + " - picogen:SimplexGui"
@@ -698,7 +704,7 @@ void MainWindow::loadScene (QString const &name) {
                 std::ifstream ss(name.toStdString().c_str());
                 actuarius::IArchive (ss) & actuarius::pack("scene", scene);
                 propertyBrowser->loadScene (scene);
-                saveFilename = name;
+                saveFilename = QFileInfo(name).absoluteFilePath();
                 QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                 refreshWindowTitle();
         } catch (std::exception const &e){
@@ -718,8 +724,7 @@ void MainWindow::loadScene (QString const &name) {
 void MainWindow::on_actionProduction_Render_triggered() {
         try {
                 again:
-                if (saveFilename == QString(str_new_scene)
-                    || !QFile::exists(saveFilename)) {
+                if (!isSaved()) {
                         if (QMessageBox::Ok ==
                                 QMessageBox::question(this, "Unsaved scene",
                                   "To do a production-render, the scene must be "
@@ -1033,3 +1038,12 @@ void MainWindow::on_setSimpleTreeFilterButton_clicked() {
 /*void MainWindow::on_focusQualitySettingsButton_clicked() {
         propertyBrowser->filter(ScenePropertyBrowser::FocusOnQuality);
 }*/
+
+
+
+bool MainWindow::isSaved() const {
+        const bool hasFilename = saveFilename != QString(str_new_scene),
+                   exists = QFile::exists(saveFilename),
+                   changed = this->changed;
+        return hasFilename && exists && !changed;
+}
