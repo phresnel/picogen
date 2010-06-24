@@ -349,7 +349,9 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         if (isCode) {
                 ui->codeEditorFrameOuter->setEnabled(true);
                 ui->codeEditorFrameOuter->setVisible(true);
+                const bool prev = ui->codeEditor->blockSignals(true);
                 ui->codeEditor->setCode(codeEditManager->value(current->property()).toString());
+                ui->codeEditor->blockSignals(prev);
         }
 
         if (propertyBrowser->currentTransformProperty() != 0) {
