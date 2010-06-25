@@ -96,8 +96,13 @@ MainWindow::MainWindow(
                         actuarius::IArchive (ss) & actuarius::pack("scene", scene);
                         propertyBrowser->loadScene(scene);
 
-                        saveFilename = QFileInfo(initialFilename).absoluteFilePath();
-                        QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
+                        if (initialFilename == "") {
+                                initialFilename = str_new_scene;
+                                saveFilename = "";
+                        } else {
+                                saveFilename = QFileInfo(initialFilename).absoluteFilePath();
+                                QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
+                        }
                         refreshWindowTitle();
                 } catch (...) {
                         QMessageBox::critical(this, "Error",
@@ -536,7 +541,9 @@ QString MainWindow::askForNewSaveFilename() {
 
 QString MainWindow::getAndUpdateSaveFilename() {
         if (saveFilename == "") {
-                saveFilename = QFileInfo(askForNewSaveFilename()).absoluteFilePath();
+                QString const str = askForNewSaveFilename();
+                if (str == "") return "";
+                saveFilename = QFileInfo(str).absoluteFilePath();
                 QDir::setCurrent(QFileInfo(saveFilename).absolutePath());
                 return saveFilename;
         }
