@@ -21,7 +21,7 @@ picogen (0.3~beta6) unstable; urgency=low
      - for several scenes, memory usage went to 80% for 64bit targets
      - for several scenes, runtime went to 84%
 
- -- Sebastian Mach <phresnel@gmail.com>  Mon, 21 Jun 2010 06:21:05 +0200
+ -- Sebastian Mach <phresnel@gmail.com>  Fri, 25 Jun 2010 07:38:11 +0200
 
 picogen (0.3~beta5) unstable; urgency=low
 
