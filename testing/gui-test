@@ -26,3 +26,6 @@ SimplexGui with loaded scene
   [ ] Test whether <ctrl>+f5 starts rendering the scene
   [ ] Press <ctrl>+f5. Should result in internal RenderWindow
   [ ] Press <ctrl>+f6. Should result in external RenderWindow
+
+SimplexGui - Examples
+  [ ] test whether each example can be rendered in a few seconds in standard settings
