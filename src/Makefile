@@ -123,4 +123,4 @@ directories:
 
 .PHONY: strip-binaries
 strip-binaries:
-	strip BUILD/*
+	strip --strip-all BUILD/*
