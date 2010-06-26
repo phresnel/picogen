@@ -3,16 +3,16 @@
 
 Installers/Packages Only
   [x] Test whether each program starts through start-/app-menu
-  [ ] Test whether .picogen-files can be opened via double-click
+  [x] Test whether .picogen-files can be opened via double-click
 
 Bare packages only; they don't have to be executable
-  [-] Test whether each program starts
+  [x] Test whether each program starts
 
 SimplexGui with default scene
-  [ ] Test whether <ctrl>+f5 starts rendering the default scene
-  [ ] Press <ctrl>+f6. Should result in error message about unsaved data
-  [ ] Press <ctrl>+s and save the default scene
-  [ ] Press <ctrl>+f6. Should result in RenderWindow
+  [x] Test whether <ctrl>+f5 starts rendering the default scene
+  [x] Press <ctrl>+f6. Should result in error message about unsaved data
+  [x] Press <ctrl>+s and save the default scene
+  [x] Press <ctrl>+f6. Should result in RenderWindow
 
 SimplexGui with example scene
   [x] Load any of the example scenes
@@ -22,7 +22,7 @@ SimplexGui with example scene
   [x] Press <ctrl>+f6. Should result in RenderWindow
 
 SimplexGui with loaded scene
-  [ ] Load scene
-  [ ] Test whether <ctrl>+f5 starts rendering the scene
-  [ ] Press <ctrl>+f5. Should result in internal RenderWindow
-  [ ] Press <ctrl>+f6. Should result in external RenderWindow
+  [x] Load scene
+  [x] Test whether <ctrl>+f5 starts rendering the scene
+  [x] Press <ctrl>+f5. Should result in internal RenderWindow
+  [x] Press <ctrl>+f6. Should result in external RenderWindow
