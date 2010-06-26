@@ -1,3 +1,5 @@
+SetCompressor /SOLID lzma
+
 !include "MUI2.nsh"
 !include "FileAssociation.nsh"
 

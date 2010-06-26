@@ -1,26 +1,50 @@
-picogen (0.3.beta5); urgency=low
+picogen (0.3~beta6) unstable; urgency=low
+
+  * several oversights have been fixed
+  * fixes in deb-package:
+     - debs are now lintian clean
+        - add manpage
+        - set proper file permissions
+     - version numbering is now proper
+  * fixes in SimplexGui:
+     - oversights:
+        - sub-items in property-editor can be reordered now
+        - camera-names can now be edited
+     - the state is no longer "changed" directly after opening
+            SimplexGui
+     - change: the main-menu has been simplified
+  * add: 4 examples are included
+  * add: a path tracer has been added
+  * add: the documentation has been slightly updated
+  * add: a set of four examples has been added
+  * change: performance and memory optimizations for quadtrees
+     - for several scenes, memory usage went to 80% for 64bit targets
+     - for several scenes, runtime went to 84%
+
+ -- Sebastian Mach <phresnel@gmail.com>  Fri, 25 Jun 2010 07:38:11 +0200
+
+picogen (0.3~beta5) unstable; urgency=low
 
   * new: context help for property-editor and help-browser
   * (windows): improve installer
   * (linux): improve .deb-package
-    * use application/picogen instead of text/picogen
-    * provide icons for desktop entry
+     - use application/picogen instead of text/picogen
+     - provide icons for desktop entry
   * fix (windows): File->New in SimplexGui doesn't work
   * fix (windows): Add zlib1, libpng, libtiff, jpeg to distribution
 
- -- Sebastian Mach <phresnel@gmail.com>  27 May 2010
+ -- Sebastian Mach <phresnel@gmail.com>  Thu, 27 May 2010 00:00:00 +0000
 
-
-picogen (0.3.beta3); urgency=low
+picogen (0.3~beta3) unstable; urgency=low
 
   * fix (.deb-package): wrong/missing dependencies
   * normalize qt-dependencies (.deb-package)
 
- -- Sebastian Mach <phresnel@gmail.com>  20 May 2010
+ -- Sebastian Mach <phresnel@gmail.com>  Thu, 20 May 2010 00:00:00 +0000
 
-
-picogen (0.3.beta2); urgency=low
+picogen (0.3~beta2) unstable; urgency=low
 
   * initial release
 
- -- Sebastian Mach <phresnel@gmail.com>  19 May 2010
+ -- Sebastian Mach <phresnel@gmail.com>  Wed, 19 May 2010 00:00:00 +0000
+
