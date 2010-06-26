@@ -6,6 +6,7 @@ for f in $(ls DEBS/); do
                 echo ${PACKAGE} already exists, skipping.
         else
                 dpkg -b DEBS/$f ${PACKAGE}
+                lintian ${PACKAGE}
         fi
 
         #tarball
@@ -29,5 +30,8 @@ for f in $(ls DEBS/); do
                 tar -cf ../../${TAR} *
                 cd ../..
                 gzip ${TAR}
+
+                echo "deleting temporary folder TARBALLS"
+                rm -rf TARBALLS
         fi
 done
