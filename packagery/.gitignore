@@ -5,3 +5,4 @@ deb/DEBS/
 nsis/data/*.dll
 nsis/data/*.exe
 nsis/data/help-content
+nsis/data/repository/
