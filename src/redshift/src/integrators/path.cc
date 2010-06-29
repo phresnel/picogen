@@ -123,7 +123,9 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                     dot(skyRay.direction, vector_cast<Vector>(normalS))
                                 );
 
-                                ret += incomingLight*surfaceColor * d / pdf;
+                                const real_t throughput =
+                                        d * (1/pdf) * (1/constants::pi);
+                                ret += surfaceColor * throughput * incomingLight;
                         }
 
                         // Done.
