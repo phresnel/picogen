@@ -28,3 +28,4 @@ include(../Picohelp/picohelp.pri)
 RESOURCES += ../../SimplexGui/resources.qrc
 RC_FILE += icon.rc
 OTHER_FILES += icon.rc
+CONFIG+=debug_and_release

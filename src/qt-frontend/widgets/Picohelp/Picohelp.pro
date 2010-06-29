@@ -4,6 +4,7 @@
 QT += webkit
 TARGET = picohelp
 TEMPLATE = app
+CONFIG+=debug_and_release
 SOURCES += main.cc \
     mainwindow.cc \
     picohelpbrowser.cc

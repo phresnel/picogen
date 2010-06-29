@@ -6,6 +6,7 @@ RC_FILE = icon.rc
 TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
 QMAKE_CXXFLAGS += -fopenmp
+CONFIG+=debug_and_release
 INCLUDEPATH += ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/
 INCLUDEPATH += ../widgets/
 INCLUDEPATH += ../widgets/QuatschSourceEditor/
