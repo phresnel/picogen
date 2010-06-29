@@ -1,6 +1,10 @@
-./atom      -> minimalistic frontend 'picogen-wx'
-./quatsch   -> micro compiler framework for strict functional languages
-./redshift  -> the new rendering kernel
-./kallisto  -> the 3d math lib for picogen
-./Doxyfile, ./doxygen -> doxygen documentation
-[./quantum   -> [deprecated] rendering kernel 'picogen']
+./actuarius   -> a small serialization framework
+./gtodo       -> contains a todo list to be opened with GNOME's gtodo
+./help-content-downloader -> downloads the picowiki and transforms it into a local help-collection
+./quatsch     -> micro compiler framework for strictly functional languages
+./quatsch2    -> rewrite of quatsch, real code is in seperate branch, planned for 0.4
+./redshift    -> the primary renderer, relatively general purpose
+./kallisto    -> the 3d math lib for picogen
+./tinkerspace -> space for grinding, massaging, research
+./upstream    -> for libraries and codes by "external providers"
+./BUILD       -> reserved for the building process
