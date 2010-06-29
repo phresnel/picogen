@@ -61,15 +61,17 @@ PssAdapter::query_ (Ray const &ray) const {
 }
 
 Color PssAdapter::getSunColor () const {
-        return Color(sunBrightnessFactor*preetham->GetSunSpectralRadiance());
+        return Color(
+          sunBrightnessFactor
+          *(preetham->GetSunSpectralRadiance()
+           +preetham->GetSkySpectralRadiance(preetham->GetSunPosition()))
+        );
 }
 
 Color PssAdapter::querySun (Ray const &ray) const {
         const Vector &vector = ray.direction;
         const real_t teh_sun = isInSunSolidAngle (vector)?1.f:0.f;
-
-        return Color(sunBrightnessFactor*preetham->GetSunSpectralRadiance())
-                * teh_sun;
+        return getSunColor() * teh_sun;
 }
 
 /*
