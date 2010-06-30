@@ -132,49 +132,72 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode)
                     : make_tuple(1., Color(0), constants::infinity)
         ;
 
-        const Color Lo = get<1>(Lo_);
+        const Color  Lo       = get<1>(Lo_);
         const real_t distance = get<2>(Lo_);
-        const bool didIntersect = distance != constants::infinity;
 
+        // If intersected, use surface color, otherwise, use atmosphere.
+        Color atmosphere_or_surface;
+        if (distance != constants::infinity) {
+                atmosphere_or_surface = Lo;
+        } else {
+                const Color
+                        atmosphere
+                            = background->atmosphere()
+                            ? background->atmosphere()->color(sample.primaryRay)
+                            : Color(),
+                        sun = background->sun()
+                            ? background->sun()->color(sample.primaryRay)
+                            : Color();
+
+                atmosphere_or_surface = atmosphere + sun;
+        }
+
+        return make_tuple (
+                1.f,
+                attenuate (atmosphere_or_surface,
+                           sample.primaryRay,
+                           sample,
+                           distance,
+                           rand));
+}
+
+
+
+Color Scene::attenuate (
+        Color const &orig,
+        Ray const &ray,
+        Sample const& sample,
+        real_t distance,
+        Random &rand
+) const {
         const Interval i (0, distance); // TODO: quirk
 
         // Intersect volumes.
         const tuple<real_t,Color>
                 T_  = volumeIntegrator
-                   ? volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand)
-                   : make_tuple(real_t(1), Color(real_t(1))),
-
+                    ? volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand)
+                    : make_tuple(real_t(1), Color(real_t(1))),
                 Lv_ = volumeIntegrator
-                   ? volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand)
-                   : make_tuple(real_t(1), Color(real_t(0)))
+                    ? volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand)
+                    : make_tuple(real_t(1), Color(real_t(0)))
         ;
-        const Color T = get<1>(T_), Lv = get<1>(Lv_);
 
+        // At some day, AtmosphericEffects should be a real Volume.
         const Color
-                atmosphere = background->atmosphere()
-                           ? background->atmosphere()->color(sample.primaryRay)
-                           : Color(),
-                sun        = background->sun()
-                           ? background->sun()->color(sample.primaryRay)
-                           : Color(),
-                atmosphere_plus_sun     = atmosphere + sun,
-                atmosphere_or_geom      = didIntersect ? Lo : (atmosphere_plus_sun),
+                T = get<1>(T_), Lv = get<1>(Lv_),
 
                 // to volume == apply volume scattering onto sth.
-                atmosphere_or_geom_volumed = T * atmosphere_or_geom + Lv,
+                atmosphere_or_geom_volumed = T * orig + Lv,
 
                 // to atmosphere == apply aerial perspective onto sth.
                 // but not onto sun, which is already attenuated inside PssSunSky
                 atmosphere_or_geom_atmosphered
                     = background->atmosphericEffects()
                     ? background->atmosphericEffects()->shade (atmosphere_or_geom_volumed, sample.primaryRay, distance)
-                    : atmosphere_or_geom_volumed,
-
-                //
-                ret = atmosphere_or_geom_atmosphered
+                    : atmosphere_or_geom_volumed
         ;
 
-        return make_tuple (1.f, ret);
+        return atmosphere_or_geom_atmosphered;
 }
 
 

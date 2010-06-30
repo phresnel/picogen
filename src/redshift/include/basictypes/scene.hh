@@ -75,6 +75,13 @@ namespace redshift {
                 shared_ptr<VolumeRegion>   getVolumeRegion () const;
 
                 tuple<real_t,Color> Li(Sample const&, Random &, LiMode mode = full) const;
+                Color attenuate (
+                        Color const &orig,
+                        Ray const &ray,
+                        Sample const& sample,
+                        real_t distance,
+                        Random &rand
+                ) const;
 
                 unsigned int currentScanline () const { return currentScanline_; }
 

@@ -24,42 +24,6 @@
 #include "../setup.hh"
 
 namespace redshift {
-        // TODO: seperate file
-        /*struct AtmosphericEffects {
-                Spectrum attenuation;
-                Spectrum inscatter;
-        };*/
-
-        /*class Background {
-        public:
-                virtual Color query (Ray const &ray) const = 0;
-
-                // TODO: refactor the sun functions into a PreethamSunAdapter
-                virtual bool hasSun () const { return false; }
-                virtual Vector getSunDirection () const { return Vector(); }
-                virtual Color getSunColor () const { return Color(); }
-                virtual Color querySun (Ray const &) const { return Color(); }
-                virtual bool isInSunSolidAngle (Vector const &) const { return false; }
-
-                virtual bool hasFastDiffuseQuery () const {
-                        return false;
-                }
-                virtual bool hasAtmosphereShade () const {
-                        return false;
-                }
-                virtual Color diffuseQuery(Point const&, Normal const&, Random &) const {
-                        return Color(0);
-                }
-
-                virtual Color atmosphereShade (
-                        Color const &c, Ray const &, real_t
-                ) const {
-                        return c;
-                }
-
-                //virtual AtmosphericEffects atmosphericEffects (
-        };*/
-
         class Sun {
         public:
                 virtual Vector direction() const = 0;
