@@ -26,7 +26,7 @@
 namespace redshift { namespace backgrounds {
         DefineFinalizer(PssAdapter);
         class PssAdapter
-        : public Background
+        : public Sky
         , DoFinalize (PssAdapter)
         {
         public:

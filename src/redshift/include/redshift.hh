@@ -83,9 +83,9 @@ namespace redshift{class RenderTarget;}
 #include "primitives/list.hh"
 
 // background/
-#include "backgrounds/visualise-direction.hh"
-#include "backgrounds/monochrome.hh"
-#include "backgrounds/preetham-adapter.hh"
+//#include "backgrounds/visualise-direction.hh"
+//#include "backgrounds/monochrome.hh"
+//#include "backgrounds/preetham-adapter.hh"
 #include "backgrounds/pss-adapter.hh"
 
 // Cameras.

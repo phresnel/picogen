@@ -507,9 +507,9 @@ redshift::shared_ptr<redshift::Scene>
 
 
         // TODO: support arbitrary many backgrounds (Starsky!)
-        shared_ptr<Background> background;
+        shared_ptr<Sky> sky;
         if (scene.backgroundCount()) {
-                background = scene.background(0).toBackground();
+                sky = scene.background(0).toSky();
         } else {
 
                 /*shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
@@ -528,7 +528,7 @@ redshift::shared_ptr<redshift::Scene>
                         0,
                         true
                 ));
-                background = shared_ptr<redshift::Background> (
+                sky = shared_ptr<redshift::Sky> (
                         new backgrounds::PssAdapter (pss,1,1,1,1));
         }
         // ----------
@@ -537,7 +537,7 @@ redshift::shared_ptr<redshift::Scene>
                 renderBuffer,
                 camera,
                 agg,
-                background,
+                sky,
 
                 shared_ptr<Integrator>(
                         scene.renderSettings(renderSettingsIndex)
@@ -646,7 +646,7 @@ void read_angle_test() {
                 else if (unit == "deg"
                 || unit == "degree"
                 || unit == "degrees"
-                || unit == "°"
+                || unit == "Â°"
                 ) u = Radian;
         }
 }

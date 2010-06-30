@@ -44,9 +44,10 @@ tuple<real_t,Color> SingleScattering::Li (
         const shared_ptr<VolumeRegion> vr = scene.getVolumeRegion();
         if (!vr) return 0.f;
 
-        const shared_ptr<Background> bg = scene.getBackground();
-        const Vector sunDir = bg->getSunDirection();
-        const Color sunCol = bg->getSunColor();
+        const shared_ptr<Sky> bg = scene.getBackground();
+        Sun const * const sun = bg->sun();
+        const Vector sunDir = sun ? sun->direction() : Vector();
+        //const Color sunCol = sun ? sun->color(sunDir);
 
         const Interval volumeInterval = vr->cull(raydiff);
 
@@ -132,20 +133,22 @@ tuple<real_t,Color> SingleScattering::Li (
                 const Color ss = vr->sigma_s (curr, w, rand);
 
                 // Background
-                const Ray sunRay (curr,sunDir);
-                if (!scene.doesIntersect (sunRay)) {
-                        const tuple<real_t,Color> T_ =
-                                Transmittance(
-                                        scene,
-                                        sunRay,
-                                        sample,
-                                        Interval(0,constants::infinity),
-                                        rand
-                                );//TODO: quirk interval max
-                        const Color T = get<1>(T_);
-                        const Color Ld = sunCol * T;
-                        const real_t pdf = 1;
-                        Lv = Lv + Tr * ss * vr->p(curr,w, -sunDir, rand) * Ld * (1.f/pdf);
+                if (sun) {
+                        const Ray sunRay (curr,sunDir);
+                        if (!scene.doesIntersect (sunRay)) {
+                                const tuple<real_t,Color> T_ =
+                                        Transmittance(
+                                                scene,
+                                                sunRay,
+                                                sample,
+                                                Interval(0,constants::infinity),
+                                                rand
+                                        );//TODO: quirk interval max
+                                const Color T = get<1>(T_);
+                                const Color Ld = sun->color(sunRay) * T;
+                                const real_t pdf = 1;
+                                Lv = Lv + Tr * ss * vr->p(curr,w, -sunDir, rand) * Ld * (1.f/pdf);
+                        }
                 }
 	}
 	return make_tuple(1.f,Lv * step);

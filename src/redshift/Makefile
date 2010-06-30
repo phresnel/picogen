@@ -78,7 +78,7 @@ OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/jobfile.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
 
-OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
+#OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
 OBJFILES += $(BACKGROUNDSOBJDIR)/pss-adapter.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_atmconstants.o

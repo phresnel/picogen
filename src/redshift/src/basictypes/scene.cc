@@ -57,7 +57,7 @@ Scene::Scene (
         shared_ptr<RenderTarget> rt,
         shared_ptr<Camera> cam,
         shared_ptr<Primitive> prim_,
-        shared_ptr<Background> bg,
+        shared_ptr<Sky> bg,
         shared_ptr<Integrator> surfaceIntegrator,
         shared_ptr<VolumeRegion> volumeRegion_,
         shared_ptr<VolumeIntegrator> volumeIntegrator_
@@ -80,7 +80,7 @@ Scene::~Scene () {
 
 
 
-shared_ptr<Background> Scene::getBackground () const {
+shared_ptr<Sky> Scene::getBackground () const {
         return background;
 }
 
@@ -150,10 +150,14 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode)
         ;
         const Color T = get<1>(T_), Lv = get<1>(Lv_);
 
-
         const Color
-                atmosphere_plus_sun     = background->query(sample.primaryRay)
-                                        + background->querySun(sample.primaryRay),
+                atmosphere = background->atmosphere()
+                           ? background->atmosphere()->color(sample.primaryRay)
+                           : Color(),
+                sun        = background->sun()
+                           ? background->sun()->color(sample.primaryRay)
+                           : Color(),
+                atmosphere_plus_sun     = atmosphere + sun,
                 atmosphere_or_geom      = didIntersect ? Lo : (atmosphere_plus_sun),
 
                 // to volume == apply volume scattering onto sth.
@@ -162,8 +166,8 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode)
                 // to atmosphere == apply aerial perspective onto sth.
                 // but not onto sun, which is already attenuated inside PssSunSky
                 atmosphere_or_geom_atmosphered
-                    = (background && background->hasAtmosphereShade())
-                    ? background->atmosphereShade (atmosphere_or_geom_volumed, sample.primaryRay, distance)
+                    = background->atmosphericEffects()
+                    ? background->atmosphericEffects()->shade (atmosphere_or_geom_volumed, sample.primaryRay, distance)
                     : atmosphere_or_geom_volumed,
 
                 //

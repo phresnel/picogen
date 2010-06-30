@@ -50,7 +50,7 @@ namespace redshift {
                         shared_ptr<RenderTarget>,
                         shared_ptr<Camera>,
                         shared_ptr<Primitive>,
-                        shared_ptr<Background> bg ,
+                        shared_ptr<Sky> bg ,
                         shared_ptr<Integrator> integrator,
                         shared_ptr<VolumeRegion> volumeRegion,
                         shared_ptr<VolumeIntegrator> volumeIntegrator
@@ -70,7 +70,7 @@ namespace redshift {
                 bool doesIntersect (Sample const &sample) const;
                 bool doesIntersect (Ray const &ray)       const;
 
-                shared_ptr<Background>     getBackground ()   const;
+                shared_ptr<Sky>            getBackground ()   const;
                 shared_ptr<Camera>         getCamera ()       const;
                 shared_ptr<VolumeRegion>   getVolumeRegion () const;
 
@@ -94,7 +94,7 @@ namespace redshift {
                 shared_ptr<RenderTarget>         renderTarget;
                 shared_ptr<Camera>               camera;
                 shared_ptr<Primitive>            aggregate;
-                shared_ptr<Background>           background;
+                shared_ptr<Sky>                  background;
                 shared_ptr<Integrator>           surfaceIntegrator;
 
                 shared_ptr<VolumeRegion>         volumeRegion;

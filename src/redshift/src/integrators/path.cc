@@ -44,7 +44,7 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
                 const real_t       distance = I->getDistance();
-                const shared_ptr<Background> bg (scene.getBackground());
+                const shared_ptr<Sky> bg (scene.getBackground());
                 const Normal normalG = gd.getGeometricNormal();
                 const Normal normalS = gd.getShadingNormal();
                 const Point poi = gd.getCenter()+
@@ -74,8 +74,9 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                         Color ret = Color(0);
 
                         // Sunlight.
-                        if (bg->hasSun()) {
-                                const Vector sunDir = bg->getSunDirection();
+                        if (bg->sun()) {
+                                const Sun& sun = *bg->sun();
+                                const Vector sunDir = sun.direction();
                                 const Ray sunRay (poi,sunDir);
                                 const Color surfaceColor = bsdf->f(
                                         -ray.direction,

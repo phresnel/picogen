@@ -655,7 +655,7 @@ namespace redshift { namespace scenefile {
                 , atmosphericEffects(true)
                 {}
 
-                shared_ptr<redshift::Background> toBackground() const {
+                shared_ptr<redshift::Sky> toSky() const {
                         using namespace redshift;
                         switch (type) {
                         case pss_sunsky: {
@@ -667,7 +667,7 @@ namespace redshift { namespace scenefile {
                                         overcast,
                                         atmosphericEffects
                                 ));
-                                return shared_ptr<redshift::Background> (
+                                return shared_ptr<redshift::Sky> (
                                   new backgrounds::PssAdapter (
                                         preetham,
                                         sunSizeFactor, sunBrightnessFactor,
@@ -689,7 +689,7 @@ namespace redshift { namespace scenefile {
                         #endif
                         } break;
                         };
-                        return shared_ptr<redshift::Background>();
+                        return shared_ptr<redshift::Sky>();
                 }
 
                 // Serialization.
