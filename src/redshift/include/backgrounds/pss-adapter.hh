@@ -41,29 +41,6 @@ namespace redshift { namespace backgrounds {
                         real_t atmosphericFxDistanceFactor
                 ) ;
                 ~PssAdapter();
-
-        private:
-
-                Color query (Ray const &ray) const;
-                bool hasFastDiffuseQuery () const { return false; }
-                //Color diffuseQuery (Point const&, Normal const&, Random &) const ;
-                Color atmosphereShade (
-                        Color const &, Ray const &, real_t
-                ) const;
-                bool hasAtmosphereShade () const { return true; }
-                bool isInSunSolidAngle (Vector const &) const;
-
-                // TODO: refactor the sun functions into a PreethamSunAdapter
-                bool hasSun () const { return true; }
-                Vector getSunDirection () const { return normalize(preetham->GetSunPosition()); }
-                Color getSunColor () const;
-                Color querySun (Ray const &ray) const;
-        private:
-
-                redshift::background::PssSunSky::Spectrum query_ (Ray const &ray) const;
-                shared_ptr<redshift::background::PssSunSky> preetham;
-                real_t sunSizeFactor, sunBrightnessFactor,
-                        atmosphereBrightnessFactor, atmosphericFxDistanceFactor;
         };
 } }
 

@@ -22,12 +22,15 @@
 
 namespace redshift { namespace backgrounds {
 
-
 class PssSunAdapter : public Sun {
 public:
-        PssSunAdapter (background::PssSunSky const &pss)
+        PssSunAdapter (
+                background::PssSunSky const &pss,
+                real_t sunSizeFactor,
+                real_t sunBrightnessFactor
+        )
         : pss(pss)
-        , sunSizeFactor(1), sunBrightnessFactor(1)
+        , sunSizeFactor(sunSizeFactor), sunBrightnessFactor(sunBrightnessFactor)
         {
         }
         Vector direction() const {
@@ -59,9 +62,12 @@ private:
 
 class PssAtmosphereAdapater : public Atmosphere {
 public:
-        PssAtmosphereAdapater (background::PssSunSky const &pss)
+        PssAtmosphereAdapater (
+                background::PssSunSky const &pss,
+                real_t atmosphereBrightnessFactor
+        )
         : pss(pss)
-        , atmosphereBrightnessFactor(1)
+        , atmosphereBrightnessFactor(atmosphereBrightnessFactor)
         {
         }
 
@@ -78,9 +84,12 @@ private:
 
 class PssAtmosphericEffectsAdapter : public AtmosphericEffects {
 public:
-        PssAtmosphericEffectsAdapter (background::PssSunSky const &pss)
+        PssAtmosphericEffectsAdapter (
+                background::PssSunSky const &pss,
+                real_t atmosphericEffectsDistanceFactor
+        )
         : pss(pss)
-        , atmosphericEffectsDistanceFactor(1)
+        , atmosphericEffectsDistanceFactor(atmosphericEffectsDistanceFactor)
         {
         }
         Color shade (Color const &color, Ray const &ray, real_t distance) const {
@@ -119,6 +128,7 @@ private:
 
 
 
+
 PssAdapter::PssAdapter (
         shared_ptr<redshift::background::PssSunSky> preetham_,
         real_t sunSizeFactor,
@@ -126,120 +136,16 @@ PssAdapter::PssAdapter (
         real_t atmosphereBrightnessFactor,
         real_t atmosphericFxDistanceFactor
 )
-: Sky( new PssSunAdapter (*preetham_)
-     , new PssAtmosphereAdapater(*preetham_)
-     , new PssAtmosphericEffectsAdapter(*preetham_)
+: Sky( new PssSunAdapter (*preetham_, sunSizeFactor, sunBrightnessFactor)
+     , new PssAtmosphereAdapater(*preetham_, atmosphereBrightnessFactor)
+     , new PssAtmosphericEffectsAdapter(*preetham_, atmosphericFxDistanceFactor)
      )
-, preetham (preetham_)
-, sunSizeFactor(sunSizeFactor)
-, sunBrightnessFactor(sunBrightnessFactor)
-, atmosphereBrightnessFactor(atmosphereBrightnessFactor)
-, atmosphericFxDistanceFactor(atmosphericFxDistanceFactor)
 {
 }
 PssAdapter::~PssAdapter() {
         delete atmosphericEffects();
         delete atmosphere();
         delete sun();
-}
-
-bool PssAdapter::isInSunSolidAngle (Vector const & vector_) const {
-        Vector const vector = normalize (vector_);
-        const real_t
-                dotS_ = dot(vector, getSunDirection()),
-                dotS = dotS_ > 1 ? 1 : dotS_, // this would be the case e.g. with
-                                              // normalize(Vector(1,1,0.1)) as input
-                alpha = acos (dotS),
-                sr = 2 * constants::pi * (1 - std::cos(alpha/2))
-        ;
-        return sr < (preetham->GetSunSolidAngle() * sunSizeFactor);
-}
-
-Color PssAdapter::query (Ray const &ray) const {
-        return Color(query_(ray));
-}
-
-redshift::background::PssSunSky::Spectrum
-PssAdapter::query_ (Ray const &ray) const {
-        using redshift::background::PssSunSky;
-        return Color(atmosphereBrightnessFactor*preetham->GetSkySpectralRadiance (ray.direction))
-                /*+ querySun (ray)*/;
-}
-
-Color PssAdapter::getSunColor () const {
-        return Color(
-          sunBrightnessFactor
-          *(preetham->GetSunSpectralRadiance()
-           +preetham->GetSkySpectralRadiance(preetham->GetSunPosition()))
-        );
-}
-
-Color PssAdapter::querySun (Ray const &ray) const {
-        const Vector &vector = ray.direction;
-        const real_t teh_sun = isInSunSolidAngle (vector)?1.f:0.f;
-        return getSunColor() * teh_sun;
-}
-
-/*
-Color PssAdapter::diffuseQuery (
-        Point const &poi, Normal const &normal, Random &rand
-) const {
-        Color sum = Color::FromRGB (0,0,0);
-        Ray ray;
-        ray.position = poi;
-
-        int numSamples;
-        for (numSamples = 0; numSamples < 10; ++numSamples) {
-                const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
-                const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
-
-                const real_t &sx = get<0>(sphere);
-                const real_t &sy = get<1>(sphere);
-                const real_t &sz = get<2>(sphere);
-                const Vector &X = get<0>(cs);
-                const Vector &Y = get<1>(cs);
-                const Vector &Z = get<2>(cs);
-                const Vector d = X * sx + Y * sy + Z * sz;
-                if (d.y > 0) {
-                        ray.direction = d;
-                        sum = sum + query (ray);
-                }
-        }
-        return sum / Color::real_t(numSamples);
-
-        return query (Ray(poi, vector_cast<Vector>(normal)));
-}*/
-
-Color PssAdapter::atmosphereShade (
-        Color const &color, Ray const &ray, real_t distance
-) const {
-        if (!preetham->atmosphericEffectsEnabled()) {
-                return color;
-        }
-
-        distance *= atmosphericFxDistanceFactor;
-        if (distance == constants::infinity)
-                distance = 10000000;
-
-        if (ray.direction.y < 0 && ray.position.y + ray.direction.y * distance < 0) {
-                // py + dy * d = 0
-                // dy * d = -py
-                // d      = -py / dy
-                distance = -ray.position.y / ray.direction.y;
-        }
-
-        const Vector viewer = vector_cast<Vector>(ray.position);
-        const Vector source = vector_cast<Vector>(ray(distance));
-
-        typedef background::PssSunSky::Spectrum SSpectrum;
-        SSpectrum attenuation(SSpectrum::noinit), inscatter(SSpectrum::noinit);
-        preetham->GetAtmosphericEffects (
-                viewer, source,
-                attenuation, inscatter
-        );
-
-        return Color (SSpectrum(color) * attenuation)
-               + inscatter;
 }
 
 } } // namespace redshift { namespace backgrounds {
