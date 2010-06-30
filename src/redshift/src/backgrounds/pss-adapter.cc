@@ -76,6 +76,47 @@ private:
         real_t atmosphereBrightnessFactor;
 };
 
+class PssAtmosphericEffectsAdapter : public AtmosphericEffects {
+public:
+        PssAtmosphericEffectsAdapter (background::PssSunSky const &pss)
+        : pss(pss)
+        , atmosphericEffectsDistanceFactor(1)
+        {
+        }
+        Color shade (Color const &color, Ray const &ray, real_t distance) const {
+                if (!pss.atmosphericEffectsEnabled()) {
+                        return color;
+                }
+
+                distance *= atmosphericEffectsDistanceFactor;
+                if (distance == constants::infinity)
+                        distance = 10000000;
+
+                if (ray.direction.y < 0 && ray.position.y + ray.direction.y * distance < 0) {
+                        // py + dy * d = 0
+                        // dy * d = -py
+                        // d      = -py / dy
+                        distance = -ray.position.y / ray.direction.y;
+                }
+
+                const Vector viewer = vector_cast<Vector>(ray.position);
+                const Vector source = vector_cast<Vector>(ray(distance));
+
+                typedef background::PssSunSky::Spectrum SSpectrum;
+                SSpectrum attenuation(SSpectrum::noinit), inscatter(SSpectrum::noinit);
+                pss.GetAtmosphericEffects (
+                        viewer, source,
+                        attenuation, inscatter
+                );
+
+                return Color (SSpectrum(color) * attenuation)
+                       + inscatter;
+        }
+private:
+        background::PssSunSky const &pss;
+        real_t atmosphericEffectsDistanceFactor;
+};
+
 
 
 PssAdapter::PssAdapter (
@@ -87,7 +128,7 @@ PssAdapter::PssAdapter (
 )
 : Sky( new PssSunAdapter (*preetham_)
      , new PssAtmosphereAdapater(*preetham_)
-     , 0
+     , new PssAtmosphericEffectsAdapter(*preetham_)
      )
 , preetham (preetham_)
 , sunSizeFactor(sunSizeFactor)
@@ -97,8 +138,9 @@ PssAdapter::PssAdapter (
 {
 }
 PssAdapter::~PssAdapter() {
-        delete sun();
+        delete atmosphericEffects();
         delete atmosphere();
+        delete sun();
 }
 
 bool PssAdapter::isInSunSolidAngle (Vector const & vector_) const {
@@ -196,7 +238,6 @@ Color PssAdapter::atmosphereShade (
                 attenuation, inscatter
         );
 
-        //return Color (SSpectrum(color) * attenuation + inscatter * (1.-attenuation));
         return Color (SSpectrum(color) * attenuation)
                + inscatter;
 }
