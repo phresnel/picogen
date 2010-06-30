@@ -72,7 +72,7 @@ namespace redshift {
                 shared_ptr<Camera>         getCamera ()       const;
                 shared_ptr<VolumeRegion>   getVolumeRegion () const;
 
-                tuple<real_t,Color> Li(Sample const&, Random &, LiMode mode = full) const;
+                tuple<real_t,Color> Li(RayDifferential const &, Sample const&, Random &, LiMode mode = full) const;
                 Color attenuate (
                         Color const &orig,
                         Ray const &ray,

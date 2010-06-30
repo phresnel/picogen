@@ -34,7 +34,7 @@ namespace redshift {
         public:
                 ImageCoordinates imageCoordinates;
                 LensCoordinates lensCoordinates;
-                RayDifferential primaryRay;
+                //RayDifferential primaryRay;
                 shared_ptr<RenderTarget> renderTarget;
 
                 Sample (ImageCoordinates const & imageCoordinates_,

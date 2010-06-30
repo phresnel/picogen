@@ -62,9 +62,7 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                         if (v_) {
                                 const tuple<Color,Vector,real_t> v = *v_;
                                 ray.direction = get<1>(v);
-                                Sample r = sample;
-                                r.primaryRay = ray;
-                                spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v) * (1/get<2>(v));
+                                spec = spec + get<1>(scene.Li (ray, sample, rand)) * get<0>(v) * (1/get<2>(v));
                         }
 
                         return make_tuple(1.0f, spec, gd.getDistance());
@@ -87,15 +85,13 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                 );
 
                                 if (!scene.doesIntersect (sunRay)) {
-                                        Sample sunSample = sample;
-                                        sunSample.primaryRay = sunRay;
-
                                         const real_t d = max(
                                             real_t(0),
                                             dot(sunDir,vector_cast<Vector>(normalS))
                                         );
+                                        const Color sunColor_ = sun.color(sunRay);
                                         const Color sunColor = scene.attenuate(
-                                                sun.color(sunRay),
+                                                sunColor_,
                                                 sunRay,
                                                 sample,
                                                 constants::infinity,
@@ -125,9 +121,7 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                 const Ray skyRay (ray.position, get<1>(*bsdfSample_));
                                 const real_t pdf = get<2>(*bsdfSample_);
 
-                                Sample s = sample;
-                                s.primaryRay = skyRay;
-                                const tuple<real_t,Color> L = scene.Li(s, rand);
+                                const tuple<real_t,Color> L = scene.Li(skyRay, sample, rand);
                                 const Color incomingLight = get<1>(L);
 
                                 const real_t d = max(

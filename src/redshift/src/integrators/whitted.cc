@@ -58,11 +58,8 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                                                 Bsdf::reflection, Bsdf::specular,
                                                 rand);
                         if (v_) {
-                                const tuple<Color,Vector,real_t> v = *v_;
-                                Sample r = sample;
-                                r.primaryRay.position  = poi;
-                                r.primaryRay.direction = get<1>(v);
-                                spec = get<1>(scene.Li (r, rand));// * get<0>(v)  * (1/get<2>(v));
+                                const Ray ray (poi, get<1>(*v_));
+                                spec = get<1>(scene.Li (ray, sample, rand));// * get<0>(v)  * (1/get<2>(v));
                         }
 
                         return make_tuple(1.0f, spec, gd.getDistance());
@@ -78,8 +75,6 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                         );
 
                         if (!scene.doesIntersect (sunRay)) {
-                                Sample sunSample = sample;
-                                sunSample.primaryRay = sunRay;
 
                                 const real_t d = max(
                                     real_t(0),

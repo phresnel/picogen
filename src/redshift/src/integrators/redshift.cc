@@ -62,9 +62,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         if (v_) {
                                 const tuple<Color,Vector,real_t> v = *v_;
                                 ray.direction = get<1>(v);
-                                Sample r = sample;
-                                r.primaryRay = ray;
-                                spec = spec + get<1>(scene.Li (r, rand)) * get<0>(v) * (1/get<2>(v));
+                                spec = spec + get<1>(scene.Li (ray, sample, rand)) * get<0>(v) * (1/get<2>(v));
                         }
 
                         return make_tuple(1.0f, spec, gd.getDistance());
@@ -87,15 +85,14 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                 );
 
                                 if (!scene.doesIntersect (sunRay)) {
-                                        Sample sunSample = sample;
-                                        sunSample.primaryRay = sunRay;
 
                                         const real_t d = max(
                                             real_t(0),
                                             dot(sunDir,vector_cast<Vector>(normalS))
                                         );
+                                        const Color sunColor_ = sun.color(sunRay);
                                         const Color sunColor = scene.attenuate(
-                                                sun.color(sunRay),
+                                                sunColor_,
                                                 sunRay,
                                                 sample,
                                                 constants::infinity,
@@ -125,9 +122,11 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                         skyRay.direction = get<1>(*v_);
                                         const real_t pdf = get<2>(*v_);
 
-                                        Sample s = sample;
-                                        s.primaryRay = skyRay;
-                                        const tuple<real_t,Color> L = scene.Li(s, rand, Scene::volume_only);
+                                        const tuple<real_t,Color> L =
+                                                scene.Li(skyRay,
+                                                         sample,
+                                                         rand,
+                                                         Scene::volume_only);
 
                                         const real_t d = max(real_t(0),
                                             dot(skyRay.direction, vector_cast<Vector>(normalS))

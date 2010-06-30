@@ -110,11 +110,11 @@ optional<Intersection> Scene::intersect(Ray const &ray) const {
 
 
 
-tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode) const {
+tuple<real_t,Color> Scene::Li (RayDifferential const &ray, Sample const & sample, Random& rand, LiMode mode) const {
         // Intersect geometry.
         const tuple<real_t,Color,real_t>
                 Lo_ = (aggregate && mode==full)
-                    ? surfaceIntegrator->Li(*this, sample.primaryRay, sample, rand)
+                    ? surfaceIntegrator->Li(*this, ray, sample, rand)
                     : make_tuple(1., Color(0), constants::infinity)
         ;
 
@@ -129,10 +129,10 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode)
                 const Color
                         atmosphere
                             = background->atmosphere()
-                            ? background->atmosphere()->color(sample.primaryRay)
+                            ? background->atmosphere()->color(ray)
                             : Color(),
                         sun = background->sun()
-                            ? background->sun()->color(sample.primaryRay)
+                            ? background->sun()->color(ray)
                             : Color();
 
                 atmosphere_or_surface = atmosphere + sun;
@@ -141,7 +141,7 @@ tuple<real_t,Color> Scene::Li (Sample const & sample, Random& rand, LiMode mode)
         return make_tuple (
                 1.f,
                 attenuate (atmosphere_or_surface,
-                           sample.primaryRay,
+                           ray,
                            sample,
                            distance,
                            rand));
@@ -161,10 +161,10 @@ Color Scene::attenuate (
         // Intersect volumes.
         const tuple<real_t,Color>
                 T_  = volumeIntegrator
-                    ? volumeIntegrator->Transmittance (*this, sample.primaryRay, sample, i, rand)
+                    ? volumeIntegrator->Transmittance (*this, ray, sample, i, rand)
                     : make_tuple(real_t(1), Color(real_t(1))),
                 Lv_ = volumeIntegrator
-                    ? volumeIntegrator->Li (*this, sample.primaryRay, sample, i, rand)
+                    ? volumeIntegrator->Li (*this, ray, sample, i, rand)
                     : make_tuple(real_t(1), Color(real_t(0)))
         ;
 
@@ -179,7 +179,7 @@ Color Scene::attenuate (
                 // but not onto sun, which is already attenuated inside PssSunSky
                 atmosphere_or_geom_atmosphered
                     = background->atmosphericEffects()
-                    ? background->atmosphericEffects()->shade (atmosphere_or_geom_volumed, sample.primaryRay, distance)
+                    ? background->atmosphericEffects()->shade (atmosphere_or_geom_volumed, ray, distance)
                     : atmosphere_or_geom_volumed
         ;
 
@@ -293,28 +293,27 @@ void Scene::render (
                                         const tuple<real_t,RayDifferential>
                                                                   primo = camera->generateRay (sample);
                                         const real_t & rayWeight (get<0>(primo));
-                                        sample.primaryRay = get<1>(primo); // Will be modified, hence
-                                                                           // non-const non-ref.
+                                        RayDifferential raydiff (get<1>(primo));
 
 
                                         //-------------------------------------------------------------
                                         // 2) Generate Ray Differential.
                                         //-------------------------------------------------------------
                                         sample.imageCoordinates.u++;
-                                        sample.primaryRay.rx = get<1>(camera->generateRay (sample));
+                                        raydiff.rx = get<1>(camera->generateRay (sample));
                                         sample.imageCoordinates.u--;
 
                                         ++sample.imageCoordinates.v;
-                                        sample.primaryRay.ry = get<1>(camera->generateRay (sample));
+                                        raydiff.ry = get<1>(camera->generateRay (sample));
                                         --sample.imageCoordinates.v;
 
-                                        sample.primaryRay.hasDifferentials= true;
+                                        raydiff.hasDifferentials= true;
 
 
                                         //-------------------------------------------------------------
                                         // 3) Evaluate Radiance Along Primary Ray.
                                         //-------------------------------------------------------------
-                                        const tuple<real_t,Color> Ls_ = Li(sample, rand);
+                                        const tuple<real_t,Color> Ls_ = Li(raydiff, sample, rand);
                                         const real_t Ls_alpha (get<0>(Ls_));
                                         const Color Ls_color  (get<1>(Ls_));
                                         const Color finalColor = rayWeight * Ls_color;

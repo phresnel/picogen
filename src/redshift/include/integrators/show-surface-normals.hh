@@ -48,9 +48,9 @@ namespace redshift {
                                 );
                         } else {
                                 Color const col = Color::FromRGB (
-                                                0.5+sample.primaryRay.direction.x,
-                                                0.5+sample.primaryRay.direction.y,
-                                                0.5+sample.primaryRay.direction.z,
+                                                0.5+raydiff.direction.x,
+                                                0.5+raydiff.direction.y,
+                                                0.5+raydiff.direction.z,
                                                 IlluminantSpectrum);
                                 return make_tuple (1.0, col, constants::infinity);
                         }
