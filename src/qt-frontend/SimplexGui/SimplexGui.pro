@@ -72,3 +72,8 @@ include(../widgets/Picohelp/picohelp.pri)
 OTHER_FILES += HOWTO_New_Stuff.txt \
     icon.rc
 RESOURCES += resources.qrc
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+} else {
+    DESTDIR = release
+}

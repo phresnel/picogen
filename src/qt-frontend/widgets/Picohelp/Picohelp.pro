@@ -16,3 +16,8 @@ RESOURCES += ../../SimplexGui/resources.qrc
 OTHER_FILES += picohelp.pri
 RC_FILE += icon.rc
 OTHER_FILES += icon.rc
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+} else {
+    DESTDIR = release
+}

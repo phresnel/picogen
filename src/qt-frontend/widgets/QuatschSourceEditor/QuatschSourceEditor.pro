@@ -1,7 +1,6 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-03-24T09:01:06
 # -------------------------------------------------
-TARGET = picogen-quatsch-editor
 TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
 SOURCES += main.cc \
@@ -29,3 +28,12 @@ RESOURCES += ../../SimplexGui/resources.qrc
 RC_FILE += icon.rc
 OTHER_FILES += icon.rc
 CONFIG+=debug_and_release
+TARGET=picogen-quatsch-editor
+
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+} else {
+    DESTDIR = release
+}
+
+
