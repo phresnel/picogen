@@ -24,8 +24,6 @@ namespace redshift { namespace backgrounds {
 
 
 class PssSunAdapter : public Sun {
-        background::PssSunSky const &pss;
-        real_t sunSizeFactor, sunBrightnessFactor;
 public:
         PssSunAdapter (background::PssSunSky const &pss)
         : pss(pss)
@@ -54,19 +52,44 @@ public:
                 ;
                 return sr < (pss.GetSunSolidAngle() * sunSizeFactor);
         }
+private:
+        background::PssSunSky const &pss;
+        real_t sunSizeFactor, sunBrightnessFactor;
+};
+
+class PssAtmosphereAdapater : public Atmosphere {
+public:
+        PssAtmosphereAdapater (background::PssSunSky const &pss)
+        : pss(pss)
+        , atmosphereBrightnessFactor(1)
+        {
+        }
+
+        Color color(Ray const &ray) const {
+                return Color(
+                        atmosphereBrightnessFactor*
+                        pss.GetSkySpectralRadiance (ray.direction)
+                );
+        }
+private:
+        background::PssSunSky const &pss;
+        real_t atmosphereBrightnessFactor;
 };
 
 
 
 PssAdapter::PssAdapter (
-        shared_ptr<redshift::background::PssSunSky> preetham,
+        shared_ptr<redshift::background::PssSunSky> preetham_,
         real_t sunSizeFactor,
         real_t sunBrightnessFactor,
         real_t atmosphereBrightnessFactor,
         real_t atmosphericFxDistanceFactor
 )
-: Sky(new PssSunAdapter (*preetham), 0, 0)
-, preetham (preetham)
+: Sky( new PssSunAdapter (*preetham_)
+     , new PssAtmosphereAdapater(*preetham_)
+     , 0
+     )
+, preetham (preetham_)
 , sunSizeFactor(sunSizeFactor)
 , sunBrightnessFactor(sunBrightnessFactor)
 , atmosphereBrightnessFactor(atmosphereBrightnessFactor)
@@ -75,6 +98,7 @@ PssAdapter::PssAdapter (
 }
 PssAdapter::~PssAdapter() {
         delete sun();
+        delete atmosphere();
 }
 
 bool PssAdapter::isInSunSolidAngle (Vector const & vector_) const {
