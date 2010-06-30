@@ -35,17 +35,12 @@ namespace redshift { namespace primitive {
                 List();
                 ~List ();
 
-                bool doesIntersect (RayDifferential const &ray) const ;
                 bool doesIntersect (Ray const &ray) const ;
-
-                optional<Intersection> intersect(
-                                        RayDifferential const &ray) const ;
+                optional<Intersection> intersect(Ray const &ray) const;
 
                 void add (shared_ptr<Primitive> primitive) ;
                 void prepare (const Scene &scene);
 
-                void prune ();
-                void setCurrentScanline (unsigned int);
         private:
                 List(List const&);
                 List &operator = (List const&);

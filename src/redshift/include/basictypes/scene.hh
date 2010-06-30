@@ -65,9 +65,7 @@ namespace redshift {
                         unsigned int userSeed
                 ) const ;
 
-                optional<Intersection> intersect(
-                                        RayDifferential const &ray) const;
-                bool doesIntersect (Sample const &sample) const;
+                optional<Intersection> intersect(Ray const &ray) const;
                 bool doesIntersect (Ray const &ray)       const;
 
                 shared_ptr<Sky>            getBackground ()   const;

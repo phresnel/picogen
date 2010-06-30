@@ -54,13 +54,6 @@ Heightmap::~Heightmap () {
 
 
 
-bool Heightmap::doesIntersect (RayDifferential const &ray) const {
-        // TODO shouldn't do full intersect()
-        return intersect (ray);
-}
-
-
-
 bool Heightmap::doesIntersect (Ray const &ray) const {
         // TODO shouldn't do full intersect()
         return intersect (RayDifferential(ray.position, ray.direction));
@@ -69,14 +62,7 @@ bool Heightmap::doesIntersect (Ray const &ray) const {
 
 
 optional<Intersection>
-Heightmap::intersect(RayDifferential const &ray) const {
-        return intersect (ray, 0.0);
-}
-
-
-
-optional<Intersection>
-Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
+Heightmap::intersect(Ray const &ray, real_t minT) const {
 
         // ugly, get rid of that namespace qualify
         typedef kallisto::Point<kallisto::CARTESIAN,real_t> PointR;
@@ -97,7 +83,7 @@ Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
         real_t step;
         const real_t step_epsilon = 0.1;
 
-        if (ray.hasDifferentials) {
+        /*if (ray.hasDifferentials) {
                 step = detail*
                         min(
                                 length(vector_cast<Vector> (ray(0)-ray.rx(0))),
@@ -106,7 +92,7 @@ Heightmap::intersect(RayDifferential const &ray, real_t minT) const {
                 if (step < step_epsilon) {
                         step = step_epsilon;
                 }
-        } else {
+        } else*/ {
                 step = 0.1;
                 if (step < step_epsilon) {
                         step = step_epsilon;

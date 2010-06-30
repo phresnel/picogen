@@ -29,14 +29,6 @@ namespace redshift { namespace primitive {
         public:
                 virtual ~Aggregate () {}
 
-                virtual bool doesIntersect (
-                                        RayDifferential const &ray) const = 0;
-                virtual bool doesIntersect (
-                                        Ray const &ray) const = 0;
-
-                virtual optional<Intersection> intersect(
-                                        RayDifferential const &ray) const = 0;
-
                 virtual shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & /*dgGeom*/
                 ) const {

@@ -34,35 +34,20 @@ namespace redshift {
         class Primitive
         : public enable_shared_from_this<Primitive> {
         public:
-                // If only the information is need whether the ray hits or not.
-                virtual bool doesIntersect (RayDifferential const &ray)
-                                                                     const = 0;
                 virtual bool doesIntersect (Ray const &ray) const = 0;
+                virtual optional<Intersection> intersect(Ray const &ray) const = 0;
 
-                // Full fledged information including Normal, U/V, etc.
-                virtual optional<Intersection> intersect(
-                                        RayDifferential const &ray) const = 0;
-                /*virtual optional<Intersection> intersect(
-                                        Ray const &ray) const = 0;*/
-
-
-                virtual bool doesIntersect (Sample const &sample) const {
+                /*virtual bool doesIntersect (Sample const &sample) const {
                         return doesIntersect (sample.primaryRay);
-                }
-
-                virtual optional<Intersection> intersect(
+                }*/
+                /*virtual optional<Intersection> intersect(
                                         Sample const &sample) const {
                         return intersect (sample.primaryRay);
-                }
-
+                }*/
+                virtual void prepare (const Scene &scene) {}
 
                 virtual shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom) const = 0;
-
-                virtual void prepare (const Scene &/*scene*/) {}
-
-                virtual void prune () {}
-                virtual void setCurrentScanline (unsigned int) {}
 
                 virtual ~Primitive () {}
         };

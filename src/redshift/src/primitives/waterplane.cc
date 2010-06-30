@@ -38,12 +38,6 @@ WaterPlane::~WaterPlane () {
 
 
 
-bool WaterPlane::doesIntersect (RayDifferential const &ray) const {
-        return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
-}
-
-
-
 bool WaterPlane::doesIntersect (Ray const &ray) const {
         return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
 }
@@ -51,7 +45,7 @@ bool WaterPlane::doesIntersect (Ray const &ray) const {
 
 
 optional<Intersection>
- WaterPlane::intersect(RayDifferential const &ray) const {
+ WaterPlane::intersect(Ray const &ray) const {
         if (!doesIntersect (ray))
                 return false;
         const real_t d = (height - scalar_cast<real_t>(ray.position.y))

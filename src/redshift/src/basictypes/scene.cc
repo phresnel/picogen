@@ -98,27 +98,13 @@ shared_ptr<VolumeRegion> Scene::getVolumeRegion () const {
 
 
 
-bool Scene::doesIntersect (Sample const &sample) const {
-        return aggregate->doesIntersect (sample);
-}
-
-
-
 bool Scene::doesIntersect (Ray const &ray) const {
         return aggregate->doesIntersect (ray);
 }
 
 
 
-optional<Intersection> Scene::intersect (Sample const &sample) const {
-        return aggregate->intersect (sample);
-}
-
-
-
-optional<Intersection> Scene::intersect(
-        RayDifferential const &ray
-) const {
+optional<Intersection> Scene::intersect(Ray const &ray) const {
         return aggregate->intersect (ray);
 }
 
@@ -251,8 +237,6 @@ void Scene::render (
 
         for (unsigned int y_=minY; y_<height; ++y_) {
                 const unsigned int y = y_;
-                currentScanline_ = (unsigned int)y;
-                aggregate->setCurrentScanline ((unsigned int)y);
 
                 for (int left=0, right=step;
                      left<(int)width;

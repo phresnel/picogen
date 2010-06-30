@@ -40,11 +40,9 @@ namespace redshift { namespace primitive {
                 ClosedSphere(Point const & center, real_t radius);
                 ~ClosedSphere ();
 
-                bool doesIntersect (RayDifferential const &ray) const;
                 bool doesIntersect (Ray const &ray) const;
 
-                optional<Intersection>
-                        intersect(RayDifferential const &ray) const;
+                optional<Intersection> intersect(Ray const &ray) const;
 
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom

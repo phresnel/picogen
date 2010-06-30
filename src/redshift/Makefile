@@ -112,7 +112,7 @@ OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(MATERIALOBJDIR)/lambertian.o
 OBJFILES += $(MATERIALOBJDIR)/mirror.o
 
-OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
+#OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 #OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
 OBJFILES += $(PRIMITIVESOBJDIR)/closedsphere.o
 OBJFILES += $(PRIMITIVESOBJDIR)/lazyquadtree.o

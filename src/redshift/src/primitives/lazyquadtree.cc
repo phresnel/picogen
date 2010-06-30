@@ -844,12 +844,6 @@ LazyQuadtree::~LazyQuadtree () {
 
 
 
-bool LazyQuadtree::doesIntersect (RayDifferential const &ray) const {
-        return impl->doesIntersect (ray);
-}
-
-
-
 bool LazyQuadtree::doesIntersect (Ray const &ray) const {
         return impl->doesIntersect (ray);
 }
@@ -857,7 +851,7 @@ bool LazyQuadtree::doesIntersect (Ray const &ray) const {
 
 
 optional<Intersection>
- LazyQuadtree::intersect(RayDifferential const &ray) const {
+ LazyQuadtree::intersect(Ray const &ray) const {
         optional<DifferentialGeometry> const dg = impl->intersect (ray);
         if (!dg)
                 return false;
@@ -879,16 +873,6 @@ shared_ptr<Bsdf> LazyQuadtree::getBsdf(
 
 void LazyQuadtree::prepare (const Scene &scene) {
         impl->prepare (scene);
-}
-
-
-
-void LazyQuadtree::prune () {
-}
-
-
-
-void LazyQuadtree::setCurrentScanline (unsigned int s) {
 }
 
 } }

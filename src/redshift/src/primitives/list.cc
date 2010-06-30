@@ -35,20 +35,6 @@ List::~List () {
 
 
 
-bool List::doesIntersect (RayDifferential const &ray) const {
-        optional<Intersection> tmp;
-        for (Primitives::const_iterator it=primitives.begin();
-                it!=primitives.end(); ++it
-        ) {
-                if ((*it)->doesIntersect (ray)) {
-                        return true;
-                }
-        }
-        return false;
-}
-
-
-
 bool List::doesIntersect (Ray const &ray) const {
         optional<Intersection> tmp;
         for (Primitives::const_iterator it=primitives.begin();
@@ -63,7 +49,7 @@ bool List::doesIntersect (Ray const &ray) const {
 
 
 
-optional<Intersection> List::intersect(RayDifferential const &ray) const {
+optional<Intersection> List::intersect(Ray const &ray) const {
         real_t nearest = constants::real_max, tmp;
         optional<Intersection> nearestI, tmpI;
         for (Primitives::const_iterator it=primitives.begin();
@@ -92,26 +78,6 @@ void List::prepare (const Scene &scene) {
                 it!=primitives.end(); ++it
         ) {
                 (*it)->prepare (scene);
-        }
-}
-
-
-
-void List::prune () {
-        for (Primitives::const_iterator it=primitives.begin();
-                it!=primitives.end(); ++it
-        ) {
-                (*it)->prune ();
-        }
-}
-
-
-
-void List::setCurrentScanline (unsigned int scanline) {
-        for (Primitives::const_iterator it=primitives.begin();
-                it!=primitives.end(); ++it
-        ) {
-                (*it)->setCurrentScanline (scanline);
         }
 }
 

@@ -37,12 +37,6 @@ HorizonPlane::~HorizonPlane () {
 
 
 
-bool HorizonPlane::doesIntersect (RayDifferential const &ray) const {
-        return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
-}
-
-
-
 bool HorizonPlane::doesIntersect (Ray const &ray) const {
         return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
 }
@@ -50,7 +44,7 @@ bool HorizonPlane::doesIntersect (Ray const &ray) const {
 
 
 optional<Intersection>
- HorizonPlane::intersect(RayDifferential const &ray) const {
+ HorizonPlane::intersect(Ray const &ray) const {
         if (!doesIntersect (ray))
                 return false;
         const real_t d = (height - scalar_cast<real_t>(ray.position.y))
