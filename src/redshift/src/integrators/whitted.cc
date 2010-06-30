@@ -67,7 +67,7 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
 
                         return make_tuple(1.0f, spec, gd.getDistance());
                 } else if (bg->sun()) {
-                        const Sun &sun = *bg->sun();
+                        const Sun& sun = *bg->sun();
                         const Vector sunDir = sun.direction();
                         const Ray sunRay (poi,sunDir);
                         const Color surfaceColor = bsdf->f(
@@ -77,8 +77,6 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                                 rand
                         );
 
-                        Color ret = Color(0);
-
                         if (!scene.doesIntersect (sunRay)) {
                                 Sample sunSample = sample;
                                 sunSample.primaryRay = sunRay;
@@ -87,13 +85,16 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                                     real_t(0),
                                     dot(sunDir,vector_cast<Vector>(normalS))
                                 );
-                                const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
-                                const Color color = get<1>(volumeLi);
-
-                                ret += surfaceColor * color * d;
+                                const Color sunColor = scene.attenuate(
+                                        sun.color(sunRay),
+                                        sunRay,
+                                        sample,
+                                        constants::infinity,
+                                        rand
+                                );
+                                Color ret = surfaceColor * sunColor * d;
+                                return make_tuple(1.0f, ret, gd.getDistance());
                         }
-
-                        return make_tuple(1.0f, ret, gd.getDistance());
                 }
 
                 return make_tuple(1.0f, Color(0), gd.getDistance());

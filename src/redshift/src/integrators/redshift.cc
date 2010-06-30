@@ -73,9 +73,10 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         const Ray ray (poi, raydiff.direction);
                         Color ret = Color(0);
 
+                        bool sunWasQueried = false;
                         // Sunlight.
                         if (bg->sun()) {
-                                const Sun &sun = *bg->sun();
+                                const Sun& sun = *bg->sun();
                                 const Vector sunDir = sun.direction();
                                 const Ray sunRay (poi,sunDir);
                                 const Color surfaceColor = bsdf->f(
@@ -93,9 +94,15 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                             real_t(0),
                                             dot(sunDir,vector_cast<Vector>(normalS))
                                         );
-                                        const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
-                                        const Color color = get<1>(volumeLi);
-                                        ret += surfaceColor * color * d;
+                                        const Color sunColor = scene.attenuate(
+                                                sun.color(sunRay),
+                                                sunRay,
+                                                sample,
+                                                constants::infinity,
+                                                rand
+                                        );
+                                        ret += surfaceColor * sunColor * d;
+                                        sunWasQueried = true;
                                 }
                         }
 
@@ -110,7 +117,10 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                                 Bsdf::reflection, Bsdf::diffuse,
                                                 rand);
                                 if (v_
-                                && (!bg->sun() || !bg->sun()->isInSunSolidAngle(get<1>(*v_)))
+                                && !(bg->sun()
+                                     && bg->sun()->isInSunSolidAngle(get<1>(*v_))
+                                     && sunWasQueried
+                                    )
                                 ) {
                                         skyRay.direction = get<1>(*v_);
                                         const real_t pdf = get<2>(*v_);

@@ -73,6 +73,7 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                         const Ray ray (poi, raydiff.direction);
                         Color ret = Color(0);
 
+                        bool sunWasQueried = false;
                         // Sunlight.
                         if (bg->sun()) {
                                 const Sun& sun = *bg->sun();
@@ -93,22 +94,32 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                             real_t(0),
                                             dot(sunDir,vector_cast<Vector>(normalS))
                                         );
-                                        const tuple<real_t,Color> volumeLi = scene.Li(sunSample,rand,Scene::volume_only);
-                                        const Color color = get<1>(volumeLi);
-                                        ret += surfaceColor * color * d;
+                                        const Color sunColor = scene.attenuate(
+                                                sun.color(sunRay),
+                                                sunRay,
+                                                sample,
+                                                constants::infinity,
+                                                rand
+                                        );
+                                        ret += surfaceColor * sunColor * d;
+                                        sunWasQueried = true;
                                 }
                         }
 
                         const optional<tuple<Color,Vector,real_t> > bsdfSample_ =
-                                bsdf->sample_f (
+                                bsdf->sample_f(
                                         -ray.direction,
                                         Bsdf::reflection, Bsdf::diffuse,
                                         rand);
 
-                        // NOTE: no need to test whether ray is in sun solid angle,
-                        //       as incomingLight will be zero for all rays that
-                        //       don't intersect.
-                        if (bsdfSample_) {
+                        // Is this a sun-ray but we already queried the sun?
+                        // (note that this is still not 100% exact, unless
+                        //  we really _sample_ the sun disk/sphere)
+                        const bool doublySunLight =
+                                   bg->sun()
+                                && bg->sun()->isInSunSolidAngle(get<1>(*bsdfSample_))
+                                && sunWasQueried;
+                        if (!doublySunLight && bsdfSample_) {
 
                                 const Color surfaceColor = get<0>(*bsdfSample_);
                                 const Ray skyRay (ray.position, get<1>(*bsdfSample_));
