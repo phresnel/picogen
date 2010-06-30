@@ -65,16 +65,20 @@ namespace redshift {
                 virtual Vector direction() const = 0;
                 virtual Color  color(Ray const &) const = 0;
                 virtual bool   isInSunSolidAngle(Vector const &) const = 0;
+
+                virtual ~Sun() {}
         };
 
         class Atmosphere {
         public:
                 virtual Color  color(Ray const &) const = 0;
+                virtual ~Atmosphere() {}
         };
 
         class AtmosphericEffects {
         public:
                 virtual Color shade(Color const &, Ray const &, real_t distance) const = 0;
+                virtual ~AtmosphericEffects() {}
         };
 
         class Sky {
@@ -86,6 +90,15 @@ namespace redshift {
                 : sunPtr(0)
                 , atmospherePtr(0)
                 , atmosphericEffectsPtr(0)
+                {}
+
+                Sky(Sun *sunPtr,
+                    Atmosphere *atmospherePtr,
+                    AtmosphericEffects *atmosphericEffectsPtr
+                )
+                : sunPtr(sunPtr)
+                , atmospherePtr(atmospherePtr)
+                , atmosphericEffectsPtr(atmosphericEffectsPtr)
                 {}
 
                 const Sun*        sun()        const { return sunPtr; }

@@ -22,6 +22,42 @@
 
 namespace redshift { namespace backgrounds {
 
+
+class PssSunAdapter : public Sun {
+        background::PssSunSky const &pss;
+        real_t sunSizeFactor, sunBrightnessFactor;
+public:
+        PssSunAdapter (background::PssSunSky const &pss)
+        : pss(pss)
+        , sunSizeFactor(1), sunBrightnessFactor(1)
+        {
+        }
+        Vector direction() const {
+                return pss.GetSunPosition();
+        }
+        Color color(Ray const &ray) const {
+                const real_t isIn = isInSunSolidAngle(ray.direction)?1:0;
+                return Color(
+                  sunBrightnessFactor*isIn
+                  *(pss.GetSunSpectralRadiance()
+                   +pss.GetSkySpectralRadiance(ray.direction))
+                );
+        }
+        bool isInSunSolidAngle(Vector const &vector_) const {
+                Vector const vector = normalize (vector_);
+                const real_t
+                  dotS_ = dot(vector, direction()),
+                  dotS = dotS_ > 1 ? 1 : dotS_, // this would be the case e.g. with
+                                                // normalize(Vector(1,1,0.1)) as input
+                  alpha = acos (dotS),
+                  sr = 2 * constants::pi * (1 - std::cos(alpha/2))
+                ;
+                return sr < (pss.GetSunSolidAngle() * sunSizeFactor);
+        }
+};
+
+
+
 PssAdapter::PssAdapter (
         shared_ptr<redshift::background::PssSunSky> preetham,
         real_t sunSizeFactor,
@@ -29,12 +65,16 @@ PssAdapter::PssAdapter (
         real_t atmosphereBrightnessFactor,
         real_t atmosphericFxDistanceFactor
 )
-: preetham (preetham)
+: Sky(new PssSunAdapter (*preetham), 0, 0)
+, preetham (preetham)
 , sunSizeFactor(sunSizeFactor)
 , sunBrightnessFactor(sunBrightnessFactor)
 , atmosphereBrightnessFactor(atmosphereBrightnessFactor)
 , atmosphericFxDistanceFactor(atmosphericFxDistanceFactor)
 {
+}
+PssAdapter::~PssAdapter() {
+        delete sun();
 }
 
 bool PssAdapter::isInSunSolidAngle (Vector const & vector_) const {

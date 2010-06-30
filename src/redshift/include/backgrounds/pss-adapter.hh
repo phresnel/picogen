@@ -24,6 +24,9 @@
 #include "../basictypes/background.hh"
 
 namespace redshift { namespace backgrounds {
+
+        class PssSunAdapter;
+
         DefineFinalizer(PssAdapter);
         class PssAdapter
         : public Sky
@@ -37,6 +40,10 @@ namespace redshift { namespace backgrounds {
                         real_t atmosphereBrightnessFactor,
                         real_t atmosphericFxDistanceFactor
                 ) ;
+                ~PssAdapter();
+
+        private:
+
                 Color query (Ray const &ray) const;
                 bool hasFastDiffuseQuery () const { return false; }
                 //Color diffuseQuery (Point const&, Normal const&, Random &) const ;
@@ -57,7 +64,6 @@ namespace redshift { namespace backgrounds {
                 shared_ptr<redshift::background::PssSunSky> preetham;
                 real_t sunSizeFactor, sunBrightnessFactor,
                         atmosphereBrightnessFactor, atmosphericFxDistanceFactor;
-
         };
 } }
 
