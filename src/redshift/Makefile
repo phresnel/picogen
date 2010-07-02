@@ -77,12 +77,14 @@ OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/jobfile.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
 
+#OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-adapter.o
 OBJFILES += $(BACKGROUNDSOBJDIR)/pss-adapter.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_atmconstants.o
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_sunconstants.o
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_sunsky.o
 OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_tospectrum.o
+OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_preetham.o
 
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
@@ -93,7 +95,7 @@ OBJFILES += $(BASICTYPESOBJDIR)/bsdf.o
 OBJFILES += $(BASICTYPESOBJDIR)/volume.o
 OBJFILES += $(BASICTYPESOBJDIR)/spectrum.o
 
-#OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
+OBJFILES += $(SAMPLERSOBJDIR)/sampler.o
 
 OBJFILES += $(SHAPEOBJDIR)/closedsphere.o
 
@@ -120,7 +122,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/list.o
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
 
-#OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
+OBJFILES += $(ACCELERATORSOBJDIR)/accelerators-bvh.o
 
 OBJFILES += $(RENDERTARGETSOBJDIR)/colorrendertarget.o
 OBJFILES += $(RENDERTARGETSOBJDIR)/sdlrendertarget.o
@@ -189,6 +191,10 @@ $(OBJDIR)/quatsch-integration.o: ./src/quatsch-integration.cc
 # backgrounds
 ###############################################################################
 
+$(BACKGROUNDSOBJDIR)/preetham-adapter.o: \
+                     ./src/backgrounds/preetham-adapter.cc
+	$(CXX) -o $@ $<
+
 $(BACKGROUNDSOBJDIR)/pss-adapter.o: \
                      ./src/backgrounds/pss-adapter.cc
 	$(CXX) -o $@ $<
@@ -209,6 +215,9 @@ $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_tospectrum.o: \
                      ./src/backgrounds/preetham-shirley-smits/tospectrum.cc
 	$(CXX) -o $@ $<
 
+$(BACKGROUNDSOBJDIR)/preetham-shirley-smits_preetham.o: \
+                     ./src/backgrounds/preetham-shirley-smits/preetham.cc
+	$(CXX) -o $@ $<
 
 
 ###############################################################################

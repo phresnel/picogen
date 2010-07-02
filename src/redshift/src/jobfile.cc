@@ -21,7 +21,10 @@
 
 //{{{{{{{{{
 // Color types.
+#include "contracts/color_contract.hh"
 #include "basictypes/rgb.hh"
+#include "traits/color_traits.hh"
+
 
 // TODO reorder
 
@@ -40,6 +43,9 @@
 namespace redshift{class RenderTarget;}
 #include "basictypes/rectangle.hh"
 #include "basictypes/sample.hh"
+
+// samplers/
+#include "samplers/sampler.hh"
 
 // cameras/
 #include "cameras/camera.hh"

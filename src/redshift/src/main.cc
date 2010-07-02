@@ -40,7 +40,9 @@ int main (int argc, char *argv[]) {
 
 //{{{{{{{{{
 // Color types.
+#include "contracts/color_contract.hh"
 #include "basictypes/rgb.hh"
+#include "traits/color_traits.hh"
 
 
 // TODO reorder
@@ -60,6 +62,9 @@ int main (int argc, char *argv[]) {
 namespace redshift{class RenderTarget;}
 #include "basictypes/rectangle.hh"
 #include "basictypes/sample.hh"
+
+// samplers/
+#include "samplers/sampler.hh"
 
 // cameras/
 #include "cameras/camera.hh"
@@ -147,8 +152,6 @@ namespace redshift{class RenderTarget;}
 #include <fstream>
 
 #include <boost/program_options.hpp>
-
-#include "../include/auxiliary/filename_extension.hh"
 
 namespace {
         using redshift::optional;

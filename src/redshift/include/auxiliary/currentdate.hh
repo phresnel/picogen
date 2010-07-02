@@ -64,4 +64,17 @@ private:
         }
 };
 
+inline std::string filename_extension (const std::string &str) {
+        using std::string;
+        string ret;
+        for (string::const_reverse_iterator it=str.rbegin(); it!=str.rend(); ++it) {
+                if ('.' == *it) {
+                        reverse (ret.begin(), ret.end());
+                        return ret;
+                }
+                ret += *it;
+        }
+        return "";
+}
+
 #endif // CURRENTDATE_HH_INCLUDED_20100221
