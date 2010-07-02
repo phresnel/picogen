@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,19 +18,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef COLORCONTRACT_H_INCLUDED_20090225
-#define COLORCONTRACT_H_INCLUDED_20090225
+#ifndef FILENAME_EXTENSION_HH_INCLUDED_20100701
+#define FILENAME_EXTENSION_HH_INCLUDED_20100701
 
-/*
-template <typename T> struct ColorContract {
-        static ColorContract def;
-        ColorContract() {
-                T t;
-                float r, g, b;
-                t.fromRgb (1.5L, g);
+inline std::string filename_extension (const std::string &str) {
+        using std::string;
+        string ret;
+        for (string::const_reverse_iterator it=str.rbegin(); it!=str.rend(); ++it) {
+                if ('.' == *it) {
+                        reverse (ret.begin(), ret.end());
+                        return ret;
+                }
+                ret += *it;
         }
-};
-template <typename T> ColorContract<T> ColorContract<T>::def = ColorContract<T>::ColorContract();
-*/
+        return "";
+}
 
-#endif // COLORCONTRACT_H_INCLUDED_20090225
+#endif // FILENAME_EXTENSION_HH_INCLUDED_20100701

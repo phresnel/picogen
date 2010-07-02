@@ -23,9 +23,11 @@
 
 #include "../basictypes/background.hh"
 
-namespace redshift { namespace backgrounds {
+namespace redshift { namespace background {
+        class PssSunSky;
+} }
 
-        class PssSunAdapter;
+namespace redshift { namespace backgrounds {
 
         DefineFinalizer(PssAdapter);
         class PssAdapter
