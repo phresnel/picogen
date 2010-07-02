@@ -18,32 +18,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PSSADAPTER_HH_INCLUDED_20100314
-#define PSSADAPTER_HH_INCLUDED_20100314
+#ifndef COLOR_TRAITS_H_INCLUDED_20090224
+#define COLOR_TRAITS_H_INCLUDED_20090224
 
-#include "../basictypes/background.hh"
+namespace redshift {
+        template <typename T> struct is_rgb
+        : public kallisto::traits::false_value {};
 
-namespace redshift { namespace background {
-        class PssSunSky;
-} }
+        template <> struct is_rgb<Rgb>
+        : public kallisto::traits::true_value {};
+}
 
-namespace redshift { namespace backgrounds {
-
-        DefineFinalizer(PssAdapter);
-        class PssAdapter
-        : public Sky
-        , DoFinalize (PssAdapter)
-        {
-        public:
-                PssAdapter (
-                        shared_ptr<redshift::background::PssSunSky> preetham,
-                        real_t sunSizeFactor,
-                        real_t sunBrightnessFactor,
-                        real_t atmosphereBrightnessFactor,
-                        real_t atmosphericFxDistanceFactor
-                ) ;
-                ~PssAdapter();
-        };
-} }
-
-#endif // PSSADAPTER_HH_INCLUDED_20100314
+#endif //  COLOR_TRAITS_H_INCLUDED_20090224

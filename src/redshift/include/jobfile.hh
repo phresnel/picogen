@@ -30,6 +30,9 @@
 #include "basictypes/height-function.hh"
 #include "basictypes/quatsch-height-function.hh"
 
+#include "backgrounds/pss-adapter.hh"
+#include "backgrounds/preetham-shirley-smits/sunsky.hh"
+
 #include "../../actuarius/actuarius.hh"
 #include <cmath>
 

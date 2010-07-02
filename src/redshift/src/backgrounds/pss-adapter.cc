@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/backgrounds/pss-adapter.hh"
+#include "../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
 
 namespace redshift { namespace backgrounds {
 

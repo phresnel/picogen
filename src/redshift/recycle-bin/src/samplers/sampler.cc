@@ -18,32 +18,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PSSADAPTER_HH_INCLUDED_20100314
-#define PSSADAPTER_HH_INCLUDED_20100314
+#include "../../include/samplers/sampler.hh"
 
-#include "../basictypes/background.hh"
+namespace redshift {
 
-namespace redshift { namespace background {
-        class PssSunSky;
-} }
+Sampler::Sampler (Rectangle const &region_, int samplesPerPixel_) 
+: region(region_), samplesPerPixel(samplesPerPixel_) 
+{}
 
-namespace redshift { namespace backgrounds {
+inline int Sampler::computeTotalSampleCount () const {
+        return samplesPerPixel * area (region);
+}
 
-        DefineFinalizer(PssAdapter);
-        class PssAdapter
-        : public Sky
-        , DoFinalize (PssAdapter)
-        {
-        public:
-                PssAdapter (
-                        shared_ptr<redshift::background::PssSunSky> preetham,
-                        real_t sunSizeFactor,
-                        real_t sunBrightnessFactor,
-                        real_t atmosphereBrightnessFactor,
-                        real_t atmosphericFxDistanceFactor
-                ) ;
-                ~PssAdapter();
-        };
-} }
-
-#endif // PSSADAPTER_HH_INCLUDED_20100314
+}

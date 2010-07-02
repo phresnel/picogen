@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,32 +18,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PSSADAPTER_HH_INCLUDED_20100314
-#define PSSADAPTER_HH_INCLUDED_20100314
+#ifndef FILENAME_EXTENSION_HH_INCLUDED_20100701
+#define FILENAME_EXTENSION_HH_INCLUDED_20100701
 
-#include "../basictypes/background.hh"
+inline std::string filename_extension (const std::string &str) {
+        using std::string;
+        string ret;
+        for (string::const_reverse_iterator it=str.rbegin(); it!=str.rend(); ++it) {
+                if ('.' == *it) {
+                        reverse (ret.begin(), ret.end());
+                        return ret;
+                }
+                ret += *it;
+        }
+        return "";
+}
 
-namespace redshift { namespace background {
-        class PssSunSky;
-} }
-
-namespace redshift { namespace backgrounds {
-
-        DefineFinalizer(PssAdapter);
-        class PssAdapter
-        : public Sky
-        , DoFinalize (PssAdapter)
-        {
-        public:
-                PssAdapter (
-                        shared_ptr<redshift::background::PssSunSky> preetham,
-                        real_t sunSizeFactor,
-                        real_t sunBrightnessFactor,
-                        real_t atmosphereBrightnessFactor,
-                        real_t atmosphericFxDistanceFactor
-                ) ;
-                ~PssAdapter();
-        };
-} }
-
-#endif // PSSADAPTER_HH_INCLUDED_20100314
+#endif // FILENAME_EXTENSION_HH_INCLUDED_20100701
