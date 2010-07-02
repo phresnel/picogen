@@ -21,6 +21,8 @@
 #ifndef RGB_H_INCLUDED_20090224
 #define RGB_H_INCLUDED_20090224
 
+#include "redshift-kallisto.hh"
+
 namespace redshift {
 
         struct /*__attribute__((deprecated))*/ SRgb {

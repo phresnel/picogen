@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2009  Sebastian Mach (*1983)
+// Copyright (C) 2010  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,33 +18,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
-#define SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
+#ifndef NONINHERITABLE_HH_INCLUDED_20100701
+#define NONINHERITABLE_HH_INCLUDED_20100701
 
-#include "usercommandprocessor.hh"
-#include "../auxiliary/stopwatch.hh"
-#include "../sealed.hh"
+#define SEALED(x) \
+        class x##NonInheritable { \
+        private: \
+                friend class x ; \
+                x##NonInheritable() {} \
+                x##NonInheritable(x##NonInheritable const &) {} \
+        }
+#define MAKE_SEALED(x) virtual x##NonInheritable
 
-namespace redshift { namespace interaction {
-
-        SEALED(SdlCommandProcessor);
-        class SdlCommandProcessor
-                : public UserCommandProcessor
-                , MAKE_SEALED(SdlCommandProcessor)
-        {
-        public:
-                SdlCommandProcessor () ;
-
-                void tick () ;
-                bool userWantsToQuit () const ;
-
-        private:
-                bool quit;
-                StopWatch lastTime;
-
-                SdlCommandProcessor (SdlCommandProcessor const &);
-                SdlCommandProcessor & operator = (SdlCommandProcessor const &);
-        };
-} }
-
-#endif // SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318
+#endif // NONINHERITABLE_HH_INCLUDED_20100701

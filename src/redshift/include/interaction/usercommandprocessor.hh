@@ -21,6 +21,8 @@
 #ifndef USERCOMMANDPROCESSOR_HH_INCLUDED_20090318
 #define USERCOMMANDPROCESSOR_HH_INCLUDED_20090318
 
+#include "../smart_ptr.hh"
+
 namespace redshift { namespace interaction {
         class UserCommandProcessor {
         public:

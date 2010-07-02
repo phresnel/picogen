@@ -21,7 +21,6 @@
 #ifndef JOBFILE_HH_INCLUDED_20100318
 #define JOBFILE_HH_INCLUDED_20100318
 
-#include "redshift.hh"
 //#include "../include/rendertargets/sdlrendertarget.hh"
 //#include "../include/rendertargets/colorrendertarget.hh"
 #include "cameras/pinhole.hh"

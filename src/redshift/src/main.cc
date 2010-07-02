@@ -18,12 +18,119 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#if 0
+#include "../include/redshift.hh"
+#include <iostream>
+using namespace redshift;
+
+#undef main
+int main (int argc, char *argv[]) {
+        redshift::static_init();
+        Color a(3), b(2), c=a*a-b;
+        std::cout << c.y() << std::endl;
+}
+
+#else
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: check if boost reports on cerr or cout
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #include "../include/auxiliary/currentdate.hh"
-#include "../include/redshift.hh"
+
+
+//{{{{{{{{{
+// Color types.
+#include "contracts/color_contract.hh"
+#include "basictypes/rgb.hh"
+#include "traits/color_traits.hh"
+
+
+// TODO reorder
+
+// coordinates/
+#include "coordinates/uvcoordinates.hh"
+#include "coordinates/imagecoordinates.hh"
+#include "coordinates/lenscoordinates.hh"
+#include "coordinates/texture2dcoordinates.hh"
+
+// interaction/
+#include "interaction/usercommandprocessor.hh"
+#include "interaction/passivecommandprocessor.hh"
+#include "interaction/progressreporter.hh"
+
+// basictypes/
+namespace redshift{class RenderTarget;}
+#include "basictypes/rectangle.hh"
+#include "basictypes/sample.hh"
+
+// samplers/
+#include "samplers/sampler.hh"
+
+// cameras/
+#include "cameras/camera.hh"
+
+// basictypes/
+#include "basictypes/differentialgeometry.hh"
+#include "basictypes/material.hh"
+#include "basictypes/intersection.hh"
+#include "basictypes/background.hh"
+#include "basictypes/volume.hh"
+
+// rendertargets/
+#include "rendertargets/rendertargetlock.hh"
+#include "rendertargets/rendertarget.hh"
+
+
+// shapes/
+#include "shapes/shape.hh"
+#include "shapes/closedsphere.hh"
+
+// primitive/
+#include "primitives/primitive.hh"
+//#include "primitives/heightmap.hh"
+//#include "primitives/booleanfield.hh"
+#include "primitives/closedsphere.hh"
+#include "primitives/lazyquadtree.hh"
+#include "primitives/horizonplane.hh"
+#include "primitives/waterplane.hh"
+#include "primitives/list.hh"
+
+// background/
+//#include "backgrounds/visualise-direction.hh"
+//#include "backgrounds/monochrome.hh"
+//#include "backgrounds/preetham-adapter.hh"
+#include "backgrounds/pss-adapter.hh"
+
+// Cameras.
+#include "cameras/camera.hh"
+
+// basictypes/
+#include "basictypes/transport.hh"
+#include "basictypes/scene.hh"
+#include "basictypes/heightmap.hh"
+#include "basictypes/bsdf.hh"
+
+// integrators/
+#include "integrators/visualize-distance.hh"
+#include "integrators/show-surface-normals.hh"
+#include "integrators/direct-lighting.hh"
+#include "integrators/redshift.hh"
+#include "integrators/whitted.hh"
+#include "integrators/emission.hh"
+#include "integrators/single-scattering.hh"
+#include "integrators/null.hh"
+#include "integrators/path.hh"
+
+// volume/
+#include "volume/homogeneous.hh"
+#include "volume/exponential.hh"
+#include "volume/list.hh"
+
+
+// material/
+#include "material/lambertian.hh"
+
+//}}}}}}}}}
 
 #include "../include/rendertargets/sdlrendertarget.hh"
 #include "../include/rendertargets/colorrendertarget.hh"
@@ -666,3 +773,4 @@ int main (int argc, char *argv[]) {
 
 
 #endif // PICOGENLIB
+#endif
