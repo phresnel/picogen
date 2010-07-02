@@ -19,6 +19,8 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/material/lambertian.hh"
+#include "../../include/random.hh"
+#include "../../include/sampling.hh"
 
 namespace redshift { namespace bsdf {
 

@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "../../include/basictypes/spectrum.hh"
 #include "../../include/backgrounds/pss-adapter.hh"
 #include "../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
 

@@ -34,12 +34,10 @@
 #include "../interaction/progressreporter.hh"
 #include "../interaction/usercommandprocessor.hh"
 
-
 namespace redshift {
+        class Random;
 
-        DefineFinalizer(Scene);
-
-        class Scene : DoFinalize(Scene) {
+        class Scene {
         public:
                 enum LiMode {
                         volume_only,
@@ -55,7 +53,7 @@ namespace redshift {
                         shared_ptr<VolumeRegion> volumeRegion,
                         shared_ptr<VolumeIntegrator> volumeIntegrator
                 );
-                ~Scene ();
+                virtual ~Scene ();
 
                 void render(
                         interaction::ProgressReporter::Ptr,

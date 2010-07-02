@@ -21,6 +21,7 @@
 
 #include "../../include/integrators/single-scattering.hh"
 #include "../../include/basictypes/scene.hh"
+#include "../../include/random.hh"
 
 namespace redshift {
 

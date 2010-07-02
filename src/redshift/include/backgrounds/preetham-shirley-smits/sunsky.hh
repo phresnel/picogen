@@ -47,7 +47,8 @@
 #endif
 */
 
-#include "../../setup.hh"
+#include "redshift-kallisto.hh"
+#include "basictypes/spectrum.hh"
 
 
 namespace redshift { namespace background {

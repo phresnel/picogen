@@ -53,6 +53,7 @@
 #endif*/
 
 #include "backgrounds/preetham-shirley-smits/sunsky.hh"
+#include "constants.hh"
 
 #include <iostream>
 #include <cmath>

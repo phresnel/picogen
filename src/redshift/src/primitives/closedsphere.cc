@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/primitives/closedsphere.hh"
+#include "../../include/sampling.hh"
 
 namespace redshift { namespace primitive {
 

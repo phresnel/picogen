@@ -21,7 +21,8 @@
 #ifndef BACKGROUND_H_INCLUDED_20090309
 #define BACKGROUND_H_INCLUDED_20090309
 
-#include "../setup.hh"
+#include "../redshift-kallisto.hh"
+#include "../basictypes/spectrum.hh"
 
 namespace redshift {
         class Sun {

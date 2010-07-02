@@ -24,6 +24,7 @@
 //   * And then, un-inline all functions herein
 
 #include <sstream>
+#include "algorithm.hh"
 
 namespace redshift {
 
@@ -102,8 +103,8 @@ inline real_t averageSpectrumSamples(const samples_t *lambda, const samples_t *v
         (real_t)vals[i], (real_t)vals[(i)+1])
 #define SEG_AVG(wl0, wl1, i) (0.5f * (INTERP(wl0, i) + INTERP(wl1, i)))
     for (; i+1 < n && lambdaEnd >= lambda[i]; ++i) {
-        real_t segStart = max((real_t)lambdaStart, (real_t)lambda[i]);
-        real_t segEnd = min((real_t)lambdaEnd, (real_t)lambda[i+1]);
+        real_t segStart = std::max((real_t)lambdaStart, (real_t)lambda[i]);
+        real_t segEnd = std::min((real_t)lambdaEnd, (real_t)lambda[i+1]);
         sum += SEG_AVG(segStart, segEnd, i) * (segEnd - segStart);
     }
 #undef INTERP

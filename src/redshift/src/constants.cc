@@ -18,12 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifdef AMALGAM
-#include "../../include/setup.hh"
-#else
-#include "../include/setup.hh"
-#endif
-
+#include "../include/constants.hh"
 
 namespace redshift { namespace constants {
 

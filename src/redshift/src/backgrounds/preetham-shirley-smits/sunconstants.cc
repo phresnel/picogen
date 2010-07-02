@@ -47,6 +47,8 @@
 #endif*/
 
 #include "backgrounds/preetham-shirley-smits/sunsky.hh"
+#include "redshift-kallisto.hh"
+#include "constants.hh"
 
 namespace redshift { namespace background {
 

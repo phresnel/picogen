@@ -31,7 +31,10 @@
  *
  */
 
+#include "redshift-kallisto.hh"
+#include "constants.hh"
 #include "backgrounds/preetham-shirley-smits/sunsky.hh"
+
 #include <iostream>
 
 /*#ifndef RICOMMON_H

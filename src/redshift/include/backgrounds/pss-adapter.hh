@@ -22,6 +22,8 @@
 #define PSSADAPTER_HH_INCLUDED_20100314
 
 #include "../basictypes/background.hh"
+#include "../sealed.hh"
+#include "../smart_ptr.hh"
 
 namespace redshift { namespace background {
         class PssSunSky;
@@ -29,10 +31,10 @@ namespace redshift { namespace background {
 
 namespace redshift { namespace backgrounds {
 
-        DefineFinalizer(PssAdapter);
+        SEALED(PssAdapter);
         class PssAdapter
         : public Sky
-        , DoFinalize (PssAdapter)
+        , MAKE_SEALED (PssAdapter)
         {
         public:
                 PssAdapter (

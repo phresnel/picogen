@@ -20,9 +20,10 @@
 
 #include "../../include/primitives/lazyquadtree.hh"
 #include "../../include/material/lambertian.hh"
-#include "kallisto/types/cache.hh"
+#include "../../include/random.hh"
 
 #include <omp.h>
+#include <list>
 
 
 // TODO outsource this to auxiliary

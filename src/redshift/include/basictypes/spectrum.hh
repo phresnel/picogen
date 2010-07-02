@@ -27,6 +27,10 @@
 #include "rgb.hh"
 
 namespace redshift {
+        enum { spectrum_samples = 9 };
+}
+
+namespace redshift {
 
         // The basic strategy is to derive from the expression-template
         // kallisto::array<>, and then to cherry pick the operations
@@ -353,5 +357,20 @@ namespace redshift {
 }
 
 #include "spectrum.inl.hh"
+
+
+namespace redshift {
+        //class Rgb;
+        //typedef Rgb Color;
+        enum { longspectrum_samples = 64 };
+        enum { referencespectrum_samples = SAMPLED_LAMBDA_END-SAMPLED_LAMBDA_START };
+        enum { halfreferencespectrum_samples = (SAMPLED_LAMBDA_END-SAMPLED_LAMBDA_START)/2 };
+
+        typedef SpectrumBase<real_t,spectrum_samples> Spectrum, Color;
+        typedef SpectrumBase<real_t,longspectrum_samples> LongSpectrum;
+        typedef SpectrumBase<real_t,referencespectrum_samples> ReferenceSpectrum;
+        typedef SpectrumBase<real_t,halfreferencespectrum_samples> HalfReferenceSpectrum;
+}
+
 
 #endif // SPECTRUM_HH_INCLUDED_20100311
