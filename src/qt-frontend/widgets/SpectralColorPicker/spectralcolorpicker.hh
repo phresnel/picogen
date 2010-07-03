@@ -23,7 +23,7 @@
 #define SPECTRALCOLORPICKER_HH
 
 #include <QWidget>
-#include "redshift/include/setup.hh"
+#include "redshift/include/basictypes/spectrum.hh"
 
 
 namespace Ui {

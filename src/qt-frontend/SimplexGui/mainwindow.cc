@@ -21,6 +21,7 @@
 
 // Picogen.
 #include "redshift/include/jobfile.hh"
+#include "redshift/include/meta/compiler.hh"
 
 // Qt.
 #include <QMessageBox>

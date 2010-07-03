@@ -21,7 +21,7 @@
 #ifndef CREATESPECTRALIMAGE_HH
 #define CREATESPECTRALIMAGE_HH
 
-#include "redshift/include/setup.hh"
+#include "redshift/include/basictypes/spectrum.hh"
 
 inline QImage createSpectralImage (int height = 32) {
         // Below method is extremely wasteful, better write a

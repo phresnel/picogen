@@ -21,7 +21,7 @@
 #ifndef QIMAGERENDERTARGET_HH_INCLUDED_20090327
 #define QIMAGERENDERTARGET_HH_INCLUDED_20090327
 
-#include "../../redshift/include/setup.hh"
+#include "../../redshift/include/sealed.hh"
 #include "../../redshift/include/rendertargets/rendertargetlock.hh"
 #include "../../redshift/include/rendertargets/rendertarget.hh"
 #include "../../redshift/include/smart_ptr.hh"
@@ -30,40 +30,40 @@
 
 namespace redshift {
 
-        DefineFinalizer(QImageRenderTarget);
+        SEALED(QImageRenderTarget);
         class QImageRenderTarget
                 : public redshift::RenderTarget
-                , DoFinalize(QImageRenderTarget) {
+                , MAKE_SEALED(QImageRenderTarget) {
         public:
                 QImageRenderTarget (int width_, int height_,
                                     double colorscale, bool toSRGB);
                 ~QImageRenderTarget();
-                
+
                 shared_ptr<RenderTargetLock> lock ();
                 shared_ptr<RenderTargetLock const> lock () const;
-                
-                void flip();        
-                int getWidth() const;        
+
+                void flip();
+                int getWidth() const;
                 int getHeight() const;
-                
+
                 operator QImage ();
 
-        private:         
-                int width, height;                
+        private:
+                int width, height;
                 QImage display;
                 double colorscale;
                 bool toSRGB;
-                
+
                 class QImageRenderTargetLock;
                 friend class QImageRenderTargetLock;
-                
+
                 class QImageRenderTargetConstLock;
                 friend class QImageRenderTargetConstLock;
 
                 // disable
                 QImageRenderTarget() ;
                 QImageRenderTarget(QImageRenderTarget const&) ;
-                QImageRenderTarget & operator = (QImageRenderTarget const &) ;                                
+                QImageRenderTarget & operator = (QImageRenderTarget const &) ;
         };
 
 } // namespace redshift

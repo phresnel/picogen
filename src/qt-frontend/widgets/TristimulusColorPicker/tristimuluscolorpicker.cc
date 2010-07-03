@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "redshift/include/setup.hh"
+#include "redshift/include/basictypes/spectrum.hh"
 
 #include <iostream>
 #include "tristimuluscolorpicker.hh"
