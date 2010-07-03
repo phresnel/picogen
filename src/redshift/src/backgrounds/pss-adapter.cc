@@ -40,10 +40,11 @@ public:
         }
         Color color(Ray const &ray) const {
                 const real_t isIn = isInSunSolidAngle(ray.direction)?1:0;
+                Color const sky = pss.GetSkySpectralRadiance (ray.direction);
                 return Color(
                   sunBrightnessFactor*isIn
                   *(pss.GetSunSpectralRadiance()
-                   +pss.GetSkySpectralRadiance(ray.direction))
+                   +sky)
                 );
         }
         bool isInSunSolidAngle(Vector const &vector_) const {
@@ -74,9 +75,10 @@ public:
         }
 
         Color color(Ray const &ray) const {
+                Color const sky = pss.GetSkySpectralRadiance (ray.direction);
                 return Color(
                         atmosphereBrightnessFactor*
-                        pss.GetSkySpectralRadiance (ray.direction)
+                        sky
                 );
         }
 private:
@@ -142,6 +144,7 @@ PssAdapter::PssAdapter (
      , new PssAtmosphereAdapater(*preetham_, atmosphereBrightnessFactor)
      , new PssAtmosphericEffectsAdapter(*preetham_, atmosphericFxDistanceFactor)
      )
+, sunSky(preetham_)
 {
 }
 PssAdapter::~PssAdapter() {

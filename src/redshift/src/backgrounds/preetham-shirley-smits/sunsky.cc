@@ -336,8 +336,7 @@ PssSunSky::clearSkySpectralRadiance (PssSunSky::real_t theta,
         const real_t Y = PerezFunction(perez_Y, theta, gamma, zenith_Y);
         const Spectrum spect = ChromaticityToSpectrum(x,y);
         // A simple luminance function would be more efficient.
-        const Spectrum ret = Y * spect / spect.y();
-        return ret;
+        return Y * spect / spect.y();
 }
 
 
@@ -347,10 +346,11 @@ PssSunSky::GetSkySpectralRadiance(
         PssSunSky::real_t theta,
         PssSunSky::real_t phi) const
 {
+        static int i = 0;
         if (overcast >= 0.9999) {
                 return overcastSkySpectralRadiance(theta, phi);
         } else if (overcast <= 0.0001) {
-                return clearSkySpectralRadiance(theta, phi);
+                return clearSkySpectralRadiance(theta,phi);
         } else {
                 return clearSkySpectralRadiance(theta,phi) * (1-overcast)
                       + overcastSkySpectralRadiance(theta,phi) * overcast;

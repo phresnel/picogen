@@ -45,6 +45,10 @@ namespace redshift { namespace backgrounds {
                         real_t atmosphericFxDistanceFactor
                 ) ;
                 ~PssAdapter();
+        private:
+                // So sunSky won't be deleted, even when inner classes
+                // use dumb-pointers/references.
+                shared_ptr<redshift::background::PssSunSky> sunSky;
         };
 } }
 

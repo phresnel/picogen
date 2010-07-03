@@ -41,6 +41,7 @@ int main (int argc, char *argv[]) {
 #include "../include/auxiliary/currentdate.hh"
 #include "../include/static_init.hh"
 
+#include "../include/meta/compiler.hh"
 
 //{{{{{{{{{
 // Color types.

@@ -21,6 +21,4 @@
 #ifndef SETUP_HH_INCLUDED_20090303
 #define SETUP_HH_INCLUDED_20090303
 
-#include "meta/compiler.hh"
-
 #endif // SETUP_HH_INCLUDED_20090303
