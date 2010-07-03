@@ -21,10 +21,11 @@
 #ifndef BACKGROUND_H_INCLUDED_20090309
 #define BACKGROUND_H_INCLUDED_20090309
 
-#include "../redshift-kallisto.hh"
+#include "../geometry.hh"
 #include "../basictypes/spectrum.hh"
 
 namespace redshift {
+
         class Sun {
         public:
                 virtual Vector direction() const = 0;

@@ -22,14 +22,15 @@
 #define EMISSION_HH_INCLUDED_20100211
 
 #include "../basictypes/volume.hh"
+#include "../sealed.hh"
 
 namespace redshift {
 
         // VolumeIntegrator.
-        DefineFinalizer (Emission);
+        SEALED (Emission);
         class Emission
                 : public VolumeIntegrator
-                , DoFinalize(Emission)
+                , MAKE_SEALED(Emission)
         {
         public:
                 Emission (real_t stepSize, real_t cutoffDistance);

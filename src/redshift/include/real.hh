@@ -18,23 +18,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef FILENAME_EXTENSION_HH_INCLUDED_20100701
-#define FILENAME_EXTENSION_HH_INCLUDED_20100701
+#ifndef REAL_HH_INCLUDED_20100702
+#define REAL_HH_INCLUDED_20100702
 
-#include <cstring>
-#include <algorithm>
-
-inline std::string filename_extension (const std::string &str) {
-        using std::string;
-        string ret;
-        for (string::const_reverse_iterator it=str.rbegin(); it!=str.rend(); ++it) {
-                if ('.' == *it) {
-                        reverse (ret.begin(), ret.end());
-                        return ret;
-                }
-                ret += *it;
-        }
-        return "";
+// This might seem exaggerated, but there is actually quite a number of files
+// that do not need anything but this real definition (e.g. rgb.hh), so this is
+// a compilation time optimization.
+namespace redshift {
+        typedef double real_t;
 }
 
-#endif // FILENAME_EXTENSION_HH_INCLUDED_20100701
+#endif // REAL_HH_INCLUDED_20100702

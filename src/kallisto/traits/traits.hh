@@ -21,6 +21,9 @@
 #ifndef TRAITS_H__INCLUDED__20090210
 #define TRAITS_H__INCLUDED__20090210
 
+#include "../testing/unit_test.hh"
+#include "../testing/static_assert.hh"
+
 namespace kallisto { namespace traits {
         template <typename T> struct get_type { typedef T type; };
 

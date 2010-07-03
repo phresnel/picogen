@@ -18,23 +18,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef FILENAME_EXTENSION_HH_INCLUDED_20100701
-#define FILENAME_EXTENSION_HH_INCLUDED_20100701
+#ifndef ARRAY_HH_INCLUDED_20100702
+#define ARRAY_HH_INCLUDED_20100702
 
-#include <cstring>
-#include <algorithm>
-
-inline std::string filename_extension (const std::string &str) {
-        using std::string;
-        string ret;
-        for (string::const_reverse_iterator it=str.rbegin(); it!=str.rend(); ++it) {
-                if ('.' == *it) {
-                        reverse (ret.begin(), ret.end());
-                        return ret;
-                }
-                ret += *it;
-        }
-        return "";
+#include "../../kallisto/types/array.hh"
+namespace redshift {
+        using kallisto::array;
 }
 
-#endif // FILENAME_EXTENSION_HH_INCLUDED_20100701
+#endif // ARRAY_HH_INCLUDED_20100702

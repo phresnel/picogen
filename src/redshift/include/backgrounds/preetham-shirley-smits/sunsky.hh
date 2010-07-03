@@ -47,7 +47,7 @@
 #endif
 */
 
-#include "redshift-kallisto.hh"
+#include "geometry.hh"
 #include "basictypes/spectrum.hh"
 
 

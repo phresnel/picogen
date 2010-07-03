@@ -22,6 +22,7 @@
 #define UNIT_TEST_H_INCLUDED_20090215
 
 namespace kallisto { namespace unit_test {
+
 #if 0
         //  \[\033[1;34m\] $\[\033[0m\]
 # define UNIT_TEST_REPORT_BEGIN(x) do {                           \
@@ -33,11 +34,16 @@ namespace kallisto { namespace unit_test {
                     << ::std::endl; }while(0)
 # define UNIT_TEST_REPORT_FAIL(x) do {\
         ::std::cout << __FILE__ << ":" << __LINE__ << ":Test failed! " << (x) << ::std::endl;}while(0)
-#else
+#elif 0
 # define UNIT_TEST_REPORT_BEGIN(x) do { ::std::cout << __FILE__ << ":" << __LINE__ << ":Beginning Unit-Test." << (x) << ::std::endl; } while(false)
 # define UNIT_TEST_PRINT(x) do { ::std::cout << __FILE__ << ":" << __LINE__ << ":" << (x) << ::std::endl; } while(false)
 # define UNIT_TEST_WARN(x) do { ::std::cout << __FILE__ << ":" << __LINE__ << ":warning:" << (x) << ::std::endl; } while(false)
 # define UNIT_TEST_REPORT_FAIL(x) do { ::std::cout << "\t" << __FILE__ << ":" << __LINE__ << ":Test failed! " << (x) << ::std::endl; } while(false)
+#else
+# define UNIT_TEST_REPORT_BEGIN(x)
+# define UNIT_TEST_PRINT(x)
+# define UNIT_TEST_WARN(x)
+# define UNIT_TEST_REPORT_FAIL(x)
 #endif
 
         template <typename T> bool cmpz_epsilon(T const &subject, T const &epsilon) {

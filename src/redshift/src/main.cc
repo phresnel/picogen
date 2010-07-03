@@ -19,15 +19,17 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #if 0
-#include "../include/redshift.hh"
+
 #include <iostream>
+
+#include "../include/basictypes/volume.hh"
 using namespace redshift;
 
 #undef main
 int main (int argc, char *argv[]) {
-        redshift::static_init();
+        /*redshift::static_init();
         Color a(3), b(2), c=a*a-b;
-        std::cout << c.y() << std::endl;
+        std::cout << c.y() << std::endl;**/
 }
 
 #else

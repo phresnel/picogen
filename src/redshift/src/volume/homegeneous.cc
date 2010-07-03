@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/volume/homogeneous.hh"
-
+#include "../../include/interval.hh"
 
 namespace redshift { namespace volume {
 

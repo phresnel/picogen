@@ -22,15 +22,17 @@
 #define VOLUME_LIST_HH_INCLUDED_20100228
 
 #include "../basictypes/volume.hh"
+#include "../sealed.hh"
+#include "../smart_ptr.hh"
 
 namespace redshift { namespace volume {
 
         // VolumeRegion.
-        DefineFinalizer(List);
+        SEALED(List);
 
         class List
                 : public VolumeRegion
-                , DoFinalize(List)
+                , MAKE_SEALED(List)
         {
         public:
                 List () ;

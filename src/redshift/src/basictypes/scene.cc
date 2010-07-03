@@ -25,6 +25,7 @@
 #include "../../include/integrators/single-scattering.hh"
 
 #include "../../include/random.hh"
+#include "../../include/interval.hh"
 #include "../../include/basictypes/spectrum.hh"
 
 #include <omp.h>

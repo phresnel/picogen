@@ -21,13 +21,14 @@
 #ifndef DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
 #define DIFFERENTIALGEOMETRY_H_INCLUDED_20090301
 
-#include "../setup.hh"
+#include "../geometry.hh"
+#include "../sealed.hh"
 
 namespace redshift {
 
-        DefineFinalizer(DifferentialGeometry);
+        SEALED(DifferentialGeometry);
 
-        class DifferentialGeometry : DoFinalize(DifferentialGeometry) {
+        class DifferentialGeometry : MAKE_SEALED(DifferentialGeometry) {
         public:
                 DifferentialGeometry();
 

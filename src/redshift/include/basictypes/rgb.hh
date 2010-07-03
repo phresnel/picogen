@@ -21,7 +21,8 @@
 #ifndef RGB_H_INCLUDED_20090224
 #define RGB_H_INCLUDED_20090224
 
-#include "redshift-kallisto.hh"
+#include <cmath>
+#include "real.hh"
 
 namespace redshift {
 
@@ -105,6 +106,7 @@ namespace redshift {
                 }
 
                 inline SRGB RGB::toSRGB () const {
+                        using std::pow;
                         SRGB srgb(R,G,B);
                         if ( srgb.R > 0.0031308 ) srgb.R = 1.055 * ( pow(srgb.R,(1/2.4) ) ) - 0.055;
                         else                 srgb.R = 12.92 * srgb.R;
@@ -166,6 +168,7 @@ namespace redshift {
                 }
 
                 operator SRgb () const {
+                        using std::pow;
                         SRgb srgb(r,g,b);
                         if ( srgb.r > 0.0031308 ) srgb.r = 1.055 * ( pow(srgb.r,(1/2.4) ) ) - 0.055;
                         else                 srgb.r = 12.92 * srgb.r;

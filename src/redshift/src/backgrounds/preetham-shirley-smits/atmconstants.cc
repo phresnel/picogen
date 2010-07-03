@@ -31,7 +31,7 @@
  *
  */
 
-#include "redshift-kallisto.hh"
+#include "geometry.hh"
 #include "constants.hh"
 #include "backgrounds/preetham-shirley-smits/sunsky.hh"
 

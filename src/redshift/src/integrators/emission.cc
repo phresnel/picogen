@@ -22,6 +22,7 @@
 #include "../../include/integrators/emission.hh"
 #include "../../include/basictypes/scene.hh"
 #include "../../include/random.hh"
+#include "../../include/interval.hh"
 
 namespace redshift {
 

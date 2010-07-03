@@ -18,26 +18,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef TRANSPORT_HH_INCLUDED_20090110
-#define TRANSPORT_HH_INCLUDED_20090110
+#ifndef INTERVAL_HH_INCLUDED_20100702
+#define INTERVAL_HH_INCLUDED_20100702
 
-#include "../geometry.hh"
-#include "spectrum.hh"
+#include "real.hh"
 
 namespace redshift {
-        class Scene;
-        class Sample;
-        class Random;
 
-        class Integrator {
+        // Should be in kallisto.
+        class Interval {
         public:
-                virtual ~Integrator() {}
-                virtual tuple<real_t,Color,real_t> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample, Random& rand
-                ) const = 0;
+                Interval (real_t min, real_t max)
+                : min_(min), max_(max)
+                {
+                        assert_valid();
+                }
+
+                Interval (Interval const &rhs)
+                : min_(rhs.min_), max_(rhs.max_) {}
+
+                Interval & operator = (Interval const &rhs) {
+                        min_ = rhs.min_;
+                        max_ = rhs.max_;
+                        return *this;
+                }
+
+                void setMin (real_t min) { min_ = min; assert_valid(); }
+                void setMax (real_t max) { max_ = max; assert_valid(); }
+                real_t min() const { return min_; }
+                real_t max() const { return max_; }
+                real_t mag() const { return max_-min_; }
+        private:
+                void assert_valid() {}
+                real_t min_, max_;
         };
 }
 
-#endif // TRANSPORT_HH_INCLUDED_20090110
+#endif // INTERVAL_HH_INCLUDED_20100702

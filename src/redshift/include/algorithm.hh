@@ -38,7 +38,7 @@ namespace redshift {
         }
 }
 
-#include "redshift-kallisto.hh"
+#include "geometry.hh"
 #include "tuple.hh"
 #include "constants.hh"
 namespace redshift {

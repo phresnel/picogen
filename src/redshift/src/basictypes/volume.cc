@@ -20,6 +20,7 @@
 
 #include "../../include/basictypes/volume.hh"
 #include "../../include/random.hh"
+#include "../../include/interval.hh"
 
 namespace redshift {
 

@@ -21,13 +21,12 @@
 #ifndef VOLUME_HH_INCLUDED_20100210
 #define VOLUME_HH_INCLUDED_20100210
 
-#include "../setup.hh"
 #include "transport.hh"
-
+#include "../tuple.hh"
 
 namespace redshift {
-        class Scene;
-        class Sample;
+
+        class Interval;
 
         // Phase functions. (Direct transcription from PBRT.)
         inline real_t phaseIsotropic(const Vector &, const Vector &) {

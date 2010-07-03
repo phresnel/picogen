@@ -22,15 +22,16 @@
 #define EXPONENTIAL_HH_INCLUDED_20100213
 
 #include "../basictypes/volume.hh"
+#include "../sealed.hh"
 
 namespace redshift { namespace volume {
 
         // VolumeRegion.
-        DefineFinalizer(Exponential);
+        SEALED(Exponential);
 
         class Exponential
                 : public DensityRegion
-                , DoFinalize(Exponential)
+                , MAKE_SEALED(Exponential)
         {
         public:
                 Exponential (

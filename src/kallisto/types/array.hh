@@ -21,6 +21,7 @@
 #ifndef ARRAY_HH_INCLUDED_20100310
 #define ARRAY_HH_INCLUDED_20100310
 
+#include <limits>
 #include "../traits/traits.hh"
 
 // Notes:

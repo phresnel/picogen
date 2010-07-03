@@ -22,8 +22,9 @@
 #define SPECTRUM_HH_INCLUDED_20100311
 
 #include <sstream>
-
-#include "../redshift-kallisto.hh"
+#include <stdexcept>
+#include "../real.hh"
+#include "../array.hh"
 #include "rgb.hh"
 
 namespace redshift {

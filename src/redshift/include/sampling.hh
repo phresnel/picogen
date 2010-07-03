@@ -21,7 +21,7 @@
 #ifndef SAMPLING_HH_INCLUDED_20100701
 #define SAMPLING_HH_INCLUDED_20100701
 
-#include "redshift-kallisto.hh"
+#include "geometry.hh"
 #include "random.hh"
 #include "constants.hh"
 #include "tuple.hh"

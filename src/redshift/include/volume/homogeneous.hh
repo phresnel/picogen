@@ -22,15 +22,16 @@
 #define HOMOGENEOUS_HH_INCLUDED_20100211
 
 #include "../basictypes/volume.hh"
+#include "../sealed.hh"
 
 namespace redshift { namespace volume {
 
         // VolumeRegion.
-        DefineFinalizer(Homogeneous);
+        SEALED(Homogeneous);
 
         class Homogeneous
                 : public VolumeRegion
-                , DoFinalize(Homogeneous)
+                , MAKE_SEALED(Homogeneous)
         {
         public:
                 Homogeneous (

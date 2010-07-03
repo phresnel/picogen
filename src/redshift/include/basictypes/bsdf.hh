@@ -21,11 +21,16 @@
 #ifndef BSDF_HH_INCLUDED_20100118
 #define BSDF_HH_INCLUDED_20100118
 
-#include "../setup.hh"
+#include "../geometry.hh"
+#include "../optional.hh"
+#include "../tuple.hh"
+#include "../smart_ptr.hh"
+#include "spectrum.hh"
 #include "differentialgeometry.hh"
 
 namespace redshift {
 class Bxdf;
+class Random;
 
 class Bsdf {
 public:

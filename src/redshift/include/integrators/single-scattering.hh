@@ -22,14 +22,15 @@
 #define SINGLE_SCATTERING_HH_INCLUDED_20100211
 
 #include "../basictypes/volume.hh"
+#include "../sealed.hh"
 
 namespace redshift {
 
         // VolumeIntegrator.
-        DefineFinalizer (SingleScattering);
+        SEALED (SingleScattering);
         class SingleScattering
                 : public VolumeIntegrator
-                , DoFinalize(SingleScattering)
+                , MAKE_SEALED(SingleScattering)
         {
         public:
                 SingleScattering (real_t stepSize, real_t cutoffDistance);
