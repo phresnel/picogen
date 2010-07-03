@@ -21,16 +21,14 @@
 #ifndef PINHOLE_HH_INCLUDED_20090312
 #define PINHOLE_HH_INCLUDED_20090312
 
-#include "../setup.hh"
-#include "../basictypes/sample.hh"
-#include "../rendertargets/rendertarget.hh"
 #include "../cameras/camera.hh"
+#include "../smart_ptr.hh"
 
 namespace redshift { namespace camera {
 
-        DefineFinalizer(Pinhole);
+        SEALED(Pinhole);
 
-        class Pinhole : public Camera, DoFinalize(Pinhole) {
+        class Pinhole : public Camera, MAKE_SEALED(Pinhole) {
         public:
 
                 Pinhole (shared_ptr<RenderTarget> film, real_t frontDist,

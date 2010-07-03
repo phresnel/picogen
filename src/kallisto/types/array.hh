@@ -21,6 +21,11 @@
 #ifndef ARRAY_HH_INCLUDED_20100310
 #define ARRAY_HH_INCLUDED_20100310
 
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+#include <stdint.h>
+
 #include <limits>
 #include "../traits/traits.hh"
 

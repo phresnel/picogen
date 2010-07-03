@@ -28,6 +28,7 @@
 #include "../../include/interval.hh"
 #include "../../include/basictypes/spectrum.hh"
 
+
 #include <omp.h>
 
 namespace {

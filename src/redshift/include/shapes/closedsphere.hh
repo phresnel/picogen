@@ -21,21 +21,20 @@
 #ifndef CLOSEDSPHERE_H_INCLUDED_20090301
 #define CLOSEDSPHERE_H_INCLUDED_20090301
 
-#include "../setup.hh"
-#include "../basictypes/intersection.hh"
 #include "shape.hh"
+#include "../sealed.hh"
 
 namespace redshift { namespace shape {
-        DefineFinalizer(ClosedSphere); 
-        
-        class ClosedSphere : public Shape, DoFinalize(ClosedSphere) {
+        SEALED(ClosedSphere);
+
+        class ClosedSphere : public Shape, MAKE_SEALED(ClosedSphere) {
         public:
                 ClosedSphere (Point const &, real_t);
                 bool doesIntersect (Ray const &ray) const ;
                 optional<DifferentialGeometry> intersect (Ray const&ray) const;
         private:
                 redshift::Sphere sphereData;
-                
+
                 ClosedSphere();
                 ClosedSphere(ClosedSphere const&);
                 ClosedSphere &operator = (ClosedSphere const&);

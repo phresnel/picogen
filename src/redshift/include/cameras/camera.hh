@@ -21,8 +21,14 @@
 #ifndef CAMERA_HH_INCLUDED_20090310
 #define CAMERA_HH_INCLUDED_20090310
 
-#include "../setup.hh"
-#include "../basictypes/sample.hh"
+#include "../geometry.hh"
+#include "../sealed.hh"
+#include "../tuple.hh"
+
+namespace redshift {
+        class RenderTarget;
+        class Sample;
+}
 
 namespace redshift {
         class Camera {

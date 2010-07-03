@@ -21,6 +21,13 @@
 #ifndef SHAPE_H_INCLUDED_20090301
 #define SHAPE_H_INCLUDED_20090301
 
+#include "../geometry.hh"
+#include "../optional.hh"
+
+namespace redshift {
+        class DifferentialGeometry;
+}
+
 namespace redshift { namespace shape {
         class Shape {
         public:

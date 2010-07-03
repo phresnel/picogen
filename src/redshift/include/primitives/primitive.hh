@@ -21,14 +21,15 @@
 #ifndef PRIMITIVE_H_INCLUDED_20090301
 #define PRIMITIVE_H_INCLUDED_20090301
 
-#include "../setup.hh"
-#include "../basictypes/intersection.hh"
-#include "../basictypes/sample.hh"
-#include "../basictypes/bsdf.hh"
-
+#include "../geometry.hh"
+#include "../optional.hh"
+#include "../smart_ptr.hh"
 
 namespace redshift {
         class Scene;
+        class Intersection;
+        class Bsdf;
+        class DifferentialGeometry;
 }
 namespace redshift {
         class Primitive
@@ -37,13 +38,6 @@ namespace redshift {
                 virtual bool doesIntersect (Ray const &ray) const = 0;
                 virtual optional<Intersection> intersect(Ray const &ray) const = 0;
 
-                /*virtual bool doesIntersect (Sample const &sample) const {
-                        return doesIntersect (sample.primaryRay);
-                }*/
-                /*virtual optional<Intersection> intersect(
-                                        Sample const &sample) const {
-                        return intersect (sample.primaryRay);
-                }*/
                 virtual void prepare (const Scene &scene) {}
 
                 virtual shared_ptr<Bsdf> getBsdf(

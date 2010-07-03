@@ -19,6 +19,10 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/cameras/cubemapface.hh"
+#include "../../include/basictypes/sample.hh"
+#include "../../include/constants.hh"
+#include "../../include/rendertargets/rendertarget.hh"
+
 
 namespace redshift { namespace camera {
 

@@ -19,6 +19,8 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/primitives/list.hh"
+#include "../../include/basictypes/intersection.hh"
+#include "../../include/constants.hh"
 
 namespace redshift { namespace primitive {
 

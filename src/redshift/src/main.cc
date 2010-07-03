@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "../include/basictypes/volume.hh"
+#include "../include/basictypes/volume.hh"
 using namespace redshift;
 
 #undef main
@@ -38,6 +39,7 @@ int main (int argc, char *argv[]) {
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #include "../include/auxiliary/currentdate.hh"
+#include "../include/static_init.hh"
 
 
 //{{{{{{{{{

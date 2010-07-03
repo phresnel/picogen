@@ -21,11 +21,13 @@
 #ifndef HEIGHTFUNCTION_HH_INCLUDED_20100114
 #define HEIGHTFUNCTION_HH_INCLUDED_20100114
 
+#include "../real.hh"
+
 namespace redshift {
 
 class HeightFunction {
 public:
-        virtual 
+        virtual
          real_t operator ()
            (real_t const &u, real_t const &v)
          const = 0;

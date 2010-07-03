@@ -21,6 +21,8 @@
 #ifndef RENDERTARGETLOCK_HH_INCLUDED_20090307
 #define RENDERTARGETLOCK_HH_INCLUDED_20090307
 
+#include "../basictypes/spectrum.hh"
+
 namespace redshift {
         class RenderTargetLock {
         public:

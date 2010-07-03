@@ -21,11 +21,15 @@
 #ifndef LAZY_QUADTREE_HH_INCLUDED_20100116
 #define LAZY_QUADTREE_HH_INCLUDED_20100116
 
-#include "../setup.hh"
-#include "../basictypes/intersection.hh"
+
 #include "../primitives/primitive.hh"
-#include "../basictypes/height-function.hh"
-#include "../basictypes/scene.hh"
+
+namespace redshift {
+        class Intersection;
+        class Scene;
+        class HeightFunction;
+}
+
 
 namespace redshift { namespace primitive {
 

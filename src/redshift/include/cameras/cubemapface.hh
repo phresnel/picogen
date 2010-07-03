@@ -21,16 +21,14 @@
 #ifndef CUBEMAPFACE_HH_INCLUDED_20100411
 #define CUBEMAPFACE_HH_INCLUDED_20100411
 
-#include "../setup.hh"
-#include "../basictypes/sample.hh"
-#include "../rendertargets/rendertarget.hh"
 #include "../cameras/camera.hh"
+#include "../smart_ptr.hh"
 
 namespace redshift { namespace camera {
 
-        DefineFinalizer(CubeMapFace);
+        SEALED(CubeMapFace);
 
-        class CubeMapFace : public Camera, DoFinalize(CubeMapFace) {
+        class CubeMapFace : public Camera, MAKE_SEALED(CubeMapFace) {
         public:
                 enum Face {
                         front, back,

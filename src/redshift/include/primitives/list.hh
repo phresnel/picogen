@@ -22,14 +22,15 @@
 #define PRIMITIVE_LIST_HH_INCLUDED_20100120
 
 #include "../primitives/aggregate.hh"
+#include "../sealed.hh"
 
 namespace redshift { namespace primitive {
 
-        DefineFinalizer(List);
+        SEALED(List);
 
         class List
                 : public Aggregate
-                , DoFinalize(List)
+                , MAKE_SEALED(List)
         {
         public:
                 List();

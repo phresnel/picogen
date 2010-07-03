@@ -21,16 +21,18 @@
 #ifndef INTERSECTION_H_INCLUDED_20090301
 #define INTERSECTION_H_INCLUDED_20090301
 
-#include "../setup.hh"
+#include "../geometry.hh"
+#include "../smart_ptr.hh"
+#include "../sealed.hh"
 #include "../basictypes/differentialgeometry.hh"
 
 
 namespace redshift { class Primitive; }
 
 namespace redshift {
-        DefineFinalizer(Intersection);
+        SEALED(Intersection);
 
-        class Intersection : DoFinalize(Intersection) {
+        class Intersection : MAKE_SEALED(Intersection) {
         public:
                 Intersection (
                         shared_ptr<redshift::Primitive const>,

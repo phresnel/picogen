@@ -42,19 +42,12 @@ namespace redshift {
         using std::make_pair;
 }
 
-#include "auxiliary/mutex.hh"
-#include "auxiliary/scopedlock.hh"
-
-#include "basictypes/rgb.hh"
-
-
-#include "constants.hh"
-
-
+/*
 #include "smart_ptr.hh"
 #include "tuple.hh"
 #include "optional.hh"
 
 #include "static_init.hh"
+*/
 
 #endif // SETUP_HH_INCLUDED_20090303

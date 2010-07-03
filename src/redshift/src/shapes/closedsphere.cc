@@ -20,6 +20,9 @@
 
 
 #include "../../include/shapes/closedsphere.hh"
+#include "../../include/tuple.hh"
+#include "../../include/algorithm.hh"
+#include "../../include/basictypes/differentialgeometry.hh"
 
 
 namespace redshift { namespace shape {
