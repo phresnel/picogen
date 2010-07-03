@@ -21,33 +21,6 @@
 #ifndef SETUP_HH_INCLUDED_20090303
 #define SETUP_HH_INCLUDED_20090303
 
-#include <utility>
-
 #include "meta/compiler.hh"
-
-#define DefineFinalizer(x) \
-        class x##Finalize { \
-        private: \
-                friend class x ; \
-                x##Finalize() {} \
-                x##Finalize(x##Finalize const &) {} \
-        }
-#define DoFinalize(x) virtual x##Finalize
-
-namespace redshift { class Random; }
-
-#include "geometry.hh"
-namespace redshift {
-        using std::pair;
-        using std::make_pair;
-}
-
-/*
-#include "smart_ptr.hh"
-#include "tuple.hh"
-#include "optional.hh"
-
-#include "static_init.hh"
-*/
 
 #endif // SETUP_HH_INCLUDED_20090303

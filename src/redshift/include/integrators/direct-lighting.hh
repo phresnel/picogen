@@ -21,15 +21,15 @@
 #ifndef DIRECTLIGHTING_HH_INCLUDED_20090110
 #define DIRECTLIGHTING_HH_INCLUDED_20090110
 
-#include "../setup.hh"
+#include "../geometry.hh"
 #include "../basictypes/scene.hh"
 #include "../basictypes/sample.hh"
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
 namespace redshift {
-        DefineFinalizer(DirectLighting);
-        class DirectLighting : public Integrator, DoFinalize(DirectLighting) {
+        SEALED(DirectLighting);
+        class DirectLighting : public Integrator, MAKE_SEALED(DirectLighting) {
         public:
                 tuple<real_t,Color,real_t> Li (
                         const Scene &scene,

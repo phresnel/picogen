@@ -21,7 +21,7 @@
 #ifndef PRIMITIVE_CLOSEDSPHERE_H_INCLUDED_20090313
 #define PRIMITIVE_CLOSEDSPHERE_H_INCLUDED_20090313
 
-#include "../setup.hh"
+#include "../geometry.hh"
 #include "../basictypes/intersection.hh"
 #include "../shapes/closedsphere.hh"
 #include "../primitives/primitive.hh"
@@ -30,11 +30,11 @@
 
 namespace redshift { namespace primitive {
 
-        DefineFinalizer(ClosedSphere);
+        SEALED(ClosedSphere);
 
         class ClosedSphere
                 : public Primitive
-                , DoFinalize(ClosedSphere)
+                , MAKE_SEALED(ClosedSphere)
         {
         public:
                 ClosedSphere(Point const & center, real_t radius);

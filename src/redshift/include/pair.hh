@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2010 Sebastian Mach (*1983)
+// Copyright (C) 2009  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,31 +18,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PATHINTEGRATOR_INCLUDED_20100604
-#define PATHINTEGRATOR_INCLUDED_20100604
+#ifndef PAIR_HH_INCLUDED_20100703
+#define PAIR_HH_INCLUDED_20100703
 
-#include "../geometry.hh"
-#include "../sealed.hh"
-#include "../basictypes/scene.hh"
-#include "../basictypes/sample.hh"
-#include "../basictypes/transport.hh"
-#include "../basictypes/bsdf.hh"
+#include <utility>
 
 namespace redshift {
-        SEALED(PathIntegrator);
-        class PathIntegrator
-        : public Integrator
-        , MAKE_SEALED(PathIntegrator) {
-        public:
-                virtual tuple<real_t,Color,real_t> Li (
-                        const Scene &scene,
-                        const RayDifferential &raydiff,
-                        const Sample &sample, Random& rand
-                ) const ;
-
-                PathIntegrator ();
-        private:
-        };
+        using std::pair;
+        using std::make_pair;
 }
 
-#endif // PATHINTEGRATOR_INCLUDED_20100316
+#endif // PAIR_HH_INCLUDED_20100703

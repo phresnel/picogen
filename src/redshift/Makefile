@@ -87,7 +87,7 @@ OBJFILES += $(BACKGROUNDSOBJDIR)/preetham-shirley-smits_tospectrum.o
 
 OBJFILES += $(BASICTYPESOBJDIR)/material.o
 OBJFILES += $(BASICTYPESOBJDIR)/scene.o
-OBJFILES += $(BASICTYPESOBJDIR)/heightmap.o
+#OBJFILES += $(BASICTYPESOBJDIR)/heightmap.o
 OBJFILES += $(BASICTYPESOBJDIR)/differentialgeometry.o
 OBJFILES += $(BASICTYPESOBJDIR)/intersection.o
 OBJFILES += $(BASICTYPESOBJDIR)/bsdf.o

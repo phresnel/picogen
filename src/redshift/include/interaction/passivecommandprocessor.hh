@@ -21,30 +21,30 @@
 #ifndef PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404
 #define PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404
 
-#include "../setup.hh"
-#include "../interaction/usercommandprocessor.hh"
+#include "../sealed.hh"
+#include "usercommandprocessor.hh"
 
 namespace redshift { namespace interaction {
-        
-        DefineFinalizer(PassiveCommandProcessor);
-        
+
+        SEALED(PassiveCommandProcessor);
+
         class PassiveCommandProcessor
         : public UserCommandProcessor
-        , DoFinalize (PassiveCommandProcessor) {
-        
+        , MAKE_SEALED(PassiveCommandProcessor) {
+
         public:
                 PassiveCommandProcessor() ;
-                
-                
+
+
                 // UserCommandProcessor:
                 void tick ();
                 bool userWantsToQuit () const;
-                
+
                 // Additional functions:
                 void setQuitState (bool doQuit);
-                
+
                 virtual ~PassiveCommandProcessor ();
-                
+
         private:
                 bool doQuit;
         };

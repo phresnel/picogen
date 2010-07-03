@@ -106,7 +106,7 @@ namespace redshift{class RenderTarget;}
 // basictypes/
 #include "basictypes/transport.hh"
 #include "basictypes/scene.hh"
-#include "basictypes/heightmap.hh"
+//#include "basictypes/heightmap.hh"
 #include "basictypes/bsdf.hh"
 
 // integrators/

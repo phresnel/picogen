@@ -23,6 +23,7 @@
 #include "../../include/primitives/lazyquadtree.hh"
 #include "../../include/material/lambertian.hh"
 #include "../../include/random.hh"
+#include "../../include/pair.hh"
 
 #include "../../include/auxiliary/scopedlock.hh"
 #include "../../include/auxiliary/mutex.hh"

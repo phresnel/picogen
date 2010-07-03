@@ -21,16 +21,16 @@
 #ifndef SDLRENDERTARGET_HH_INCLUDED_20090307
 #define SDLRENDERTARGET_HH_INCLUDED_20090307
 
-#include "../setup.hh"
 #include "../rendertargets/rendertarget.hh"
+#include "../sealed.hh"
 #include <SDL/SDL.h>
 
 namespace redshift {
 
-        DefineFinalizer(SdlRenderTarget);
+        SEALED(SdlRenderTarget);
         class SdlRenderTarget
                 : public redshift::RenderTarget
-                , DoFinalize(SdlRenderTarget) {
+                , MAKE_SEALED(SdlRenderTarget) {
         public:
                 SdlRenderTarget (int width_, int height_,
                         std::string const & outputFile,

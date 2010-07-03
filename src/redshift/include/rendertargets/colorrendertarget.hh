@@ -21,15 +21,15 @@
 #ifndef COLORRENDERTARGET_HH_INCLUDED_20090307
 #define COLORRENDERTARGET_HH_INCLUDED_20090307
 
-#include "../setup.hh"
+#include "../sealed.hh"
 #include "../rendertargets/rendertarget.hh"
 
 namespace redshift {
 
-        DefineFinalizer(ColorRenderTarget);
+        SEALED(ColorRenderTarget);
         class ColorRenderTarget
                 : public redshift::RenderTarget
-                , DoFinalize(ColorRenderTarget) {
+                , MAKE_SEALED(ColorRenderTarget) {
         public:
                 ColorRenderTarget (int width_, int height_);
                 ~ColorRenderTarget();

@@ -35,11 +35,11 @@ namespace redshift { namespace primitive {
 
         class LazyQuadtreeImpl;
 
-        DefineFinalizer(LazyQuadtree);
+        SEALED(LazyQuadtree);
 
         class LazyQuadtree
                 : public Primitive
-                , DoFinalize(LazyQuadtree)
+                , MAKE_SEALED(LazyQuadtree)
         {
         public:
                 LazyQuadtree(

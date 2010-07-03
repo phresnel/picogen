@@ -21,17 +21,17 @@
 #ifndef WHITTED_INCLUDED_20100509
 #define WHITTED_INCLUDED_20100509
 
-#include "../setup.hh"
+#include "../geometry.hh"
 #include "../basictypes/scene.hh"
 #include "../basictypes/sample.hh"
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
 namespace redshift {
-        DefineFinalizer(WhittedIntegrator);
+        SEALED(WhittedIntegrator);
         class WhittedIntegrator
         : public Integrator
-        , DoFinalize(WhittedIntegrator) {
+        , MAKE_SEALED(WhittedIntegrator) {
         public:
                 virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,

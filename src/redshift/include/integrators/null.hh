@@ -21,16 +21,17 @@
 #ifndef NULLINTEGRATOR_INCLUDED_20100415
 #define NULLINTEGRATOR_INCLUDED_20100415
 
-#include "../setup.hh"
+#include "../geometry.hh"
+#include "../sealed.hh"
 #include "../basictypes/scene.hh"
 #include "../basictypes/sample.hh"
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
 namespace redshift {
-        DefineFinalizer(NullIntegrator);
+        SEALED(NullIntegrator);
         class NullIntegrator : public Integrator, public VolumeIntegrator
-        , DoFinalize(NullIntegrator) {
+        , MAKE_SEALED(NullIntegrator) {
         public:
                 // Surface null
                 tuple<real_t,Color,real_t> Li (

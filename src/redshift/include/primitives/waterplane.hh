@@ -21,19 +21,23 @@
 #ifndef PRIMITIVE_WATERPLANE_H_INCLUDED_20100119
 #define PRIMITIVE_WATERPLANE_H_INCLUDED_20100119
 
-#include "../setup.hh"
-#include "../basictypes/intersection.hh"
+#include "../geometry.hh"
 #include "../primitives/primitive.hh"
 #include "../material/mirror.hh"
 #include "../basictypes/height-function.hh"
 
+namespace redshift {
+        class HeightFunction;
+        class Intersection;
+}
+
 namespace redshift { namespace primitive {
 
-        DefineFinalizer(WaterPlane);
+        SEALED(WaterPlane);
 
         class WaterPlane
                 : public Primitive
-                , DoFinalize(WaterPlane)
+                , MAKE_SEALED(WaterPlane)
         {
         public:
                 WaterPlane(real_t height, shared_ptr<HeightFunction const> fun, const Color &color);

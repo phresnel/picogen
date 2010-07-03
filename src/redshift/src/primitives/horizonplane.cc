@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/primitives/horizonplane.hh"
+#include "../../include/basictypes/intersection.hh"
 
 namespace redshift { namespace primitive {
 

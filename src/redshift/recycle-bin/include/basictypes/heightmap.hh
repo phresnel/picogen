@@ -21,17 +21,19 @@
 #ifndef HEIGHTMAPRENDERER_HH_INCLUDED_20090426
 #define HEIGHTMAPRENDERER_HH_INCLUDED_20090426
 
-#include "../setup.hh"
+#include "../sealed.hh"
 #include "height-function.hh"
 #include "../rendertargets/rendertarget.hh"
 #include "../interaction/usercommandprocessor.hh"
 #include "../interaction/progressreporter.hh"
 
+#pragma message "is HeightmapRenderer really needed?"
+
 namespace redshift {
 
-        DefineFinalizer(HeightmapRenderer);
+        SEALED(HeightmapRenderer);
 
-        class HeightmapRenderer : DoFinalize(HeightmapRenderer) {
+        class HeightmapRenderer : MAKE_SEALED(HeightmapRenderer) {
         public:
 
                 HeightmapRenderer(shared_ptr<RenderTarget>,

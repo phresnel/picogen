@@ -21,17 +21,18 @@
 #ifndef REDSHIFTINTEGRATOR_INCLUDED_20100316
 #define REDSHIFTINTEGRATOR_INCLUDED_20100316
 
-#include "../setup.hh"
+#include "../geometry.hh"
+#include "../sealed.hh"
 #include "../basictypes/scene.hh"
 #include "../basictypes/sample.hh"
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
 namespace redshift {
-        DefineFinalizer(RedshiftIntegrator);
+        SEALED(RedshiftIntegrator);
         class RedshiftIntegrator
         : public Integrator
-        , DoFinalize(RedshiftIntegrator) {
+        , MAKE_SEALED(RedshiftIntegrator) {
         public:
                 virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,

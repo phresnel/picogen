@@ -21,19 +21,18 @@
 #ifndef PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119
 #define PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119
 
-#include "../setup.hh"
-#include "../basictypes/intersection.hh"
+#include "../geometry.hh"
 #include "../primitives/primitive.hh"
 #include "../material/lambertian.hh"
-#include "../material/mirror.hh"
+
 
 namespace redshift { namespace primitive {
 
-        DefineFinalizer(HorizonPlane);
+        SEALED(HorizonPlane);
 
         class HorizonPlane
                 : public Primitive
-                , DoFinalize(HorizonPlane)
+                , MAKE_SEALED(HorizonPlane)
         {
         public:
                 HorizonPlane(real_t height, const Color &color);

@@ -45,7 +45,8 @@ Intersection::Intersection (
 
 
 Intersection::Intersection (Intersection const &i)
-: primitive(i.primitive)
+: IntersectionNonInheritable()
+, primitive(i.primitive)
 , differentialGeometry(i.differentialGeometry) {
 }
 
