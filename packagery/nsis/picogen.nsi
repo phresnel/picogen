@@ -35,6 +35,13 @@ SetCompressor /SOLID lzma
 # Install + Finish
 	!insertmacro MUI_PAGE_INSTFILES
 	!insertmacro MUI_PAGE_FINISH
+        
+# Uninstall
+        #!insertmacro MUI_UNPAGE_WELCOME
+        !insertmacro MUI_UNPAGE_CONFIRM
+        !insertmacro MUI_UNPAGE_INSTFILES
+        #!insertmacro MUI_UNPAGE_FINISH
+
 
 
 Name "picogen"
@@ -43,54 +50,70 @@ installDir $PROGRAMFILES\picogen
 
 !insertmacro MUI_LANGUAGE "English"
 
+
+
+function checkPrevious
+        IfFileExists "$INSTDIR\uninstall.exe" uninstallFirst
+                goto next
+        uninstallFirst:
+                MessageBox MB_YESNO|MB_ICONQUESTION "A previous installation of picogen must first be uninstalled. Do that?" IDYES noAbort
+                        MessageBox MB_OK|MB_ICONSTOP "Installation cancelled."
+                        abort
+                noAbort:                
+                execWait '"$INSTDIR\uninstall.exe" _?=$INSTDIR' $0
+                strcmp $0 "0" next
+                MessageBox MB_OK|MB_ICONSTOP "Uninstallation was cancelled, cannot proceed."
+                abort
+        next:
+functionEnd
+
+
+
 # start default section
-section
+section        
+        # set the installation directory as the destination for the following actions
+        setOutPath $INSTDIR        
+        call checkPrevious
 
-    # set the installation directory as the destination for the following actions
-    setOutPath $INSTDIR
+        file data\*.dll
+        file data\*.txt
+        file data\*.exe
+        file /r data\help-content
+        file /r data\repository
 
-	file data\*.dll
-	file data\*.txt
-	file data\*.exe
-	file /r data\help-content
-	file /r data\repository
+        # create the uninstaller
+        writeUninstaller "$INSTDIR\uninstall.exe"
 
-    # create the uninstaller
-    writeUninstaller "$INSTDIR\uninstall.exe"
+        createDirectory "$SMPROGRAMS\$StartMenuFolder"
+        createShortCut "$SMPROGRAMS\$StartMenuFolder\picogen-simplex.lnk" "$INSTDIR\picogen-simplex.exe"
+        createShortCut "$SMPROGRAMS\$StartMenuFolder\picogen-quatsch-editor.lnk" "$INSTDIR\picogen-quatsch-editor.exe"
+        createShortCut "$SMPROGRAMS\$StartMenuFolder\picohelp.lnk" "$INSTDIR\picohelp.exe"
+        createShortCut "$SMPROGRAMS\$StartMenuFolder\uninstall.lnk" "$INSTDIR\uninstall.exe"
 
-    createDirectory "$SMPROGRAMS\$StartMenuFolder"
-    createShortCut "$SMPROGRAMS\$StartMenuFolder\picogen-simplex.lnk" "$INSTDIR\picogen-simplex.exe"
-    createShortCut "$SMPROGRAMS\$StartMenuFolder\picogen-quatsch-editor.lnk" "$INSTDIR\picogen-quatsch-editor.exe"
-    createShortCut "$SMPROGRAMS\$StartMenuFolder\picohelp.lnk" "$INSTDIR\picohelp.exe"
-    createShortCut "$SMPROGRAMS\$StartMenuFolder\uninstall.lnk" "$INSTDIR\uninstall.exe"
-
-	${registerExtension} "$INSTDIR\picogen-simplex.exe" ".picogen" "Picogen scene file"
-
+        ${registerExtension} "$INSTDIR\picogen-simplex.exe" ".picogen" "Picogen scene file"
 sectionEnd
 
-# uninstaller section start
+
+
 section "uninstall"
+        # first, delete the uninstaller
+        delete "$INSTDIR\uninstall.exe"
 
-    # first, delete the uninstaller
-    delete "$INSTDIR\uninstall.exe"
+        # remove program data
+        delete "$INSTDIR\*.dll"
+        delete "$INSTDIR\*.txt"
+        delete "$INSTDIR\*.exe"
+        rmdir /r "$INSTDIR\repository"
+        rmdir /r "$INSTDIR\help-content"
+        rmdir "$INSTDIR"
 
-	# remove program data
-	delete "$INSTDIR\*.dll"
-	delete "$INSTDIR\*.txt"
-	delete "$INSTDIR\*.exe"
-	rmdir /r "$INSTDIR\repository"
-	rmdir /r "$INSTDIR\help-content"
-	rmdir "$INSTDIR"
+        # remove start menu items
+        !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
+        delete "$SMPROGRAMS\$StartMenuFolder\picogen-simplex.lnk"
+        delete "$SMPROGRAMS\$StartMenuFolder\picogen-quatsch-editor.lnk"
+        delete "$SMPROGRAMS\$StartMenuFolder\picohelp.lnk"
+        delete "$SMPROGRAMS\$StartMenuFolder\uninstall.lnk"
+        rmdir  "$SMPROGRAMS\$StartMenuFolder"
 
-	# remove start menu items
-	!insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
-	delete "$SMPROGRAMS\$StartMenuFolder\picogen-simplex.lnk"
-    delete "$SMPROGRAMS\$StartMenuFolder\picogen-quatsch-editor.lnk"
-    delete "$SMPROGRAMS\$StartMenuFolder\picohelp.lnk"
-    delete "$SMPROGRAMS\$StartMenuFolder\uninstall.lnk"
-	rmdir  "$SMPROGRAMS\$StartMenuFolder"
-
-	${unregisterExtension} ".picogen" "Picogen scene file"
-
-# uninstaller section end
+        ${unregisterExtension} ".picogen" "Picogen scene file"
 sectionEnd
