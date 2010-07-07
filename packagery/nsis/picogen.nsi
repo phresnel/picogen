@@ -60,7 +60,7 @@ function checkPrevious
                         MessageBox MB_OK|MB_ICONSTOP "Installation cancelled."
                         abort
                 noAbort:                
-                execWait '"$INSTDIR\uninstall.exe" _?=$INSTDIR' $0
+                execWait '"$INSTDIR\uninstall.exe" /S _?=$INSTDIR' $0
                 strcmp $0 "0" next
                 MessageBox MB_OK|MB_ICONSTOP "Uninstallation was cancelled, cannot proceed."
                 abort
