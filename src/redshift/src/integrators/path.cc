@@ -32,7 +32,7 @@ PathIntegrator::PathIntegrator ()
 
 
 
-tuple<real_t,Color,real_t> PathIntegrator::Li (
+LiResult PathIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -40,15 +40,15 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
         Random &rand/*,
         const bool doMirror // TODO: I think that one can die*/
 ) const {
-        const optional<Intersection> I (scene.intersect (raydiff));
-
         real_t throughput = 1;
         if (lirec.depth()>5) { // let us gamble then
                 const real_t continueProb = 0.75;
                 if (rand() >= continueProb)
-                        return false;
+                        return LiResult(Color(0), Distance(constants::infinity));
                 throughput *= 1 / continueProb;
         }
+
+        const optional<Intersection> I (scene.intersect (raydiff));
 
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
@@ -75,7 +75,7 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                 spec = spec + get<1>(scene.Li (ray, sample, lirec, rand)) * get<0>(v) * (1/get<2>(v));
                         }
 
-                        return make_tuple(1.0f, spec*throughput, gd.getDistance());
+                        return LiResult(spec*throughput, Distance(gd.getDistance()));
                 } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
 
                         const Ray ray (poi, raydiff.direction);
@@ -138,16 +138,17 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
 
                                 ret += incomingLight*surfaceColor * d / pdf;
                         }
+                        ret *= throughput;
 
                         // Done.
-                        return make_tuple(1.0f, ret*throughput, gd.getDistance());
+                        return LiResult(ret, Distance(gd.getDistance()));
                 }
 
-                return make_tuple(1.0f, Color(0), gd.getDistance());
+                return LiResult(Color(0), Distance(gd.getDistance()));
         } else {
-                return make_tuple (1.0,
+                return LiResult (
                         Color(0),
-                        constants::infinity
+                        Distance(constants::infinity)
                 );
         }
 }

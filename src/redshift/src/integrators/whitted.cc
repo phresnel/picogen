@@ -30,7 +30,7 @@ WhittedIntegrator::WhittedIntegrator ()
 
 
 
-tuple<real_t,Color,real_t> WhittedIntegrator::Li (
+LiResult WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -38,8 +38,9 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
         Random &rand,
         const bool doMirror // TODO: I think that one can die
 ) const {
+        if (lirec.depth()>10)  // plain and stupid
+                return LiResult (Color(0),Distance(constants::infinity));
         const optional<Intersection> I (scene.intersect (raydiff));
-        if (lirec.depth()>10) return false; // plain and stupid
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf   = I->getPrimitive()->getBsdf (gd);
@@ -61,7 +62,7 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                                 const Ray ray (poi, get<1>(*v_));
                                 spec = get<1>(scene.Li (ray, sample, lirec, rand));// * get<0>(v)  * (1/get<2>(v));
                         }
-                        return make_tuple(1.0f, spec, gd.getDistance());
+                        return LiResult(spec, Distance(gd.getDistance()));
                 } else if (bg->sun()) {
                         const Sun& sun = *bg->sun();
                         const Vector sunDir = sun.direction();
@@ -87,22 +88,22 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                                         rand
                                 );
                                 Color ret = surfaceColor * sunColor * d;
-                                return make_tuple(1.0f, ret, gd.getDistance());
+                                return LiResult(ret, Distance(gd.getDistance()));
                         }
                 }
 
-                return make_tuple(1.0f, Color(0), gd.getDistance());
+                return LiResult(Color(0), Distance(gd.getDistance()));
         } else {
-                return make_tuple (1.0,
+                return LiResult (
                         Color(0),
-                        constants::infinity
+                        Distance(constants::infinity)
                 );
         }
 }
 
 
 
-tuple<real_t,Color,real_t> WhittedIntegrator::Li (
+LiResult WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,

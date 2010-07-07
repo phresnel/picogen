@@ -34,17 +34,16 @@ namespace redshift {
         , MAKE_SEALED(NullIntegrator) {
         public:
                 // Surface null
-                tuple<real_t,Color,real_t> Li (
+                LiResult Li (
                         const Scene &,
                         const RayDifferential &,
                         const Sample &,
                         const LiRecursion &,
                         Random&
                 ) const {
-                        return make_tuple (
-                                1.0,
+                        return LiResult (
                                 Color(0),
-                                constants::infinity
+                                Distance(constants::infinity)
                         );
                 }
 

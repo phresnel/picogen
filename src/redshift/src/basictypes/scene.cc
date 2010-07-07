@@ -121,14 +121,14 @@ tuple<real_t,Color> Scene::Li (RayDifferential const &ray,
                                LiMode mode
 ) const {
         // Intersect geometry.
-        const tuple<real_t,Color,real_t>
+        const LiResult
                 Lo_ = (aggregate && !mode.SkipSurface)
                     ? surfaceIntegrator->Li(*this, ray, sample, ++lirec, rand)
-                    : make_tuple(1., Color(0), constants::infinity)
+                    : LiResult(Color(0), Distance(constants::infinity))
         ;
 
-        const Color  Lo       = get<1>(Lo_);
-        const real_t distance = get<2>(Lo_);
+        const Color  Lo       = Lo_.color();
+        const real_t distance = Lo_.distance().toReal();
 
         // If intersected, use surface color, otherwise, use atmosphere.
         Color atmosphere_or_surface;

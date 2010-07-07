@@ -41,11 +41,50 @@ namespace redshift {
                 LiRecursion operator -- () const { return LiRecursion(depth_-1); }
                 unsigned int depth_;
         };
+}
 
+namespace redshift {
+        class Distance {
+        public:
+                Distance() : d(std::numeric_limits<real_t>::infinity()) {}
+                explicit Distance(real_t d) : d(d) {}
+                real_t toReal () const {
+                        return d;
+                }
+        private:
+                real_t d;
+        };
+        class LiResult {
+        public:
+                LiResult (Color const &color, Distance const &distance)
+                : color_(color), distance_(distance)
+                {}
+
+                LiResult (LiResult const &rhs)
+                : color_(rhs.color_), distance_(rhs.distance_)
+                {}
+
+                LiResult& operator = (LiResult const &rhs) {
+                        color_ = rhs.color_;
+                        distance_ = rhs.distance_;
+                        return *this;
+                }
+
+                Color color() const { return color_; }
+                Distance distance() const { return distance_; }
+        private:
+                LiResult() {}
+
+                Color color_;
+                Distance distance_;
+        };
+}
+
+namespace redshift {
         class Integrator {
         public:
                 virtual ~Integrator() {}
-                virtual tuple<real_t,Color,real_t> Li (
+                virtual LiResult Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,

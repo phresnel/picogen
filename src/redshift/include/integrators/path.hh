@@ -34,7 +34,7 @@ namespace redshift {
         : public Integrator
         , MAKE_SEALED(PathIntegrator) {
         public:
-                virtual tuple<real_t,Color,real_t> Li (
+                virtual LiResult Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,

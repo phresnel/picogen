@@ -33,7 +33,7 @@ namespace redshift {
         : public Integrator
         , MAKE_SEALED(WhittedIntegrator) {
         public:
-                virtual tuple<real_t,Color,real_t> Li (
+                LiResult Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
@@ -43,7 +43,7 @@ namespace redshift {
 
                 WhittedIntegrator ();
         private:
-                tuple<real_t,Color,real_t> Li (
+                LiResult Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
