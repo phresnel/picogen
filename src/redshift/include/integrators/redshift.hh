@@ -34,7 +34,7 @@ namespace redshift {
         : public Integrator
         , MAKE_SEALED(RedshiftIntegrator) {
         public:
-                LiResult Li (
+                DistantRadiance Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
@@ -44,7 +44,7 @@ namespace redshift {
 
                 RedshiftIntegrator (unsigned int numAmbientSamples=0);
         private:
-                LiResult Li (
+                DistantRadiance Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,

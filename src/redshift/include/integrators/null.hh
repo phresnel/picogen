@@ -34,14 +34,14 @@ namespace redshift {
         , MAKE_SEALED(NullIntegrator) {
         public:
                 // Surface null
-                LiResult Li (
+                DistantRadiance Li (
                         const Scene &,
                         const RayDifferential &,
                         const Sample &,
                         const LiRecursion &,
                         Random&
                 ) const {
-                        return LiResult (
+                        return DistantRadiance (
                                 Color(0),
                                 Distance(constants::infinity)
                         );

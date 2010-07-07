@@ -114,17 +114,17 @@ optional<Intersection> Scene::intersect(Ray const &ray) const {
 
 
 
-tuple<real_t,Color> Scene::Li (RayDifferential const &ray,
-                               Sample const & sample,
-                               LiRecursion const &lirec,
-                               Random& rand,
-                               LiMode mode
+Color Scene::radiance (RayDifferential const &ray,
+                       Sample const & sample,
+                       LiRecursion const &lirec,
+                       Random& rand,
+                       LiMode mode
 ) const {
         // Intersect geometry.
-        const LiResult
+        const DistantRadiance
                 Lo_ = (aggregate && !mode.SkipSurface)
                     ? surfaceIntegrator->Li(*this, ray, sample, ++lirec, rand)
-                    : LiResult(Color(0), Distance(constants::infinity))
+                    : DistantRadiance(Color(0), Distance(constants::infinity))
         ;
 
         const Color  Lo       = Lo_.color();
@@ -147,13 +147,11 @@ tuple<real_t,Color> Scene::Li (RayDifferential const &ray,
                 atmosphere_or_surface = atmosphere + sun;
         }
 
-        return make_tuple (
-                1.f,
-                attenuate (atmosphere_or_surface,
-                           ray,
-                           sample,
-                           distance,
-                           rand));
+        return attenuate (atmosphere_or_surface,
+                          ray,
+                          sample,
+                          distance,
+                          rand);
 }
 
 
@@ -322,13 +320,11 @@ void Scene::render (
                                         //-------------------------------------------------------------
                                         // 3) Evaluate Radiance Along Primary Ray.
                                         //-------------------------------------------------------------
-                                        const tuple<real_t,Color> Ls_ = Li(raydiff,
-                                                                           sample,
-                                                                           LiRecursion(0),
-                                                                           rand);
-                                        const real_t Ls_alpha (get<0>(Ls_));
-                                        const Color Ls_color  (get<1>(Ls_));
-                                        const Color finalColor = rayWeight * Ls_color;
+                                        const Color rad = radiance(raydiff,
+                                                                   sample,
+                                                                   LiRecursion(0),
+                                                                   rand);
+                                        const Color finalColor = rayWeight * rad;
 
                                         if (isnan (finalColor)) {
                                                 std::cout << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;

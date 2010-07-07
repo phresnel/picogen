@@ -32,7 +32,7 @@ PathIntegrator::PathIntegrator ()
 
 
 
-LiResult PathIntegrator::Li (
+DistantRadiance PathIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -44,7 +44,7 @@ LiResult PathIntegrator::Li (
         if (lirec.depth()>5) { // let us gamble then
                 const real_t continueProb = 0.75;
                 if (rand() >= continueProb)
-                        return LiResult(Color(0), Distance(constants::infinity));
+                        return DistantRadiance(Color(0), Distance(constants::infinity));
                 throughput *= 1 / continueProb;
         }
 
@@ -72,10 +72,11 @@ LiResult PathIntegrator::Li (
                         if (v_) {
                                 const tuple<Color,Vector,real_t> v = *v_;
                                 ray.direction = get<1>(v);
-                                spec = spec + get<1>(scene.Li (ray, sample, lirec, rand)) * get<0>(v) * (1/get<2>(v));
+                                const Color rad = scene.radiance (ray, sample, lirec, rand);
+                                spec = spec + rad * get<0>(v) * (1/get<2>(v));
                         }
 
-                        return LiResult(spec*throughput, Distance(gd.getDistance()));
+                        return DistantRadiance(spec*throughput, Distance(gd.getDistance()));
                 } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
 
                         const Ray ray (poi, raydiff.direction);
@@ -124,29 +125,25 @@ LiResult PathIntegrator::Li (
 
                                 Scene::LiMode m;
                                 m.SkipSun = true;
-                                const tuple<real_t,Color> L = scene.Li(skyRay,
-                                                                       sample,
-                                                                       lirec,
-                                                                       rand,
-                                                                       m);
-                                const Color incomingLight = get<1>(L);
+                                const Color incoming = scene.radiance(
+                                        skyRay, sample, lirec, rand, m);
 
                                 const real_t d = max(
                                     real_t(0),
                                     dot(skyRay.direction, vector_cast<Vector>(normalS))
                                 );
 
-                                ret += incomingLight*surfaceColor * d / pdf;
+                                ret += incoming*surfaceColor * d / pdf;
                         }
                         ret *= throughput;
 
                         // Done.
-                        return LiResult(ret, Distance(gd.getDistance()));
+                        return DistantRadiance(ret, Distance(gd.getDistance()));
                 }
 
-                return LiResult(Color(0), Distance(gd.getDistance()));
+                return DistantRadiance(Color(0), Distance(gd.getDistance()));
         } else {
-                return LiResult (
+                return DistantRadiance (
                         Color(0),
                         Distance(constants::infinity)
                 );

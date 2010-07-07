@@ -34,7 +34,7 @@ namespace redshift {
         : public Integrator
         , MAKE_SEALED(PathIntegrator) {
         public:
-                virtual LiResult Li (
+                virtual DistantRadiance Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,

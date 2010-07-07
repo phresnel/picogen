@@ -32,7 +32,7 @@ RedshiftIntegrator::RedshiftIntegrator (unsigned int numAmbientSamples)
 
 
 
-LiResult RedshiftIntegrator::Li (
+DistantRadiance RedshiftIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -41,7 +41,7 @@ LiResult RedshiftIntegrator::Li (
         const bool doMirror // TODO: I think that one can die
 ) const {
         if (lirec.depth()>10)  // plain and stupid
-                return LiResult (Color(0),Distance(constants::infinity));
+                return DistantRadiance (Color(0),Distance(constants::infinity));
         const optional<Intersection> I (scene.intersect (raydiff));
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
@@ -65,10 +65,11 @@ LiResult RedshiftIntegrator::Li (
                         if (v_) {
                                 const tuple<Color,Vector,real_t> v = *v_;
                                 ray.direction = get<1>(v);
-                                spec = spec + get<1>(scene.Li (ray, sample, lirec, rand)) * get<0>(v) * (1/get<2>(v));
+                                const Color rad = scene.radiance (ray, sample, lirec, rand);
+                                spec = spec + rad * get<0>(v) * (1/get<2>(v));
                         }
 
-                        return LiResult(spec, Distance(gd.getDistance()));
+                        return DistantRadiance(spec, Distance(gd.getDistance()));
                 } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
 
                         const Ray ray (poi, raydiff.direction);
@@ -120,18 +121,17 @@ LiResult RedshiftIntegrator::Li (
 
                                         Scene::LiMode m;
                                         m.SkipSun = true;
-                                        const tuple<real_t,Color> L =
-                                                scene.Li(skyRay,
-                                                         sample,
-                                                         lirec,
-                                                         rand,
-                                                         m);
+                                        const Color L = scene.radiance(skyRay,
+                                                                       sample,
+                                                                       lirec,
+                                                                       rand,
+                                                                       m);
 
                                         const real_t d = max(real_t(0),
                                             dot(skyRay.direction, vector_cast<Vector>(normalS))
                                         );
 
-                                        skylightSum += get<1>(L) * get<0>(*v_) * d*(1/pdf);
+                                        skylightSum += L * get<0>(*v_) * d*(1/pdf);
                                 }
                         }
 
@@ -139,12 +139,12 @@ LiResult RedshiftIntegrator::Li (
                                 ret += skylightSum * (1. / numAmbientSamples);
 
                         // Done.
-                        return LiResult(ret, Distance(gd.getDistance()));
+                        return DistantRadiance(ret, Distance(gd.getDistance()));
                 }
 
-                return LiResult(Color(0), Distance(gd.getDistance()));
+                return DistantRadiance(Color(0), Distance(gd.getDistance()));
         } else {
-                return LiResult(
+                return DistantRadiance(
                         Color(0),
                         Distance(constants::infinity)
                 );
@@ -153,7 +153,7 @@ LiResult RedshiftIntegrator::Li (
 
 
 
-LiResult RedshiftIntegrator::Li (
+DistantRadiance RedshiftIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,

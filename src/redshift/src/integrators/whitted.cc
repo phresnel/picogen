@@ -30,7 +30,7 @@ WhittedIntegrator::WhittedIntegrator ()
 
 
 
-LiResult WhittedIntegrator::Li (
+DistantRadiance WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
@@ -39,7 +39,7 @@ LiResult WhittedIntegrator::Li (
         const bool doMirror // TODO: I think that one can die
 ) const {
         if (lirec.depth()>10)  // plain and stupid
-                return LiResult (Color(0),Distance(constants::infinity));
+                return DistantRadiance (Color(0),Distance(constants::infinity));
         const optional<Intersection> I (scene.intersect (raydiff));
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
@@ -60,9 +60,9 @@ LiResult WhittedIntegrator::Li (
                                                 rand);
                         if (v_) {
                                 const Ray ray (poi, get<1>(*v_));
-                                spec = get<1>(scene.Li (ray, sample, lirec, rand));// * get<0>(v)  * (1/get<2>(v));
+                                spec = scene.radiance (ray, sample, lirec, rand);
                         }
-                        return LiResult(spec, Distance(gd.getDistance()));
+                        return DistantRadiance(spec, Distance(gd.getDistance()));
                 } else if (bg->sun()) {
                         const Sun& sun = *bg->sun();
                         const Vector sunDir = sun.direction();
@@ -88,13 +88,13 @@ LiResult WhittedIntegrator::Li (
                                         rand
                                 );
                                 Color ret = surfaceColor * sunColor * d;
-                                return LiResult(ret, Distance(gd.getDistance()));
+                                return DistantRadiance(ret, Distance(gd.getDistance()));
                         }
                 }
 
-                return LiResult(Color(0), Distance(gd.getDistance()));
+                return DistantRadiance(Color(0), Distance(gd.getDistance()));
         } else {
-                return LiResult (
+                return DistantRadiance (
                         Color(0),
                         Distance(constants::infinity)
                 );
@@ -103,7 +103,7 @@ LiResult WhittedIntegrator::Li (
 
 
 
-LiResult WhittedIntegrator::Li (
+DistantRadiance WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,

@@ -54,17 +54,17 @@ namespace redshift {
         private:
                 real_t d;
         };
-        class LiResult {
+        class DistantRadiance {
         public:
-                LiResult (Color const &color, Distance const &distance)
+                DistantRadiance (Color const &color, Distance const &distance)
                 : color_(color), distance_(distance)
                 {}
 
-                LiResult (LiResult const &rhs)
+                DistantRadiance (DistantRadiance const &rhs)
                 : color_(rhs.color_), distance_(rhs.distance_)
                 {}
 
-                LiResult& operator = (LiResult const &rhs) {
+                DistantRadiance& operator = (DistantRadiance const &rhs) {
                         color_ = rhs.color_;
                         distance_ = rhs.distance_;
                         return *this;
@@ -73,7 +73,7 @@ namespace redshift {
                 Color color() const { return color_; }
                 Distance distance() const { return distance_; }
         private:
-                LiResult() {}
+                DistantRadiance() {}
 
                 Color color_;
                 Distance distance_;
@@ -84,7 +84,7 @@ namespace redshift {
         class Integrator {
         public:
                 virtual ~Integrator() {}
-                virtual LiResult Li (
+                virtual DistantRadiance Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,

@@ -33,7 +33,7 @@ namespace redshift {
         : public Integrator
         , MAKE_SEALED(WhittedIntegrator) {
         public:
-                LiResult Li (
+                DistantRadiance Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
@@ -43,7 +43,7 @@ namespace redshift {
 
                 WhittedIntegrator ();
         private:
-                LiResult Li (
+                DistantRadiance Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
