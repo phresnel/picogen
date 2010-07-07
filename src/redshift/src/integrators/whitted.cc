@@ -34,11 +34,12 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
+        const LiRecursion &lirec,
         Random &rand,
         const bool doMirror // TODO: I think that one can die
 ) const {
         const optional<Intersection> I (scene.intersect (raydiff));
-
+        if (lirec.depth()>10) return false; // plain and stupid
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf   = I->getPrimitive()->getBsdf (gd);
@@ -49,7 +50,6 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                 const Point poi               = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
-
                 if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
                         Color spec = Spectrum::noinit;
 
@@ -59,9 +59,8 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
                                                 rand);
                         if (v_) {
                                 const Ray ray (poi, get<1>(*v_));
-                                spec = get<1>(scene.Li (ray, sample, rand));// * get<0>(v)  * (1/get<2>(v));
+                                spec = get<1>(scene.Li (ray, sample, lirec, rand));// * get<0>(v)  * (1/get<2>(v));
                         }
-
                         return make_tuple(1.0f, spec, gd.getDistance());
                 } else if (bg->sun()) {
                         const Sun& sun = *bg->sun();
@@ -106,9 +105,11 @@ tuple<real_t,Color,real_t> WhittedIntegrator::Li (
 tuple<real_t,Color,real_t> WhittedIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
-        const Sample &sample, Random &rand
+        const Sample &sample,
+        const LiRecursion &lirec,
+        Random &rand
 ) const {
-        return Li(scene, raydiff, sample, rand, true);
+        return Li(scene, raydiff, sample, lirec, rand, true);
 }
 
 }

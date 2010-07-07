@@ -36,6 +36,7 @@
 
 namespace redshift {
         class Random;
+        class LiRecursion;
 
         class Scene {
         public:
@@ -47,7 +48,7 @@ namespace redshift {
                         bool SkipSurface;
                         bool SkipSun;
 
-                        LiMode () : SkipSun(0), SkipSurface(0) {}
+                        LiMode () : SkipSurface(0), SkipSun(0) {}
 
                         static LiMode Full () {
                                 return LiMode();
@@ -80,7 +81,11 @@ namespace redshift {
                 shared_ptr<Camera>         getCamera ()       const;
                 shared_ptr<VolumeRegion>   getVolumeRegion () const;
 
-                tuple<real_t,Color> Li(RayDifferential const &, Sample const&, Random &, LiMode mode = LiMode::Full()) const;
+                tuple<real_t,Color> Li(RayDifferential const &,
+                                       Sample const&,
+                                       LiRecursion const &,
+                                       Random &,
+                                       LiMode mode = LiMode::Full()) const;
                 Color attenuate (
                         Color const &orig,
                         Ray const &ray,

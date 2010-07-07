@@ -19,7 +19,6 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/basictypes/scene.hh"
-#include "../../include/integrators/direct-lighting.hh"
 
 #include "../../include/integrators/emission.hh"
 #include "../../include/integrators/single-scattering.hh"
@@ -115,11 +114,16 @@ optional<Intersection> Scene::intersect(Ray const &ray) const {
 
 
 
-tuple<real_t,Color> Scene::Li (RayDifferential const &ray, Sample const & sample, Random& rand, LiMode mode) const {
+tuple<real_t,Color> Scene::Li (RayDifferential const &ray,
+                               Sample const & sample,
+                               LiRecursion const &lirec,
+                               Random& rand,
+                               LiMode mode
+) const {
         // Intersect geometry.
         const tuple<real_t,Color,real_t>
                 Lo_ = (aggregate && !mode.SkipSurface)
-                    ? surfaceIntegrator->Li(*this, ray, sample, rand)
+                    ? surfaceIntegrator->Li(*this, ray, sample, ++lirec, rand)
                     : make_tuple(1., Color(0), constants::infinity)
         ;
 
@@ -226,7 +230,7 @@ void Scene::render (
                 (minY<maxY && maxY<(unsigned int)renderTarget->getHeight())
                 ? maxY
                 : renderTarget->getHeight();
-//#define NO_OMP_THREADING
+#define NO_OMP_THREADING
 
         // TODO: needs to be tested
         const int
@@ -318,7 +322,10 @@ void Scene::render (
                                         //-------------------------------------------------------------
                                         // 3) Evaluate Radiance Along Primary Ray.
                                         //-------------------------------------------------------------
-                                        const tuple<real_t,Color> Ls_ = Li(raydiff, sample, rand);
+                                        const tuple<real_t,Color> Ls_ = Li(raydiff,
+                                                                           sample,
+                                                                           LiRecursion(0),
+                                                                           rand);
                                         const real_t Ls_alpha (get<0>(Ls_));
                                         const Color Ls_color  (get<1>(Ls_));
                                         const Color finalColor = rayWeight * Ls_color;

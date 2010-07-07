@@ -37,7 +37,9 @@ namespace redshift {
                 tuple<real_t,Color,real_t> Li (
                         const Scene &,
                         const RayDifferential &,
-                        const Sample &, Random&
+                        const Sample &,
+                        const LiRecursion &,
+                        Random&
                 ) const {
                         return make_tuple (
                                 1.0,

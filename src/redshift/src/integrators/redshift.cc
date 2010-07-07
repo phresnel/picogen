@@ -36,10 +36,12 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
+        const LiRecursion &lirec,
         Random &rand,
         const bool doMirror // TODO: I think that one can die
 ) const {
         const optional<Intersection> I (scene.intersect (raydiff));
+        if (lirec.depth()>10) return false; // plain and stupid
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
@@ -62,7 +64,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         if (v_) {
                                 const tuple<Color,Vector,real_t> v = *v_;
                                 ray.direction = get<1>(v);
-                                spec = spec + get<1>(scene.Li (ray, sample, rand)) * get<0>(v) * (1/get<2>(v));
+                                spec = spec + get<1>(scene.Li (ray, sample, lirec, rand)) * get<0>(v) * (1/get<2>(v));
                         }
 
                         return make_tuple(1.0f, spec, gd.getDistance());
@@ -120,6 +122,7 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                         const tuple<real_t,Color> L =
                                                 scene.Li(skyRay,
                                                          sample,
+                                                         lirec,
                                                          rand,
                                                          m);
 
@@ -152,9 +155,11 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
 tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
-        const Sample &sample, Random &rand
+        const Sample &sample,
+        const LiRecursion &lirec,
+        Random &rand
 ) const {
-        return Li(scene, raydiff, sample, rand, true);
+        return Li(scene, raydiff, sample, lirec, rand, true);
 }
 
 }

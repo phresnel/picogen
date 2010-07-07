@@ -29,13 +29,28 @@ namespace redshift {
         class Sample;
         class Random;
 
+        // Quick hack until all integrators are iterative
+        class LiRecursion {
+        public:
+                unsigned int depth() const { return depth_; }
+                friend class Scene;
+        private:
+                LiRecursion () : depth_(0) {}
+                LiRecursion (unsigned int depth) : depth_(depth) {}
+                LiRecursion operator ++ () const { return LiRecursion(depth_+1); }
+                LiRecursion operator -- () const { return LiRecursion(depth_-1); }
+                unsigned int depth_;
+        };
+
         class Integrator {
         public:
                 virtual ~Integrator() {}
                 virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
-                        const Sample &sample, Random& rand
+                        const Sample &sample,
+                        const LiRecursion &liRecursion,
+                        Random& rand
                 ) const = 0;
         };
 }

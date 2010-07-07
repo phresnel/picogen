@@ -37,7 +37,9 @@ namespace redshift {
                 virtual tuple<real_t,Color,real_t> Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
-                        const Sample &sample, Random& rand
+                        const Sample &sample,
+                        const LiRecursion &,
+                        Random& rand
                 ) const ;
 
                 RedshiftIntegrator (unsigned int numAmbientSamples=0);
@@ -46,6 +48,7 @@ namespace redshift {
                         const Scene &scene,
                         const RayDifferential &raydiff,
                         const Sample &sample,
+                        const LiRecursion &,
                         Random& rand,
                         const bool doMirror
                 ) const ;

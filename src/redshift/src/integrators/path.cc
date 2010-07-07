@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/integrators/path.hh"
+#include "../../include/random.hh"
 
 namespace redshift {
 
@@ -35,10 +36,19 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
         const Sample &sample,
+        const LiRecursion &lirec,
         Random &rand/*,
         const bool doMirror // TODO: I think that one can die*/
 ) const {
         const optional<Intersection> I (scene.intersect (raydiff));
+
+        real_t throughput = 1;
+        if (lirec.depth()>5) { // let us gamble then
+                const real_t continueProb = 0.75;
+                if (rand() >= continueProb)
+                        return false;
+                throughput *= 1 / continueProb;
+        }
 
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
@@ -62,10 +72,10 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                         if (v_) {
                                 const tuple<Color,Vector,real_t> v = *v_;
                                 ray.direction = get<1>(v);
-                                spec = spec + get<1>(scene.Li (ray, sample, rand)) * get<0>(v) * (1/get<2>(v));
+                                spec = spec + get<1>(scene.Li (ray, sample, lirec, rand)) * get<0>(v) * (1/get<2>(v));
                         }
 
-                        return make_tuple(1.0f, spec, gd.getDistance());
+                        return make_tuple(1.0f, spec*throughput, gd.getDistance());
                 } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
 
                         const Ray ray (poi, raydiff.direction);
@@ -114,7 +124,11 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
 
                                 Scene::LiMode m;
                                 m.SkipSun = true;
-                                const tuple<real_t,Color> L = scene.Li(skyRay, sample, rand, m);
+                                const tuple<real_t,Color> L = scene.Li(skyRay,
+                                                                       sample,
+                                                                       lirec,
+                                                                       rand,
+                                                                       m);
                                 const Color incomingLight = get<1>(L);
 
                                 const real_t d = max(
@@ -126,7 +140,7 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                         }
 
                         // Done.
-                        return make_tuple(1.0f, ret, gd.getDistance());
+                        return make_tuple(1.0f, ret*throughput, gd.getDistance());
                 }
 
                 return make_tuple(1.0f, Color(0), gd.getDistance());
