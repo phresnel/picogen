@@ -39,9 +39,19 @@ namespace redshift {
 
         class Scene {
         public:
-                enum LiMode {
+                /*enum LiMode {
                         volume_only,
                         full
+                };*/
+                struct LiMode {
+                        bool SkipSurface;
+                        bool SkipSun;
+
+                        LiMode () : SkipSun(0), SkipSurface(0) {}
+
+                        static LiMode Full () {
+                                return LiMode();
+                        }
                 };
 
                 Scene(
@@ -70,7 +80,7 @@ namespace redshift {
                 shared_ptr<Camera>         getCamera ()       const;
                 shared_ptr<VolumeRegion>   getVolumeRegion () const;
 
-                tuple<real_t,Color> Li(RayDifferential const &, Sample const&, Random &, LiMode mode = full) const;
+                tuple<real_t,Color> Li(RayDifferential const &, Sample const&, Random &, LiMode mode = LiMode::Full()) const;
                 Color attenuate (
                         Color const &orig,
                         Ray const &ray,

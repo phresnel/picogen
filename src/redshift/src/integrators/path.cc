@@ -71,7 +71,6 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                         const Ray ray (poi, raydiff.direction);
                         Color ret = Color(0);
 
-                        bool sunWasQueried = false;
                         // Sunlight.
                         if (bg->sun()) {
                                 const Sun& sun = *bg->sun();
@@ -98,7 +97,6 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                                 rand
                                         );
                                         ret += surfaceColor * sunColor * d;
-                                        sunWasQueried = true;
                                 }
                         }
 
@@ -108,20 +106,15 @@ tuple<real_t,Color,real_t> PathIntegrator::Li (
                                         Bsdf::reflection, Bsdf::diffuse,
                                         rand);
 
-                        // Is this a sun-ray but we already queried the sun?
-                        // (note that this is still not 100% exact, unless
-                        //  we really _sample_ the sun disk/sphere)
-                        const bool doublySunLight =
-                                   bg->sun()
-                                && bg->sun()->isInSunSolidAngle(get<1>(*bsdfSample_))
-                                && sunWasQueried;
-                        if (!doublySunLight && bsdfSample_) {
+                        if (bsdfSample_) {
 
                                 const Color surfaceColor = get<0>(*bsdfSample_);
                                 const Ray skyRay (ray.position, get<1>(*bsdfSample_));
                                 const real_t pdf = get<2>(*bsdfSample_);
 
-                                const tuple<real_t,Color> L = scene.Li(skyRay, sample, rand);
+                                Scene::LiMode m;
+                                m.SkipSun = true;
+                                const tuple<real_t,Color> L = scene.Li(skyRay, sample, rand, m);
                                 const Color incomingLight = get<1>(L);
 
                                 const real_t d = max(

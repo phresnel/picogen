@@ -118,7 +118,7 @@ optional<Intersection> Scene::intersect(Ray const &ray) const {
 tuple<real_t,Color> Scene::Li (RayDifferential const &ray, Sample const & sample, Random& rand, LiMode mode) const {
         // Intersect geometry.
         const tuple<real_t,Color,real_t>
-                Lo_ = (aggregate && mode==full)
+                Lo_ = (aggregate && !mode.SkipSurface)
                     ? surfaceIntegrator->Li(*this, ray, sample, rand)
                     : make_tuple(1., Color(0), constants::infinity)
         ;
@@ -136,7 +136,7 @@ tuple<real_t,Color> Scene::Li (RayDifferential const &ray, Sample const & sample
                             = background->atmosphere()
                             ? background->atmosphere()->color(ray)
                             : Color(),
-                        sun = background->sun()
+                        sun = (background->sun() && !mode.SkipSun)
                             ? background->sun()->color(ray)
                             : Color();
 

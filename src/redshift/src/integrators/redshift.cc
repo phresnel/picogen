@@ -71,7 +71,6 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                         const Ray ray (poi, raydiff.direction);
                         Color ret = Color(0);
 
-                        bool sunWasQueried = false;
                         // Sunlight.
                         if (bg->sun()) {
                                 const Sun& sun = *bg->sun();
@@ -99,7 +98,6 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                                 rand
                                         );
                                         ret += surfaceColor * sunColor * d;
-                                        sunWasQueried = true;
                                 }
                         }
 
@@ -113,20 +111,17 @@ tuple<real_t,Color,real_t> RedshiftIntegrator::Li (
                                                 -skyRay.direction,
                                                 Bsdf::reflection, Bsdf::diffuse,
                                                 rand);
-                                if (v_
-                                && !(bg->sun()
-                                     && bg->sun()->isInSunSolidAngle(get<1>(*v_))
-                                     && sunWasQueried
-                                    )
-                                ) {
+                                if (v_) {
                                         skyRay.direction = get<1>(*v_);
                                         const real_t pdf = get<2>(*v_);
 
+                                        Scene::LiMode m;
+                                        m.SkipSun = true;
                                         const tuple<real_t,Color> L =
                                                 scene.Li(skyRay,
                                                          sample,
                                                          rand,
-                                                         Scene::volume_only);
+                                                         m);
 
                                         const real_t d = max(real_t(0),
                                             dot(skyRay.direction, vector_cast<Vector>(normalS))

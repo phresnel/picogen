@@ -40,11 +40,10 @@ public:
         }
         Color color(Ray const &ray) const {
                 const real_t isIn = isInSunSolidAngle(ray.direction)?1:0;
-                Color const sky = pss.GetSkySpectralRadiance (ray.direction);
+                //Color const sky = pss.GetSkySpectralRadiance (ray.direction);
                 return Color(
-                  sunBrightnessFactor*isIn
-                  *(pss.GetSunSpectralRadiance()
-                   +sky)
+                  (sunBrightnessFactor*isIn)
+                  *pss.GetSunSpectralRadiance()
                 );
         }
         bool isInSunSolidAngle(Vector const &vector_) const {
