@@ -21,19 +21,19 @@
 #ifndef LAMBERTIAN_HH_INCLUDED_20100119
 #define LAMBERTIAN_HH_INCLUDED_20100119
 
-#include "../setup.hh"
 #include "../basictypes/bsdf.hh"
 
 namespace redshift { namespace bsdf {
-        class Lambertian : public Bxdf {
+        SEALED(Lambertian);
+        class Lambertian : public Bxdf, MAKE_SEALED(Lambertian) {
         public:
                 Lambertian (Color const &color_);
 
-                virtual tuple<Color,Vector,real_t> sample_f (
+                BsdfSample sample_f (
                         const Vector &in, Random &
                 ) const;
 
-                virtual Color f (const Vector &out, const Vector &in, Random &) const;
+                Color f (const Vector &out, const Vector &in, Random &) const;
 
         private:
                 Color const color;

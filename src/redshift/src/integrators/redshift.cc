@@ -58,16 +58,14 @@ DistantRadiance RedshiftIntegrator::Li (
                         Color spec = Color(0);
 
                         Ray ray (poi, raydiff.direction);
-                        const optional<tuple<Color,Vector,real_t> > v_ = bsdf->sample_f (
+                        const BsdfSample v = bsdf->sample_f (
                                 -ray.direction,
                                 Bsdf::reflection, Bsdf::specular,
                                 rand);
-                        if (v_) {
-                                const tuple<Color,Vector,real_t> v = *v_;
-                                ray.direction = get<1>(v);
-                                const Color rad = scene.radiance (ray, sample, lirec, rand);
-                                spec = spec + rad * get<0>(v) * (1/get<2>(v));
-                        }
+
+                        ray.direction = v.incident();
+                        const Color rad = scene.radiance (ray, sample, lirec, rand);
+                        spec = spec + rad * v.color() * (1/v.pdf());
 
                         return DistantRadiance(spec, Distance(gd.getDistance()));
                 } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
@@ -110,29 +108,22 @@ DistantRadiance RedshiftIntegrator::Li (
                         for (int numSamples = 0; numSamples < numAmbientSamples; ++numSamples) {
                                 Ray skyRay (ray.position, ray.direction);
 
-                                const optional<tuple<Color,Vector,real_t> > v_ =
-                                        bsdf->sample_f (
-                                                -skyRay.direction,
-                                                Bsdf::reflection, Bsdf::diffuse,
-                                                rand);
-                                if (v_) {
-                                        skyRay.direction = get<1>(*v_);
-                                        const real_t pdf = get<2>(*v_);
+                                const BsdfSample v = bsdf->sample_f (
+                                        -skyRay.direction,
+                                        Bsdf::reflection, Bsdf::diffuse,
+                                        rand);
+                                skyRay.direction = v.incident();
 
-                                        Scene::LiMode m;
-                                        m.SkipSun = true;
-                                        const Color L = scene.radiance(skyRay,
-                                                                       sample,
-                                                                       lirec,
-                                                                       rand,
-                                                                       m);
+                                Scene::LiMode m;
+                                m.SkipSun = true;
+                                const Color L = scene.radiance(
+                                        skyRay, sample, lirec, rand, m);
 
-                                        const real_t d = max(real_t(0),
-                                            dot(skyRay.direction, vector_cast<Vector>(normalS))
-                                        );
+                                const real_t d = max(real_t(0),
+                                    dot(skyRay.direction, vector_cast<Vector>(normalS))
+                                );
 
-                                        skylightSum += L * get<0>(*v_) * d*(1/pdf);
-                                }
+                                skylightSum += L * v.color() * d*(1/v.pdf());
                         }
 
                         if (numAmbientSamples > 0)

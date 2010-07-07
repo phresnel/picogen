@@ -31,10 +31,10 @@ Mirror::Mirror (Color const &color_)
 
 
 
-tuple<Color,Vector,real_t> Mirror::sample_f (
+BsdfSample Mirror::sample_f (
         const Vector &in, Random &
 ) const {
-        return make_tuple (
+        return BsdfSample (
                 color,
                 Vector(-in.x, in.y, -in.z),
                 1

@@ -21,20 +21,20 @@
 #ifndef MIRROR_HH_INCLUDED_20100119
 #define MIRROR_HH_INCLUDED_20100119
 
-#include "../setup.hh"
 #include "../basictypes/bsdf.hh"
 
 namespace redshift { namespace bsdf {
-        class Mirror : public Bxdf {
+        SEALED(Mirror);
+        class Mirror : public Bxdf, MAKE_SEALED(Mirror) {
         public:
                 Mirror (Color const &color_);
 
-                virtual tuple<Color,Vector,real_t> sample_f (
+                BsdfSample sample_f (
                         const Vector &in,
                         Random &
                 ) const;
 
-                virtual Color f (
+                Color f (
                         const Vector &out,
                         const Vector &in,
                         Random &) const;

@@ -25,12 +25,55 @@
 #include "../optional.hh"
 #include "../tuple.hh"
 #include "../smart_ptr.hh"
+#include "../sealed.hh"
 #include "spectrum.hh"
 #include "differentialgeometry.hh"
 
 namespace redshift {
 class Bxdf;
 class Random;
+
+SEALED(BsdfSample);
+class BsdfSample : MAKE_SEALED(BsdfSample) {
+public:
+        BsdfSample(Color const &R, Vector const &incident, real_t pdf)
+        : reflection_(R), incident_(incident), pdf_(pdf), isNull(false)
+        {}
+
+        BsdfSample (BsdfSample const &rhs)
+        : SEALED_CONSTRUCT(BsdfSample)
+        , reflection_(rhs.reflection_)
+        , incident_(rhs.incident_)
+        , pdf_(rhs.pdf_)
+        , isNull(rhs.isNull)
+        {}
+
+        BsdfSample& operator= (BsdfSample const &rhs) {
+                reflection_ = rhs.reflection_;
+                incident_ = rhs.incident_;
+                pdf_ = rhs.pdf_;
+                isNull = rhs.isNull;
+                return *this;
+        }
+
+        Color  color ()    const { return reflection_; }
+        Vector incident () const { return incident_; }
+        real_t pdf ()      const { return pdf_; }
+
+        operator bool () const { return isNull; }
+
+        static BsdfSample null() {
+                return BsdfSample();
+        }
+
+private:
+        Color reflection_;
+        Vector incident_;
+        real_t pdf_;
+        bool isNull;
+
+        BsdfSample() : isNull(true) {}
+};
 
 class Bsdf {
 public:
@@ -51,7 +94,7 @@ public:
         };
         //virtual bool hasAny (Reflection, Specular) const = 0;
 
-        optional<tuple<Color,Vector,real_t> > sample_f (
+        BsdfSample sample_f (
                 const Vector &in, Reflection, Specular, Random &
         ) const;
 
@@ -109,7 +152,9 @@ public:
                 return ((reflection&r)==r) && ((specular&s)==s);
         }
 
-        virtual tuple<Color,Vector,real_t> sample_f (const Vector &in, Random &) const = 0;
+        virtual BsdfSample sample_f (
+                const Vector &in, Random &
+        ) const = 0;
         virtual Color f (const Vector &out, const Vector &in, Random &) const = 0;
 
 protected:

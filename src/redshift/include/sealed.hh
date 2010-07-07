@@ -29,5 +29,6 @@
                 x##NonInheritable(x##NonInheritable const &) {} \
         }
 #define MAKE_SEALED(x) virtual x##NonInheritable
+#define SEALED_CONSTRUCT(x) x##NonInheritable()
 
 #endif // NONINHERITABLE_HH_INCLUDED_20100701

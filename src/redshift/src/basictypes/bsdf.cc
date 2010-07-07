@@ -58,18 +58,18 @@ Vector Bsdf::localToWorld (Vector const &v) const {
 
 
 
-optional<tuple<Color,Vector,real_t> > Bsdf::sample_f (
+BsdfSample Bsdf::sample_f (
         const Vector &in_, Reflection r, Specular s, Random &rand
 ) const {
         const int nc = numComponents (r,s);
-        if (nc == 0)
-                return false;
+        if (nc == 0) {
+                return BsdfSample::null();
+        }
         if (nc != 1) {
-                std::cerr << "BSDFs with mith multiple components "
-                        << "of same kind are currently not supported. "
-                        << "See " << __FILE__ << ":" << __LINE__
-                        << std::endl;
-                throw std::exception ();
+                throw std::runtime_error (
+                        "BSDFs with mith multiple components "
+                        "of same kind are currently not supported. "
+                        "(" __FILE__ ")");
         }
         /*Color col;
         typedef std::vector<shared_ptr<Bxdf> >::iterator It;
@@ -84,16 +84,15 @@ optional<tuple<Color,Vector,real_t> > Bsdf::sample_f (
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
                 if ((**it).is (r,s)) {
-                        const tuple<Color,Vector,real_t> ret = (**it).sample_f (in, rand);
-                        return make_tuple(
-                                get<0>(ret),
-                                localToWorld (get<1>(ret)),
-                                get<2>(ret)
-                        );                        
+                        const BsdfSample ret = (**it).sample_f (in, rand);
+                        return BsdfSample(
+                                ret.color(),
+                                localToWorld (ret.incident()),
+                                ret.pdf()
+                        );
                 }
         }
-
-        return false;
+        throw std::runtime_error("Impossible! See bsdf.cc:Bsdf::sample_f()");
 }
 
 

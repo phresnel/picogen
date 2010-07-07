@@ -35,12 +35,12 @@ Lambertian::Lambertian (
 
 
 
-tuple<Color,Vector,real_t> Lambertian::sample_f (
+BsdfSample Lambertian::sample_f (
         const Vector &out, Random &rand
 ) const {
         const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
         const Vector in (get<0>(sphere), get<1>(sphere), get<2>(sphere));
-        return make_tuple (f(out, in, rand), in, in.y * (1/constants::pi));
+        return BsdfSample(f(out, in, rand), in, in.y * (1/constants::pi));
 }
 
 

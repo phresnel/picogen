@@ -54,14 +54,12 @@ DistantRadiance WhittedIntegrator::Li (
                 if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
                         Color spec = Spectrum::noinit;
 
-                        const optional<tuple<Color,Vector,real_t> > v_ =
-                                bsdf->sample_f (-raydiff.direction,
-                                                Bsdf::reflection, Bsdf::specular,
-                                                rand);
-                        if (v_) {
-                                const Ray ray (poi, get<1>(*v_));
-                                spec = scene.radiance (ray, sample, lirec, rand);
-                        }
+                        const BsdfSample v = bsdf->sample_f (
+                                -raydiff.direction,
+                                Bsdf::reflection, Bsdf::specular,
+                                rand);
+                        const Ray ray (poi, v.incident());
+                        spec = scene.radiance (ray, sample, lirec, rand);
                         return DistantRadiance(spec, Distance(gd.getDistance()));
                 } else if (bg->sun()) {
                         const Sun& sun = *bg->sun();

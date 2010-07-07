@@ -65,16 +65,13 @@ DistantRadiance PathIntegrator::Li (
                         Color spec = Color(0);
 
                         Ray ray (poi, raydiff.direction);
-                        const optional<tuple<Color,Vector,real_t> > v_ = bsdf->sample_f (
+                        const BsdfSample v = bsdf->sample_f (
                                 -ray.direction,
                                 Bsdf::reflection, Bsdf::specular,
                                 rand);
-                        if (v_) {
-                                const tuple<Color,Vector,real_t> v = *v_;
-                                ray.direction = get<1>(v);
-                                const Color rad = scene.radiance (ray, sample, lirec, rand);
-                                spec = spec + rad * get<0>(v) * (1/get<2>(v));
-                        }
+                        ray.direction = v.incident();
+                        const Color rad = scene.radiance (ray, sample, lirec, rand);
+                        spec = spec + rad * v.color() * (1/v.pdf());
 
                         return DistantRadiance(spec*throughput, Distance(gd.getDistance()));
                 } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
@@ -111,30 +108,27 @@ DistantRadiance PathIntegrator::Li (
                                 }
                         }
 
-                        const optional<tuple<Color,Vector,real_t> > bsdfSample_ =
+                        const BsdfSample bsdfSample =
                                 bsdf->sample_f(
                                         -ray.direction,
                                         Bsdf::reflection, Bsdf::diffuse,
                                         rand);
 
-                        if (bsdfSample_) {
+                        const Color surfaceColor = bsdfSample.color();
+                        const Ray skyRay (ray.position, bsdfSample.incident());
+                        const real_t pdf = bsdfSample.pdf();
 
-                                const Color surfaceColor = get<0>(*bsdfSample_);
-                                const Ray skyRay (ray.position, get<1>(*bsdfSample_));
-                                const real_t pdf = get<2>(*bsdfSample_);
+                        Scene::LiMode m;
+                        m.SkipSun = true;
+                        const Color incoming = scene.radiance(
+                                skyRay, sample, lirec, rand, m);
 
-                                Scene::LiMode m;
-                                m.SkipSun = true;
-                                const Color incoming = scene.radiance(
-                                        skyRay, sample, lirec, rand, m);
+                        const real_t d = max(
+                            real_t(0),
+                            dot(skyRay.direction, vector_cast<Vector>(normalS))
+                        );
 
-                                const real_t d = max(
-                                    real_t(0),
-                                    dot(skyRay.direction, vector_cast<Vector>(normalS))
-                                );
-
-                                ret += incoming*surfaceColor * d / pdf;
-                        }
+                        ret += incoming*surfaceColor * d / pdf;
                         ret *= throughput;
 
                         // Done.
