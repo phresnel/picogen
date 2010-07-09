@@ -729,7 +729,7 @@ namespace redshift { namespace scenefile {
                 double sunSizeFactor;
                 double sunBrightnessFactor;
                 double atmosphereBrightnessFactor;
-                double atmosphericFxDistanceFactor;
+                double atmosphericFxFactor;
                 double overcast;
                 Color sunColor;
                 Color skyFilter;
@@ -743,7 +743,7 @@ namespace redshift { namespace scenefile {
                 , sunSizeFactor(1)
                 , sunBrightnessFactor(1)
                 , atmosphereBrightnessFactor(1)
-                , atmosphericFxDistanceFactor(1)
+                , atmosphericFxFactor(1)
                 , sunColor(3,3,3)
                 , skyFilter(0.05,0.05,0.05)
                 , atmosphericEffects(true)
@@ -765,7 +765,7 @@ namespace redshift { namespace scenefile {
                                   new backgrounds::PssAdapter (
                                         preetham,
                                         sunSizeFactor, sunBrightnessFactor,
-                                        atmosphereBrightnessFactor, atmosphericFxDistanceFactor
+                                        atmosphereBrightnessFactor, atmosphericFxFactor
                                 ));
                         #else
                                 shared_ptr<redshift::background::Preetham> preetham (
@@ -798,7 +798,7 @@ namespace redshift { namespace scenefile {
                                 arch & pack ("sun-size-factor", sunSizeFactor);
                                 arch & pack ("sun-brightness-factor", sunBrightnessFactor);
                                 arch & pack ("atmosphere-brightness-factor", atmosphereBrightnessFactor);
-                                arch & pack ("atmospheric-effects-distance-factor", atmosphericFxDistanceFactor);
+                                arch & pack ("atmospheric-effects-factor", atmosphericFxFactor);
                                 arch & pack ("atmospheric-effects", atmosphericEffects);
                                 arch & pack ("turbidity", turbidity);
                                 arch & pack ("overcast", overcast);

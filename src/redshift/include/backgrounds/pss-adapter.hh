@@ -42,7 +42,7 @@ namespace redshift { namespace backgrounds {
                         real_t sunSizeFactor,
                         real_t sunBrightnessFactor,
                         real_t atmosphereBrightnessFactor,
-                        real_t atmosphericFxDistanceFactor
+                        real_t atmosphericEffectsFactor
                 ) ;
                 ~PssAdapter();
         private:

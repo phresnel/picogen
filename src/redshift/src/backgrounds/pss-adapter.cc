@@ -89,18 +89,17 @@ class PssAtmosphericEffectsAdapter : public AtmosphericEffects {
 public:
         PssAtmosphericEffectsAdapter (
                 background::PssSunSky const &pss,
-                real_t atmosphericEffectsDistanceFactor
+                real_t atmosphericEffectsFactor
         )
         : pss(pss)
-        , atmosphericEffectsDistanceFactor(atmosphericEffectsDistanceFactor)
+        , atmosphericEffectsFactor(atmosphericEffectsFactor)
         {
         }
-        Color shade (Color const &color, Ray const &ray, real_t distance) const {
+        Color attenuate (Color const &color, Ray const &ray, real_t distance) const {
                 if (!pss.atmosphericEffectsEnabled()) {
                         return color;
                 }
 
-                distance *= atmosphericEffectsDistanceFactor;
                 if (distance == constants::infinity)
                         distance = 10000000;
 
@@ -120,13 +119,17 @@ public:
                         viewer, source,
                         attenuation, inscatter
                 );
+                const Color attenuated =
+                        Color (SSpectrum(color) * attenuation)
+                        + inscatter;
+                //return attenuated;
 
-                return Color (SSpectrum(color) * attenuation)
-                       + inscatter;
+                return color * (1-atmosphericEffectsFactor)
+                     + attenuated * atmosphericEffectsFactor;
         }
 private:
         background::PssSunSky const &pss;
-        real_t atmosphericEffectsDistanceFactor;
+        real_t atmosphericEffectsFactor;
 };
 
 

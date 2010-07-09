@@ -186,7 +186,7 @@ Color Scene::attenuate (
                 // but not onto sun, which is already attenuated inside PssSunSky
                 atmosphere_or_geom_atmosphered
                     = background->atmosphericEffects()
-                    ? background->atmosphericEffects()->shade (atmosphere_or_geom_volumed, ray, distance)
+                    ? background->atmosphericEffects()->attenuate (atmosphere_or_geom_volumed, ray, distance)
                     : atmosphere_or_geom_volumed
         ;
 

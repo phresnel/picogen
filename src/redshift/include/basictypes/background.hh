@@ -43,7 +43,7 @@ namespace redshift {
 
         class AtmosphericEffects {
         public:
-                virtual Color shade(Color const &, Ray const &, real_t distance) const = 0;
+                virtual Color attenuate(Color const &, Ray const &, real_t distance) const = 0;
                 virtual ~AtmosphericEffects() {}
         };
 
