@@ -32,15 +32,14 @@ QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
 , ui(new Ui::qtsunskyeditor)
 {
         ui->setupUi(this);
+        ui->previewScreen->setScaledContents(true);
 
         using namespace redshift;
         direction = normalize(Vector(1,1,1));
         ui->turbiditySpinBox->setValue(7.2f);
         ui->sunIntensitySpinBox->setValue(1.0f);
         ui->atmosphereIntensitySpinBox->setValue(1.0f);
-        updatePreethamSettings();
-
-        redraw();
+        redraw(true);
 }
 
 
@@ -65,7 +64,7 @@ void QtSunSkyEditor::changeEvent(QEvent *e) {
 
 
 void QtSunSkyEditor::resizeEvent (QResizeEvent*) {
-        redraw();
+        redraw(false);
 }
 
 
@@ -85,7 +84,7 @@ void QtSunSkyEditor::mouseMoveEvent (QMouseEvent* e) {
                         updatePreethamSettings();
                         //preetham.setSunDirection(d);
                         //preetham.invalidate();
-                        redraw(true, u, v);
+                        redraw(true, false, u, v);
                 }
         }
 }
@@ -106,25 +105,25 @@ void QtSunSkyEditor::wheelEvent(QWheelEvent* e) {
                         ui->turbiditySpinBox->value()
                         + e->delta() / (speed*(8.f*15.f))
                 );
-                redraw();
+                redraw(true);
         }
 }
 
 
 
-void QtSunSkyEditor::redraw (bool drawCross, float crossU, float crossV) {
-        updatePreethamSettings();
+void QtSunSkyEditor::redraw (bool recalc, bool drawCross, float crossU, float crossV) {
+        if (recalc) updatePreethamSettings();
 
         const int
-                width = ui->previewScreen->width(),
-                height = ui->previewScreen->height();
+                pixelSize = ui->previewResolution->value(),
+                width = ui->previewScreen->width()/pixelSize,
+                height = ui->previewScreen->height()/pixelSize;
         QImage img (width, height, QImage::Format_RGB32);
         QPainter painter (&img);
 
-        const int pixelSize = ui->previewResolution->value();
 
-        for (int y=0; y<height; y+=pixelSize)
-        for (int x=0; x<width; x+=pixelSize) {
+        for (int y=0; y<height; ++y)
+        for (int x=0; x<width; ++x) {
                 const rgbf col = computeColor (x/(float)width, y/(float)height);
                 const int
                         r_ = (int)(256.f*col.r),
@@ -134,10 +133,9 @@ void QtSunSkyEditor::redraw (bool drawCross, float crossU, float crossV) {
                         g = g_<0?0:g_>255?255:g_,
                         b = b_<0?0:b_>255?255:b_
                 ;
-                //img.setPixel(x, y, QColor(r,g,b).rgb());
-                QRgb const color = QColor(r,g,b).rgb();
-                //painter.setPen(color);
-                painter.fillRect(x,y,pixelSize,pixelSize, color);
+                img.setPixel(x, y, QColor(r,g,b).rgb());
+                //QRgb const color = QColor(r,g,b).rgb();
+                //painter.fillRect(x,y,pixelSize,pixelSize, color);
         }
 
         if (false&&drawCross) {
@@ -157,21 +155,20 @@ QtSunSkyEditor::computeColor (float u, float v) const {
         using namespace redshift;
         using namespace redshift::background;
 
-        const optional<Vector> d = screenToHemisphere(u,v);
-        if (!d)
-                return rgbf(0.25,0.25,0.25);
+        const Vector d = screenToHemisphereSat(u,v);
         if (0 == preetham.get() || 0 == preetham->sun())
                 return rgbf(0.5,0.25,0.125);
 
-        const Ray skyRay (Point(), *d);
+        const Ray skyRay (Point(), d);
         Color color = preetham->sun()->color(skyRay)
-                          + preetham->atmosphere()->color(skyRay) * 0.0001;
+                    + preetham->atmosphere()->color(skyRay);
         // not working yet
         if (ui->enableAtmosphericEffects->checkState())
-                color = preetham->atmosphericEffects()->shade(
-                        color, skyRay, std::numeric_limits<real_t>::infinity()
+                color = preetham->atmosphericEffects()->attenuate(
+                        color, skyRay, redshift::constants::infinity
                 );
-        const color::RGB rgb = color.toRGB();
+        const Color scaledDown = color * ui->previewMultiplier->value();
+        const color::RGB rgb = scaledDown.toRGB();
         return rgbf(rgb.R, rgb.G, rgb.B);
 }
 
@@ -209,31 +206,49 @@ QtSunSkyEditor::screenToHemisphereSat (float u, float v) const {
 
 
 void QtSunSkyEditor::on_previewResolution_valueChanged(int) {
-        redraw();
+        redraw(false);
 }
 
 
 
 void QtSunSkyEditor::on_turbiditySpinBox_valueChanged(double value) {
-        redraw();
+        redraw(true);
+}
+
+
+
+void QtSunSkyEditor::on_previewMultiplier_valueChanged(double ) {
+        redraw(false);
 }
 
 
 
 void QtSunSkyEditor::on_sunIntensitySpinBox_valueChanged(double value) {
-        redraw();
+        redraw(true);
 }
 
 
 
 void QtSunSkyEditor::on_atmosphereIntensitySpinBox_valueChanged(double value) {
-        redraw();
+        redraw(true);
+}
+
+
+
+void QtSunSkyEditor::on_diskSizeSpinBox_valueChanged(double) {
+        redraw(true);
 }
 
 
 
 void QtSunSkyEditor::on_enableAtmosphericEffects_stateChanged(int ) {
-        redraw();
+        redraw(true);
+}
+
+
+
+void QtSunSkyEditor::on_atmosphericEffectsFactorSpinBox_valueChanged(double ) {
+        redraw(true);
 }
 
 
@@ -247,9 +262,10 @@ void QtSunSkyEditor::updatePreethamSettings() {
                 ui->enableAtmosphericEffects->checkState()
         ));
         preetham = redshift::shared_ptr<redshift::backgrounds::PssAdapter>
-                   (new backgrounds::PssAdapter (pss,
-                                                 1,
-                                                 ui->sunIntensitySpinBox->value(),
-                                                 ui->atmosphereIntensitySpinBox->value(),
-                                                 1));
+                   (new backgrounds::PssAdapter (
+                        pss,
+                        ui->diskSizeSpinBox->value(),
+                        ui->sunIntensitySpinBox->value(),
+                        ui->atmosphereIntensitySpinBox->value(),
+                        ui->atmosphericEffectsFactorSpinBox->value()));
 }

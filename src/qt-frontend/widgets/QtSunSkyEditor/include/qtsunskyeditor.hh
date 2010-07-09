@@ -57,7 +57,7 @@ protected:
         void wheelEvent(QWheelEvent*);
 
 private:
-        void redraw(bool drawCross=false, float crossU=0, float crossV=0);
+        void redraw(bool recalc, bool drawCross=false, float crossU=0, float crossV=0);
         void updatePreethamSettings();
 
         redshift::Vector direction;
@@ -80,8 +80,11 @@ private:
 
 private slots:
         void on_enableAtmosphericEffects_stateChanged(int );
+        void on_atmosphericEffectsFactorSpinBox_valueChanged(double );
         void on_previewResolution_valueChanged(int );
+        void on_diskSizeSpinBox_valueChanged(double );
         void on_turbiditySpinBox_valueChanged(double );
+        void on_previewMultiplier_valueChanged(double );
         void on_sunIntensitySpinBox_valueChanged(double );
         void on_atmosphereIntensitySpinBox_valueChanged(double );
 };
