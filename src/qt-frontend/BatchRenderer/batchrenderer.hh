@@ -22,6 +22,7 @@
 #define BATCHRENDERER_HH
 
 #include <QMainWindow>
+#include <QSet>
 
 class QFileSystemWatcher;
 
@@ -42,6 +43,7 @@ private:
         Ui::BatchRenderer *ui;
         QString const jobPath;
         QFileSystemWatcher *watcher;
+        QSet<QString> knownFiles;
 private slots:
         void watcher_directoryChanged ( const QString & path  );
 };

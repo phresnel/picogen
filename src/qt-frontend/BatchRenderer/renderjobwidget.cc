@@ -18,52 +18,45 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../actuarius/actuarius.hh"
-#include "jobfile.hh"
-#include <sstream>
-#undef main
-
-struct RenderJob {
-
-        std::string title;
-        redshift::scenefile::Scene scene;
-
-        // Serialization.
-        template<typename Arch>
-        void serialize (Arch &arch) {
-                using actuarius::pack;
-                arch & pack("scene", scene);
-                arch & pack("title", title);
-        }
-};
+#include "job.hh"
 
 #include <QDir>
+#include <QtLockedFile>
+#include <QTextStream>
 #include "renderjobwidget.hh"
 #include "ui_renderjobwidget.h"
 
-RenderJobWidget::RenderJobWidget(const QString &jobfile, QWidget *parent) :
+RenderJobWidget::RenderJobWidget(QFile &jobfile, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderJobWidget),
-    jobFilename(jobfile),
-    statusDirectory(jobfile + ".status")
+    jobFilename(jobfile.fileName()),
+    statusDirectory(jobfile.fileName() + ".status")
 {
         ui->setupUi(this);
 
-        std::ifstream ifs(jobfile.toAscii());
-        if (!ifs) {
-                qWarning("ifs not opened");
+        job = loadFromFile(jobfile);
+        if (job->scene.renderSettingsCount() == 0
+         || job->scene.cameraCount() == 0
+        ) {
+                isValid_ = false;
+                return;
         }
-        RenderJob job;
-        actuarius::IArchive (ifs) & actuarius::pack("job", job);
+        isValid_ = true;
+        prepareJob(*job, statusDirectory);
 
-        updateStatus();
+        ui->filename->setText(jobFilename);
 
-        ui->filename->setText(QString::fromStdString(job.title));
+        updateProgress();
 }
 
 RenderJobWidget::~RenderJobWidget()
 {
+        delete job;
         delete ui;
+}
+
+bool RenderJobWidget::isValid() const {
+        return isValid_;
 }
 
 void RenderJobWidget::changeEvent(QEvent *e)
@@ -78,11 +71,9 @@ void RenderJobWidget::changeEvent(QEvent *e)
         }
 }
 
-void RenderJobWidget::updateStatus() {
-        ui->filename->setText(jobFilename);
-        if (!QDir().exists(statusDirectory)) {
-                ui->progressBar->setValue(0);
-        } else {
-                ui->progressBar->setValue(50);
-        }
+void RenderJobWidget::updateProgress() {
+        const Status status = readStatus(statusDirectory);
+        ui->progressBar->setValue(
+                100*(status.currentScanline - job->getRenderSettings().min_y)
+                / job->getRenderSettings().max_y);
 }

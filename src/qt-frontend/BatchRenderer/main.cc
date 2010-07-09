@@ -21,6 +21,8 @@
 #include <QtSingleApplication>
 #include <QMessageBox>
 #include "batchrenderer.hh"
+#include <iostream>
+#include <QtLockedFile>
 
 int main(int argc, char *argv[])
 {

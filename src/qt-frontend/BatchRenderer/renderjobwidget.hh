@@ -27,11 +27,19 @@ namespace Ui {
     class RenderJobWidget;
 }
 
+class RenderJob;
+
+class QFile;
+
 class RenderJobWidget : public QWidget {
         Q_OBJECT
 public:
-        RenderJobWidget(QString const &jobfile, QWidget *parent = 0);
+        RenderJobWidget(QFile &jobfile, QWidget *parent = 0);
         ~RenderJobWidget();
+
+        void updateProgress();
+
+        bool isValid() const;
 
 protected:
         void changeEvent(QEvent *e);
@@ -40,7 +48,8 @@ private:
         Ui::RenderJobWidget *ui;
         QString const jobFilename;
         QString const statusDirectory;
-        void updateStatus();
+        RenderJob *job;
+        bool isValid_;
 };
 
 #endif // RENDERJOBWIDGET_HH

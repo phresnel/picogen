@@ -73,14 +73,25 @@ void BatchRenderer::watcher_directoryChanged (const QString & path) {
         dir.setFilter(QDir::Files);
         const QStringList files = dir.entryList();
 
-        ui->jobView->clear();
-        ui->jobView->setRowCount(files.count());
-
         int r = 0;
         foreach (QString file, files) {
-                ui->jobView->setCellWidget(
-                        r, 0,
-                        new RenderJobWidget(dir.absoluteFilePath(file), this));
-                ++r;
+                if (knownFiles.contains(file))
+                        continue;
+                QtLockedFile f(dir.absoluteFilePath(file));
+                f.open(QIODevice::ReadOnly);
+                if (f.lock(QtLockedFile::ReadLock, true)) {
+                        knownFiles.insert(file);
+
+                        RenderJobWidget *p = new RenderJobWidget(f, this);
+                        if (p->isValid()) {
+                                ui->jobView->setRowCount(r+1);
+                                ui->jobView->setCellWidget(r, 0, p);
+                                ++r;
+                        } else {
+                                delete p;
+                        }
+                        f.unlock();
+                        f.close();
+                }
         }
 }
