@@ -21,19 +21,23 @@
 #ifndef QTSUNSKYEDITOR_HH
 #define QTSUNSKYEDITOR_HH
 
+#include "geometry.hh"
+#include "optional.hh"
+#include "smart_ptr.hh"
 
-
-#include "kallisto/common.hh"
 #include <QWidget>
 #include <QImage>
 #include <QMouseEvent>
 #include "ui_qtsunskyeditor.h"
-#include "redshift.hh"
-
 
 
 namespace Ui {
         class qtsunskyeditor;
+}
+namespace redshift {
+        namespace backgrounds {
+                class PssAdapter;
+        }
 }
 
 
@@ -70,7 +74,7 @@ private:
 
 
         Ui::qtsunskyeditor *ui;
-        redshift::background::Preetham preetham;
+        redshift::shared_ptr<redshift::backgrounds::PssAdapter> preetham;
 
 private slots:
         void on_previewResolution_valueChanged(int );

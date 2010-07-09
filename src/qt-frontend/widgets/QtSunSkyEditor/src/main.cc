@@ -19,16 +19,17 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "kallisto/common.hh"
-#include <QtGui/QApplication>
 #include "include/qtsunskyeditor.hh"
+#include "static_init.hh"
+#include <QtGui/QApplication>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    QtSunSkyEditor w;
-    w.show();
-    return a.exec();
+        redshift::static_init();
+        QApplication a(argc, argv);
+        QtSunSkyEditor w;
+        w.show();
+        return a.exec();
 }
 
 

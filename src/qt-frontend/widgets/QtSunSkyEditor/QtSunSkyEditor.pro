@@ -1,19 +1,23 @@
-
-LIBS += -lgomp
+CONFIG+=debug_and_release
+LIBS += -lgomp ../../../redshift/lib/libpicogen.a
 QMAKE_CXXFLAGS += -fopenmp -O3
 QMAKE_LFLAGS += -fopenmp
 
 INCLUDEPATH += ../include/ \
     ../../ \
-    ../../instant-preview/open-gl/include/ \
-    ../../skylab/include/ \
-    ../../redshift/include/
-HEADERS += include/qtsunskyeditor.hh \
-    ../../skylab/include/preetham.hh
+    ../../../redshift/include/
+#../../../instant-preview/open-gl/include/ \
+#../../skylab/include/
+HEADERS += include/qtsunskyeditor.hh
 SOURCES += src/qtsunskyeditor.cc \
-    src/main.cc \
-    ../../skylab/src/preetham.cc \
-    ../../redshift/src/constants.cc
+    src/main.cc
+#../../redshift/src/constants.cc
+#../../skylab/src/preetham.cc
 FORMS += forms/qtsunskyeditor.ui
 RESOURCES += ../QtQuatschEditor/resources/icons.qrc
 
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+} else {
+    DESTDIR = release
+}

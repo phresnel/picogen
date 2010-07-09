@@ -20,6 +20,8 @@
 
 
 #include "include/qtsunskyeditor.hh"
+#include "backgrounds/pss-adapter.hh"
+#include "backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <QPainter>
 
 //#include <omp.h>
@@ -32,10 +34,19 @@ QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
         using namespace redshift;
         ui->setupUi(this);
 
-        ui->turbiditySpinBox->setValue(2.2f);
+        ui->turbiditySpinBox->setValue(7.2f);
         ui->sunIntensitySpinBox->setValue(1.0f);
         ui->atmosphereIntensitySpinBox->setValue(0.2f);
         updatePreethamSettings();
+
+        shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
+                normalize(Vector(1,.25,1)),
+                7.2,
+                0,
+                true
+        ));
+        preetham = redshift::shared_ptr<redshift::backgrounds::PssAdapter>
+                   (new backgrounds::PssAdapter (pss,1,1,1,1));
         redraw();
 }
 
@@ -78,8 +89,8 @@ void QtSunSkyEditor::mouseMoveEvent (QMouseEvent* e) {
                                 v = P.y() / (float)ui->previewScreen->height()
                         ;
                         const Vector d = screenToHemisphereSat(u,v);
-                        preetham.setSunDirection(d);
-                        preetham.invalidate();
+                        //preetham.setSunDirection(d);
+                        //preetham.invalidate();
 
                         redraw(true, u, v);
                 }
@@ -123,9 +134,9 @@ void QtSunSkyEditor::redraw (bool drawCross, float crossU, float crossV) {
         for (int x=0; x<width; x+=pixelSize) {
                 const rgbf col = computeColor (x/(float)width, y/(float)height);
                 const int
-                        r_ = (int)256.f*col.r,
-                        g_ = (int)256.f*col.g,
-                        b_ = (int)256.f*col.b,
+                        r_ = (int)(256.f*col.r),
+                        g_ = (int)(256.f*col.g),
+                        b_ = (int)(256.f*col.b),
                         r = r_<0?0:r_>255?255:r_,
                         g = g_<0?0:g_>255?255:g_,
                         b = b_<0?0:b_>255?255:b_
@@ -148,21 +159,25 @@ void QtSunSkyEditor::redraw (bool drawCross, float crossU, float crossV) {
 }
 
 
-
+#include <fstream>
+std::ofstream foo("foo.txt");
 QtSunSkyEditor::rgbf
 QtSunSkyEditor::computeColor (float u, float v) const {
         using namespace redshift;
         using namespace redshift::background;
 
-
         const optional<Vector> d = screenToHemisphere(u,v);
         if (!d)
-                return rgbf(0,0,0);
+                return rgbf(0.25,0.25,0.25);
+        if (0 == preetham.get() || 0 == preetham->sun())
+                return rgbf(0.5,0.25,0.125);
 
         const Ray skyRay (Point(), *d);
-        const Color color = preetham.shade (skyRay)
-                            + preetham.sunShade(skyRay);
-        return rgbf(color.r, color.g, color.b);
+        const Color color = preetham->sun()->color(skyRay)
+                          + preetham->atmosphere()->color(skyRay) * 0.0001;
+        const color::RGB rgb = color.toRGB();
+        foo << color.y() << "\n";
+        return rgbf(rgb.R, rgb.G, rgb.B);
 }
 
 
@@ -250,8 +265,10 @@ void QtSunSkyEditor::on_atmosphereIntensitySpinBox_valueChanged(double value) {
 
 
 void QtSunSkyEditor::updatePreethamSettings() {
+        /*
         preetham.setTurbidity(ui->turbiditySpinBox->value());
         preetham.setSunColor(redshift::Color(1,1,1)*ui->sunIntensitySpinBox->value());
         preetham.setColorFilter(redshift::Color(1,1,1)*ui->atmosphereIntensitySpinBox->value());
         preetham.invalidate();
+        */
 }
