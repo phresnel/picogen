@@ -63,7 +63,11 @@ BsdfSample Bsdf::sample_f (
 ) const {
         const int nc = numComponents (r,s);
         if (nc == 0) {
-                return BsdfSample::null();
+                const char *msg = "bsdf.cc:Bsdf::sample_f() called for "
+                                  "a combination of Reflection/Specular"
+                                  " that is present in this Bsdf.";
+                std::cerr << msg;
+                throw std::runtime_error(msg);
         }
         if (nc != 1) {
                 throw std::runtime_error (
@@ -126,7 +130,7 @@ Color Bsdf::f (
 
 
 
-bool Bsdf::is (Bsdf::Reflection r, Bsdf::Specular s) const {
+bool Bsdf::hasComponent (Bsdf::Reflection r, Bsdf::Specular s) const {
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it)
                 if ((**it).is (r, s))

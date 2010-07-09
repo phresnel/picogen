@@ -61,7 +61,7 @@ DistantRadiance PathIntegrator::Li (
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
 
-                if (bsdf->is (Bsdf::reflection, Bsdf::specular)) {
+                if (bsdf->hasComponent (Bsdf::reflection, Bsdf::specular)) {
                         Color spec = Color(0);
 
                         Ray ray (poi, raydiff.direction);
@@ -74,7 +74,7 @@ DistantRadiance PathIntegrator::Li (
                         spec = spec + rad * v.color() * (1/v.pdf());
 
                         return DistantRadiance(spec*throughput, Distance(gd.getDistance()));
-                } else if (bsdf->is (Bsdf::reflection, Bsdf::diffuse)) {
+                } else if (bsdf->hasComponent (Bsdf::reflection, Bsdf::diffuse)) {
 
                         const Ray ray (poi, raydiff.direction);
                         Color ret = Color(0);

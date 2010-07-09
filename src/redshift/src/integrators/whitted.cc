@@ -51,7 +51,7 @@ DistantRadiance WhittedIntegrator::Li (
                 const Point poi               = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
-                if (doMirror && bsdf->is (Bsdf::reflection, Bsdf::specular)) {
+                if (doMirror && bsdf->hasComponent(Bsdf::reflection, Bsdf::specular)) {
                         Color spec = Spectrum::noinit;
 
                         const BsdfSample v = bsdf->sample_f (

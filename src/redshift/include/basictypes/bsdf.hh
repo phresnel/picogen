@@ -37,7 +37,7 @@ SEALED(BsdfSample);
 class BsdfSample : MAKE_SEALED(BsdfSample) {
 public:
         BsdfSample(Color const &R, Vector const &incident, real_t pdf)
-        : reflection_(R), incident_(incident), pdf_(pdf), isNull(false)
+        : reflection_(R), incident_(incident), pdf_(pdf)
         {}
 
         BsdfSample (BsdfSample const &rhs)
@@ -45,22 +45,18 @@ public:
         , reflection_(rhs.reflection_)
         , incident_(rhs.incident_)
         , pdf_(rhs.pdf_)
-        , isNull(rhs.isNull)
         {}
 
         BsdfSample& operator= (BsdfSample const &rhs) {
                 reflection_ = rhs.reflection_;
                 incident_ = rhs.incident_;
                 pdf_ = rhs.pdf_;
-                isNull = rhs.isNull;
                 return *this;
         }
 
         Color  color ()    const { return reflection_; }
         Vector incident () const { return incident_; }
         real_t pdf ()      const { return pdf_; }
-
-        operator bool () const { return isNull; }
 
         static BsdfSample null() {
                 return BsdfSample();
@@ -70,9 +66,8 @@ private:
         Color reflection_;
         Vector incident_;
         real_t pdf_;
-        bool isNull;
 
-        BsdfSample() : isNull(true) {}
+        BsdfSample() ;
 };
 
 class Bsdf {
@@ -124,7 +119,7 @@ public:
                 std::vector<shared_ptr<Bxdf> >().swap (bxdfs);
         }
 
-        bool is (Bsdf::Reflection r, Bsdf::Specular s) const ;
+        bool hasComponent (Bsdf::Reflection r, Bsdf::Specular s) const ;
 
 private:
         Vector worldToLocal (Vector const &v) const ;
