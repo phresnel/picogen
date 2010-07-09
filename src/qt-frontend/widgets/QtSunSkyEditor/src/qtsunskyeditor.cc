@@ -37,7 +37,7 @@ QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
         direction = normalize(Vector(1,1,1));
         ui->turbiditySpinBox->setValue(7.2f);
         ui->sunIntensitySpinBox->setValue(1.0f);
-        ui->atmosphereIntensitySpinBox->setValue(0.2f);
+        ui->atmosphereIntensitySpinBox->setValue(1.0f);
         updatePreethamSettings();
 
         redraw();
@@ -164,8 +164,13 @@ QtSunSkyEditor::computeColor (float u, float v) const {
                 return rgbf(0.5,0.25,0.125);
 
         const Ray skyRay (Point(), *d);
-        const Color color = preetham->sun()->color(skyRay)
+        Color color = preetham->sun()->color(skyRay)
                           + preetham->atmosphere()->color(skyRay) * 0.0001;
+        // not working yet
+        if (ui->enableAtmosphericEffects->checkState())
+                color = preetham->atmosphericEffects()->shade(
+                        color, skyRay, std::numeric_limits<real_t>::infinity()
+                );
         const color::RGB rgb = color.toRGB();
         return rgbf(rgb.R, rgb.G, rgb.B);
 }
@@ -209,46 +214,25 @@ void QtSunSkyEditor::on_previewResolution_valueChanged(int) {
 
 
 
-void QtSunSkyEditor::on_turbidityDial_valueChanged(int position) {
-        const float fac = 100.f;
-        ui->turbiditySpinBox->setValue(position / fac);
-}
-
-
-
 void QtSunSkyEditor::on_turbiditySpinBox_valueChanged(double value) {
-        const float fac = 100.f;
-        ui->turbidityDial->setValue(static_cast<int>(value*fac));
         redraw();
-}
-
-
-
-void QtSunSkyEditor::on_sunIntensityDial_valueChanged(int position) {
-        const float fac = 100.f;
-        ui->sunIntensitySpinBox->setValue(position / fac);
 }
 
 
 
 void QtSunSkyEditor::on_sunIntensitySpinBox_valueChanged(double value) {
-        const float fac = 100.f;
-        ui->sunIntensityDial->setValue(static_cast<int>(value*fac));
         redraw();
 }
 
 
 
-void QtSunSkyEditor::on_atmosphereIntensityDial_valueChanged(int position) {
-        const float fac = 100.f;
-        ui->atmosphereIntensitySpinBox->setValue(position / fac);
+void QtSunSkyEditor::on_atmosphereIntensitySpinBox_valueChanged(double value) {
+        redraw();
 }
 
 
 
-void QtSunSkyEditor::on_atmosphereIntensitySpinBox_valueChanged(double value) {
-        const float fac = 100.f;
-        ui->atmosphereIntensityDial->setValue(static_cast<int>(value*fac));
+void QtSunSkyEditor::on_enableAtmosphericEffects_stateChanged(int ) {
         redraw();
 }
 
@@ -260,7 +244,7 @@ void QtSunSkyEditor::updatePreethamSettings() {
                 normalize(direction),
                 ui->turbiditySpinBox->value(),
                 0,
-                false
+                ui->enableAtmosphericEffects->checkState()
         ));
         preetham = redshift::shared_ptr<redshift::backgrounds::PssAdapter>
                    (new backgrounds::PssAdapter (pss,

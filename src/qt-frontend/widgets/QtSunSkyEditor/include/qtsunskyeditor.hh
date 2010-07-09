@@ -79,13 +79,11 @@ private:
         redshift::shared_ptr<redshift::backgrounds::PssAdapter> preetham;
 
 private slots:
+        void on_enableAtmosphericEffects_stateChanged(int );
         void on_previewResolution_valueChanged(int );
         void on_turbiditySpinBox_valueChanged(double );
-        void on_turbidityDial_valueChanged(int position);
         void on_sunIntensitySpinBox_valueChanged(double );
-        void on_sunIntensityDial_valueChanged(int position);
         void on_atmosphereIntensitySpinBox_valueChanged(double );
-        void on_atmosphereIntensityDial_valueChanged(int position);
 };
 
 #endif // QTSUNSKYEDITOR_HH
