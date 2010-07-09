@@ -253,12 +253,18 @@ void QtSunSkyEditor::on_atmosphericEffectsFactorSpinBox_valueChanged(double ) {
 
 
 
+void QtSunSkyEditor::on_overcastSpinBox_valueChanged(double ) {
+        redraw(true);
+}
+
+
+
 void QtSunSkyEditor::updatePreethamSettings() {
         using namespace redshift;
         shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
                 normalize(direction),
                 ui->turbiditySpinBox->value(),
-                0,
+                ui->overcastSpinBox->value(),
                 ui->enableAtmosphericEffects->checkState()
         ));
         preetham = redshift::shared_ptr<redshift::backgrounds::PssAdapter>

@@ -79,6 +79,7 @@ private:
         redshift::shared_ptr<redshift::backgrounds::PssAdapter> preetham;
 
 private slots:
+        void on_overcastSpinBox_valueChanged(double );
         void on_enableAtmosphericEffects_stateChanged(int );
         void on_atmosphericEffectsFactorSpinBox_valueChanged(double );
         void on_previewResolution_valueChanged(int );
