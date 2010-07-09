@@ -24,6 +24,8 @@
 #include <QStringList>
 #include <QLabel>
 
+#include "renderjobwidget.hh"
+
 #include "batchrenderer.hh"
 #include "ui_batchrenderer.h"
 
@@ -68,15 +70,17 @@ void BatchRenderer::changeEvent(QEvent *e)
 
 void BatchRenderer::watcher_directoryChanged (const QString & path) {
         QDir dir (path);
+        dir.setFilter(QDir::Files);
         const QStringList files = dir.entryList();
 
         ui->jobView->clear();
-        ui->jobView->setColumnCount(1);
         ui->jobView->setRowCount(files.count());
 
         int r = 0;
         foreach (QString file, files) {
-                ui->jobView->setCellWidget(r, 0, new QLabel(file, this));
+                ui->jobView->setCellWidget(
+                        r, 0,
+                        new RenderJobWidget(dir.absoluteFilePath(file), this));
                 ++r;
         }
 }
