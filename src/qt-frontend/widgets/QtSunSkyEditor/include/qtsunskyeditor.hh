@@ -60,6 +60,8 @@ private:
         void redraw(bool drawCross=false, float crossU=0, float crossV=0);
         void updatePreethamSettings();
 
+        redshift::Vector direction;
+
 
         struct rgbf {
                 rgbf(){}
