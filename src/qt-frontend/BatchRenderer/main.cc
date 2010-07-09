@@ -18,9 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
-#include "qtsingleapplication.h"
+#include <QtSingleApplication>
 #include <QMessageBox>
 #include "batchrenderer.hh"
 

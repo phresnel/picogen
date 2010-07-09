@@ -18,21 +18,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include <QtLockedFile>
+#include <QFileSystemWatcher>
+#include <QDir>
+#include <QStringList>
+#include <QLabel>
 
 #include "batchrenderer.hh"
 #include "ui_batchrenderer.h"
 
-BatchRenderer::BatchRenderer(QWidget *parent) :
-        QMainWindow(parent),
-        ui(new Ui::BatchRenderer)
+
+
+BatchRenderer::BatchRenderer(QWidget *parent)
+: QMainWindow(parent)
+, ui(new Ui::BatchRenderer)
+, jobPath("C:/Dokumente und Einstellungen/smach/Eigene Dateien/foo/")
+, watcher(new QFileSystemWatcher(QStringList() << jobPath, this))
 {
         ui->setupUi(this);
+
+        connect (watcher, SIGNAL(directoryChanged(QString)),
+                 this, SLOT(watcher_directoryChanged(QString const &)));
+
+        watcher_directoryChanged(jobPath);
 }
+
+
 
 BatchRenderer::~BatchRenderer()
 {
         delete ui;
 }
+
+
 
 void BatchRenderer::changeEvent(QEvent *e)
 {
@@ -43,5 +61,22 @@ void BatchRenderer::changeEvent(QEvent *e)
                 break;
         default:
                 break;
+        }
+}
+
+
+
+void BatchRenderer::watcher_directoryChanged (const QString & path) {
+        QDir dir (path);
+        const QStringList files = dir.entryList();
+
+        ui->jobView->clear();
+        ui->jobView->setColumnCount(1);
+        ui->jobView->setRowCount(files.count());
+
+        int r = 0;
+        foreach (QString file, files) {
+                ui->jobView->setCellWidget(r, 0, new QLabel(file, this));
+                ++r;
         }
 }

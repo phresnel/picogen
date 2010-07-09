@@ -23,6 +23,8 @@
 
 #include <QMainWindow>
 
+class QFileSystemWatcher;
+
 namespace Ui {
     class BatchRenderer;
 }
@@ -33,13 +35,15 @@ public:
         BatchRenderer(QWidget *parent = 0);
         ~BatchRenderer();
 
-public slots:
-
 protected:
         void changeEvent(QEvent *e);
 
 private:
         Ui::BatchRenderer *ui;
+        QString const jobPath;
+        QFileSystemWatcher *watcher;
+private slots:
+        void watcher_directoryChanged ( const QString & path  );
 };
 
 #endif // BATCHRENDERER_HH
