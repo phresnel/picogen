@@ -20,6 +20,11 @@ wget http://get.qt.nokia.com/qt/solutions/lgpl/qtsingleapplication-2.6_1-opensou
 tar -xzf qtsingleapplication-2.6_1-opensource.tar.gz
 rm qtsingleapplication-2.6_1-opensource.tar.gz
 
+echo getting QtLockedFile
+wget http://get.qt.nokia.com/qt/solutions/lgpl/qtlockedfile-2.4_1-opensource.tar.gz
+tar -xzf qtlockedfile-2.4_1-opensource.tar.gz
+rm qtlockedfile-2.4_1-opensource.tar.gz
+
 popd
 
 echo creating tarball of downloaded stuff

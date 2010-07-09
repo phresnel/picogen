@@ -63,6 +63,16 @@ qtwindowlistmenu:
 	echo "license accepted" > .licenseAccepted ; \
 	./configure
 
+qtlockedfile:
+	@cd upstream/QtSolutions/qtlockedfile-2.4_1-opensource ; \
+	echo "license accepted" > .licenseAccepted ; \
+	./configure
+
+qtsingleapplication:
+	@cd upstream/QtSolutions/qtsingleapplication-2.6_1-opensource ; \
+	echo "license accepted" > .licenseAccepted ; \
+	./configure
+
 ###############################################################################
 # Qt
 ###############################################################################
