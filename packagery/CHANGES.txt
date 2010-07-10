@@ -1,3 +1,13 @@
+picogen (0.3) unstable; urgency=low
+
+  * fix: nsis uninstaller does not want a confirmation
+  * fix: nsis installer now check whether picogen is already installed
+  * fix severe: surface integrators could infinitely recurse
+     - this was especially apparent for water height-maps of high
+       frequency and high amplitude
+  * fix severe: crash when width was below 10
+
+
 picogen (0.3~beta6) unstable; urgency=low
 
   * several oversights have been fixed

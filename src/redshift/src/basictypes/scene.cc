@@ -27,7 +27,7 @@
 #include "../../include/interval.hh"
 #include "../../include/basictypes/spectrum.hh"
 
-
+#include <algorithm>
 #include <omp.h>
 
 namespace {
@@ -228,7 +228,7 @@ void Scene::render (
                 (minY<maxY && maxY<(unsigned int)renderTarget->getHeight())
                 ? maxY
                 : renderTarget->getHeight();
-#define NO_OMP_THREADING
+//#define NO_OMP_THREADING
 
         // TODO: needs to be tested
         const int
@@ -238,19 +238,18 @@ void Scene::render (
                 step_ = samplesPerLine < samplesBeforeReporting
                       ? width
                       : samplesBeforeReporting / numAASamples,
-                step = (step_<10 ? 10 : step_)
+                step = std::min (std::min(10, step_), (int)width)
         ;
 
 
         for (unsigned int y_=minY; y_<height; ++y_) {
                 const unsigned int y = y_;
 
-                for (int left=0, right=step;
+                for (int left=0,
+                         right=step;
                      left<(int)width;
-                     (left+=step), (right= left+step<(int)width ? left+step : width))
-
-                //const int left = 0, right = width;
-                {
+                     (left+=step), (right = std::min(left+step, (int)width))
+                ) {
                         reporter->report (lock, sampleNumber, totalNumberOfSamples);
                         ucp->tick();
                         if (ucp->userWantsToQuit())
