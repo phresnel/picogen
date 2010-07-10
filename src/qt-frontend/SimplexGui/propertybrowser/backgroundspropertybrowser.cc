@@ -177,13 +177,13 @@ void BackgroundsPropertyBrowser::setBackground (
 
 
         // Atmosphere effects distance factor.
-        vp = variantManager->addProperty(QVariant::Double, "atmospheric-effects-distance-factor");
+        vp = variantManager->addProperty(QVariant::Double, "atmospheric-effects-factor");
         vp->setValue(1);
-        vp->setAttribute(QLatin1String("singleStep"), 0.1);
-        vp->setAttribute(QLatin1String("decimals"), 5);
+        vp->setAttribute(QLatin1String("singleStep"), 0.05);
+        vp->setAttribute(QLatin1String("decimals"), 1);
         vp->setAttribute(QLatin1String("minimum"), 0);
         vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
-        vp->setValue(b.atmosphericFxDistanceFactor);
+        vp->setValue(b.atmosphericFxFactor);
         pssSunSkyProperty->addSubProperty(vp);
 
 
@@ -271,7 +271,7 @@ void BackgroundsPropertyBrowser::addBackgroundsToScene (
 
                         sunsky.atmosphericEffects = readValue<bool>("atmospheric-effects", bg);
                         sunsky.atmosphereBrightnessFactor = readValue<double>("atmosphere-brightness-factor", bg);
-                        sunsky.atmosphericFxDistanceFactor = readValue<double>("atmospheric-effects-distance-factor", bg);
+                        sunsky.atmosphericFxFactor = readValue<double>("atmospheric-effects-factor", bg);
 
                         sunsky.turbidity = readValue<double>("turbidity", bg);
                         sunsky.overcast = readValue<double>("overcast", bg);

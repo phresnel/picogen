@@ -178,7 +178,7 @@ void ScenePropertyBrowser::currentItemChanged(QtBrowserItem *current) {
                                : findParent(root->properties(),
                                             parentProp);
 
-        const bool isCode = name == "code";
+        //const bool isCode = name == "code";
 
 
         const bool isTransform      = name  == "transform";

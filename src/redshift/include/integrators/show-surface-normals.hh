@@ -26,33 +26,37 @@
 namespace redshift {
         class ShowSurfaceNormals : public Integrator {
         public:
-                virtual tuple<real_t,Color,real_t> Li (
+                DistantRadiance Li (
                         const Scene &scene,
                         const RayDifferential &raydiff,
-                        const Sample &sample, Random& /*rand*/
+                        const Sample &,
+                        const LiRecursion &,
+                        Random&
                 ) const {
                         const optional<Intersection> I (
-                                                scene.intersect (raydiff));
+                                scene.intersect (raydiff));
                         if (I) {
                                 //const Vector sunDir (1,1,0);
 
 
-                                return make_tuple (1.0,
+                                return DistantRadiance (
                                         Color::FromRGB(
                                                 I->getShadingNormal().x+0.5,
                                                 I->getShadingNormal().y+0.5,
                                                 I->getShadingNormal().z+0.5,
                                                 IlluminantSpectrum
                                         ),
-                                        I->getDistance()
+                                        Distance(I->getDistance())
                                 );
                         } else {
-                                Color const col = Color::FromRGB (
+                                Color const col = Color::FromRGB(
                                                 0.5+raydiff.direction.x,
                                                 0.5+raydiff.direction.y,
                                                 0.5+raydiff.direction.z,
                                                 IlluminantSpectrum);
-                                return make_tuple (1.0, col, constants::infinity);
+                                return DistantRadiance (
+                                        col,
+                                        Distance(constants::infinity));
                         }
                 }
         };

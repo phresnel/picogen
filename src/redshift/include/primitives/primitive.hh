@@ -35,13 +35,13 @@ namespace redshift {
         class Primitive
         : public enable_shared_from_this<Primitive> {
         public:
-                virtual bool doesIntersect (Ray const &ray) const = 0;
-                virtual optional<Intersection> intersect(Ray const &ray) const = 0;
+                virtual bool doesIntersect (Ray const &) const = 0;
+                virtual optional<Intersection> intersect(Ray const &) const = 0;
 
-                virtual void prepare (const Scene &scene) {}
+                virtual void prepare (const Scene &) {}
 
                 virtual shared_ptr<Bsdf> getBsdf(
-                        const DifferentialGeometry & dgGeom) const = 0;
+                        const DifferentialGeometry &) const = 0;
 
                 virtual ~Primitive () {}
         };
