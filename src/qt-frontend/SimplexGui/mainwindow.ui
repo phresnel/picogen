@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>790</width>
-    <height>552</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -528,7 +528,6 @@ QTabWidget::pane { /* The tab widget frame */
           <property name="contextMenuPolicy">
            <enum>Qt::CustomContextMenu</enum>
           </property>
-          <zorder>groupBox_8</zorder>
          </widget>
         </item>
         <item>
@@ -809,7 +808,7 @@ QTabWidget::pane { /* The tab widget frame */
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>790</width>
+     <width>1024</width>
      <height>19</height>
     </rect>
    </property>

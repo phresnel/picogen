@@ -180,9 +180,9 @@ void BackgroundsPropertyBrowser::setBackground (
         vp = variantManager->addProperty(QVariant::Double, "atmospheric-effects-factor");
         vp->setValue(1);
         vp->setAttribute(QLatin1String("singleStep"), 0.05);
-        vp->setAttribute(QLatin1String("decimals"), 1);
+        vp->setAttribute(QLatin1String("decimals"), 5);
         vp->setAttribute(QLatin1String("minimum"), 0);
-        vp->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
+        vp->setAttribute(QLatin1String("maximum"), 1);
         vp->setValue(b.atmosphericFxFactor);
         pssSunSkyProperty->addSubProperty(vp);
 

@@ -80,8 +80,8 @@ void FilmSettingsPropertyBrowser::initialize() {
                         QVariant::Double,
                         QLatin1String("color-scale"));
         item->setValue(0.013);
-        item->setAttribute(QLatin1String("singleStep"), 0.01);
-        item->setAttribute(QLatin1String("decimals"), 6);
+        item->setAttribute(QLatin1String("singleStep"), 0.0001);
+        item->setAttribute(QLatin1String("decimals"), 7);
         item->setAttribute(QLatin1String("minimum"), 0);
         item->setAttribute(QLatin1String("maximum"), redshift::constants::infinity);
         filmSettingsProperty->addSubProperty(item);
