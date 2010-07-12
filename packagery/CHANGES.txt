@@ -4,7 +4,7 @@ picogen (0.3) unstable; urgency=low
      - this was especially apparent for water height-maps of high
        frequency and high amplitude
   * fix severe: crash when width was below 10
-  * fix: sunlight and skylight where not seperated properly
+  * fix: sunlight and skylight where not separated properly
   * fix: nsis uninstaller does not want a confirmation
   * fix: nsis installer now check whether picogen is already installed
   * atmospheric-fx-distance-factor has been removed until further notice
