@@ -11,7 +11,7 @@ MAKE  := $(shell if [ -f "c:/mingw/bin/mingw32-make" ] ; then echo "c:/mingw/bin
 
 
 .PHONY: all
-all: picogen-lib  qt-frontend  strip-binaries
+all: picogen-lib  picogen-pure qt-frontend  strip-binaries
 
 .PHONY: clean
 clean: qt-clean  picogen-lib-clean
@@ -27,6 +27,11 @@ distclean: qt-distclean  picogen-lib-distclean
 picogen-lib: directories
 	@cd redshift ; \
 	$(MAKE) lib
+
+picogen-pure: directories
+	@cd redshift ; \
+	$(MAKE) redshift ; \
+	cp bin/redshift ../BUILD/picogen-pure
 
 picogen-lib-clean:
 	@cd redshift ; \
