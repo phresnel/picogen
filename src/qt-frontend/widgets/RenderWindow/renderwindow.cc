@@ -36,6 +36,7 @@
 #include "../../redshift/include/interaction/progressreporter.hh"
 #include "../../redshift/include/rendertargets/colorrendertarget.hh"
 #include "../../redshift/include/rendertargets/rendertargetlock.hh"
+#include "../../redshift/include/basictypes/film.hh"
 #include "qimagerendertarget.hh"
 
 
@@ -167,12 +168,9 @@ RenderWindowImpl::~RenderWindowImpl () {
 
 
 
-void RenderWindowImpl::report (
-        redshift::shared_ptr<redshift::RenderTargetLock const> /*rlock*/,
-        int completed, int total
-) {
+void RenderWindowImpl::report (int completed, int total) {
         if (firstReport || realTime() >= updateLatency) {
-                copy(renderBuffer, target);
+                doCopy();
                 emit updateImage(*target, (double)completed / (double)total);
                 realTime.restart();
                 firstReport = false;
@@ -182,8 +180,24 @@ void RenderWindowImpl::report (
 
 
 void RenderWindowImpl::reportDone () {
-        copy(renderBuffer, target);
+        doCopy();
         emit updateImage(*target, 2.f);
+}
+
+
+
+void RenderWindowImpl::doCopy() {
+        using namespace redshift;
+        {
+                RenderTarget::WriteLockPtr writeLock = target->lock();
+                for (unsigned int y=0; y<renderBuffer->height(); ++y) {
+                        for (unsigned int x=0; x<renderBuffer->width(); ++x) {
+                                writeLock->setPixel(x, y,
+                                                    renderBuffer->average(x, y));
+                        }
+                }
+        }
+        target->flip();
 }
 
 
@@ -201,8 +215,8 @@ void RenderWindowImpl::run() {
                       width = scenefile->renderSettings(renderSettings).width,
                       height = scenefile->renderSettings(renderSettings).height;
 
-                renderBuffer = shared_ptr<ColorRenderTarget>(
-                                new ColorRenderTarget (width, height));
+                renderBuffer = shared_ptr<Film>(
+                                new Film (width, height));
                 target = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (
                                         width, height,
                                         fs.colorscale, fs.convertToSrgb));

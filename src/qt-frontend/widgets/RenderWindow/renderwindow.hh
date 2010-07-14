@@ -46,6 +46,7 @@ namespace redshift {
         class RenderTargetLock;
         class ColorRenderTarget;
         class Scene;
+        class Film;
 
         namespace scenefile {
                 class Scene;
@@ -119,8 +120,7 @@ public:
         void saveQuit ();
 
         // ProgressReporter
-        void report (redshift::shared_ptr<redshift::RenderTargetLock const> rlock,
-                     int completed, int total);
+        void report (int completed, int total);
         void reportDone ();
 
 
@@ -141,9 +141,11 @@ signals:
         void updateImage (QImage const &image, double percentage);
 
 private:
+
+        void doCopy();
         int renderSettings, camera;
         redshift::shared_ptr<redshift::QImageRenderTarget> target;
-        redshift::shared_ptr<redshift::ColorRenderTarget> renderBuffer;
+        redshift::shared_ptr<redshift::Film> renderBuffer;
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
 
         bool error_;

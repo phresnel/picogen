@@ -24,9 +24,8 @@
 #ifndef NOISE2D_HH_INCLUDED_20090813
 #define NOISE2D_HH_INCLUDED_20090813
 
-#include <boost/shared_array.hpp>
-//#include <picogen/picogen.h>
 #include "../../kallisto/common.hh"
+#include <boost/shared_array.hpp>
 
 #include <map>
 #include <vector>
