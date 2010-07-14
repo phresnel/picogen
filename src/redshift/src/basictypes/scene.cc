@@ -295,7 +295,7 @@ void Scene::renderToRenderTarget(
                      left<(int)width;
                      (left+=step), (right = std::min(left+step, (int)width))
                 ) {
-                        reporter->report (lock, sampleNumber, totalNumberOfSamples);
+                        reporter->report (sampleNumber, totalNumberOfSamples);
                         ucp->tick();
                         if (ucp->userWantsToQuit())
                                 goto behind_the_big_spin;
@@ -466,7 +466,7 @@ void Scene::renderToFilm(
                      left<(int)width;
                      (left+=step), (right = std::min(left+step, (int)width))
                 ) {
-                        reporter->report (RenderTarget::LockPtr(), sampleNumber, totalNumberOfSamples);
+                        reporter->report (sampleNumber, totalNumberOfSamples);
                         ucp->tick();
                         if (ucp->userWantsToQuit())
                                 goto behind_the_big_spin;

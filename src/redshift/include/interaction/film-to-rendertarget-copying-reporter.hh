@@ -41,20 +41,10 @@ public:
 
 
 
-        void report (RenderTarget::ReadLockPtr sourcel,
-                                              int /*completed*/, int /*total*/) {
+        void report (int /*completed*/, int /*total*/) {
                 if (lastTime() < 0.5)
                         return;
                 lastTime.restart();
-
-                /*real_t const finished = static_cast<real_t>(completed)
-                                          / static_cast<real_t>(total);*/
-                /*if (total>0.0) {
-                        cout << real_t(100)*(finished) << "%"
-                             << endl;
-                } else {
-                        cout << completed << endl;
-                }*/
                 doCopy();
         }
 

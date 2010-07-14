@@ -37,8 +37,7 @@ public:
 
 
 
-        void report (RenderTarget::ReadLockPtr sourcel,
-                                              int /*completed*/, int /*total*/) {
+        void report (int /*completed*/, int /*total*/) {
                 if (lastTime() < 0.5)
                         return;
                 lastTime.restart();
@@ -53,7 +52,7 @@ public:
                         cout << completed << endl;
                 }
                 */
-                copy (source, sourcel, target);
+                copy (source, target);
                 target->flip();
         }
 
