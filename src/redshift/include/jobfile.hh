@@ -1231,12 +1231,6 @@ namespace redshift { namespace scenefile {
 redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (
         redshift::scenefile::Scene const &scene,
-        redshift::RenderTarget::Ptr renderBuffer,
-        int renderSettingsIndex, int cameraIndex
-);
-redshift::shared_ptr<redshift::Scene>
- sceneDescriptionToScene (
-        redshift::scenefile::Scene const &scene,
         redshift::shared_ptr<redshift::Film> renderBuffer,
         int renderSettingsIndex, int cameraIndex
 );
