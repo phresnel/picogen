@@ -30,7 +30,7 @@ BINDIR := ./bin
 #------------------------------------------------------------------------------
 KALLISTOBASE := -I../
 #SFMLINCLUDE := -I../externs/SFML/include
-INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
+INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/ -I/usr/include/OpenEXR/
 
 #------------------------------------------------------------------------------
 # libs
@@ -38,7 +38,8 @@ INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/
 SDLLIBS := `sdl-config --static-libs` -lSDL_image
 BOOSTLIBS := `./boost-libs.sh`
 
-LIBS   := $(SDLLIBS) -lnoise $(BOOSTLIBS)
+LIBS   := $(SDLLIBS) -lnoise $(BOOSTLIBS) -lIlmImf \
+	  -lz -lImath -lHalf -lIex -lIlmThread
 
 #------------------------------------------------------------------------------
 # compiler flags
@@ -75,6 +76,7 @@ OBJFILES :=
 # main.o is intentionally excluded, and must be included by main targets
 OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/jobfile.o
+OBJFILES += $(OBJDIR)/save_openexr.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/pss-adapter.o
@@ -180,6 +182,8 @@ $(OBJDIR)/constants.o: ./src/constants.cc
 $(OBJDIR)/jobfile.o: ./src/jobfile.cc
 	$(CXX) -o $@ $<
 
+$(OBJDIR)/save_openexr.o: ./src/save_openexr.cc
+	$(CXX) -o $@ $<
 
 $(OBJDIR)/quatsch-integration.o: ./src/quatsch-integration.cc
 	$(CXX) -o $@ $<

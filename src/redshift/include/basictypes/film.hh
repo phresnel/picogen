@@ -21,6 +21,8 @@
 #ifndef FILM_HH_INCLUDED_20100709
 #define FILM_HH_INCLUDED_20100709
 
+#include "spectrum.hh"
+#include "../smart_ptr.hh"
 #include "../sealed.hh"
 
 namespace redshift {
