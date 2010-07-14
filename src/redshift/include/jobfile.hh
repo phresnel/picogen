@@ -860,6 +860,17 @@ namespace redshift { namespace scenefile {
                 , convertToSrgb(false)
                 {}
 
+                FilmSettings (FilmSettings const &rhs)
+                : colorscale(rhs.colorscale)
+                , convertToSrgb(rhs.convertToSrgb)
+                {}
+
+                FilmSettings &operator = (FilmSettings const &rhs) {
+                        colorscale = rhs.colorscale;
+                        convertToSrgb = rhs.convertToSrgb;
+                        return *this;
+                }
+
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {

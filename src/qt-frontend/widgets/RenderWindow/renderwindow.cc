@@ -37,7 +37,6 @@
 #include "../../redshift/include/rendertargets/colorrendertarget.hh"
 #include "../../redshift/include/rendertargets/rendertargetlock.hh"
 #include "../../redshift/include/basictypes/film.hh"
-#include "qimagerendertarget.hh"
 
 
 
@@ -151,7 +150,8 @@ RenderWindowImpl::RenderWindowImpl (
                 redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
                 int renderSettings, int camera, double updateLatency
 ) : renderSettings(renderSettings), camera(camera)
-  , scenefile(scenefile), error_(false), errorMessage_("")
+  , scenefile(scenefile)
+  , error_(false), errorMessage_("")
   , running(false)
   , wantsToQuit(false)
   , wantsToPause(false)
@@ -213,8 +213,6 @@ void RenderWindowImpl::run() {
         running = true;
 
         try {
-                const scenefile::FilmSettings &fs = scenefile->filmSettings();
-
                 const int
                       width = scenefile->renderSettings(renderSettings).width,
                       height = scenefile->renderSettings(renderSettings).height;
@@ -330,6 +328,8 @@ RenderWindow::RenderWindow(
     QDialog(parent),
     ui(new Ui::RenderWindow),
     scenefile(scenefile),
+    filmSettings(new redshift::scenefile::FilmSettings(
+                    scenefile->filmSettings())),
     updateLatency(updateLatency),
     realTime(), compTime()
 {
@@ -430,15 +430,37 @@ void RenderWindow::updateImage (double percentage) {
                 using namespace redshift;
                 {
                         const redshift::Film &film = *impl->film();
-                        this->image = QImage(film.width(), film.height(),QImage::Format_RGB32);
-                        for (unsigned int y=0; y<film.height(); ++y) {
+                        this->image = QImage(film.width(), film.height(),
+                                             QImage::Format_RGB32);
+
+                        const real_t s = 255 * filmSettings->colorscale;
+                        if (filmSettings->convertToSrgb) {
+                                for (unsigned int y=0; y<film.height(); ++y)
+                                for (unsigned int x=0; x<film.width(); ++x) {
+                                        const Color color = film.average(x,y);
+                                        const redshift::color::SRGB rgb =
+                                                        color.toRGB().toSRGB();
+                                        const int rf = s * rgb.R,
+                                                  gf = s * rgb.G,
+                                                  bf = s * rgb.B,
+                                                  rs = rf<0?0:rf>255?255:rf,
+                                                  gs = gf<0?0:gf>255?255:gf,
+                                                  bs = bf<0?0:bf>255?255:bf
+                                        ;
+                                        this->image.setPixel(
+                                                x, y,
+                                                qRgb(rs,gs,bs)
+                                        );
+                                }
+                        } else {
+                                for (unsigned int y=0; y<film.height(); ++y)
                                 for (unsigned int x=0; x<film.width(); ++x) {
                                         const Color color = film.average(x,y);
                                         const redshift::color::RGB rgb =
                                                         color.toRGB();
-                                        const int rf = rgb.R * 255,
-                                                  gf = rgb.G * 255,
-                                                  bf = rgb.B * 255,
+                                        const int rf = s * rgb.R,
+                                                  gf = s * rgb.G,
+                                                  bf = s * rgb.B,
                                                   rs = rf<0?0:rf>255?255:rf,
                                                   gs = gf<0?0:gf>255?255:gf,
                                                   bs = bf<0?0:bf>255?255:bf

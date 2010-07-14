@@ -50,6 +50,7 @@ namespace redshift {
 
         namespace scenefile {
                 class Scene;
+                class FilmSettings;
         }
 }
 
@@ -82,6 +83,7 @@ private:
         friend class RenderWindowImpl;
 
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
+        redshift::shared_ptr<redshift::scenefile::FilmSettings> filmSettings;
         QImage image;
         double updateLatency;
         redshift::StopWatch realTime;
