@@ -6,7 +6,7 @@ RC_FILE = icon.rc
 TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
 QMAKE_CXXFLAGS += -fopenmp
-CONFIG+=debug_and_release
+CONFIG += debug_and_release
 INCLUDEPATH += ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/
 INCLUDEPATH += ../widgets/
 INCLUDEPATH += ../widgets/QuatschSourceEditor/
@@ -16,7 +16,6 @@ INCLUDEPATH += ../../
 SOURCES += main.cc \
     mainwindow.cc \
     ../widgets/RenderWindow/renderwindow.cc \
-    ../widgets/RenderWindow/qimagerendertarget.cc \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.cc \
     ../widgets/OpenSceneFile/openscenefile.cc \
     coloreditmanager.cpp \
@@ -33,7 +32,6 @@ SOURCES += main.cc \
     ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/pictureflow.cpp
 HEADERS += mainwindow.hh \
     ../widgets/RenderWindow/renderwindow.hh \
-    ../widgets/RenderWindow/qimagerendertarget.hh \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.hh \
     ../widgets/OpenSceneFile/openscenefile.hh \
     coloreditmanager.h \
@@ -72,8 +70,5 @@ include(../widgets/Picohelp/picohelp.pri)
 OTHER_FILES += HOWTO_New_Stuff.txt \
     icon.rc
 RESOURCES += resources.qrc
-CONFIG(debug, debug|release) {
-    DESTDIR = debug
-} else {
-    DESTDIR = release
-}
+CONFIG(debug, debug|release):DESTDIR = debug
+else:DESTDIR = release

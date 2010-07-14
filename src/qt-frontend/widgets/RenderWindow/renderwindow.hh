@@ -42,7 +42,7 @@ class RenderWindowImpl;
 
 
 namespace redshift {
-        class QImageRenderTarget;
+        //class QImageRenderTarget;
         class RenderTargetLock;
         class ColorRenderTarget;
         class Scene;
@@ -73,7 +73,8 @@ protected:
 private slots:
         void on_pauseButton_clicked(bool checked);
         void on_saveImageButton_clicked();
-        void updateImage (QImage const &image, double percentage);
+        //void updateImage (QImage const &image, double percentage);
+        void updateImage (double percentage);
 
 private:
         Ui::RenderWindow *ui;
@@ -136,15 +137,17 @@ public:
         bool error() const { return error_; }
         QString errorMessage() const { return errorMessage_; }
 
+        redshift::shared_ptr<redshift::Film> film() const;
+
 signals:
         // any percentage >= 1. is assumed to mean 100%
-        void updateImage (QImage const &image, double percentage);
+        void updateImage (double percentage);
 
 private:
 
         void doCopy();
         int renderSettings, camera;
-        redshift::shared_ptr<redshift::QImageRenderTarget> target;
+        //redshift::shared_ptr<redshift::QImageRenderTarget> target;
         redshift::shared_ptr<redshift::Film> renderBuffer;
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
 

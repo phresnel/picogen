@@ -170,8 +170,7 @@ RenderWindowImpl::~RenderWindowImpl () {
 
 void RenderWindowImpl::report (int completed, int total) {
         if (firstReport || realTime() >= updateLatency) {
-                doCopy();
-                emit updateImage(*target, (double)completed / (double)total);
+                emit updateImage((double)completed / (double)total);
                 realTime.restart();
                 firstReport = false;
         }
@@ -180,14 +179,13 @@ void RenderWindowImpl::report (int completed, int total) {
 
 
 void RenderWindowImpl::reportDone () {
-        doCopy();
-        emit updateImage(*target, 2.f);
+        emit updateImage(2.f);
 }
 
 
 
 void RenderWindowImpl::doCopy() {
-        using namespace redshift;
+        /*using namespace redshift;
         {
                 RenderTarget::WriteLockPtr writeLock = target->lock();
                 for (unsigned int y=0; y<renderBuffer->height(); ++y) {
@@ -197,7 +195,13 @@ void RenderWindowImpl::doCopy() {
                         }
                 }
         }
-        target->flip();
+        target->flip();*/
+}
+
+
+
+redshift::shared_ptr<redshift::Film> RenderWindowImpl::film() const {
+        return renderBuffer;
 }
 
 
@@ -217,9 +221,9 @@ void RenderWindowImpl::run() {
 
                 renderBuffer = shared_ptr<Film>(
                                 new Film (width, height));
-                target = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (
+                /*target = shared_ptr<QImageRenderTarget>(new QImageRenderTarget (
                                         width, height,
-                                        fs.colorscale, fs.convertToSrgb));
+                                        fs.colorscale, fs.convertToSrgb));*/
 
                 redshift::shared_ptr<redshift::Scene> scene =
                                         sceneDescriptionToScene(*scenefile,
@@ -238,19 +242,18 @@ void RenderWindowImpl::run() {
                      scenefile->renderSettings(renderSettings).max_y,
                      scenefile->renderSettings(renderSettings).userSeed
                 );
-
                 scenefile.reset();
         } catch (std::exception const &ex) {
                 error_ = true;
                 errorMessage_ = QString()
                         + "Critical exception occured:\n"
                         + ex.what();
-                emit updateImage (QImage(), 2);
+                emit updateImage (2);
         } catch (...) {
                 error_ = true;
                 errorMessage_ = QString()
                         + "An unknown, critical exception occured";
-                emit updateImage (QImage(), 2);
+                emit updateImage (2);
         }
 
 
@@ -318,7 +321,6 @@ void RenderWindow::RenderProcess (QString pathToSource,
 }
 
 
-
 RenderWindow::RenderWindow(
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
         int renderSettings, int camera,
@@ -349,8 +351,8 @@ RenderWindow::RenderWindow(
           new RenderWindowImpl(scenefile, renderSettings, camera, updateLatency));
 
         connect(
-                impl.get(), SIGNAL(updateImage (QImage const &, double)),
-                this, SLOT(updateImage (QImage const &, double))
+                impl.get(), SIGNAL(updateImage (double)),
+                this, SLOT(updateImage(double))
         );
 
         scenefile.reset();
@@ -368,7 +370,7 @@ RenderWindow::~RenderWindow() {
 
 
 
-void RenderWindow::updateImage (QImage const &image, double percentage) {
+void RenderWindow::updateImage (double percentage) {
         if (impl->error()) {
                 setWindowTitle ("Error");
 
@@ -424,7 +426,30 @@ void RenderWindow::updateImage (QImage const &image, double percentage) {
 
 
                 // Set image.
-                this->image = image; // TODO: profile that assignment
+                //this->image = image; // TODO: profile that assignment
+                using namespace redshift;
+                {
+                        const redshift::Film &film = *impl->film();
+                        this->image = QImage(film.width(), film.height(),QImage::Format_RGB32);
+                        for (unsigned int y=0; y<film.height(); ++y) {
+                                for (unsigned int x=0; x<film.width(); ++x) {
+                                        const Color color = film.average(x,y);
+                                        const redshift::color::RGB rgb =
+                                                        color.toRGB();
+                                        const int rf = rgb.R * 255,
+                                                  gf = rgb.G * 255,
+                                                  bf = rgb.B * 255,
+                                                  rs = rf<0?0:rf>255?255:rf,
+                                                  gs = gf<0?0:gf>255?255:gf,
+                                                  bs = bf<0?0:bf>255?255:bf
+                                        ;
+                                        this->image.setPixel(
+                                                x, y,
+                                                qRgb(rs,gs,bs)
+                                        );
+                                }
+                        }
+                }
                 if (!this->image.size().isNull()) {
                         ui->pix->setPixmap(QPixmap::fromImage(this->image).scaled(
                                 ui->pix->size(),
