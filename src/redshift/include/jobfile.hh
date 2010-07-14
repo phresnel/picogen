@@ -1061,39 +1061,39 @@ namespace redshift { namespace scenefile {
 
 
                 shared_ptr<redshift::Camera> toRedshiftCamera (
-                        shared_ptr<redshift::RenderTarget> film
+                        unsigned int width, unsigned int height
                 ) const {
                         using redshift::Camera;
 
                         switch (type) {
                         case pinhole:
                                 return shared_ptr<Camera> (new camera::Pinhole(
-                                        film, pinholeParams.front,
+                                        width, height, pinholeParams.front,
                                         transforms.toRedshiftTransform()));
 
                         case cubemap_left:
                                 return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        film, camera::CubeMapFace::left,
+                                        width, height, camera::CubeMapFace::left,
                                         transforms.toRedshiftTransform()));
                         case cubemap_right:
                                 return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        film, camera::CubeMapFace::right,
+                                        width, height, camera::CubeMapFace::right,
                                         transforms.toRedshiftTransform()));
                         case cubemap_bottom:
                                 return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        film, camera::CubeMapFace::bottom,
+                                        width, height, camera::CubeMapFace::bottom,
                                         transforms.toRedshiftTransform()));
                         case cubemap_top:
                                 return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        film, camera::CubeMapFace::top,
+                                        width, height, camera::CubeMapFace::top,
                                         transforms.toRedshiftTransform()));
                         case cubemap_front:
                                 return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        film, camera::CubeMapFace::front,
+                                        width, height, camera::CubeMapFace::front,
                                         transforms.toRedshiftTransform()));
                         case cubemap_back:
                                 return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        film, camera::CubeMapFace::back,
+                                        width, height, camera::CubeMapFace::back,
                                         transforms.toRedshiftTransform()));
 
                         default:
@@ -1221,6 +1221,12 @@ redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (
         redshift::scenefile::Scene const &scene,
         redshift::RenderTarget::Ptr renderBuffer,
+        int renderSettingsIndex, int cameraIndex
+);
+redshift::shared_ptr<redshift::Scene>
+ sceneDescriptionToScene (
+        redshift::scenefile::Scene const &scene,
+        redshift::shared_ptr<redshift::Film> renderBuffer,
         int renderSettingsIndex, int cameraIndex
 );
 

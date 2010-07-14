@@ -31,7 +31,8 @@ namespace redshift { namespace camera {
         class Pinhole : public Camera, MAKE_SEALED(Pinhole) {
         public:
 
-                Pinhole (shared_ptr<RenderTarget> film, real_t frontDist,
+                Pinhole (unsigned int filmWidth, unsigned int filmHeight,
+                         real_t frontDist,
                          Transform const &xform = Transform::identity());
                 virtual ~Pinhole () ;
 
@@ -41,7 +42,6 @@ namespace redshift { namespace camera {
                 Point getCommonCenter () const ;
 
         private:
-                shared_ptr<RenderTarget> film;
                 real_t invFilmWidth;
                 real_t invFilmHeight;
                 real_t aspect;

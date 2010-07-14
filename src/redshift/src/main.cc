@@ -75,10 +75,12 @@ namespace redshift{class RenderTarget;}
 #include "basictypes/intersection.hh"
 #include "basictypes/background.hh"
 #include "basictypes/volume.hh"
+#include "basictypes/film.hh"
 
 // rendertargets/
 #include "rendertargets/rendertargetlock.hh"
 #include "rendertargets/rendertarget.hh"
+
 
 
 // shapes/
@@ -136,6 +138,7 @@ namespace redshift{class RenderTarget;}
 #include "../include/cameras/pinhole.hh"
 #include "../include/interaction/sdlcommandprocessor.hh"
 #include "../include/interaction/rendertarget-copying-reporter.hh"
+#include "../include/interaction/film-to-rendertarget-copying-reporter.hh"
 #include "../include/basictypes/height-function.hh"
 #include "../include/basictypes/quatsch-height-function.hh"
 #include "../../actuarius/actuarius.hh"
@@ -571,6 +574,62 @@ namespace {
                                 commandProcessor->tick();
                 }
         }
+
+
+        void renderSdlFilm (
+                redshift::scenefile::Scene const &scened,
+                const Options & options
+        ) {
+                using namespace redshift;
+                using namespace redshift::camera;
+                using namespace redshift::interaction;
+                using namespace redshift::primitive;
+
+                redshift::StopWatch stopWatch;
+
+
+                const unsigned int
+                        width = scened.renderSettings(0).width,
+                        height = scened.renderSettings(0).height,
+                        samplesPerPixel = scened.renderSettings(0).samplesPerPixel
+                ;
+
+                //RenderTarget::Ptr renderBuffer (new ColorRenderTarget(width,height));
+                shared_ptr<Film> film (new Film (width, height));
+                shared_ptr<Scene> scene = sceneDescriptionToScene(scened, film, 0, 0);
+
+
+                RenderTarget::Ptr screenBuffer (new SdlRenderTarget(
+                        width, height,
+                        options.outputFile,
+                        scened.filmSettings().colorscale,
+                        scened.filmSettings().convertToSrgb
+                ));
+
+                UserCommandProcessor::Ptr commandProcessor (new SdlCommandProcessor());
+
+                ProgressReporter::Ptr reporter (
+                          new FilmToRenderTargetCopyingReporter(film, screenBuffer));
+
+                scene->render(
+                        reporter, commandProcessor,
+                        samplesPerPixel,
+                        scened.renderSettings(0).min_y,
+                        scened.renderSettings(0).max_y,
+                        scened.renderSettings(0).userSeed);
+                //copy (renderBuffer, screenBuffer);
+                //screenBuffer->flip();
+
+                stopWatch.stop();
+                std::stringstream ss;
+                ss << "t:" << stopWatch();
+                SDL_WM_SetCaption(ss.str().c_str(), ss.str().c_str());
+
+                if (options.pauseAfterRendering) {
+                        while (!commandProcessor->userWantsToQuit())
+                                commandProcessor->tick();
+                }
+        }
 }
 
 
@@ -580,6 +639,7 @@ redshift::shared_ptr<redshift::Scene>
         redshift::RenderTarget::Ptr renderBuffer,
         int renderSettingsIndex, int cameraIndex
 ) {
+        std::clog << "sceneDescriptionToScene by RenderTarget" << std::endl;
         using namespace redshift;
         using namespace redshift::camera;
         using namespace redshift::interaction;
@@ -588,10 +648,16 @@ redshift::shared_ptr<redshift::Scene>
 
         shared_ptr<Camera> camera;
         if (scene.cameraCount()) {
-                camera = scene.camera(cameraIndex).toRedshiftCamera (renderBuffer);
+                camera = scene.
+                         camera(cameraIndex).
+                         toRedshiftCamera (
+                                renderBuffer->getWidth(),
+                                renderBuffer->getHeight());
         } else {
                 camera = shared_ptr<Camera> (new Pinhole(
-                        renderBuffer, 1.0f,
+                        renderBuffer->getWidth(),
+                        renderBuffer->getHeight(),
+                        1.0f,
                         Transform::translation(0.f,0.1f,0.f)
                 ));
         }
@@ -643,6 +709,101 @@ redshift::shared_ptr<redshift::Scene>
 
         return shared_ptr<Scene> (new Scene (
                 renderBuffer,
+                camera,
+                agg,
+                sky,
+
+                shared_ptr<Integrator>(
+                        scene.renderSettings(renderSettingsIndex)
+                                .surfaceIntegrator
+                                .toSurfaceIntegrator()),
+
+                volumeAgg,
+                shared_ptr<VolumeIntegrator>(
+                        scene.renderSettings(renderSettingsIndex)
+                                .volumeIntegrator
+                                .toVolumeIntegrator())
+        ));
+}
+
+
+
+
+redshift::shared_ptr<redshift::Scene>
+ sceneDescriptionToScene (
+        redshift::scenefile::Scene const &scene,
+        redshift::shared_ptr<redshift::Film> film,
+        int renderSettingsIndex, int cameraIndex
+) {
+        using namespace redshift;
+        using namespace redshift::camera;
+        using namespace redshift::interaction;
+        using namespace redshift::primitive;
+
+
+        shared_ptr<Camera> camera;
+        if (scene.cameraCount()) {
+                camera = scene.
+                         camera(cameraIndex).
+                         toRedshiftCamera (
+                                film->width(),
+                                film->height());
+        } else {
+                camera = shared_ptr<Camera> (new Pinhole(
+                        film->width(),
+                        film->height(),
+                        1.0f,
+                        Transform::translation(0.f,0.1f,0.f)
+                ));
+        }
+
+
+        // Add objects.
+        primitive::List *list = new List;
+        for (unsigned int i=0; i<scene.objectCount(); ++i) {
+                list->add (scene.object(i).toPrimitive());
+        }
+        shared_ptr<Primitive> agg (list);
+
+
+        // Add volumes.
+        volume::List *volumeList = new volume::List;
+        for (unsigned int i=0; i<scene.volumeCount(); ++i) {
+                volumeList->add (scene.volume(i).toVolume());
+        }
+        shared_ptr<VolumeRegion> volumeAgg (volumeList);
+
+
+
+        // TODO: support arbitrary many backgrounds (Starsky!)
+        shared_ptr<Sky> sky;
+        if (scene.backgroundCount()) {
+                sky = scene.background(0).toSky();
+        } else {
+
+                /*shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
+                        30, // [in] lat Latitude (0-360)
+                        30,			// [in] long Longitude (-90,90) south to north
+                        0,			// [in] sm  Standard Meridian
+                        90,			// [in] jd  Julian Day (1-365)
+                        8.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
+                        7,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
+                        true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
+                                                // happen if you try to use them....
+                ));*/
+                shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
+                        Vector(1,.25,1),
+                        7,
+                        0,
+                        true
+                ));
+                sky = shared_ptr<redshift::Sky> (
+                        new backgrounds::PssAdapter (pss,1,1,1,1));
+        }
+        // ----------
+
+        return shared_ptr<Scene> (new Scene (
+                film,
                 camera,
                 agg,
                 sky,
@@ -726,7 +887,7 @@ void read_and_render (Options const & options) {
 
                 queryRenderSettings (scene, options);
                 queryCamera (scene, options);
-                renderSdl (scene, options);
+                renderSdlFilm (scene, options);
         }
 }
 

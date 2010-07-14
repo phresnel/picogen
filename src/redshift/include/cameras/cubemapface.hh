@@ -36,7 +36,7 @@ namespace redshift { namespace camera {
                         bottom, top
                 };
 
-                CubeMapFace (shared_ptr<RenderTarget> film,
+                CubeMapFace (unsigned int width, unsigned int height,
                              Face face,
                              Transform const &xform = Transform::identity());
 
@@ -48,7 +48,6 @@ namespace redshift { namespace camera {
                 Point getCommonCenter () const ;
 
         private:
-                shared_ptr<RenderTarget> film;
                 real_t invFilmWidth;
                 real_t invFilmHeight;
         };

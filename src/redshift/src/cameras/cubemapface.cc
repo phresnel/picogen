@@ -53,14 +53,13 @@ namespace {
 
 
 CubeMapFace::CubeMapFace (
-        shared_ptr<RenderTarget> film_,
+        unsigned int width, unsigned int height,
         Face face,
         Transform const & xform
 )
 : Camera(xform * cubeRot(face))
-, film(film_)
-, invFilmWidth(1/static_cast<real_t>(film->getWidth()))
-, invFilmHeight(1/static_cast<real_t>(film->getHeight()))
+, invFilmWidth(1/static_cast<real_t>(width))
+, invFilmHeight(1/static_cast<real_t>(height))
 {
 }
 

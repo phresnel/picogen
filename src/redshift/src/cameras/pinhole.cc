@@ -28,15 +28,14 @@ namespace redshift { namespace camera {
 
 
 Pinhole::Pinhole (
-        shared_ptr<RenderTarget> film_,
+        unsigned int filmWidth, unsigned int filmHeight,
         real_t frontDist,
         Transform const & xform
 )
 : Camera(xform)
-, film(film_)
-, invFilmWidth(constants::one/static_cast<real_t>(film->getWidth()))
-, invFilmHeight(constants::one/static_cast<real_t>(film->getHeight()))
-, aspect (static_cast<real_t>(film->getWidth()) / film->getHeight())
+, invFilmWidth(constants::one/static_cast<real_t>(filmWidth))
+, invFilmHeight(constants::one/static_cast<real_t>(filmHeight))
+, aspect (static_cast<real_t>(filmWidth) / filmHeight)
 , frontDist (frontDist)
 {
 }

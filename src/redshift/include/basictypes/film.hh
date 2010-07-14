@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SURFACE_HH_INCLUDED_20100709
-#define SURFACE_HH_INCLUDED_20100709
+#ifndef FILM_HH_INCLUDED_20100709
+#define FILM_HH_INCLUDED_20100709
 
 #include "../sealed.hh"
 
@@ -36,33 +36,41 @@ namespace redshift {
                         sum += pixel.sum;
                         sampleCount += pixel.sampleCount;
                 }
+
+                void operator += (Color const &color) {
+                        sum += color;
+                        ++sampleCount;
+                }
         };
 
-        SEALED(Surface);
-        class Surface : MAKE_SEALED(Surface) {
+        SEALED(Film);
+        class Film : MAKE_SEALED(Film) {
         public:
-                Surface (unsigned int w, unsigned int h)
-                : width(w), height(h), surface(new Pixel[w*h])
+                Film (unsigned int w, unsigned int h)
+                : width_(w), height_(h), surface(new Pixel[w*h])
                 {}
 
                 Pixel pixel (unsigned int x, unsigned int y) const {
-                        return surface[y*width+x];
+                        return surface[y*width_+x];
                 }
-                Color color (unsigned int x, unsigned int y) const {
-                        return surface[y*width+x].average();
+                Color average (unsigned int x, unsigned int y) const {
+                        return surface[y*width_+x].average();
                 }
 
                 Pixel &pixel (unsigned int x, unsigned int y) {
-                        return surface[y*width+x];
+                        return surface[y*width_+x];
                 }
-        private:
-                Surface &operator = (Surface const &);
-                Surface (Surface const &);
-                Surface();
 
-                const unsigned int width, height;
+                unsigned int width()  const { return width_;  }
+                unsigned int height() const { return height_; }
+        private:
+                Film &operator = (Film const &);
+                Film (Film const &);
+                Film();
+
+                const unsigned int width_, height_;
                 shared_array<Pixel> surface;
         };
 }
 
-#endif // SURFACE_HH_INCLUDED_20100709
+#endif // FILM_HH_INCLUDED_20100709

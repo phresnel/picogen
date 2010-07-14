@@ -35,14 +35,15 @@ namespace redshift {
                 ImageCoordinates imageCoordinates;
                 LensCoordinates lensCoordinates;
                 //RayDifferential primaryRay;
-                shared_ptr<RenderTarget> renderTarget;
+                //shared_ptr<RenderTarget> renderTarget;
 
                 Sample (ImageCoordinates const & imageCoordinates_,
-                        LensCoordinates const & lensCoordinates_,
-                        shared_ptr<RenderTarget> renderTarget_)
+                        LensCoordinates const & lensCoordinates_
+                        /*,
+                        shared_ptr<RenderTarget> renderTarget_*/)
                 : imageCoordinates (imageCoordinates_)
                 , lensCoordinates (lensCoordinates_)
-                , renderTarget (renderTarget_)
+                //, renderTarget (renderTarget_)
                 {}
         };
 }

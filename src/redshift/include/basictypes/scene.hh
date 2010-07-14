@@ -37,6 +37,7 @@
 namespace redshift {
         class Random;
         class LiRecursion;
+        class Film;
 
         class Scene {
         public:
@@ -57,6 +58,15 @@ namespace redshift {
 
                 Scene(
                         shared_ptr<RenderTarget>,
+                        shared_ptr<Camera>,
+                        shared_ptr<Primitive>,
+                        shared_ptr<Sky> bg ,
+                        shared_ptr<Integrator> integrator,
+                        shared_ptr<VolumeRegion> volumeRegion,
+                        shared_ptr<VolumeIntegrator> volumeIntegrator
+                );
+                Scene(
+                        shared_ptr<Film>,
                         shared_ptr<Camera>,
                         shared_ptr<Primitive>,
                         shared_ptr<Sky> bg ,
@@ -105,11 +115,29 @@ namespace redshift {
                 Scene();
 
 
+                // Just for a short phase of transition.
+                void renderToRenderTarget(
+                        interaction::ProgressReporter::Ptr,
+                        interaction::UserCommandProcessor::Ptr,
+                        unsigned int samplePerPixel,
+                        unsigned int minY, unsigned int maxY,
+                        unsigned int userSeed
+                ) const ;
+                void renderToFilm(
+                        interaction::ProgressReporter::Ptr,
+                        interaction::UserCommandProcessor::Ptr,
+                        unsigned int samplePerPixel,
+                        unsigned int minY, unsigned int maxY,
+                        unsigned int userSeed
+                ) const ;
+
+
                 inline optional<Intersection> intersect(
                                              Sample const &sample) const;
 
                 //Scene scene;
                 shared_ptr<RenderTarget>         renderTarget;
+                shared_ptr<Film>                 film;
                 shared_ptr<Camera>               camera;
                 shared_ptr<Primitive>            aggregate;
                 shared_ptr<Sky>                  background;
