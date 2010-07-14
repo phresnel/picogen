@@ -51,3 +51,17 @@ popd
 echo creating tarball of downloaded stuff
 tar -cf qt-widgets.tar qt-widgets
 gzip qt-widgets.tar
+
+
+mkdir -p image-formats && pushd image-formats
+
+echo getting OpenEXR
+wget http://download.savannah.gnu.org/releases/openexr/openexr-1.6.1.tar.gz
+tar -xzf openexr-1.6.1.tar.gz
+rm openexr-1.6.1.tar.gz
+
+popd
+
+echo creating tarball of downloaded stuff
+tar -cf image-formats.tar image-formats
+gzip image-formats.tar
