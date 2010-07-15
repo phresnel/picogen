@@ -39,7 +39,10 @@ int main (int argc, char *argv[]) {
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #include "../include/auxiliary/currentdate.hh"
+#include "../include/auxiliary/remove_filename_extension.hh"
 #include "../include/static_init.hh"
+
+#include "../include/image-export.hh"
 
 #include "../include/meta/compiler.hh"
 
@@ -172,6 +175,12 @@ namespace {
                 std::string useCamera;
                 bool doSaveOutput;
 
+                enum SaveFormat {
+                        Bitmap = 0,
+                        Exr = 1,
+                        BitmapAndExr = 2
+                } saveFormat;
+
 
                 // TODO: Unsupported:
                 bool printStats;
@@ -224,14 +233,14 @@ namespace {
                         po::value<std::string>(&ret.inputFile),
                         "File that contains the job.")
 
-                        ("save-output,S",
+                        /*("save-output,S",
                         po::value(&ret.doSaveOutput)
-                        ->default_value(true),
-                        "Save image after rendering.")
+                        ->default_value(false),
+                        "Save image after rendering.")*/
 
                         ("output-file,o",
                         po::value(&ret.outputFile),
-                        "Image file to write to.")
+                        "Image file to write to (supported extensions: bmp, exr, bmp+exr).")
 
                         ("render-settings,r",
                         po::value(&ret.useRenderSettings),
@@ -278,21 +287,30 @@ namespace {
                         std::cout << desc << "\n";
                         return optional<Options>();
                 }
-                if (ret.outputFile == "" && ret.doSaveOutput) {
-                        ret.outputFile = "redshift-"+CurrentDate::AsPartOfFilename()+".bmp";
-                        std::cout << "No output-file set, will write to '" << ret.outputFile << "'.\n";
-                }
+                /*if (ret.outputFile == "" && ret.doSaveOutput) {
+                        ret.outputFile = "redshift-"+CurrentDate::AsPartOfFilename()+".bmp+exr";
+                        std::cout << "No output-file set, will write to '" << ret.outputFile << ".bmp+exr'.\n";
+                } else if (ret.outputFile == "" && !ret.doSaveOutput) {
+                }*/
+                ret.doSaveOutput = ret.outputFile != "";
+
                 const std::string ext = filename_extension (ret.outputFile);
                 if (ret.doSaveOutput) {
                         if (ext == "bmp") {
-                                // okay
-                        } else if (ext == "") {
-                                std::cout << "Missing filename extension for output file, "
-                                             "will use bmp.\n";
-                                ret.outputFile += ".bmp";
+                                ret.saveFormat = Options::Bitmap;
+                                ret.outputFile = remove_filename_extension(ret.outputFile);
+                        } else if (ext == "exr") {
+                                ret.saveFormat = Options::Exr;
+                                ret.outputFile = remove_filename_extension(ret.outputFile);
+                        } else if (ext == "bmp+exr" || ext == "exr+bmp") {
+                                ret.saveFormat = Options::BitmapAndExr;
+                                ret.outputFile = remove_filename_extension(ret.outputFile);
+                        } else if (ext == "" || ext == ".") {
+                                std::cout << "Missing filename extension for output file\n";
+                                return optional<Options>();
                         } else {
                                 std::cout << "Unsupported filename extension for output file: " << ext << "\n";
-                                // TODO: --help extensions
+                                return optional<Options>();
                         }
                 }
                 return ret;
@@ -547,7 +565,10 @@ namespace {
 
                 RenderTarget::Ptr screenBuffer (new SdlRenderTarget(
                         width, height,
-                        options.outputFile,
+                        (options.saveFormat == Options::Bitmap
+                         || options.saveFormat == Options::BitmapAndExr
+                        ) ? options.outputFile + ".bmp"
+                          : "",
                         scened.filmSettings().colorscale,
                         scened.filmSettings().convertToSrgb
                 ));
@@ -571,6 +592,13 @@ namespace {
                 ss << "t:" << stopWatch();
                 SDL_WM_SetCaption(ss.str().c_str(), ss.str().c_str());
 
+                if (options.saveFormat == Options::Exr
+                  || options.saveFormat == Options::BitmapAndExr
+                ) {
+                        // it's a bit of legacy that at this point, the output filename
+                        // may have a .bmp extension
+                        saveOpenEXR(*film, (options.outputFile + ".exr").c_str());
+                }
                 if (options.pauseAfterRendering) {
                         while (!commandProcessor->userWantsToQuit())
                                 commandProcessor->tick();

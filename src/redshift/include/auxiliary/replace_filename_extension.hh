@@ -18,31 +18,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <OpenEXR/ImfRgbaFile.h>
-#include "redshift/include/basictypes/film.hh"
+#ifndef REPLACE_FILENAME_EXTENSION_HH_INCLUDED_20100715
+#define REPLACE_FILENAME_EXTENSION_HH_INCLUDED_20100715
 
-namespace redshift {
+#include <cstring>
+#include <algorithm>
 
-void saveOpenEXR (Film const &film, const char *filename) {
-        typedef redshift::color::RGB PicogenRGB;
+#include "remove_filename_extension.hh"
 
-        const unsigned int width = film.width(), height = film.height();
-        std::vector<Imf::Rgba> imfpixels(width*height);
-
-        for (unsigned int y=0; y<height; ++y)
-        for (unsigned int x=0; x<width; ++x) {
-                const PicogenRGB prgb = film.average(x, y).toRGB();
-                Imf::Rgba &irgb = imfpixels[y*width+x];
-                irgb.a = 1;
-                irgb.r = prgb.R;
-                irgb.g = prgb.G;
-                irgb.b = prgb.B;
-        }
-
-        Imf::RgbaOutputFile file (filename,
-                                  width, height, Imf::WRITE_RGBA);
-        file.setFrameBuffer (&imfpixels[0], 1, width);
-        file.writePixels (height);
+inline std::string replace_filename_extension (const std::string &str,
+                                               const std::string &new_ext)
+{
+        return remove_filename_extension(str)+"."+new_ext;
 }
 
-}
+#endif // REPLACE_FILENAME_EXTENSION_HH_INCLUDED_20100715
