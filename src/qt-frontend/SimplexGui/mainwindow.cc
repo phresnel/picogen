@@ -335,8 +335,8 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
                (current->parent()==0 || current->parent()->parent()==0)
                ? 0
                : current->
-                        parent()->
-                        parent()->property();
+                 parent()->
+                 parent()->property();
                //: findParent(ui->settings->properties(),
                //             parentProp);
 
@@ -344,7 +344,7 @@ void MainWindow::on_settings_currentItemChanged(QtBrowserItem * current) {
         const QString parentName = (parentProp==0) ? "" : parentProp->propertyName();
         const QString parentParentName = (parentParentProp==0) ? "" : parentParentProp->propertyName();
 
-        const bool isTransform      = name  == "transform";
+        //const bool isTransform      = name  == "transform";
         const bool isSubTransform   = parentName ==  "transform";
         const bool isCamera         = parentName == "cameras";
         const bool isRenderSetting  = parentName =="render-settings";

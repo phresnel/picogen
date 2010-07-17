@@ -52,15 +52,19 @@ FORMS += mainwindow.ui \
     ../widgets/RenderWindow/renderwindow.ui \
     ../widgets/QuatschSourceEditor/quatschsourceeditor.ui \
     ../widgets/OpenSceneFile/openscenefile.ui
-LIBS += ../../redshift/lib/libpicogen.a \
+LIBS += \
+    ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lnoise \
-    -lSDL \
-    -lSDL_image
-unix:LIBS += /usr/lib/libboost_program_options.a \
+    -lSDL -lSDL_image
+# pkg-config --libs OpenEXR
+LIBS += -pthread -lIlmImf -lz -lImath -lHalf -lIex -lIlmThread
+unix:LIBS += \
+    /usr/lib/libboost_program_options.a \
     /usr/lib/libboost_filesystem.a \
     /usr/lib/libboost_system.a
-windows:LIBS += -lboost_program_options \
+windows:LIBS += \
+    -lboost_program_options \
     -lboost_filesystem \
     -lboost_system
 include(../../upstream/QtSolutions/qtwindowlistmenu-2.2_1-opensource/src/qtwindowlistmenu.pri)

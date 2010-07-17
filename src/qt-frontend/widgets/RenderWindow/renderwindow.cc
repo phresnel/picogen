@@ -33,6 +33,7 @@
 #include "renderwindow.hh"
 #include "ui_renderwindow.h"
 #include "../../redshift/include/jobfile.hh"
+#include "../../redshift/include/image-export.hh"
 #include "../../redshift/include/interaction/progressreporter.hh"
 #include "../../redshift/include/rendertargets/colorrendertarget.hh"
 #include "../../redshift/include/rendertargets/rendertargetlock.hh"
@@ -46,7 +47,8 @@ QString getImageSavePath (QWidget *parent) {
         dialog.setFileMode(QFileDialog::AnyFile);
 
         QStringList nameFilters;
-        nameFilters << "Portable Network Graphics (*.png)"
+        nameFilters << "OpenEXR HDR (*.exr)"
+                    << "Portable Network Graphics (*.png)"
                     << "Bitmap (*.bmp)"
                     << "JPEG (*.jpg *.jpeg)"
                     << "Portable Pixmap (*.ppm)"
@@ -66,21 +68,30 @@ QString getImageSavePath (QWidget *parent) {
 
         if (dialog.exec()) {
                 QString pathToTarget = dialog.selectedFiles()[0];
+                const QFileInfo fi (pathToTarget);
+                const QString   filename = fi.fileName();
 
-                // Check extension.
-                if (pathToTarget.endsWith(".bmp", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".jpg", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".jpeg", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".png", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".ppm", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".tif", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".tiff", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".xbm", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.endsWith(".xpm", Qt::CaseInsensitive)) {}
-                else if (pathToTarget.lastIndexOf('.')>=0){
+                const bool hasValidExtension =
+                        filename.endsWith(".exr", Qt::CaseInsensitive)
+                     || filename.endsWith(".bmp", Qt::CaseInsensitive)
+                     || filename.endsWith(".jpg", Qt::CaseInsensitive)
+                     || filename.endsWith(".jpeg", Qt::CaseInsensitive)
+                     || filename.endsWith(".png", Qt::CaseInsensitive)
+                     || filename.endsWith(".ppm", Qt::CaseInsensitive)
+                     || filename.endsWith(".tif", Qt::CaseInsensitive)
+                     || filename.endsWith(".tiff", Qt::CaseInsensitive)
+                     || filename.endsWith(".xbm", Qt::CaseInsensitive)
+                     || filename.endsWith(".xpm", Qt::CaseInsensitive);
+                // The following should also allow for hidden names like ".foo"
+                const bool hasExtension = filename.lastIndexOf('.') > 0;
+
+                QMessageBox::information(parent, "", QString::number(filename.lastIndexOf('.')) + ":" + QString::number(hasExtension) + ":" + QString::number(hasValidExtension));
+
+                if (hasExtension && !hasValidExtension) {
                         QMessageBox::information(parent,
                            "Unsupported filename extension",
                            "Please choose a filename with one of the following extensions:\n"
+                           " * .exr\n"
                            " * .bmp\n"
                            " * .jpg / .jpeg\n"
                            " * .png\n"
@@ -90,9 +101,11 @@ QString getImageSavePath (QWidget *parent) {
                            " * .xpm\n"
                         );
                         goto again;
-                } else {
+                } else if (!hasExtension){
                         // No filename given, so try to guess from file-dialog.
-                        if (dialog.selectedNameFilter().contains(".bmp"))
+                        if (dialog.selectedNameFilter().contains(".exr"))
+                                pathToTarget += ".exr";
+                        else if (dialog.selectedNameFilter().contains(".bmp"))
                                 pathToTarget += ".bmp";
                         else if (dialog.selectedNameFilter().contains(".jpg"))
                                 pathToTarget += ".jpg";
@@ -501,7 +514,12 @@ void RenderWindow::on_saveImageButton_clicked() {
         const QString path = getImageSavePath(this);
         if ("" != path) {
                 setWindowTitle("saving " + path + "... ");
-                this->image.save(path, 0, 100);
+                if (path.endsWith(".exr")) {
+                        redshift::saveOpenEXR(*this->impl->film(),
+                                              path.toAscii());
+                } else {
+                        this->image.save(path, 0, 100);
+                }
                 setWindowTitle("Saved as " + path);
         }
 }
