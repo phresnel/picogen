@@ -85,8 +85,6 @@ QString getImageSavePath (QWidget *parent) {
                 // The following should also allow for hidden names like ".foo"
                 const bool hasExtension = filename.lastIndexOf('.') > 0;
 
-                QMessageBox::information(parent, "", QString::number(filename.lastIndexOf('.')) + ":" + QString::number(hasExtension) + ":" + QString::number(hasValidExtension));
-
                 if (hasExtension && !hasValidExtension) {
                         QMessageBox::information(parent,
                            "Unsupported filename extension",
