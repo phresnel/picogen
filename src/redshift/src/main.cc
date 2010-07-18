@@ -565,8 +565,9 @@ namespace {
 
                 RenderTarget::Ptr screenBuffer (new SdlRenderTarget(
                         width, height,
-                        (options.saveFormat == Options::Bitmap
-                         || options.saveFormat == Options::BitmapAndExr
+                        (options.doSaveOutput
+                         && (options.saveFormat == Options::Bitmap
+                            || options.saveFormat == Options::BitmapAndExr)
                         ) ? options.outputFile + ".bmp"
                           : "",
                         scened.filmSettings().colorscale,
@@ -592,8 +593,9 @@ namespace {
                 ss << "t:" << stopWatch();
                 SDL_WM_SetCaption(ss.str().c_str(), ss.str().c_str());
 
-                if (options.saveFormat == Options::Exr
-                  || options.saveFormat == Options::BitmapAndExr
+                if (options.doSaveOutput
+                   && (options.saveFormat == Options::Exr
+                      || options.saveFormat == Options::BitmapAndExr)
                 ) {
                         // it's a bit of legacy that at this point, the output filename
                         // may have a .bmp extension
