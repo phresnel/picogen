@@ -15,8 +15,8 @@ picogen \- a terrain synthesizer and renderer
 
 .SH DESCRIPTION
 The programs
-.B picogen-simplex, picohelp, picogen-quatsch-editor
-are part of the
+.B picogen-simplex, picohelp, picogen-quatsch-editor, picogen-pure
+are GUI programs and part of the
 .B picogen package
 and provide a free terrain synthesizer and renderer.
 .PP
@@ -30,8 +30,15 @@ or
 to find inline- and context-sensitive information.
 .PP
 In case you are on GNOME or KDE (or another menu-enabled system),
-you can also find the picogen-tools in the graphics-section.
-
+you can also find the picogen-tools in the graphics-section of the application
+menu.
+Note that
+.B picogen-pure
+is a mostly command-line-interface program with an SDL rendering screen. It is
+actually the spearhead of feature-completeness as it is just another build
+of the picogen-library. You can also use it for batch rendering. But see
+.B picogen-pure --help
+for more information.
 .SH OPTIONS
 .B
 .IP none
@@ -46,6 +53,9 @@ and
 .B http://picogen.deviantart.com
 , but be aware that picogen is free software, developed in spare-time, and thus
 no commercial-grade support is available.
+
+.SH UPDATES TO THIS FILE
+ - So 18. Jul 18:59:29 UTC 2010: add picogen-pure description / smach
 
 .SH AUTHORS
 Sebastian Mach, sometimes appearing as "phresnel" <phresnel@gmail.com>

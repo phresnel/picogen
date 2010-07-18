@@ -1,15 +1,20 @@
 picogen (0.3) unstable; urgency=low
 
-  * fix severe: surface integrators could infinitely recurse
-     - this was especially apparent for water height-maps of high
-       frequency and high amplitude
-  * fix severe: crash when width was below 10
-  * fix: sunlight and skylight where not separated properly
-  * fix: nsis uninstaller does not want a confirmation
-  * fix: nsis installer now check whether picogen is already installed
-  * atmospheric-fx-distance-factor has been removed until further notice
+  * Additions:
+    - OpenEXR support
+    - picogen-pure, the (mostly-)CLI renderer, was added to packages
+  * Fixes:
+    - severe: surface integrators could infinitely recurse
+    - severe: crash when width was below 10
+    - severe: whitted_ambient was doing exponential distribution
+                ray tracing by accident
+    - sunlight and skylight where not separated properly
+    - nsis uninstaller does not want a confirmation
+    - nsis installer now check whether picogen is already installed
+  * Removals:
+    - atmospheric-fx-distance-factor has been removed until further notice
 
- -- Sebastian Mach <phresnel@gmail.com>  Sat, 10 Jul 2010 10:15:55 +0200
+ -- Sebastian Mach <phresnel@gmail.com>  Sun, 18 Jul 2010 21:08:49 +0200
 
 picogen (0.3~beta6) unstable; urgency=low
 
