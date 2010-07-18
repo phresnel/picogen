@@ -116,6 +116,7 @@ DistantRadiance RedshiftIntegrator::Li (
 
                                 Scene::LiMode m;
                                 m.SkipSun = true;
+                                m.SkipSurface = true;
                                 const Color L = scene.radiance(
                                         skyRay, sample, lirec, rand, m);
 
