@@ -31,6 +31,7 @@
 #include "../../redshift/include/interaction/usercommandprocessor.hh"
 #include "../../redshift/include/auxiliary/stopwatch.hh"
 #include "../../redshift/include/auxiliary/computationtime.hh"
+#include "../../redshift/include/auxiliary/scopedlock.hh"
 
 namespace Ui {
     class RenderWindow;
@@ -80,6 +81,7 @@ private slots:
 private:
         Ui::RenderWindow *ui;
         redshift::shared_ptr<RenderWindowImpl> impl;
+        redshift::Mutex updateMutex;
         friend class RenderWindowImpl;
 
         redshift::shared_ptr<redshift::scenefile::Scene> scenefile;

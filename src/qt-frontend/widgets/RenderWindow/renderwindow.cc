@@ -382,6 +382,7 @@ RenderWindow::~RenderWindow() {
 
 
 void RenderWindow::updateImage (double percentage) {
+        redshift::ScopedLock lock(updateMutex);
         if (impl->error()) {
                 setWindowTitle ("Error");
 
@@ -448,7 +449,8 @@ void RenderWindow::updateImage (double percentage) {
                         if (filmSettings->convertToSrgb) {
                                 for (unsigned int y=0; y<film.height(); ++y)
                                 for (unsigned int x=0; x<film.width(); ++x) {
-                                        const Color color = film.average(x,y);
+                                        const Color color =
+                                                      film.average_or_zero(x,y);
                                         const redshift::color::SRGB rgb =
                                                         color.toRGB().toSRGB();
                                         const int rf = s * rgb.R,
@@ -466,7 +468,8 @@ void RenderWindow::updateImage (double percentage) {
                         } else {
                                 for (unsigned int y=0; y<film.height(); ++y)
                                 for (unsigned int x=0; x<film.width(); ++x) {
-                                        const Color color = film.average(x,y);
+                                        const Color color =
+                                                      film.average_or_zero(x,y);
                                         const redshift::color::RGB rgb =
                                                         color.toRGB();
                                         const int rf = s * rgb.R,

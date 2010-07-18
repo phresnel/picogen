@@ -26,11 +26,32 @@
 #include "../sealed.hh"
 
 namespace redshift {
-        struct Pixel {
+        SEALED(Pixel);
+        struct Pixel : MAKE_SEALED(Pixel) {
                 Color sum;
                 unsigned int sampleCount;
 
+                Pixel () : sum(0), sampleCount(0) {}
+
+                Pixel (Pixel const &rhs)
+                        : SEALED_CONSTRUCT(Pixel)
+                        , sum(rhs.sum)
+                        , sampleCount(rhs.sampleCount)
+                {}
+
+                Pixel& operator = (Pixel const &rhs) {
+                        sum = rhs.sum;
+                        sampleCount = rhs.sampleCount;
+                        return *this;
+                }
+
                 Color average () const {
+                        return sum * (real_t(1)/sampleCount);
+                }
+
+                Color average_or_zero () const {
+                        if (sampleCount == 0)
+                                return Color(0);
                         return sum * (real_t(1)/sampleCount);
                 }
 
@@ -57,6 +78,9 @@ namespace redshift {
                 }
                 Color average (unsigned int x, unsigned int y) const {
                         return surface[y*width_+x].average();
+                }
+                Color average_or_zero (unsigned int x, unsigned int y) const {
+                        return surface[y*width_+x].average_or_zero();
                 }
 
                 Pixel &pixel (unsigned int x, unsigned int y) {
