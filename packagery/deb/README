@@ -7,9 +7,8 @@ Steps to create .deb-packages
 2) run "merge-dist-extras-in.sh"
 3) provide binaries into each DEBS/*/usr/share/bin/
 4) run set-permissions-for-redist.sh
-5) run build-packages.sh
-6) lintian
-7) after uploading, notifying freshmeat and the rest of the world, run as root "clean-up.sh"
+5) run build-packages.sh (it will also do a lintian-check of the deb-packages)
+6) after uploading, notifying freshmeat and the rest of the world, run as root "clean-up.sh"
 x) ...
 x+1) profit
 
