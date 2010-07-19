@@ -1,0 +1,1 @@
+rm DIST-EXTRAS/repository/scenes/examples/*/*.png
