@@ -1,5 +1,5 @@
 .deb-Packages Only
-  [ ] Check if suggestions are installable
+  [-] Check if suggestions are installable
 
 Installers/Packages Only
   [ ] Test whether each program starts through start-/app-menu
