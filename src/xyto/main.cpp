@@ -2,6 +2,7 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <sstream>
 #include <boost/optional.hpp>
 #include <algorithm>
 
@@ -147,10 +148,11 @@ bool is_white (char c) {
 class Token {
 public:
         enum Type {
-                LessThan, GreaterThan, // <>
+                LessThan, GreaterThan,
                 TransformTo, // -->
-                Colon, Semicolon,
-                Identifier
+                Colon, Semicolon, Comma,
+                LeftParen, RightParen,
+                Identifier, Real, Integer
         };
 
         Token (Type type_,
@@ -184,6 +186,20 @@ public:
 
         Type type() const { return type_; }
         std::string value() const { return value_; }
+        double valueAsReal () const {
+                std::stringstream ss;
+                ss << value_;
+                double ret;
+                ss >> ret;
+                return ret;
+        }
+        int valueAsInteger () const {
+                std::stringstream ss;
+                ss << value_;
+                int ret;
+                ss >> ret;
+                return ret;
+        }
         CodeIterator from() const { return from_; }
         CodeIterator to() const { return to_; }
 private:
@@ -209,6 +225,29 @@ TokenVector tokenize(const char *code) {
                         }
                         tokens.push_back (Token(Token::Identifier, begin, it));
                         it = prev;
+                } else if (is_num(c)) {
+                        const CI begin = it;
+                        CI prev = it;
+                        for (; *it!='\0' && is_num(*it); prev=it, ++it) {
+                        }
+                        if (*it == '.') {
+                                ++it;
+                                if (!is_num(*it)) {
+                                        std::cerr << "tokenization error in "
+                                             << "line " << it.row()
+                                             << ", column " << it.column()
+                                             << ": '" << *it << "', "
+                                             << "expected number" << std::endl;
+                                        return TokenVector();
+                                }
+                                for (; *it!='\0' && is_num(*it); prev=it, ++it) {
+                                }
+                                tokens.push_back (Token(Token::Real, begin, it));
+                                it = prev;
+                        } else {
+                                tokens.push_back (Token(Token::Integer, begin, it));
+                                it = prev;
+                        }
                 } else if (c == '<') {
                         tokens.push_back (Token(Token::LessThan, it, it.next()));
                 } else if (c == '>') {
@@ -224,6 +263,12 @@ TokenVector tokenize(const char *code) {
                         tokens.push_back (Token(Token::Colon, it, it.next()));
                 } else if (c == ';') {
                         tokens.push_back (Token(Token::Semicolon, it, it.next()));
+                } else if (c == '(') {
+                        tokens.push_back (Token(Token::LeftParen, it, it.next()));
+                } else if (c == ')') {
+                        tokens.push_back (Token(Token::RightParen, it, it.next()));
+                } else if (c == ',') {
+                        tokens.push_back (Token(Token::Comma, it, it.next()));
                 } else if (!is_white(c)) {
                         std::cerr << "tokenization error in "
                              << "line " << it.row() << ", column " << it.column()
@@ -235,6 +280,76 @@ TokenVector tokenize(const char *code) {
 }
 
 
+class Parameter {
+public:
+        enum Type {
+                Identifier,
+                Integer,
+                Real
+                //Expression
+        };
+
+        Type type() const {
+                return type_;
+        }
+        void setType (Type type) {
+                type_ = type;
+        }
+private:
+        Type type_;
+};
+inline std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
+        o << " : ";
+        switch (rhs.type()) {
+        case Parameter::Identifier: o << "id"; break;
+        case Parameter::Integer:    o << "int"; break;
+        case Parameter::Real: o << "real"; break;
+        }
+        return o;
+}
+
+class ParameterList {
+public:
+        unsigned int size() const {
+                return parameters_.size();
+        }
+        void push_back(Parameter const &sym) {
+                parameters_.push_back(sym);
+        }
+        bool empty() const {
+                return size() == 0;
+        }
+
+        Parameter &operator [] (unsigned int i) {
+                return parameters_[i];
+        }
+        const Parameter &operator [] (unsigned int i) const {
+                return parameters_[i];
+        }
+
+        ParameterList() {}
+        ParameterList(ParameterList const &rhs)
+        : parameters_(rhs.parameters_)
+        {}
+        ParameterList& operator= (ParameterList const &rhs) {
+                parameters_ = rhs.parameters_;
+                return *this;
+        }
+private:
+        std::vector<Parameter> parameters_;
+};
+inline std::ostream& operator<< (std::ostream& o, ParameterList const& rhs) {
+        if (rhs.size()) {
+                o << "(";
+                for (unsigned int i=0; i<rhs.size(); ++i) {
+                        if (i) o << ", ";
+                        o << rhs[i];
+                }
+                o << ")";
+        }
+        return o;
+}
+
 class Symbol {
 public:
         std::string name() const {
@@ -243,8 +358,27 @@ public:
         void setName(std::string const &name) {
                 name_ = name;
         }
+
+        ParameterList parameterList() const {
+                return parameterList_;
+        }
+        void setParameterList(ParameterList const &rhs) {
+                parameterList_ = rhs;
+        }
+
+        Symbol() {}
+        Symbol (Symbol const &rhs)
+        : name_(rhs.name_)
+        , parameterList_(rhs.parameterList_)
+        {}
+        Symbol& operator= (Symbol const &rhs) {
+                name_ = rhs.name_;
+                parameterList_ = rhs.parameterList_;
+                return *this;
+        }
 private:
         std::string name_;
+        ParameterList parameterList_;
 };
 inline bool operator == (Symbol const &lhs, Symbol const &rhs) {
         return lhs.name() == rhs.name();
@@ -254,6 +388,7 @@ inline bool operator != (Symbol const &lhs, Symbol const &rhs) {
 }
 inline std::ostream& operator<< (std::ostream& o, Symbol const& rhs) {
         o << rhs.name();
+        o << rhs.parameterList();
         return o;
 }
 
@@ -274,6 +409,15 @@ public:
         }
         bool empty() const {
                 return size() == 0;
+        }
+
+        Pattern() {}
+        Pattern(Pattern const &rhs)
+        : symbols(rhs.symbols)
+        {}
+        Pattern& operator= (Pattern const &rhs) {
+            symbols = rhs.symbols;
+            return *this;
         }
 private:
         std::vector<Symbol> symbols;
@@ -328,6 +472,23 @@ public:
                 pattern_ = p;
         }
 
+        ProductionHeader() {}
+
+        ProductionHeader (ProductionHeader const &rhs)
+        : name_(rhs.name_)
+        , leftContext_(rhs.leftContext_)
+        , rightContext_(rhs.rightContext_)
+        , pattern_(rhs.pattern_)
+        {}
+
+        ProductionHeader& operator= (ProductionHeader const &rhs) {
+                name_ = rhs.name_;
+                leftContext_ = rhs.leftContext_;
+                rightContext_ = rhs.rightContext_;
+                pattern_ = rhs.pattern_;
+                return *this;
+        }
+
 private:
         std::string name_;
         Pattern leftContext_, rightContext_;
@@ -354,6 +515,15 @@ public:
         void setPattern(Pattern const & p) {
                 pattern_ = p;
         }
+
+        ProductionBody() {}
+        ProductionBody(ProductionBody const &rhs)
+        : pattern_(rhs.pattern_)
+        {}
+        ProductionBody& operator= (ProductionBody const &rhs) {
+            pattern_ = rhs.pattern_;
+            return *this;
+        }
 private:
         Pattern pattern_;
 };
@@ -378,6 +548,16 @@ public:
                 body_ = h;
         }
 
+        Production() {}
+        Production(Production const &rhs)
+        : header_(rhs.header_)
+        , body_(rhs.body_)
+        {}
+        Production& operator= (Production const &rhs) {
+                header_ = rhs.header_;
+                body_ = rhs.body_;
+                return *this;
+        }
 private:
         ProductionHeader header_;
         ProductionBody body_;
@@ -429,7 +609,81 @@ inline bool ambiguous (Production const &lhs, Production const &rhs) {
 }
 
 
+optional<Parameter> parse_parameter (
+        TokenIterator it, TokenIterator end, TokenIterator &behind
+) {
+        if (it == end)
+                return optional<Parameter>();
+        if (it->type() == Token::Identifier) {
+                Parameter p;
+                p.setType (Parameter::Identifier);
+                behind = ++it;
+                return p;
+        }
+        if (it->type() == Token::Real) {
+                Parameter p;
+                p.setType (Parameter::Real);
+                behind = ++it;
+                return p;
+        }
+        if (it->type() == Token::Integer) {
+                Parameter p;
+                p.setType (Parameter::Integer);
+                behind = ++it;
+                return p;
+        }
+        return optional<Parameter>();
+}
 
+
+optional<ParameterList> parse_parameter_list (
+        TokenIterator it, TokenIterator end, TokenIterator &behind
+) {
+        ParameterList ret;
+        if (it == end || it->type() != Token::LeftParen) {
+                behind = it;
+                return ret;
+        }
+        ++it;
+        if (it == end) {
+                std::cerr << "error: unclosed parameter list in line "
+                        << (it-1)->to().next().row() << ", column "
+                        << (it-1)->to().next().column() << std::endl;
+                return optional<ParameterList>();
+        }
+
+        if (it->type() == Token::RightParen) {
+                ++it;
+        } else while (1) {
+                TokenIterator behindParam;
+                optional<Parameter> p = parse_parameter(it, end, behindParam);
+                if (p) {
+                        ret.push_back(*p);
+                        it = behindParam;
+                } else {
+                        std::cerr <<
+                           "error: expected parameter in line "
+                           << it->from().next().row() << ", column "
+                           << it->from().next().column() << std::endl;
+                        return optional<ParameterList>();
+                }
+
+                if (it == end) {
+                        TokenIterator i = it - 1;
+                        std::cerr <<
+                           "error: unclosed parameter list in line "
+                           << i->from().next().row() << ", column "
+                           << i->from().next().column() << std::endl;
+                        return optional<ParameterList>();
+                } else if (it->type() == Token::RightParen) {
+                        ++it;
+                        break;
+                }
+        }
+
+        behind = it;
+        return ret;
+}
 
 
 optional<Symbol> parse_symbol (TokenIterator it, TokenIterator end, TokenIterator &behind) {
@@ -437,7 +691,15 @@ optional<Symbol> parse_symbol (TokenIterator it, TokenIterator end, TokenIterato
                 return optional<Symbol>();
         Symbol sym;
         sym.setName (it->value());
-        behind = ++it;
+        ++it;
+
+        TokenIterator behindParams;
+        optional<ParameterList> params = parse_parameter_list(it, end, behindParams);
+        if (!params)
+                return optional<Symbol>();
+        sym.setParameterList (*params);
+        it = behindParams;
+        behind = it;
         return sym;
 }
 
@@ -654,9 +916,10 @@ void compile (const char *code) {
         }
 
         std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
-        /*for (int i=0; i<prods.size(); ++i) {
+        for (unsigned int i=0; i<prods.size(); ++i) {
                 std::cout << i << " -- " << prods[i] << '\n';
-        }*/
+        }
+        return;
 
         // check if there are ambiguous rules
         for (unsigned int i=0; i<prods.size()-1; ++i) {
@@ -751,29 +1014,6 @@ unsigned int matchLength (Production const &production,
         return mainLen;
 }
 
-optional<Pattern> apply(Production const &production, Pattern const &axiom) {
-        Pattern ret;
-
-        bool any = false;
-
-        unsigned int i=0;
-        while (i<axiom.size()) {
-                if (int len=matchLength(production, axiom, i)) {
-                        any = true;
-                        const ProductionBody body = production.body();
-                        for (unsigned int b=0; b<body.pattern().size(); ++b)
-                                ret.push_back(body.pattern()[b]);
-                        i += len;
-                } else {
-                        ret.push_back(axiom[i]);
-                        ++i;
-                }
-        }
-
-        if (!any)
-                return optional<Pattern>();
-        return ret;
-}
 
 optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
         bool axiomWasTweaked = false;
@@ -808,8 +1048,9 @@ int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                "sec:   b < a --> b;\n"
-                "third:     b --> a;\n"
+                /*"a0: b < a --> b (0);\n"
+                "a1: b --> a;\n"-*/
+                "m: a(x) --> a(5) ;"
         ;
         compile(code);
 
