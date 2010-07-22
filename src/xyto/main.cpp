@@ -244,6 +244,12 @@ public:
 private:
         std::string name_;
 };
+bool operator == (Symbol const &lhs, Symbol const &rhs) {
+        return lhs.name() == rhs.name();
+}
+bool operator != (Symbol const &lhs, Symbol const &rhs) {
+        return lhs.name() != rhs.name();
+}
 inline std::ostream& operator<< (std::ostream& o, Symbol const& rhs) {
         o << rhs.name();
         return o;
@@ -567,13 +573,97 @@ optional<Production> parse_production (TokenIterator it, TokenIterator end, Toke
 }
 
 void compile (const char *code) {
-        TokenVector tokens = tokenize (code);
+        const TokenVector tokens = tokenize (code);
 
         TokenIterator behind;
         optional<Production> op = parse_production (tokens.begin(), tokens.end(), behind);
         if (op) {
-                std::cout << *op << std::endl;
+                std::cout << *op << '\n';
         }
+
+        const TokenVector axiom = tokenize("x y x y");
+        std::cout << "--------------\n";
+        Pattern pat = parse_pattern(axiom.begin(), axiom.end(), behind);
+        std::cout << "axiom: " << pat << '\n';
+
+        for (int i=0; i<3; ++i) {
+                optional<Pattern> apply(Production const &, Pattern const &);
+
+                const optional<Pattern> next = apply (*op, pat);
+                if (next) {
+                        pat = *next;
+                        std::cout << "step " << i << ": " << pat << '\n';
+                } else {
+                        std::cout << "no match in step " << i << '\n';
+                        break;
+                }
+        }
+}
+
+
+int matchLength (Pattern const &pattern,
+                 Pattern const &axiom,
+                 int axiomIndex
+) {
+        if (axiomIndex<0)
+                return 0;
+        for (unsigned int i=0; i<pattern.size(); ++i) {
+                if (i+axiomIndex >= axiom.size()) return 0;
+                if (pattern[i] != axiom[i+axiomIndex])
+                        return 0;
+        }
+        return pattern.size();
+}
+
+int matchLength (Production const &production,
+                 Pattern const &axiom,
+                 int axiomIndex
+) {
+        const ProductionHeader &header = production.header();
+        const int mainLen = matchLength (header.pattern(), axiom, axiomIndex);
+        if (0 == mainLen)
+                return 0;
+
+        if (!header.leftContext().empty()) {
+                Pattern const & ct = header.leftContext();
+                if (!matchLength (ct, axiom, axiomIndex-ct.size()))
+                        return 0;
+        }
+        if (!header.rightContext().empty()) {
+                Pattern const & ct = header.rightContext();
+                if (!matchLength (ct, axiom, axiomIndex+mainLen))
+                        return 0;
+        }
+        return mainLen;
+
+        /*if (0 == mainLen)
+                return 0;
+        axiomIndex += mainLen;*/
+
+}
+
+optional<Pattern> apply(Production const &production, Pattern const &axiom) {
+        Pattern ret;
+
+        bool any = false;
+
+        unsigned int i=0;
+        while (i<axiom.size()) {
+                if (int len=matchLength(production, axiom, i)) {
+                        any = true;
+                        const ProductionBody body = production.body();
+                        for (unsigned int b=0; b<body.pattern().size(); ++b)
+                                ret.push_back(body.pattern()[b]);
+                        i += len;
+                } else {
+                        ret.push_back(axiom[i]);
+                        ++i;
+                }
+        }
+
+        if (!any)
+                return optional<Pattern>();
+        return ret;
 }
 
 
@@ -582,9 +672,9 @@ int main()
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
                 //"foo(x) < bar(y) > frob(z) : x==y --> bar";
-                "foo: x<x --> x\n"
-                "           y;"
+                "foo: x y < x y--> Hit;"
         ;
         compile(code);
+
         return 0;
 }
