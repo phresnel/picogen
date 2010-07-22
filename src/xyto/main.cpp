@@ -1,7 +1,9 @@
 #include <string>
 #include <vector>
+#include <set>
 #include <iostream>
 #include <boost/optional.hpp>
+#include <algorithm>
 
 using boost::optional;
 
@@ -244,10 +246,10 @@ public:
 private:
         std::string name_;
 };
-bool operator == (Symbol const &lhs, Symbol const &rhs) {
+inline bool operator == (Symbol const &lhs, Symbol const &rhs) {
         return lhs.name() == rhs.name();
 }
-bool operator != (Symbol const &lhs, Symbol const &rhs) {
+inline bool operator != (Symbol const &lhs, Symbol const &rhs) {
         return lhs.name() != rhs.name();
 }
 inline std::ostream& operator<< (std::ostream& o, Symbol const& rhs) {
@@ -276,6 +278,15 @@ public:
 private:
         std::vector<Symbol> symbols;
 };
+inline bool operator == (Pattern const &lhs, Pattern const &rhs) {
+        if (lhs.size() != rhs.size())
+                return false;
+        for (unsigned int i=0; i<lhs.size(); ++i) {
+                if (lhs[i] != rhs[i])
+                        return false;
+        }
+        return true;
+}
 inline std::ostream& operator<< (std::ostream& o, Pattern const& rhs) {
         if (rhs.size()) {
                 o << rhs[0];
@@ -374,6 +385,47 @@ private:
 inline std::ostream& operator<< (std::ostream& o, Production const& rhs) {
         o << rhs.header() << " --> " << rhs.body() << ";";
         return o;
+}
+inline bool hasPrecedenceOver (Production const &lhs, Production const &rhs) {
+        const int numContextsLhs =
+                !lhs.header().leftContext().empty()
+                + !lhs.header().rightContext().empty();
+        const int numContextsRhs =
+                !rhs.header().leftContext().empty()
+                + !rhs.header().rightContext().empty();
+
+        // Always prefer contexts over no context, as well as
+        // two contexts over one context.
+        if (numContextsLhs > numContextsRhs)
+                return true;
+        else if (numContextsLhs < numContextsRhs)
+                return false;
+
+        // Always prefer larger main-pattern.
+        const int patternSizeLhs = lhs.header().pattern().size();
+        const int patternSizeRhs = rhs.header().pattern().size();
+        if (patternSizeLhs > patternSizeRhs)
+                return true;
+        else if (patternSizeLhs < patternSizeRhs)
+                return false;
+
+        // Prefer larger context.
+        const int contextSizeLhs = lhs.header().leftContext().size()
+                                 + lhs.header().rightContext().size();
+        const int contextSizeRhs = rhs.header().leftContext().size()
+                                 + rhs.header().rightContext().size();
+        if (contextSizeLhs > contextSizeRhs)
+                return true;
+        else if (contextSizeLhs < contextSizeRhs)
+                return false;
+
+        return false;
+}
+inline bool ambiguous (Production const &lhs, Production const &rhs) {
+        return lhs.header().pattern() == rhs.header().pattern()
+            && !hasPrecedenceOver(lhs, rhs)
+            && !hasPrecedenceOver(rhs, lhs)
+            ;
 }
 
 
@@ -515,10 +567,12 @@ optional<ProductionBody> parse_production_body (
         if (it == end || it->type() != Token::Semicolon) {
                 TokenIterator prev = it - 1;
                 std::cerr << "error: expected ';' after production in line "
-                        << prev->from().row() << ", column "
-                        << prev->from().column() << std::endl;
+                        << prev->to().row() << ", column "
+                        << prev->to().column() << std::endl;
                 return optional<ProductionBody>();
         }
+        ++it;
+        behind = it;
 
         ProductionBody ret;
         ret.setPattern (pat);
@@ -575,33 +629,83 @@ optional<Production> parse_production (TokenIterator it, TokenIterator end, Toke
 void compile (const char *code) {
         const TokenVector tokens = tokenize (code);
 
-        TokenIterator behind;
-        optional<Production> op = parse_production (tokens.begin(), tokens.end(), behind);
-        if (op) {
-                std::cout << *op << '\n';
+        std::vector<Production> prods;
+
+        std::set<std::string> names;
+        TokenIterator it = tokens.begin();
+        const TokenIterator &end = tokens.end();
+        //char c = 'a';
+        while (it != end) {
+                TokenIterator behind;
+                if (optional<Production> op = parse_production (it, end, behind)) {
+                        if (names.find(op->header().name())
+                          != names.end()
+                        ) {
+                                std::cerr << "error: multiple productions are "
+                                 << "named '" << op->header().name() << "'.\n";
+                                return;
+                        }
+                        names.insert(op->header().name());
+                        prods.push_back(*op);
+                } else {
+                        return;
+                }
+                it = behind;
         }
 
-        const TokenVector axiom = tokenize("x y x y");
+        std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
+        /*for (int i=0; i<prods.size(); ++i) {
+                std::cout << i << " -- " << prods[i] << '\n';
+        }*/
+
+        // check if there are ambiguous rules
+        for (unsigned int i=0; i<prods.size()-1; ++i) {
+                if (ambiguous (prods[i], prods[i+1])) {
+                        std::cerr << "warning: productions '"
+                          << prods[i].header().name()
+                          << "' and '"
+                          << prods[i+1].header().name()
+                          << "' might be ambiguous (neither is more "
+                          << "specialized); in such case, '"
+                          << prods[i].header().name()
+                          << "' will be preferred (because it was "
+                          << "declared first).\n";
+                        ;
+                }
+        }
+
+
+        const TokenVector axiom = tokenize("a b a");
         std::cout << "--------------\n";
+        TokenIterator behind;
         Pattern pat = parse_pattern(axiom.begin(), axiom.end(), behind);
         std::cout << "axiom: " << pat << '\n';
 
-        for (int i=0; i<3; ++i) {
+        for (int step=0; step<6; ++step) {
                 optional<Pattern> apply(Production const &, Pattern const &);
 
-                const optional<Pattern> next = apply (*op, pat);
-                if (next) {
+                bool any = false;
+                optional<Pattern> next;
+                for (unsigned int i=0; i<prods.size(); ++i) {
+                        next = apply (prods[i], pat);
+                        if (next) {
+                                any = true;
+                                break;
+                        }
+                }
+
+                if (any) {
                         pat = *next;
-                        std::cout << "step " << i << ": " << pat << '\n';
+                        std::cout << "step " << step << ": " << pat << '\n';
                 } else {
-                        std::cout << "no match in step " << i << '\n';
+                        std::cout << "no match in step " << step << '\n';
                         break;
                 }
         }
 }
 
 
-int matchLength (Pattern const &pattern,
+unsigned int matchLength (Pattern const &pattern,
                  Pattern const &axiom,
                  int axiomIndex
 ) {
@@ -615,7 +719,7 @@ int matchLength (Pattern const &pattern,
         return pattern.size();
 }
 
-int matchLength (Production const &production,
+unsigned int matchLength (Production const &production,
                  Pattern const &axiom,
                  int axiomIndex
 ) {
@@ -635,11 +739,6 @@ int matchLength (Production const &production,
                         return 0;
         }
         return mainLen;
-
-        /*if (0 == mainLen)
-                return 0;
-        axiomIndex += mainLen;*/
-
 }
 
 optional<Pattern> apply(Production const &production, Pattern const &axiom) {
@@ -671,8 +770,9 @@ int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                //"foo(x) < bar(y) > frob(z) : x==y --> bar";
-                "foo: x y < x y--> Hit;"
+                "first:     b     --> First;\n"
+                "sec:       b > a --> Second;"
+                "third: a < b     --> Third;\n"
         ;
         compile(code);
 
