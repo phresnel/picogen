@@ -51,8 +51,7 @@ else ifeq ($(COMPILE), "DEBUG")
 	CXXFLAGS += -O0 -g
 else
 	CXXFLAGS += -O3
-	CXXFLAGS += -freciprocal-math  -fno-signed-zeros
-	CXXFLAGS += -ffast-math -fassociative-math
+	CXXFLAGS += -ffast-math
 	CXXFLAGS += -msse -mfpmath=sse
 	CXXFLAGS += -fopenmp
 endif
