@@ -60,7 +60,9 @@ CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s -fopenmp `./machine-linker-settings.sh`
+LINK := g++ -s -fopenmp \
+        `./machine-linker-settings.sh`
+
 # -Wl,--enable-auto-import
 AR   := ar -rs
 CXX  := g++ -c $(CXXFLAGS)
