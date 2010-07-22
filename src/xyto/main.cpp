@@ -675,14 +675,24 @@ void compile (const char *code) {
         }
 
 
-        const TokenVector axiom = tokenize("a b a");
+        const TokenVector axiom = tokenize("b a a a a");
         std::cout << "--------------\n";
         TokenIterator behind;
         Pattern pat = parse_pattern(axiom.begin(), axiom.end(), behind);
         std::cout << "axiom: " << pat << '\n';
 
         for (int step=0; step<6; ++step) {
-                optional<Pattern> apply(Production const &, Pattern const &);
+                optional<Pattern> apply(std::vector<Production> const &, Pattern const &);
+
+                optional<Pattern> next = apply (prods, pat);
+                if (next) {
+                        pat = *next;
+                        std::cout << "step " << step << ": " << pat << '\n';
+                } else {
+                        std::cout << "no match in step " << step << '\n';
+                        break;
+                }
+                /*optional<Pattern> apply(std::vector<Production> prods; const &, Pattern const &);
 
                 bool any = false;
                 optional<Pattern> next;
@@ -700,7 +710,7 @@ void compile (const char *code) {
                 } else {
                         std::cout << "no match in step " << step << '\n';
                         break;
-                }
+                }*/
         }
 }
 
@@ -765,14 +775,41 @@ optional<Pattern> apply(Production const &production, Pattern const &axiom) {
         return ret;
 }
 
+optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
+        bool axiomWasTweaked = false;
+        Pattern ret;
+        for (unsigned int A=0; A<axiom.size(); ) {
+                bool any = false;
+                for (unsigned int P=0; P<prods.size(); ++P) {
+                        if (int len = matchLength(prods[P], axiom, A)) {
+                                A += len;
+                                any = true;
+                                for (int i=0; i<len; ++i) {
+                                        ret.push_back(prods[P].body().pattern()[i]);
+                                }
+                                break;
+                        }
+                }
+                if (any) {
+                        axiomWasTweaked = true;
+                } else {
+                        ret.push_back (axiom[A]);
+                        ++A;
+                }
+        }
+
+        if (axiomWasTweaked)
+                return ret;
+        return optional<Pattern>();
+}
+
 
 int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                "first:     b     --> First;\n"
-                "sec:       b > a --> Second;"
-                "third: a < b     --> Third;\n"
+                "sec:   b < a --> b;\n"
+                "third:     b --> a;\n"
         ;
         compile(code);
 
