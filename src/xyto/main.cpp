@@ -286,8 +286,8 @@ public:
         enum Type {
                 Identifier,
                 Integer,
-                Real
-                //Expression
+                Real,
+                ParameterIndex // never parsed
         };
 
         Type type() const {
@@ -300,43 +300,56 @@ public:
         void setInteger (int v) {
                 if (type_ != Integer)
                         std::cout << "runtime error: Parameter::setInteger() "
-                                "called for non-integer";
+                                "called for non-integer\n";
                 intval = v;
         }
         void setReal (double v) {
                 if (type_ != Real)
                         std::cout << "runtime error: Parameter::setReal() "
-                                "called for non-real";
+                                "called for non-real\n";
                 realval = v;
         }
         void setIdentifier (std::string v) {
                 if (type_ != Identifier)
                         std::cout << "runtime error: "
                                 "Parameter::setIdentifier() called for "
-                                "non-identifier";
+                                "non-identifier\n";
                 idval = v;
         }
         int integer () const {
                 if (type_ != Integer)
                         std::cout << "runtime error: Parameter::integer() "
-                                "called for non-integer";
+                                "called for non-integer\n";
                 return intval;
         }
         double real () const {
                 if (type_ != Real)
                         std::cout << "runtime error: Parameter::real() "
-                                "called for non-real";
+                                "called for non-real\n";
                 return realval;
         }
         std::string identifier () const {
                 if (type_ != Identifier)
                         std::cout << "runtime error: Parameter::identifier() "
-                                "called for non-identifier";
+                                "called for non-identifier\n";
                 return idval;
+        }
+
+        void toParameterIndex (int index) {
+                if (type_ != Identifier)
+                        std::cout << "runtime error: Parameter::"
+                                "toParameterIndex() called for non-"
+                                "identifier\n";
+                type_ = ParameterIndex;
+                this->index = index;
+        }
+        int parameterIndex() const {
+                return index;
         }
 private:
         Type type_;
         int intval;
+        int index;
         double realval;
         std::string idval;
 };
@@ -345,6 +358,9 @@ inline std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
         case Parameter::Identifier: o << rhs.identifier() << ":id"; break;
         case Parameter::Integer:    o << rhs.integer() << ":int"; break;
         case Parameter::Real: o << rhs.real() << ":real"; break;
+        case Parameter::ParameterIndex:
+                o << rhs.parameterIndex() << ":pidx";
+                break;
         }
         return o;
 }
@@ -942,44 +958,109 @@ optional<Production> parse_production (TokenIterator it, TokenIterator end, Toke
         optional<ProductionHeader> header;
         optional<ProductionBody> body;
 
+        //---------------------------------------------------------
         // Header
-        {
-                TokenIterator behindHeader;
-                header = parse_production_header(it, end, behindHeader);
-                if (!header) {
-                        return optional<Production>();
-                }
-                it = behindHeader;
+        TokenIterator behindHeader;
+        header = parse_production_header(it, end, behindHeader);
+        if (!header) {
+                return optional<Production>();
+        }
+        it = behindHeader;
 
-                if (it == end) {
-                        TokenIterator i = it - 1;
-                        std::cerr <<
-                           "error: expected body behind '-->' in line "
-                           << i->to().next().row() << ", column "
-                           << i->to().next().column() << std::endl;
-                        return optional<Production>();
-                }
+        if (it == end) {
+                TokenIterator i = it - 1;
+                std::cerr <<
+                   "error: expected body behind '-->' in line "
+                   << i->to().next().row() << ", column "
+                   << i->to().next().column() << std::endl;
+                return optional<Production>();
         }
+        //---------------------------------------------------------
+
+
+
+        //---------------------------------------------------------
         // Body
-        {
-                TokenIterator behindBody;
-                body = parse_production_body(it, end, behindBody);
-                if (!body) {
-                        return optional<Production>();
-                }
-                it = behindBody;
+        TokenIterator behindBody;
+        body = parse_production_body(it, end, behindBody);
+        if (!body) {
+                return optional<Production>();
         }
+        it = behindBody;
+        //---------------------------------------------------------
+
+
+
+        Production ret;
+
+
+        //---------------------------------------------------------
+        // Compile symbol table.
+        {
+                int index = 0;
+                std::map<std::string, int> symtab;
+                Pattern headerPatterns[3] = {
+                        header->leftContext(),
+                        header->pattern(),
+                        header->rightContext()
+                };
+                // At this point it is ensured that all parameters are
+                // identifiers. parse_headers() did the check for us.
+                for (unsigned int i=0; i<3; ++i) {
+                        Pattern &pat = headerPatterns[i];
+                        for (unsigned int p=0; p<pat.size(); ++p) {
+                                ParameterList params = pat[p].parameterList();
+                                for (unsigned int a=0; a<params.size(); ++a) {
+                                        Parameter &param = params[a];
+                                        std::string const &id = param.identifier();
+                                        if (!symtab.count(id)) {
+                                                symtab[id] = index++;
+                                        }
+                                        param.toParameterIndex(symtab[id]);
+                                }
+                                pat[p].setParameterList(params);
+                        }
+                }
+                ProductionHeader ph(*header);
+                ph.setLeftContext (headerPatterns[0]);
+                ph.setPattern(headerPatterns[1]);
+                ph.setRightContext (headerPatterns[2]);
+                ret.setHeader (ph);
+
+                // Apply symbol table to body.
+                Pattern bodyPattern = body->pattern();
+                for (unsigned int p=0; p<bodyPattern.size(); ++p) {
+                        ParameterList params = bodyPattern[p].parameterList();
+                        for (unsigned int a=0; a<params.size(); ++a) {
+                                Parameter &param = params[a];
+                                if (param.type() != Parameter::Identifier) {
+                                        std::cout << "--" << std::endl;
+                                        continue;
+                                } else {
+                                        std::cout << "++" << param.identifier() << std::endl;
+                                }
+                                std::string const &id = param.identifier();
+                                if (!symtab.count(id)) {
+                                        std::cout << "error:" << std::endl;
+                                        return optional<Production>();
+                                }
+                                param.toParameterIndex(symtab[id]);
+                        }
+                        bodyPattern[p].setParameterList(params);
+                }
+                ProductionBody pb = *body;
+                pb.setPattern(bodyPattern);
+                ret.setBody (pb);
+        }
+        //---------------------------------------------------------
+
 
 
         behind = it;
-
-        Production ret;
-        ret.setHeader (*header);
-        ret.setBody (*body);
         return ret;
 }
 
-void compile (const char *code) {
+void compile (const char *code, const char *axiom_) {
         const TokenVector tokens = tokenize (code);
 
         std::vector<Production> prods;
@@ -1061,8 +1142,7 @@ void compile (const char *code) {
         }
 
 
-        const std::string axiom_ = "a(1,2)";
-        const TokenVector axiom = tokenize(axiom_.c_str());
+        const TokenVector axiom = tokenize(axiom_);
         std::cout << "--------------\n";
         TokenIterator behind;
         optional<Pattern> ax = parse_axiom(axiom.begin(), axiom.end());
@@ -1169,7 +1249,7 @@ int main()
                 //  a(1) b c (2)
                 "m: a(x,y) --> a(y,x);"
         ;
-        compile(code);
+        compile(code, "a(1,2)");
 
         return 0;
 }
