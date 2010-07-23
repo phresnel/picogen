@@ -419,6 +419,9 @@ public:
         ParameterList parameterList() const {
                 return parameterList_;
         }
+        ParameterList &parameterList() {
+                return parameterList_;
+        }
         void setParameterList(ParameterList const &rhs) {
                 parameterList_ = rhs;
         }
@@ -1206,7 +1209,61 @@ unsigned int matchLength (Production const &production,
 }
 
 
+void fillStack (
+        Pattern const &pattern,
+        Pattern const &axiom, unsigned int axiomIndex,
+        std::vector<Parameter> &stack
+) {
+        // Step 0) Reap values from axiom.
+        /*
+            axiom:       x(1,2)
+            production:  x(#0,#1) -> x(#1,#0)
+        */
+        for (unsigned int i=0; i<pattern.size(); ++i) {
+                Symbol const &sym = pattern[i];
+                Symbol const &xsym = axiom[i];
+                ParameterList const &paramList = sym.parameterList();
+                ParameterList const &xparamList = xsym.parameterList();
+                for (unsigned int p=0; p<paramList.size(); ++p) {
+                        Parameter const &param = paramList[p];
+                        Parameter const &xparam = xparamList[p];
+
+                        int const paramIndex = param.parameterIndex();
+                        if (paramIndex >= (int)stack.size()) {
+                                stack.resize (paramIndex+1);
+                        }
+
+                        stack[paramIndex] = xparam;
+                }
+        }
+}
+
+
+Symbol applyStack (Symbol const &symbol, std::vector<Parameter> const &stack) {
+        Symbol ret = symbol;
+        ParameterList const &params = symbol.parameterList();
+        ParameterList &rparams = ret.parameterList();
+        for (unsigned int p=0; p<params.size(); ++p) {
+                Parameter const &param = params[p];
+                Parameter &rparam = rparams[p];
+                if (param.type() == Parameter::ParameterIndex) {
+                        rparam = stack[param.parameterIndex()];
+                } else {
+                        rparam = param;
+                }
+        }
+        return ret;
+}
+/*Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack) {
+        Pattern ret;
+        for (unsigned int s=0; s<pattern.size(); ++s) {
+                ret.push_back (applyStack (pattern[s], stack));
+        }
+        return ret;
+}*/
+
 optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
+        std::vector<Parameter> stack; // or something ...
         bool axiomWasTweaked = false;
         Pattern ret;
         for (unsigned int A=0; A<axiom.size(); ) {
@@ -1215,12 +1272,18 @@ optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axi
                         const int len = matchLength(prods[P], axiom, A);
                         const bool doesMatch = len > 0;
                         if (doesMatch) {
-                                A += len;
                                 any = true;
+
                                 const Pattern &body = prods[P].body().pattern();
+
+                                stack.clear();
+                                fillStack (prods[P].header().pattern(), axiom, A, stack);
+
                                 for (unsigned int i=0; i<body.size(); ++i) {
-                                        ret.push_back(body[i]);
+                                        ret.push_back(applyStack(body[i], stack));
                                 }
+
+                                A += len;
                                 break;
                         }
                 }
@@ -1247,9 +1310,11 @@ int main()
                 "a1:     b --> a;\n"
                 */
                 //  a(1) b c (2)
-                "m: a(x,y) --> a(y,x);"
+                //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
+                "m: A(x,y) --> A(y,x,y,x);"
+                "n: A(a,b,x,y) --> A(a,b);"
         ;
-        compile(code, "a(1,2)");
+        compile(code, "A(0,1)");
 
         return 0;
 }
