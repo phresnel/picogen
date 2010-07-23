@@ -296,15 +296,55 @@ public:
         void setType (Type type) {
                 type_ = type;
         }
+
+        void setInteger (int v) {
+                if (type_ != Integer)
+                        std::cout << "runtime error: Parameter::setInteger() "
+                                "called for non-integer";
+                intval = v;
+        }
+        void setReal (double v) {
+                if (type_ != Real)
+                        std::cout << "runtime error: Parameter::setReal() "
+                                "called for non-real";
+                realval = v;
+        }
+        void setIdentifier (std::string v) {
+                if (type_ != Identifier)
+                        std::cout << "runtime error: "
+                                "Parameter::setIdentifier() called for "
+                                "non-identifier";
+                idval = v;
+        }
+        int integer () const {
+                if (type_ != Integer)
+                        std::cout << "runtime error: Parameter::integer() "
+                                "called for non-integer";
+                return intval;
+        }
+        double real () const {
+                if (type_ != Real)
+                        std::cout << "runtime error: Parameter::real() "
+                                "called for non-real";
+                return realval;
+        }
+        std::string identifier () const {
+                if (type_ != Identifier)
+                        std::cout << "runtime error: Parameter::identifier() "
+                                "called for non-identifier";
+                return idval;
+        }
 private:
         Type type_;
+        int intval;
+        double realval;
+        std::string idval;
 };
 inline std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
-        o << " : ";
         switch (rhs.type()) {
-        case Parameter::Identifier: o << "id"; break;
-        case Parameter::Integer:    o << "int"; break;
-        case Parameter::Real: o << "real"; break;
+        case Parameter::Identifier: o << rhs.identifier() << ":id"; break;
+        case Parameter::Integer:    o << rhs.integer() << ":int"; break;
+        case Parameter::Real: o << rhs.real() << ":real"; break;
         }
         return o;
 }
@@ -620,6 +660,7 @@ optional<Parameter> parse_parameter (
         if (it->type() == Token::Identifier) {
                 Parameter p;
                 p.setType (Parameter::Identifier);
+                p.setIdentifier (it->value());
                 behind = ++it;
                 return p;
         }
@@ -635,12 +676,14 @@ optional<Parameter> parse_parameter (
         if (it->type() == Token::Real) {
                 Parameter p;
                 p.setType (Parameter::Real);
+                p.setReal (it->valueAsReal());
                 behind = ++it;
                 return p;
         }
         if (it->type() == Token::Integer) {
                 Parameter p;
                 p.setType (Parameter::Integer);
+                p.setInteger (it->valueAsInteger());
                 behind = ++it;
                 return p;
         }
@@ -732,6 +775,31 @@ Pattern parse_pattern (TokenIterator it, TokenIterator end,
                 ret.push_back(*sym);
         }
         behind = it;
+        return ret;
+}
+
+bool contains_unknowns (Pattern const &pat) {
+        for (unsigned int i=0; i<pat.size(); ++i) {
+                Symbol const & sym = pat[i];
+                ParameterList const &pm = sym.parameterList();
+
+                for (unsigned int p=0; p<pm.size(); ++p) {
+                        if (pm[i].type() != Parameter::Integer
+                         && pm[i].type() != Parameter::Real
+                        )
+                                return true;
+                }
+        }
+        return false;
+}
+optional<Pattern> parse_axiom (TokenIterator it, TokenIterator end) {
+        TokenIterator trash;
+        Pattern ret = parse_pattern (it, end, trash);
+        if (contains_unknowns(ret)) {
+                std::cerr << "error: axioms may not contain any unknowns"
+                          << std::endl;
+                return optional<Pattern>();
+        }
         return ret;
 }
 
@@ -941,9 +1009,6 @@ void compile (const char *code) {
                 std::cout << i << " -- " << prods[i] << '\n';
         }
 
-        // ABoP seems to allow for overloading, i.e. "b" != "b(x)".
-        // I guess that can cause confusion, thus we'll try to warn
-        // about overloads.
         std::map<std::string, Symbol> first_appearance;
         for (unsigned int i=0; i<prods.size(); ++i) {
 
@@ -967,6 +1032,9 @@ void compile (const char *code) {
                         ;
                 }
 
+                // ABoP seems to allow for overloading, i.e. "b" != "b(x)".
+                // I guess that can cause confusion, thus we'll try to warn
+                // about overloads.
                 const Pattern pats[4] = {
                         prods[i].header().leftContext(),
                         prods[i].header().pattern(),
@@ -993,22 +1061,29 @@ void compile (const char *code) {
         }
 
 
-        const TokenVector axiom = tokenize("b(x,z) a a a a");
+        const std::string axiom_ = "a(1,2)";
+        const TokenVector axiom = tokenize(axiom_.c_str());
         std::cout << "--------------\n";
         TokenIterator behind;
-        Pattern pat = parse_pattern(axiom.begin(), axiom.end(), behind);
-        std::cout << "axiom: " << pat << '\n';
+        optional<Pattern> ax = parse_axiom(axiom.begin(), axiom.end());
 
-        for (int step=0; step<6; ++step) {
-                optional<Pattern> apply(std::vector<Production> const &, Pattern const &);
+        if (!ax) {
+                std::cout << "axiom '" << axiom_ << "' is not valid." << std::endl;
+        } else {
+                std::cout << "axiom: " << *ax << '\n';
 
-                optional<Pattern> next = apply (prods, pat);
-                if (next) {
-                        pat = *next;
-                        std::cout << "step " << step << ": " << pat << '\n';
-                } else {
-                        std::cout << "no match in step " << step << '\n';
-                        break;
+                Pattern pat = *ax;
+                for (int step=0; step<6; ++step) {
+                        optional<Pattern> apply(std::vector<Production> const &, Pattern const &);
+
+                        optional<Pattern> next = apply (prods, pat);
+                        if (next) {
+                                pat = *next;
+                                std::cout << "step " << step << ": " << pat << '\n';
+                        } else {
+                                std::cout << "no match in step " << step << '\n';
+                                break;
+                        }
                 }
         }
 }
@@ -1087,9 +1162,12 @@ int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                "a0: b(7,x) < a --> b(5,5);\n"
-                "a1:     b(x,x) --> a;\n"
-                //"m: a --> a foo;"
+                /*
+                "a0: b < a --> b;\n"
+                "a1:     b --> a;\n"
+                */
+                //  a(1) b c (2)
+                "m: a(x,y) --> a(y,x);"
         ;
         compile(code);
 
