@@ -30,7 +30,8 @@ BINDIR := ./bin
 #------------------------------------------------------------------------------
 KALLISTOBASE := -I../
 #SFMLINCLUDE := -I../externs/SFML/include
-INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/ -I/usr/include/OpenEXR/
+INCLUDEDIRS  := $(KALLISTOBASE)  -I./include/ \
+                -I/usr/include/OpenEXR/ -I/mingw/include/OpenEXR/
 
 #------------------------------------------------------------------------------
 # libs
