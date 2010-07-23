@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
 #include <iostream>
 #include <sstream>
 #include <boost/optional.hpp>
@@ -381,10 +382,11 @@ private:
         ParameterList parameterList_;
 };
 inline bool operator == (Symbol const &lhs, Symbol const &rhs) {
-        return lhs.name() == rhs.name();
+        return lhs.name() == rhs.name()
+            && lhs.parameterList().size() == rhs.parameterList().size();
 }
 inline bool operator != (Symbol const &lhs, Symbol const &rhs) {
-        return lhs.name() != rhs.name();
+        return !(lhs == rhs);
 }
 inline std::ostream& operator<< (std::ostream& o, Symbol const& rhs) {
         o << rhs.name();
@@ -900,9 +902,7 @@ void compile (const char *code) {
         while (it != end) {
                 TokenIterator behind;
                 if (optional<Production> op = parse_production (it, end, behind)) {
-                        if (names.find(op->header().name())
-                          != names.end()
-                        ) {
+                        if (names.count(op->header().name())) {
                                 std::cerr << "error: multiple productions are "
                                  << "named '" << op->header().name() << "'.\n";
                                 return;
@@ -920,10 +920,20 @@ void compile (const char *code) {
                 std::cout << i << " -- " << prods[i] << '\n';
         }
 
+        // ABoP seems to allow for overloading, i.e. "b" != "b(x)".
+        // I guess that can cause confusion, thus we'll try to warn
+        // about overloads.
+        std::map<std::string, Symbol> first_appearance;
+        for (unsigned int i=0; i<prods.size(); ++i) {
 
-        // check if there are ambiguous rules
-        for (unsigned int i=0; i<prods.size()-1; ++i) {
-                if (ambiguous (prods[i], prods[i+1])) {
+                // Check if there are ambiguous rules which could lead
+                // to a situation like:
+                //  axiom: a   b   a
+                //      A: a < b
+                //      B:     b < a
+                if (i<prods.size()-1
+                   && ambiguous (prods[i], prods[i+1])
+                ) {
                         std::cerr << "warning: productions '"
                           << prods[i].header().name()
                           << "' and '"
@@ -934,6 +944,30 @@ void compile (const char *code) {
                           << "' will be preferred (because it was "
                           << "declared first).\n";
                         ;
+                }
+
+                const Pattern pats[4] = {
+                        prods[i].header().leftContext(),
+                        prods[i].header().pattern(),
+                        prods[i].header().rightContext(),
+                        prods[i].body().pattern()
+                };
+                for (unsigned int p=0; p<4; ++p) {
+                        const Pattern &pat = pats[p];
+                        for (unsigned int i=0; i<pat.size(); ++i) {
+                                if (!first_appearance.count(pat[i].name())) {
+                                        first_appearance[pat[i].name()] = pat[i];
+                                } else if (pat[i] != first_appearance[pat[i].name()]) {
+                                        Symbol const & sym =
+                                               first_appearance[pat[i].name()];
+                                        std::cerr
+                                          << "warning: letter '"
+                                          << pat[i].name() << "' used with"
+                                          << " differing parameter-counts, "
+                                          << "'" << pat[i] << "' won't match "
+                                          << "'" << sym << "'" << std::endl;
+                                }
+                        }
                 }
         }
 
@@ -1033,7 +1067,7 @@ int main()
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
                 "a0: b < a --> b;\n"
-                "a1: b --> a;\n"
+                "a1:     b --> a;\n"
                 //"m: a --> a foo;"
         ;
         compile(code);
