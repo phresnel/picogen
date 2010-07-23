@@ -225,6 +225,7 @@ TokenVector tokenize(const char *code) {
                         for (; *it!='\0' && is_alnum(*it); prev=it, ++it) {
                         }
                         tokens.push_back (Token(Token::Identifier, begin, it));
+                        std::cout << "id ";
                         it = prev;
                 } else if (is_num(c)) {
                         const CI begin = it;
@@ -244,9 +245,11 @@ TokenVector tokenize(const char *code) {
                                 for (; *it!='\0' && is_num(*it); prev=it, ++it) {
                                 }
                                 tokens.push_back (Token(Token::Real, begin, it));
+                                std::cout << "real ";
                                 it = prev;
                         } else {
                                 tokens.push_back (Token(Token::Integer, begin, it));
+                                std::cout << "int ";
                                 it = prev;
                         }
                 } else if (c == '<') {
@@ -355,11 +358,11 @@ private:
 };
 inline std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
         switch (rhs.type()) {
-        case Parameter::Identifier: o << rhs.identifier() << ":id"; break;
-        case Parameter::Integer:    o << rhs.integer() << ":int"; break;
-        case Parameter::Real: o << rhs.real() << ":real"; break;
+        case Parameter::Identifier: o << "$" << rhs.identifier() /*<< ":id"*/; break;
+        case Parameter::Integer:    o << "i" << rhs.integer() /*<< ":int"*/; break;
+        case Parameter::Real:       o << "r" << rhs.real()  /*<< ":real"*/; break;
         case Parameter::ParameterIndex:
-                o << rhs.parameterIndex() << ":pidx";
+                o << "#" << rhs.parameterIndex() /*<< ":pidx"*/;
                 break;
         }
         return o;
@@ -803,10 +806,11 @@ bool contains_unknowns (Pattern const &pat) {
                 ParameterList const &pm = sym.parameterList();
 
                 for (unsigned int p=0; p<pm.size(); ++p) {
-                        if (pm[i].type() != Parameter::Integer
-                         && pm[i].type() != Parameter::Real
-                        )
+                        if (pm[p].type() != Parameter::Integer
+                         && pm[p].type() != Parameter::Real
+                        ) {
                                 return true;
+                        }
                 }
         }
         return false;
@@ -1037,10 +1041,8 @@ optional<Production> parse_production (TokenIterator it, TokenIterator end, Toke
                         for (unsigned int a=0; a<params.size(); ++a) {
                                 Parameter &param = params[a];
                                 if (param.type() != Parameter::Identifier) {
-                                        std::cout << "--" << std::endl;
                                         continue;
                                 } else {
-                                        std::cout << "++" << param.identifier() << std::endl;
                                 }
                                 std::string const &id = param.identifier();
                                 if (!symtab.count(id)) {
@@ -1090,7 +1092,7 @@ void compile (const char *code, const char *axiom_) {
 
         std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
         for (unsigned int i=0; i<prods.size(); ++i) {
-                std::cout << i << " -- " << prods[i] << '\n';
+                std::cout << prods[i] << '\n';
         }
 
         std::map<std::string, Symbol> first_appearance;
@@ -1145,8 +1147,12 @@ void compile (const char *code, const char *axiom_) {
         }
 
 
+        std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
         const TokenVector axiom = tokenize(axiom_);
-        std::cout << "--------------\n";
+        /*for (unsigned int i=0; i<axiom.size(); ++i) {
+                std::cout << axiom[i];
+        }*/
+        std::cout << "\n--------------\n";
         TokenIterator behind;
         optional<Pattern> ax = parse_axiom(axiom.begin(), axiom.end());
 
@@ -1211,7 +1217,7 @@ unsigned int matchLength (Production const &production,
 
 void fillStack (
         Pattern const &pattern,
-        Pattern const &axiom, unsigned int axiomIndex,
+        Pattern const &axiom, unsigned int axiomIndex, int axiomOffset,
         std::vector<Parameter> &stack
 ) {
         // Step 0) Reap values from axiom.
@@ -1221,7 +1227,7 @@ void fillStack (
         */
         for (unsigned int i=0; i<pattern.size(); ++i) {
                 Symbol const &sym = pattern[i];
-                Symbol const &xsym = axiom[i];
+                Symbol const &xsym = axiom[(i+axiomIndex)+axiomOffset];
                 ParameterList const &paramList = sym.parameterList();
                 ParameterList const &xparamList = xsym.parameterList();
                 for (unsigned int p=0; p<paramList.size(); ++p) {
@@ -1263,7 +1269,7 @@ Symbol applyStack (Symbol const &symbol, std::vector<Parameter> const &stack) {
 }*/
 
 optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
-        std::vector<Parameter> stack; // or something ...
+        std::vector<Parameter> stack(16); // or something ...
         bool axiomWasTweaked = false;
         Pattern ret;
         for (unsigned int A=0; A<axiom.size(); ) {
@@ -1274,10 +1280,15 @@ optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axi
                         if (doesMatch) {
                                 any = true;
 
+                                const Pattern &lcPattern = prods[P].header().leftContext();
+                                const Pattern &rcPattern = prods[P].header().rightContext();
                                 const Pattern &body = prods[P].body().pattern();
 
                                 stack.clear();
-                                fillStack (prods[P].header().pattern(), axiom, A, stack);
+
+                                fillStack (lcPattern, axiom, A, -lcPattern.size(), stack);
+                                fillStack (prods[P].header().pattern(), axiom, A, 0, stack);
+                                //fillStack (rcPattern, axiom, A, axiom.size(), stack);
 
                                 for (unsigned int i=0; i<body.size(); ++i) {
                                         ret.push_back(applyStack(body[i], stack));
@@ -1311,10 +1322,10 @@ int main()
                 */
                 //  a(1) b c (2)
                 //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "m: A(x,y) --> A(y,x,y,x);"
-                "n: A(a,b,x,y) --> A(a,b);"
+                "m: a     > c(y) --> c(y);"
+                "n: c(y) c(x)    --> exit;"
         ;
-        compile(code, "A(0,1)");
+        compile(code, "a c(4)");
 
         return 0;
 }
