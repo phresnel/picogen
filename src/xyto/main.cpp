@@ -919,7 +919,7 @@ void compile (const char *code) {
         for (unsigned int i=0; i<prods.size(); ++i) {
                 std::cout << i << " -- " << prods[i] << '\n';
         }
-        return;
+
 
         // check if there are ambiguous rules
         for (unsigned int i=0; i<prods.size()-1; ++i) {
@@ -955,25 +955,6 @@ void compile (const char *code) {
                         std::cout << "no match in step " << step << '\n';
                         break;
                 }
-                /*optional<Pattern> apply(std::vector<Production> prods; const &, Pattern const &);
-
-                bool any = false;
-                optional<Pattern> next;
-                for (unsigned int i=0; i<prods.size(); ++i) {
-                        next = apply (prods[i], pat);
-                        if (next) {
-                                any = true;
-                                break;
-                        }
-                }
-
-                if (any) {
-                        pat = *next;
-                        std::cout << "step " << step << ": " << pat << '\n';
-                } else {
-                        std::cout << "no match in step " << step << '\n';
-                        break;
-                }*/
         }
 }
 
@@ -1021,11 +1002,14 @@ optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axi
         for (unsigned int A=0; A<axiom.size(); ) {
                 bool any = false;
                 for (unsigned int P=0; P<prods.size(); ++P) {
-                        if (int len = matchLength(prods[P], axiom, A)) {
+                        const int len = matchLength(prods[P], axiom, A);
+                        const bool doesMatch = len > 0;
+                        if (doesMatch) {
                                 A += len;
                                 any = true;
-                                for (int i=0; i<len; ++i) {
-                                        ret.push_back(prods[P].body().pattern()[i]);
+                                const Pattern &body = prods[P].body().pattern();
+                                for (unsigned int i=0; i<body.size(); ++i) {
+                                        ret.push_back(body[i]);
                                 }
                                 break;
                         }
@@ -1048,9 +1032,9 @@ int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                /*"a0: b < a --> b (0);\n"
-                "a1: b --> a;\n"-*/
-                "m: a(x) --> a(5) ;"
+                "a0: b < a --> b;\n"
+                "a1: b --> a;\n"
+                //"m: a --> a foo;"
         ;
         compile(code);
 
