@@ -612,7 +612,8 @@ inline bool ambiguous (Production const &lhs, Production const &rhs) {
 
 
 optional<Parameter> parse_parameter (
-        TokenIterator it, TokenIterator end, TokenIterator &behind
+        TokenIterator it, TokenIterator end, TokenIterator &behind,
+        bool isHeader
 ) {
         if (it == end)
                 return optional<Parameter>();
@@ -621,6 +622,15 @@ optional<Parameter> parse_parameter (
                 p.setType (Parameter::Identifier);
                 behind = ++it;
                 return p;
+        }
+        if (isHeader) {
+                std::cerr
+                  << "error: only a single identifier (e.g. 'id') "
+                  << "is allowed as a formal parameter in the "
+                  << "header of a production, line "
+                  << it->from().row() << ", column "
+                  << it->from().column() << std::endl;
+                return optional<Parameter>();
         }
         if (it->type() == Token::Real) {
                 Parameter p;
@@ -639,7 +649,8 @@ optional<Parameter> parse_parameter (
 
 
 optional<ParameterList> parse_parameter_list (
-        TokenIterator it, TokenIterator end, TokenIterator &behind
+        TokenIterator it, TokenIterator end, TokenIterator &behind,
+        bool isHeader
 ) {
         ParameterList ret;
         if (it == end || it->type() != Token::LeftParen) {
@@ -658,7 +669,9 @@ optional<ParameterList> parse_parameter_list (
                 ++it;
         } else while (1) {
                 TokenIterator behindParam;
-                optional<Parameter> p = parse_parameter(it, end, behindParam);
+                optional<Parameter> p = parse_parameter(
+                                          it, end, behindParam,
+                                          isHeader);
                 if (p) {
                         ret.push_back(*p);
                         it = behindParam;
@@ -690,7 +703,10 @@ optional<ParameterList> parse_parameter_list (
 }
 
 
-optional<Symbol> parse_symbol (TokenIterator it, TokenIterator end, TokenIterator &behind) {
+optional<Symbol> parse_symbol (
+        TokenIterator it, TokenIterator end, TokenIterator &behind,
+        bool isHeader=false
+) {
         if (it == end || it->type() != Token::Identifier)
                 return optional<Symbol>();
         Symbol sym;
@@ -698,7 +714,8 @@ optional<Symbol> parse_symbol (TokenIterator it, TokenIterator end, TokenIterato
         ++it;
 
         TokenIterator behindParams;
-        optional<ParameterList> params = parse_parameter_list(it, end, behindParams);
+        optional<ParameterList> params =
+                parse_parameter_list(it, end, behindParams, isHeader);
         if (!params)
                 return optional<Symbol>();
         sym.setParameterList (*params);
@@ -707,9 +724,10 @@ optional<Symbol> parse_symbol (TokenIterator it, TokenIterator end, TokenIterato
         return sym;
 }
 
-Pattern parse_pattern (TokenIterator it, TokenIterator end, TokenIterator &behind) {
+Pattern parse_pattern (TokenIterator it, TokenIterator end,
+                       TokenIterator &behind, bool isHeader=false) {
         Pattern ret;
-        while (optional<Symbol> sym = parse_symbol(it, end, behind)) {
+        while (optional<Symbol> sym = parse_symbol(it, end, behind, isHeader)) {
                 it = behind;
                 ret.push_back(*sym);
         }
@@ -719,33 +737,34 @@ Pattern parse_pattern (TokenIterator it, TokenIterator end, TokenIterator &behin
 
 
 
-bool parse_match_patterns (
+bool parse_header_patterns (
         TokenIterator it, TokenIterator end,
         TokenIterator &behind,
         Pattern &leftContext, Pattern &mainPattern, Pattern &rightContext
 ) {
         const TokenIterator beforePatterns = it;
         TokenIterator behindPattern;
-        const Pattern pat = parse_pattern(it, end, behindPattern);
+        const Pattern pat = parse_pattern(it, end, behindPattern, true);
         TokenIterator prev = it;
         it = behindPattern;
 
         if (it != end && it->type() == Token::LessThan) {
                 leftContext = pat;
                 ++it;
-                mainPattern = parse_pattern(it, end, behindPattern);
+                mainPattern = parse_pattern(it, end, behindPattern, true);
                 prev = it; it = behindPattern;
 
                 if (it != end && it->type() == Token::GreaterThan) {
                         ++it;
-                        rightContext = parse_pattern(it, end, behindPattern);
+                        rightContext = parse_pattern(it, end,
+                                                     behindPattern, true);
                         prev = it; it = behindPattern;
                 }
 
         } else if (it != end && it->type() == Token::GreaterThan) {
                 mainPattern = pat;
                 ++it;
-                rightContext = parse_pattern(it, end, behindPattern);
+                rightContext = parse_pattern(it, end, behindPattern, true);
                 prev = it; it = behindPattern;
         } else if (!pat.empty()) {
                 mainPattern = pat;
@@ -754,7 +773,7 @@ bool parse_match_patterns (
         if (mainPattern.empty()) {
                 TokenIterator i = beforePatterns - 1;
                 std::cerr <<
-                   "error: no pattern found in line "
+                   "error: no (valid) pattern found in line "
                    << i->from().next().row() << ", column "
                    << i->from().next().column() << std::endl;
                 return optional<Production>();
@@ -793,8 +812,8 @@ optional<ProductionHeader> parse_production_header (
         TokenIterator behindMatchPatterns;
         Pattern leftContext, mainPattern, rightContext;
 
-        if (!parse_match_patterns(it, end, behindMatchPatterns,
-                                  leftContext, mainPattern, rightContext)
+        if (!parse_header_patterns(it, end, behindMatchPatterns,
+                                   leftContext, mainPattern, rightContext)
         ) {
                 return optional<ProductionHeader>();
         }
@@ -1068,7 +1087,7 @@ int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                "a0: b(x,x) < a --> b(5,5);\n"
+                "a0: b(7,x) < a --> b(5,5);\n"
                 "a1:     b(x,x) --> a;\n"
                 //"m: a --> a foo;"
         ;
