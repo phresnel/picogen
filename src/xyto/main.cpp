@@ -1269,7 +1269,7 @@ Symbol applyStack (Symbol const &symbol, std::vector<Parameter> const &stack) {
 }*/
 
 optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
-        std::vector<Parameter> stack(16); // or something ...
+        std::vector<Parameter> stack(16);
         bool axiomWasTweaked = false;
         Pattern ret;
         for (unsigned int A=0; A<axiom.size(); ) {
@@ -1282,13 +1282,16 @@ optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axi
 
                                 const Pattern &lcPattern = prods[P].header().leftContext();
                                 const Pattern &rcPattern = prods[P].header().rightContext();
+                                const Pattern &mPattern  = prods[P].header().pattern();
                                 const Pattern &body = prods[P].body().pattern();
 
                                 stack.clear();
 
+                                // Fill stack with values from axiom.
+                                // E.g., axiom = "a(x) < b(y) c(z) > d(a)"
                                 fillStack (lcPattern, axiom, A, -lcPattern.size(), stack);
-                                fillStack (prods[P].header().pattern(), axiom, A, 0, stack);
-                                //fillStack (rcPattern, axiom, A, axiom.size(), stack);
+                                fillStack (mPattern,  axiom, A, 0, stack);
+                                fillStack (rcPattern, axiom, A, mPattern.size(), stack);
 
                                 for (unsigned int i=0; i<body.size(); ++i) {
                                         ret.push_back(applyStack(body[i], stack));
@@ -1322,10 +1325,9 @@ int main()
                 */
                 //  a(1) b c (2)
                 //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "m: a     > c(y) --> c(y);"
-                "n: c(y) c(x)    --> exit;"
+                "a:  A(x) < A(a) A(b) > A(y) --> B(x,a,b,y);"
         ;
-        compile(code, "a c(4)");
+        compile(code, "A(0)A(1)A(2)A(3)");
 
         return 0;
 }
