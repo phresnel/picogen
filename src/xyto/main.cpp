@@ -1302,6 +1302,8 @@ optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axi
                         }
                 }
                 if (any) {
+                        // NOTE: this is actually wrond. in many cases, doesMatch will be true,
+                        //       but the resultant axiom wasn't really tweaked
                         axiomWasTweaked = true;
                 } else {
                         ret.push_back (axiom[A]);
