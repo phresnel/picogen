@@ -680,6 +680,8 @@ optional<ParameterList> parse_parameter_list (
                 } else if (it->type() == Token::RightParen) {
                         ++it;
                         break;
+                } else if (it->type() == Token::Comma) {
+                        ++it;
                 }
         }
 
@@ -972,7 +974,7 @@ void compile (const char *code) {
         }
 
 
-        const TokenVector axiom = tokenize("b a a a a");
+        const TokenVector axiom = tokenize("b(x,z) a a a a");
         std::cout << "--------------\n";
         TokenIterator behind;
         Pattern pat = parse_pattern(axiom.begin(), axiom.end(), behind);
@@ -1066,8 +1068,8 @@ int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                "a0: b < a --> b;\n"
-                "a1:     b --> a;\n"
+                "a0: b(x,x) < a --> b(5,5);\n"
+                "a1:     b(x,x) --> a;\n"
                 //"m: a --> a foo;"
         ;
         compile(code);
