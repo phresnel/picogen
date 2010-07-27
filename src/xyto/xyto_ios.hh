@@ -100,4 +100,13 @@ inline std::ostream& operator<< (std::ostream& o, Production const& rhs) {
         return o;
 }
 
+inline std::ostream& operator<< (std::ostream &o,
+                                 std::vector<Production> const &prods)
+{
+        for (unsigned int i=0; i<prods.size(); ++i) {
+                o << prods[i] << '\n';
+        }
+        return o;
+}
+
 #endif // XYTO_IOS_HH_INCLUDED_20100726

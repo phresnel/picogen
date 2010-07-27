@@ -412,6 +412,73 @@ boost::optional<ProductionBody> parse_production_body (
 
 
 
+void compile_symbol_table (
+        const Pattern& pattern,
+        std::map<std::string, int> &symtab
+) {
+        for (unsigned int p=0; p<pattern.size(); ++p) {
+                switch (pattern[p].type()) {
+                case Segment::Letter: {
+                        ParameterList params = pattern[p].parameterList();
+                        for (unsigned int a=0; a<params.size(); ++a) {
+                                Parameter &param = params[a];
+                                std::string const &id = param
+                                                        .identifier();
+                                if (!symtab.count(id)) {
+                                        symtab[id] = symtab.size();
+                                }
+                        }
+                } break;
+                case Segment::Branch:
+                        compile_symbol_table(pattern[p].branch(), symtab);
+                        break;
+                }
+        }
+}
+
+
+
+boost::optional<Pattern> apply_symbol_table (
+        Pattern pat,
+        std::map<std::string, int> const & symtab
+) {
+        for (unsigned int p=0; p<pat.size(); ++p) {
+                switch (pat[p].type()) {
+                case Segment::Letter: {
+                        ParameterList params = pat[p].parameterList();
+                        for (unsigned int a=0; a<params.size(); ++a) {
+                                Parameter &param = params[a];
+                                if (param.type() != Parameter::Identifier) {
+                                        continue;
+                                } else {
+                                }
+                                std::string const &id = param.identifier();
+                                if (!symtab.count(id)) {
+                                        std::cout << "error: symbol '" << id
+                                                << "' unknown." << std::endl;
+                                        return boost::optional<Pattern>();
+                                }
+                                param.toParameterIndex(
+                                        symtab.find(id)->second);
+                        }
+                        pat[p].setParameterList(params);
+                } break;
+                case Segment::Branch: {
+                        boost::optional<Pattern> sub = apply_symbol_table(
+                                                             pat[p].branch(),
+                                                             symtab);
+                        if (!sub)
+                                return boost::optional<Pattern>();
+                        pat[p].setBranch (*sub);
+                        break;
+                } break;
+                }
+        }
+        return pat;
+}
+
+
+
 boost::optional<Production> parse_production (TokenIterator it, TokenIterator end, TokenIterator &behind) {
         if (it==end) {
                 std::cerr << "found nothing" << std::endl;
@@ -461,58 +528,45 @@ boost::optional<Production> parse_production (TokenIterator it, TokenIterator en
         //---------------------------------------------------------
         // Compile symbol table.
         {
-                int index = 0;
-                std::map<std::string, int> symtab;
-                Pattern headerPatterns[3] = {
-                        header->leftContext(),
-                        header->pattern(),
-                        header->rightContext()
-                };
                 // At this point it is ensured that all parameters are
                 // identifiers. parse_headers() did the check for us.
-                for (unsigned int i=0; i<3; ++i) {
-                        Pattern &pat = headerPatterns[i];
-                        for (unsigned int p=0; p<pat.size(); ++p) {
-                                ParameterList params = pat[p].parameterList();
-                                for (unsigned int a=0; a<params.size(); ++a) {
-                                        Parameter &param = params[a];
-                                        std::string const &id = param.identifier();
-                                        if (!symtab.count(id)) {
-                                                symtab[id] = index++;
-                                        }
-                                        param.toParameterIndex(symtab[id]);
-                                }
-                                pat[p].setParameterList(params);
+
+                std::map<std::string, int> symtab;
+                compile_symbol_table(header->leftContext(), symtab);
+                compile_symbol_table(header->pattern(), symtab);
+                compile_symbol_table(header->rightContext(), symtab);
+                for (std::map<std::string, int>::const_iterator it = symtab.begin();
+                        it != symtab.end(); ++it) {
+                                std::cout << it->first << "::" << it->second << std::endl;
                         }
+
+                const boost::optional<Pattern>
+                     newL = apply_symbol_table(header->leftContext(), symtab),
+                     newC = apply_symbol_table(header->pattern(), symtab),
+                     newR = apply_symbol_table(header->rightContext(), symtab);
+                if ((!newL && header->leftContext().size())
+                  ||(!newC && header->pattern().size())
+                  ||(!newR && header->rightContext().size())
+                ) {
+                        std::cout << "internal error: after apply_symbol_table"
+                                "(), one of newL, newR, or newC is null"
+                                << std::endl;
+                        return boost::optional<Production>();
                 }
+
                 ProductionHeader ph(*header);
-                ph.setLeftContext (headerPatterns[0]);
-                ph.setPattern(headerPatterns[1]);
-                ph.setRightContext (headerPatterns[2]);
+                ph.setLeftContext (*newL);
+                ph.setPattern(*newC);
+                ph.setRightContext (*newR);
                 ret.setHeader (ph);
 
-                // Apply symbol table to body.
-                Pattern bodyPattern = body->pattern();
-                for (unsigned int p=0; p<bodyPattern.size(); ++p) {
-                        ParameterList params = bodyPattern[p].parameterList();
-                        for (unsigned int a=0; a<params.size(); ++a) {
-                                Parameter &param = params[a];
-                                if (param.type() != Parameter::Identifier) {
-                                        continue;
-                                } else {
-                                }
-                                std::string const &id = param.identifier();
-                                if (!symtab.count(id)) {
-                                        std::cout << "error:" << std::endl;
-                                        return boost::optional<Production>();
-                                }
-                                param.toParameterIndex(symtab[id]);
-                        }
-                        bodyPattern[p].setParameterList(params);
-                }
-                ProductionBody pb = *body;
-                pb.setPattern(bodyPattern);
-                ret.setBody (pb);
+                const boost::optional<Pattern> newp = apply_symbol_table(
+                                                            body->pattern(),
+                                                            symtab);
+                if (!newp)
+                        return boost::optional<Production>();
+                body->setPattern (*newp);
+                ret.setBody (*body);
         }
         //---------------------------------------------------------
 
@@ -523,37 +577,7 @@ boost::optional<Production> parse_production (TokenIterator it, TokenIterator en
 }
 
 
-
-void compile (const char *code, const char *axiom_) {
-        const TokenVector tokens = tokenize (code);
-
-        std::vector<Production> prods;
-
-        std::set<std::string> names;
-        TokenIterator it = tokens.begin();
-        const TokenIterator &end = tokens.end();
-        //char c = 'a';
-        while (it != end) {
-                TokenIterator behind;
-                if (boost::optional<Production> op = parse_production (it, end, behind)) {
-                        if (names.count(op->header().name())) {
-                                std::cerr << "error: multiple productions are "
-                                 << "named '" << op->header().name() << "'.\n";
-                                return;
-                        }
-                        names.insert(op->header().name());
-                        prods.push_back(*op);
-                } else {
-                        return;
-                }
-                it = behind;
-        }
-
-        std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
-        for (unsigned int i=0; i<prods.size(); ++i) {
-                std::cout << prods[i] << '\n';
-        }
-
+void generate_warnings (std::vector<Production> const &prods) {
         std::map<std::string, Segment> first_appearance;
         for (unsigned int i=0; i<prods.size(); ++i) {
 
@@ -604,14 +628,39 @@ void compile (const char *code, const char *axiom_) {
                         }
                 }
         }
+}
 
-        const TokenVector axiom = tokenize(axiom_);
+void compile (const char *code, const char *axiom_) {
+        const TokenVector tokens = tokenize (code);
 
-        /*for (unsigned int i=0; i<axiom.size(); ++i) {
-                std::cout << axiom[i];
-        }*/
+        std::vector<Production> prods;
+
+        std::set<std::string> names;
+        TokenIterator it = tokens.begin();
+        const TokenIterator &end = tokens.end();
+        //char c = 'a';
+        while (it != end) {
+                TokenIterator behind;
+                if (boost::optional<Production> op = parse_production (it, end, behind)) {
+                        if (names.count(op->header().name())) {
+                                std::cerr << "error: multiple productions are "
+                                 << "named '" << op->header().name() << "'.\n";
+                                return;
+                        }
+                        names.insert(op->header().name());
+                        prods.push_back(*op);
+                } else {
+                        return;
+                }
+                it = behind;
+        }
+
+        std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
+        generate_warnings(prods);
+
         std::cout << "\n--------------\n";
         TokenIterator behind;
+        const TokenVector axiom = tokenize(axiom_);
         boost::optional<Pattern> ax = parse_axiom(axiom.begin(), axiom.end());
 
         if (!ax) {
