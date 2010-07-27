@@ -21,6 +21,8 @@
 #include <boost/optional.hpp>
 #include "pattern.hh"
 #include "production.hh"
+#include <iostream>
+#include "xyto_ios.hh"
 
 namespace {
 
@@ -74,50 +76,87 @@ void fillStack (
         for (unsigned int i=0; i<pattern.size(); ++i) {
                 Segment const &sym = pattern[i];
                 Segment const &xsym = axiom[(i+axiomIndex)+axiomOffset];
-                ParameterList const &paramList = sym.parameterList();
-                ParameterList const &xparamList = xsym.parameterList();
-                for (unsigned int p=0; p<paramList.size(); ++p) {
-                        Parameter const &param = paramList[p];
-                        Parameter const &xparam = xparamList[p];
 
-                        int const paramIndex = param.parameterIndex();
-                        if (paramIndex >= (int)stack.size()) {
-                                stack.resize (paramIndex+1);
+                if (sym.type() != xsym.type()) {
+                        std::cerr << "internal error: divergence of "
+                                "segment-types within function "
+                                "interpreter.cc:fillStack(.) ["
+                                << "'"<<sym<<"' / '"<<xsym<<"'"
+                                << "]"
+                                << std::endl;
+                        return;
+                }
+
+                switch (sym.type()) {
+                case Segment::Letter: {
+                        ParameterList const &paramList = sym.parameterList();
+                        ParameterList const &xparamList = xsym.parameterList();
+                        for (unsigned int p=0; p<paramList.size(); ++p) {
+                                Parameter const &param = paramList[p];
+                                Parameter const &xparam = xparamList[p];
+
+                                int const paramIndex = param.parameterIndex();
+                                if (paramIndex >= (int)stack.size()) {
+                                        stack.resize (paramIndex+1);
+                                }
+
+                                stack[paramIndex] = xparam;
                         }
-
-                        stack[paramIndex] = xparam;
+                } break;
+                case Segment::Branch: {
+                        fillStack(sym.branch(),
+                                  xsym.branch(), 0, 0,
+                                  stack);
+                } break;
                 }
         }
 }
+
+Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack);
+Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack);
+
+Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack) {
+        Pattern ret;
+        for (unsigned int i=0; i<pattern.size(); ++i) {
+                ret.push_back(applyStack(pattern[i], stack));
+        }
+        return ret;
+}
+
+
 
 
 Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) {
+
         Segment ret = symbol;
-        ParameterList const &params = symbol.parameterList();
-        ParameterList &rparams = ret.parameterList();
-        for (unsigned int p=0; p<params.size(); ++p) {
-                Parameter const &param = params[p];
-                Parameter &rparam = rparams[p];
-                if (param.type() == Parameter::ParameterIndex) {
-                        rparam = stack[param.parameterIndex()];
-                } else {
-                        rparam = param;
+
+        switch (symbol.type()) {
+        case Segment::Letter: {
+                ParameterList const &params = symbol.parameterList();
+                ParameterList &rparams = ret.parameterList();
+                for (unsigned int p=0; p<params.size(); ++p) {
+                        Parameter const &param = params[p];
+                        Parameter &rparam = rparams[p];
+                        if (param.type() == Parameter::ParameterIndex) {
+                                rparam = stack[param.parameterIndex()];
+                        } else {
+                                rparam = param;
+                        }
                 }
+        } break;
+        case Segment::Branch: {
+                ret.setBranch (applyStack (symbol.branch(), stack));
+        } break;
         }
+
         return ret;
 }
-/*Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack) {
-        Pattern ret;
-        for (unsigned int s=0; s<pattern.size(); ++s) {
-                ret.push_back (applyStack (pattern[s], stack));
-        }
-        return ret;
-}*/
 
 } // namespace {
 
+
+
 boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
-        std::vector<Parameter> stack(16);
         bool axiomWasTweaked = false;
         Pattern ret;
         for (unsigned int A=0; A<axiom.size(); ) {
@@ -133,17 +172,16 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                                 const Pattern &mPattern  = prods[P].header().pattern();
                                 const Pattern &body = prods[P].body().pattern();
 
-                                stack.clear();
+                                std::vector<Parameter> stack(16);
 
                                 // Fill stack with values from axiom.
                                 // E.g., axiom = "a(x) < b(y) c(z) > d(a)"
+
                                 fillStack (lcPattern, axiom, A, -lcPattern.size(), stack);
                                 fillStack (mPattern,  axiom, A, 0, stack);
                                 fillStack (rcPattern, axiom, A, mPattern.size(), stack);
 
-                                for (unsigned int i=0; i<body.size(); ++i) {
-                                        ret.push_back(applyStack(body[i], stack));
-                                }
+                                ret = applyStack(body, stack);
 
                                 A += len;
                                 break;
