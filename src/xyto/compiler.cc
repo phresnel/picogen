@@ -29,6 +29,12 @@
 #include "token.hh"
 #include "xyto_ios.hh"
 
+
+Pattern parse_pattern (TokenIterator it, TokenIterator end,
+                       TokenIterator &behind, bool isHeader=false);
+
+
+
 inline bool hasPrecedenceOver (Production const &lhs, Production const &rhs) {
         const int numContextsLhs =
                 !lhs.header().leftContext().empty()
@@ -173,33 +179,58 @@ boost::optional<ParameterList> parse_parameter_list (
 
 
 
-boost::optional<Symbol> parse_symbol (
+boost::optional<Segment> parse_segment (
         TokenIterator it, TokenIterator end, TokenIterator &behind,
         bool isHeader=false
 ) {
-        if (it == end || it->type() != Token::Identifier)
-                return boost::optional<Symbol>();
-        Symbol sym;
-        sym.setName (it->value());
-        ++it;
+        if (it == end)
+                return boost::optional<Segment>();
 
-        TokenIterator behindParams;
-        boost::optional<ParameterList> params =
-                parse_parameter_list(it, end, behindParams, isHeader);
-        if (!params)
-                return boost::optional<Symbol>();
-        sym.setParameterList (*params);
-        it = behindParams;
-        behind = it;
-        return sym;
+        if (it->type() == Token::Identifier) {
+                Segment sym;
+                sym.setType (Segment::Letter);
+                sym.setName (it->value());
+                ++it;
+
+                TokenIterator behindParams;
+                boost::optional<ParameterList> params =
+                        parse_parameter_list(it, end, behindParams, isHeader);
+                if (!params)
+                        return boost::optional<Segment>();
+                sym.setParameterList (*params);
+                it = behindParams;
+                behind = it;
+                return sym;
+        } else if (it->type() == Token::LeftBracket) {
+                const TokenIterator start = it;
+
+                ++it;
+                Segment sym;
+                sym.setType(Segment::Branch);
+                sym.setName("[");
+                TokenIterator behindBranch;
+                sym.setBranch(parse_pattern(it, end, behindBranch, isHeader));
+                it = behindBranch;
+                if (it == end || it->type() != Token::RightBracket) {
+                        std::cerr << "missing ']' after branch started at "
+                           << "line " << start->to().row() << ", column "
+                           << start->to().column() << std::endl;
+                        return boost::optional<Segment>();
+                }
+
+                behind = ++it;
+                return sym;
+        } else {
+                return boost::optional<Segment>();
+        }
 }
 
 
 
 Pattern parse_pattern (TokenIterator it, TokenIterator end,
-                       TokenIterator &behind, bool isHeader=false) {
+                       TokenIterator &behind, bool isHeader) {
         Pattern ret;
-        while (boost::optional<Symbol> sym = parse_symbol(it, end, behind, isHeader)) {
+        while (boost::optional<Segment> sym = parse_segment(it, end, behind, isHeader)) {
                 it = behind;
                 ret.push_back(*sym);
         }
@@ -211,15 +242,23 @@ Pattern parse_pattern (TokenIterator it, TokenIterator end,
 
 bool contains_unknowns (Pattern const &pat) {
         for (unsigned int i=0; i<pat.size(); ++i) {
-                Symbol const & sym = pat[i];
-                ParameterList const &pm = sym.parameterList();
+                Segment const & sym = pat[i];
 
-                for (unsigned int p=0; p<pm.size(); ++p) {
-                        if (pm[p].type() != Parameter::Integer
-                         && pm[p].type() != Parameter::Real
-                        ) {
-                                return true;
+                switch (sym.type()) {
+                case Segment::Letter: {
+                        ParameterList const &pm = sym.parameterList();
+
+                        for (unsigned int p=0; p<pm.size(); ++p) {
+                                if (pm[p].type() != Parameter::Integer
+                                 && pm[p].type() != Parameter::Real
+                                ) {
+                                        return true;
+                                }
                         }
+                        break;
+                }
+                case Segment::Branch:
+                        return contains_unknowns(sym.branch());
                 }
         }
         return false;
@@ -515,7 +554,7 @@ void compile (const char *code, const char *axiom_) {
                 std::cout << prods[i] << '\n';
         }
 
-        std::map<std::string, Symbol> first_appearance;
+        std::map<std::string, Segment> first_appearance;
         for (unsigned int i=0; i<prods.size(); ++i) {
 
                 // Check if there are ambiguous rules which could lead
@@ -553,7 +592,7 @@ void compile (const char *code, const char *axiom_) {
                                 if (!first_appearance.count(pat[i].name())) {
                                         first_appearance[pat[i].name()] = pat[i];
                                 } else if (pat[i] != first_appearance[pat[i].name()]) {
-                                        Symbol const & sym =
+                                        Segment const & sym =
                                                first_appearance[pat[i].name()];
                                         std::cerr
                                           << "warning: letter '"
@@ -566,8 +605,8 @@ void compile (const char *code, const char *axiom_) {
                 }
         }
 
-
         const TokenVector axiom = tokenize(axiom_);
+
         /*for (unsigned int i=0; i<axiom.size(); ++i) {
                 std::cout << axiom[i];
         }*/
@@ -602,7 +641,7 @@ void compile (const char *code, const char *axiom_) {
 
 
 
-unsigned int matchLength (Pattern const &pattern,
+unsigned int match (Pattern const &pattern,
                  Pattern const &axiom,
                  int axiomIndex
 ) {
@@ -616,23 +655,23 @@ unsigned int matchLength (Pattern const &pattern,
         return pattern.size();
 }
 
-unsigned int matchLength (Production const &production,
+unsigned int match (Production const &production,
                  Pattern const &axiom,
                  int axiomIndex
 ) {
         const ProductionHeader &header = production.header();
-        const int mainLen = matchLength (header.pattern(), axiom, axiomIndex);
+        const int mainLen = match (header.pattern(), axiom, axiomIndex);
         if (0 == mainLen)
                 return 0;
 
         if (!header.leftContext().empty()) {
                 Pattern const & ct = header.leftContext();
-                if (!matchLength (ct, axiom, axiomIndex-ct.size()))
+                if (!match (ct, axiom, axiomIndex-ct.size()))
                         return 0;
         }
         if (!header.rightContext().empty()) {
                 Pattern const & ct = header.rightContext();
-                if (!matchLength (ct, axiom, axiomIndex+mainLen))
+                if (!match (ct, axiom, axiomIndex+mainLen))
                         return 0;
         }
         return mainLen;
@@ -650,8 +689,8 @@ void fillStack (
             production:  x(#0,#1) -> x(#1,#0)
         */
         for (unsigned int i=0; i<pattern.size(); ++i) {
-                Symbol const &sym = pattern[i];
-                Symbol const &xsym = axiom[(i+axiomIndex)+axiomOffset];
+                Segment const &sym = pattern[i];
+                Segment const &xsym = axiom[(i+axiomIndex)+axiomOffset];
                 ParameterList const &paramList = sym.parameterList();
                 ParameterList const &xparamList = xsym.parameterList();
                 for (unsigned int p=0; p<paramList.size(); ++p) {
@@ -669,8 +708,8 @@ void fillStack (
 }
 
 
-Symbol applyStack (Symbol const &symbol, std::vector<Parameter> const &stack) {
-        Symbol ret = symbol;
+Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) {
+        Segment ret = symbol;
         ParameterList const &params = symbol.parameterList();
         ParameterList &rparams = ret.parameterList();
         for (unsigned int p=0; p<params.size(); ++p) {
@@ -699,7 +738,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
         for (unsigned int A=0; A<axiom.size(); ) {
                 bool any = false;
                 for (unsigned int P=0; P<prods.size(); ++P) {
-                        const int len = matchLength(prods[P], axiom, A);
+                        const int len = match(prods[P], axiom, A);
                         const bool doesMatch = len > 0;
                         if (doesMatch) {
                                 any = true;

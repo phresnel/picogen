@@ -22,28 +22,44 @@
 #define SYMBOL_HH_INCLUDED_20100726
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 #include "parameterlist.hh"
 
 class ParameterList;
+class Pattern;
 
-class Symbol {
+class Segment {
 public:
-        Symbol();
-        Symbol (Symbol const &rhs);
-        Symbol& operator= (Symbol const &rhs);
+        enum Type {
+                Letter,
+                Branch
+        };
+
+        Segment();
+        Segment (Segment const &rhs);
+        Segment& operator= (Segment const &rhs);
 
         std::string name() const;
         void setName(std::string const &name);
 
+        void setType (Type type) ;
+        Type type () const;
+
         ParameterList parameterList() const;
         ParameterList &parameterList();
         void setParameterList(ParameterList const &rhs);
+
+        Pattern branch () const ;
+        Pattern &branch ();
+        void setBranch(Pattern const &pat);
 private:
         std::string name_;
         ParameterList parameterList_;
+        boost::shared_ptr<Pattern> branch_;
+        Type type_;
 };
 
-bool operator == (Symbol const &lhs, Symbol const &rhs);
-bool operator != (Symbol const &lhs, Symbol const &rhs);
+bool operator == (Segment const &lhs, Segment const &rhs);
+bool operator != (Segment const &lhs, Segment const &rhs);
 
 #endif // SYMBOL_HH_INCLUDED_20100726

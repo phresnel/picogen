@@ -40,10 +40,11 @@ int main()
                 */
                 //  a(1) b c (2)
                 //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "a:  A --> B;\n"
-                "a:  B --> [A] B [A];"
+                "a: A [B] --> B;"
+                /*"a:  A --> B;\n"
+                "a:  B --> [A] B [A];"*/
         ;
-        compile(code, "A");
+        compile(code, "A[A(2) B C]");
 
         return 0;
 }

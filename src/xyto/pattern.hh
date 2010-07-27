@@ -22,23 +22,24 @@
 #define PATTERN_HH_INCLUDED_20100726
 
 #include <vector>
-#include "symbol.hh"
+#include "segment.hh"
 
-class Symbol;
+class Segment;
+
 class Pattern {
 public:
         Pattern();
         Pattern(Pattern const &rhs);
         Pattern& operator= (Pattern const &rhs);
 
-        Symbol const& operator[] (unsigned int i) const;
-        Symbol & operator[] (unsigned int i);
+        Segment const& operator[] (unsigned int i) const;
+        Segment & operator[] (unsigned int i);
 
         unsigned int size() const;
-        void push_back(Symbol const &sym);
+        void push_back(Segment const &sym);
         bool empty() const;
 private:
-        std::vector<Symbol> symbols;
+        std::vector<Segment> symbols;
 };
 
 bool operator == (Pattern const &lhs, Pattern const &rhs);

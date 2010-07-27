@@ -21,6 +21,8 @@
 #ifndef XYTO_IOS_HH_INCLUDED_20100726
 #define XYTO_IOS_HH_INCLUDED_20100726
 
+inline std::ostream& operator<< (std::ostream& o, Pattern const& rhs);
+
 inline std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
         switch (rhs.type()) {
         case Parameter::Identifier:
@@ -52,9 +54,16 @@ inline std::ostream& operator<< (std::ostream& o, ParameterList const& rhs) {
 }
 
 
-inline std::ostream& operator<< (std::ostream& o, Symbol const& rhs) {
-        o << rhs.name();
-        o << rhs.parameterList();
+inline std::ostream& operator<< (std::ostream& o, Segment const& rhs) {
+        switch (rhs.type()) {
+        case Segment::Letter:
+                o << rhs.name();
+                o << rhs.parameterList();
+                break;
+        case Segment::Branch:
+                o << "[" << rhs.branch() << "]";
+                break;
+        }
         return o;
 }
 

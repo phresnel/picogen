@@ -19,15 +19,15 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "pattern.hh"
-#include "symbol.hh"
+#include "segment.hh"
 
-Symbol const& Pattern::operator[] (unsigned int i) const {
+Segment const& Pattern::operator[] (unsigned int i) const {
         return symbols[i];
 }
 
 
 
-Symbol & Pattern::operator[] (unsigned int i) {
+Segment & Pattern::operator[] (unsigned int i) {
         return symbols[i];
 }
 
@@ -39,7 +39,7 @@ unsigned int Pattern::size() const {
 
 
 
-void Pattern::push_back(Symbol const &sym) {
+void Pattern::push_back(Segment const &sym) {
         symbols.push_back(sym);
 }
 
