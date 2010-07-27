@@ -26,20 +26,35 @@
 
 namespace {
 
+// Returns the number of matched Segments *in the axiom*.
 unsigned int match (Pattern const &pattern,
                  Pattern const &axiom,
                  int axiomIndex
 ) {
         if (axiomIndex<0)
                 return 0;
-        for (unsigned int i=0; i<pattern.size(); ++i) {
-                if (i+axiomIndex >= axiom.size()) return 0;
-                if (pattern[i] != axiom[i+axiomIndex])
-                        return 0;
+
+        if (pattern <= axiom.subset(axiomIndex)) {
+                // The following will return the number of matched letters
+                // in the axiom.
+                // It takes into account that a production "A A" also matches
+                // an axiom "A [xxx] A", which is according to ABoP, p.32.
+                unsigned int pIndex = 0, aIndex = axiomIndex;
+                while (pIndex < pattern.size()) {
+                        if (pattern[pIndex].type() == Segment::Letter
+                          && axiom[aIndex].type() == Segment::Branch) {
+                                ++aIndex;
+                        } else {
+                                ++aIndex;
+                                ++pIndex;
+                        }
+                }
+                return aIndex - axiomIndex;
         }
-        return pattern.size();
+        return 0;
 }
 
+// Returns the number of matched Segments *in the axiom*.
 unsigned int match (Production const &production,
                  Pattern const &axiom,
                  int axiomIndex
@@ -74,9 +89,25 @@ void fillStack (
             production:  x(#0,#1) -> x(#1,#0)
         */
         for (unsigned int i=0; i<pattern.size(); ++i) {
+                again:
                 Segment const &sym = pattern[i];
-                Segment const &xsym = axiom[(i+axiomIndex)+axiomOffset];
+                const unsigned int axiom_i = (i+axiomIndex)+axiomOffset;
+                if (axiom_i >= axiom.size()) {
+                        std::cerr << "internal error: divergence of "
+                                "segment-types within function "
+                                "interpreter.cc:fillStack(.) ["
+                                << "'"<<sym<<"']"
+                                << std::endl;
+                        return;
+                }
+                Segment const &xsym = axiom[axiom_i];
 
+                if (sym.type() == Segment::Letter
+                  && xsym.type() == Segment::Branch
+                ) {
+                        ++axiomIndex;
+                        goto again;
+                }
                 if (sym.type() != xsym.type()) {
                         std::cerr << "internal error: divergence of "
                                 "segment-types within function "
@@ -186,6 +217,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                                         ret.push_back(tmp[i]);
 
                                 A += len;
+                                std::cout << "len=" << len << std::endl;
                                 break;
                         }
                 }

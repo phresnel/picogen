@@ -70,6 +70,15 @@ Pattern& Pattern::operator= (Pattern const &rhs) {
 
 
 
+Pattern Pattern::subset(unsigned int u) const {
+        Pattern ret;
+        for (unsigned int i=u; i<size(); ++i)
+                ret.push_back ((*this)[i]);
+        return ret;
+}
+
+
+
 bool operator == (Pattern const &lhs, Pattern const &rhs) {
         if (lhs.size() != rhs.size())
                 return false;
@@ -81,13 +90,44 @@ bool operator == (Pattern const &lhs, Pattern const &rhs) {
 }
 
 
-
+#include <iostream>
+#include "production.hh"
+#include "xyto_ios.hh"
 bool operator <= (Pattern const &lhs, Pattern const &rhs) {
-        if (lhs.size()>rhs.size())
-                return false;
-        for (unsigned int i=0; i<lhs.size(); ++i) {
-                if (lhs[i] != rhs[i])
+        /*if (lhs.size()>rhs.size())
+                return false;*/
+//std::cout << "\n---------------------{{\n" << lhs << "\n";
+//std::cout << rhs << std::endl;
+/*std::cout << ">>>>>>" << std::endl;
+std::cout << "  l: " << lhs << std::endl;
+std::cout << "  r: " << rhs << std::endl;*/
+
+        unsigned int index_l, index_r;
+        for (index_l=index_r=0;
+             true;
+             ++index_l, ++index_r
+        ) {
+
+                cond:
+                if (index_l>=lhs.size() || index_r>=rhs.size())
+                        break;
+
+                // e.g. in "axiom: A [A] A;
+                //          foo: A A --> B;"
+                // the production foo may skip over the branch. See ABoP, p.32
+                if (rhs[index_r].type() == Segment::Branch
+                 && lhs[index_l].type() != Segment::Branch
+                ) {
+                        /*std::cout << "uhm" << std::endl;
+                        std::cout << "  l: " << lhs[index_l] << std::endl;
+                        std::cout << "  r: " << rhs[index_r] << std::endl;*/
+                        ++index_r;
+                        goto cond;
+                }
+
+                if (lhs[index_l] != rhs[index_r])
                         return false;
         }
-        return true;
+//std::cout << "}}-----------------\n";
+        return index_l == lhs.size();
 }

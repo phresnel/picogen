@@ -38,6 +38,8 @@ public:
         unsigned int size() const;
         void push_back(Segment const &sym);
         bool empty() const;
+
+        Pattern subset(unsigned int u) const ;
 private:
         std::vector<Segment> symbols;
 };
