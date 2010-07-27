@@ -34,17 +34,10 @@ int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
-                /*
-                "a0: b < a --> b;\n"
-                "a1:     b --> a;\n"
-                */
-                //  a(1) b c (2)
-                //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "foo: A [B] --> result;"
-                /*"a:  A --> B;\n"
-                "a:  B --> [A] B [A];"*/
+                "foo: FOO[FOO] < A > [B] --> result;"
+                //"foo: FOO < A > [B] --> result;" // should match
         ;
-        compile(code, "A [C D]");
+        compile(code, "FOO[FOO[FOO FOO]] A [B D]");
 
         return 0;
 }

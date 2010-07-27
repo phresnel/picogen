@@ -181,7 +181,9 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                                 fillStack (mPattern,  axiom, A, 0, stack);
                                 fillStack (rcPattern, axiom, A, mPattern.size(), stack);
 
-                                ret = applyStack(body, stack);
+                                const Pattern tmp = applyStack(body, stack);
+                                for (unsigned int i=0; i<tmp.size(); ++i)
+                                        ret.push_back(tmp[i]);
 
                                 A += len;
                                 break;
