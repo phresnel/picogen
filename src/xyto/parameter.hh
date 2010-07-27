@@ -18,32 +18,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifndef PARAMETER_HH_INCLUDED_20100726
+#define PARAMETER_HH_INCLUDED_20100726
+
 #include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <iostream>
-#include <sstream>
-#include <boost/optional.hpp>
-#include <algorithm>
 
-void compile(const char*, const char*);
+class Parameter {
+public:
+        enum Type {
+                Identifier,
+                Integer,
+                Real,
+                ParameterIndex // never parsed
+        };
 
+        Type type() const;
+        void setType (Type type);
 
-int main()
-{
-        // f(x) < y(x)   should yield an error "parameter names may only appear once"
-        const char * code =
-                /*
-                "a0: b < a --> b;\n"
-                "a1:     b --> a;\n"
-                */
-                //  a(1) b c (2)
-                //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "a:  A --> B;\n"
-                "a:  B --> [A] B [A];"
-        ;
-        compile(code, "A");
+        void setInteger (int v);
+        void setReal (double v);
+        void setIdentifier (std::string v);
 
-        return 0;
-}
+        int integer () const;
+        double real () const;
+        std::string identifier () const;
+
+        void toParameterIndex (int index);
+        int parameterIndex() const;
+private:
+        Type type_;
+        int intval;
+        int index;
+        double realval;
+        std::string idval;
+};
+
+#endif // PARAMETER_HH_INCLUDED_20100726

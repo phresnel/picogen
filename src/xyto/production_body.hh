@@ -18,32 +18,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <iostream>
-#include <sstream>
-#include <boost/optional.hpp>
-#include <algorithm>
+#ifndef PRODUCTION_BODY_HH_INCLUDED_20100726
+#define PRODUCTION_BODY_HH_INCLUDED_20100726
 
-void compile(const char*, const char*);
+#include "pattern.hh"
 
+class ProductionBody {
+public:
+        ProductionBody();
+        ProductionBody(ProductionBody const &rhs);
+        ProductionBody& operator= (ProductionBody const &rhs);
 
-int main()
-{
-        // f(x) < y(x)   should yield an error "parameter names may only appear once"
-        const char * code =
-                /*
-                "a0: b < a --> b;\n"
-                "a1:     b --> a;\n"
-                */
-                //  a(1) b c (2)
-                //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "a:  A --> B;\n"
-                "a:  B --> [A] B [A];"
-        ;
-        compile(code, "A");
+        Pattern pattern() const;
+        void setPattern(Pattern const & p);
+private:
+        Pattern pattern_;
+};
 
-        return 0;
-}
+#endif // PRODUCTION_BODY_HH_INCLUDED_20100726

@@ -18,32 +18,65 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <iostream>
-#include <sstream>
-#include <boost/optional.hpp>
-#include <algorithm>
+#include "symbol.hh"
+#include "parameterlist.hh"
 
-void compile(const char*, const char*);
+std::string Symbol::name() const {
+        return name_;
+}
 
 
-int main()
+void Symbol::setName(std::string const &name) {
+        name_ = name;
+}
+
+
+
+ParameterList Symbol::parameterList() const {
+        return parameterList_;
+}
+
+
+
+ParameterList &Symbol::parameterList() {
+        return parameterList_;
+}
+
+
+
+void Symbol::setParameterList(ParameterList const &rhs) {
+        parameterList_ = rhs;
+}
+
+
+
+Symbol::Symbol() {
+}
+
+
+
+Symbol::Symbol (Symbol const &rhs)
+: name_(rhs.name_)
+, parameterList_(rhs.parameterList_)
 {
-        // f(x) < y(x)   should yield an error "parameter names may only appear once"
-        const char * code =
-                /*
-                "a0: b < a --> b;\n"
-                "a1:     b --> a;\n"
-                */
-                //  a(1) b c (2)
-                //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "a:  A --> B;\n"
-                "a:  B --> [A] B [A];"
-        ;
-        compile(code, "A");
+}
 
-        return 0;
+
+
+Symbol& Symbol::operator= (Symbol const &rhs) {
+        name_ = rhs.name_;
+        parameterList_ = rhs.parameterList_;
+        return *this;
+}
+
+
+bool operator == (Symbol const &lhs, Symbol const &rhs) {
+        return lhs.name() == rhs.name()
+            && lhs.parameterList().size() == rhs.parameterList().size();
+}
+
+
+
+bool operator != (Symbol const &lhs, Symbol const &rhs) {
+        return !(lhs == rhs);
 }

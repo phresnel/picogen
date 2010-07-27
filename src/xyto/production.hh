@@ -18,32 +18,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <iostream>
-#include <sstream>
-#include <boost/optional.hpp>
-#include <algorithm>
+#ifndef PRODUCTION_HH_INCLUDED_20100726
+#define PRODUCTION_HH_INCLUDED_20100726
 
-void compile(const char*, const char*);
+#include "production_header.hh"
+#include "production_body.hh"
 
+class Production {
+public:
+        Production();
+        Production(Production const &rhs);
+        Production& operator= (Production const &rhs);
 
-int main()
-{
-        // f(x) < y(x)   should yield an error "parameter names may only appear once"
-        const char * code =
-                /*
-                "a0: b < a --> b;\n"
-                "a1:     b --> a;\n"
-                */
-                //  a(1) b c (2)
-                //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "a:  A --> B;\n"
-                "a:  B --> [A] B [A];"
-        ;
-        compile(code, "A");
+        ProductionHeader header() const;
+        void setHeader(ProductionHeader const &h);
 
-        return 0;
-}
+        ProductionBody body() const;
+        void setBody(ProductionBody const &h);
+private:
+        ProductionHeader header_;
+        ProductionBody body_;
+};
+
+#endif // PRODUCTION_HH_INCLUDED_20100726

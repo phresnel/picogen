@@ -18,32 +18,51 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <iostream>
-#include <sstream>
-#include <boost/optional.hpp>
-#include <algorithm>
+#include "parameterlist.hh"
 
-void compile(const char*, const char*);
+unsigned int ParameterList::size() const {
+        return parameters_.size();
+}
 
 
-int main()
+
+void ParameterList::push_back(Parameter const &sym) {
+        parameters_.push_back(sym);
+}
+
+
+
+bool ParameterList::empty() const {
+        return size() == 0;
+}
+
+
+
+Parameter& ParameterList::operator [] (unsigned int i) {
+        return parameters_[i];
+}
+
+
+
+const Parameter& ParameterList::operator [] (unsigned int i) const {
+        return parameters_[i];
+}
+
+
+
+ParameterList::ParameterList() {
+}
+
+
+
+ParameterList::ParameterList(ParameterList const &rhs)
+: parameters_(rhs.parameters_)
 {
-        // f(x) < y(x)   should yield an error "parameter names may only appear once"
-        const char * code =
-                /*
-                "a0: b < a --> b;\n"
-                "a1:     b --> a;\n"
-                */
-                //  a(1) b c (2)
-                //"m: A(a,b,c,d,e,f) --> A(f,a,b,c,d,e);"
-                "a:  A --> B;\n"
-                "a:  B --> [A] B [A];"
-        ;
-        compile(code, "A");
+}
 
-        return 0;
+
+
+ParameterList& ParameterList::operator= (ParameterList const &rhs) {
+        parameters_ = rhs.parameters_;
+        return *this;
 }
