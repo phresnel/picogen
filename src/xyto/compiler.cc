@@ -425,7 +425,8 @@ void compile_symbol_table (
                                 std::string const &id = param
                                                         .identifier();
                                 if (!symtab.count(id)) {
-                                        symtab[id] = symtab.size();
+                                        const int id_ = symtab.size();
+                                        symtab[id] = id_;
                                 }
                         }
                 } break;
@@ -577,6 +578,33 @@ boost::optional<Production> parse_production (TokenIterator it, TokenIterator en
 }
 
 
+void generate_warnings (Pattern const &pat,
+                        std::map<std::string, Segment> &first_appearance
+) {
+        for (unsigned int i=0; i<pat.size(); ++i) {
+                switch (pat[i].type()) {
+                case Segment::Letter:
+                        if (!first_appearance.count(pat[i].name())) {
+                                first_appearance[pat[i].name()] = pat[i];
+                        } else if (pat[i] != first_appearance[pat[i].name()]) {
+                                Segment const & sym =
+                                  first_appearance[pat[i].name()];
+                                std::cerr
+                                << "warning: letter '"
+                                << pat[i].name() << "' used with"
+                                << " differing parameter-counts, "
+                                << "'" << pat[i] << "' won't match "
+                                << "'" << sym << "'" << std::endl;
+                        }
+                        break;
+                case Segment::Branch:
+                        generate_warnings(pat[i].branch(), first_appearance);
+                        break;
+                }
+        }
+}
+
+
 void generate_warnings (std::vector<Production> const &prods) {
         std::map<std::string, Segment> first_appearance;
         for (unsigned int i=0; i<prods.size(); ++i) {
@@ -612,20 +640,7 @@ void generate_warnings (std::vector<Production> const &prods) {
                 };
                 for (unsigned int p=0; p<4; ++p) {
                         const Pattern &pat = pats[p];
-                        for (unsigned int i=0; i<pat.size(); ++i) {
-                                if (!first_appearance.count(pat[i].name())) {
-                                        first_appearance[pat[i].name()] = pat[i];
-                                } else if (pat[i] != first_appearance[pat[i].name()]) {
-                                        Segment const & sym =
-                                               first_appearance[pat[i].name()];
-                                        std::cerr
-                                          << "warning: letter '"
-                                          << pat[i].name() << "' used with"
-                                          << " differing parameter-counts, "
-                                          << "'" << pat[i] << "' won't match "
-                                          << "'" << sym << "'" << std::endl;
-                                }
-                        }
+                        generate_warnings(pat, first_appearance);
                 }
         }
 }
@@ -657,6 +672,7 @@ void compile (const char *code, const char *axiom_) {
 
         std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
         generate_warnings(prods);
+        std::cout << prods;
 
         std::cout << "\n--------------\n";
         TokenIterator behind;
