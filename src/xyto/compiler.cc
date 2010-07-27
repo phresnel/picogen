@@ -29,6 +29,7 @@
 #include "token.hh"
 #include "xyto_ios.hh"
 
+namespace {
 
 Pattern parse_pattern (TokenIterator it, TokenIterator end,
                        TokenIterator &behind, bool isHeader=false);
@@ -230,7 +231,9 @@ boost::optional<Segment> parse_segment (
 Pattern parse_pattern (TokenIterator it, TokenIterator end,
                        TokenIterator &behind, bool isHeader) {
         Pattern ret;
-        while (boost::optional<Segment> sym = parse_segment(it, end, behind, isHeader)) {
+        while (boost::optional<Segment> sym = parse_segment(it, end,
+                                                            behind, isHeader)
+        ) {
                 it = behind;
                 ret.push_back(*sym);
         }
@@ -480,7 +483,10 @@ boost::optional<Pattern> apply_symbol_table (
 
 
 
-boost::optional<Production> parse_production (TokenIterator it, TokenIterator end, TokenIterator &behind) {
+boost::optional<Production> parse_production (TokenIterator it,
+                                              TokenIterator end,
+                                              TokenIterator &behind
+) {
         if (it==end) {
                 std::cerr << "found nothing" << std::endl;
                 return boost::optional<Production>();
@@ -645,6 +651,9 @@ void generate_warnings (std::vector<Production> const &prods) {
         }
 }
 
+} // namespace {
+
+
 void compile (const char *code, const char *axiom_) {
         const TokenVector tokens = tokenize (code);
 
@@ -656,7 +665,9 @@ void compile (const char *code, const char *axiom_) {
         //char c = 'a';
         while (it != end) {
                 TokenIterator behind;
-                if (boost::optional<Production> op = parse_production (it, end, behind)) {
+                if (boost::optional<Production> op = parse_production (it, end,
+                                                                       behind)
+                ) {
                         if (names.count(op->header().name())) {
                                 std::cerr << "error: multiple productions are "
                                  << "named '" << op->header().name() << "'.\n";
@@ -680,7 +691,8 @@ void compile (const char *code, const char *axiom_) {
         boost::optional<Pattern> ax = parse_axiom(axiom.begin(), axiom.end());
 
         if (!ax) {
-                std::cout << "axiom '" << axiom_ << "' is not valid." << std::endl;
+                std::cout << "axiom '" << axiom_ << "' is not valid."
+                          << std::endl;
         } else {
                 std::cout << "axiom: " << *ax << '\n';
 
@@ -699,148 +711,3 @@ void compile (const char *code, const char *axiom_) {
                 }
         }
 }
-
-
-
-
-
-
-
-unsigned int match (Pattern const &pattern,
-                 Pattern const &axiom,
-                 int axiomIndex
-) {
-        if (axiomIndex<0)
-                return 0;
-        for (unsigned int i=0; i<pattern.size(); ++i) {
-                if (i+axiomIndex >= axiom.size()) return 0;
-                if (pattern[i] != axiom[i+axiomIndex])
-                        return 0;
-        }
-        return pattern.size();
-}
-
-unsigned int match (Production const &production,
-                 Pattern const &axiom,
-                 int axiomIndex
-) {
-        const ProductionHeader &header = production.header();
-        const int mainLen = match (header.pattern(), axiom, axiomIndex);
-        if (0 == mainLen)
-                return 0;
-
-        if (!header.leftContext().empty()) {
-                Pattern const & ct = header.leftContext();
-                if (!match (ct, axiom, axiomIndex-ct.size()))
-                        return 0;
-        }
-        if (!header.rightContext().empty()) {
-                Pattern const & ct = header.rightContext();
-                if (!match (ct, axiom, axiomIndex+mainLen))
-                        return 0;
-        }
-        return mainLen;
-}
-
-
-void fillStack (
-        Pattern const &pattern,
-        Pattern const &axiom, unsigned int axiomIndex, int axiomOffset,
-        std::vector<Parameter> &stack
-) {
-        // Step 0) Reap values from axiom.
-        /*
-            axiom:       x(1,2)
-            production:  x(#0,#1) -> x(#1,#0)
-        */
-        for (unsigned int i=0; i<pattern.size(); ++i) {
-                Segment const &sym = pattern[i];
-                Segment const &xsym = axiom[(i+axiomIndex)+axiomOffset];
-                ParameterList const &paramList = sym.parameterList();
-                ParameterList const &xparamList = xsym.parameterList();
-                for (unsigned int p=0; p<paramList.size(); ++p) {
-                        Parameter const &param = paramList[p];
-                        Parameter const &xparam = xparamList[p];
-
-                        int const paramIndex = param.parameterIndex();
-                        if (paramIndex >= (int)stack.size()) {
-                                stack.resize (paramIndex+1);
-                        }
-
-                        stack[paramIndex] = xparam;
-                }
-        }
-}
-
-
-Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) {
-        Segment ret = symbol;
-        ParameterList const &params = symbol.parameterList();
-        ParameterList &rparams = ret.parameterList();
-        for (unsigned int p=0; p<params.size(); ++p) {
-                Parameter const &param = params[p];
-                Parameter &rparam = rparams[p];
-                if (param.type() == Parameter::ParameterIndex) {
-                        rparam = stack[param.parameterIndex()];
-                } else {
-                        rparam = param;
-                }
-        }
-        return ret;
-}
-/*Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack) {
-        Pattern ret;
-        for (unsigned int s=0; s<pattern.size(); ++s) {
-                ret.push_back (applyStack (pattern[s], stack));
-        }
-        return ret;
-}*/
-
-boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
-        std::vector<Parameter> stack(16);
-        bool axiomWasTweaked = false;
-        Pattern ret;
-        for (unsigned int A=0; A<axiom.size(); ) {
-                bool any = false;
-                for (unsigned int P=0; P<prods.size(); ++P) {
-                        const int len = match(prods[P], axiom, A);
-                        const bool doesMatch = len > 0;
-                        if (doesMatch) {
-                                any = true;
-
-                                const Pattern &lcPattern = prods[P].header().leftContext();
-                                const Pattern &rcPattern = prods[P].header().rightContext();
-                                const Pattern &mPattern  = prods[P].header().pattern();
-                                const Pattern &body = prods[P].body().pattern();
-
-                                stack.clear();
-
-                                // Fill stack with values from axiom.
-                                // E.g., axiom = "a(x) < b(y) c(z) > d(a)"
-                                fillStack (lcPattern, axiom, A, -lcPattern.size(), stack);
-                                fillStack (mPattern,  axiom, A, 0, stack);
-                                fillStack (rcPattern, axiom, A, mPattern.size(), stack);
-
-                                for (unsigned int i=0; i<body.size(); ++i) {
-                                        ret.push_back(applyStack(body[i], stack));
-                                }
-
-                                A += len;
-                                break;
-                        }
-                }
-                if (any) {
-                        // NOTE: this is actually wrond. in many cases, doesMatch will be true,
-                        //       but the resultant axiom wasn't really tweaked
-                        axiomWasTweaked = true;
-                } else {
-                        ret.push_back (axiom[A]);
-                        ++A;
-                }
-        }
-
-        if (axiomWasTweaked)
-                return ret;
-        return boost::optional<Pattern>();
-}
-

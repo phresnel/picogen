@@ -24,8 +24,8 @@
 #include <map>
 #include <iostream>
 #include <sstream>
-#include <boost/optional.hpp>
 #include <algorithm>
+#include <boost/optional.hpp>
 
 void compile(const char*, const char*);
 
