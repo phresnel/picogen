@@ -80,3 +80,14 @@ bool operator == (Pattern const &lhs, Pattern const &rhs) {
         return true;
 }
 
+
+
+bool operator <= (Pattern const &lhs, Pattern const &rhs) {
+        if (lhs.size()>rhs.size())
+                return false;
+        for (unsigned int i=0; i<lhs.size(); ++i) {
+                if (lhs[i] != rhs[i])
+                        return false;
+        }
+        return true;
+}

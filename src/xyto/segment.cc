@@ -33,7 +33,7 @@ bool operator == (Segment const &lhs, Segment const &rhs) {
                 return lhs.name() == rhs.name()
                     && lhs.parameterList().size() == rhs.parameterList().size();
         case Segment::Branch:
-                return lhs.branch() == rhs.branch();
+                return lhs.branch() <= rhs.branch();
         }
 }
 

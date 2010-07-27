@@ -43,5 +43,6 @@ private:
 };
 
 bool operator == (Pattern const &lhs, Pattern const &rhs);
+bool operator <= (Pattern const &lhs, Pattern const &rhs);
 
 #endif // PATTERN_HH_INCLUDED_20100726

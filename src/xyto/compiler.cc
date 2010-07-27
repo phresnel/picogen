@@ -542,10 +542,6 @@ boost::optional<Production> parse_production (TokenIterator it,
                 compile_symbol_table(header->leftContext(), symtab);
                 compile_symbol_table(header->pattern(), symtab);
                 compile_symbol_table(header->rightContext(), symtab);
-                for (std::map<std::string, int>::const_iterator it = symtab.begin();
-                        it != symtab.end(); ++it) {
-                                std::cout << it->first << "::" << it->second << std::endl;
-                        }
 
                 const boost::optional<Pattern>
                      newL = apply_symbol_table(header->leftContext(), symtab),
