@@ -29,6 +29,7 @@
 #include "token.hh"
 #include "parameter.hh"
 #include "xyto_ios.hh"
+#include "parse_expr.hh"
 
 namespace {
 
@@ -95,14 +96,14 @@ boost::optional<Parameter> parse_parameter (
 ) {
         if (it == end)
                 return boost::optional<Parameter>();
-        if (it->type() == Token::Identifier) {
-                Parameter p;
-                p.setType (Parameter::Identifier);
-                p.setIdentifier (it->value());
-                behind = ++it;
-                return p;
-        }
         if (isHeader) {
+                if (it->type() == Token::Identifier) {
+                        Parameter p;
+                        p.setType (Parameter::Identifier);
+                        p.setIdentifier (it->value());
+                        behind = ++it;
+                        return p;
+                }
                 std::cerr
                   << "error: only a single identifier (e.g. 'id') "
                   << "is allowed as a formal parameter in the "
@@ -111,21 +112,7 @@ boost::optional<Parameter> parse_parameter (
                   << it->from().column() << std::endl;
                 return boost::optional<Parameter>();
         }
-        if (it->type() == Token::Real) {
-                Parameter p;
-                p.setType (Parameter::Real);
-                p.setReal (it->valueAsReal());
-                behind = ++it;
-                return p;
-        }
-        if (it->type() == Token::Integer) {
-                Parameter p;
-                p.setType (Parameter::Integer);
-                p.setInteger (it->valueAsInteger());
-                behind = ++it;
-                return p;
-        }
-        return boost::optional<Parameter>();
+        return parse_expr(it, end, behind);
 }
 
 

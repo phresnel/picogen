@@ -30,18 +30,17 @@ void compile(const char*, const char*);
 
 int main()
 {
-        /*if (1) {
-                // f(x) < y(x)   should yield an error "parameter names may only appear once"
+        if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
                         "foo: foo(x) --> foo(x*5);"
                 ;
                 compile(code, "foo(5)");
                 return 1;
-        }*/
+        }
 
-        {
-                const char *expr = "1<2 && 1";
+        if (0) {
+                const char *expr = "1<x";
 
                 const TokenVector tokens = tokenize(expr);
                 std::cout << expr << ": " << tokens << std::endl;
