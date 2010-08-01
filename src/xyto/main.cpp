@@ -34,12 +34,14 @@ int main()
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
                 //"foo: A B #up(25) #left(10) --> result;"
-                "foo0: a --> [0.0001] a \n"
+                "foo0: a --> [0.00007] c \n"
                 "            [0.0001] b \n"
                 "            [0] c \n"
                 ";"
                 "foo1: b --> [0.0001] a \n"
                 "            [0.0001] b \n"
+                ";"
+                "foo2: c --> "
                 ";"
         ;
         compile(code, "a");

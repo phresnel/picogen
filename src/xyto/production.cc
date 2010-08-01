@@ -48,6 +48,9 @@ std::vector<ProductionBody> & Production::bodies() {
 ProductionBody Production::pickBody(
         kallisto::random::marsaglia::UNI &rng
 ) const {
+        if (bodies_.size() == 1)
+                return bodies_[0];
+
         double p = rng();
         int i = -1;
         do {
