@@ -38,7 +38,9 @@ public:
                 Asterisk, Slash, // * /
 
                 LessThan, LessEqual,
-                GreaterThan, GreaterEqual
+                GreaterThan, GreaterEqual,
+
+                LogicalAnd, LogicalOr, LogicalXor
         };
 
         Token (Type type_,

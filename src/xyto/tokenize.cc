@@ -70,7 +70,7 @@ TokenVector tokenize(const char *code) {
                 } else if (c == '<') {
                         if (it.can_peek(1) && it.peek(1) == '=') {
                                 tokens.push_back (
-                                        Token(Token::LessEqual, it, it.next().next()));
+                                        Token(Token::LessEqual, it, it.next(2)));
                                 ++it;
                         } else {
                                 tokens.push_back (
@@ -79,7 +79,7 @@ TokenVector tokenize(const char *code) {
                 } else if (c == '>') {
                         if (it.can_peek(1) && it.peek(1) == '=') {
                                 tokens.push_back (
-                                    Token(Token::GreaterEqual, it, it.next().next()));
+                                    Token(Token::GreaterEqual, it, it.next(2)));
                                 ++it;
                         } else {
                                 tokens.push_back (
@@ -107,6 +107,21 @@ TokenVector tokenize(const char *code) {
                         tokens.push_back (Token(Token::Asterisk, it, it.next()));
                 } else if (c == '/') {
                         tokens.push_back (Token(Token::Slash, it, it.next()));
+                } else if (c == '&' && it.can_peek(1) && it.peek(1) == '&') {
+                        tokens.push_back (
+                                Token(Token::LogicalAnd, it, it.next(2)));
+                        ++it;
+                } else if (c == '|' && it.can_peek(1) && it.peek(1) == '|') {
+                        tokens.push_back (
+                                Token(Token::LogicalOr, it, it.next(2)));
+                        ++it;
+                } else if (c == 'x' &&
+                           it.can_peek(1) && it.peek(1) == 'o' &&
+                           it.can_peek(2) && it.peek(2) == 'r'
+                ) {
+                        tokens.push_back (
+                                Token(Token::LogicalOr, it, it.next(3)));
+                        ++it; ++it;
                 } else if (!is_white(c)) {
                         std::cerr << "tokenization error in "
                              << "line " << it.row() << ", column " << it.column()

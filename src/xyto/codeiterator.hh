@@ -79,8 +79,13 @@ public:
                 }
                 return peek == 0;
         }
-        CodeIterator next() const {
-                return ++CodeIterator(*this);
+        CodeIterator next(unsigned int n=1) const {
+                CodeIterator foo(*this);
+                while (n) {
+                        ++foo;
+                        --n;
+                }
+                return foo;
         }
         char operator *() const {
                 return *curr;

@@ -67,10 +67,15 @@ Parameter::Type tokenTypeToParameterType (Token::Type tok) {
         case Token::Minus: return Parameter::Subtraction;
         case Token::Asterisk: return Parameter::Multiplication;
         case Token::Slash: return Parameter::Division;
+
         case Token::LessThan: return Parameter::LessThan;
         case Token::LessEqual: return Parameter::LessEqual;
         case Token::GreaterThan: return Parameter::GreaterThan;
         case Token::GreaterEqual: return Parameter::GreaterEqual;
+
+        case Token::LogicalAnd: return Parameter::LogicalAnd;
+        case Token::LogicalOr: return Parameter::LogicalOr;
+        case Token::LogicalXor: return Parameter::LogicalXor;
         default: throw std::runtime_error("unhandled token-type in "
                                 "tokenTypeToParameterType (Token::Type tok)");
         };
@@ -81,7 +86,8 @@ template <
         boost::optional<Parameter> descendant (TokenIterator it,
                    TokenIterator end,
                    TokenIterator &behind
-        )
+        ),
+        int strictArgCount
 >
 boost::optional<Parameter> parse_term_tpl (
         TokenIterator it,
@@ -107,6 +113,7 @@ boost::optional<Parameter> parse_term_tpl (
         Parameter ret = *first;
         Parameter prev = *first;
 
+        int argCount = 1;
         while (it != end) {
                 optional<Parameter> next;
 
@@ -126,6 +133,7 @@ boost::optional<Parameter> parse_term_tpl (
                 if (!any) {
                         break;
                 }
+                ++argCount;
 
                 behind = ++it;
                 next = descendant(it, end, behind);
@@ -136,6 +144,10 @@ boost::optional<Parameter> parse_term_tpl (
                 ret.setLhs(prev);
                 ret.setRhs(*next);
                 prev = ret;
+        }
+
+        if (strictArgCount!=-1 && argCount!=strictArgCount) {
+                return false;
         }
 
         return ret;
@@ -156,43 +168,35 @@ const Token::Type RelTokens::tokens [] = { Token::LessThan,
                                            Token::GreaterEqual
                                          };
 
+struct LogTokens { static const Token::Type tokens []; };
+const Token::Type LogTokens::tokens [] = { Token::LogicalAnd,
+                                           Token::LogicalOr,
+                                           Token::LogicalXor
+                                         };
+
 
 boost::optional<Parameter> parse_term (TokenIterator it, TokenIterator end,
                                        TokenIterator &behind)
 {
-        return parse_term_tpl<AddTokens, parse_factor>(it, end, behind);
+        return parse_term_tpl<AddTokens, parse_factor, -1>(it, end, behind);
 }
 
 boost::optional<Parameter> parse_expr (TokenIterator it, TokenIterator end,
                                        TokenIterator &behind)
 {
-        return parse_term_tpl<MulTokens, parse_term>(it, end, behind);
+        return parse_term_tpl<MulTokens, parse_term, -1>(it, end, behind);
 }
 
 boost::optional<Parameter> parse_rel(TokenIterator it, TokenIterator end,
                                      TokenIterator &behind)
 {
-        return parse_term_tpl<RelTokens, parse_expr>(it, end, behind);
+        return parse_term_tpl<RelTokens, parse_expr, 2>(it, end, behind);
 }
 
-
-bool parse_cond (TokenIterator it, TokenIterator end, TokenIterator &behind) {
-        std::cout << "(? ";
-        if (!parse_expr(it, end, behind))
-                return false;
-        it = behind;
-        while (it != end &&
-               (  it->type() == Token::LessThan
-               || it->type() == Token::GreaterThan
-               )
-        ) {
-                behind = ++it;
-                if (!parse_expr(it, end, behind))
-                        return false;
-                it = behind;
-        }
-        std::cout << ")";
-        return true;
+boost::optional<Parameter> parse_logical(TokenIterator it, TokenIterator end,
+                                     TokenIterator &behind)
+{
+        return parse_term_tpl<LogTokens, parse_rel, -1>(it, end, behind);
 }
 
 
@@ -210,16 +214,17 @@ int main()
         }*/
 
         {
-                const char *expr = "a*b*c+d >= 0 && 1";
+                const char *expr = "1<2 && 1";
 
                 const TokenVector tokens = tokenize(expr);
                 std::cout << expr << ": " << tokens << std::endl;
                 std::cout << "------\n";
                 TokenIterator behind;
-                const boost::optional<Parameter> t = parse_rel(tokens.begin(),
+                const boost::optional<Parameter> t = parse_logical(tokens.begin(),
                                                                tokens.end(),
                                                                behind);
                 if (t) std::cout << "\n{\n" << *t << "\n}\n";
+                else std::cout << "<invalid>\n";
         }
 
         /*

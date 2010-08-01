@@ -38,7 +38,10 @@ public:
 
                 // relational
                 LessThan, LessEqual,
-                GreaterThan, GreaterEqual
+                GreaterThan, GreaterEqual,
+
+                // logical
+                LogicalAnd, LogicalOr, LogicalXor
         };
 
         Type type() const;
