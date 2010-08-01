@@ -28,18 +28,27 @@ TokenVector tokenize(const char *code) {
         typedef CodeIterator CI;
         for (CI it=code; *it!='\0'; ++it) {
                 const char c = *it;
-                if (is_alpha(c)) {
+
+                if (c == '-'
+                    && it.can_peek(1) && it.peek(1)=='-'
+                    && it.can_peek(2) && it.peek(2)=='>'
+                ) {
+                        const CI begin = it;
+                        ++it; ++it;
+                        tokens.push_back (Token(Token::TransformTo, begin, it.next()));
+                } else if (is_alpha(c)) {
                         const CI begin = it;
                         CI prev = it;
                         for (; *it!='\0' && is_alnum(*it); prev=it, ++it) {
                         }
                         tokens.push_back (Token(Token::Identifier, begin, it));
                         it = prev;
-                } else if (is_num(c)) {
+                } else if (is_num(c) || c=='-') {
                         const CI begin = it;
                         CI prev = it;
-                        for (; *it!='\0' && is_num(*it); prev=it, ++it) {
-                        }
+
+                        if (c=='-') ++it;
+                        for (; *it!='\0' && is_num(*it); prev=it, ++it) {}
                         if (*it == '.') {
                                 ++it;
                                 if (!is_num(*it)) {
@@ -62,13 +71,6 @@ TokenVector tokenize(const char *code) {
                         tokens.push_back (Token(Token::LessThan, it, it.next()));
                 } else if (c == '>') {
                         tokens.push_back (Token(Token::GreaterThan, it, it.next()));
-                } else if (c == '-'
-                        && it.can_peek(1) && it.peek(1)=='-'
-                        && it.can_peek(2) && it.peek(2)=='>'
-                ) {
-                        const CI begin = it;
-                        ++it; ++it;
-                        tokens.push_back (Token(Token::TransformTo, begin, it.next()));
                 } else if (c == ':') {
                         tokens.push_back (Token(Token::Colon, it, it.next()));
                 } else if (c == ';') {

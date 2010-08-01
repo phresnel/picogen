@@ -32,14 +32,26 @@ void Production::setHeader(ProductionHeader const &h) {
 
 
 
-ProductionBody Production::body() const {
-        return body_;
+std::vector<ProductionBody> Production::bodies() const {
+        return bodies_;
 }
 
 
 
-void Production::setBody(ProductionBody const &h) {
-        body_ = h;
+std::vector<ProductionBody> & Production::bodies() {
+        return bodies_;
+}
+
+
+
+ProductionBody Production::pickBody() const {
+        return bodies_[0];
+}
+
+
+
+void Production::setBodies(std::vector<ProductionBody> const &h) {
+        bodies_ = h;
 }
 
 
@@ -51,7 +63,7 @@ Production::Production() {
 
 Production::Production(Production const &rhs)
 : header_(rhs.header_)
-, body_(rhs.body_)
+, bodies_(rhs.bodies_)
 {
 }
 
@@ -59,6 +71,6 @@ Production::Production(Production const &rhs)
 
 Production& Production::operator= (Production const &rhs) {
         header_ = rhs.header_;
-        body_ = rhs.body_;
+        bodies_ = rhs.bodies_;
         return *this;
 }

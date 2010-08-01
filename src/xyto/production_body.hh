@@ -30,9 +30,12 @@ public:
         ProductionBody& operator= (ProductionBody const &rhs);
 
         Pattern pattern() const;
+        double probability() const;
         void setPattern(Pattern const & p);
+        void setProbability(double);
 private:
         Pattern pattern_;
+        double probability_;
 };
 
 #endif // PRODUCTION_BODY_HH_INCLUDED_20100726

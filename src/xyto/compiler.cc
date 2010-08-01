@@ -33,6 +33,9 @@ namespace {
 
 Pattern parse_pattern (TokenIterator it, TokenIterator end,
                        TokenIterator &behind, bool isHeader=false);
+boost::optional<double> parse_probability (TokenIterator it,
+                                           TokenIterator end,
+                                           TokenIterator &behind);
 
 
 
@@ -208,16 +211,22 @@ boost::optional<Segment> parse_segment (
                 const TokenIterator start = it;
 
                 ++it;
+                if (it == end
+                 || it->type() == Token::Real
+                 || it->type() == Token::Integer
+                )
+                        return boost::optional<Segment>();
                 Segment sym;
                 sym.setType(Segment::Branch);
                 sym.setName("[");
                 TokenIterator behindBranch;
                 sym.setBranch(parse_pattern(it, end, behindBranch, isHeader));
                 it = behindBranch;
+
                 if (it == end || it->type() != Token::RightBracket) {
-                        std::cerr << "missing ']' after branch started at "
+                        /*std::cerr << "missing ']' after branch started at "
                            << "line " << start->to().row() << ", column "
-                           << start->to().column() << std::endl;
+                           << start->to().column() << std::endl;*/
                         return boost::optional<Segment>();
                 }
 
@@ -397,22 +406,110 @@ boost::optional<ProductionBody> parse_production_body (
         // foo --> bar  x:
         TokenIterator it, TokenIterator end, TokenIterator &behind
 ) {
+        ProductionBody ret;
+
+        //---------------------------------------------------------
+        // Weight
+        TokenIterator behindProbability;
+        const boost::optional<double> prob =
+                        parse_probability(it, end, behindProbability);
+        if (prob) {
+                if (*prob < 0) {
+                        std::cerr
+                          << "error: probabilities must be >= 0, see line "
+                          << it->to().row() << ", column "
+                          << it->to().column() << std::endl;
+                        return boost::optional<ProductionBody>();
+                }
+                it = behindProbability;
+                ret.setProbability(*prob);
+        }  else {
+                ret.setProbability(1);
+        }
+        //---------------------------------------------------------
+
+
         TokenIterator behindPattern;
         const Pattern pat = parse_pattern(it, end, behindPattern);
         it = behindPattern;
-        if (it == end || it->type() != Token::Semicolon) {
+        if (it == end ||
+           (it->type() != Token::Semicolon && it->type() != Token::LeftBracket)
+        ) {
                 TokenIterator prev = it - 1;
                 std::cerr << "error: expected ';' after production in line "
                         << prev->to().row() << ", column "
                         << prev->to().column() << std::endl;
                 return boost::optional<ProductionBody>();
         }
-        ++it;
         behind = it;
 
-        ProductionBody ret;
         ret.setPattern (pat);
         return ret;
+}
+
+
+
+
+boost::optional<std::vector<ProductionBody> > parse_production_bodies (
+        // foo --> bar  x:
+        TokenIterator it, TokenIterator end, TokenIterator &behind
+) {
+        typedef boost::optional<std::vector<ProductionBody> > RET;
+
+        std::vector<ProductionBody> ret;
+        TokenIterator behindProd;
+        while (boost::optional<ProductionBody> body
+                = parse_production_body(it, end, behindProd)
+        ) {
+                it = behindProd;
+                ret.push_back (*body);
+                if (it == end) {
+                        TokenIterator prev = it - 1;
+                        std::cerr
+                            << "error: expected ';' after production in line "
+                            << prev->to().row() << ", column "
+                            << prev->to().column() << std::endl;
+                        return RET();
+                }
+                if (it->type() == Token::Semicolon) {
+                        break;
+                }
+        }
+
+        if (it == end || it->type() != Token::Semicolon) {
+                TokenIterator prev = it - 1;
+                std::cerr << "error: expected ';' after production in line "
+                        << prev->to().row() << ", column "
+                        << prev->to().column() << std::endl;
+                return RET();
+        }
+        ++it;
+        behind = it;
+        return ret;
+}
+
+
+
+boost::optional<double> parse_probability (
+        TokenIterator it, TokenIterator end, TokenIterator &behind
+) {
+        if (it == end || it->type() != Token::LeftBracket) {
+                return boost::optional<double>();
+        }
+        ++it;
+        if (it == end ||
+            (it->type() != Token::Integer && it->type() != Token::Real)
+        ) {
+                return boost::optional<double>();
+        }
+        const double p = it->valueAsReal();
+        ++it;
+        if (it == end || it->type() != Token::RightBracket) {
+                return boost::optional<double>();
+        }
+        ++it;
+        behind = it;
+        return p;
 }
 
 
@@ -494,9 +591,10 @@ boost::optional<Production> parse_production (TokenIterator it,
                 return boost::optional<Production>();
         }
 
+        const TokenIterator startIt = it;
 
         boost::optional<ProductionHeader> header;
-        boost::optional<ProductionBody> body;
+        boost::optional<std::vector<ProductionBody> > bodies;
 
         //---------------------------------------------------------
         // Header
@@ -522,10 +620,26 @@ boost::optional<Production> parse_production (TokenIterator it,
         //---------------------------------------------------------
         // Body
         TokenIterator behindBody;
-        body = parse_production_body(it, end, behindBody);
-        if (!body) {
+        bodies = parse_production_bodies(it, end, behindBody);
+        if (!bodies) {
                 return boost::optional<Production>();
         }
+
+        // normalize probabilities
+        double sum = 0;
+        for (unsigned int i=0; i<bodies->size(); ++i)
+                sum += (*bodies)[i].probability();
+        if (sum <= 0.000001) {
+                std::cerr
+                  << "error: the sum of probabilities for production '"
+                  << header->name() << "' in line "
+                  << startIt->from().next().row() << ", column "
+                  << startIt->from().next().column() << " must not be zero."
+                  << std::endl;
+                return boost::optional<Production>();
+        }
+        for (unsigned int i=0; i<bodies->size(); ++i)
+                (*bodies)[i].setProbability((*bodies)[i].probability() / sum);
         it = behindBody;
         //---------------------------------------------------------
 
@@ -565,16 +679,17 @@ boost::optional<Production> parse_production (TokenIterator it,
                 ph.setRightContext (*newR);
                 ret.setHeader (ph);
 
-                const boost::optional<Pattern> newp = apply_symbol_table(
-                                                            body->pattern(),
-                                                            symtab);
-                if (!newp)
-                        return boost::optional<Production>();
-                body->setPattern (*newp);
-                ret.setBody (*body);
+                for (unsigned int p=0; p<(*bodies).size(); ++p) {
+                        ProductionBody &body = (*bodies)[p];
+                        const boost::optional<Pattern> newp =
+                                apply_symbol_table(body.pattern(), symtab);
+                        if (!newp)
+                                return boost::optional<Production>();
+                        body.setPattern (*newp);
+                }
+                ret.setBodies (*bodies);
         }
         //---------------------------------------------------------
-
 
 
         behind = it;
@@ -639,11 +754,14 @@ void generate_warnings (std::vector<Production> const &prods) {
                 const Pattern pats[4] = {
                         prods[i].header().leftContext(),
                         prods[i].header().pattern(),
-                        prods[i].header().rightContext(),
-                        prods[i].body().pattern()
+                        prods[i].header().rightContext()
                 };
                 for (unsigned int p=0; p<4; ++p) {
                         const Pattern &pat = pats[p];
+                        generate_warnings(pat, first_appearance);
+                }
+                for (unsigned int p=0; p<prods[i].bodies().size(); ++p) {
+                        const Pattern &pat = prods[i].bodies()[p].pattern();
                         generate_warnings(pat, first_appearance);
                 }
         }
@@ -686,6 +804,7 @@ void compile (const char *code, const char *axiom_) {
         std::cout << "\n--------------\n";
         TokenIterator behind;
         const TokenVector axiom = tokenize(axiom_);
+
         boost::optional<Pattern> ax = parse_axiom(axiom.begin(), axiom.end());
 
         if (!ax) {
@@ -699,7 +818,7 @@ void compile (const char *code, const char *axiom_) {
                         boost::optional<Pattern> apply(std::vector<Production> const &, Pattern const &);
 
                         boost::optional<Pattern> next = apply (prods, pat);
-                        std::cout << "step " << step << ": ";
+                        std::cout << "step " << step+1 << ": ";
                         if (next) {
                                 pat = *next;
                                 std::cout << pat << '\n';

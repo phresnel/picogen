@@ -95,8 +95,23 @@ inline std::ostream& operator<< (std::ostream& o, ProductionBody const& rhs) {
         return o;
 }
 
+inline std::ostream& operator<< (std::ostream& o,
+                                 std::vector<ProductionBody> const& rhs) {
+        if (rhs.size() == 1) {
+                o << rhs[0].pattern();
+        } else if (rhs.size() > 1) {
+                o << "\n";
+                for (unsigned int i=0; i<rhs.size(); ++i) {
+                        o << "        "
+                          << "(" << rhs[i].probability() << ") "
+                          << rhs[i].pattern() << "\n";
+                }
+        }
+        return o;
+}
+
 inline std::ostream& operator<< (std::ostream& o, Production const& rhs) {
-        o << rhs.header() << " --> " << rhs.body() << ";";
+        o << rhs.header() << " --> " << rhs.bodies() << ";";
         return o;
 }
 

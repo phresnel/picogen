@@ -23,6 +23,7 @@
 
 #include "production_header.hh"
 #include "production_body.hh"
+#include <vector>
 
 class Production {
 public:
@@ -33,11 +34,15 @@ public:
         ProductionHeader header() const;
         void setHeader(ProductionHeader const &h);
 
-        ProductionBody body() const;
-        void setBody(ProductionBody const &h);
+        /*ProductionBody body() const;
+        void setBody(ProductionBody const &h);*/
+        std::vector<ProductionBody> bodies () const;
+        std::vector<ProductionBody>& bodies ();
+        void setBodies(std::vector<ProductionBody> const &);
+        ProductionBody pickBody() const;
 private:
         ProductionHeader header_;
-        ProductionBody body_;
+        std::vector<ProductionBody> bodies_;
 };
 
 #endif // PRODUCTION_HH_INCLUDED_20100726

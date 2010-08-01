@@ -33,13 +33,25 @@ void ProductionBody::setPattern(Pattern const & p) {
 
 
 
+double ProductionBody::probability() const {
+        return probability_;
+}
+
+
+
+void ProductionBody::setProbability(double probability) {
+        probability_ = probability;
+}
+
+
+
 ProductionBody::ProductionBody() {
 }
 
 
 
 ProductionBody::ProductionBody(ProductionBody const &rhs)
-: pattern_(rhs.pattern_)
+: pattern_(rhs.pattern_), probability_(rhs.probability_)
 {
 }
 
@@ -47,5 +59,6 @@ ProductionBody::ProductionBody(ProductionBody const &rhs)
 
 ProductionBody& ProductionBody::operator= (ProductionBody const &rhs) {
         pattern_ = rhs.pattern_;
+        probability_ = rhs.probability_;
         return *this;
 }

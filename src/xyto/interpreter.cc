@@ -77,11 +77,7 @@ unsigned int match (Production const &production,
                 if (!match(ct, axiom.subset(mainLen), true))
                         return 0;
         }
-        /*if (!header.rightContext().empty()) {
-                Pattern const & ct = header.rightContext();
-                if (!match (ct, axiom, axiomIndex+mainLen))
-                        return 0;
-        }*/
+
         return mainLen;
 }
 
@@ -209,7 +205,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                                 const Pattern &lcPattern = prods[P].header().leftContext();
                                 const Pattern &rcPattern = prods[P].header().rightContext();
                                 const Pattern &mPattern  = prods[P].header().pattern();
-                                const Pattern &body = prods[P].body().pattern();
+                                const Pattern &body = prods[P].pickBody().pattern();
 
                                 std::vector<Parameter> stack(16);
 
