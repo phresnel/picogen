@@ -21,8 +21,9 @@
 #include <boost/optional.hpp>
 #include "pattern.hh"
 #include "production.hh"
-#include <iostream>
 #include "xyto_ios.hh"
+#include <iostream>
+#include <stdexcept>
 
 namespace {
 /*
@@ -147,8 +148,49 @@ void fillStack (
         }
 }
 
+Parameter applyStack (Parameter const &pattern, std::vector<Parameter> const &stack);
+ParameterList applyStack (ParameterList const &pattern, std::vector<Parameter> const &stack);
 Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack);
 Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack);
+
+
+
+Parameter applyStack (Parameter const &param,
+                      std::vector<Parameter> const &stack
+) {
+        switch (param.type()) {
+        case Parameter::ParameterIndex:
+                return stack[param.parameterIndex()];
+
+        case Parameter::Integer:
+        case Parameter::Real:
+        case Parameter::Identifier:
+                return param;
+
+        case Parameter::Multiplication: case Parameter::Division:
+        case Parameter::Addition:       case Parameter::Subtraction:
+
+        case Parameter::LessThan:    case Parameter::LessEqual:
+        case Parameter::GreaterThan: case Parameter::GreaterEqual:
+
+        case Parameter::LogicalAnd:
+        case Parameter::LogicalOr:
+        case Parameter::LogicalXor:
+                Parameter ret (param);
+                ret.setLhs (applyStack (param.lhs(), stack));
+                ret.setRhs (applyStack (param.rhs(), stack));
+                return ret;
+        }
+
+        throw std::runtime_error("unhandled parameter-type in applyStack(.)");
+}
+
+
+
+/*ParameterList applyStack (ParameterList const &pattern, std::vector<Parameter> const &stack) {
+}*/
+
+
 
 Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack) {
         Pattern ret;
@@ -162,21 +204,16 @@ Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack)
 
 
 Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) {
-
         Segment ret = symbol;
 
         switch (symbol.type()) {
         case Segment::Letter: {
-                ParameterList const &params = symbol.parameterList();
+                ParameterList const &sourceParams = symbol.parameterList();
                 ParameterList &rparams = ret.parameterList();
-                for (unsigned int p=0; p<params.size(); ++p) {
-                        Parameter const &param = params[p];
-                        Parameter &rparam = rparams[p];
-                        if (param.type() == Parameter::ParameterIndex) {
-                                rparam = stack[param.parameterIndex()];
-                        } else {
-                                rparam = param;
-                        }
+
+                for (unsigned int p=0; p<sourceParams.size(); ++p) {
+                        Parameter const &param = sourceParams[p];
+                        rparams[p] = applyStack (param, stack);
                 }
         } break;
         case Segment::Branch: {
