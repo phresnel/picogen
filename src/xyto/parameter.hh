@@ -23,8 +23,7 @@
 
 #include <string>
 #include "soft_value.hh"
-
-
+#include <iostream>
 class Parameter {
 public:
         enum Type {
@@ -32,8 +31,14 @@ public:
                 Integer,
                 Real,
                 ParameterIndex, // <-- never parsed, used by compiler
+
+                // arithmetic
                 Multiplication, Division,
-                Addition, Subtraction
+                Addition, Subtraction,
+
+                // relational
+                LessThan, LessEqual,
+                GreaterThan, GreaterEqual
         };
 
         Type type() const;
@@ -51,10 +56,10 @@ public:
         int parameterIndex() const;
 
         Parameter lhs () const;
-        void setLhs (Parameter const &) const;
+        void setLhs (Parameter const &);
 
         Parameter rhs () const;
-        void setRhs (Parameter const &) const;
+        void setRhs (Parameter const &);
 
         void swap (Parameter&);
 private:

@@ -28,7 +28,6 @@
 class Token {
 public:
         enum Type {
-                LessThan, GreaterThan,
                 TransformTo, // -->
                 Colon, Semicolon, Comma,
                 LeftParen, RightParen,     // ()
@@ -36,7 +35,10 @@ public:
                 Identifier, Real, Integer,
 
                 Plus, Minus,    // + -
-                Asterisk, Slash // * /
+                Asterisk, Slash, // * /
+
+                LessThan, LessEqual,
+                GreaterThan, GreaterEqual
         };
 
         Token (Type type_,

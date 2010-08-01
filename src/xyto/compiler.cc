@@ -27,6 +27,7 @@
 #include "production.hh"
 #include "tokenize.hh"
 #include "token.hh"
+#include "parameter.hh"
 #include "xyto_ios.hh"
 
 namespace {
@@ -816,7 +817,7 @@ void compile (const char *code, const char *axiom_) {
                 kallisto::random::marsaglia::UNI rng(1,2,3,4);
                 rng.skip(1024);
                 Pattern pat = *ax;
-                for (int step=0; step<32; ++step) {
+                for (int step=0; step<5; ++step) {
                         boost::optional<Pattern> apply(
                                 std::vector<Production> const &,
                                 Pattern const &,

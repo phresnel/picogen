@@ -88,6 +88,30 @@ std::string Parameter::identifier () const {
 
 
 
+Parameter Parameter::lhs () const {
+        return *lhs_;
+}
+
+
+
+void Parameter::setLhs (Parameter const &val) {
+        lhs_ = soft_value<Parameter>(val);
+}
+
+
+
+Parameter Parameter::rhs () const {
+        return *rhs_;
+}
+
+
+
+void Parameter::setRhs (Parameter const &val) {
+        rhs_ = soft_value<Parameter>(val);
+}
+
+
+
 void Parameter::toParameterIndex (int index) {
         if (type_ != Identifier)
                 std::cout << "runtime error: Parameter::"

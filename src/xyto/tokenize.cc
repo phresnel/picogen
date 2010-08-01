@@ -68,9 +68,23 @@ TokenVector tokenize(const char *code) {
                                 it = prev;
                         }
                 } else if (c == '<') {
-                        tokens.push_back (Token(Token::LessThan, it, it.next()));
+                        if (it.can_peek(1) && it.peek(1) == '=') {
+                                tokens.push_back (
+                                        Token(Token::LessEqual, it, it.next().next()));
+                                ++it;
+                        } else {
+                                tokens.push_back (
+                                    Token(Token::LessThan, it, it.next()));
+                        }
                 } else if (c == '>') {
-                        tokens.push_back (Token(Token::GreaterThan, it, it.next()));
+                        if (it.can_peek(1) && it.peek(1) == '=') {
+                                tokens.push_back (
+                                    Token(Token::GreaterEqual, it, it.next().next()));
+                                ++it;
+                        } else {
+                                tokens.push_back (
+                                    Token(Token::GreaterThan, it, it.next()));
+                        }
                 } else if (c == ':') {
                         tokens.push_back (Token(Token::Colon, it, it.next()));
                 } else if (c == ';') {

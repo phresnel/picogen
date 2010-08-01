@@ -26,67 +26,155 @@
 #include <sstream>
 #include <algorithm>
 #include <boost/optional.hpp>
+#include <stdexcept>
 
 #include "xyto_ios.hh"
 #include "tokenize.hh"
+#include "parameter.hh"
 
 void compile(const char*, const char*);
 
 
-bool parse_factor (TokenIterator it,
+boost::optional<Parameter> parse_factor (TokenIterator it,
                    TokenIterator end,
                    TokenIterator &behind
 ) {
+        Parameter ret;
         switch (it->type()) {
         case Token::Integer:
-                std::cout << "0 ";
+                ret.setType(Parameter::Integer);
+                ret.setInteger(it->valueAsInteger());
                 break;
         case Token::Real:
-                std::cout << "0.0 ";
+                ret.setType(Parameter::Real);
+                ret.setReal(it->valueAsReal());
                 break;
         case Token::Identifier:
-                std::cout << "id ";
+                ret.setType(Parameter::Identifier);
+                ret.setIdentifier(it->value());
                 break;
         default:
                 return false;
         };
         behind = ++it;
-        return true;
+        return ret;
 }
 
-bool parse_term (TokenIterator it, TokenIterator end, TokenIterator &behind) {
-        std::cout << "(*/ ";
-        if (!parse_factor(it, end, behind))
-                return false;
-        it = behind;
-        while (it != end &&
-               (it->type() == Token::Asterisk || it->type() == Token::Slash)
-        ) {
-                behind = ++it;
-                if (!parse_factor(it, end, behind))
-                        return false;
-                it = behind;
-        }
-        std::cout << ")";
-        return true;
+
+Parameter::Type tokenTypeToParameterType (Token::Type tok) {
+        switch (tok) {
+        case Token::Plus:  return Parameter::Addition;
+        case Token::Minus: return Parameter::Subtraction;
+        case Token::Asterisk: return Parameter::Multiplication;
+        case Token::Slash: return Parameter::Division;
+        case Token::LessThan: return Parameter::LessThan;
+        case Token::LessEqual: return Parameter::LessEqual;
+        case Token::GreaterThan: return Parameter::GreaterThan;
+        case Token::GreaterEqual: return Parameter::GreaterEqual;
+        default: throw std::runtime_error("unhandled token-type in "
+                                "tokenTypeToParameterType (Token::Type tok)");
+        };
 }
 
-bool parse_expr (TokenIterator it, TokenIterator end, TokenIterator &behind) {
-        std::cout << "(+- ";
-        if (!parse_term(it, end, behind))
+template <
+        typename AcceptedTokens,
+        boost::optional<Parameter> descendant (TokenIterator it,
+                   TokenIterator end,
+                   TokenIterator &behind
+        )
+>
+boost::optional<Parameter> parse_term_tpl (
+        TokenIterator it,
+        TokenIterator end,
+        TokenIterator &behind
+) {
+        using boost::optional;
+        /*
+                a * b * c * d
+                (* a (* b (* c d)))  // <-- the more intuitive way, but wrong
+                                            for any left-associative operation
+                (* (* (* a b) c) d)  // <-- right
+        */
+
+        if (it == end)
+                return false;
+
+        const optional<Parameter> first = descendant(it, end, behind);
+        if (!first)
                 return false;
         it = behind;
-        while (it != end &&
-               (it->type() == Token::Plus || it->type() == Token::Minus)
-        ) {
+
+        Parameter ret = *first;
+        Parameter prev = *first;
+
+        while (it != end) {
+                optional<Parameter> next;
+
+                bool any = false;
+                for (unsigned int i=0;
+                     i<sizeof(AcceptedTokens::tokens)
+                       / sizeof(AcceptedTokens::tokens[0]);
+                      ++i
+                ) {
+                        if (it->type() == AcceptedTokens::tokens[i]) {
+                                ret.setType(
+                                        tokenTypeToParameterType(it->type()));
+                                any = true;
+                                break;
+                        }
+                }
+                if (!any) {
+                        break;
+                }
+
                 behind = ++it;
-                if (!parse_term(it, end, behind))
+                next = descendant(it, end, behind);
+                if (!next)
                         return false;
                 it = behind;
+
+                ret.setLhs(prev);
+                ret.setRhs(*next);
+                prev = ret;
         }
-        std::cout << ")";
-        return true;
+
+        return ret;
 }
+
+
+// It will be better with variadic templates.
+struct AddTokens { static const Token::Type tokens []; };
+const Token::Type AddTokens::tokens [] = { Token::Asterisk, Token::Slash };
+
+struct MulTokens { static const Token::Type tokens []; };
+const Token::Type MulTokens::tokens [] = { Token::Plus, Token::Minus };
+
+struct RelTokens { static const Token::Type tokens []; };
+const Token::Type RelTokens::tokens [] = { Token::LessThan,
+                                           Token::LessEqual,
+                                           Token::GreaterThan,
+                                           Token::GreaterEqual
+                                         };
+
+
+boost::optional<Parameter> parse_term (TokenIterator it, TokenIterator end,
+                                       TokenIterator &behind)
+{
+        return parse_term_tpl<AddTokens, parse_factor>(it, end, behind);
+}
+
+boost::optional<Parameter> parse_expr (TokenIterator it, TokenIterator end,
+                                       TokenIterator &behind)
+{
+        return parse_term_tpl<MulTokens, parse_term>(it, end, behind);
+}
+
+boost::optional<Parameter> parse_rel(TokenIterator it, TokenIterator end,
+                                     TokenIterator &behind)
+{
+        return parse_term_tpl<RelTokens, parse_expr>(it, end, behind);
+}
+
 
 bool parse_cond (TokenIterator it, TokenIterator end, TokenIterator &behind) {
         std::cout << "(? ";
@@ -108,42 +196,30 @@ bool parse_cond (TokenIterator it, TokenIterator end, TokenIterator &behind) {
 }
 
 
-/*template <typename T> struct soft_value {
-public:
-
-        soft_value& operator= (soft_value rhs) {
-                swap (rhs);
-        }
-        void swap (soft_value &rhs) {
-                swap (ptr, rhs.ptr);
-        }
-
-private:
-        boost::scoped_ptr<T> ptr;
-};
-template <typename T>
-void swap (soft_value<T> &lhs, soft_value<T> &rhs) {
-        lhs.swap (rhs);
-}*/
 
 int main()
 {
-        if (0) {
+        /*if (1) {
                 // f(x) < y(x)   should yield an error "parameter names may only appear once"
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
-                        "foo: foo(x) --> foo(x*2);"
+                        "foo: foo(x) --> foo(x*5);"
                 ;
                 compile(code, "foo(5)");
-        }
+                return 1;
+        }*/
 
         {
-                const char *expr = "x*2 + 5*1 < 0";
-                TokenVector tokens = tokenize(expr);
+                const char *expr = "a*b*c+d >= 0 && 1";
+
+                const TokenVector tokens = tokenize(expr);
                 std::cout << expr << ": " << tokens << std::endl;
                 std::cout << "------\n";
                 TokenIterator behind;
-                parse_expr(tokens.begin(), tokens.end(), behind);
+                const boost::optional<Parameter> t = parse_rel(tokens.begin(),
+                                                               tokens.end(),
+                                                               behind);
+                if (t) std::cout << "\n{\n" << *t << "\n}\n";
         }
 
         /*
