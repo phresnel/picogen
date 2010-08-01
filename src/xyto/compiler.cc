@@ -76,6 +76,8 @@ inline bool hasPrecedenceOver (Production const &lhs, Production const &rhs) {
 
 inline bool ambiguous (Production const &lhs, Production const &rhs) {
         return lhs.header().pattern() == rhs.header().pattern()
+            && lhs.header().leftContext() == rhs.header().leftContext()
+            && lhs.header().rightContext() == rhs.header().rightContext()
             && !hasPrecedenceOver(lhs, rhs)
             && !hasPrecedenceOver(rhs, lhs)
             ;
@@ -697,11 +699,12 @@ void compile (const char *code, const char *axiom_) {
                         boost::optional<Pattern> apply(std::vector<Production> const &, Pattern const &);
 
                         boost::optional<Pattern> next = apply (prods, pat);
+                        std::cout << "step " << step << ": ";
                         if (next) {
                                 pat = *next;
-                                std::cout << "step " << step << ": " << pat << '\n';
+                                std::cout << pat << '\n';
                         } else {
-                                std::cout << "no match in step " << step << '\n';
+                                std::cout << "<no match>\n";
                                 break;
                         }
                 }

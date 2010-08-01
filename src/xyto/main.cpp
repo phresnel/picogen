@@ -29,15 +29,15 @@
 
 void compile(const char*, const char*);
 
-
 int main()
 {
         // f(x) < y(x)   should yield an error "parameter names may only appear once"
         const char * code =
                 //"foo: A B --> result;"
-                "foo: FOO < A  --> result;" // should match
+                "foo0: B < [S] > A --> resultA;"
+                "foo1: B < [S] > B --> resultB;"
         ;
-        compile(code, "FOO [FOO[FOO FOO]] A [B D]");
+        compile(code, "B [x] [S foo] [x] B");
         //compile(code, "A [C] B");
 
         return 0;

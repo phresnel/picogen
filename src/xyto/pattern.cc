@@ -79,6 +79,15 @@ Pattern Pattern::subset(unsigned int u) const {
 
 
 
+Pattern Pattern::subset(unsigned int from, unsigned int to) const {
+        Pattern ret;
+        for (unsigned int i=from; i<to; ++i)
+                ret.push_back ((*this)[i]);
+        return ret;
+}
+
+
+
 bool operator == (Pattern const &lhs, Pattern const &rhs) {
         if (lhs.size() != rhs.size())
                 return false;
@@ -130,4 +139,57 @@ std::cout << "  r: " << rhs << std::endl;*/
         }
 //std::cout << "}}-----------------\n";
         return index_l == lhs.size();
+}
+
+
+template <typename iterator>
+unsigned int match(
+        iterator pattern_begin, iterator pattern_end,
+        iterator axiom_begin, iterator axiom_end,
+        bool maySkipBranchesAtExtremes
+) {
+        iterator aix = axiom_begin;
+        iterator it;
+        for (it=pattern_begin; it!=pattern_end; ++it) {
+                again:
+                if (aix == axiom_end)
+                        break;
+
+                const bool isExtreme = aix==axiom_begin||aix==axiom_end;
+
+                if (!isExtreme || maySkipBranchesAtExtremes) {
+                        const bool skipBranch = it->type()  == Segment::Letter
+                                             && aix->type() == Segment::Branch;
+                        if (skipBranch) {
+                                ++aix;
+                                goto again;
+                        }
+                }
+
+                if (*it != *aix)
+                        return false;
+                ++aix;
+        }
+        const bool fullMatch = it == pattern_end;
+        const unsigned int axiomMatchLength = aix-axiom_begin;
+
+        return fullMatch ? axiomMatchLength : 0;
+}
+
+unsigned int match (Pattern const &pattern,
+                    Pattern const &axiom,
+                    bool maySkipBranchesAtExtremes
+) {
+        return match (pattern.begin(), pattern.end(),
+                      axiom.begin(), axiom.end(),
+                      maySkipBranchesAtExtremes);
+}
+
+unsigned int rmatch (Pattern const &pattern,
+                    Pattern const &axiom,
+                    bool maySkipBranchesAtExtremes
+) {
+        return match (pattern.rbegin(), pattern.rend(),
+                      axiom.rbegin(), axiom.rend(),
+                      maySkipBranchesAtExtremes);
 }

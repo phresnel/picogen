@@ -31,9 +31,11 @@ public:
         Pattern();
         Pattern(Pattern const &rhs);
         Pattern& operator= (Pattern const &rhs);
-        bool empty() const;
 
+
+        bool empty() const;
         Pattern subset(unsigned int u) const ;
+        Pattern subset(unsigned int from, unsigned int to) const ;
 
 
 
@@ -74,5 +76,12 @@ private:
 
 bool operator == (Pattern const &lhs, Pattern const &rhs);
 bool operator <= (Pattern const &lhs, Pattern const &rhs);
+
+unsigned int match (Pattern const &pattern,
+                    Pattern const &axiom,
+                    bool maySkipBranchesAtExtremes);
+unsigned int rmatch (Pattern const &pattern,
+                     Pattern const &axiom,
+                     bool maySkipBranchesAtExtremes);
 
 #endif // PATTERN_HH_INCLUDED_20100726

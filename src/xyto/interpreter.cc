@@ -25,7 +25,7 @@
 #include "xyto_ios.hh"
 
 namespace {
-
+/*
 // Returns the number of matched Segments *in the axiom*.
 unsigned int match (Pattern const &pattern,
                  Pattern const &axiom,
@@ -52,7 +52,7 @@ unsigned int match (Pattern const &pattern,
                 return aIndex - axiomIndex;
         }
         return 0;
-}
+}*/
 
 // Returns the number of matched Segments *in the axiom*.
 unsigned int match (Production const &production,
@@ -60,20 +60,28 @@ unsigned int match (Production const &production,
                  int axiomIndex
 ) {
         const ProductionHeader &header = production.header();
-        const int mainLen = match (header.pattern(), axiom, axiomIndex);
-        if (0 == mainLen)
+
+        unsigned int mainLen = match (header.pattern(),
+                                      axiom.subset(axiomIndex),
+                                      false);
+        if (!mainLen)
                 return 0;
 
         if (!header.leftContext().empty()) {
                 Pattern const & ct = header.leftContext();
-                if (!match (ct, axiom, axiomIndex-ct.size()))
+                if (!rmatch(ct, axiom.subset(0,axiomIndex), true))
                         return 0;
         }
         if (!header.rightContext().empty()) {
                 Pattern const & ct = header.rightContext();
-                if (!match (ct, axiom, axiomIndex+mainLen))
+                if (!match(ct, axiom.subset(mainLen), true))
                         return 0;
         }
+        /*if (!header.rightContext().empty()) {
+                Pattern const & ct = header.rightContext();
+                if (!match (ct, axiom, axiomIndex+mainLen))
+                        return 0;
+        }*/
         return mainLen;
 }
 
@@ -217,7 +225,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                                         ret.push_back(tmp[i]);
 
                                 A += len;
-                                std::cout << "len=" << len << std::endl;
+                                //std::cout << "len=" << len << std::endl;
                                 break;
                         }
                 }
@@ -227,7 +235,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                         axiomWasTweaked = true;
                 } else {
                         ret.push_back (axiom[A]);
-                        std::cout << ret[ret.size()-1] << " == " << axiom[A] << std::endl;
+                        //std::cout << ret[ret.size()-1] << " == " << axiom[A] << std::endl;
                         ++A;
                 }
         }
