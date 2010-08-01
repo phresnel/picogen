@@ -155,6 +155,116 @@ Pattern applyStack (Pattern const &pattern, std::vector<Parameter> const &stack)
 
 
 
+Parameter fold (Parameter::Type op, Parameter const &lhs, Parameter const &rhs)
+{
+        Parameter ret;
+
+        // Same rule for floating point promotion as in C++
+        if (lhs.type() == Parameter::Integer &&
+            rhs.type() == Parameter::Integer) {
+                ret.setType (Parameter::Integer);
+
+                const int L = lhs.integer();
+                const int R = rhs.integer();
+
+                switch (op) {
+                case Parameter::ParameterIndex:
+                case Parameter::Integer:
+                case Parameter::Real:
+                case Parameter::Identifier:
+                        break; /*<-- fall to error. */
+
+                case Parameter::Multiplication:
+                        ret.setInteger(L * R);
+                        return ret;
+                case Parameter::Division:
+                        ret.setInteger(L / R);
+                        return ret;
+                case Parameter::Addition:
+                        ret.setInteger(L + R);
+                        return ret;
+                case Parameter::Subtraction:
+                        ret.setInteger(L - R);
+                        return ret;
+                case Parameter::LessThan:
+                        ret.setInteger(L < R);
+                        return ret;
+                case Parameter::LessEqual:
+                        ret.setInteger(L <= R);
+                        return ret;
+                case Parameter::GreaterThan:
+                        ret.setInteger(L > R);
+                        return ret;
+                case Parameter::GreaterEqual:
+                        ret.setInteger(L >= R);
+                        return ret;
+                case Parameter::LogicalAnd:
+                        ret.setInteger(L && R);
+                        return ret;
+                case Parameter::LogicalOr:
+                        ret.setInteger(L || R);
+                        return ret;
+                case Parameter::LogicalXor:
+                        ret.setInteger(!!L != !!R);
+                        return ret;
+                }
+        } else {
+                ret.setType (Parameter::Real);
+
+                const double L = lhs.type()==Parameter::Real
+                               ? lhs.real()
+                               : lhs.integer();
+                const double R = rhs.type()==Parameter::Real
+                               ? rhs.real()
+                               : rhs.integer();
+
+                switch (op) {
+                case Parameter::ParameterIndex:
+                case Parameter::Integer:
+                case Parameter::Real:
+                case Parameter::Identifier:
+                        break; /*<-- fall to error. */
+
+                case Parameter::Multiplication:
+                        ret.setReal(L * R);
+                        return ret;
+                case Parameter::Division:
+                        ret.setReal(L / R);
+                        return ret;
+                case Parameter::Addition:
+                        ret.setReal(L + R);
+                        return ret;
+                case Parameter::Subtraction:
+                        ret.setReal(L - R);
+                        return ret;
+                case Parameter::LessThan:
+                        ret.setType(Parameter::Integer);
+                        ret.setInteger(L < R);
+                        return ret;
+                case Parameter::LessEqual:
+                        ret.setType(Parameter::Integer);
+                        ret.setInteger(L <= R);
+                        return ret;
+                case Parameter::GreaterThan:
+                        ret.setType(Parameter::Integer);
+                        ret.setInteger(L > R);
+                        return ret;
+                case Parameter::GreaterEqual:
+                        ret.setType(Parameter::Integer);
+                        ret.setInteger(L >= R);
+                        return ret;
+                case Parameter::LogicalAnd:
+                case Parameter::LogicalOr:
+                case Parameter::LogicalXor:
+                        throw std::runtime_error("logical operator invoked "
+                                                 "for real-valued operands");
+                }
+        }
+
+        throw std::runtime_error("unhandled parameter-type in fold(.)");
+}
+
+
 Parameter applyStack (Parameter const &param,
                       std::vector<Parameter> const &stack
 ) {
@@ -164,8 +274,9 @@ Parameter applyStack (Parameter const &param,
 
         case Parameter::Integer:
         case Parameter::Real:
-        case Parameter::Identifier:
                 return param;
+        case Parameter::Identifier:
+                break; /*<-- fall to error. */
 
         case Parameter::Multiplication: case Parameter::Division:
         case Parameter::Addition:       case Parameter::Subtraction:
@@ -176,10 +287,21 @@ Parameter applyStack (Parameter const &param,
         case Parameter::LogicalAnd:
         case Parameter::LogicalOr:
         case Parameter::LogicalXor:
+                /*
                 Parameter ret (param);
                 ret.setLhs (applyStack (param.lhs(), stack));
                 ret.setRhs (applyStack (param.rhs(), stack));
                 return ret;
+                //*/
+                //for funny results do not apply any calculations here, but
+                //instead use commented out code above. The formulas would be
+                //inlined, e.g.
+                //        f(x) --> f(x+1) --> f((x+1)+1) --> f(((x+1)+1)+1...
+
+
+                return fold (param.type(),
+                             applyStack (param.lhs(), stack),
+                             applyStack (param.rhs(), stack));
         }
 
         throw std::runtime_error("unhandled parameter-type in applyStack(.)");

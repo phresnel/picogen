@@ -43,7 +43,8 @@ TokenVector tokenize(const char *code) {
                         }
                         tokens.push_back (Token(Token::Identifier, begin, it));
                         it = prev;
-                } else if (is_num(c) || c=='-') {
+                } else if (is_num(c)/* ||
+                           (c=='-' && it.can_peek(1) && is_num(it.peek(1)))*/) {
                         const CI begin = it;
                         CI prev = it;
 
