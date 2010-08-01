@@ -503,23 +503,60 @@ boost::optional<double> parse_probability (
 
 
 void compile_symbol_table (
+        const Parameter& param,
+        std::map<std::string, int> &symtab
+) {
+        switch (param.type()) {
+        case Parameter::Identifier:
+                if (!symtab.count(param.identifier())) {
+                        const int id_ = symtab.size();
+                        symtab[param.identifier()] = id_;
+                }
+                break;
+
+        case Parameter::Integer:
+        case Parameter::Real:
+        case Parameter::ParameterIndex:
+
+        case Parameter::Multiplication: case Parameter::Division:
+        case Parameter::Addition:       case Parameter::Subtraction:
+
+        case Parameter::LessThan:    case Parameter::LessEqual:
+        case Parameter::GreaterThan: case Parameter::GreaterEqual:
+
+        case Parameter::LogicalAnd:
+        case Parameter::LogicalOr:
+        case Parameter::LogicalXor:
+                /*compile_symbol_table (param.lhs(), symtab);
+                compile_symbol_table (param.rhs(), symtab);
+                break;*/
+                return;
+        }
+}
+
+
+
+void compile_symbol_table (
+        const ParameterList& params,
+        std::map<std::string, int> &symtab
+) {
+        for (unsigned int a=0; a<params.size(); ++a) {
+                compile_symbol_table (params[a], symtab);
+        }
+}
+
+
+
+void compile_symbol_table (
         const Pattern& pattern,
         std::map<std::string, int> &symtab
 ) {
         for (unsigned int p=0; p<pattern.size(); ++p) {
                 switch (pattern[p].type()) {
-                case Segment::Letter: {
-                        ParameterList params = pattern[p].parameterList();
-                        for (unsigned int a=0; a<params.size(); ++a) {
-                                Parameter &param = params[a];
-                                std::string const &id = param
-                                                        .identifier();
-                                if (!symtab.count(id)) {
-                                        const int id_ = symtab.size();
-                                        symtab[id] = id_;
-                                }
-                        }
-                } break;
+                case Segment::Letter:
+                        compile_symbol_table(pattern[p].parameterList(),
+                                             symtab);
+                        break;
                 case Segment::Branch:
                         compile_symbol_table(pattern[p].branch(), symtab);
                         break;
@@ -528,31 +565,97 @@ void compile_symbol_table (
 }
 
 
+boost::optional<Parameter> apply_symbol_table (
+        Parameter param,
+        std::map<std::string, int> const & symtab
+);
+boost::optional<ParameterList> apply_symbol_table (
+        ParameterList params,
+        std::map<std::string, int> const & symtab
+);
+boost::optional<Pattern> apply_symbol_table (
+        Pattern pat,
+        std::map<std::string, int> const & symtab
+);
+
+
+
+boost::optional<Parameter> apply_symbol_table (
+        Parameter param,
+        std::map<std::string, int> const & symtab
+) {
+        using boost::optional;
+
+        switch (param.type()) {
+        case Parameter::Identifier:
+                if (!symtab.count(param.identifier())) {
+                        std::cout << "error: symbol '" << param.identifier()
+                                << "' unknown." << std::endl;
+                        return optional<Parameter>();
+                }
+                param.toParameterIndex(
+                        symtab.find(param.identifier())->second);
+                break;
+
+        case Parameter::Integer:
+        case Parameter::Real:
+        case Parameter::ParameterIndex:
+                break;
+
+        case Parameter::Multiplication: case Parameter::Division:
+        case Parameter::Addition:       case Parameter::Subtraction:
+
+        case Parameter::LessThan:    case Parameter::LessEqual:
+        case Parameter::GreaterThan: case Parameter::GreaterEqual:
+
+        case Parameter::LogicalAnd:
+        case Parameter::LogicalOr:
+        case Parameter::LogicalXor: {
+                const optional<Parameter>
+                        lhs = apply_symbol_table (param.lhs(), symtab),
+                        rhs = apply_symbol_table (param.rhs(), symtab);
+                if (!lhs || !rhs)
+                        return optional<Parameter>();
+                param.setLhs(*lhs);
+                param.setRhs(*rhs);
+        } break;
+        }
+
+        return param;
+}
+
+
+boost::optional<ParameterList> apply_symbol_table (
+        ParameterList params,
+        std::map<std::string, int> const & symtab
+) {
+        using boost::optional;
+        for (unsigned int a=0; a<params.size(); ++a) {
+                const optional<Parameter> param = apply_symbol_table(params[a],
+                                                                     symtab);
+                if (!param) return optional<ParameterList>();
+                params[a] = *param;
+
+        }
+        return params;
+}
+
+
 
 boost::optional<Pattern> apply_symbol_table (
         Pattern pat,
         std::map<std::string, int> const & symtab
 ) {
+        using boost::optional;
+
         for (unsigned int p=0; p<pat.size(); ++p) {
                 switch (pat[p].type()) {
                 case Segment::Letter: {
-                        ParameterList params = pat[p].parameterList();
-                        for (unsigned int a=0; a<params.size(); ++a) {
-                                Parameter &param = params[a];
-                                if (param.type() != Parameter::Identifier) {
-                                        continue;
-                                } else {
-                                }
-                                std::string const &id = param.identifier();
-                                if (!symtab.count(id)) {
-                                        std::cout << "error: symbol '" << id
-                                                << "' unknown." << std::endl;
-                                        return boost::optional<Pattern>();
-                                }
-                                param.toParameterIndex(
-                                        symtab.find(id)->second);
-                        }
-                        pat[p].setParameterList(params);
+                        const optional<ParameterList> params =
+                                apply_symbol_table(pat[p].parameterList(),
+                                                   symtab);
+                        if (!params) return optional<Pattern>();
+                        pat[p].setParameterList(*params);
                 } break;
                 case Segment::Branch: {
                         boost::optional<Pattern> sub = apply_symbol_table(

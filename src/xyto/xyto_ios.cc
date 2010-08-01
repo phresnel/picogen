@@ -56,7 +56,7 @@ std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
                 o << rhs.real()  /*<< ":real"*/;
                 break;
         case Parameter::ParameterIndex:
-                o << rhs.parameterIndex();
+                o << "#" << rhs.parameterIndex();
                 break;
         case Parameter::Addition:        o << "(+ " << rhs.lhs() << " "
                                                     << rhs.rhs() << ")";
