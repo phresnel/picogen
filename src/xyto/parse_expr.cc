@@ -20,6 +20,7 @@
 
 #include "parse_expr.hh"
 #include <stdexcept>
+#include "xyto_ios.hh"
 
 namespace {
 
@@ -32,20 +33,52 @@ boost::optional<Parameter> parse_factor (TokenIterator it,
         case Token::Integer:
                 ret.setType(Parameter::Integer);
                 ret.setInteger(it->valueAsInteger());
-                break;
+                behind = ++it;
+                return ret;
         case Token::Real:
                 ret.setType(Parameter::Real);
                 ret.setReal(it->valueAsReal());
-                break;
+                behind = ++it;
+                return ret;
         case Token::Identifier:
                 ret.setType(Parameter::Identifier);
                 ret.setIdentifier(it->value());
-                break;
+                behind = ++it;
+                return ret;
+        case Token::Minus: {
+                ret.setType(Parameter::Negate);
+                ++it;
+                if (it == end)
+                        return boost::optional<Parameter>();
+                const boost::optional<Parameter> p =
+                                        parse_factor(it, end, behind);
+                it = behind;
+                if (!p)
+                        return boost::optional<Parameter>();
+
+                // I have implemented full constant propagation already
+                // for the next quatsch revision, but I must get this L-System
+                // thing ready ASAP.
+                // This is really only the most basic form of it so that an
+                // axiom may look like "foo(-0.5)".
+                if (p->type() == Parameter::Integer) {
+                        Parameter ret;
+                        ret.setType(Parameter::Integer);
+                        ret.setInteger (-p->integer());
+                        return ret;
+                } else if (p->type() == Parameter::Real) {
+                        Parameter ret;
+                        ret.setType(Parameter::Real);
+                        ret.setReal (-p->real());
+                        return ret;
+                }
+                ret.setUnaryParameter(*p);
+                return ret;
+        } break;
         default:
-                return false;
+                break;
         };
-        behind = ++it;
-        return ret;
+        return boost::optional<Parameter>();;
 }
 
 
@@ -137,7 +170,6 @@ boost::optional<Parameter> parse_term_tpl (
         if (strictArgCount!=-1 && argCount!=strictArgCount) {
                 return false;
         }
-
         return ret;
 }
 

@@ -33,6 +33,7 @@ public:
                 ParameterIndex, // <-- never parsed, used by compiler
 
                 // arithmetic
+                Negate,
                 Multiplication, Division,
                 Addition, Subtraction,
 
@@ -64,6 +65,9 @@ public:
         Parameter rhs () const;
         void setRhs (Parameter const &);
 
+        Parameter unaryParameter () const;
+        void setUnaryParameter (Parameter const &);
+
         void swap (Parameter&);
 private:
         Type type_;
@@ -72,7 +76,7 @@ private:
         double realval;
         std::string idval;
 
-        soft_value<Parameter> lhs_, rhs_;
+        soft_value<Parameter> lhs_, rhs_, unary_;
 };
 
 

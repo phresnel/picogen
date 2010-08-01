@@ -89,6 +89,10 @@ std::string Parameter::identifier () const {
 
 
 Parameter Parameter::lhs () const {
+        if (!lhs_) {
+                std::cerr << "Parameter::lhs() called, but "
+                             "it is NULL (type=" << type_ << ")" << std::endl;
+        }
         return *lhs_;
 }
 
@@ -101,6 +105,10 @@ void Parameter::setLhs (Parameter const &val) {
 
 
 Parameter Parameter::rhs () const {
+        if (!rhs_) {
+                std::cerr << "Parameter::rhs() called, but "
+                             "it is NULL (type=" << type_ << ")" << std::endl;
+        }
         return *rhs_;
 }
 
@@ -108,6 +116,22 @@ Parameter Parameter::rhs () const {
 
 void Parameter::setRhs (Parameter const &val) {
         rhs_ = soft_value<Parameter>(val);
+}
+
+
+
+Parameter Parameter::unaryParameter () const {
+        if (!unary_) {
+                std::cerr << "Parameter::unaryParameter() called, but "
+                             "it is NULL (type=" << type_ << ")" << std::endl;
+        }
+        return *unary_;
+}
+
+
+
+void Parameter::setUnaryParameter (Parameter const &val) {
+        unary_ = soft_value<Parameter>(val);
 }
 
 

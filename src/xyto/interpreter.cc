@@ -172,6 +172,7 @@ Parameter fold (Parameter::Type op, Parameter const &lhs, Parameter const &rhs)
                 case Parameter::Integer:
                 case Parameter::Real:
                 case Parameter::Identifier:
+                case Parameter::Negate:
                         break; /*<-- fall to error. */
 
                 case Parameter::Multiplication:
@@ -223,6 +224,7 @@ Parameter fold (Parameter::Type op, Parameter const &lhs, Parameter const &rhs)
                 case Parameter::Integer:
                 case Parameter::Real:
                 case Parameter::Identifier:
+                case Parameter::Negate:
                         break; /*<-- fall to error. */
 
                 case Parameter::Multiplication:
@@ -277,6 +279,19 @@ Parameter applyStack (Parameter const &param,
                 return param;
         case Parameter::Identifier:
                 break; /*<-- fall to error. */
+
+        case Parameter::Negate: {
+                Parameter ret = applyStack(param.unaryParameter(), stack);
+                if (ret.type() == Parameter::Integer)
+                        ret.setInteger(-ret.integer());
+                else if (ret.type() == Parameter::Real)
+                        ret.setInteger(-ret.real());
+                else
+                        throw std::runtime_error("unhandled parameter-type "
+                                                 "for negation in applyStack()"
+                                                 );
+                return ret;
+        } break;
 
         case Parameter::Multiplication: case Parameter::Division:
         case Parameter::Addition:       case Parameter::Subtraction:

@@ -518,6 +518,8 @@ void compile_symbol_table (
         case Parameter::Real:
         case Parameter::ParameterIndex:
 
+        case Parameter::Negate:
+
         case Parameter::Multiplication: case Parameter::Division:
         case Parameter::Addition:       case Parameter::Subtraction:
 
@@ -602,6 +604,15 @@ boost::optional<Parameter> apply_symbol_table (
         case Parameter::ParameterIndex:
                 break;
 
+        case Parameter::Negate: {
+                const optional<Parameter>
+                    p = apply_symbol_table (param.unaryParameter(), symtab);
+                if (!p)
+                        return optional<Parameter>();
+                param.setUnaryParameter(*p);
+                break;
+        }
+
         case Parameter::Multiplication: case Parameter::Division:
         case Parameter::Addition:       case Parameter::Subtraction:
 
@@ -618,7 +629,8 @@ boost::optional<Parameter> apply_symbol_table (
                         return optional<Parameter>();
                 param.setLhs(*lhs);
                 param.setRhs(*rhs);
-        } break;
+                break;
+        }
         }
 
         return param;
@@ -733,7 +745,6 @@ boost::optional<Production> parse_production (TokenIterator it,
                 (*bodies)[i].setProbability((*bodies)[i].probability() / sum);
         it = behindBody;
         //---------------------------------------------------------
-
 
 
         Production ret;
@@ -869,6 +880,7 @@ void compile (const char *code, const char *axiom_) {
         std::set<std::string> names;
         TokenIterator it = tokens.begin();
         const TokenIterator &end = tokens.end();
+
         //char c = 'a';
         while (it != end) {
                 TokenIterator behind;

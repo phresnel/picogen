@@ -44,6 +44,8 @@ public:
                 ptr.swap (rhs.ptr);
         }
 
+        operator bool () const { return (bool)ptr; }
+
         T & operator*() const { return *ptr; }
         T * operator->() const { return ptr.get(); }
 

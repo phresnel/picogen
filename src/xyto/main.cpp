@@ -33,20 +33,20 @@ int main()
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
-                        "foo: foo(x) --> foo(-x+ x*x);"
+                        "foo: foo(x) --> foo(-2*x);"
                 ;
-                compile(code, "foo(5)");
+                compile(code, "foo(-5)");
                 return 1;
         }
 
         if (0) {
-                const char *expr = "1<x";
+                const char *expr = "-x";
 
                 const TokenVector tokens = tokenize(expr);
                 std::cout << expr << ": " << tokens << std::endl;
                 std::cout << "------\n";
                 TokenIterator behind;
-                const boost::optional<Parameter> t = parse_logical(tokens.begin(),
+                const boost::optional<Parameter> t = parse_expr(tokens.begin(),
                                                                tokens.end(),
                                                                behind);
                 if (t) std::cout << "\n{\n" << *t << "\n}\n";
