@@ -31,15 +31,43 @@ public:
         Pattern();
         Pattern(Pattern const &rhs);
         Pattern& operator= (Pattern const &rhs);
-
-        Segment const& operator[] (unsigned int i) const;
-        Segment & operator[] (unsigned int i);
-
-        unsigned int size() const;
-        void push_back(Segment const &sym);
         bool empty() const;
 
         Pattern subset(unsigned int u) const ;
+
+
+
+        // -- array/push/pop --------------------------------------------------
+        Segment const& operator[] (unsigned int i) const;
+        Segment&       operator[] (unsigned int i);
+
+        unsigned int size() const;
+        void push_back(Segment const &sym);
+        // --------------------------------------------------------------------
+
+
+
+        // -- iteration -------------------------------------------------------
+        typedef std::vector<Segment>::iterator
+                                      iterator;
+        typedef std::vector<Segment>::const_iterator
+                                      const_iterator;
+        typedef std::vector<Segment>::reverse_iterator
+                                      reverse_iterator;
+        typedef std::vector<Segment>::const_reverse_iterator
+                                      const_reverse_iterator;
+
+        iterator               begin()         { return symbols.begin(); }
+        const_iterator         begin() const   { return symbols.begin(); }
+        iterator               end()           { return symbols.end(); }
+        const_iterator         end() const     { return symbols.end(); }
+        reverse_iterator       rbegin()        { return symbols.rbegin(); }
+        const_reverse_iterator rbegin() const  { return symbols.rbegin(); }
+        reverse_iterator       rend()          { return symbols.rend(); }
+        const_reverse_iterator rend() const    { return symbols.rend(); }
+        // --------------------------------------------------------------------
+
+
 private:
         std::vector<Segment> symbols;
 };

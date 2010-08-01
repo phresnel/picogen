@@ -227,6 +227,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                         axiomWasTweaked = true;
                 } else {
                         ret.push_back (axiom[A]);
+                        std::cout << ret[ret.size()-1] << " == " << axiom[A] << std::endl;
                         ++A;
                 }
         }
