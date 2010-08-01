@@ -85,6 +85,14 @@ TokenVector tokenize(const char *code) {
                         tokens.push_back (Token(Token::RightBracket, it, it.next()));
                 } else if (c == ',') {
                         tokens.push_back (Token(Token::Comma, it, it.next()));
+                } else if (c == '+') {
+                        tokens.push_back (Token(Token::Plus, it, it.next()));
+                } else if (c == '-') {
+                        tokens.push_back (Token(Token::Minus, it, it.next()));
+                } else if (c == '*') {
+                        tokens.push_back (Token(Token::Asterisk, it, it.next()));
+                } else if (c == '/') {
+                        tokens.push_back (Token(Token::Slash, it, it.next()));
                 } else if (!is_white(c)) {
                         std::cerr << "tokenization error in "
                              << "line " << it.row() << ", column " << it.column()

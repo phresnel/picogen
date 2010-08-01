@@ -21,107 +21,31 @@
 #ifndef XYTO_IOS_HH_INCLUDED_20100726
 #define XYTO_IOS_HH_INCLUDED_20100726
 
-inline std::ostream& operator<< (std::ostream& o, Pattern const& rhs);
+#include <vector>
+#include <fstream>
 
-inline std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
-        switch (rhs.type()) {
-        case Parameter::Identifier:
-                o << "$" << rhs.identifier() /*<< ":id"*/;
-                break;
-        case Parameter::Integer:
-                o << "i" << rhs.integer() /*<< ":int"*/;
-                break;
-        case Parameter::Real:
-                o << "r" << rhs.real()  /*<< ":real"*/;
-                break;
-        case Parameter::ParameterIndex:
-                o << "#" << rhs.parameterIndex() /*<< ":pidx"*/;
-                break;
-        }
-        return o;
-}
+class Token;
+typedef std::vector<Token> TokenVector;
+class Pattern;
+class Parameter;
+class ParameterList;
+class Segment;
+class ProductionHeader;
+class ProductionBody;
+class ProductionBody;
+class Production;
 
-inline std::ostream& operator<< (std::ostream& o, ParameterList const& rhs) {
-        if (rhs.size()) {
-                o << "(";
-                for (unsigned int i=0; i<rhs.size(); ++i) {
-                        if (i) o << ", ";
-                        o << rhs[i];
-                }
-                o << ")";
-        }
-        return o;
-}
-
-
-inline std::ostream& operator<< (std::ostream& o, Segment const& rhs) {
-        switch (rhs.type()) {
-        case Segment::Letter:
-                o << rhs.name();
-                o << rhs.parameterList();
-                break;
-        case Segment::Branch:
-                o << "[" << rhs.branch() << "]";
-                break;
-        }
-        return o;
-}
-
-inline std::ostream& operator<< (std::ostream& o, Pattern const& rhs) {
-        if (rhs.size()) {
-                o << rhs[0];
-        }
-        for (unsigned int i=1; i<rhs.size(); ++i) {
-                o << " " << rhs[i];
-        }
-        return o;
-}
-
-inline std::ostream& operator<< (std::ostream& o, ProductionHeader const& rhs){
-        o << rhs.name() << ": ";
-
-        if (!rhs.leftContext().empty())
-                o << rhs.leftContext() << " < ";
-
-        o << rhs.pattern();
-
-        if (!rhs.rightContext().empty())
-                o << " > " << rhs.rightContext();
-        return o;
-}
-
-inline std::ostream& operator<< (std::ostream& o, ProductionBody const& rhs) {
-        o << rhs.pattern();
-        return o;
-}
-
-inline std::ostream& operator<< (std::ostream& o,
-                                 std::vector<ProductionBody> const& rhs) {
-        if (rhs.size() == 1) {
-                o << rhs[0].pattern();
-        } else if (rhs.size() > 1) {
-                o << "\n";
-                for (unsigned int i=0; i<rhs.size(); ++i) {
-                        o << "        "
-                          << "(" << rhs[i].probability() << ") "
-                          << rhs[i].pattern() << "\n";
-                }
-        }
-        return o;
-}
-
-inline std::ostream& operator<< (std::ostream& o, Production const& rhs) {
-        o << rhs.header() << " --> " << rhs.bodies() << ";";
-        return o;
-}
-
-inline std::ostream& operator<< (std::ostream &o,
-                                 std::vector<Production> const &prods)
-{
-        for (unsigned int i=0; i<prods.size(); ++i) {
-                o << prods[i] << '\n';
-        }
-        return o;
-}
+std::ostream& operator<< (std::ostream&, Token const&);
+std::ostream& operator<< (std::ostream&, TokenVector const&);
+std::ostream& operator<< (std::ostream&, Pattern const&);
+std::ostream& operator<< (std::ostream&, Parameter const&);
+std::ostream& operator<< (std::ostream&, ParameterList const&);
+std::ostream& operator<< (std::ostream&, Segment const&);
+std::ostream& operator<< (std::ostream&, Pattern const&);
+std::ostream& operator<< (std::ostream&, ProductionHeader const&);
+std::ostream& operator<< (std::ostream&, ProductionBody const&);
+std::ostream& operator<< (std::ostream&, std::vector<ProductionBody>const&);
+std::ostream& operator<< (std::ostream&, Production const&);
+std::ostream& operator<< (std::ostream&, std::vector<Production>const&);
 
 #endif // XYTO_IOS_HH_INCLUDED_20100726

@@ -22,6 +22,8 @@
 #define PARAMETER_HH_INCLUDED_20100726
 
 #include <string>
+#include "soft_value.hh"
+
 
 class Parameter {
 public:
@@ -29,7 +31,9 @@ public:
                 Identifier,
                 Integer,
                 Real,
-                ParameterIndex // never parsed
+                ParameterIndex, // <-- never parsed, used by compiler
+                Multiplication, Division,
+                Addition, Subtraction
         };
 
         Type type() const;
@@ -45,12 +49,23 @@ public:
 
         void toParameterIndex (int index);
         int parameterIndex() const;
+
+        Parameter lhs () const;
+        void setLhs (Parameter const &) const;
+
+        Parameter rhs () const;
+        void setRhs (Parameter const &) const;
+
+        void swap (Parameter&);
 private:
         Type type_;
         int intval;
         int index;
         double realval;
         std::string idval;
+
+        soft_value<Parameter> lhs_, rhs_;
 };
+
 
 #endif // PARAMETER_HH_INCLUDED_20100726

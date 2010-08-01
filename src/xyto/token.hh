@@ -33,7 +33,10 @@ public:
                 Colon, Semicolon, Comma,
                 LeftParen, RightParen,     // ()
                 LeftBracket, RightBracket, // []
-                Identifier, Real, Integer
+                Identifier, Real, Integer,
+
+                Plus, Minus,    // + -
+                Asterisk, Slash // * /
         };
 
         Token (Type type_,
