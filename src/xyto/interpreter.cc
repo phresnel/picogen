@@ -189,9 +189,12 @@ Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) 
 
 } // namespace {
 
+#include "kiss.hh"
 
-
-boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern const &axiom) {
+boost::optional<Pattern> apply(std::vector<Production> const &prods,
+                               Pattern const &axiom,
+                               kallisto::random::marsaglia::UNI &rng
+) {
         bool axiomWasTweaked = false;
         Pattern ret;
         for (unsigned int A=0; A<axiom.size(); ) {
@@ -205,7 +208,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods, Pattern con
                                 const Pattern &lcPattern = prods[P].header().leftContext();
                                 const Pattern &rcPattern = prods[P].header().rightContext();
                                 const Pattern &mPattern  = prods[P].header().pattern();
-                                const Pattern &body = prods[P].pickBody().pattern();
+                                const Pattern &body = prods[P].pickBody(rng).pattern();
 
                                 std::vector<Parameter> stack(16);
 

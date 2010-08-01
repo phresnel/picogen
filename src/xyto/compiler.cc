@@ -769,7 +769,7 @@ void generate_warnings (std::vector<Production> const &prods) {
 
 } // namespace {
 
-
+#include "kiss.hh"
 void compile (const char *code, const char *axiom_) {
         const TokenVector tokens = tokenize (code);
 
@@ -813,11 +813,19 @@ void compile (const char *code, const char *axiom_) {
         } else {
                 std::cout << "axiom: " << *ax << '\n';
 
+                kallisto::random::marsaglia::UNI rng(1,2,3,4);
+                rng.skip(1024);
                 Pattern pat = *ax;
-                for (int step=0; step<6; ++step) {
-                        boost::optional<Pattern> apply(std::vector<Production> const &, Pattern const &);
+                for (int step=0; step<32; ++step) {
+                        boost::optional<Pattern> apply(
+                                std::vector<Production> const &,
+                                Pattern const &,
+                                kallisto::random::marsaglia::UNI &rng
+                        );
 
-                        boost::optional<Pattern> next = apply (prods, pat);
+                        boost::optional<Pattern> next = apply (prods,
+                                                               pat,
+                                                               rng);
                         std::cout << "step " << step+1 << ": ";
                         if (next) {
                                 pat = *next;

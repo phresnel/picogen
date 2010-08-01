@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "production.hh"
+#include "kiss.hh"
 
 ProductionHeader Production::header() const {
                 return header_;
@@ -43,9 +44,17 @@ std::vector<ProductionBody> & Production::bodies() {
 }
 
 
-
-ProductionBody Production::pickBody() const {
-        return bodies_[0];
+#include <iostream>
+ProductionBody Production::pickBody(
+        kallisto::random::marsaglia::UNI &rng
+) const {
+        double p = rng();
+        int i = -1;
+        do {
+                ++i;
+                p-=bodies_[i].probability();
+        } while (p>0);
+        return bodies_[i];
 }
 
 

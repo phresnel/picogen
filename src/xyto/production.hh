@@ -25,6 +25,10 @@
 #include "production_body.hh"
 #include <vector>
 
+namespace kallisto { namespace random { namespace marsaglia {
+        class UNI;
+} } }
+
 class Production {
 public:
         Production();
@@ -39,7 +43,7 @@ public:
         std::vector<ProductionBody> bodies () const;
         std::vector<ProductionBody>& bodies ();
         void setBodies(std::vector<ProductionBody> const &);
-        ProductionBody pickBody() const;
+        ProductionBody pickBody(kallisto::random::marsaglia::UNI &) const;
 private:
         ProductionHeader header_;
         std::vector<ProductionBody> bodies_;
