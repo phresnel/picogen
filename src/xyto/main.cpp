@@ -24,8 +24,10 @@
 #include "xyto_ios.hh"
 #include "tokenize.hh"
 #include "parse_expr.hh"
+#include "lsystem.hh"
+#include <boost/optional.hpp>
 
-void compile(const char*, const char*);
+boost::optional<LSystem> compile(const char*, const char*);
 
 
 int main()
@@ -33,10 +35,14 @@ int main()
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
-                        "foo: foo(x) : if (x>=0) --> foo(-2*x);"
-                        "bar: foo(x) --> foo(x*x);"
+                        "foo: foo(x) --> bar(1+x);"
+                        "bar: bar(x) --> foo(1+x);"
                 ;
-                compile(code, "foo(5)");
+                boost::optional<LSystem> lsys = compile(code, "foo(-100)");
+                std::cout << "[0] " << lsys->run(0) << std::endl;
+                std::cout << "[1] " << lsys->run(1) << std::endl;
+                std::cout << "[2] " << lsys->run(2) << std::endl;
+                std::cout << "[3] " << lsys->run(3) << std::endl;
                 return 1;
         }
 

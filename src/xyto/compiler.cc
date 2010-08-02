@@ -31,6 +31,8 @@
 #include "xyto_ios.hh"
 #include "parse_expr.hh"
 
+#include "lsystem.hh"
+
 namespace {
 
 Pattern parse_pattern (TokenIterator it, TokenIterator end,
@@ -962,7 +964,7 @@ void generate_warnings (std::vector<Production> const &prods) {
 } // namespace {
 
 #include "kiss.hh"
-void compile (const char *code, const char *axiom_) {
+boost::optional<LSystem> compile (const char *code, const char *axiom_) {
         const TokenVector tokens = tokenize (code);
 
         std::vector<Production> prods;
@@ -980,12 +982,12 @@ void compile (const char *code, const char *axiom_) {
                         if (names.count(op->header().name())) {
                                 std::cerr << "error: multiple productions are "
                                  << "named '" << op->header().name() << "'.\n";
-                                return;
+                                return boost::optional<LSystem>();
                         }
                         names.insert(op->header().name());
                         prods.push_back(*op);
                 } else {
-                        return;
+                        return boost::optional<LSystem>();
                 }
                 it = behind;
         }
@@ -1003,8 +1005,13 @@ void compile (const char *code, const char *axiom_) {
         if (!ax) {
                 std::cout << "axiom '" << axiom_ << "' is not valid."
                           << std::endl;
+                return boost::optional<LSystem>();
         } else {
-                std::cout << "axiom: " << *ax << '\n';
+                LSystem sys;
+                sys.setAxiom (*ax);
+                sys.setProductions(prods);
+                return sys;
+                /*std::cout << "axiom: " << *ax << '\n';
 
                 kallisto::random::marsaglia::UNI rng(1,2,3,4);
                 rng.skip(1024);
@@ -1027,6 +1034,6 @@ void compile (const char *code, const char *axiom_) {
                                 std::cout << "<no match>\n";
                                 break;
                         }
-                }
+                }*/
         }
 }
