@@ -27,6 +27,18 @@ Parameter::Type Parameter::type() const {
 
 
 
+double Parameter::toReal () const {
+        if (type_ == Real)
+                return realval;
+        if (type_ == Integer)
+                return intval;
+        std::cout << "runtime error: Parameter::toReal() "
+                "called for non-number\n";
+        return 0;
+}
+
+
+
 void Parameter::setType (Parameter::Type type) {
         type_ = type;
 }

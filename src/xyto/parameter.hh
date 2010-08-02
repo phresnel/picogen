@@ -56,6 +56,8 @@ public:
         double real () const;
         std::string identifier () const;
 
+        double toReal () const ;
+
         void toParameterIndex (int index);
         int parameterIndex() const;
 
