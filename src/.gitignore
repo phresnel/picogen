@@ -86,6 +86,8 @@ qt-frontend/widgets/Picohelp/help-content
 qt-frontend/widgets/Picohelp/debug/
 qt-frontend/widgets/Picohelp/release/
 
+xyto/Xytoplax/Makefile
+xyto/Xytoplax/Xytoplax
 
 upstream/*
 BUILD/

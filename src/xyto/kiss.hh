@@ -21,6 +21,8 @@
 #ifndef KISS_HH_INCLUDED_20100301
 #define KISS_HH_INCLUDED_20100301
 
+#include <inttypes.h>
+
 // Implemented after:
 // [0] http://www.bobwheeler.com/statistics/Password/MarsagliaPost.txt
 // [1a] http://www.math.niu.edu/~rusin/known-math/99/RNG
