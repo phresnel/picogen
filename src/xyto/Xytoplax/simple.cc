@@ -24,6 +24,7 @@
 #include "simple.hh"
 
 #include <QGraphicsView>
+#include <QMessageBox>
 
 #include "ui_simple.h"
 
@@ -42,10 +43,11 @@ Simple::Simple(QWidget *parent) :
 
 
         ui->sourceCode->setPlainText(
-        "f1:   foo --> [1] foo [left foo] \n"
-        "              [1] foo [right foo] \n"
-        "              [1.3] foo foo"
-        ";  \n"
+                        "f0:  x(x)  -->  f(x)   [left(75)  x(x*0.75)]   f(x)   [right(75)  x(x*0.75)]   x(0.5*x);\n"
+                        //"                [left(45) f(x*0.5)] \n"
+                        //"                f(x) right(5) \n"
+                        //"                [right(45) f(x*0.5)]\n"
+                        //"                f(x*0.5);"
         );
 }
 
@@ -85,15 +87,27 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
                 if (seg.type() == Segment::Branch) {
                         draw (seg.branch(), turtle, scene);
                 } else if (seg.type() == Segment::Letter) {
-                        if (seg.name() == "foo") {
+                        if (seg.name() == "left") {
+                                if (!seg.parameterList().empty()) {
+                                        turtle.turnLeft(seg.parameterList()[0].toReal() * 0.0174532925);
+                                } else {
+                                        turtle.turnLeft(0.5);
+                                }
+                        } else if (seg.name() == "right") {
+                                if (!seg.parameterList().empty())
+                                        turtle.turnRight(seg.parameterList()[0].toReal() * 0.0174532925);
+                                else
+                                        turtle.turnRight(0.5);
+                        } else if (seg.name() == "f"){
                                 const Turtle oldBoy = turtle;
-                                turtle.forward(10);
+
+                                if (!seg.parameterList().empty())
+                                        turtle.forward(seg.parameterList()[0].toReal());
+                                else
+                                        turtle.forward(1);
+
                                 scene.addLine(oldBoy.x, -oldBoy.y,
                                               turtle.x, -turtle.y);
-                        } else if (seg.name() == "left") {
-                                turtle.turnLeft(0.5);
-                        } else if (seg.name() == "right") {
-                                turtle.turnRight(0.5);
                         }
                 }
         }
@@ -101,16 +115,17 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
 
 
 
+
 void Simple::on_pushButton_clicked() {
         const boost::optional<LSystem> lsys =
                 compile(ui->sourceCode->toPlainText().toAscii(),
-                        "foo");
+                        "x(25)");
         if (!lsys) {
                 ui->outputPattern->setPlainText("<invalid L-System!>");
                 return;
         }
         std::stringstream ss;
-        for (unsigned int i=0; i<10; ++i) {
+        for (unsigned int i=0; i<5; ++i) {
                 const Pattern pat = lsys->run(i);
                 ss << pat << '\n';
         }
@@ -120,7 +135,7 @@ void Simple::on_pushButton_clicked() {
         //--
         QGraphicsScene *scene = new QGraphicsScene (this);
         scene->addEllipse(-10,-10,20,20);
-        draw (lsys->run(10), Turtle(), *scene);
+        draw (lsys->run(8), Turtle(), *scene);
 
         ui->graphicsView->setScene(scene);
 
