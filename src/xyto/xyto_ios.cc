@@ -145,6 +145,9 @@ std::ostream& operator<< (std::ostream& o, ProductionHeader const& rhs){
 
         if (!rhs.rightContext().empty())
                 o << " > " << rhs.rightContext();
+
+        if (rhs.condition())
+                o << " : if (" << *rhs.condition() << ") ";
         return o;
 }
 

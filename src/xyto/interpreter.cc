@@ -79,6 +79,8 @@ unsigned int match (Production const &production,
                         return 0;
         }
 
+        // COND
+
         return mainLen;
 }
 
@@ -377,11 +379,12 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods,
                         const int len = match(prods[P], axiom, A);
                         const bool doesMatch = len > 0;
                         if (doesMatch) {
-                                any = true;
 
-                                const Pattern &lcPattern = prods[P].header().leftContext();
-                                const Pattern &rcPattern = prods[P].header().rightContext();
-                                const Pattern &mPattern  = prods[P].header().pattern();
+                                const ProductionHeader &header
+                                                         = prods[P].header();
+                                const Pattern &lcPattern = header.leftContext();
+                                const Pattern &rcPattern = header.rightContext();
+                                const Pattern &mPattern  = header.pattern();
                                 const Pattern &body = prods[P].pickBody(rng).pattern();
 
                                 std::vector<Parameter> stack(16);
@@ -393,12 +396,21 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods,
                                 fillStack (mPattern,  axiom, A, 0, stack);
                                 fillStack (rcPattern, axiom, A, mPattern.size(), stack);
 
+                                // Check condition.
+                                if (header.condition()) {
+                                        const int cond =
+                                                applyStack(*header.condition(),
+                                                           stack).integer();
+                                        if (!cond)
+                                                continue;
+                                }
+
                                 const Pattern tmp = applyStack(body, stack);
                                 for (unsigned int i=0; i<tmp.size(); ++i)
                                         ret.push_back(tmp[i]);
 
                                 A += len;
-                                //std::cout << "len=" << len << std::endl;
+                                any = true;
                                 break;
                         }
                 }

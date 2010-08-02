@@ -21,29 +21,6 @@
 #include "pattern.hh"
 #include "production_header.hh"
 
-ProductionHeader::ProductionHeader() {
-}
-
-
-
-ProductionHeader::ProductionHeader (ProductionHeader const &rhs)
-: name_(rhs.name_)
-, leftContext_(rhs.leftContext_)
-, rightContext_(rhs.rightContext_)
-, pattern_(rhs.pattern_)
-{
-}
-
-
-
-ProductionHeader& ProductionHeader::operator= (ProductionHeader const &rhs) {
-        name_ = rhs.name_;
-        leftContext_ = rhs.leftContext_;
-        rightContext_ = rhs.rightContext_;
-        pattern_ = rhs.pattern_;
-        return *this;
-}
-
 
 
 std::string ProductionHeader::name() const {
@@ -54,6 +31,18 @@ std::string ProductionHeader::name() const {
 
 void ProductionHeader::setName(std::string const &name) {
         name_ = name;
+}
+
+
+
+boost::optional<Parameter> ProductionHeader::condition () const {
+        return condition_;
+}
+
+
+
+void ProductionHeader::setCondition (Parameter const &cond) {
+        condition_ = cond;
 }
 
 

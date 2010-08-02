@@ -33,9 +33,10 @@ int main()
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
-                        "foo: foo(x) --> foo(-2*x);"
+                        "foo: foo(x) : if (x>=0) --> foo(-2*x);"
+                        "bar: foo(x) --> foo(x*x);"
                 ;
-                compile(code, "foo(-5)");
+                compile(code, "foo(5)");
                 return 1;
         }
 

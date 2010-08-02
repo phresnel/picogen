@@ -74,6 +74,10 @@ inline bool hasPrecedenceOver (Production const &lhs, Production const &rhs) {
         else if (contextSizeLhs < contextSizeRhs)
                 return false;
 
+        // Prefer conditioned.
+        if (lhs.header().condition() && !rhs.header().condition())
+                return true;
+
         return false;
 }
 
@@ -365,7 +369,9 @@ boost::optional<ProductionHeader> parse_production_header (
         }
         it = behindMatchPatterns;
 
-        if (it == end || it->type() != Token::TransformTo) {
+        if (it == end || (it->type() != Token::TransformTo
+                          && it->type() != Token::Colon)
+        ) {
                 TokenIterator i = it - 1;
                 std::cerr <<
                    "error: expected body (starting with '-->') for "
@@ -375,9 +381,76 @@ boost::optional<ProductionHeader> parse_production_header (
                    << "'" << i->value() << "'" << std::endl;
                 return boost::optional<ProductionHeader>();
         }
-        // Checkpoint: We just passed "-->"
+        // Checkpoint: We just passed "-->" or ":"
+        boost::optional<Parameter> condition;
+        if (it->type() == Token::Colon) {
+                ++it;
 
-        ++it;
+                if (it == end
+                    || it->type() != Token::Identifier
+                    || it->value() != "if"
+                ) {
+                        TokenIterator i = it - 1;
+                        std::cerr <<
+                           "error: expected condition (starting with "
+                           "': if(...)' for production in line "
+                           << i->from().next().row() << ", column "
+                           << i->from().next().column() << ", but found "
+                           << "'" << i->value() << "'" << std::endl;
+                        return boost::optional<ProductionHeader>();
+                }
+                ++it;
+                if (it == end || it->type() != Token::LeftParen) {
+                        TokenIterator i = it - 1;
+                        std::cerr <<
+                           "error: expected '(' after 'if' in line "
+                           << i->from().next().row() << ", column "
+                           << i->from().next().column() << ", but found "
+                           << "'" << i->value() << "'" << std::endl;
+                        return boost::optional<ProductionHeader>();
+                }
+                ++it;
+
+                //boost::optional<Parameter> cond = ;
+                condition = parse_logical(it , end, behind);
+                if (!condition) {
+                        TokenIterator i = it==end ? it-1 : it;
+                        std::cerr <<
+                           "error: expected condition within '(' and ')' in "
+                           "line "
+                           << i->from().next().row() << ", column "
+                           << i->from().next().column() << ", but found "
+                           << "'" << i->value() << "'" << std::endl;
+                        return boost::optional<ProductionHeader>();
+                }
+
+                it = behind;
+                if (it == end || it->type() != Token::RightParen) {
+                        TokenIterator i = it==end ? it-1 : it;
+                        std::cerr <<
+                           "error: expected ')' after condition in line "
+                           << i->from().next().row() << ", column "
+                           << i->from().next().column() << ", but found "
+                           << "'" << i->value() << "'" << std::endl;
+                        return boost::optional<ProductionHeader>();
+                }
+                ++it;
+
+                if (it == end || it->type() != Token::TransformTo) {
+                        TokenIterator i = it==end ? it-1 : it;
+                        std::cerr <<
+                           "error: expected body (starting with '-->') for "
+                           " production in line "
+                           << i->from().next().row() << ", column "
+                           << i->from().next().column() << ", but found "
+                           << "'" << i->value() << "'" << std::endl;
+                        return boost::optional<ProductionHeader>();
+                }
+                ++it;
+
+        } else {
+                ++it;
+        }
         behind = it;
 
         ProductionHeader ret;
@@ -385,6 +458,8 @@ boost::optional<ProductionHeader> parse_production_header (
         ret.setLeftContext(leftContext);
         ret.setRightContext(rightContext);
         ret.setPattern(mainPattern);
+        if (condition) ret.setCondition(*condition);
+
         return ret;
 }
 
@@ -689,6 +764,7 @@ boost::optional<Production> parse_production (TokenIterator it,
                                               TokenIterator end,
                                               TokenIterator &behind
 ) {
+        using boost::optional;
         if (it==end) {
                 std::cerr << "found nothing" << std::endl;
                 return boost::optional<Production>();
@@ -761,7 +837,7 @@ boost::optional<Production> parse_production (TokenIterator it,
                 compile_symbol_table(header->pattern(), symtab);
                 compile_symbol_table(header->rightContext(), symtab);
 
-                const boost::optional<Pattern>
+                const optional<Pattern>
                      newL = apply_symbol_table(header->leftContext(), symtab),
                      newC = apply_symbol_table(header->pattern(), symtab),
                      newR = apply_symbol_table(header->rightContext(), symtab);
@@ -779,6 +855,20 @@ boost::optional<Production> parse_production (TokenIterator it,
                 ph.setLeftContext (*newL);
                 ph.setPattern(*newC);
                 ph.setRightContext (*newR);
+
+                if (header->condition()) {
+                        const optional<Parameter> cond = apply_symbol_table(
+                                                *header->condition(), symtab);
+                        if (!cond) {
+                                std::cout <<
+                                "internal error: after apply_symbol_table"
+                                "(), cond is null"
+                                << std::endl;
+                                return boost::optional<Production>();
+                        }
+                        ph.setCondition (*cond);
+                }
+
                 ret.setHeader (ph);
 
                 for (unsigned int p=0; p<(*bodies).size(); ++p) {

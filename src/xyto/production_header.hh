@@ -22,20 +22,20 @@
 #define PRODUCTION_HEADER_HH_INCLUDED_20100726
 
 #include <string>
+#include <boost/optional.hpp>
 #include "pattern.hh"
 
 class ProductionHeader {
 public:
-        ProductionHeader();
-        ProductionHeader (ProductionHeader const &rhs);
-        ProductionHeader& operator= (ProductionHeader const &rhs);
-
         std::string name() const;
         void setName(std::string const &name);
 
         Pattern leftContext()  const;
         Pattern rightContext() const;
         Pattern pattern() const;
+
+        boost::optional<Parameter> condition () const ;
+        void setCondition (Parameter const &cond);
 
         void setLeftContext(Pattern const & p);
         void setRightContext(Pattern const & p);
@@ -46,6 +46,7 @@ private:
         Pattern leftContext_,
                 rightContext_,
                 pattern_;
+        boost::optional<Parameter> condition_;
 };
 
 #endif // PRODUCTION_HEADER_HH_INCLUDED_20100726
