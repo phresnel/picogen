@@ -35,14 +35,18 @@ int main()
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
-                        "foo: foo(x) --> bar(1+x);"
-                        "bar: bar(x) --> foo(1+x);"
+
+                        "f0:   foo  --> foo bar;  \n"
+                        "f1:   bar  --> frob;  \n"
+                        "f2:   frob --> [1] foo [left foo] \n"
+                        "               [1] foo [right foo] \n"
+                        ";  \n"
+                        //"f0: foo --> [foo];"
                 ;
-                boost::optional<LSystem> lsys = compile(code, "foo(-100)");
-                std::cout << "[0] " << lsys->run(0) << std::endl;
-                std::cout << "[1] " << lsys->run(1) << std::endl;
-                std::cout << "[2] " << lsys->run(2) << std::endl;
-                std::cout << "[3] " << lsys->run(3) << std::endl;
+                boost::optional<LSystem> lsys = compile(code, "foo");
+                for (int i=0; i<10; ++i) {
+                        std::cout << "[" << i << "] " << lsys->run(i) << std::endl;
+                }
                 return 1;
         }
 

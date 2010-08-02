@@ -371,6 +371,7 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods,
                                Pattern const &axiom,
                                kallisto::random::marsaglia::UNI &rng
 ) {
+        using boost::optional;
         bool axiomWasTweaked = false;
         Pattern ret;
         for (unsigned int A=0; A<axiom.size(); ) {
@@ -415,11 +416,29 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods,
                         }
                 }
                 if (any) {
-                        // NOTE: this is actually wrond. in many cases, doesMatch will be true,
+                        // NOTE: this is actually wrong. in many cases, doesMatch will be true,
                         //       but the resultant axiom wasn't really tweaked
                         axiomWasTweaked = true;
                 } else {
-                        ret.push_back (axiom[A]);
+                        if (axiom[A].type() == Segment::Branch) {
+                                optional<Pattern> sub = apply(prods,
+                                                              axiom[A].branch(),
+                                                              rng);
+                                //std::cout << ">" << axiom[A].branch() << std::endl;
+                                if (sub) {
+                                        axiomWasTweaked = true;
+                                        Segment branch = axiom[A];
+                                        branch.setBranch(*sub);
+                                        ret.push_back(branch);
+                                        /*std::cout << "!" << *sub << std::endl;
+                                        std::cout << "=" << axiom[A].branch() << std::endl;
+                                        std::cout << "=" << branch << std::endl;*/
+                                } else {
+                                        ret.push_back (axiom[A]);
+                                }
+                        } else {
+                                ret.push_back (axiom[A]);
+                        }
                         //std::cout << ret[ret.size()-1] << " == " << axiom[A] << std::endl;
                         ++A;
                 }

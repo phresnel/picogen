@@ -102,6 +102,8 @@ bool operator == (Pattern const &lhs, Pattern const &rhs) {
 #include <iostream>
 #include "production.hh"
 #include "xyto_ios.hh"
+
+
 bool operator <= (Pattern const &lhs, Pattern const &rhs) {
         /*if (lhs.size()>rhs.size())
                 return false;*/
@@ -140,6 +142,8 @@ std::cout << "  r: " << rhs << std::endl;*/
 //std::cout << "}}-----------------\n";
         return index_l == lhs.size();
 }
+
+
 
 
 template <typename iterator>
