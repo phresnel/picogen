@@ -27,7 +27,7 @@
 #include "lsystem.hh"
 #include <boost/optional.hpp>
 
-boost::optional<LSystem> compile(const char*, const char*);
+boost::optional<LSystem> compile(const char*);
 
 
 int main()
@@ -36,6 +36,7 @@ int main()
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
                         "theta=12.5;\n"
+                        "axiom: f;\n"
                         "f: f(theta) --> f(theta);"
                         /*"f0:   foo  --> foo bar;  \n"
                         "f1:   bar  --> frob [;  \n"
@@ -44,7 +45,7 @@ int main()
                         ";  \n"*/
                         //"f0: foo --> [foo];"
                 ;
-                boost::optional<LSystem> lsys = compile(code, "foo");
+                boost::optional<LSystem> lsys = compile(code);
 
                 if (lsys) {
                         std::cout << "------\n";

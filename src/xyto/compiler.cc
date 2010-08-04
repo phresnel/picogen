@@ -274,14 +274,41 @@ bool contains_unknowns (Pattern const &pat) {
 
 
 
-boost::optional<Pattern> parse_axiom (TokenIterator it, TokenIterator end) {
-        TokenIterator trash;
-        Pattern ret = parse_pattern (it, end, trash, false);
-        if (contains_unknowns(ret)) {
-                std::cerr << "error: axioms may not contain any unknowns"
+boost::optional<Pattern> parse_axiom (TokenIterator it, TokenIterator end,
+                                      TokenIterator &behind
+) {
+        if (it == end ||
+            it->type() != Token::Identifier ||
+            it->value() != "axiom"
+        ) {
+                return boost::optional<Pattern>();
+        }
+        ++it;
+        if (it == end || it->type() != Token::Colon) {
+                return boost::optional<Pattern>();
+        }
+        ++it;
+
+        const Pattern ret = parse_pattern (it, end, behind, false);
+        if (it == behind ||
+            behind == end ||
+            behind->type() != Token::Semicolon
+        ) {
+                std::cerr << "error: expected ';' after axiom; see "
+                          << "line " << it->from().row() << ", column "
+                          << it->from().column()
                           << std::endl;
                 return boost::optional<Pattern>();
         }
+        if (contains_unknowns(ret)) {
+                std::cerr << "error: axioms may not contain any unknowns; see "
+                          << "line " << it->from().row() << ", column "
+                          << it->from().column()
+                          << std::endl;
+                return boost::optional<Pattern>();
+        }
+        it = behind;
+        behind = ++it;
         return ret;
 }
 
@@ -1092,10 +1119,11 @@ void generate_warnings (LSystem const &lsys) {
 } // namespace {
 
 #include "kiss.hh"
-boost::optional<LSystem> compile (const char *code, const char *axiom_) {
+boost::optional<LSystem> compile (const char *code) {
         const TokenVector tokens = tokenize (code);
 
         std::vector<Production> prods;
+        boost::optional<Pattern> axiom;
 
         std::set<std::string> names;
         std::map<std::string, Constant> constants;
@@ -1105,16 +1133,25 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
         //char c = 'a';
         while (it != end) {
                 TokenIterator behind;
-                if (boost::optional<Production> op = parse_production (
-                                        it, end, behind, constants)
-                ) {
-                        if (names.count(op->header().name())) {
-                                std::cerr << "error: multiple productions are "
-                                 << "named '" << op->header().name() << "'.\n";
+
+                if (boost::optional<Pattern> a = parse_axiom(it, end, behind)){
+                        if (axiom) {
+                                std::cerr<<"error: multiple axioms.\n";
                                 return boost::optional<LSystem>();
                         }
-                        names.insert(op->header().name());
-                        prods.push_back(*op);
+                        axiom = *a;
+                } else if (boost::optional<Production> op = parse_production (
+                                        it, end, behind, constants)
+                ) {
+                        const std::string &name = op->header().name();
+                        if (names.count(name)) {
+                                std::cerr << "error: multiple productions are "
+                                 << "named '" << name << "'.\n";
+                                return boost::optional<LSystem>();
+                        } else {
+                                names.insert(op->header().name());
+                                prods.push_back(*op);
+                        }
                 } else if (boost::optional<Constant> c = parse_constant(it,end,
                                                                         behind)
                 ) {
@@ -1135,24 +1172,19 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
                 it = behind;
         }
 
+        if (!axiom) {
+                std::cerr << "error: missing axiom.\n";
+                return boost::optional<LSystem>();
+        }
+
         std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
 
-        TokenIterator behind;
-        const TokenVector axiom = tokenize(axiom_);
-
-        boost::optional<Pattern> ax = parse_axiom(axiom.begin(), axiom.end());
-
-        if (!ax) {
-                std::cout << "axiom '" << axiom_ << "' is not valid."
-                          << std::endl;
-                return boost::optional<LSystem>();
-        } else {
-                LSystem sys;
-                sys.setConstants(constants);
-                sys.setAxiom (*ax);
-                sys.setProductions(prods);
-                generate_warnings(sys);
-                return sys;
+        LSystem sys;
+        sys.setConstants(constants);
+        sys.setAxiom (*axiom);
+        sys.setProductions(prods);
+        generate_warnings(sys);
+        return sys;
                 /*std::cout << "axiom: " << *ax << '\n';
 
                 kallisto::random::marsaglia::UNI rng(1,2,3,4);
@@ -1177,5 +1209,4 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
                                 break;
                         }
                 }*/
-        }
 }
