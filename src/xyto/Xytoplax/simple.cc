@@ -43,14 +43,20 @@ Simple::Simple(QWidget *parent) :
 
 
         ui->sourceCode->setPlainText(
-                        "axiom: x(10);\n"
-                        "f0:  x(x)  -->  f(x)   [left(75)  x(x*0.6)] right(7) f(x) [right(75) x(x*0.6)] x(0.5*x);\n"
+
+                        /*"f: f --> f;\n"
+                        "axiom: f(50) [left(90) f(10)]   left(45) up(70)  f(50); "*/
 
                         /*
-                        // ABoP, p. 25, figure f
-                        f0:  x(x)  -->  f(x) left(22.5) [[x(x)]right(22.5)x(x)]right(22.5)f(x)[right(22.5)f(x)x(x)]left(22.5)x(x);
-                        f1: f(x) --> f(x)f(x);
+                        "axiom: x(10);\n"
+                        "f0:  x(x)  -->  f(x)   [left(75)  x(x*0.6)] right(7) f(x) [right(75) x(x*0.6)] x(0.5*x);\n"
                         */
+
+
+                        // ABoP, p. 25, figure f
+                        "f0:  x(x)  -->  f(x) left(22.5) [[x(x)]right(22.5)x(x)]right(22.5)f(x)[right(22.5)f(x)x(x)]left(22.5)x(x);\n"
+                        "f1: f(x) --> f(x)f(x);\n"
+
 
         );
 }
@@ -94,7 +100,7 @@ public:
         {
         }
 
-        static TurtleMatrix Heading(double a) {
+        static TurtleMatrix X(double a) {
                 using std::sin; using std::cos;
                 return TurtleMatrix(
                         1, 0,      0,
@@ -102,7 +108,7 @@ public:
                         0, sin(a), cos(a)
                 );
         }
-        static TurtleMatrix Left(double a) {
+        static TurtleMatrix Y(double a) {
                 using std::sin; using std::cos;
                 return TurtleMatrix(
                         cos(a), 0, -sin(a),
@@ -110,11 +116,11 @@ public:
                         sin(a), 0, cos(a)
                 );
         }
-        static TurtleMatrix Up(double a) {
+        static TurtleMatrix Z(double a) {
                 using std::sin; using std::cos;
                 return TurtleMatrix(
-                        cos(a),  sin(a), 0,
-                        -sin(a), cos(a), 0,
+                        cos(a),  -sin(a), 0,
+                        sin(a), cos(a), 0,
                         0,       0,      1
                 );
         }
@@ -201,18 +207,33 @@ struct Turtle {
         TurtleVector position;
         TurtleMatrix rotation;
 
-        Turtle() {}
+        Turtle()
+        {
+        }
 
         void forward (float f) {
-                using std::sin; using std::cos;
                 position += rotation*TurtleVector(0,0,f);
         }
 
-        void turnLeft (float f=3.14159/2) {
-                rotation = rotation * TurtleMatrix::Left(-f);
+        void turnLeft (float f) {
+                rotation = TurtleMatrix::Y(f) * rotation;
         }
-        void turnRight (float f=3.14159/2) {
-                rotation = rotation * TurtleMatrix::Left(f);
+        void turnRight (float f) {
+                rotation = TurtleMatrix::Y(-f) * rotation;
+        }
+
+        void pitchUp (float f) {
+                rotation = TurtleMatrix::X(f) * rotation;
+        }
+        void pitchDown (float f) {
+                rotation = TurtleMatrix::X(-f) * rotation;
+        }
+
+        void rollLeft (float f) {
+                rotation = TurtleMatrix::Z(f) * rotation;
+        }
+        void rollRight (float f) {
+                rotation = TurtleMatrix::Z(-f) * rotation;
         }
 };
 
@@ -237,6 +258,28 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
                                         turtle.turnRight(seg.parameterList()[0].toReal() * 0.0174532925);
                                 else
                                         turtle.turnRight(0.5);
+                        } else if (seg.name() == "up") {
+                                if (!seg.parameterList().empty()) {
+                                        turtle.pitchUp(seg.parameterList()[0].toReal() * 0.0174532925);
+                                } else {
+                                        turtle.pitchUp(0.5);
+                                }
+                        } else if (seg.name() == "down") {
+                                if (!seg.parameterList().empty())
+                                        turtle.pitchDown(seg.parameterList()[0].toReal() * 0.0174532925);
+                                else
+                                        turtle.pitchDown(0.5);
+                        } else if (seg.name() == "rollleft") {
+                                if (!seg.parameterList().empty()) {
+                                        turtle.rollLeft(seg.parameterList()[0].toReal() * 0.0174532925);
+                                } else {
+                                        turtle.rollLeft(0.5);
+                                }
+                        } else if (seg.name() == "rollright") {
+                                if (!seg.parameterList().empty())
+                                        turtle.rollRight(seg.parameterList()[0].toReal() * 0.0174532925);
+                                else
+                                        turtle.rollRight(0.5);
                         } else if (seg.name() == "f"){
                                 const Turtle oldBoy = turtle;
 
