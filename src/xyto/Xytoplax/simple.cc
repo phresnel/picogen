@@ -208,6 +208,10 @@ struct Turtle {
         TurtleVector position;
         TurtleMatrix rotation;
 
+        Turtle() {
+                pitchUp(3.14159*0.5);
+        }
+
         void forward (float f) {
                 position += rotation*TurtleVector(0,0,f);
         }
@@ -273,7 +277,29 @@ Simple::Simple(QWidget *parent) :
 
         ui->sourceCode->setPlainText(
 
+                        //"axiom: f(20) rollright(90) up(90)  f(20) up(135) f(20);"
+
+                        /*
+R=1.456;
+a=120; // <-- tweak for fun
+axiom:up(90) A(1);
+p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
+                         */
+
+                        // abop p. 59
+                        "r1=0.9;\n"
+                        "r2=0.7;\n"
+                        "a1=10;\n"
+                        "a2=60;\n"
+                        "wr=0.707;\n"
+                        "\n"
+                        "axiom: up(90) A(1,10);\n"
+                        "p1: A(l,w) --> f(l) [down(a1)B(l*r1,w*wr)] rollright(180) [down(a2)B(l*r2,w*wr)];\n"
+                        "p2: B(l,w) --> f(l) [left(a1) vert B(l*r1,w*wr)] [right(a2) vert B(l*r2,w*wr)];\n"
+                        //*/
+
                         // abop p. 56
+                        /*
                         "\n"
                         "r1=0.9;\n"
                         "r2=0.6;\n"
@@ -368,8 +394,8 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
                                 else
                                         turtle.forward(1);
 
-                                scene.addLine(oldBoy.position.x, -oldBoy.position.z,
-                                              turtle.position.x, -turtle.position.z);
+                                scene.addLine(oldBoy.position.x, -oldBoy.position.y,
+                                              turtle.position.x, -turtle.position.y);
                         }
                 }
         }
