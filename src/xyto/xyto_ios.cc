@@ -59,9 +59,9 @@ std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
         case Parameter::ParameterIndex:
                 o << "#" << rhs.parameterIndex();
                 break;
-        case Parameter::Constant:
+        /*case Parameter::Constant:
                 o << rhs.constant().name();
-                break;
+                break;*/
         case Parameter::Negate:
                 o << "-" << rhs.unaryParameter();
                 break;
@@ -195,6 +195,7 @@ std::ostream& operator<< (std::ostream &o, LSystem const &ls) {
                 o << consts[u].name() << " = " << consts[u].toReal() << ";\n";
         }
 
+        o << "axiom: " << ls.axiom() << '\n';
         o << ls.productions();
 
         return o;

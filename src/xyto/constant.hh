@@ -43,6 +43,13 @@ public:
                 }
         }
 
+        double toInteger () const {
+                switch (type_) {
+                case Real: return real_;
+                case Integer: return integer_;
+                }
+        }
+
 private:
         std::string name_;
         Type type_;

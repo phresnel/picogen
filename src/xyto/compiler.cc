@@ -33,6 +33,9 @@
 
 #include "lsystem.hh"
 
+
+Pattern fold (Pattern const &);
+
 namespace {
 
 Pattern parse_pattern (TokenIterator it, TokenIterator end,
@@ -41,6 +44,12 @@ boost::optional<double> parse_probability (TokenIterator it,
                                            TokenIterator end,
                                            TokenIterator &behind);
 
+boost::optional<Pattern> apply_symbol_table (
+        Pattern pat,
+        bool isHeader,
+        std::map<std::string, int> const & symtab,
+        std::map<std::string, Constant> const & consttab
+);
 
 
 inline bool hasPrecedenceOver (Production const &lhs, Production const &rhs) {
@@ -259,6 +268,7 @@ bool contains_unknowns (Pattern const &pat) {
                         for (unsigned int p=0; p<pm.size(); ++p) {
                                 if (pm[p].type() != Parameter::Integer
                                  && pm[p].type() != Parameter::Real
+                                 //&& pm[p].type() != Parameter::Constant
                                 ) {
                                         return true;
                                 }
@@ -274,8 +284,10 @@ bool contains_unknowns (Pattern const &pat) {
 
 
 
-boost::optional<Pattern> parse_axiom (TokenIterator it, TokenIterator end,
-                                      TokenIterator &behind
+boost::optional<Pattern> parse_axiom (
+        TokenIterator it, TokenIterator end,
+        TokenIterator &behind,
+        const std::map<std::string, Constant> &consttab
 ) {
         if (it == end ||
             it->type() != Token::Identifier ||
@@ -289,7 +301,7 @@ boost::optional<Pattern> parse_axiom (TokenIterator it, TokenIterator end,
         }
         ++it;
 
-        const Pattern ret = parse_pattern (it, end, behind, false);
+        Pattern ret = parse_pattern (it, end, behind, false);
         if (it == behind ||
             behind == end ||
             behind->type() != Token::Semicolon
@@ -300,6 +312,16 @@ boost::optional<Pattern> parse_axiom (TokenIterator it, TokenIterator end,
                           << std::endl;
                 return boost::optional<Pattern>();
         }
+        const boost::optional<Pattern> nret = apply_symbol_table(
+                                ret, false,
+                                std::map<std::string, int>(),//empty for axiom
+                                consttab);
+        if (!nret) {
+                return boost::optional<Pattern>();
+        }
+        ret = fold(*nret);
+
+        std::cout << "<<<<" << ret << std::endl;
         if (contains_unknowns(ret)) {
                 std::cerr << "error: axioms may not contain any unknowns; see "
                           << "line " << it->from().row() << ", column "
@@ -375,14 +397,16 @@ boost::optional<ProductionHeader> parse_production_header (
                 return boost::optional<ProductionHeader>();
         }
         const std::string name = it->value();
+
+        // early exit. because when this is the axiom, we get a plethora of
+        // error messages for a production without header.
+        if (name == "axiom") return boost::optional<ProductionHeader>();
+
         prev = it;
         ++it;
         // Checkpoint: We have an identifier.
 
         if (it==end || it->type() != Token::Colon) {
-                /*std::cerr << "error: expected ':' at line "
-                   << prev->to().next().row() << ", column "
-                   << prev->to().next().column() << std::endl;*/
                 return boost::optional<ProductionHeader>();
         }
         prev = it;
@@ -623,7 +647,7 @@ void compile_symbol_table (
         case Parameter::Integer:
         case Parameter::Real:
         case Parameter::ParameterIndex:
-        case Parameter::Constant:
+        //case Parameter::Constant:
 
         case Parameter::Negate:
 
@@ -674,7 +698,7 @@ void compile_symbol_table (
 }
 
 
-boost::optional<Parameter> apply_symbol_table (
+/*boost::optional<Parameter> apply_symbol_table (
         Parameter param, bool isHeader,
         std::map<std::string, int> const & symtab
 );
@@ -685,7 +709,7 @@ boost::optional<ParameterList> apply_symbol_table (
 boost::optional<Pattern> apply_symbol_table (
         Pattern pat, bool isHeader,
         std::map<std::string, int> const & symtab
-);
+);*/
 
 
 
@@ -728,7 +752,7 @@ boost::optional<Parameter> apply_symbol_table (
         case Parameter::Integer:
         case Parameter::Real:
         case Parameter::ParameterIndex:
-        case Parameter::Constant:
+        //case Parameter::Constant:
                 break;
 
         case Parameter::Negate: {
@@ -1134,7 +1158,8 @@ boost::optional<LSystem> compile (const char *code) {
         while (it != end) {
                 TokenIterator behind;
 
-                if (boost::optional<Pattern> a = parse_axiom(it, end, behind)){
+                if (boost::optional<Pattern> a = parse_axiom(it, end, behind,
+                                                             constants)){
                         if (axiom) {
                                 std::cerr<<"error: multiple axioms.\n";
                                 return boost::optional<LSystem>();

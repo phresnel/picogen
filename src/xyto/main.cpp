@@ -29,15 +29,14 @@
 
 boost::optional<LSystem> compile(const char*);
 
-
 int main()
 {
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
                         "theta=12.5;\n"
-                        "axiom: f;\n"
-                        "f: f(theta) --> f(theta);"
+                        "axiom: f(theta*2);\n"
+                        "f: f(x) --> f(2.5*6);"
                         /*"f0:   foo  --> foo bar;  \n"
                         "f1:   bar  --> frob [;  \n"
                         "f2:   frob --> [1] foo [left foo] \n"

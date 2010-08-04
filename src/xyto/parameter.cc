@@ -170,12 +170,20 @@ void Parameter::toConstant (::Constant c) {
                 std::cout << "internal runtime error: Parameter::"
                         "toConstant() called for non-"
                         "identifier\n";
-        type_ = Constant;
-        this->constant_ = c;
+        switch (c.type()) {
+        case ::Constant::Real:
+                type_ = Real;
+                realval = c.toReal();
+                break;
+        case ::Constant::Integer:
+                type_ = Integer;
+                intval = c.toInteger();
+                break;
+        }
 }
 
 
 
-Constant Parameter::constant() const {
+/*Constant Parameter::constant() const {
         return constant_;
-}
+}*/

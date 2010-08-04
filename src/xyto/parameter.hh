@@ -33,7 +33,6 @@ public:
                 Integer,
                 Real,
                 ParameterIndex, // <-- never parsed, used by compiler
-                Constant,       // <-- never parsed, used by compiler
 
                 // arithmetic
                 Negate,
@@ -83,7 +82,6 @@ private:
         int index;
         double realval;
         std::string idval;
-        ::Constant constant_;
 
         soft_value<Parameter> lhs_, rhs_, unary_;
 };

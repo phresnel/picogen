@@ -175,7 +175,7 @@ Parameter fold (Parameter::Type op, Parameter const &lhs, Parameter const &rhs)
                 case Parameter::Real:
                 case Parameter::Identifier:
                 case Parameter::Negate:
-                case Parameter::Constant:
+                //case Parameter::Constant:
                         break; /*<-- fall to error. */
 
                 case Parameter::Multiplication:
@@ -228,7 +228,7 @@ Parameter fold (Parameter::Type op, Parameter const &lhs, Parameter const &rhs)
                 case Parameter::Real:
                 case Parameter::Identifier:
                 case Parameter::Negate:
-                case Parameter::Constant:
+                //case Parameter::Constant:
                         break; /*<-- fall to error. */
 
                 case Parameter::Multiplication:
@@ -280,7 +280,6 @@ Parameter applyStack (Parameter const &param,
 
         case Parameter::Integer:
         case Parameter::Real:
-        case Parameter::Constant:
                 return param;
         case Parameter::Identifier:
                 break; /*<-- fall to error. */
@@ -369,6 +368,22 @@ Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) 
 } // namespace {
 
 #include "kiss.hh"
+
+
+Parameter fold (Parameter const &param) {
+        try {
+                return applyStack (param, std::vector<Parameter>());
+        } catch (...) {
+                return param;
+        }
+}
+Pattern fold (Pattern const &param) {
+        try {
+                return applyStack (param, std::vector<Parameter>());
+        } catch (...) {
+                return param;
+        }
+}
 
 boost::optional<Pattern> apply(std::vector<Production> const &prods,
                                Pattern const &axiom,
