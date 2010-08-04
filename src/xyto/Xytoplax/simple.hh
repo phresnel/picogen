@@ -38,6 +38,8 @@ public:
 private:
         Ui::Simple *ui;
 
+        void resizeEvent(QResizeEvent *);
+
 private slots:
         void on_write_clicked();
         void on_draw_clicked();
