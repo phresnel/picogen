@@ -207,9 +207,11 @@ struct Turtle {
 struct Turtle {
         TurtleVector position;
         TurtleMatrix rotation;
+        float diameter;
 
         Turtle() {
                 pitchUp(3.14159*0.5);
+                diameter = 1;
         }
 
         void forward (float f) {
@@ -237,6 +239,10 @@ struct Turtle {
         }
         void rollRight (float f) {
                 rotation = TurtleMatrix::Z(-f) * rotation;
+        }
+
+        void decrementDiameter (float f) {
+                diameter = f;
         }
 
         TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
@@ -287,19 +293,19 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 59
+                        /*
                         "r1=0.9;\n"
                         "r2=0.7;\n"
                         "a1=10;\n"
                         "a2=60;\n"
                         "wr=0.707;\n"
                         "\n"
-                        "axiom: up(90) A(1,10);\n"
-                        "p1: A(l,w) --> f(l) [down(a1)B(l*r1,w*wr)] rollright(180) [down(a2)B(l*r2,w*wr)];\n"
-                        "p2: B(l,w) --> f(l) [left(a1) vert B(l*r1,w*wr)] [right(a2) vert B(l*r2,w*wr)];\n"
+                        "axiom: A(1,10);\n"
+                        "p1: A(l,w) --> dia(w) f(l) [down(a1)B(l*r1,w*wr)] rollright(180) [down(a2)B(l*r2,w*wr)];\n"
+                        "p2: B(l,w) --> dia(w) f(l) [left(a1) vert B(l*r1,w*wr)] [right(a2) vert B(l*r2,w*wr)];\n"
                         //*/
 
                         // abop p. 56
-                        /*
                         "\n"
                         "r1=0.9;\n"
                         "r2=0.6;\n"
@@ -310,9 +316,9 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                         "\n"
                         "axiom: A(1, 10);\n"
                         "\n"
-                        "p1 : A(l,w) --> f(l) [down(a0)       B(l*r2, w*wr)] rollright(d) A(l*r1, w*wr);\n"
-                        "p2 : B(l,w) --> f(l) [right(a2) vert C(l*r2, w*wr)] C(l*r1, w*wr);\n"
-                        "p3 : C(l,w) --> f(l) [left(a2)  vert B(l*r2, w*wr)] B(l*r1, w*wr);\n"
+                        "p1 : A(l,w) --> dia(w) f(l) [down(a0)       B(l*r2, w*wr)] rollright(d) A(l*r1, w*wr);\n"
+                        "p2 : B(l,w) --> dia(w) f(l) [right(a2) vert C(l*r2, w*wr)] C(l*r1, w*wr);\n"
+                        "p3 : C(l,w) --> dia(w) f(l) [left(a2)  vert B(l*r2, w*wr)] B(l*r1, w*wr);\n"
                         "\n" //*/
 
                         /*"f: f --> f;\n"
@@ -386,16 +392,22 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
                                         turtle.rollRight(0.5);
                         } else if (seg.name() == "vert") {
                                 turtle.rollToVertical();
+                        } else if (seg.name() == "dia") {
+                                if (!seg.parameterList().empty())
+                                        turtle.decrementDiameter(seg.parameterList()[0].toReal());
                         } else if (seg.name() == "f"){
                                 const Turtle oldBoy = turtle;
 
-                                if (!seg.parameterList().empty())
+                                if (!seg.parameterList().empty()) {
                                         turtle.forward(seg.parameterList()[0].toReal());
-                                else
+                                } else {
                                         turtle.forward(1);
+                                }
 
+                                QPen pen;
+                                pen.setWidthF(turtle.diameter*0.01);
                                 scene.addLine(oldBoy.position.x, -oldBoy.position.y,
-                                              turtle.position.x, -turtle.position.y);
+                                              turtle.position.x, -turtle.position.y, pen);
                         }
                 }
         }
