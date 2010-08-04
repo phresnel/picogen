@@ -26,6 +26,11 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="font">
+       <font>
+        <family>Monospace</family>
+       </font>
+      </property>
      </widget>
      <widget class="QWidget" name="horizontalLayoutWidget">
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -89,6 +94,11 @@
          </item>
          <item>
           <widget class="QPlainTextEdit" name="outputPattern">
+           <property name="font">
+            <font>
+             <family>Monospace</family>
+            </font>
+           </property>
            <property name="undoRedoEnabled">
             <bool>false</bool>
            </property>

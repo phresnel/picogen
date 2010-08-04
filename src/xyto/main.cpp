@@ -34,9 +34,20 @@ int main()
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
-                        "theta=12.5;\n"
-                        "axiom: f(theta*2);\n"
-                        "f: f(x) --> f(2.5*6);"
+"\n\
+r1=0.9;\n\
+r2=0.6;\n\
+a0=45;\n\
+a2=45;\n\
+d=137.5;\n\
+wr=0.707;\n\
+\n\
+axiom: A(1, 10);\n\
+\n\
+p1:A(l,w) -->f(l)[down(a0)B(l*r2,w*wr)]/(d)A(l*r1,w*wr);\n\
+p2:B(l,w) --> f(l)[right(a2) vert C(l*r2,w*wr)]C(l*r1,w*wr);\n\
+p3:C(l,w) --> f(l)[left(a2) vert B(l*r2,w*wr)]B(l*r1,w*wr);\n\
+"
                         /*"f0:   foo  --> foo bar;  \n"
                         "f1:   bar  --> frob [;  \n"
                         "f2:   frob --> [1] foo [left foo] \n"

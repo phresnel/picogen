@@ -30,42 +30,7 @@
 
 #include "../lsystem.hh"
 #include "../xyto_ios.hh"
-boost::optional<LSystem> compile(const char*);
 
-Simple::Simple(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Simple)
-{
-        ui->setupUi(this);
-
-        // Koch curve:
-        //ui->sourceCode->setPlainText("foo: foo --> foo right foo left foo left foo right foo;\n"
-
-
-        ui->sourceCode->setPlainText(
-
-                        /*"f: f --> f;\n"
-                        "axiom: f(50) [left(90) f(10)]   left(45) up(70)  f(50); "*/
-
-                        /*
-                        "axiom: x(10);\n"
-                        "f0:  x(x)  -->  f(x)   [left(75)  x(x*0.6)] right(7) f(x) [right(75) x(x*0.6)] x(0.5*x);\n"
-                        */
-
-
-                        // ABoP, p. 25, figure f
-                        "f0:  x(x)  -->  f(x) left(22.5) [[x(x)]right(22.5)x(x)]right(22.5)f(x)[right(22.5)f(x)x(x)]left(22.5)x(x);\n"
-                        "f1: f(x) --> f(x)f(x);\n"
-
-
-        );
-}
-
-
-
-Simple::~Simple() {
-        delete ui;
-}
 
 
 struct TurtleVector {
@@ -80,6 +45,34 @@ struct TurtleVector {
                 return *this;
         }
 };
+double dot (TurtleVector lhs, TurtleVector rhs) {
+        return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
+}
+double length_sq (TurtleVector vec) {
+        return dot(vec, vec);
+}
+double length (TurtleVector vec) {
+        return std::sqrt(length_sq(vec));
+}
+TurtleVector normalize (TurtleVector vec) {
+        const double len = 1/length(vec);
+        return TurtleVector(vec.x*len,
+                            vec.y*len,
+                            vec.z*len);
+}
+
+TurtleVector cross (TurtleVector lhs, TurtleVector rhs) {
+        return TurtleVector(
+                lhs.y*rhs.z - lhs.z*rhs.y,
+                lhs.z*rhs.x - lhs.x*rhs.z,
+                lhs.x*rhs.y - lhs.y*rhs.x
+        );
+}
+std::ostream& operator<< (std::ostream& o, TurtleVector const &rhs) {
+        o << "[" << rhs.x << ", " << rhs.y << ", " << rhs.z << "]";
+        return o;
+}
+
 
 class TurtleMatrix {
 public:
@@ -87,6 +80,14 @@ public:
                 m00(1), m01(0),  m02(0),
                 m10(0), m11(1),  m12(0),
                 m20(0), m21(0),  m22(1)
+        {
+        }
+
+        TurtleMatrix(TurtleVector right, TurtleVector up, TurtleVector forw)
+                :
+                m00(right.x), m01(up.x),  m02(forw.x),
+                m10(right.y), m11(up.y),  m12(forw.y),
+                m20(right.z), m21(up.z),  m22(forw.z)
         {
         }
 
@@ -207,10 +208,6 @@ struct Turtle {
         TurtleVector position;
         TurtleMatrix rotation;
 
-        Turtle()
-        {
-        }
-
         void forward (float f) {
                 position += rotation*TurtleVector(0,0,f);
         }
@@ -223,19 +220,100 @@ struct Turtle {
         }
 
         void pitchUp (float f) {
-                rotation = TurtleMatrix::X(f) * rotation;
+                rotation = TurtleMatrix::X(-f) * rotation;
         }
         void pitchDown (float f) {
-                rotation = TurtleMatrix::X(-f) * rotation;
+                rotation = TurtleMatrix::X(f) * rotation;
         }
 
         void rollLeft (float f) {
+                std::cout << "before roll-left: " << up() << std::endl;
                 rotation = TurtleMatrix::Z(f) * rotation;
+                std::cout << "after roll-left: " << up() << std::endl;
         }
         void rollRight (float f) {
                 rotation = TurtleMatrix::Z(-f) * rotation;
         }
+
+        TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
+        TurtleVector right() const { return rotation*TurtleVector(1,0,0); }
+
+        void rollToVertical() {
+                const TurtleVector
+                        up = TurtleVector (0,1,0),
+                        forward = normalize(rotation*TurtleVector(0,0,1)),
+                        newRight = normalize(cross(up,forward)),
+                        newUp = normalize (cross(forward,newRight));
+
+                std::cout << "right-before:" << this->right() << std::endl;
+                rotation = TurtleMatrix(newRight, newUp, forward);
+                std::cout << "right-after:" << this->right() << std::endl;
+        }
 };
+
+
+
+boost::optional<LSystem> compile(const char*);
+
+Simple::Simple(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::Simple)
+{
+        ui->setupUi(this);
+
+        /*Turtle a;
+        a.rollLeft(0.0174532925 * 45);
+        a.rollToVertical();
+
+        exit(0);*/
+
+        // Koch curve:
+        //ui->sourceCode->setPlainText("foo: foo --> foo right foo left foo left foo right foo;\n"
+
+
+        ui->sourceCode->setPlainText(
+
+                        // abop p. 56
+                        "\n"
+                        "r1=0.9;\n"
+                        "r2=0.6;\n"
+                        "a0=45;\n"
+                        "a2=45;\n"
+                        "d=137.5;\n"
+                        "wr=0.707;\n"
+                        "\n"
+                        "axiom: A(1, 10);\n"
+                        "\n"
+                        "p1 : A(l,w) --> f(l) [down(a0)       B(l*r2, w*wr)] rollright(d) A(l*r1, w*wr);\n"
+                        "p2 : B(l,w) --> f(l) [right(a2) vert C(l*r2, w*wr)] C(l*r1, w*wr);\n"
+                        "p3 : C(l,w) --> f(l) [left(a2)  vert B(l*r2, w*wr)] B(l*r1, w*wr);\n"
+                        "\n" //*/
+
+                        /*"f: f --> f;\n"
+                        "axiom: f(50) [left(90) f(10)]   left(45) up(70)  f(50); "*/
+
+                        /*
+                        "axiom: x(10);\n"
+                        "f0:  x(x)  -->  f(x)   [left(75)  x(x*0.6)] right(7) f(x) [right(75) x(x*0.6)] x(0.5*x);\n"
+                        */
+
+
+                        // ABoP, p. 25, figure f
+
+                        /*"axiom: x(10);\n"
+                        "f0:  x(x)  -->  f(x) left(22.5) [[x(x)]right(22.5)x(x)]right(22.5)f(x)[right(22.5)f(x)x(x)]left(22.5)x(x);\n"
+                        "f1: f(x) --> f(x)f(x);\n"
+                        //*/
+
+
+        );
+}
+
+
+
+Simple::~Simple() {
+        delete ui;
+}
 
 
 
@@ -280,6 +358,8 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
                                         turtle.rollRight(seg.parameterList()[0].toReal() * 0.0174532925);
                                 else
                                         turtle.rollRight(0.5);
+                        } else if (seg.name() == "vert") {
+                                turtle.rollToVertical();
                         } else if (seg.name() == "f"){
                                 const Turtle oldBoy = turtle;
 
@@ -308,7 +388,7 @@ void Simple::on_draw_clicked() {
 
         //--
         QGraphicsScene *scene = new QGraphicsScene (this);
-        scene->addEllipse(-10,-10,20,20);
+        scene->addEllipse(-1,-1,2,2);
 
         ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
         draw (lsys->run(ui->numIterations->value()), Turtle(), *scene);

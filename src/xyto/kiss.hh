@@ -36,6 +36,8 @@
 // [1a,1b].
 //
 
+#include <inttypes.h>
+
 namespace kallisto { namespace random { namespace marsaglia {
 
         // -- Bits ----------------------------------------------------
