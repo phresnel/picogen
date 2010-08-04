@@ -22,8 +22,10 @@
 #define PARAMETER_HH_INCLUDED_20100726
 
 #include <string>
-#include "soft_value.hh"
 #include <iostream>
+#include "soft_value.hh"
+#include "constant.hh"
+
 class Parameter {
 public:
         enum Type {
@@ -31,6 +33,7 @@ public:
                 Integer,
                 Real,
                 ParameterIndex, // <-- never parsed, used by compiler
+                Constant,       // <-- never parsed, used by compiler
 
                 // arithmetic
                 Negate,
@@ -61,6 +64,9 @@ public:
         void toParameterIndex (int index);
         int parameterIndex() const;
 
+        void toConstant (::Constant c);
+        ::Constant constant() const;
+
         Parameter lhs () const;
         void setLhs (Parameter const &);
 
@@ -77,6 +83,7 @@ private:
         int index;
         double realval;
         std::string idval;
+        ::Constant constant_;
 
         soft_value<Parameter> lhs_, rhs_, unary_;
 };

@@ -150,7 +150,7 @@ void Parameter::setUnaryParameter (Parameter const &val) {
 
 void Parameter::toParameterIndex (int index) {
         if (type_ != Identifier)
-                std::cout << "runtime error: Parameter::"
+                std::cout << "internal runtime error: Parameter::"
                         "toParameterIndex() called for non-"
                         "identifier\n";
         type_ = ParameterIndex;
@@ -161,4 +161,21 @@ void Parameter::toParameterIndex (int index) {
 
 int Parameter::parameterIndex() const {
         return index;
+}
+
+
+
+void Parameter::toConstant (::Constant c) {
+        if (type_ != Identifier)
+                std::cout << "internal runtime error: Parameter::"
+                        "toConstant() called for non-"
+                        "identifier\n";
+        type_ = Constant;
+        this->constant_ = c;
+}
+
+
+
+Constant Parameter::constant() const {
+        return constant_;
 }

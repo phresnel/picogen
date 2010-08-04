@@ -36,7 +36,7 @@ int main()
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
                         "theta=12.5;\n"
-                        "f: f --> f;"
+                        "f: f(theta) --> f(theta);"
                         /*"f0:   foo  --> foo bar;  \n"
                         "f1:   bar  --> frob [;  \n"
                         "f2:   frob --> [1] foo [left foo] \n"

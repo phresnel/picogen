@@ -36,7 +36,7 @@
 namespace {
 
 Pattern parse_pattern (TokenIterator it, TokenIterator end,
-                       TokenIterator &behind, bool isHeader=false);
+                       TokenIterator &behind, bool isHeader);
 boost::optional<double> parse_probability (TokenIterator it,
                                            TokenIterator end,
                                            TokenIterator &behind);
@@ -181,7 +181,7 @@ boost::optional<ParameterList> parse_parameter_list (
 
 boost::optional<Segment> parse_segment (
         TokenIterator it, TokenIterator end, TokenIterator &behind,
-        bool isHeader=false
+        bool isHeader
 ) {
         if (it == end)
                 return boost::optional<Segment>();
@@ -276,7 +276,7 @@ bool contains_unknowns (Pattern const &pat) {
 
 boost::optional<Pattern> parse_axiom (TokenIterator it, TokenIterator end) {
         TokenIterator trash;
-        Pattern ret = parse_pattern (it, end, trash);
+        Pattern ret = parse_pattern (it, end, trash, false);
         if (contains_unknowns(ret)) {
                 std::cerr << "error: axioms may not contain any unknowns"
                           << std::endl;
@@ -336,7 +336,8 @@ bool parse_header_patterns (
 
 
 boost::optional<ProductionHeader> parse_production_header (
-        TokenIterator it, TokenIterator end, TokenIterator &behind
+        TokenIterator it, TokenIterator end, TokenIterator &behind,
+        const std::map<std::string, Constant> &consttab
 ) {
         TokenIterator prev = it;
 
@@ -494,7 +495,7 @@ boost::optional<ProductionBody> parse_production_body (
         //---------------------------------------------------------
 
         TokenIterator behindPattern;
-        const Pattern pat = parse_pattern(it, end, behindPattern);
+        const Pattern pat = parse_pattern(it, end, behindPattern, false);
         it = behindPattern;
         if (it == end ||
            (it->type() != Token::Semicolon && it->type() != Token::LeftBracket)
@@ -595,6 +596,7 @@ void compile_symbol_table (
         case Parameter::Integer:
         case Parameter::Real:
         case Parameter::ParameterIndex:
+        case Parameter::Constant:
 
         case Parameter::Negate:
 
@@ -646,15 +648,15 @@ void compile_symbol_table (
 
 
 boost::optional<Parameter> apply_symbol_table (
-        Parameter param,
+        Parameter param, bool isHeader,
         std::map<std::string, int> const & symtab
 );
 boost::optional<ParameterList> apply_symbol_table (
-        ParameterList params,
+        ParameterList params, bool isHeader,
         std::map<std::string, int> const & symtab
 );
 boost::optional<Pattern> apply_symbol_table (
-        Pattern pat,
+        Pattern pat, bool isHeader,
         std::map<std::string, int> const & symtab
 );
 
@@ -662,29 +664,50 @@ boost::optional<Pattern> apply_symbol_table (
 
 boost::optional<Parameter> apply_symbol_table (
         Parameter param,
-        std::map<std::string, int> const & symtab
+        bool isHeader,
+        std::map<std::string, int> const & symtab,
+        std::map<std::string, Constant> const & consttab
 ) {
         using boost::optional;
 
         switch (param.type()) {
         case Parameter::Identifier:
+                // 0) lookup symbols
                 if (!symtab.count(param.identifier())) {
-                        std::cout << "error: symbol '" << param.identifier()
-                                << "' unknown." << std::endl;
-                        return optional<Parameter>();
+
+                        // 1) lookup constants
+                        if (!consttab.count(param.identifier())) {
+                                std::cout << "error: parameter or constant '"
+                                        << param.identifier()
+                                        << "' unknown." << std::endl;
+                                return optional<Parameter>();
+                        }
+
+                        param.toConstant(
+                                consttab.find(param.identifier())->second);
+                } else {
+                        if (isHeader && consttab.count(param.identifier())) {
+                                std::cout << "warning: parameter '"
+                                        << param.identifier()
+                                        << "' overrides the constant "
+                                        << "'" << param.identifier()
+                                        << "'." << std::endl;
+                        }
+                        param.toParameterIndex(
+                                symtab.find(param.identifier())->second);
                 }
-                param.toParameterIndex(
-                        symtab.find(param.identifier())->second);
                 break;
 
         case Parameter::Integer:
         case Parameter::Real:
         case Parameter::ParameterIndex:
+        case Parameter::Constant:
                 break;
 
         case Parameter::Negate: {
                 const optional<Parameter>
-                    p = apply_symbol_table (param.unaryParameter(), symtab);
+                    p = apply_symbol_table (param.unaryParameter(), isHeader,
+                                            symtab, consttab);
                 if (!p)
                         return optional<Parameter>();
                 param.setUnaryParameter(*p);
@@ -701,8 +724,10 @@ boost::optional<Parameter> apply_symbol_table (
         case Parameter::LogicalOr:
         case Parameter::LogicalXor: {
                 const optional<Parameter>
-                        lhs = apply_symbol_table (param.lhs(), symtab),
-                        rhs = apply_symbol_table (param.rhs(), symtab);
+                        lhs = apply_symbol_table (param.lhs(),isHeader,
+                                                  symtab,consttab),
+                        rhs = apply_symbol_table (param.rhs(),isHeader,
+                                                  symtab,consttab);
                 if (!lhs || !rhs)
                         return optional<Parameter>();
                 param.setLhs(*lhs);
@@ -717,12 +742,16 @@ boost::optional<Parameter> apply_symbol_table (
 
 boost::optional<ParameterList> apply_symbol_table (
         ParameterList params,
-        std::map<std::string, int> const & symtab
+        bool isHeader,
+        std::map<std::string, int> const & symtab,
+        std::map<std::string, Constant> const & consttab
 ) {
         using boost::optional;
         for (unsigned int a=0; a<params.size(); ++a) {
                 const optional<Parameter> param = apply_symbol_table(params[a],
-                                                                     symtab);
+                                                                     isHeader,
+                                                                     symtab,
+                                                                     consttab);
                 if (!param) return optional<ParameterList>();
                 params[a] = *param;
 
@@ -734,7 +763,9 @@ boost::optional<ParameterList> apply_symbol_table (
 
 boost::optional<Pattern> apply_symbol_table (
         Pattern pat,
-        std::map<std::string, int> const & symtab
+        bool isHeader,
+        std::map<std::string, int> const & symtab,
+        std::map<std::string, Constant> const & consttab
 ) {
         using boost::optional;
 
@@ -743,14 +774,18 @@ boost::optional<Pattern> apply_symbol_table (
                 case Segment::Letter: {
                         const optional<ParameterList> params =
                                 apply_symbol_table(pat[p].parameterList(),
-                                                   symtab);
+                                                   isHeader,
+                                                   symtab,
+                                                   consttab);
                         if (!params) return optional<Pattern>();
                         pat[p].setParameterList(*params);
                 } break;
                 case Segment::Branch: {
                         boost::optional<Pattern> sub = apply_symbol_table(
                                                              pat[p].branch(),
-                                                             symtab);
+                                                             isHeader,
+                                                             symtab,
+                                                             consttab);
                         if (!sub)
                                 return boost::optional<Pattern>();
                         pat[p].setBranch (*sub);
@@ -763,9 +798,11 @@ boost::optional<Pattern> apply_symbol_table (
 
 
 
-boost::optional<Production> parse_production (TokenIterator it,
-                                              TokenIterator end,
-                                              TokenIterator &behind
+boost::optional<Production> parse_production (
+      TokenIterator it,
+      TokenIterator end,
+      TokenIterator &behind,
+      std::map<std::string, Constant> const & consttab
 ) {
         using boost::optional;
         if (it==end) {
@@ -781,7 +818,7 @@ boost::optional<Production> parse_production (TokenIterator it,
         //---------------------------------------------------------
         // Header
         TokenIterator behindHeader;
-        header = parse_production_header(it, end, behindHeader);
+        header = parse_production_header(it, end, behindHeader, consttab);
         if (!header) {
                 return boost::optional<Production>();
         }
@@ -841,9 +878,15 @@ boost::optional<Production> parse_production (TokenIterator it,
                 compile_symbol_table(header->rightContext(), symtab);
 
                 const optional<Pattern>
-                     newL = apply_symbol_table(header->leftContext(), symtab),
-                     newC = apply_symbol_table(header->pattern(), symtab),
-                     newR = apply_symbol_table(header->rightContext(), symtab);
+                     newL = apply_symbol_table(header->leftContext(),
+                                               true,
+                                               symtab, consttab),
+                     newC = apply_symbol_table(header->pattern(),
+                                               true,
+                                               symtab, consttab),
+                     newR = apply_symbol_table(header->rightContext(),
+                                               true,
+                                               symtab, consttab);
                 if ((!newL && header->leftContext().size())
                   ||(!newC && header->pattern().size())
                   ||(!newR && header->rightContext().size())
@@ -861,7 +904,9 @@ boost::optional<Production> parse_production (TokenIterator it,
 
                 if (header->condition()) {
                         const optional<Parameter> cond = apply_symbol_table(
-                                                *header->condition(), symtab);
+                                                *header->condition(),
+                                                false,
+                                                symtab, consttab);
                         if (!cond) {
                                 std::cout <<
                                 "internal error: after apply_symbol_table"
@@ -877,7 +922,8 @@ boost::optional<Production> parse_production (TokenIterator it,
                 for (unsigned int p=0; p<(*bodies).size(); ++p) {
                         ProductionBody &body = (*bodies)[p];
                         const boost::optional<Pattern> newp =
-                                apply_symbol_table(body.pattern(), symtab);
+                                apply_symbol_table(body.pattern(), false,
+                                                   symtab, consttab);
                         if (!newp)
                                 return boost::optional<Production>();
                         body.setPattern (*newp);
@@ -893,8 +939,8 @@ boost::optional<Production> parse_production (TokenIterator it,
 
 
 boost::optional<Constant> parse_constant (TokenIterator it,
-                                            TokenIterator end,
-                                            TokenIterator &behind
+                                          TokenIterator end,
+                                          TokenIterator &behind
 ) {
         using boost::optional;
         const TokenIterator startIt = it;
@@ -968,7 +1014,8 @@ boost::optional<Constant> parse_constant (TokenIterator it,
 }
 
 
-void generate_warnings (Pattern const &pat,
+void generate_warnings (LSystem const &lsys,
+                        Pattern const &pat,
                         std::map<std::string, Segment> &first_appearance
 ) {
         for (unsigned int i=0; i<pat.size(); ++i) {
@@ -988,14 +1035,17 @@ void generate_warnings (Pattern const &pat,
                         }
                         break;
                 case Segment::Branch:
-                        generate_warnings(pat[i].branch(), first_appearance);
+                        generate_warnings(lsys, pat[i].branch(),
+                                          first_appearance);
                         break;
                 }
         }
 }
 
 
-void generate_warnings (std::vector<Production> const &prods) {
+void generate_warnings (LSystem const &lsys) {
+        std::vector<Production> const prods = lsys.productions();
+
         std::map<std::string, Segment> first_appearance;
         for (unsigned int i=0; i<prods.size(); ++i) {
 
@@ -1029,12 +1079,13 @@ void generate_warnings (std::vector<Production> const &prods) {
                 };
                 for (unsigned int p=0; p<4; ++p) {
                         const Pattern &pat = pats[p];
-                        generate_warnings(pat, first_appearance);
+                        generate_warnings(lsys, pat, first_appearance);
                 }
                 for (unsigned int p=0; p<prods[i].bodies().size(); ++p) {
                         const Pattern &pat = prods[i].bodies()[p].pattern();
-                        generate_warnings(pat, first_appearance);
+                        generate_warnings(lsys, pat, first_appearance);
                 }
+
         }
 }
 
@@ -1054,8 +1105,8 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
         //char c = 'a';
         while (it != end) {
                 TokenIterator behind;
-                if (boost::optional<Production> op = parse_production (it, end,
-                                                                       behind)
+                if (boost::optional<Production> op = parse_production (
+                                        it, end, behind, constants)
                 ) {
                         if (names.count(op->header().name())) {
                                 std::cerr << "error: multiple productions are "
@@ -1085,10 +1136,7 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
         }
 
         std::stable_sort (prods.begin(), prods.end(), hasPrecedenceOver);
-        generate_warnings(prods);
-        std::cout << prods;
 
-        std::cout << "\n--------------\n";
         TokenIterator behind;
         const TokenVector axiom = tokenize(axiom_);
 
@@ -1103,6 +1151,7 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
                 sys.setConstants(constants);
                 sys.setAxiom (*ax);
                 sys.setProductions(prods);
+                generate_warnings(sys);
                 return sys;
                 /*std::cout << "axiom: " << *ax << '\n';
 

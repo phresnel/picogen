@@ -175,6 +175,7 @@ Parameter fold (Parameter::Type op, Parameter const &lhs, Parameter const &rhs)
                 case Parameter::Real:
                 case Parameter::Identifier:
                 case Parameter::Negate:
+                case Parameter::Constant:
                         break; /*<-- fall to error. */
 
                 case Parameter::Multiplication:
@@ -227,6 +228,7 @@ Parameter fold (Parameter::Type op, Parameter const &lhs, Parameter const &rhs)
                 case Parameter::Real:
                 case Parameter::Identifier:
                 case Parameter::Negate:
+                case Parameter::Constant:
                         break; /*<-- fall to error. */
 
                 case Parameter::Multiplication:
@@ -278,6 +280,7 @@ Parameter applyStack (Parameter const &param,
 
         case Parameter::Integer:
         case Parameter::Real:
+        case Parameter::Constant:
                 return param;
         case Parameter::Identifier:
                 break; /*<-- fall to error. */

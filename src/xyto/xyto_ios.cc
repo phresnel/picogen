@@ -59,6 +59,9 @@ std::ostream& operator<< (std::ostream& o, Parameter const& rhs) {
         case Parameter::ParameterIndex:
                 o << "#" << rhs.parameterIndex();
                 break;
+        case Parameter::Constant:
+                o << rhs.constant().name();
+                break;
         case Parameter::Negate:
                 o << "-" << rhs.unaryParameter();
                 break;
