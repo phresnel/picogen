@@ -43,7 +43,7 @@ Simple::Simple(QWidget *parent) :
 
 
         ui->sourceCode->setPlainText(
-                        "f0:  x(x)  -->  f(x)   [left(75)  x(x*0.75)]   f(x)   [right(75)  x(x*0.75)]   x(0.5*x);\n"
+                        "f0:  x(x)  -->  f(x)   [left(75)  x(x*0.6)] right(7) f(x) [right(75) x(x*0.6)] x(0.5*x);\n"
                         //"                [left(45) f(x*0.5)] \n"
                         //"                f(x) right(5) \n"
                         //"                [right(45) f(x*0.5)]\n"
@@ -116,27 +116,37 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
 
 
 
-void Simple::on_pushButton_clicked() {
+void Simple::on_draw_clicked() {
         const boost::optional<LSystem> lsys =
                 compile(ui->sourceCode->toPlainText().toAscii(),
-                        "x(25)");
+                        "x(100)");
+        if (!lsys) {
+                ui->outputPattern->setPlainText("<invalid L-System!>");
+                return;
+        }
+
+        //--
+        QGraphicsScene *scene = new QGraphicsScene (this);
+        scene->addEllipse(-10,-10,20,20);
+
+        ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
+        draw (lsys->run(ui->numIterations->value()), Turtle(), *scene);
+        ui->graphicsView->setScene(scene);
+
+}
+
+void Simple::on_write_clicked() {
+        const boost::optional<LSystem> lsys =
+                compile(ui->sourceCode->toPlainText().toAscii(),
+                        "x(100)");
         if (!lsys) {
                 ui->outputPattern->setPlainText("<invalid L-System!>");
                 return;
         }
         std::stringstream ss;
-        for (unsigned int i=0; i<5; ++i) {
+        for (unsigned int i=0; i<ui->numIterations->value(); ++i) {
                 const Pattern pat = lsys->run(i);
                 ss << pat << '\n';
         }
         ui->outputPattern->setPlainText(QString::fromStdString(ss.str()));
-
-
-        //--
-        QGraphicsScene *scene = new QGraphicsScene (this);
-        scene->addEllipse(-10,-10,20,20);
-        draw (lsys->run(8), Turtle(), *scene);
-
-        ui->graphicsView->setScene(scene);
-
 }

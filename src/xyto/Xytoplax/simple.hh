@@ -29,17 +29,18 @@ namespace Ui {
 
 class Simple : public QWidget
 {
-    Q_OBJECT
+        Q_OBJECT
 
 public:
-    explicit Simple(QWidget *parent = 0);
-    ~Simple();
+        explicit Simple(QWidget *parent = 0);
+        ~Simple();
 
 private:
-    Ui::Simple *ui;
+        Ui::Simple *ui;
 
 private slots:
-    void on_pushButton_clicked();
+        void on_write_clicked();
+        void on_draw_clicked();
 };
 
 #endif // SIMPLE_HH
