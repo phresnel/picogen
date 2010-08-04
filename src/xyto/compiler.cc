@@ -352,9 +352,9 @@ boost::optional<ProductionHeader> parse_production_header (
         // Checkpoint: We have an identifier.
 
         if (it==end || it->type() != Token::Colon) {
-                std::cerr << "error: expected ':' at line "
+                /*std::cerr << "error: expected ':' at line "
                    << prev->to().next().row() << ", column "
-                   << prev->to().next().column() << std::endl;
+                   << prev->to().next().column() << std::endl;*/
                 return boost::optional<ProductionHeader>();
         }
         prev = it;
@@ -892,6 +892,82 @@ boost::optional<Production> parse_production (TokenIterator it,
 }
 
 
+boost::optional<Constant> parse_constant (TokenIterator it,
+                                            TokenIterator end,
+                                            TokenIterator &behind
+) {
+        using boost::optional;
+        const TokenIterator startIt = it;
+        if (it == end) {
+                return optional<Constant>();
+        }
+        if (it->type() != Token::Identifier) {
+                return optional<Constant>();
+        }
+        Constant c;
+        c.setName (it->value());
+        ++it;
+
+        if (it == end || it->type() != Token::Equals) {
+                return optional<Constant>();
+        }
+
+        ++it;
+        if (it == end) {
+                const TokenIterator prev = it-1;
+                std::cerr
+                        << "error: expected number after '=' in line "
+                        << prev->to().row() << ", column " << prev->to().column()
+                        << ".";
+                return optional<Constant>();
+                return optional<Constant>();
+        }
+
+        bool negative = false;
+        if (it->type() == Token::Minus) {
+                ++it;
+                if (it == end
+                  || (it->type()!=Token::Real
+                     && it->type()!=Token::Integer)
+                ) {
+                        const TokenIterator prev = it-1;
+                        std::cerr
+                                << "error: expected number after '-' in line "
+                                << prev->to().row()
+                                << ", column " << prev->to().column()
+                                << ".";
+                        return optional<Constant>();
+                }
+                negative = true;
+        }
+
+
+        if (it->type() == Token::Real) {
+                c.setType(Constant::Real);
+                c.setReal(negative ?
+                          -it->valueAsReal() :
+                          it->valueAsReal());
+        } else if (it->type() == Token::Integer) {
+                c.setType(Constant::Integer);
+                c.setInteger(negative?
+                             -it->valueAsInteger() :
+                             it->valueAsInteger());
+        }
+        ++it;
+
+        if (it == end || it->type() != Token::Semicolon) {
+                TokenIterator prev = it - 1;
+                std::cerr << "error: expected ';' after constant in line "
+                        << prev->to().row() << ", column "
+                        << prev->to().column() << std::endl;
+                return boost::optional<Constant>();
+        }
+        behind = ++it;
+
+        return c;
+}
+
+
 void generate_warnings (Pattern const &pat,
                         std::map<std::string, Segment> &first_appearance
 ) {
@@ -971,6 +1047,7 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
         std::vector<Production> prods;
 
         std::set<std::string> names;
+        std::map<std::string, Constant> constants;
         TokenIterator it = tokens.begin();
         const TokenIterator &end = tokens.end();
 
@@ -987,7 +1064,21 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
                         }
                         names.insert(op->header().name());
                         prods.push_back(*op);
+                } else if (boost::optional<Constant> c = parse_constant(it,end,
+                                                                        behind)
+                ) {
+                        if (constants.count(c->name())) {
+                                std::cerr << "error: multiple constants are "
+                                 << "named '" << c->name() << "'.\n";
+                                return boost::optional<LSystem>();
+                        }
+                        constants [c->name()] = *c;
                 } else {
+                        std::cerr << "error: statement beginning at line " <<
+                                it->from().row() << ", column " <<
+                                it->from().column() << " is neither a "
+                                "production, nor a constant-declaration."
+                                << std::endl;
                         return boost::optional<LSystem>();
                 }
                 it = behind;
@@ -1009,6 +1100,7 @@ boost::optional<LSystem> compile (const char *code, const char *axiom_) {
                 return boost::optional<LSystem>();
         } else {
                 LSystem sys;
+                sys.setConstants(constants);
                 sys.setAxiom (*ax);
                 sys.setProductions(prods);
                 return sys;

@@ -88,6 +88,8 @@ TokenVector tokenize(const char *code) {
                         }
                 } else if (c == ':') {
                         tokens.push_back (Token(Token::Colon, it, it.next()));
+                } else if (c == '=') {
+                        tokens.push_back (Token(Token::Equals, it, it.next()));
                 } else if (c == ';') {
                         tokens.push_back (Token(Token::Semicolon, it, it.next()));
                 } else if (c == '(') {

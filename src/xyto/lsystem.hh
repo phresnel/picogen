@@ -22,8 +22,10 @@
 #define LSYSTEM_HH_INCLUDED_20100802
 
 #include <vector>
+#include <map>
 #include "pattern.hh"
 #include "production.hh"
+#include "constant.hh"
 
 namespace kallisto { namespace random { namespace marsaglia {
         class UNI;
@@ -36,12 +38,20 @@ public:
 
         Production production(unsigned int index) const;
         void setProductions (std::vector<Production> const &);
+        std::vector<Production> productions() const;
 
         Pattern run (kallisto::random::marsaglia::UNI &rng,
                      unsigned int count) const;
         Pattern run (unsigned int count) const;
+
+        std::vector<Constant> constants () const;
+        Constant constant (std::string const &name) const;
+        void addConstant (Constant const &constant);
+        void setConstants (std::map<std::string, Constant> const & constants);
+        bool constantExists (std::string const &name) const;
 private:
 
+        std::map<std::string, Constant> constants_;
         std::vector<Production> productions_;
         Pattern axiom_;
 };

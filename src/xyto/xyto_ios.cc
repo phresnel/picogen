@@ -25,6 +25,7 @@
 #include "parameterlist.hh"
 #include "segment.hh"
 #include "production.hh"
+#include "lsystem.hh"
 
 std::ostream& operator<< (std::ostream& o, Token const &rhs) {
         o << "[" << rhs.value() << "]";
@@ -177,7 +178,7 @@ std::ostream& operator<< (std::ostream& o, Production const& rhs) {
 }
 
 std::ostream& operator<< (std::ostream &o,
-                                 std::vector<Production> const &prods)
+                          std::vector<Production> const &prods)
 {
         for (unsigned int i=0; i<prods.size(); ++i) {
                 o << prods[i] << '\n';
@@ -185,4 +186,13 @@ std::ostream& operator<< (std::ostream &o,
         return o;
 }
 
+std::ostream& operator<< (std::ostream &o, LSystem const &ls) {
+        const std::vector<Constant> consts = ls.constants();
+        for (unsigned int u=0; u<consts.size(); ++u) {
+                o << consts[u].name() << " = " << consts[u].toReal() << ";\n";
+        }
 
+        o << ls.productions();
+
+        return o;
+}

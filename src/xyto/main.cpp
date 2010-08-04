@@ -35,6 +35,7 @@ int main()
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"
+                        "theta=12.5;\n"
                         "f: f --> f;"
                         /*"f0:   foo  --> foo bar;  \n"
                         "f1:   bar  --> frob [;  \n"
@@ -44,10 +45,16 @@ int main()
                         //"f0: foo --> [foo];"
                 ;
                 boost::optional<LSystem> lsys = compile(code, "foo");
-                if (lsys) for (int i=0; i<5; ++i) {
-                        std::cout << "[" << i << "] " << lsys->run(i) << std::endl;
+
+                if (lsys) {
+                        std::cout << "------\n";
+                        std::cout << *lsys;
+                        std::cout << "------\n";
+                        for (int i=0; i<5; ++i) {
+                                std::cout << "[" << i << "] " << lsys->run(i) << std::endl;
+                        }
                 }
-                return 1;
+                return 0;
         }
 
         if (0) {

@@ -44,6 +44,45 @@ void LSystem::setProductions (std::vector<Production> const &rhs) {
 }
 
 
+std::vector<Production> LSystem::productions() const {
+        return productions_;
+}
+
+
+Constant LSystem::constant (std::string const &name) const {
+        if (constantExists(name))
+                return constants_.find(name)->second;
+        std::cerr << "runtime error: constant '" << name << "' not found."
+                  << std::endl;
+        return Constant();
+}
+
+
+void LSystem::addConstant (Constant const &constant) {
+        constants_[constant.name()]  = constant;
+}
+
+
+bool LSystem::constantExists (std::string const &name) const {
+        return 0 != constants_.count(name);
+}
+
+
+void LSystem::setConstants (std::map<std::string, Constant> const & constants){
+        this->constants_ = constants;
+}
+
+
+std::vector<Constant> LSystem::constants () const {
+        typedef std::map<std::string, Constant>::const_iterator iter;
+        std::vector<Constant> ret;
+        for (iter it=constants_.begin(); it != constants_.end(); ++it) {
+                ret.push_back(it->second);
+        }
+        return ret;
+}
+
+
 Pattern LSystem::run (
         unsigned int count
 ) const {

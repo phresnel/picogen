@@ -29,6 +29,7 @@ class Token {
 public:
         enum Type {
                 TransformTo, // -->
+                Equals,
                 Colon, Semicolon, Comma,
                 LeftParen, RightParen,     // ()
                 LeftBracket, RightBracket, // []

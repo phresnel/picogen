@@ -34,7 +34,9 @@ class ProductionHeader;
 class ProductionBody;
 class ProductionBody;
 class Production;
+class LSystem;
 
+std::ostream& operator<< (std::ostream&, LSystem const&);
 std::ostream& operator<< (std::ostream&, Token const&);
 std::ostream& operator<< (std::ostream&, TokenVector const&);
 std::ostream& operator<< (std::ostream&, Pattern const&);
