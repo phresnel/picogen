@@ -22,6 +22,7 @@
 #define SIMPLE_HH
 
 #include <QWidget>
+#include "../pattern.hh"
 
 namespace Ui {
     class Simple;
@@ -37,10 +38,12 @@ public:
 
 private:
         Ui::Simple *ui;
+        Pattern lsys;
 
         void resizeEvent(QResizeEvent *);
 
 private slots:
+        void on_rotationY_sliderMoved(int position);
         void on_write_clicked();
         void on_draw_clicked();
 };

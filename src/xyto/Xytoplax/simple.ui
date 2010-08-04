@@ -75,6 +75,16 @@
          <item>
           <widget class="QGraphicsView" name="graphicsView"/>
          </item>
+         <item>
+          <widget class="QSlider" name="rotationY">
+           <property name="maximum">
+            <number>360</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>

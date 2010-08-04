@@ -45,6 +45,16 @@ struct TurtleVector {
                 return *this;
         }
 };
+TurtleVector operator+ (TurtleVector lhs, TurtleVector rhs) {
+        return TurtleVector(lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z);
+}
+TurtleVector operator* (TurtleVector lhs, double rhs) {
+        return TurtleVector(lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
+}
+TurtleVector operator* (double lhs, TurtleVector rhs) {
+        return TurtleVector(lhs*rhs.x, lhs*rhs.y, lhs*rhs.z);
+}
+
 double dot (TurtleVector lhs, TurtleVector rhs) {
         return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
 }
@@ -101,7 +111,7 @@ public:
         {
         }
 
-        static TurtleMatrix X(double a) {
+        static TurtleMatrix RotateX(double a) {
                 using std::sin; using std::cos;
                 return TurtleMatrix(
                         1, 0,      0,
@@ -109,7 +119,7 @@ public:
                         0, sin(a), cos(a)
                 );
         }
-        static TurtleMatrix Y(double a) {
+        static TurtleMatrix RotateY(double a) {
                 using std::sin; using std::cos;
                 return TurtleMatrix(
                         cos(a), 0, -sin(a),
@@ -117,7 +127,7 @@ public:
                         sin(a), 0, cos(a)
                 );
         }
-        static TurtleMatrix Z(double a) {
+        static TurtleMatrix RotateZ(double a) {
                 using std::sin; using std::cos;
                 return TurtleMatrix(
                         cos(a),  -sin(a), 0,
@@ -125,6 +135,27 @@ public:
                         0,       0,      1
                 );
         }
+
+        static TurtleMatrix Rotate (double angle, TurtleVector axis) {
+                using std::sin; using std::cos;
+                const TurtleVector a = normalize(axis);
+                const double s = sin(angle), c = cos(angle);
+
+                return TurtleMatrix (
+                        a.x * a.x + (1.f - a.x * a.x) * c,
+                        a.x * a.y * (1.f - c) - a.z * s,
+                        a.x * a.z * (1.f - c) + a.y * s,
+
+                        a.x * a.y * (1.f - c) + a.z * s,
+                        a.y * a.y + (1.f - a.y * a.y) * c,
+                        a.y * a.z * (1.f - c) - a.x * s,
+
+                        a.x * a.z * (1.f - c) - a.y * s,
+                        a.y * a.z * (1.f - c) + a.x * s,
+                        a.z * a.z + (1.f - a.z * a.z) * c
+                );
+        }
+
 
         TurtleMatrix operator * (TurtleMatrix rhs) const {
                 TurtleMatrix ret;
@@ -184,22 +215,22 @@ private:
 
 /*
 struct Turtle {
-        float x, y, z;
-        float theta, phi;
+        double x, y, z;
+        double theta, phi;
 
         Turtle() : x(0), y(0), z(0), theta(3.14159/2.), phi(3.14159/2.) {}
 
-        void forward (float f) {
+        void forward (double f) {
                 using std::sin; using std::cos;
                 x += f * sin(theta) * cos(phi);
                 y += f * sin(theta) * sin(phi);
                 z += f * cos(theta);
         }
 
-        void turnLeft (float f=3.14159/2) {
+        void turnLeft (double f=3.14159/2) {
                 phi += f;
         }
-        void turnRight (float f=3.14159/2) {
+        void turnRight (double f=3.14159/2) {
                 phi -= f;
         }
 };
@@ -207,46 +238,59 @@ struct Turtle {
 struct Turtle {
         TurtleVector position;
         TurtleMatrix rotation;
-        float diameter;
+        TurtleVector tropism;
+        double e;
+        double diameter;
 
         Turtle() {
                 pitchUp(3.14159*0.5);
                 diameter = 1;
+                tropism = TurtleVector(0,-1,0);
+                e = 0.22;
         }
 
-        void forward (float f) {
-                position += rotation*TurtleVector(0,0,f);
+        void forward (double f) {
+                const TurtleVector H = heading(f);
+                const double
+                        alpha = e * length (cross (H, tropism));
+                //qWarning(QString::number(alpha).toAscii());
+                //pitchDown(alpha*0.0174);
+
+                rotation = TurtleMatrix::RotateX(alpha*0.0174) * rotation;
+
+                position += heading(f);
         }
 
-        void turnLeft (float f) {
-                rotation = TurtleMatrix::Y(f) * rotation;
+        void turnLeft (double f) {
+                rotation = TurtleMatrix::RotateY(f) * rotation;
         }
-        void turnRight (float f) {
-                rotation = TurtleMatrix::Y(-f) * rotation;
-        }
-
-        void pitchUp (float f) {
-                rotation = TurtleMatrix::X(-f) * rotation;
-        }
-        void pitchDown (float f) {
-                rotation = TurtleMatrix::X(f) * rotation;
+        void turnRight (double f) {
+                rotation = TurtleMatrix::RotateY(-f) * rotation;
         }
 
-        void rollLeft (float f) {
-                std::cout << "before roll-left: " << up() << std::endl;
-                rotation = TurtleMatrix::Z(f) * rotation;
-                std::cout << "after roll-left: " << up() << std::endl;
+        void pitchUp (double f) {
+                rotation = TurtleMatrix::RotateX(-f) * rotation;
         }
-        void rollRight (float f) {
-                rotation = TurtleMatrix::Z(-f) * rotation;
+        void pitchDown (double f) {
+                rotation = TurtleMatrix::RotateX(f) * rotation;
         }
 
-        void decrementDiameter (float f) {
+        void rollLeft (double f) {
+                rotation = TurtleMatrix::RotateZ(f) * rotation;
+        }
+        void rollRight (double f) {
+                rotation = TurtleMatrix::RotateZ(-f) * rotation;
+        }
+
+        void decrementDiameter (double f) {
                 diameter = f;
         }
 
-        TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
-        TurtleVector right() const { return rotation*TurtleVector(1,0,0); }
+        /*TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
+        TurtleVector right() const { return rotation*TurtleVector(1,0,0); }*/
+        TurtleVector heading(double f=1) const {
+                return rotation*TurtleVector(0,0,f);
+        }
 
         void rollToVertical() {
                 const TurtleVector
@@ -255,9 +299,7 @@ struct Turtle {
                         newRight = normalize(cross(up,forward)),
                         newUp = normalize (cross(forward,newRight));
 
-                std::cout << "right-before:" << this->right() << std::endl;
                 rotation = TurtleMatrix(newRight, newUp, forward);
-                std::cout << "right-after:" << this->right() << std::endl;
         }
 };
 
@@ -292,6 +334,20 @@ axiom:up(90) A(1);
 p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
+                        // abop p. 60
+                        "d1 = 94.74;\n"
+                        "d2 = 132.63;\n"
+                        "a = 18.95;\n"
+                        "lr = 1.109;\n"
+                        "vr = 1.732;\n"
+                        "\n"
+                        "axiom: dia(1.0) f(200) rollright(45) A;\n"
+                        "p1: A --> dia(vr) f(50) \n"
+                        "        [down(a) f(50) A] rollright(d1)\n"
+                        "        [down(a) f(50) A] rollright(d2)\n"
+                        "        [down(a) f(50) A];\n"
+                        "p2: f(l) --> f(l*lr);\n"
+                        "p3: dia(w) --> dia(w*vr);\n"
                         // abop p. 59
                         /*
                         "r1=0.9;\n"
@@ -306,6 +362,7 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                         //*/
 
                         // abop p. 56
+                        /*
                         "\n"
                         "r1=0.9;\n"
                         "r2=0.6;\n"
@@ -349,13 +406,15 @@ Simple::~Simple() {
 
 
 
-void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
+void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene, float rotation=0) {
         typedef Pattern::const_iterator It;
+
+        const TurtleMatrix rot = TurtleMatrix::RotateY(rotation);
 
         for (It it = pat.begin(); it!=pat.end(); ++it) {
                 Segment seg = *it;
                 if (seg.type() == Segment::Branch) {
-                        draw (seg.branch(), turtle, scene);
+                        draw (seg.branch(), turtle, scene, rotation);
                 } else if (seg.type() == Segment::Letter) {
                         if (seg.name() == "left") {
                                 if (!seg.parameterList().empty()) {
@@ -405,9 +464,13 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene) {
                                 }
 
                                 QPen pen;
-                                pen.setWidthF(turtle.diameter*0.01);
-                                scene.addLine(oldBoy.position.x, -oldBoy.position.y,
-                                              turtle.position.x, -turtle.position.y, pen);
+                                pen.setWidthF(turtle.diameter*1);
+
+
+                                const TurtleVector from = rot*oldBoy.position;
+                                const TurtleVector to   = rot*turtle.position;
+                                scene.addLine(from.x, -from.y,
+                                              to.x, -to.y, pen);
                         }
                 }
         }
@@ -429,7 +492,7 @@ void Simple::on_draw_clicked() {
         scene->addEllipse(-1,-1,2,2);
 
         ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
-        draw (lsys->run(ui->numIterations->value()), Turtle(), *scene);
+        draw (this->lsys = lsys->run(ui->numIterations->value()), Turtle(), *scene);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
@@ -454,4 +517,16 @@ void Simple::on_write_clicked() {
 void Simple::resizeEvent(QResizeEvent *) {
         ui->graphicsView->fitInView(ui->graphicsView->sceneRect(),
                                     Qt::KeepAspectRatio);
+}
+
+
+void Simple::on_rotationY_sliderMoved(int position) {
+        //--
+        QGraphicsScene *scene = new QGraphicsScene (this);
+        scene->addEllipse(-1,-1,2,2);
+
+        ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
+        draw (lsys, Turtle(), *scene, position*0.0174);
+        ui->graphicsView->setScene(scene);
+        ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
