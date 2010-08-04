@@ -493,7 +493,6 @@ boost::optional<ProductionBody> parse_production_body (
         }
         //---------------------------------------------------------
 
-
         TokenIterator behindPattern;
         const Pattern pat = parse_pattern(it, end, behindPattern);
         it = behindPattern;
@@ -526,9 +525,7 @@ boost::optional<std::vector<ProductionBody> > parse_production_bodies (
         while (boost::optional<ProductionBody> body
                 = parse_production_body(it, end, behindProd)
         ) {
-                it = behindProd;
-                ret.push_back (*body);
-                if (it == end) {
+                if (it == behindProd || behindProd == end) {
                         TokenIterator prev = it - 1;
                         std::cerr
                             << "error: expected ';' after production in line "
@@ -536,6 +533,9 @@ boost::optional<std::vector<ProductionBody> > parse_production_bodies (
                             << prev->to().column() << std::endl;
                         return RET();
                 }
+
+                it = behindProd;
+                ret.push_back (*body);
                 if (it->type() == Token::Semicolon) {
                         break;
                 }
@@ -570,6 +570,7 @@ boost::optional<double> parse_probability (
         const double p = it->valueAsReal();
         ++it;
         if (it == end || it->type() != Token::RightBracket) {
+                std::cout << "fault prob" << std::endl;
                 return boost::optional<double>();
         }
         ++it;
