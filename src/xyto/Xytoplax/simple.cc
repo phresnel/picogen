@@ -249,16 +249,54 @@ struct Turtle {
                 e = 0.22;
         }
 
+
+        /*
+
+(defun turtle-update-orientation (torque angle)
+  (setf (state-orientation *turtle*)
+        (turn-space (state-orientation *turtle*) torque angle)))
+
+
+(defun turtle-adjust (vector amount)
+  (let ((torque (cross-product (point-normalize vector) (get-normal *turtle*))))
+    (turtle-update-orientation torque (* amount (point-length torque)))))
+
+
+(defun turtle-move (amount)
+  (setf (state-location *turtle*) (turtle-displacement amount)))
+
+
+(defun turtle-forward (amount)
+  (if (null (turtle-branch *turtle*)) (add-new-branch))
+  (turtle-move amount)
+  (add-new-branch))
+
+
+(defun turtle-tropism (distance vector strength)
+  (turtle-forward distance)
+  (turtle-adjust vector strength))
+        */
+
+        //(defun turtle-adjust (vector amount)
+        //  (let ((torque (cross-product (point-normalize vector) (get-normal *turtle*))))
+        //    (turtle-update-orientation torque (* amount (point-length torque)))))
+        void adjust (TurtleVector vector, double amount) {
+                TurtleVector torque = cross (normalize(vector), heading(1));
+                rotation = rotation * TurtleMatrix::Rotate(
+                                -amount*length(torque),
+                                normalize(torque))
+                           ;
+                //pitchUp(length(torque));
+        }
+
+        void tropism_ (double distance, TurtleVector vector, double strength) {
+                adjust (vector, strength);
+                position += heading(distance); //forward (distance);
+        }
+
+
         void forward (double f) {
-                const TurtleVector H = heading(f);
-                const double
-                        alpha = e * length (cross (H, tropism));
-                //qWarning(QString::number(alpha).toAscii());
-                //pitchDown(alpha*0.0174);
-
-                rotation = TurtleMatrix::RotateX(alpha*0.0174) * rotation;
-
-                position += heading(f);
+                tropism_ (f, tropism, e);
         }
 
         void turnLeft (double f) {
@@ -286,8 +324,8 @@ struct Turtle {
                 diameter = f;
         }
 
-        /*TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
-        TurtleVector right() const { return rotation*TurtleVector(1,0,0); }*/
+        TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
+        /*TurtleVector right() const { return rotation*TurtleVector(1,0,0); }*/
         TurtleVector heading(double f=1) const {
                 return rotation*TurtleVector(0,0,f);
         }
@@ -324,6 +362,7 @@ Simple::Simple(QWidget *parent) :
 
 
         ui->sourceCode->setPlainText(
+                        //"axiom: dia(1.0) right(45) f(20) f(20) f(20)  f(20) f(20)  f(20) f(20);"
 
                         //"axiom: f(20) rollright(90) up(90)  f(20) up(135) f(20);"
 
@@ -335,6 +374,7 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 60
+
                         "d1 = 94.74;\n"
                         "d2 = 132.63;\n"
                         "a = 18.95;\n"
@@ -348,6 +388,8 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                         "        [down(a) f(50) A];\n"
                         "p2: f(l) --> f(l*lr);\n"
                         "p3: dia(w) --> dia(w*vr);\n"
+                        //*/
+
                         // abop p. 59
                         /*
                         "r1=0.9;\n"
@@ -469,8 +511,13 @@ void draw (Pattern pat, Turtle turtle, QGraphicsScene &scene, float rotation=0) 
 
                                 const TurtleVector from = rot*oldBoy.position;
                                 const TurtleVector to   = rot*turtle.position;
-                                scene.addLine(from.x, -from.y,
-                                              to.x, -to.y, pen);
+                                const double Zfrom = 1;//1 / (1 + 0.001 * (800+from.z)); // <-- very basic perspective
+                                const double Zto = 1;//1 / (1 + 0.001 * (800+to.z));
+                                scene.addLine(from.x * Zfrom,
+                                              -from.y * Zfrom,
+                                              to.x * Zto,
+                                              -to.y * Zto,
+                                              pen);
                         }
                 }
         }
@@ -489,6 +536,7 @@ void Simple::on_draw_clicked() {
 
         //--
         QGraphicsScene *scene = new QGraphicsScene (this);
+        scene->setItemIndexMethod(QGraphicsScene::NoIndex);
         scene->addEllipse(-1,-1,2,2);
 
         ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
@@ -520,13 +568,15 @@ void Simple::resizeEvent(QResizeEvent *) {
 }
 
 
-void Simple::on_rotationY_sliderMoved(int position) {
+void Simple::on_rotationY_valueChanged(int value)
+{
         //--
         QGraphicsScene *scene = new QGraphicsScene (this);
+        scene->setItemIndexMethod(QGraphicsScene::NoIndex);
         scene->addEllipse(-1,-1,2,2);
 
         ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
-        draw (lsys, Turtle(), *scene, position*0.0174);
+        draw (lsys, Turtle(), *scene, value*0.0174);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
