@@ -124,10 +124,19 @@
        </item>
       </layout>
      </widget>
+     <widget class="GLWidget" name="widget" native="true"/>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GLWidget</class>
+   <extends>QWidget</extends>
+   <header>GLWidget.hh</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

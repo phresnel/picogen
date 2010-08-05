@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 
 TARGET = Xytoplax
 TEMPLATE = app
@@ -26,7 +26,8 @@ SOURCES += main.cc\
     ../parameter.cc \
     ../lsystem.cc \
     ../interpreter.cc \
-    ../compiler.cc
+    ../compiler.cc \
+    GLWidget.cc
 
 HEADERS  += mainwindow.hh \
     simple.hh \
@@ -45,7 +46,8 @@ HEADERS  += mainwindow.hh \
     ../parameter.hh \
     ../lsystem.hh \
     ../kiss.hh \
-    ../codeiterator.hh
+    ../codeiterator.hh \
+    GLWidget.hh
 
 FORMS    += mainwindow.ui \
     simple.ui

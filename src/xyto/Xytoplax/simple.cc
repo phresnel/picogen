@@ -25,11 +25,14 @@
 
 #include <QGraphicsView>
 #include <QMessageBox>
+#include <QtOpenGL>
 
 #include "ui_simple.h"
 
 #include "../lsystem.hh"
 #include "../xyto_ios.hh"
+
+
 
 
 
