@@ -36,6 +36,11 @@ class ProductionBody;
 class Production;
 class LSystem;
 
+class TurtleVector;
+
+
+std::ostream& operator<< (std::ostream& o, TurtleVector const &rhs);
+
 std::ostream& operator<< (std::ostream&, LSystem const&);
 std::ostream& operator<< (std::ostream&, Token const&);
 std::ostream& operator<< (std::ostream&, TokenVector const&);

@@ -47,7 +47,11 @@ HEADERS  += mainwindow.hh \
     ../lsystem.hh \
     ../kiss.hh \
     ../codeiterator.hh \
-    GLWidget.hh
+    GLWidget.hh \
+    ../turtlevector.hh \
+    ../turtlematrix.hh \
+    ../turtle.hh \
+    ../draw.hh
 
 FORMS    += mainwindow.ui \
     simple.ui

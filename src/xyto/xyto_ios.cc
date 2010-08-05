@@ -27,6 +27,8 @@
 #include "production.hh"
 #include "lsystem.hh"
 
+#include "turtlevector.hh"
+
 std::ostream& operator<< (std::ostream& o, Token const &rhs) {
         o << "[" << rhs.value() << "]";
         return o;
@@ -198,5 +200,13 @@ std::ostream& operator<< (std::ostream &o, LSystem const &ls) {
         o << "axiom: " << ls.axiom() << '\n';
         o << ls.productions();
 
+        return o;
+}
+
+
+
+
+std::ostream& operator<< (std::ostream& o, TurtleVector const &rhs) {
+        o << "[" << rhs.x << ", " << rhs.y << ", " << rhs.z << "]";
         return o;
 }
