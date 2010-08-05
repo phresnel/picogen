@@ -40,11 +40,11 @@ public:
         QSize sizeHint() const;
 
         void updateData (Pattern const &lsys);
-        /*public slots:
+public slots:
         void setXRotation(int angle);
         void setYRotation(int angle);
         void setZRotation(int angle);
-        signals:
+        /*signals:
         void xRotationChanged(int angle);
         void yRotationChanged(int angle);
         void zRotationChanged(int angle);*/

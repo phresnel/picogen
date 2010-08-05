@@ -29,8 +29,9 @@ public:
                 displayList = glGenLists(1);
                 glNewList(displayList, GL_COMPILE);
 
-                glColor3f(0, 1, 0);
-                glLineWidth(2);
+                glColor3f(0, 0, 0);
+                glLineWidth(1);
+                glEnable(GL_LINE_SMOOTH);
                 glBegin(GL_LINES);
         }
 
@@ -47,10 +48,11 @@ public:
                 glVertex3f(state.position.x,
                            state.position.y,
                            state.position.z);
+                glLineWidth(newState.diameter*10);
+                glVertex3f(newState.position.x,
+                           newState.position.y,
+                           newState.position.z);
                 state = newState;
-                glVertex3f(state.position.x,
-                           state.position.y,
-                           state.position.z);
         }
 
         GLuint result() const {
@@ -62,6 +64,15 @@ private:
 };
 
 
+
+
+int normalizeAngle(int angle) {
+     while (angle < 0)
+         angle += 360 * 16;
+     while (angle > 360 * 16)
+         angle -= 360 * 16;
+     return angle;
+}
 
 
 
@@ -95,22 +106,35 @@ QSize GLWidget::minimumSizeHint() const {
 QSize GLWidget::sizeHint() const {
         return QSize(400, 400);
 }
- /*void GLWidget::setXRotation(int angle)
-  {
-      qNormalizeAngle(angle);
+
+
+void GLWidget::setXRotation(int angle) {
+      angle = normalizeAngle(angle);
       if (angle != xRot) {
           xRot = angle;
-          emit xRotationChanged(angle);
           updateGL();
       }
-
-  }*/
+}
+void GLWidget::setYRotation(int angle) {
+      angle = normalizeAngle(angle);
+      if (angle != yRot) {
+          yRot = angle;
+          updateGL();
+      }
+}
+void GLWidget::setZRotation(int angle) {
+      angle = normalizeAngle(angle);
+      if (angle != zRot) {
+          zRot = angle;
+          updateGL();
+      }
+}
 
 
 void GLWidget::initializeGL() {
         qglClearColor(qtPurple.dark());
 
-        glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_LIGHTING);
@@ -123,18 +147,19 @@ void GLWidget::initializeGL() {
 
 void GLWidget::resizeGL(int width, int height) {
         int side = qMin(width, height);
-        glViewport((width - side) / 2, (height - side) / 2, side, side);
+        //glViewport((width - side) / 2, (height - side) / 2, side, side);
+        glViewport(0,0, width, height);
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        const double s = 1;
-/*#ifdef QT_OPENGL_ES_1
-        glOrthof(s*-0.5, s*+0.5, s*-0.5, s*+0.5, 0.0, 150.0);
+        /*const double s = 1000;
+#ifdef QT_OPENGL_ES_1
+        glOrthof(s*-0.5, s*+0.5, s*-0.5, s*+0.5, 0.0, s);
 #else
-        glOrtho(s*-0.5, s*+0.5, s*-0.5, s*+0.5, 0.0, 150.0);
+        glOrtho(s*-0.5, s*+0.5, s*-0.5, s*+0.5, 0.0, s);
 #endif*/
-        gluPerspective(90*0.17, 1, 0, 100);
+        gluPerspective(90*0.17, width / (float)height, 0, 1000);
 }
 
 
@@ -142,10 +167,10 @@ void GLWidget::paintGL() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glTranslatef(0.0, 20.0, -7000.0);
-        /*glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
+        glTranslatef(0.0, -5.0, -20.0);
+        glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
         glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
-        glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);*/
+        glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
         glCallList(displayList);
 
         /*glBegin(GL_LINES);
@@ -163,15 +188,13 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 void GLWidget::mouseMoveEvent(QMouseEvent *event) {
         int dx = event->x() - lastPos.x();
         int dy = event->y() - lastPos.y();
-        Q_UNUSED(dx)
-        Q_UNUSED(dy)
 
         if (event->buttons() & Qt::LeftButton) {
-                //setXRotation(xRot + 8 * dy);
-                //setYRotation(yRot + 8 * dx);
+                setXRotation(xRot + 8 * dy);
+                setYRotation(yRot + 8 * dx);
         } else if (event->buttons() & Qt::RightButton) {
-                //setXRotation(xRot + 8 * dy);
-                //setZRotation(zRot + 8 * dx);
+                setXRotation(xRot + 8 * dy);
+                setZRotation(zRot + 8 * dx);
         }
         lastPos = event->pos();
 }

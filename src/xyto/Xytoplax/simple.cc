@@ -78,7 +78,6 @@ Simple::Simple(QWidget *parent) :
                         //"axiom: dia(1.0) right(45) f(20) f(20) f(20)  f(20) f(20)  f(20) f(20);"
 
                         //"axiom: f(20) rollright(90) up(90)  f(20) up(135) f(20);"
-
                         /*
 R=1.456;
 a=120; // <-- tweak for fun
@@ -87,18 +86,17 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 60
-
                         "d1 = 94.74;\n"
                         "d2 = 132.63;\n"
                         "a = 18.95;\n"
                         "lr = 1.109;\n"
                         "vr = 1.732;\n"
                         "\n"
-                        "axiom: dia(1.0) f(200) rollright(45) A;\n"
-                        "p1: A --> dia(vr) f(50) \n"
-                        "        [down(a) f(50) A] rollright(d1)\n"
-                        "        [down(a) f(50) A] rollright(d2)\n"
-                        "        [down(a) f(50) A];\n"
+                        "axiom: dia(1.0) f(4) rollright(45) A;\n"
+                        "p1: A --> dia(vr) f(1) \n"
+                        "        [down(a) f(1) A] rollright(d1)\n"
+                        "        [down(a) f(1) A] rollright(d2)\n"
+                        "        [down(a) f(1) A];\n"
                         "p2: f(l) --> f(l*lr);\n"
                         "p3: dia(w) --> dia(w*vr);\n"
                         //*/
@@ -172,7 +170,7 @@ public:
 
         void drawTo (Turtle newState) {
                 QPen pen;
-                pen.setWidthF(newState.diameter*1);
+                pen.setWidthF(newState.diameter*0.025);
                 const TurtleVector from = rot*state.position;
                 const TurtleVector to = rot*newState.position;
                 //const double Zfrom = 1;//1 / (1 + 0.001 * (800+from.z)); // <-- very basic perspective
