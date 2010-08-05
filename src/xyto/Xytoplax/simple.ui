@@ -124,7 +124,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="GLWidget" name="widget" native="true"/>
+     <widget class="GLWidget" name="glWidget" native="true"/>
     </widget>
    </item>
   </layout>

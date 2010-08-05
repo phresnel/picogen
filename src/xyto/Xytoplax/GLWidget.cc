@@ -19,6 +19,51 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "GLWidget.hh"
+#include "../turtle.hh"
+#include "../draw.hh"
+
+
+class GLDisplayListMesh {
+public:
+        GLDisplayListMesh () {
+                displayList = glGenLists(1);
+                glNewList(displayList, GL_COMPILE);
+
+                glColor3f(0, 1, 0);
+                glLineWidth(2);
+                glBegin(GL_LINES);
+        }
+
+        ~GLDisplayListMesh () {
+                glEnd();
+                glEndList();
+        }
+
+        void moveTo (Turtle state) {
+                this->state = state;
+        }
+
+        void drawTo (Turtle newState) {
+                glVertex3f(state.position.x,
+                           state.position.y,
+                           state.position.z);
+                state = newState;
+                glVertex3f(state.position.x,
+                           state.position.y,
+                           state.position.z);
+        }
+
+        GLuint result() const {
+                return displayList;
+        }
+private:
+        Turtle state;
+        GLuint displayList;
+};
+
+
+
+
 
 GLWidget::GLWidget(QWidget *parent)
      : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
@@ -29,11 +74,16 @@ GLWidget::GLWidget(QWidget *parent)
 
         qtGreen = QColor::fromCmykF(0.40, 0.0, 1.0, 0.0);
         qtPurple = QColor::fromCmykF(0.39, 0.39, 0.0, 0.0);
+
+        displayList = 0;
 }
 
 
 GLWidget::~GLWidget()
 {
+        makeCurrent();
+        if (displayList != 0)
+                glDeleteLists(displayList, 1);
 }
 
 
@@ -77,27 +127,31 @@ void GLWidget::resizeGL(int width, int height) {
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-#ifdef QT_OPENGL_ES_1
-        glOrthof(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
+
+        const double s = 1;
+/*#ifdef QT_OPENGL_ES_1
+        glOrthof(s*-0.5, s*+0.5, s*-0.5, s*+0.5, 0.0, 150.0);
 #else
-        glOrtho(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
-#endif
-        glMatrixMode(GL_MODELVIEW);
+        glOrtho(s*-0.5, s*+0.5, s*-0.5, s*+0.5, 0.0, 150.0);
+#endif*/
+        gluPerspective(90*0.17, 1, 0, 100);
 }
 
 
 void GLWidget::paintGL() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glTranslatef(0.0, 0.0, -10.0);
-        glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
+        glTranslatef(0.0, 20.0, -7000.0);
+        /*glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
         glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
-        glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
+        glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);*/
+        glCallList(displayList);
 
-        glBegin(GL_LINES);
-        glVertex3f(0,0,2);
-        glVertex3f(0,10,2);
-        glEnd();
+        /*glBegin(GL_LINES);
+        glVertex3f(-1,0,0);
+        glVertex3f(1,0,0);
+        glEnd();*/
 }
 
 
@@ -122,3 +176,30 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
         lastPos = event->pos();
 }
 
+
+void GLWidget::updateData(Pattern const &pat) {
+        if (displayList != 0)
+                glDeleteLists(displayList, 1);
+
+        if (1) {
+                {
+                        GLDisplayListMesh dlm;
+                        draw (pat, Turtle(), dlm);
+                        displayList = dlm.result();
+                }
+                repaint();
+        } else {
+                displayList = glGenLists(1);
+                glNewList(displayList, GL_COMPILE);
+
+                glBegin(GL_LINES);
+                glColor3f(0.5,0.7,0.9);
+                glVertex3f(0,0,0);
+                glVertex3f(10,50,0);
+                glEnd();
+
+                glEndList();
+
+                repaint();
+        }
+}

@@ -172,7 +172,7 @@ public:
 
         void drawTo (Turtle newState) {
                 QPen pen;
-                pen.setWidthF(state.diameter*1);
+                pen.setWidthF(newState.diameter*1);
                 const TurtleVector from = rot*state.position;
                 const TurtleVector to = rot*newState.position;
                 //const double Zfrom = 1;//1 / (1 + 0.001 * (800+from.z)); // <-- very basic perspective
@@ -212,6 +212,7 @@ void Simple::on_draw_clicked() {
               gsm);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+        ui->glWidget->updateData(this->lsys);
 }
 
 void Simple::on_write_clicked() {
