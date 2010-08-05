@@ -39,7 +39,7 @@ struct Turtle {
 
 
         void adjust (TurtleVector vector, double amount) {
-                TurtleVector torque = cross (normalize(vector), heading(1));
+                TurtleVector torque = cross (normalize(vector), heading_(1));
                 rotation = rotation * TurtleMatrix::Rotate(
                                 -amount*length(torque),
                                 normalize(torque))
@@ -48,7 +48,7 @@ struct Turtle {
 
         void tropism_ (double distance, TurtleVector vector, double strength) {
                 adjust (vector, strength);
-                position += heading(distance); //forward (distance);
+                position += heading_(distance); //forward (distance);
         }
 
 
@@ -91,10 +91,16 @@ struct Turtle {
                 rotation = TurtleMatrix(newRight, newUp, forward);
         }
 
+        TurtleVector disk (double phi) {
+                const TurtleVector d = up_() * sin(phi)
+                                     + right_() * cos(phi);
+                return position + d * diameter * 0.5 * 0.1;
+        }
+
 private:
-        TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
-        /*TurtleVector right() const { return rotation*TurtleVector(1,0,0); }*/
-        TurtleVector heading(double f=1) const {
+        TurtleVector up_() const { return rotation*TurtleVector(0,1,0); }
+        TurtleVector right_() const { return rotation*TurtleVector(1,0,0); }
+        TurtleVector heading_(double f=1) const {
                 return rotation*TurtleVector(0,0,f);
         }
 

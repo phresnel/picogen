@@ -28,15 +28,9 @@ public:
         GLDisplayListMesh () {
                 displayList = glGenLists(1);
                 glNewList(displayList, GL_COMPILE);
-
-                glColor3f(0, 0, 0);
-                glLineWidth(1);
-                glEnable(GL_LINE_SMOOTH);
-                glBegin(GL_LINES);
         }
 
         ~GLDisplayListMesh () {
-                glEnd();
                 glEndList();
         }
 
@@ -45,14 +39,33 @@ public:
         }
 
         void drawTo (Turtle newState) {
+                glColor3f(0, 0, 0);
+                /*glLineWidth(newState.diameter);
+                glEnable(GL_LINE_SMOOTH);
+
+                glBegin(GL_LINES);
                 glVertex3f(state.position.x,
                            state.position.y,
                            state.position.z);
                 glLineWidth(newState.diameter*10);
                 glVertex3f(newState.position.x,
                            newState.position.y,
-                           newState.position.z);
+                           newState.position.z);*/
+
+                glBegin(GL_QUAD_STRIP);
+                const double pi = 3.14159, pi2 = pi*2;
+                for (int i=0; i<=5; ++i) {
+                        const double phi = (i/5.) * pi2;
+                //for (double phi=0; phi<pi2; phi+=pi2/4) {
+                        const TurtleVector a = state.disk(phi);
+                        const TurtleVector b = newState.disk(phi);
+                        glVertex3f(a.x, a.y, a.z);
+                        glVertex3f(b.x, b.y, b.z);
+                }
+                glEnd();
+
                 state = newState;
+                glEnd();
         }
 
         GLuint result() const {
@@ -135,7 +148,8 @@ void GLWidget::initializeGL() {
         qglClearColor(qtPurple.dark());
 
         //glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
+        //glEnable(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
@@ -146,8 +160,6 @@ void GLWidget::initializeGL() {
 
 
 void GLWidget::resizeGL(int width, int height) {
-        int side = qMin(width, height);
-        //glViewport((width - side) / 2, (height - side) / 2, side, side);
         glViewport(0,0, width, height);
 
         glMatrixMode(GL_PROJECTION);
@@ -167,7 +179,7 @@ void GLWidget::paintGL() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glTranslatef(0.0, -5.0, -20.0);
+        glTranslatef(0.0, -5.0, -40.0);
         glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
         glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
         glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
