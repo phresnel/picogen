@@ -157,11 +157,11 @@ void GLWidget::initializeGL() {
 
         //glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
-        //glShadeModel(GL_SMOOTH);
+        glShadeModel(GL_SMOOTH);
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
         //glEnable(GL_MULTISAMPLE);
-        static GLfloat lightPosition[4] = { 0.5, 5.0, 7.0, 1.0 };
+        static GLfloat lightPosition[4] = { 1.0, 0.8, 2.0, 0.0 };
         glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
         glClearColor(0.5, 0.4, 0.3, 1.0);
@@ -174,7 +174,7 @@ void GLWidget::resizeGL(int width, int height) {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        gluPerspective(90, width / (float)height, 1, 100);
+        gluPerspective(70, width / (float)height, 1, 100);
         //glOrtho(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
 
         glMatrixMode(GL_MODELVIEW);
@@ -185,21 +185,22 @@ void GLWidget::paintGL() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glLoadIdentity();
-        glTranslatef(0.0, -10.0, -30.0);
+        glTranslatef(0.0, -20.0, -50.0);
         //glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
         glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
         //glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
         glCallList(displayList);
 
         glBegin(GL_QUADS);
+        glNormal3f(0,1,0);
         glColor3f(1,0,0);
-        glVertex3f(-10, 10, 0);
-        glColor3f(0,1,0);
-        glVertex3f(10, 10, 0);
+        glVertex3f(-10, 0, 10);
+        glColor3f(0,0,0);
+        glVertex3f(10, 0, 10);
         glColor3f(0,0,1);
-        glVertex3f(10, -10, 0);
+        glVertex3f(10, 0, -10);
         glColor3f(1,0,1);
-        glVertex3f(-10, -10, 0);
+        glVertex3f(-10, 0, -10);
         glEnd();
 }
 
