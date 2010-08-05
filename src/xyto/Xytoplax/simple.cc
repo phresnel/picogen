@@ -166,13 +166,15 @@ public:
         : scene(scene), rot(rot) {
         }
 
-        void addInner (TurtleVector from_, double diameterFrom,
-                       TurtleVector to_, double diameterTo
-        ) {
+        void moveTo (Turtle state) {
+                this->state = state;
+        }
+
+        void drawTo (Turtle newState) {
                 QPen pen;
-                pen.setWidthF(diameterTo*1);
-                const TurtleVector from = rot*from_;
-                const TurtleVector to = rot*to_;
+                pen.setWidthF(state.diameter*1);
+                const TurtleVector from = rot*state.position;
+                const TurtleVector to = rot*newState.position;
                 //const double Zfrom = 1;//1 / (1 + 0.001 * (800+from.z)); // <-- very basic perspective
                 //const double Zto = 1;//1 / (1 + 0.001 * (800+to.z));
                 scene.addLine(from.x,
@@ -180,11 +182,13 @@ public:
                               to.x,
                               -to.y,
                               pen);
+                state = newState;
         }
 
 private:
         QGraphicsScene &scene;
         TurtleMatrix rot;
+        Turtle state;
 };
 
 

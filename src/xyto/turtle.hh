@@ -38,43 +38,12 @@ struct Turtle {
         }
 
 
-        /*
-
-(defun turtle-update-orientation (torque angle)
-  (setf (state-orientation *turtle*)
-        (turn-space (state-orientation *turtle*) torque angle)))
-
-
-(defun turtle-adjust (vector amount)
-  (let ((torque (cross-product (point-normalize vector) (get-normal *turtle*))))
-    (turtle-update-orientation torque (* amount (point-length torque)))))
-
-
-(defun turtle-move (amount)
-  (setf (state-location *turtle*) (turtle-displacement amount)))
-
-
-(defun turtle-forward (amount)
-  (if (null (turtle-branch *turtle*)) (add-new-branch))
-  (turtle-move amount)
-  (add-new-branch))
-
-
-(defun turtle-tropism (distance vector strength)
-  (turtle-forward distance)
-  (turtle-adjust vector strength))
-        */
-
-        //(defun turtle-adjust (vector amount)
-        //  (let ((torque (cross-product (point-normalize vector) (get-normal *turtle*))))
-        //    (turtle-update-orientation torque (* amount (point-length torque)))))
         void adjust (TurtleVector vector, double amount) {
                 TurtleVector torque = cross (normalize(vector), heading(1));
                 rotation = rotation * TurtleMatrix::Rotate(
                                 -amount*length(torque),
                                 normalize(torque))
                            ;
-                //pitchUp(length(torque));
         }
 
         void tropism_ (double distance, TurtleVector vector, double strength) {
@@ -112,12 +81,6 @@ struct Turtle {
                 diameter = f;
         }
 
-        TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
-        /*TurtleVector right() const { return rotation*TurtleVector(1,0,0); }*/
-        TurtleVector heading(double f=1) const {
-                return rotation*TurtleVector(0,0,f);
-        }
-
         void rollToVertical() {
                 const TurtleVector
                         up = TurtleVector (0,1,0),
@@ -127,6 +90,14 @@ struct Turtle {
 
                 rotation = TurtleMatrix(newRight, newUp, forward);
         }
+
+private:
+        TurtleVector up() const { return rotation*TurtleVector(0,1,0); }
+        /*TurtleVector right() const { return rotation*TurtleVector(1,0,0); }*/
+        TurtleVector heading(double f=1) const {
+                return rotation*TurtleVector(0,0,f);
+        }
+
 };
 
 #endif // TURTLE_HH_INCLUDED_20100805

@@ -28,10 +28,13 @@ template <typename T>
 inline void draw (Pattern pat, Turtle turtle, T &mesh) {
         typedef Pattern::const_iterator It;
 
+        bool first = true;
+
         for (It it = pat.begin(); it!=pat.end(); ++it) {
                 Segment seg = *it;
                 if (seg.type() == Segment::Branch) {
                         draw (seg.branch(), turtle, mesh);
+                        mesh.moveTo(turtle);
                 } else if (seg.type() == Segment::Letter) {
                         if (seg.name() == "left") {
                                 if (!seg.parameterList().empty()) {
@@ -80,10 +83,11 @@ inline void draw (Pattern pat, Turtle turtle, T &mesh) {
                                         turtle.forward(1);
                                 }
 
-                                mesh.addInner (oldBoy.position,
-                                               oldBoy.diameter,
-                                               turtle.position,
-                                               turtle.diameter);
+                                if (first) {
+                                        mesh.moveTo(oldBoy);
+                                        first = false;
+                                }
+                                mesh.drawTo (turtle);
                         }
                 }
         }
