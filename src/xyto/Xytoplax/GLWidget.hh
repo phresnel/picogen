@@ -23,11 +23,9 @@
 
 #include <QtOpenGL>
 #include <QGLWidget>
-#ifndef GL_MULTISAMPLE
-#define GL_MULTISAMPLE  0x809D
-#endif
 
 class Pattern;
+class LSystem;
 
 class GLWidget : public QGLWidget
 {
@@ -39,7 +37,7 @@ public:
         QSize minimumSizeHint() const;
         QSize sizeHint() const;
 
-        void updateData (Pattern const &lsys);
+        void updateData (LSystem const &lsys, Pattern const &pat);
 public slots:
         void setXRotation(int angle);
         void setYRotation(int angle);

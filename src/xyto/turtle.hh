@@ -29,12 +29,14 @@ struct Turtle {
         TurtleVector tropism;
         double e;
         double diameter;
+        double scale;
 
         Turtle() {
                 pitchUp(3.14159*0.5);
                 diameter = 1;
                 tropism = TurtleVector(0,-1,0);
                 e = 0.22;
+                scale = 1;
         }
 
 
@@ -92,9 +94,12 @@ struct Turtle {
         }
 
         TurtleVector disk (double phi) {
-                const TurtleVector d = up_() * sin(phi)
-                                     + right_() * cos(phi);
-                return position + d * diameter * 0.5 * 0.1;
+                const double radius = diameter * 0.5;
+                return position + normal(phi) * radius;
+        }
+        TurtleVector normal (double phi) {
+                return normalize( up_() * sin(phi)
+                                + right_() * cos(phi));
         }
 
 private:

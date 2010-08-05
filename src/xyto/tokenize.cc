@@ -36,9 +36,10 @@ TokenVector tokenize(const char *code) {
                         const CI begin = it;
                         ++it; ++it;
                         tokens.push_back (Token(Token::TransformTo, begin, it.next()));
-                } else if (is_alpha(c)) {
+                } else if (is_alpha(c) || c=='#') {
                         const CI begin = it;
                         CI prev = it;
+                        ++it;
                         for (; *it!='\0' && is_alnum(*it); prev=it, ++it) {
                         }
                         tokens.push_back (Token(Token::Identifier, begin, it));

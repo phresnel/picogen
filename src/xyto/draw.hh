@@ -21,11 +21,19 @@
 #ifndef DRAW_HH_INCLUDED_20100805
 #define DRAW_HH_INCLUDED_20100805
 
-#include "pattern.hh"
+#include "lsystem.hh"
 #include "turtle.hh"
 
 template <typename T>
-inline void draw (Pattern pat, Turtle turtle, T &mesh) {
+inline void draw (LSystem lsys, Pattern pat, Turtle turtle, T &mesh) {
+        turtle.scale = 1;
+        if (lsys.constantExists("#scale"))
+                turtle.scale = lsys.constant("#scale").toReal();
+        return draw_(pat, turtle, mesh);
+}
+
+template <typename T>
+inline void draw_ (Pattern pat, Turtle turtle, T &mesh) {
         typedef Pattern::const_iterator It;
 
         bool first = true;
@@ -33,7 +41,7 @@ inline void draw (Pattern pat, Turtle turtle, T &mesh) {
         for (It it = pat.begin(); it!=pat.end(); ++it) {
                 Segment seg = *it;
                 if (seg.type() == Segment::Branch) {
-                        draw (seg.branch(), turtle, mesh);
+                        draw_ (seg.branch(), turtle, mesh);
                         mesh.moveTo(turtle);
                 } else if (seg.type() == Segment::Letter) {
                         if (seg.name() == "left") {

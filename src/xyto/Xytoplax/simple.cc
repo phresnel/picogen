@@ -75,6 +75,7 @@ Simple::Simple(QWidget *parent) :
 
 
         ui->sourceCode->setPlainText(
+                        //"axiom:dia(4) f(50);"
                         //"axiom: dia(1.0) right(45) f(20) f(20) f(20)  f(20) f(20)  f(20) f(20);"
 
                         //"axiom: f(20) rollright(90) up(90)  f(20) up(135) f(20);"
@@ -86,17 +87,19 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 60
+
                         "d1 = 94.74;\n"
                         "d2 = 132.63;\n"
                         "a = 18.95;\n"
                         "lr = 1.109;\n"
                         "vr = 1.732;\n"
+                        "#scale=0.01;\n"
                         "\n"
-                        "axiom: dia(1.0) f(4) rollright(45) A;\n"
-                        "p1: A --> dia(vr) f(1) \n"
-                        "        [down(a) f(1) A] rollright(d1)\n"
-                        "        [down(a) f(1) A] rollright(d2)\n"
-                        "        [down(a) f(1) A];\n"
+                        "axiom: dia(1.0) f(400) rollright(45) A;\n"
+                        "p1: A --> dia(vr) f(100) \n"
+                        "        [down(a) f(100) A] rollright(d1)\n"
+                        "        [down(a) f(100) A] rollright(d2)\n"
+                        "        [down(a) f(100) A];\n"
                         "p2: f(l) --> f(l*lr);\n"
                         "p3: dia(w) --> dia(w*vr);\n"
                         //*/
@@ -170,7 +173,7 @@ public:
 
         void drawTo (Turtle newState) {
                 QPen pen;
-                pen.setWidthF(newState.diameter*0.025);
+                pen.setWidthF(newState.diameter);
                 const TurtleVector from = rot*state.position;
                 const TurtleVector to = rot*newState.position;
                 //const double Zfrom = 1;//1 / (1 + 0.001 * (800+from.z)); // <-- very basic perspective
@@ -191,12 +194,16 @@ private:
 
 
 void Simple::on_draw_clicked() {
-        const boost::optional<LSystem> lsys =
+        const boost::optional<LSystem> newLsys =
                 compile(ui->sourceCode->toPlainText().toAscii());
-        if (!lsys) {
+        if (!newLsys) {
+                lsys = LSystem();
+                pat = Pattern();
                 ui->outputPattern->setPlainText("<invalid L-System!>");
                 return;
         }
+        lsys = *newLsys;
+        pat = lsys.run(ui->numIterations->value());
 
         //--
         QGraphicsScene *scene = new QGraphicsScene (this);
@@ -205,12 +212,13 @@ void Simple::on_draw_clicked() {
 
         ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
         GraphicsSceneMesh gsm(*scene, TurtleMatrix::RotateY(ui->rotationY->value()*0.0174));
-        draw (this->lsys = lsys->run(ui->numIterations->value()),
+        draw (lsys,
+              pat,
               Turtle(),
               gsm);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
-        ui->glWidget->updateData(this->lsys);
+        ui->glWidget->updateData(lsys, pat);
 }
 
 void Simple::on_write_clicked() {
@@ -245,7 +253,7 @@ void Simple::on_rotationY_valueChanged(int value)
 
         ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
         GraphicsSceneMesh gsm(*scene, TurtleMatrix::RotateY(value*0.0174));
-        draw (lsys, Turtle(), gsm);
+        draw (lsys, pat, Turtle(), gsm);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }

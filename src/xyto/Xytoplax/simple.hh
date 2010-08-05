@@ -22,7 +22,7 @@
 #define SIMPLE_HH
 
 #include <QWidget>
-#include "../pattern.hh"
+#include "../lsystem.hh"
 
 namespace Ui {
     class Simple;
@@ -38,7 +38,8 @@ public:
 
 private:
         Ui::Simple *ui;
-        Pattern lsys;
+        Pattern pat;
+        LSystem lsys;
 
         void resizeEvent(QResizeEvent *);
 
