@@ -44,6 +44,7 @@ private:
         void resizeEvent(QResizeEvent *);
 
 private slots:
+        void on_wireframe_toggled(bool checked);
         void on_rotationY_valueChanged(int value);
         void on_write_clicked();
         void on_draw_clicked();

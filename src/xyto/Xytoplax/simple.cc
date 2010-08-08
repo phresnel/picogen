@@ -75,6 +75,10 @@ Simple::Simple(QWidget *parent) :
 
 
         ui->sourceCode->setPlainText(
+/*"#scale=1;\n"
+"#diascale=20;\n"
+"axiom:f(20);\n"*/
+
                         //"axiom:dia(4) f(50);"
                         //"axiom: dia(1.0) right(45) f(20) f(20) f(20)  f(20) f(20)  f(20) f(20);"
 
@@ -87,7 +91,6 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 60
-
                         "d1 = 94.74;\n"
                         "d2 = 132.63;\n"
                         "a = 18.95;\n"
@@ -256,4 +259,10 @@ void Simple::on_rotationY_valueChanged(int value)
         draw (lsys, pat, Turtle(), gsm);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
+
+void Simple::on_wireframe_toggled(bool checked)
+{
+    ui->glWidget->setWireframe(checked);
 }

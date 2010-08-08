@@ -19,8 +19,16 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "GLWidget.hh"
+#include "GL/glext.h"
 #include "../turtle.hh"
 #include "../draw.hh"
+
+#ifndef GL_TEXTURE_FILTER_CONTROL
+#define GL_TEXTURE_FILTER_CONTROL         0x8500
+#endif
+#ifndef GL_TEXTURE_LOD_BIAS
+#define GL_TEXTURE_LOD_BIAS               0x8501
+#endif
 
 
 class GLDisplayListMesh {
@@ -30,7 +38,18 @@ public:
                 glGenTextures(1, &textures_[0]);
                 glBindTexture(GL_TEXTURE_2D, textures_[0]);
 
+
                 QImage img ("bark.jpg");
+
+                // make it 2^n
+                int w=1, h=1;
+                while (img.width()>w)
+                        w *= 2;
+                while (img.width()>h)
+                        h *= 2;
+                img = img.scaled(w,h,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+
                 unsigned char *foo = new unsigned char [img.width()*img.height()*3];
                 for (int y=0; y<img.height(); ++y) {
                         for (int x=0; x<img.width(); ++x) {
@@ -46,16 +65,19 @@ public:
                 delete [] foo;
 
 
-                displayList_ = glGenLists(1);
-                glNewList(displayList_, GL_COMPILE);
-
                 glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
                 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                                 GL_LINEAR_MIPMAP_NEAREST);
+                                 GL_LINEAR_MIPMAP_LINEAR);
                 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+
+                displayList_ = glGenLists(1);
+                glNewList(displayList_, GL_COMPILE);
+
+
+                glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, -4);
                 glEnable (GL_TEXTURE_2D);
         }
 
@@ -68,22 +90,10 @@ public:
         }
 
         void drawTo (Turtle newState) {
-                glColor3f(0, 0, 0);
-                /*glLineWidth(newState.diameter);
-                glEnable(GL_LINE_SMOOTH);
 
-                glBegin(GL_LINES);
-                glVertex3f(state.position.x,
-                           state.position.y,
-                           state.position.z);
-                glLineWidth(newState.diameter*10);
-                glVertex3f(newState.position.x,
-                           newState.position.y,
-                           newState.position.z);*/
-
-                glBegin(GL_QUAD_STRIP);
+                glBegin(GL_TRIANGLE_STRIP);
                 const double pi = 3.14159, pi2 = pi*2;
-                int count = 16;
+                int count = 7;
                 for (int i=0; i<=count; ++i) {
                         const double f = i/(float)count;
                         const double phi = f * pi2;
@@ -92,18 +102,17 @@ public:
                         const TurtleVector na = state.normal(phi);
                         const TurtleVector nb = newState.normal(phi);
 
-                        glTexCoord2f(f, 0);
+                        glTexCoord2f(f, 0);//distance(a,b));
                         glNormal3f(nb.x, nb.y, nb.z);
                         glVertex3f(b.x, b.y, b.z);
 
-                        glTexCoord2f(f, distance(a,b)*0.1);
+                        glTexCoord2f(f, distance(a,b));
                         glNormal3f(na.x, na.y, na.z);
                         glVertex3f(a.x, a.y, a.z);
                 }
                 glEnd();
 
                 state = newState;
-                glEnd();
         }
 
         GLuint displayList() const {
@@ -311,3 +320,9 @@ void GLWidget::updateData(LSystem const &lsys, Pattern const &pat) {
         }
 }
 
+
+
+void GLWidget::setWireframe (bool enable) {
+        glPolygonMode (GL_FRONT_AND_BACK, enable ? GL_LINE : GL_FILL);
+        updateGL();
+}

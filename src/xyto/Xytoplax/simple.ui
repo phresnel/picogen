@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>775</width>
-    <height>378</height>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,6 +37,13 @@
        <property name="sizeConstraint">
         <enum>QLayout::SetMaximumSize</enum>
        </property>
+       <item>
+        <widget class="QCheckBox" name="wireframe">
+         <property name="text">
+          <string>Wireframe</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QSpinBox" name="numIterations">
          <property name="maximumSize">

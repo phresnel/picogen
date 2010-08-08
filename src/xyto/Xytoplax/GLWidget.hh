@@ -38,6 +38,7 @@ public:
         QSize sizeHint() const;
 
         void updateData (LSystem const &lsys, Pattern const &pat);
+        void setWireframe (bool enable);
 public slots:
         void setXRotation(int angle);
         void setYRotation(int angle);

@@ -29,6 +29,8 @@ inline void draw (LSystem lsys, Pattern pat, Turtle turtle, T &mesh) {
         turtle.scale = 1;
         if (lsys.constantExists("#scale"))
                 turtle.scale = lsys.constant("#scale").toReal();
+        if (lsys.constantExists("#diascale"))
+                turtle.diameterScale = lsys.constant("#diascale").toReal();
         return draw_(pat, turtle, mesh);
 }
 
