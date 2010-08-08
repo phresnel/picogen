@@ -38,6 +38,9 @@ struct TurtleVector {
 inline TurtleVector operator+ (TurtleVector lhs, TurtleVector rhs) {
         return TurtleVector(lhs.x+rhs.x, lhs.y+rhs.y, lhs.z+rhs.z);
 }
+inline TurtleVector operator- (TurtleVector lhs, TurtleVector rhs) {
+        return TurtleVector(lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z);
+}
 inline TurtleVector operator* (TurtleVector lhs, double rhs) {
         return TurtleVector(lhs.x*rhs, lhs.y*rhs, lhs.z*rhs);
 }
@@ -53,6 +56,9 @@ inline double length_sq (TurtleVector vec) {
 }
 inline double length (TurtleVector vec) {
         return std::sqrt(length_sq(vec));
+}
+inline double distance (TurtleVector a, TurtleVector b) {
+        return length(a-b);
 }
 inline TurtleVector normalize (TurtleVector vec) {
         const double len = 1/length(vec);

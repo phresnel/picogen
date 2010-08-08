@@ -26,8 +26,37 @@
 class GLDisplayListMesh {
 public:
         GLDisplayListMesh () {
-                displayList = glGenLists(1);
-                glNewList(displayList, GL_COMPILE);
+                textures_.push_back(0);
+                glGenTextures(1, &textures_[0]);
+                glBindTexture(GL_TEXTURE_2D, textures_[0]);
+
+                QImage img ("bark.jpg");
+                unsigned char *foo = new unsigned char [img.width()*img.height()*3];
+                for (int y=0; y<img.height(); ++y) {
+                        for (int x=0; x<img.width(); ++x) {
+                                QColor const & col = img.pixel(x, y);
+                                unsigned char * const p = &foo[(x+img.width()*y)*3];
+                                p[0] = col.red();
+                                p[1] = col.green();
+                                p[2] = col.blue();
+                        }
+                }
+                gluBuild2DMipmaps(GL_TEXTURE_2D, 3, img.width(), img.height(),
+                                  GL_RGB, GL_UNSIGNED_BYTE, foo);
+                delete [] foo;
+
+
+                displayList_ = glGenLists(1);
+                glNewList(displayList_, GL_COMPILE);
+
+                glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                                 GL_LINEAR_MIPMAP_NEAREST);
+                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+                glEnable (GL_TEXTURE_2D);
         }
 
         ~GLDisplayListMesh () {
@@ -56,14 +85,18 @@ public:
                 const double pi = 3.14159, pi2 = pi*2;
                 int count = 16;
                 for (int i=0; i<=count; ++i) {
-                        const double phi = (i/(float)count) * pi2;
+                        const double f = i/(float)count;
+                        const double phi = f * pi2;
                         const TurtleVector a = state.disk(phi) * state.scale;
                         const TurtleVector b = newState.disk(phi) * newState.scale;
                         const TurtleVector na = state.normal(phi);
                         const TurtleVector nb = newState.normal(phi);
-                        glColor3f(0,1,0);
+
+                        glTexCoord2f(f, 0);
                         glNormal3f(nb.x, nb.y, nb.z);
                         glVertex3f(b.x, b.y, b.z);
+
+                        glTexCoord2f(f, distance(a,b)*0.1);
                         glNormal3f(na.x, na.y, na.z);
                         glVertex3f(a.x, a.y, a.z);
                 }
@@ -73,12 +106,16 @@ public:
                 glEnd();
         }
 
-        GLuint result() const {
-                return displayList;
+        GLuint displayList() const {
+                return displayList_;
+        }
+        std::vector<GLuint> textures() const {
+                return textures_;
         }
 private:
         Turtle state;
-        GLuint displayList;
+        GLuint displayList_;
+        std::vector<GLuint> textures_;
 };
 
 
@@ -101,6 +138,10 @@ GLWidget::GLWidget(QWidget *parent)
         yRot = 0;
         zRot = 0;
 
+        xPos = 0;
+        yPos = -20;
+        zPos = -50;
+
         qtGreen = QColor::fromCmykF(0.40, 0.0, 1.0, 0.0);
         qtPurple = QColor::fromCmykF(0.39, 0.39, 0.0, 0.0);
 
@@ -117,6 +158,10 @@ GLWidget::~GLWidget()
         makeCurrent();
         if (displayList != 0)
                 glDeleteLists(displayList, 1);
+        while (!textures.empty()) {
+                glDeleteTextures (1, &textures.back());
+                textures.pop_back();
+        }
 }
 
 
@@ -153,9 +198,12 @@ void GLWidget::setZRotation(int angle) {
 }
 
 
+
 void GLWidget::initializeGL() {
 
-        //glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
+        //glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+
         glEnable(GL_DEPTH_TEST);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_LIGHTING);
@@ -173,8 +221,7 @@ void GLWidget::resizeGL(int width, int height) {
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-
-        gluPerspective(70, width / (float)height, 1, 100);
+        gluPerspective(45, width / (float)height, 1, 1000);
         //glOrtho(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0);
 
         glMatrixMode(GL_MODELVIEW);
@@ -184,11 +231,12 @@ void GLWidget::resizeGL(int width, int height) {
 void GLWidget::paintGL() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glTranslatef(0.0, -20.0, -50.0);
-        //glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
+        glTranslatef(xPos, yPos, zPos);
+        glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
         glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
-        //glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
+        glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
         glCallList(displayList);
 
         glBegin(GL_QUADS);
@@ -218,22 +266,33 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
                 setXRotation(xRot + 8 * dy);
                 setYRotation(yRot + 8 * dx);
         } else if (event->buttons() & Qt::RightButton) {
-                setXRotation(xRot + 8 * dy);
-                setZRotation(zRot + 8 * dx);
+                xPos += dx * 0.1;
+                yPos -= dy * 0.1;
+                //zoom((xRot + 8 * dy)*0.01);
+                //setZRotation(zRot + 8 * dx);
+                updateGL();
         }
         lastPos = event->pos();
+}
+void GLWidget::wheelEvent (QWheelEvent *we) {
+        zPos += we->delta() * 0.05;
+        updateGL();
 }
 
 
 void GLWidget::updateData(LSystem const &lsys, Pattern const &pat) {
         if (displayList != 0)
                 glDeleteLists(displayList, 1);
+        while (!textures.empty()) {
+                glDeleteTextures (1, &textures.back());
+                textures.pop_back();
+        }
 
         if (1) {
                 {
                         GLDisplayListMesh dlm;
                         draw (lsys, pat, Turtle(), dlm);
-                        displayList = dlm.result();
+                        displayList = dlm.displayList();
                 }
                 updateGL();
         } else {
