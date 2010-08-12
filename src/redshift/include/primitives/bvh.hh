@@ -56,11 +56,11 @@ namespace redshift { namespace primitive {
 
         SEALED(BvhBuilder);
         class BvhBuilder :
-                public BoundPrimitive,
                 MAKE_SEALED(BvhBuilder)
         {
         public:
-                void add (Primitive const &prim);
+                BvhBuilder ();
+                void add (BoundPrimitive const &prim);
                 shared_ptr<Bvh> toBvh() const;
         private:
                 BvhBuilder (BvhBuilder const &);

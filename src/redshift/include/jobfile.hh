@@ -73,6 +73,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/horizonplane.hh"
 #include "primitives/waterplane.hh"
 #include "primitives/list.hh"
+#include "primitives/bvh.hh"
 
 // background/
 //#include "backgrounds/visualise-direction.hh"
@@ -367,7 +368,8 @@ namespace redshift { namespace scenefile {
                         water_plane,
                         horizon_plane,
                         lazy_quadtree,
-                        closed_sphere
+                        closed_sphere,
+                        bvh
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -378,6 +380,18 @@ namespace redshift { namespace scenefile {
                         case water_plane: return waterPlaneParams.toPrimitive();
                         case horizon_plane: return horizonPlaneParams.toPrimitive();
                         case closed_sphere: return closedSphereParams.toPrimitive();
+                        case bvh: return bvhParams.toPrimitive();
+                        };
+                        throw std::exception();
+                }
+
+                inline shared_ptr<BoundPrimitive> toBoundPrimitive () const {
+                        switch (type) {
+                        case lazy_quadtree: return shared_ptr<BoundPrimitive>();
+                        case water_plane: return shared_ptr<BoundPrimitive>();
+                        case horizon_plane: return shared_ptr<BoundPrimitive>();
+                        case closed_sphere: return closedSphereParams.toBoundPrimitive();
+                        case bvh: return bvhParams.toBoundPrimitive();
                         };
                         throw std::exception();
                 }
@@ -422,6 +436,11 @@ namespace redshift { namespace scenefile {
                                 & pack("center", closedSphereParams.center)
                                 & pack("radius", closedSphereParams.radius)
                                 & pack("material", closedSphereParams.material)
+                                ;
+                                break;
+                        case bvh:
+                                arch
+                                & pack ("objects", &Object::type, Object::Typenames, bvhParams.objects);
                                 ;
                                 break;
                         };
@@ -544,14 +563,47 @@ namespace redshift { namespace scenefile {
                         , material(1,1,1)
                         {}
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
-                                return shared_ptr<Primitive>(new ClosedSphere(
+                                return shared_ptr<BoundPrimitive>(new ClosedSphere(
                                         redshift::Point(center.x, center.y, center.z),
                                         radius
                                 ));
+                        }
+
+                        shared_ptr<Primitive> toPrimitive() const {
+                                return toBoundPrimitive();
+                        }
+                };
+
+                struct BvhParams {
+                        std::vector<Object> objects;
+
+                        shared_ptr<Primitive> toPrimitive() const {
+                                return toBoundPrimitive();
+                        }
+                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+                                typedef std::vector<Object>::const_iterator I;
+
+                                primitive::BvhBuilder builder;
+                                std::cout << "foo" << std::endl;
+                                for (I it = objects.begin(); it != objects.end(); ++it) {
+                                        shared_ptr<BoundPrimitive> bp = it->toBoundPrimitive();
+                                        std::cout << "frob" << std::endl;
+                                        if (bp.get()) {
+                                                std::cout << "frib" << std::endl;
+                                                builder.add (*bp);
+                                        } else {
+                                                std::cerr << "warning: unsupported primitive within Bvh: '"
+                                                        << Typenames[it->type] << "'\n";
+                                        }
+                                }
+                                std::cout << "bar" << std::endl;
+                                return builder.toBvh();
                         }
                 };
         public:
@@ -559,6 +611,7 @@ namespace redshift { namespace scenefile {
                 WaterPlaneParams waterPlaneParams;
                 HorizonPlaneParams horizonPlaneParams;
                 ClosedSphereParams closedSphereParams;
+                BvhParams bvhParams;
         };
 
 

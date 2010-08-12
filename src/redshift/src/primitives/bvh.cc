@@ -66,7 +66,12 @@ shared_ptr<Bsdf> Bvh::getBsdf(const DifferentialGeometry &) const {
 //-----------------------------------------------------------------------------
 // Builder
 //-----------------------------------------------------------------------------
-void BvhBuilder::add (Primitive const &prim) {
+BvhBuilder::BvhBuilder() {
+}
+
+
+
+void BvhBuilder::add (BoundPrimitive const &prim) {
 }
 
 
