@@ -22,15 +22,16 @@
 #define Bvh_HH_INCLUDED_20100811
 
 #include "../sealed.hh"
-#include "accelerator.hh"
+#include "aggregate.hh"
 
 namespace redshift { namespace primitive {
 
         class BvhBuilder;
+        class BvhNode;
 
         SEALED(Bvh);
         class Bvh :
-                public Accelerator,
+                public BoundAggregate,
                 MAKE_SEALED(Bvh)
         {
         public:
@@ -43,16 +44,18 @@ namespace redshift { namespace primitive {
                 // -- Primitive -----------------------------------------------
                 bool doesIntersect (Ray const &) const;
                 optional<Intersection> intersect(Ray const &) const;
-                shared_ptr<Bsdf> getBsdf(const DifferentialGeometry &) const;
                 // ------------------------------------------------------------
 
         private:
                 friend class BvhBuilder;
+                Bvh (shared_ptr<BvhNode> root);
+
                 Bvh ();
                 Bvh& operator= (Bvh const &);
                 Bvh (Bvh const&);
-        };
 
+                shared_ptr<BvhNode> root;
+        };
 
         SEALED(BvhBuilder);
         class BvhBuilder :
@@ -60,11 +63,13 @@ namespace redshift { namespace primitive {
         {
         public:
                 BvhBuilder ();
-                void add (BoundPrimitive const &prim);
-                shared_ptr<Bvh> toBvh() const;
+                void add (shared_ptr<BoundPrimitive> prim);
+                shared_ptr<Bvh> toBvh();
         private:
                 BvhBuilder (BvhBuilder const &);
                 BvhBuilder& operator= (BvhBuilder const&);
+
+                shared_ptr<BvhNode> root;
         };
 } }
 

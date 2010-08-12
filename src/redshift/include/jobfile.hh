@@ -590,19 +590,15 @@ namespace redshift { namespace scenefile {
                                 typedef std::vector<Object>::const_iterator I;
 
                                 primitive::BvhBuilder builder;
-                                std::cout << "foo" << std::endl;
                                 for (I it = objects.begin(); it != objects.end(); ++it) {
                                         shared_ptr<BoundPrimitive> bp = it->toBoundPrimitive();
-                                        std::cout << "frob" << std::endl;
                                         if (bp.get()) {
-                                                std::cout << "frib" << std::endl;
-                                                builder.add (*bp);
+                                                builder.add (bp);
                                         } else {
                                                 std::cerr << "warning: unsupported primitive within Bvh: '"
                                                         << Typenames[it->type] << "'\n";
                                         }
                                 }
-                                std::cout << "bar" << std::endl;
                                 return builder.toBvh();
                         }
                 };

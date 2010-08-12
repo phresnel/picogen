@@ -22,6 +22,7 @@
 #define AGGREGATE_HH_INCLUDED_20100120
 
 #include "primitive.hh"
+#include "boundprimitive.hh"
 #include <stdexcept>
 
 namespace redshift { namespace primitive {
@@ -33,7 +34,19 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & /*dgGeom*/
                 ) const {
                         throw std::logic_error (
-                                "getBsdf() called on aggregate.");
+                                "getBsdf() called on Aggregate.");
+                }
+        };
+
+        class BoundAggregate : public BoundPrimitive {
+        public:
+                virtual ~BoundAggregate () {}
+
+                virtual shared_ptr<Bsdf> getBsdf(
+                        const DifferentialGeometry & /*dgGeom*/
+                ) const {
+                        throw std::logic_error (
+                                "getBsdf() called on BoundAggregate.");
                 }
         };
 } }
