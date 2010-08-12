@@ -35,11 +35,11 @@ namespace kallisto {
 
                 // Use max() instead of infinity() to allow for integer types.
                 BoundingBox ()
-                : minimum (
+                : minimum_ (
                         traits::numeric_limits<scalar_t>::max(),
                         traits::numeric_limits<scalar_t>::max(),
                         traits::numeric_limits<scalar_t>::max())
-                , maximum (
+                , maximum_ (
                         -traits::numeric_limits<scalar_t>::max(),
                         -traits::numeric_limits<scalar_t>::max(),
                         -traits::numeric_limits<scalar_t>::max())
@@ -49,18 +49,18 @@ namespace kallisto {
 
 
                 BoundingBox (point_t const & p)
-                : minimum (p), maximum (p)
+                : minimum_ (p), maximum_ (p)
                 {
                 }
 
 
 
                 BoundingBox (point_t const & a, point_t const & b)
-                : minimum (
+                : minimum_ (
                         min (a.x, b.x),
                         min (a.y, b.y),
                         min (a.z, b.z))
-                , maximum (
+                , maximum_ (
                         max (a.x, b.x),
                         max (a.y, b.y),
                         max (a.z, b.z))
@@ -69,31 +69,60 @@ namespace kallisto {
 
 
 
-                point_t getMinimum () const { return minimum; }
-                point_t getMaximum () const { return maximum; }
+                // Old naming scheme.
+                point_t getMinimum () const { return minimum_; }
+                point_t getMaximum () const { return maximum_; }
 
-                scalar_t getMinimumX () const { return minimum.x; }
-                scalar_t getMinimumY () const { return minimum.y; }
-                scalar_t getMinimumZ () const { return minimum.z; }
+                scalar_t getMinimumX () const { return minimum_.x; }
+                scalar_t getMinimumY () const { return minimum_.y; }
+                scalar_t getMinimumZ () const { return minimum_.z; }
 
-                scalar_t getMaximumX () const { return maximum.x; }
-                scalar_t getMaximumY () const { return maximum.y; }
-                scalar_t getMaximumZ () const { return maximum.z; }
+                scalar_t getMaximumX () const { return maximum_.x; }
+                scalar_t getMaximumY () const { return maximum_.y; }
+                scalar_t getMaximumZ () const { return maximum_.z; }
 
-                scalar_t getWidth ()  const { return maximum.x - minimum.x; }
-                scalar_t getHeight () const { return maximum.y - minimum.y; }
-                scalar_t getDepth ()  const { return maximum.z - minimum.z; }
+                scalar_t getWidth ()  const { return maximum_.x - minimum_.x; }
+                scalar_t getHeight () const { return maximum_.y - minimum_.y; }
+                scalar_t getDepth ()  const { return maximum_.z - minimum_.z; }
 
-                void setMinimumX (scalar_t v) { maximum.x = v; }
-                void setMinimumY (scalar_t v) { maximum.y = v; }
-                void setMinimumZ (scalar_t v) { maximum.z = v; }
-                void setMaximumX (scalar_t v) { maximum.x = v; }
-                void setMaximumY (scalar_t v) { maximum.y = v; }
-                void setMaximumZ (scalar_t v) { maximum.z = v; }
+                void setMinimumX (scalar_t v) { maximum_.x = v; }
+                void setMinimumY (scalar_t v) { maximum_.y = v; }
+                void setMinimumZ (scalar_t v) { maximum_.z = v; }
+                void setMaximumX (scalar_t v) { maximum_.x = v; }
+                void setMaximumY (scalar_t v) { maximum_.y = v; }
+                void setMaximumZ (scalar_t v) { maximum_.z = v; }
 
+
+                // New naming scheme.
+                point_t minimum () const { return minimum_; }
+                point_t maximum () const { return maximum_; }
+
+                scalar_t minimumX () const { return minimum_.x; }
+                scalar_t minimumY () const { return minimum_.y; }
+                scalar_t minimumZ () const { return minimum_.z; }
+
+                scalar_t maximumX () const { return maximum_.x; }
+                scalar_t maximumY () const { return maximum_.y; }
+                scalar_t maximumZ () const { return maximum_.z; }
+
+                scalar_t width ()  const { return maximum_.x - minimum_.x; }
+                scalar_t height () const { return maximum_.y - minimum_.y; }
+                scalar_t depth ()  const { return maximum_.z - minimum_.z; }
+
+                void size (unsigned int axis) const {
+                        return maximum_[axis] - minimum_[axis];
+                }
+                void center (unsigned int axis) const {
+                        return maximum_[axis]*scalar_t(0.5)
+                             + minimum_[axis]*scalar_t(0.5);
+                }
+                point_t center() const {
+                        return scalar_t(0.5)*maximum_
+                             + scalar_t(0.5)*minimum_;
+                }
 
         private:
-                point_t minimum, maximum;
+                point_t minimum_, maximum_;
 
         };
 
