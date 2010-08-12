@@ -42,10 +42,12 @@ public:
 
 
         void report (int /*completed*/, int /*total*/) {
-                if (lastTime() < 0.5)
+                if (lastTime() < 2.5)
                         return;
-                lastTime.restart();
+
+                StopWatch f;
                 doCopy();
+                lastTime.restart();
         }
 
 
@@ -62,7 +64,7 @@ private:
                         for (unsigned int y=0; y<source->height(); ++y) {
                                 for (unsigned int x=0; x<source->width(); ++x) {
                                         writeLock->setPixel(x, y,
-                                                            source->average(x, y));
+                                                            source->average_or_zero(x, y));
                                 }
                         }
                 }

@@ -804,10 +804,13 @@ void read_angle_test() {
 }
 
 #undef main
+
 int main (int argc, char *argv[]) {
-#if defined(_WIN32) || defined(_WIN64)
-        freopen( "CON", "w", stdout );
-#endif
+        #if defined(_WIN32) || defined(_WIN64)
+        freopen("CON", "w", stdout);
+        freopen("CON", "w", stderr);
+        #endif
+
         redshift::static_init();
         const optional<Options> oo = parseOptions(argc,argv);
         if (!oo)
@@ -815,7 +818,6 @@ int main (int argc, char *argv[]) {
         read_and_render(*oo);
         return 0;
 }
-
 
 #endif // PICOGENLIB
 #endif

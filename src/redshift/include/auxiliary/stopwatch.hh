@@ -23,6 +23,7 @@
 
 #ifdef _OPENMP
 #include <omp.h>
+#include <iostream>
 namespace redshift {
         class StopWatch {
                 double begin, end;
@@ -38,8 +39,7 @@ namespace redshift {
                 }
 
                 void restart () {
-                        stopped = false;
-                        begin = omp_get_wtime();
+                        *this = StopWatch();
                 }
 
                 double stop () {
@@ -74,8 +74,7 @@ namespace redshift {
                 {}
 
                 void restart () {
-                        stopped = false;
-                        begin = clock() / (double)CLOCKS_PER_SEC;
+                        *this = StopWatch();
                 }
 
                 void set (double time) {

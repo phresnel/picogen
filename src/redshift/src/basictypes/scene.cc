@@ -30,6 +30,9 @@
 
 #include <algorithm>
 #include <omp.h>
+#include <iostream>
+
+#include <fstream>
 
 namespace {
         redshift::Random createRandom(
@@ -240,6 +243,17 @@ void Scene::render (
 
 
 
+
+void Scene::renderToRenderTarget(
+        interaction::ProgressReporter::Ptr reporter,
+        interaction::UserCommandProcessor::Ptr ucp,
+        unsigned int numAASamples_,
+        unsigned int minY, unsigned int maxY,
+        unsigned int userSalt
+) const {
+        throw std::runtime_error("Scene::renderToRenderTarget(.) is no longer supported.");
+}
+#if 0
 void Scene::renderToRenderTarget(
         interaction::ProgressReporter::Ptr reporter,
         interaction::UserCommandProcessor::Ptr ucp,
@@ -286,8 +300,11 @@ void Scene::renderToRenderTarget(
                 step = std::min (std::min(10, step_), (int)width)
         ;
 
+        std::ofstream foo ("foo.txt");
+        exit(0);
 
         for (unsigned int y_=minY; y_<height; ++y_) {
+                foo << "\nline " << y_ << std::endl;
                 const unsigned int y = y_;
 
                 for (int left=0,
@@ -295,6 +312,7 @@ void Scene::renderToRenderTarget(
                      left<(int)width;
                      (left+=step), (right = std::min(left+step, (int)width))
                 ) {
+                        foo << left << "    \r" << std::endl;
                         reporter->report (sampleNumber, totalNumberOfSamples);
                         ucp->tick();
                         if (ucp->userWantsToQuit())
@@ -372,8 +390,10 @@ void Scene::renderToRenderTarget(
 
                                         if (isnan (finalColor)) {
                                                 std::cout << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;
+                                                foo << "NaN pixel at " << x << ":" << y << ":" << i << std::endl;
                                         } else if (isinf (finalColor)) {
                                                 std::cout << "inf pixel at " << x << ":" << y << ":" << i << std::endl;
+                                                foo << "inf pixel at " << x << ":" << y << ":" << i << std::endl;
                                         } else {
                                                 accu = accu + finalColor;
                                         }
@@ -388,8 +408,10 @@ void Scene::renderToRenderTarget(
                                 }*/
                                 if (isnan (accu)) {
                                         std::cout << "NaN pixel at " << x << ":" << y << std::endl;
+                                        foo << "NaN pixel at " << x << ":" << y << std::endl;
                                 } else if (isinf (accu)) {
                                         std::cout << "inf pixel at " << x << ":" << y << std::endl;
+                                        foo << "inf pixel at " << x << ":" << y << std::endl;
                                 } else {
                                         Color c = accu*(Color::real_t(1)/numAASamples);
                                         lock->setPixel (x,y,c);
@@ -409,6 +431,7 @@ void Scene::renderToRenderTarget(
         reporter->reportDone ();
         running_ = false;
 }
+#endif
 
 
 
@@ -444,7 +467,7 @@ void Scene::renderToFilm(
                 (minY<maxY && maxY<(unsigned int)film->height())
                 ? maxY
                 : film->height();
-//#define NO_OMP_THREADING
+#define NO_OMP_THREADING
 
         // TODO: needs to be tested
         const int
@@ -460,13 +483,13 @@ void Scene::renderToFilm(
 
         for (unsigned int y_=minY; y_<height; ++y_) {
                 const unsigned int y = y_;
-
                 for (int left=0,
                          right=step;
                      left<(int)width;
                      (left+=step), (right = std::min(left+step, (int)width))
                 ) {
                         reporter->report (sampleNumber, totalNumberOfSamples);
+
                         ucp->tick();
                         if (ucp->userWantsToQuit())
                                 goto behind_the_big_spin;
@@ -570,7 +593,6 @@ void Scene::renderToFilm(
                                         film->pixel(x,y) += pix;
                                         sampleNumber += numAASamples;
                                 }
-
 
                                 //-------------------------------------------------------------
                                 // 5) Report Progress.
