@@ -121,6 +121,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/horizonplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/waterplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/list.o
 OBJFILES += $(PRIMITIVESOBJDIR)/bvh.o
+OBJFILES += $(PRIMITIVESOBJDIR)/triangle.o
 
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
@@ -307,6 +308,10 @@ $(INTERACTIONOBJDIR)/passivecommandprocessor.o: \
 
 $(PRIMITIVESOBJDIR)/bvh.o: \
                      ./src/primitives/bvh.cc
+	$(CXX) -o $@ $<
+
+$(PRIMITIVESOBJDIR)/triangle.o: \
+                     ./src/primitives/triangle.cc
 	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/closedsphere.o: \

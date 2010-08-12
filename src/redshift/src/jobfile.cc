@@ -32,6 +32,7 @@ namespace redshift { namespace scenefile {
                 | actuarius::Nvp<Object::Type>(Object::lazy_quadtree, "lazy-quadtree")
                 | actuarius::Nvp<Object::Type>(Object::horizon_plane, "horizon-plane")
                 | actuarius::Nvp<Object::Type>(Object::closed_sphere, "sphere")
+                | actuarius::Nvp<Object::Type>(Object::triangle, "triangle")
                 | actuarius::Nvp<Object::Type>(Object::bvh, "bvh")
         );
 

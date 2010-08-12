@@ -725,6 +725,8 @@ void read_and_render (Options const & options) {
                 scene.addObject (o);
                 o.type = Object::water_plane;
                 scene.addObject (o);
+                o.type = Object::triangle;
+                scene.addObject (o);
 
                 RenderSettings rs;
                 rs.width = 800;

@@ -44,7 +44,7 @@ struct BvhNode {
                 //std::cout << "BvhNode::compile()" << std::endl;
 
                 std::cout << "  primitive-count: " << primitives.size() << std::endl;
-                if (primitives.size() == 1) {
+                if (primitives.size() <= 5) {
                         //std::cout << "  is done here" << std::endl;
                         return;
                 }

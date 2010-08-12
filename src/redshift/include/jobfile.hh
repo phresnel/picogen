@@ -74,6 +74,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/waterplane.hh"
 #include "primitives/list.hh"
 #include "primitives/bvh.hh"
+#include "primitives/triangle.hh"
 
 // background/
 //#include "backgrounds/visualise-direction.hh"
@@ -354,11 +355,25 @@ namespace redshift { namespace scenefile {
                 Point (double x, double y, double z) : x(x), y(y), z(z) {}
                 Point () : x(0), y(0), z(0) {}
 
+                operator redshift::Point () const {
+                        return redshift::Point(x,y,z);
+                }
+
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {
                         using actuarius::pack;
                         arch & pack(x) & pack(y) & pack(z);
+                }
+        };
+        struct Vertex {
+                Point position;
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack("position", position);
                 }
         };
 
@@ -369,6 +384,7 @@ namespace redshift { namespace scenefile {
                         horizon_plane,
                         lazy_quadtree,
                         closed_sphere,
+                        triangle,
                         bvh
                 };
                 static const actuarius::Enum<Type> Typenames;
@@ -380,6 +396,7 @@ namespace redshift { namespace scenefile {
                         case water_plane: return waterPlaneParams.toPrimitive();
                         case horizon_plane: return horizonPlaneParams.toPrimitive();
                         case closed_sphere: return closedSphereParams.toPrimitive();
+                        case triangle: return triangleParams.toPrimitive();
                         case bvh: return bvhParams.toPrimitive();
                         };
                         throw std::exception();
@@ -391,6 +408,7 @@ namespace redshift { namespace scenefile {
                         case water_plane: return shared_ptr<BoundPrimitive>();
                         case horizon_plane: return shared_ptr<BoundPrimitive>();
                         case closed_sphere: return closedSphereParams.toBoundPrimitive();
+                        case triangle: return triangleParams.toBoundPrimitive();
                         case bvh: return bvhParams.toBoundPrimitive();
                         };
                         throw std::exception();
@@ -436,6 +454,13 @@ namespace redshift { namespace scenefile {
                                 & pack("center", closedSphereParams.center)
                                 & pack("radius", closedSphereParams.radius)
                                 & pack("material", closedSphereParams.material)
+                                ;
+                                break;
+                        case triangle:
+                                arch
+                                & pack("vertex", triangleParams.A)
+                                & pack("vertex", triangleParams.B)
+                                & pack("vertex", triangleParams.C)
                                 ;
                                 break;
                         case bvh:
@@ -578,6 +603,25 @@ namespace redshift { namespace scenefile {
                         }
                 };
 
+                struct TriangleParams {
+                        Vertex A, B, C;
+
+                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+
+                                return shared_ptr<BoundPrimitive>(new Triangle(
+                                        Triangle::Vertex (A.position),
+                                        Triangle::Vertex (B.position),
+                                        Triangle::Vertex (C.position)
+                                ));
+                        }
+
+                        shared_ptr<Primitive> toPrimitive() const {
+                                return toBoundPrimitive();
+                        }
+                };
+
                 struct BvhParams {
                         std::vector<Object> objects;
 
@@ -607,6 +651,7 @@ namespace redshift { namespace scenefile {
                 WaterPlaneParams waterPlaneParams;
                 HorizonPlaneParams horizonPlaneParams;
                 ClosedSphereParams closedSphereParams;
+                TriangleParams triangleParams;
                 BvhParams bvhParams;
         };
 
