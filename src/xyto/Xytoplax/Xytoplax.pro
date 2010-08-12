@@ -27,7 +27,8 @@ SOURCES += main.cc\
     ../lsystem.cc \
     ../interpreter.cc \
     ../compiler.cc \
-    GLWidget.cc
+    GLWidget.cc \
+    GLDisplayListMesh.cc
 
 HEADERS  += mainwindow.hh \
     simple.hh \
@@ -51,7 +52,8 @@ HEADERS  += mainwindow.hh \
     ../turtlevector.hh \
     ../turtlematrix.hh \
     ../turtle.hh \
-    ../draw.hh
+    ../draw.hh \
+    GLDisplayListMesh.hh
 
 FORMS    += mainwindow.ui \
     simple.ui

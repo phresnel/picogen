@@ -39,8 +39,7 @@ template <typename T>
 inline void draw_ (Pattern pat, Turtle turtle, T &mesh, bool &first) {
         typedef Pattern::const_iterator It;
 
-        //bool first = true;
-        Turtle turtleUsedForLastUpdate;
+        bool lastWasBranch = false;
 
         for (It it = pat.begin(); it!=pat.end(); ++it) {
                 Segment seg = *it;
@@ -48,6 +47,7 @@ inline void draw_ (Pattern pat, Turtle turtle, T &mesh, bool &first) {
                         mesh.pushState();
                         draw_ (seg.branch(), turtle, mesh, first);
                         mesh.popState();
+                        lastWasBranch = true;
                 } else if (seg.type() == Segment::Letter) {
                         if (seg.name() == "left") {
                                 if (!seg.parameterList().empty()) {
@@ -101,9 +101,12 @@ inline void draw_ (Pattern pat, Turtle turtle, T &mesh, bool &first) {
                                         first = false;
                                 }
                                 mesh.drawTo (turtle);
+                                lastWasBranch = false;
                         }
                 }
         }
+        if (!lastWasBranch)
+                mesh.leaf();
 }
 
 #endif // DRAW_HH_INCLUDED_20100805

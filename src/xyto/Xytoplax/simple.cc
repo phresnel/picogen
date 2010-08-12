@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <sstream>
+#include <stack>
 #include "simple.hh"
 
 #include <QGraphicsView>
@@ -53,7 +54,7 @@ Simple::Simple(QWidget *parent) :
 
         ui->sourceCode->setPlainText(
                         //"axiom: dia(10) f(10) rollright(90) f(10);"
-                        "axiom: f(1) rollright(20)  f(1)  []  f(3);"
+                        //"axiom: f(1) rollright(20)  f(1)  []  f(3);"
 /*"#scale=1;\n"
 "#diascale=20;\n"
 "axiom:f(5)f(5)f(5)f(5);\n"//*/
@@ -70,7 +71,7 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 60
-/*
+
                         "d1 = 94.74;\n"
                         "d2 = 132.63;\n"
                         "a = 18.95;\n"
@@ -170,13 +171,15 @@ public:
                 state = newState;
         }
 
-        void pushState() {}
-        void popState() {}
+        void pushState() { stateStack.push(state); }
+        void popState() { state = stateStack.top(); stateStack.pop(); }
+        void leaf() {}
 
 private:
         QGraphicsScene &scene;
         TurtleMatrix rot;
         Turtle state;
+        std::stack<Turtle> stateStack;
 };
 
 

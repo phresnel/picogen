@@ -19,156 +19,12 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "GLWidget.hh"
+#include "GLDisplayListMesh.hh"
 #include "GL/glext.h"
 #include "../turtle.hh"
 #include "../draw.hh"
 
 #include <stack>
-
-#ifndef GL_TEXTURE_FILTER_CONTROL
-#define GL_TEXTURE_FILTER_CONTROL         0x8500
-#endif
-#ifndef GL_TEXTURE_LOD_BIAS
-#define GL_TEXTURE_LOD_BIAS               0x8501
-#endif
-
-
-class GLDisplayListMesh {
-public:
-        GLDisplayListMesh () {
-
-                textures_.push_back(0);
-                glGenTextures(1, &textures_[0]);
-                glBindTexture(GL_TEXTURE_2D, textures_[0]);
-
-
-                QImage img ("bark.jpg");
-
-                // make it 2^n
-                int w=1, h=1;
-                while (img.width()>w)
-                        w *= 2;
-                while (img.width()>h)
-                        h *= 2;
-                img = img.scaled(w,h,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-
-                unsigned char *foo = new unsigned char [img.width()*img.height()*3];
-                for (int y=0; y<img.height(); ++y) {
-                        for (int x=0; x<img.width(); ++x) {
-                                QColor const & col = img.pixel(x, y);
-                                unsigned char * const p = &foo[(x+img.width()*y)*3];
-                                p[0] = col.red();
-                                p[1] = col.green();
-                                p[2] = col.blue();
-                        }
-                }
-                gluBuild2DMipmaps(GL_TEXTURE_2D, 3, img.width(), img.height(),
-                                  GL_RGB, GL_UNSIGNED_BYTE, foo);
-                delete [] foo;
-
-
-                glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                                 GL_LINEAR_MIPMAP_LINEAR);
-                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-
-                displayList_ = glGenLists(1);
-                glNewList(displayList_, GL_COMPILE);
-
-
-                glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, -4);
-                glEnable (GL_TEXTURE_2D);
-        }
-
-        ~GLDisplayListMesh () {
-                glEndList();
-        }
-
-        void moveTo (Turtle state) {
-                qWarning("moveTo");
-                this->state = state;
-        }
-
-
-        void drawTo (Turtle newState) {
-                qWarning("drawTo");
-                using std::fabs;
-                using std::acos;
-
-                glBegin(GL_QUAD_STRIP);
-                const double pi = 3.14159, pi2 = pi*2;
-                int count = 7;
-
-
-                const double fdot = dot (state.rotation.forward(),
-                                         newState.rotation.forward());
-                if (fabs(fdot) < 0.999) {
-                        qWarning(" -> correction");
-                        const TurtleVector axis =
-                                        normalize(cross(
-                                                state.rotation.forward(),
-                                                newState.rotation.forward()));
-                        const double angle = acos(fdot);
-                        newState.rotation = state.rotation
-                                            *
-                                            TurtleMatrix::Rotate(angle, axis)
-                                            ;
-                } else {
-                        qWarning(" -> no correction");
-                        newState.rotation = state.rotation;
-                }
-
-                const double oldTexV = state.pathLength    * 0.01,
-                             newTexV = newState.pathLength * 0.01;
-                for (int i=0; i<=count; ++i) {
-                        const double f = i / (float)count;
-                        const double phi = f * pi2;
-                        const TurtleVector oldV = state.disk(phi) * state.scale;
-                        const TurtleVector newV = newState.disk(phi) * newState.scale;
-                        const TurtleVector oldN = state.normal(phi);
-                        const TurtleVector newN = newState.normal(phi);
-
-                        glTexCoord2f(f, newTexV);
-                        glNormal3f(newN.x, newN.y, newN.z);
-                        glVertex3f(newV.x, newV.y, newV.z);
-
-                        glTexCoord2f(f, oldTexV);
-                        glNormal3f(oldN.x, oldN.y, oldN.z);
-                        glVertex3f(oldV.x, oldV.y, oldV.z);
-                }
-                glEnd();
-
-                state = newState;
-        }
-
-        GLuint displayList() const {
-                return displayList_;
-        }
-        std::vector<GLuint> textures() const {
-                return textures_;
-        }
-
-        void pushState() {
-                stateStack.push(state);
-        }
-        void popState() {
-                state = stateStack.top();
-                stateStack.pop();
-        }
-
-private:
-        Turtle state;
-        std::stack<Turtle> stateStack;
-        GLuint displayList_;
-        std::vector<GLuint> textures_;
-};
-
-
-
 int normalizeAngle(int angle) {
      while (angle < 0)
          angle += 360 * 16;
@@ -250,7 +106,7 @@ void GLWidget::setZRotation(int angle) {
 
 void GLWidget::initializeGL() {
 
-        glEnable(GL_CULL_FACE);
+        //glDisable(GL_CULL_FACE);
         //glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
         glEnable(GL_DEPTH_TEST);
@@ -262,6 +118,8 @@ void GLWidget::initializeGL() {
         glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
         glClearColor(0.5, 0.4, 0.3, 1.0);
+
+        glEnable (GL_TEXTURE_2D);
 }
 
 
