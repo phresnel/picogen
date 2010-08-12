@@ -35,7 +35,7 @@ boost::optional<LSystem> compile(const char*);
 namespace {
         class LSystemTreeMesher {
         public:
-                LSystemTreeMesher ();
+                LSystemTreeMesher (unsigned int slices);
                 ~LSystemTreeMesher ();
                 void moveTo (Turtle state);
                 void drawTo (Turtle newState);
@@ -49,13 +49,16 @@ namespace {
         private:
                 Turtle state;
                 std::stack<Turtle> stateStack;
+                unsigned int slices;
                 //GLuint displayList_;
                 //std::vector<GLuint> textures_;
         };
 
 
 
-        LSystemTreeMesher::LSystemTreeMesher () {
+        LSystemTreeMesher::LSystemTreeMesher (unsigned int slices)
+        : slices(slices)
+        {
                 //textures_.push_back(loadTexture("bark.jpg"));
                 //textures_.push_back(loadTexture("leaf.png"));
 
@@ -87,7 +90,6 @@ namespace {
                 using namespace redshift;
 
                 const double pi = 3.14159, pi2 = pi*2;
-                int count = 5;
 
 
                 const double fdot = dot (state.rotation.forward(),
@@ -111,8 +113,8 @@ namespace {
 
                 //glBegin(GL_QUAD_STRIP);
                 Point prevOldV, prevNewV;
-                for (int i=0; i<=count; ++i) {
-                        const double f = i / (float)count;
+                for (unsigned int i=0; i<=slices; ++i) {
+                        const double f = i / (float)slices;
                         const double phi = f * pi2;
                         const TurtleVector oldV_ = state.disk(phi) * state.scale;
                         const TurtleVector newV_ = newState.disk(phi) * newState.scale;
@@ -257,7 +259,7 @@ LSystemTree::LSystemTree(
         lsys = *newLsys;
         pat = lsys.run(level);
 
-        LSystemTreeMesher mesher;
+        LSystemTreeMesher mesher(slicesPerSegment);
         draw(lsys, pat, Turtle(), mesher);
 
         BvhBuilder builder;

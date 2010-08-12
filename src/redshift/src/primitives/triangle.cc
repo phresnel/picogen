@@ -149,11 +149,14 @@ optional<Intersection>
                 const Vector dv = does>0?
                         normalize (C.position-A.position) :
                         normalize (B.position-A.position);
+                const Normal n = does>0?
+                        normal :
+                        -normal;
 
                 const DifferentialGeometry dg (
                         t,
                         ray(t),
-                        normal,
+                        n,
                         du,
                         dv,
                         Vector(), Vector()
