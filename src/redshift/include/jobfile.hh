@@ -366,7 +366,8 @@ namespace redshift { namespace scenefile {
                 enum Type {
                         water_plane,
                         horizon_plane,
-                        lazy_quadtree
+                        lazy_quadtree,
+                        closed_sphere
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -376,6 +377,7 @@ namespace redshift { namespace scenefile {
                         case lazy_quadtree: return lazyQuadtreeParams.toPrimitive();
                         case water_plane: return waterPlaneParams.toPrimitive();
                         case horizon_plane: return horizonPlaneParams.toPrimitive();
+                        case closed_sphere: return closedSphereParams.toPrimitive();
                         };
                         throw std::exception();
                 }
@@ -413,6 +415,13 @@ namespace redshift { namespace scenefile {
                                 arch
                                 & pack("height", horizonPlaneParams.height)
                                 & pack("material", horizonPlaneParams.material)
+                                ;
+                                break;
+                        case closed_sphere:
+                                arch
+                                & pack("center", closedSphereParams.center)
+                                & pack("radius", closedSphereParams.radius)
+                                & pack("material", closedSphereParams.material)
                                 ;
                                 break;
                         };
@@ -523,12 +532,33 @@ namespace redshift { namespace scenefile {
                                 ));
                         }
                 };
+
+                struct ClosedSphereParams {
+                        Point center;
+                        double radius;
+                        Material material;
+
+                        ClosedSphereParams ()
+                        : center(0,0,0)
+                        , radius(1)
+                        , material(1,1,1)
+                        {}
+
+                        shared_ptr<Primitive> toPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+
+                                return shared_ptr<Primitive>(new ClosedSphere(
+                                        redshift::Point(center.x, center.y, center.z),
+                                        radius
+                                ));
+                        }
+                };
         public:
                 LazyQuadtreeParams lazyQuadtreeParams;
                 WaterPlaneParams waterPlaneParams;
                 HorizonPlaneParams horizonPlaneParams;
-
-
+                ClosedSphereParams closedSphereParams;
         };
 
 

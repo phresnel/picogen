@@ -31,6 +31,7 @@ namespace redshift { namespace scenefile {
                 ( actuarius::Nvp<Object::Type>(Object::water_plane, "water-plane")
                 | actuarius::Nvp<Object::Type>(Object::lazy_quadtree, "lazy-quadtree")
                 | actuarius::Nvp<Object::Type>(Object::horizon_plane, "horizon-plane")
+                | actuarius::Nvp<Object::Type>(Object::closed_sphere, "sphere")
         );
 
         const actuarius::Enum<SurfaceIntegrator::Type> SurfaceIntegrator::Typenames =

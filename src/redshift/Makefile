@@ -120,6 +120,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/lazyquadtree.o
 OBJFILES += $(PRIMITIVESOBJDIR)/horizonplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/waterplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/list.o
+OBJFILES += $(PRIMITIVESOBJDIR)/bvh.o
 
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
@@ -303,6 +304,10 @@ $(INTERACTIONOBJDIR)/passivecommandprocessor.o: \
 ###############################################################################
 # primitives
 ###############################################################################
+
+$(PRIMITIVESOBJDIR)/bvh.o: \
+                     ./src/primitives/bvh.cc
+	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/closedsphere.o: \
                      ./src/primitives/closedsphere.cc
