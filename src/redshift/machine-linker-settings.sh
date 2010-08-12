@@ -3,9 +3,9 @@ if [ -e /c/mingw ]; then
 	echo -Wl,--subsystem,console
 fi
 
-cd ../scripts
-if  ./gcc-version-at-least.sh 4 5 ; then
+cd ../scripts > /dev/null
+if  ./gcc-version-at-least.sh 4 5 &> /dev/null; then
         echo -enable-stdcall-fixup  \
          -Wl,--enable-auto-import,--enable-runtime-pseudo-reloc-v2,--no-keep-memory,--reduce-memory-overheads
 fi
-cd -
+cd -  > /dev/null
