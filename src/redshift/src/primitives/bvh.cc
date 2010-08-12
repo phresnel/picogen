@@ -43,7 +43,7 @@ struct BvhNode {
         void compile() {
                 //std::cout << "BvhNode::compile()" << std::endl;
 
-                //std::cout << "  primitive-count: " << primitives.size() << std::endl;
+                std::cout << "  primitive-count: " << primitives.size() << std::endl;
                 if (primitives.size() == 1) {
                         //std::cout << "  is done here" << std::endl;
                         return;
@@ -69,7 +69,12 @@ struct BvhNode {
                 childB.reset(new BvhNode);
 
                 for (It it = primitives.begin(); it!=primitives.end(); ++it) {
-                        if ((**it).boundingBox().center(splitAxis) < center) {
+                        const real_t s = (**it).boundingBox().center(splitAxis);
+                        if (s < center) {
+                                childA->add(*it);
+                        } else if (s > center) {
+                                childB->add(*it);
+                        } else if (childA->primitives.size()<childB->primitives.size()) {
                                 childA->add(*it);
                         } else {
                                 childB->add(*it);
