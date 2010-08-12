@@ -34,6 +34,7 @@
 class GLDisplayListMesh {
 public:
         GLDisplayListMesh () {
+
                 textures_.push_back(0);
                 glGenTextures(1, &textures_[0]);
                 glBindTexture(GL_TEXTURE_2D, textures_[0]);
@@ -89,26 +90,54 @@ public:
                 this->state = state;
         }
 
+
         void drawTo (Turtle newState) {
+                using std::fabs;
+                using std::acos;
 
-                glBegin(GL_TRIANGLE_STRIP);
+                glBegin(GL_QUAD_STRIP);
                 const double pi = 3.14159, pi2 = pi*2;
-                int count = 7;
+                int count = 5;
+
+
+                const double fdot = dot (state.rotation.forward(),
+                                         newState.rotation.forward());
+                qWarning("fdot:" + QString::number(fdot).toAscii());
+                qWarning("fwd:" + (QString::number(newState.rotation.forward().x) + "," +
+                                   QString::number(newState.rotation.forward().y) + "," +
+                                   QString::number(newState.rotation.forward().z)).toAscii());
+                if (fabs(fdot) < 0.999) {
+                        const TurtleVector axis =
+                                        normalize(cross(
+                                                state.rotation.forward(),
+                                                newState.rotation.forward()));
+                        const double angle = acos(fdot);
+                        qWarning(QString::number(angle/0.0174532925).toAscii());
+                        newState.rotation = state.rotation
+                                            *
+                                            TurtleMatrix::Rotate(angle, axis)
+                                            ;
+                } else {
+                        newState.rotation = state.rotation;
+                }
+
+                const double oldTexV = state.pathLength    * 0.01,
+                             newTexV = newState.pathLength * 0.01;
                 for (int i=0; i<=count; ++i) {
-                        const double f = i/(float)count;
+                        const double f = i / (float)count;
                         const double phi = f * pi2;
-                        const TurtleVector a = state.disk(phi) * state.scale;
-                        const TurtleVector b = newState.disk(phi) * newState.scale;
-                        const TurtleVector na = state.normal(phi);
-                        const TurtleVector nb = newState.normal(phi);
+                        const TurtleVector oldV = state.disk(phi) * state.scale;
+                        const TurtleVector newV = newState.disk(phi) * newState.scale;
+                        const TurtleVector oldN = state.normal(phi);
+                        const TurtleVector newN = newState.normal(phi);
 
-                        glTexCoord2f(f, 0);//distance(a,b));
-                        glNormal3f(nb.x, nb.y, nb.z);
-                        glVertex3f(b.x, b.y, b.z);
+                        glTexCoord2f(f, newTexV);
+                        glNormal3f(newN.x, newN.y, newN.z);
+                        glVertex3f(newV.x, newV.y, newV.z);
 
-                        glTexCoord2f(f, distance(a,b));
-                        glNormal3f(na.x, na.y, na.z);
-                        glVertex3f(a.x, a.y, a.z);
+                        glTexCoord2f(f, oldTexV);
+                        glNormal3f(oldN.x, oldN.y, oldN.z);
+                        glVertex3f(oldV.x, oldV.y, oldV.z);
                 }
                 glEnd();
 

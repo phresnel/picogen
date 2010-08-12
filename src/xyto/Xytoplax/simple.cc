@@ -32,29 +32,6 @@
 #include "../xyto_ios.hh"
 
 
-/*
-struct Turtle {
-        double x, y, z;
-        double theta, phi;
-
-        Turtle() : x(0), y(0), z(0), theta(3.14159/2.), phi(3.14159/2.) {}
-
-        void forward (double f) {
-                using std::sin; using std::cos;
-                x += f * sin(theta) * cos(phi);
-                y += f * sin(theta) * sin(phi);
-                z += f * cos(theta);
-        }
-
-        void turnLeft (double f=3.14159/2) {
-                phi += f;
-        }
-        void turnRight (double f=3.14159/2) {
-                phi -= f;
-        }
-};
-*/
-
 
 boost::optional<LSystem> compile(const char*);
 
@@ -75,9 +52,10 @@ Simple::Simple(QWidget *parent) :
 
 
         ui->sourceCode->setPlainText(
+                        //"axiom: dia(10) f(10) rollright(90) f(10);"
 /*"#scale=1;\n"
 "#diascale=20;\n"
-"axiom:f(20);\n"*/
+"axiom:f(5)f(5)f(5)f(5);\n"//*/
 
                         //"axiom:dia(4) f(50);"
                         //"axiom: dia(1.0) right(45) f(20) f(20) f(20)  f(20) f(20)  f(20) f(20);"
@@ -91,6 +69,7 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 60
+
                         "d1 = 94.74;\n"
                         "d2 = 132.63;\n"
                         "a = 18.95;\n"

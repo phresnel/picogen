@@ -116,6 +116,16 @@ public:
                 );
         }
 
+
+        TurtleVector disk_normal (double phi) {
+                return normalize( up() * cos(phi)
+                                + right() * -sin(phi));
+        }
+
+        TurtleVector right() const { return TurtleVector(m00,m10,m20); }
+        TurtleVector up() const { return TurtleVector(m01,m11,m21); }
+        TurtleVector forward() const { return TurtleVector(m02,m12,m22); }
+
 private:
         double& operator [] (unsigned int index) {
                 switch (index) {

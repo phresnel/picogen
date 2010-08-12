@@ -31,19 +31,18 @@ inline void draw (LSystem lsys, Pattern pat, Turtle turtle, T &mesh) {
                 turtle.scale = lsys.constant("#scale").toReal();
         if (lsys.constantExists("#diascale"))
                 turtle.diameterScale = lsys.constant("#diascale").toReal();
-        return draw_(pat, turtle, mesh);
+        bool first = true;
+        return draw_(pat, turtle, mesh, first);
 }
 
 template <typename T>
-inline void draw_ (Pattern pat, Turtle turtle, T &mesh) {
+inline void draw_ (Pattern pat, Turtle turtle, T &mesh, bool &first) {
         typedef Pattern::const_iterator It;
-
-        bool first = true;
 
         for (It it = pat.begin(); it!=pat.end(); ++it) {
                 Segment seg = *it;
                 if (seg.type() == Segment::Branch) {
-                        draw_ (seg.branch(), turtle, mesh);
+                        draw_ (seg.branch(), turtle, mesh, first);
                         mesh.moveTo(turtle);
                 } else if (seg.type() == Segment::Letter) {
                         if (seg.name() == "left") {

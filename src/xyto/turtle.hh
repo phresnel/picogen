@@ -31,6 +31,7 @@ struct Turtle {
         double diameter;
         double scale;
         double diameterScale;
+        double pathLength;
 
         Turtle() {
                 pitchUp(3.14159*0.5);
@@ -39,6 +40,7 @@ struct Turtle {
                 e = 0.22;
                 scale = 1;
                 diameterScale = 1;
+                pathLength = 0;
         }
 
 
@@ -52,7 +54,9 @@ struct Turtle {
 
         void tropism_ (double distance, TurtleVector vector, double strength) {
                 adjust (vector, strength);
-                position += heading_(distance); //forward (distance);
+                const TurtleVector delta = heading_(distance);
+                position += delta;
+                pathLength += length(delta);
         }
 
 
