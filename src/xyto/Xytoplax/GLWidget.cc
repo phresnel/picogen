@@ -23,6 +23,8 @@
 #include "../turtle.hh"
 #include "../draw.hh"
 
+#include <stack>
+
 #ifndef GL_TEXTURE_FILTER_CONTROL
 #define GL_TEXTURE_FILTER_CONTROL         0x8500
 #endif
@@ -87,37 +89,36 @@ public:
         }
 
         void moveTo (Turtle state) {
+                qWarning("moveTo");
                 this->state = state;
         }
 
 
         void drawTo (Turtle newState) {
+                qWarning("drawTo");
                 using std::fabs;
                 using std::acos;
 
                 glBegin(GL_QUAD_STRIP);
                 const double pi = 3.14159, pi2 = pi*2;
-                int count = 5;
+                int count = 7;
 
 
                 const double fdot = dot (state.rotation.forward(),
                                          newState.rotation.forward());
-                qWarning("fdot:" + QString::number(fdot).toAscii());
-                qWarning("fwd:" + (QString::number(newState.rotation.forward().x) + "," +
-                                   QString::number(newState.rotation.forward().y) + "," +
-                                   QString::number(newState.rotation.forward().z)).toAscii());
                 if (fabs(fdot) < 0.999) {
+                        qWarning(" -> correction");
                         const TurtleVector axis =
                                         normalize(cross(
                                                 state.rotation.forward(),
                                                 newState.rotation.forward()));
                         const double angle = acos(fdot);
-                        qWarning(QString::number(angle/0.0174532925).toAscii());
                         newState.rotation = state.rotation
                                             *
                                             TurtleMatrix::Rotate(angle, axis)
                                             ;
                 } else {
+                        qWarning(" -> no correction");
                         newState.rotation = state.rotation;
                 }
 
@@ -150,8 +151,18 @@ public:
         std::vector<GLuint> textures() const {
                 return textures_;
         }
+
+        void pushState() {
+                stateStack.push(state);
+        }
+        void popState() {
+                state = stateStack.top();
+                stateStack.pop();
+        }
+
 private:
         Turtle state;
+        std::stack<Turtle> stateStack;
         GLuint displayList_;
         std::vector<GLuint> textures_;
 };

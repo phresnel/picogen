@@ -53,6 +53,7 @@ Simple::Simple(QWidget *parent) :
 
         ui->sourceCode->setPlainText(
                         //"axiom: dia(10) f(10) rollright(90) f(10);"
+                        "axiom: f(1) rollright(20)  f(1)  []  f(3);"
 /*"#scale=1;\n"
 "#diascale=20;\n"
 "axiom:f(5)f(5)f(5)f(5);\n"//*/
@@ -69,13 +70,14 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                          */
 
                         // abop p. 60
-
+/*
                         "d1 = 94.74;\n"
                         "d2 = 132.63;\n"
                         "a = 18.95;\n"
                         "lr = 1.109;\n"
                         "vr = 1.732;\n"
-                        "#scale=0.01;\n"
+                        "#scale=0.05;\n"
+                        "#diascale=5.0;\n"
                         "\n"
                         "axiom: dia(1.0) f(400) rollright(45) A;\n"
                         "p1: A --> dia(vr) f(100) \n"
@@ -100,7 +102,7 @@ p1: A(s) --> f(s)[right(a)A(s/R)][left(a)A(s/R)];
                         //*/
 
                         // abop p. 56
-                        /*
+/*
                         "\n"
                         "r1=0.9;\n"
                         "r2=0.6;\n"
@@ -167,6 +169,9 @@ public:
                               pen);
                 state = newState;
         }
+
+        void pushState() {}
+        void popState() {}
 
 private:
         QGraphicsScene &scene;

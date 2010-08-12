@@ -39,11 +39,15 @@ template <typename T>
 inline void draw_ (Pattern pat, Turtle turtle, T &mesh, bool &first) {
         typedef Pattern::const_iterator It;
 
+        //bool first = true;
+        Turtle turtleUsedForLastUpdate;
+
         for (It it = pat.begin(); it!=pat.end(); ++it) {
                 Segment seg = *it;
                 if (seg.type() == Segment::Branch) {
+                        mesh.pushState();
                         draw_ (seg.branch(), turtle, mesh, first);
-                        mesh.moveTo(turtle);
+                        mesh.popState();
                 } else if (seg.type() == Segment::Letter) {
                         if (seg.name() == "left") {
                                 if (!seg.parameterList().empty()) {
