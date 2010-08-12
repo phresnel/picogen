@@ -24,7 +24,7 @@
 #include "../geometry.hh"
 #include "../basictypes/intersection.hh"
 #include "../shapes/closedsphere.hh"
-#include "../primitives/primitive.hh"
+#include "../primitives/boundprimitive.hh"
 #include "../material/lambertian.hh"
 #include "../material/mirror.hh"
 
@@ -33,12 +33,14 @@ namespace redshift { namespace primitive {
         SEALED(ClosedSphere);
 
         class ClosedSphere
-                : public Primitive
+                : public BoundPrimitive
                 , MAKE_SEALED(ClosedSphere)
         {
         public:
                 ClosedSphere(Point const & center, real_t radius);
                 ~ClosedSphere ();
+
+                BoundingBox boundingBox () const;
 
                 bool doesIntersect (Ray const &ray) const;
 

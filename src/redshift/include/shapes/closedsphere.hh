@@ -32,6 +32,7 @@ namespace redshift { namespace shape {
                 ClosedSphere (Point const &, real_t);
                 bool doesIntersect (Ray const &ray) const ;
                 optional<DifferentialGeometry> intersect (Ray const&ray) const;
+                BoundingBox boundingBox () const;
         private:
                 redshift::Sphere sphereData;
 

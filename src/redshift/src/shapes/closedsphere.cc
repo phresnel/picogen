@@ -35,6 +35,22 @@ ClosedSphere::ClosedSphere (Point const & center, real_t radius)
 
 
 
+BoundingBox ClosedSphere::boundingBox () const {
+        const Point min (
+                sphereData.center.x-sphereData.radius,
+                sphereData.center.y-sphereData.radius,
+                sphereData.center.z-sphereData.radius
+        );
+        const Point max (
+                sphereData.center.x+sphereData.radius,
+                sphereData.center.y+sphereData.radius,
+                sphereData.center.z+sphereData.radius
+        );
+        return BoundingBox(min, max);
+}
+
+
+
 bool ClosedSphere::doesIntersect (Ray const &ray) const {
         if (kallisto::intersect<true> (ray, sphereData))
                 return true;

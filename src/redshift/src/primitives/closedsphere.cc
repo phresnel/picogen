@@ -37,6 +37,12 @@ ClosedSphere::~ClosedSphere () {
 
 
 
+BoundingBox ClosedSphere::boundingBox () const {
+        return sphereData.boundingBox();
+}
+
+
+
 bool ClosedSphere::doesIntersect (Ray const &ray) const {
         return sphereData.doesIntersect (ray);
 }
