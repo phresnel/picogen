@@ -121,6 +121,10 @@ namespace kallisto {
                              + scalar_t(0.5)*minimum_;
                 }
 
+                void reset() {
+                        *this = BoundingBox();
+                }
+
         private:
                 point_t minimum_, maximum_;
 
