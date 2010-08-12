@@ -75,6 +75,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/list.hh"
 #include "primitives/bvh.hh"
 #include "primitives/triangle.hh"
+#include "primitives/lsystemtree.hh"
 
 // background/
 //#include "backgrounds/visualise-direction.hh"
@@ -385,7 +386,8 @@ namespace redshift { namespace scenefile {
                         lazy_quadtree,
                         closed_sphere,
                         triangle,
-                        bvh
+                        bvh,
+                        lsystemtree
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -398,6 +400,7 @@ namespace redshift { namespace scenefile {
                         case closed_sphere: return closedSphereParams.toPrimitive();
                         case triangle: return triangleParams.toPrimitive();
                         case bvh: return bvhParams.toPrimitive();
+                        case lsystemtree: return lsystemTreeParams.toPrimitive();
                         };
                         throw std::exception();
                 }
@@ -410,6 +413,7 @@ namespace redshift { namespace scenefile {
                         case closed_sphere: return closedSphereParams.toBoundPrimitive();
                         case triangle: return triangleParams.toBoundPrimitive();
                         case bvh: return bvhParams.toBoundPrimitive();
+                        case lsystemtree: return lsystemTreeParams.toBoundPrimitive();
                         };
                         throw std::exception();
                 }
@@ -466,6 +470,13 @@ namespace redshift { namespace scenefile {
                         case bvh:
                                 arch
                                 & pack ("objects", &Object::type, Object::Typenames, bvhParams.objects);
+                                ;
+                                break;
+                        case lsystemtree:
+                                arch
+                                & pack("code", lsystemTreeParams.code)
+                                & pack("level", lsystemTreeParams.level)
+                                & pack("slices", lsystemTreeParams.slices)
                                 ;
                                 break;
                         };
@@ -622,6 +633,26 @@ namespace redshift { namespace scenefile {
                         }
                 };
 
+
+                struct LSystemTreeParams {
+                        std::string code;
+                        unsigned int level;
+                        unsigned int slices;
+
+                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+
+                                return shared_ptr<BoundPrimitive>(new LSystemTree(
+                                        code.c_str(), level, slices
+                                ));
+                        }
+
+                        shared_ptr<Primitive> toPrimitive() const {
+                                return toBoundPrimitive();
+                        }
+                };
+
                 struct BvhParams {
                         std::vector<Object> objects;
 
@@ -653,6 +684,7 @@ namespace redshift { namespace scenefile {
                 ClosedSphereParams closedSphereParams;
                 TriangleParams triangleParams;
                 BvhParams bvhParams;
+                LSystemTreeParams lsystemTreeParams;
         };
 
 

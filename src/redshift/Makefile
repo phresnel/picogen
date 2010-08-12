@@ -80,6 +80,7 @@ OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/jobfile.o
 OBJFILES += $(OBJDIR)/save_openexr.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
+OBJFILES += $(OBJDIR)/xyto/*.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/pss-adapter.o
 
@@ -122,6 +123,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/waterplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/list.o
 OBJFILES += $(PRIMITIVESOBJDIR)/bvh.o
 OBJFILES += $(PRIMITIVESOBJDIR)/triangle.o
+OBJFILES += $(PRIMITIVESOBJDIR)/lsystemtree.o
 
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
@@ -134,6 +136,7 @@ OBJFILES += $(RENDERTARGETSOBJDIR)/sdlrendertarget.o
 OBJFILES += $(VOLUMESOBJDIR)/homogeneous.o
 OBJFILES += $(VOLUMESOBJDIR)/exponential.o
 OBJFILES += $(VOLUMESOBJDIR)/list.o
+
 
 ###############################################################################
 ## MAIN TARGETS ###############################################################
@@ -178,10 +181,8 @@ $(OBJDIR)/main.o: ./src/main.cc
 $(OBJDIR)/lib-main.o: ./src/main.cc
 	$(CXX) -DPICOGENLIB -o $@ $<
 
-
 $(OBJDIR)/constants.o: ./src/constants.cc
 	$(CXX) -o $@ $<
-
 
 $(OBJDIR)/jobfile.o: ./src/jobfile.cc
 	$(CXX) -o $@ $<
@@ -192,6 +193,16 @@ $(OBJDIR)/save_openexr.o: ./src/save_openexr.cc
 $(OBJDIR)/quatsch-integration.o: ./src/quatsch-integration.cc
 	$(CXX) -o $@ $<
 
+
+$(OBJDIR)/xyto/*.o: ../xyto/*.cc
+	mkdir -p obj/xyto && \
+	cd obj/xyto && \
+	$(CXX) ../../../xyto/*.cc
+
+
+$(OBJDIR)/libxyto.a: $(OBJDIR)/xyto/*.o
+	cd obj/xyto && \
+	$(AR) -o $@ *
 
 ###############################################################################
 # backgrounds
@@ -305,6 +316,10 @@ $(INTERACTIONOBJDIR)/passivecommandprocessor.o: \
 ###############################################################################
 # primitives
 ###############################################################################
+
+$(PRIMITIVESOBJDIR)/lsystemtree.o: \
+                     ./src/primitives/lsystemtree.cc
+	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/bvh.o: \
                      ./src/primitives/bvh.cc

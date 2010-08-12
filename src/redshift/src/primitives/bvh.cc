@@ -43,11 +43,12 @@ struct BvhNode {
         void compile() {
                 //std::cout << "BvhNode::compile()" << std::endl;
 
-                std::cout << "  primitive-count: " << primitives.size() << std::endl;
+                std::cout << "  primitive-count: " << primitives.size();
                 if (primitives.size() <= 5) {
-                        //std::cout << "  is done here" << std::endl;
+                        std::cout << "  is done here" << std::endl;
                         return;
                 }
+                std::cout << std::endl;
 
                 boundingBox.reset();
                 for (It it = primitives.begin(); it!=primitives.end(); ++it) {
@@ -62,32 +63,40 @@ struct BvhNode {
                 if (boundingBox.size(1) > boundingBox.size(splitAxis_)) splitAxis_ = 1;
                 if (boundingBox.size(2) > boundingBox.size(splitAxis_)) splitAxis_ = 2;
                 const int splitAxis = splitAxis_;
+                //std::cout << "  split-axis: " << splitAxis << std::endl;
 
                 const real_t center = boundingBox.center(splitAxis);
+                //std::cout << "  center: " << center << std::endl;
 
                 childA.reset(new BvhNode);
                 childB.reset(new BvhNode);
 
                 for (It it = primitives.begin(); it!=primitives.end(); ++it) {
                         const real_t s = (**it).boundingBox().center(splitAxis);
+                        //std::cout << s << " ";
                         if (s < center) {
+                                //std::cout << " <" << std::endl;
                                 childA->add(*it);
                         } else if (s > center) {
+                                //std::cout << " >" << std::endl;
                                 childB->add(*it);
                         } else if (childA->primitives.size()<childB->primitives.size()) {
+                                //std::cout << " <" << std::endl;
                                 childA->add(*it);
                         } else {
+                                //std::cout << " >" << std::endl;
                                 childB->add(*it);
                         }
                 }
 
-                primitives.clear();
-
-                if (!childA->primitives.empty()) childA->compile();
-                else childA.reset();
-
-                if (!childB->primitives.empty()) childB->compile();
-                else childB.reset();
+                if (childA->primitives.empty() || childB->primitives.empty()) {
+                        childA.reset();
+                        childB.reset();
+                } else {
+                        primitives.clear();
+                        childA->compile();
+                        childB->compile();
+                }
         }
 
         bool doesIntersect (Ray const &ray) const {

@@ -104,9 +104,6 @@ namespace redshift { namespace primitive {
 Triangle::Triangle (Vertex A, Vertex B, Vertex C)
 : A(A), B(B), C(C)
 {
-        std::cerr << A.position.x << "," << A.position.y << "," << A.position.z << std::endl;
-        std::cerr << B.position.x << "," << B.position.y << "," << B.position.z << std::endl;
-        std::cerr << C.position.x << "," << C.position.y << "," << C.position.z << std::endl;
 }
 
 
@@ -146,12 +143,19 @@ optional<Intersection>
                                           t, u, v,
                                           normal);
         if (does != 0) {
+                const Vector du = does>0?
+                        normalize (B.position-A.position) :
+                        normalize (C.position-A.position);
+                const Vector dv = does>0?
+                        normalize (C.position-A.position) :
+                        normalize (B.position-A.position);
+
                 const DifferentialGeometry dg (
                         t,
                         ray(t),
                         normal,
-                        normalize (B.position-A.position),
-                        normalize (C.position-A.position),
+                        du,
+                        dv,
                         Vector(), Vector()
                 );
                 return Intersection (shared_from_this(), dg);
