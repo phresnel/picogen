@@ -109,10 +109,10 @@ namespace kallisto {
                 scalar_t height () const { return maximum_.y - minimum_.y; }
                 scalar_t depth ()  const { return maximum_.z - minimum_.z; }
 
-                void size (unsigned int axis) const {
+                scalar_t size (unsigned int axis) const {
                         return maximum_[axis] - minimum_[axis];
                 }
-                void center (unsigned int axis) const {
+                scalar_t center (unsigned int axis) const {
                         return maximum_[axis]*scalar_t(0.5)
                              + minimum_[axis]*scalar_t(0.5);
                 }
