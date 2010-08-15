@@ -126,6 +126,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/trianglebvh.o
 OBJFILES += $(PRIMITIVESOBJDIR)/triangle.o
 OBJFILES += $(PRIMITIVESOBJDIR)/lsystemtree.o
 OBJFILES += $(PRIMITIVESOBJDIR)/instance.o
+OBJFILES += $(PRIMITIVESOBJDIR)/boundinstance.o
 
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
@@ -318,6 +319,10 @@ $(INTERACTIONOBJDIR)/passivecommandprocessor.o: \
 ###############################################################################
 # primitives
 ###############################################################################
+
+$(PRIMITIVESOBJDIR)/boundinstance.o: \
+                     ./src/primitives/boundinstance.cc
+	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/instance.o: \
                      ./src/primitives/instance.cc

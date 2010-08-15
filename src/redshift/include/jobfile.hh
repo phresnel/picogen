@@ -78,6 +78,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/triangle.hh"
 #include "primitives/lsystemtree.hh"
 #include "primitives/instance.hh"
+#include "primitives/boundinstance.hh"
 
 // background/
 //#include "backgrounds/visualise-direction.hh"
@@ -913,11 +914,10 @@ namespace redshift { namespace scenefile {
                                         return shared_ptr<BoundPrimitive>();
                                 }
 
-                                /*return shared_ptr<Primitive>(
-                                        objects[0].toPrimitive(),
-                                        transform.toRedshiftTransform()
-                                );*/
-                                throw std::runtime_error("FOO BAR!");
+                                return shared_ptr<BoundPrimitive>(new primitive::BoundInstance(
+                                        transforms.toRedshiftTransform(),
+                                        bp
+                                ));
                         }
                 private:
                         bool warnings() const {
