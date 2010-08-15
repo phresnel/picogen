@@ -638,12 +638,12 @@ namespace redshift { namespace scenefile {
                                 break;
                         case bvh:
                                 arch
-                                & pack ("objects", &Object::type, Object::Typenames, bvhParams.objects);
+                                & pack(&Object::type, Object::Typenames, bvhParams.objects)
                                 ;
                                 break;
                         case triangle_bvh:
                                 arch
-                                & pack ("objects", &Object::type, Object::Typenames, triangleBvhParams.objects);
+                                & pack(&Object::type, Object::Typenames, triangleBvhParams.objects)
                                 ;
                                 break;
                         case lsystemtree:
