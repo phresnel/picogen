@@ -273,14 +273,16 @@ struct TriangleBvhNode {
         }
 
         void compile() {
-                if (size() <= 5) {
-                        return;
-                }
 
                 boundingBox.reset();
                 for (TriangleBvhTri *it = from; it!=to; ++it) {
                         boundingBox = merge (boundingBox,
                                              it->boundingBox());
+                }
+
+                if (size() <= 5) {
+                        std::cout << "hmm, " << boundingBox.width() << std::endl;
+                        return;
                 }
 
                 int splitAxis_ = 0;
@@ -343,6 +345,9 @@ struct TriangleBvhNode {
         }
 
         optional<Intersection> intersect(Ray const &ray) const {
+
+                if (!does_intersect<false>(ray, boundingBox))
+                        return optional<Intersection>();
 
                 real_t nearest = constants::real_max, tmp;
                 optional<Intersection> nearestI, tmpI;
