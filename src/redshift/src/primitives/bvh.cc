@@ -41,32 +41,21 @@ struct BvhNode {
         }
 
         void compile() {
-                //std::cout << "BvhNode::compile()" << std::endl;
-
-                std::cout << "  primitive-count: " << primitives.size();
-                if (primitives.size() <= 5) {
-                        std::cout << "  is done here" << std::endl;
-                        return;
-                }
-                std::cout << std::endl;
-
                 boundingBox.reset();
                 for (It it = primitives.begin(); it!=primitives.end(); ++it) {
                         boundingBox = merge (boundingBox,
                                              ((**it).boundingBox()));
                 }
 
-                //std::cout << "  boundingBox.size   = {" << boundingBox.width() << ", " << boundingBox.height() << ", " << boundingBox.depth() << "}" << std::endl;
-                //std::cout << "  boundingBox.center = {" << boundingBox.center(0) << ", " << boundingBox.center(1) << ", " << boundingBox.center(2) << "}" << std::endl;
+                if (primitives.size() <= 5) {
+                        return;
+                }
 
                 int splitAxis_ = 0;
                 if (boundingBox.size(1) > boundingBox.size(splitAxis_)) splitAxis_ = 1;
                 if (boundingBox.size(2) > boundingBox.size(splitAxis_)) splitAxis_ = 2;
                 const int splitAxis = splitAxis_;
-                //std::cout << "  split-axis: " << splitAxis << std::endl;
-
                 const real_t center = boundingBox.center(splitAxis);
-                //std::cout << "  center: " << center << std::endl;
 
                 childA.reset(new BvhNode);
                 childB.reset(new BvhNode);
@@ -116,6 +105,9 @@ struct BvhNode {
         }
 
         optional<Intersection> intersect(Ray const &ray) const {
+                if (!does_intersect<false>(ray, boundingBox))
+                        return optional<Intersection>();
+
                 real_t nearest = constants::real_max, tmp;
                 optional<Intersection> nearestI, tmpI;
                 for (CIt it=primitives.begin();

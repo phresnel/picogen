@@ -281,7 +281,6 @@ struct TriangleBvhNode {
                 }
 
                 if (size() <= 5) {
-                        std::cout << "hmm, " << boundingBox.width() << std::endl;
                         return;
                 }
 
@@ -303,19 +302,6 @@ struct TriangleBvhNode {
 
                 childA.reset(new TriangleBvhNode(from, pivot));
                 childB.reset(new TriangleBvhNode(pivot, to));
-
-                /*for (It it = primitives.begin(); it!=primitives.end(); ++it) {
-                        const real_t s = it->boundingBox().center(splitAxis);
-                        if (s < center) {
-                                childA->add(*it);
-                        } else if (s > center) {
-                                childB->add(*it);
-                        } else if (childA->primitives.size()<childB->primitives.size()) {
-                                childA->add(*it);
-                        } else {
-                                childB->add(*it);
-                        }
-                }*/
 
                 if (childA->empty() || childB->empty()) {
                         childA.reset();
