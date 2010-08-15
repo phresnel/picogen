@@ -58,7 +58,7 @@ optional<Intersection> List::intersect(Ray const &ray) const {
                 it!=primitives.end(); ++it
         ) {
                 if ((tmpI=(*it)->intersect (ray))
-                   && (tmp=tmpI->getDistance()) < nearest
+                    && (tmp=length(ray.position-tmpI->getCenter())) < nearest
                 ) {
                         nearest = tmp;
                         nearestI = tmpI;

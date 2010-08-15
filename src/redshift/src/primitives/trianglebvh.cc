@@ -223,7 +223,6 @@ struct TriangleBvhTri : BoundPrimitive {
                                 -normalizedNormal;
 
                         const DifferentialGeometry dg (
-                                t,
                                 ray(t),
                                 vector_cast<Normal>(n),
                                 du,
@@ -349,7 +348,9 @@ struct TriangleBvhNode {
                 }*/
                 for (TriangleBvhTri* it = from; it != to; ++it) {
                         tmpI = it->intersect (ray);
-                        if (tmpI && (tmp=tmpI->getDistance()) < nearest) {
+                        if (tmpI
+                            && (tmp=length(ray.position-tmpI->getCenter())) < nearest
+                        ) {
                                 nearest = tmp;
                                 nearestI = tmpI;
                         }
@@ -357,14 +358,16 @@ struct TriangleBvhNode {
 
                 if (childA) {
                         if ((tmpI = childA->intersect(ray))
-                         && (tmp = tmpI->getDistance()) < nearest) {
+                          && (tmp=length(ray.position-tmpI->getCenter())) < nearest
+                        ) {
                                 nearest = tmp;
                                 nearestI = tmpI;
                         }
                 }
                 if (childB) {
                         if ((tmpI = childB->intersect(ray))
-                         && (tmp = tmpI->getDistance()) < nearest) {
+                          && (tmp=length(ray.position-tmpI->getCenter())) < nearest
+                        ) {
                                 nearest = tmp;
                                 nearestI = tmpI;
                         }

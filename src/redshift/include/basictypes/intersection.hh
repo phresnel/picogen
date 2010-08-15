@@ -43,7 +43,7 @@ namespace redshift {
                 Intersection (Intersection const &) ;
                 Intersection & operator = (Intersection const &);
 
-                real_t getDistance() const ;
+                Point getCenter() const;
                 Normal getGeometricNormal() const ;
                 Normal getShadingNormal() const ;
                 DifferentialGeometry getDifferentialGeometry() const ;
@@ -51,6 +51,7 @@ namespace redshift {
                 //shared_ptr<Primitive const> getPrimitive () const ;
                 Primitive const &getPrimitive () const ;
 
+                void applyTransform (Transform const &t);
         private:
 
                 Primitive const *primitive;

@@ -46,7 +46,8 @@ namespace redshift {
                                                 I->getShadingNormal().z+0.5,
                                                 IlluminantSpectrum
                                         ),
-                                        Distance(I->getDistance())
+                                        Distance(length(raydiff.position-
+                                                        I->getCenter()))
                                 );
                         } else {
                                 Color const col = Color::FromRGB(

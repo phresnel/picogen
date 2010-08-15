@@ -742,7 +742,6 @@ public:
                 const Vector v = get<0>(lcs);*/
 
                 return DifferentialGeometry (
-                        dg->first,
                         poi,
                         dg->second, // geometric normal
                         v, u,// partial derivative of position

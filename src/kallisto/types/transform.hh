@@ -258,7 +258,7 @@ namespace kallisto {
                         return m[u+v*4];
                 }
                 T geti (unsigned int u, unsigned int v) const {
-                        return m[u+v*4];
+                        return i[u+v*4];
                 }
 
                 static T* set (

@@ -114,7 +114,7 @@ struct BvhNode {
                         it!=primitives.end(); ++it
                 ) {
                         if ((tmpI=(*it)->intersect (ray))
-                           && (tmp=tmpI->getDistance()) < nearest
+                           && (tmp=length(ray.position-tmpI->getCenter())) < nearest
                         ) {
                                 nearest = tmp;
                                 nearestI = tmpI;
@@ -123,14 +123,16 @@ struct BvhNode {
 
                 if (childA) {
                         if ((tmpI = childA->intersect(ray))
-                         && (tmp = tmpI->getDistance()) < nearest) {
+                         && (tmp=length(ray.position-tmpI->getCenter())) < nearest
+                        ) {
                                 nearest = tmp;
                                 nearestI = tmpI;
                         }
                 }
                 if (childB) {
                         if ((tmpI = childB->intersect(ray))
-                         && (tmp = tmpI->getDistance()) < nearest) {
+                         && (tmp=length(ray.position-tmpI->getCenter())) < nearest
+                        ) {
                                 nearest = tmp;
                                 nearestI = tmpI;
                         }

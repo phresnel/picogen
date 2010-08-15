@@ -74,7 +74,6 @@ optional<Intersection>
         return Intersection(
                 *this,
                 DifferentialGeometry (
-                        d,
                         poi,
                         Normal(0,1,0),
                         isAbove ? u : v, isAbove ? v : u,

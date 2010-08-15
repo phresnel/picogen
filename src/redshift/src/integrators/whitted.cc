@@ -44,7 +44,6 @@ DistantRadiance WhittedIntegrator::Li (
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf   = I->getPrimitive().getBsdf (gd);
-                const real_t distance         = I->getDistance();
                 const shared_ptr<Sky> bg      (scene.getBackground());
                 const Normal normalG          = gd.getGeometricNormal(),
                              normalS          = gd.getShadingNormal();
@@ -60,7 +59,7 @@ DistantRadiance WhittedIntegrator::Li (
                                 rand);
                         const Ray ray (poi, v.incident());
                         spec = scene.radiance (ray, sample, lirec, rand);
-                        return DistantRadiance(spec, Distance(gd.getDistance()));
+                        return DistantRadiance(spec, Distance(length(raydiff.position-poi)));
                 } else if (bg->sun()) {
                         const Sun& sun = *bg->sun();
                         const Vector sunDir = sun.direction();
@@ -86,11 +85,11 @@ DistantRadiance WhittedIntegrator::Li (
                                         rand
                                 );
                                 Color ret = surfaceColor * sunColor * d;
-                                return DistantRadiance(ret, Distance(gd.getDistance()));
+                                return DistantRadiance(ret, Distance(length(raydiff.position-poi)));
                         }
                 }
 
-                return DistantRadiance(Color(0), Distance(gd.getDistance()));
+                return DistantRadiance(Color(0), Distance(length(raydiff.position-poi)));
         } else {
                 return DistantRadiance (
                         Color(0),

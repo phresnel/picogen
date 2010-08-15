@@ -38,15 +38,16 @@ namespace redshift {
                         if (I) {
                                 //const Vector sunDir (1,1,0);
 
-
+                                const real_t dist = length(raydiff.position-
+                                                           I->getCenter());
                                 return DistantRadiance (
                                         Color::FromRGB(
-                                                I->getDistance()*0.05,
-                                                I->getDistance()*0.025,
-                                                I->getDistance()*0.0125,
+                                                dist*0.05,
+                                                dist*0.025,
+                                                dist*0.0125,
                                                 IlluminantSpectrum
                                         ),
-                                        Distance(I->getDistance())
+                                        Distance(dist)
                                 );
                         } else {
                                 Color const col = Color::FromRGB(

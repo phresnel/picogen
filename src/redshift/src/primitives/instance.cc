@@ -18,58 +18,47 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/primitives/horizonplane.hh"
+#include "../../include/primitives/instance.hh"
 #include "../../include/basictypes/intersection.hh"
 
 namespace redshift { namespace primitive {
 
 
 
-HorizonPlane::HorizonPlane (real_t height_, const Color &color)
-: height(height_)
-, color (color)
+Instance::Instance (Transform const &transform,
+                    shared_ptr<Primitive> primitive
+)
+: transform(transform.inverse())
+, primitive (primitive)
 {
 }
 
 
 
-HorizonPlane::~HorizonPlane () {
+Instance::~Instance () {
 }
 
 
 
-bool HorizonPlane::doesIntersect (Ray const &ray) const {
-        return ((ray.direction.y<0) == (scalar_cast<real_t>(ray.position.y)>height));
+bool Instance::doesIntersect (Ray const &ray) const {
+        return primitive->doesIntersect (transform * ray);
 }
 
 
 
 optional<Intersection>
- HorizonPlane::intersect(Ray const &ray) const {
-        if (!doesIntersect (ray))
-                return false;
-        const real_t d = (height - scalar_cast<real_t>(ray.position.y))
-                       / ray.direction.y;
-
-        const Point poi = ray(d);
-        const Vector voi = vector_cast<Vector>(poi);
-
-        const Vector u = Vector(1,0,0);
-        const Vector v = Vector(0,0,1);
-
-        const bool isAbove = !(scalar_cast<real_t>(ray.position.y)>height);
-
-        return Intersection(
-                *this,
-                DifferentialGeometry (
-                        poi,
-                        Normal(0,1,0),
-                        isAbove ? u : v, isAbove ? v : u,
-                        Vector(0,0,0), Vector(0,0,0)
-                )
-        );
+ Instance::intersect(Ray const &ray) const {
+        optional<Intersection> i = primitive->intersect (transform * ray);
+        if (!i) return optional<Intersection>();
+        i->applyTransform (transform.inverse());
+        return i;
 }
 
+
+
+shared_ptr<Bsdf> Instance::getBsdf(const DifferentialGeometry &dg) const {
+        return shared_ptr<Bsdf>();
+}
 
 
 } }

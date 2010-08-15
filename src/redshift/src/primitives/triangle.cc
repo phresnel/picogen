@@ -154,7 +154,6 @@ optional<Intersection>
                         -normal;
 
                 const DifferentialGeometry dg (
-                        t,
                         ray(t),
                         n,
                         du,

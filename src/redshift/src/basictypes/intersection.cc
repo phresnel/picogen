@@ -60,12 +60,6 @@ Intersection & Intersection::operator = (Intersection const &i) {
 
 
 
-real_t Intersection::getDistance() const {
-        return differentialGeometry.getDistance();
-}
-
-
-
 Normal Intersection::getGeometricNormal() const {
         return differentialGeometry.getGeometricNormal();
 }
@@ -74,6 +68,12 @@ Normal Intersection::getGeometricNormal() const {
 
 Normal Intersection::getShadingNormal() const {
         return differentialGeometry.getShadingNormal();
+}
+
+
+
+Point Intersection::getCenter() const {
+        return differentialGeometry.getCenter();
 }
 
 
@@ -88,6 +88,11 @@ Primitive const &Intersection::getPrimitive () const {
         return *primitive;
 }
 
+
+
+void Intersection::applyTransform (Transform const &t) {
+        differentialGeometry.applyTransform(t);
+}
 
 
 }

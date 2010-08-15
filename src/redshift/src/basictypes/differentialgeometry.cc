@@ -47,14 +47,13 @@ DifferentialGeometry::DifferentialGeometry (
 
 
 DifferentialGeometry::DifferentialGeometry (
-        real_t distance_,
+        //real_t distance_,
         Point  const &center_,
         Normal const &geometricNormal_,
         Vector const &dpdu_, Vector const &dpdv_,
         Vector const &dndu_, Vector const &dndv_
 )
-: distance(distance_)
-, center(center_)
+: center(center_)
 , geometricNormal(geometricNormal_)
 , shadingNormal(vector_cast<Normal>(normalize (cross (dpdu_, dpdv_))))
 , dpdu(dpdu_), dpdv(dpdv_)
@@ -88,9 +87,9 @@ DifferentialGeometry::operator= (DifferentialGeometry const &dg) {
 
 
 
-real_t DifferentialGeometry::getDistance() const {
+/*real_t DifferentialGeometry::getDistance() const {
         return distance;
-}
+}*/
 
 
 
@@ -108,6 +107,18 @@ Normal DifferentialGeometry::getShadingNormal () const {
 
 Normal DifferentialGeometry::getGeometricNormal () const {
         return geometricNormal;
+}
+
+
+
+void DifferentialGeometry::applyTransform (Transform const &t) {
+        center = t * center;
+        geometricNormal = normalize(t * geometricNormal);
+        shadingNormal = normalize(t * shadingNormal);
+        dpdu = t * dpdu;
+        dpdv = t * dpdv;
+        dndu = t * dndu;
+        dndv = t * dndv;
 }
 
 

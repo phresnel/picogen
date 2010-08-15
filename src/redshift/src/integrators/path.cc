@@ -55,7 +55,6 @@ DistantRadiance PathIntegrator::Li (
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive().getBsdf (gd);
-                const real_t       distance = I->getDistance();
                 const shared_ptr<Sky> bg (scene.getBackground());
                 const Normal normalG = gd.getGeometricNormal();
                 const Normal normalS = gd.getShadingNormal();
@@ -75,7 +74,7 @@ DistantRadiance PathIntegrator::Li (
                         const Color rad = scene.radiance (ray, sample, lirec, rand);
                         spec = spec + rad * v.color() * (1/v.pdf());
 
-                        return DistantRadiance(spec*throughput, Distance(gd.getDistance()));
+                        return DistantRadiance(spec*throughput, Distance(length(raydiff.position-poi)));
                 } else if (bsdf->hasComponent (Bsdf::reflection, Bsdf::diffuse)) {
 
                         const Ray ray (poi, raydiff.direction);
@@ -134,10 +133,10 @@ DistantRadiance PathIntegrator::Li (
                         ret *= throughput;
 
                         // Done.
-                        return DistantRadiance(ret, Distance(gd.getDistance()));
+                        return DistantRadiance(ret, Distance(length(raydiff.position-poi)));
                 }
 
-                return DistantRadiance(Color(0), Distance(gd.getDistance()));
+                return DistantRadiance(Color(0), Distance(length(raydiff.position-poi)));
         } else {
                 return DistantRadiance (
                         Color(0),

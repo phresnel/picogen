@@ -74,7 +74,7 @@ optional<DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const {
         const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
 
         return DifferentialGeometry (
-                *d, poi,
+                poi,
                 normal,
                 get<0>(cs), get<2>(cs),
                 Vector(),Vector());

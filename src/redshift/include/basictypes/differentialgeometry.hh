@@ -41,7 +41,6 @@ namespace redshift {
                 );*/
 
                 DifferentialGeometry (
-                        real_t distance,
                         Point  const &center,
                         Normal const &geometricNormal,
                         Vector const &dpdu, Vector const &dpdv,
@@ -51,7 +50,6 @@ namespace redshift {
                 /*DifferentialGeometry (DifferentialGeometry const &) ;
                 DifferentialGeometry& operator= (DifferentialGeometry const &);*/
 
-                real_t getDistance() const ;
                 Point  getCenter() const ;
 
                 Normal getShadingNormal() const ;
@@ -63,9 +61,10 @@ namespace redshift {
                 Vector get_dpdv() const { return dpdv; }
                 Vector get_dndu() const { return dpdu; }
                 Vector get_dndv() const { return dpdv; }
+
+                void applyTransform (Transform const &t);
         private:
 
-                real_t distance;
                 Point  center;
                 Normal geometricNormal;
                 Normal shadingNormal;
