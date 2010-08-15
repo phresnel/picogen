@@ -161,7 +161,7 @@ optional<Intersection>
                         dv,
                         Vector(), Vector()
                 );
-                return Intersection (shared_from_this(), dg);
+                return Intersection (*this, dg);
         } else {
                 return false;
         }

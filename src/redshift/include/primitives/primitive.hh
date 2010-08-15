@@ -33,7 +33,7 @@ namespace redshift {
 }
 namespace redshift {
         class Primitive
-        : public enable_shared_from_this<Primitive> {
+        {
         public:
                 virtual bool doesIntersect (Ray const &) const = 0;
                 virtual optional<Intersection> intersect(Ray const &) const = 0;

@@ -34,6 +34,7 @@ namespace redshift { namespace scenefile {
                 | actuarius::Nvp<Object::Type>(Object::closed_sphere, "sphere")
                 | actuarius::Nvp<Object::Type>(Object::triangle, "triangle")
                 | actuarius::Nvp<Object::Type>(Object::bvh, "bvh")
+                | actuarius::Nvp<Object::Type>(Object::triangle_bvh, "triangle-bvh")
                 | actuarius::Nvp<Object::Type>(Object::lsystemtree, "lsystem-tree")
         );
 

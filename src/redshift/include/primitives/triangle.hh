@@ -48,6 +48,10 @@ namespace redshift { namespace primitive {
                 Triangle(Vertex A, Vertex B, Vertex C);
                 ~Triangle ();
 
+                Vertex a () const { return A; }
+                Vertex b () const { return B; }
+                Vertex c () const { return C; }
+
                 BoundingBox boundingBox () const;
 
                 bool doesIntersect (Ray const &ray) const;
@@ -63,10 +67,6 @@ namespace redshift { namespace primitive {
                 }
 
         private:
-                Triangle();
-                Triangle(Triangle const&);
-                Triangle &operator = (Triangle const&);
-
                 Vertex A, B, C;
         };
 } }

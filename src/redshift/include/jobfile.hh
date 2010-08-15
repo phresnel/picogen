@@ -74,6 +74,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/waterplane.hh"
 #include "primitives/list.hh"
 #include "primitives/bvh.hh"
+#include "primitives/trianglebvh.hh"
 #include "primitives/triangle.hh"
 #include "primitives/lsystemtree.hh"
 
@@ -387,6 +388,7 @@ namespace redshift { namespace scenefile {
                         closed_sphere,
                         triangle,
                         bvh,
+                        triangle_bvh,
                         lsystemtree
                 };
                 static const actuarius::Enum<Type> Typenames;
@@ -400,6 +402,7 @@ namespace redshift { namespace scenefile {
                         case closed_sphere: return closedSphereParams.toPrimitive();
                         case triangle: return triangleParams.toPrimitive();
                         case bvh: return bvhParams.toPrimitive();
+                        case triangle_bvh: return triangleBvhParams.toPrimitive();
                         case lsystemtree: return lsystemTreeParams.toPrimitive();
                         };
                         throw std::exception();
@@ -413,6 +416,7 @@ namespace redshift { namespace scenefile {
                         case closed_sphere: return closedSphereParams.toBoundPrimitive();
                         case triangle: return triangleParams.toBoundPrimitive();
                         case bvh: return bvhParams.toBoundPrimitive();
+                        case triangle_bvh: return triangleBvhParams.toBoundPrimitive();
                         case lsystemtree: return lsystemTreeParams.toBoundPrimitive();
                         };
                         throw std::exception();
@@ -470,6 +474,11 @@ namespace redshift { namespace scenefile {
                         case bvh:
                                 arch
                                 & pack ("objects", &Object::type, Object::Typenames, bvhParams.objects);
+                                ;
+                                break;
+                        case triangle_bvh:
+                                arch
+                                & pack ("objects", &Object::type, Object::Typenames, triangleBvhParams.objects);
                                 ;
                                 break;
                         case lsystemtree:
@@ -677,6 +686,36 @@ namespace redshift { namespace scenefile {
                                 return builder.toBvh();
                         }
                 };
+
+
+                struct TriangleBvhParams {
+                        std::vector<Object> objects;
+
+                        shared_ptr<Primitive> toPrimitive() const {
+                                return toBoundPrimitive();
+                        }
+                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+                                typedef std::vector<Object>::const_iterator I;
+
+                                primitive::TriangleBvhBuilder builder;
+                                for (I it = objects.begin(); it != objects.end(); ++it) {
+                                        if (it->type != triangle) {
+                                                std::cerr << "warning: only triangles are allowed "
+                                                        "within a triangle-bvh, but found a '"
+                                                        << Typenames[it->type] << "'\n";
+                                                continue;
+                                        }
+                                        builder.add(Triangle(
+                                                Triangle::Vertex (it->triangleParams.A.position),
+                                                Triangle::Vertex (it->triangleParams.B.position),
+                                                Triangle::Vertex (it->triangleParams.C.position)
+                                        ));
+                                }
+                                return builder.toTriangleBvh();
+                        }
+                };
         public:
                 LazyQuadtreeParams lazyQuadtreeParams;
                 WaterPlaneParams waterPlaneParams;
@@ -684,6 +723,7 @@ namespace redshift { namespace scenefile {
                 ClosedSphereParams closedSphereParams;
                 TriangleParams triangleParams;
                 BvhParams bvhParams;
+                TriangleBvhParams triangleBvhParams;
                 LSystemTreeParams lsystemTreeParams;
         };
 

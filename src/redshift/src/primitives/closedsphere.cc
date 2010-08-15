@@ -54,7 +54,7 @@ optional<Intersection>
 
         const optional<DifferentialGeometry> i(sphereData.intersect(ray));
         if (i) {
-                return Intersection (shared_from_this(), *i);
+                return Intersection (*this, *i);
         } else {
                 return false;
         }

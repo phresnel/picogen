@@ -18,26 +18,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef LSYSTEMTREE_HH_INCLUDED_20100812
-#define LSYSTEMTREE_HH_INCLUDED_20100812
+#ifndef TRIANGLEBVH_HH_INCLUDED_20100813
+#define TRIANGLEBVH_HH_INCLUDED_20100813
 
 #include "../sealed.hh"
-#include "trianglebvh.hh"
-#include "../material/lambertian.hh"
-#include "../material/mirror.hh"
+#include "triangle.hh"
+#include "aggregate.hh"
 
 namespace redshift { namespace primitive {
 
-        SEALED(LSystemTree);
-        class LSystemTree :
-                public BoundPrimitive,
-                MAKE_SEALED(LSystemTree)
+        class TriangleBvhBuilder;
+        class TriangleBvhNode;
+
+        SEALED(TriangleBvh);
+        class TriangleBvh :
+                public BoundAggregate,
+                MAKE_SEALED(TriangleBvh)
         {
         public:
-                LSystemTree(const char *code,
-                            unsigned int level,
-                            unsigned int slicesPerSegment);
-                ~LSystemTree ();
+                ~TriangleBvh ();
 
                 // -- BoundPrimitive ------------------------------------------
                 BoundingBox boundingBox() const;
@@ -48,21 +47,31 @@ namespace redshift { namespace primitive {
                 optional<Intersection> intersect(Ray const &) const;
                 // ------------------------------------------------------------
 
-                shared_ptr<Bsdf> getBsdf(
-                        const DifferentialGeometry & dgGeom
-                ) const {
-                        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color(1))));
-                        return bsdf;
-                }
-
         private:
-                LSystemTree ();
-                LSystemTree& operator= (LSystemTree const &);
-                LSystemTree (LSystemTree const&);
+                friend class TriangleBvhBuilder;
+                TriangleBvh (shared_ptr<TriangleBvhNode> root);
 
-                shared_ptr<TriangleBvh> mesh;
+                TriangleBvh ();
+                TriangleBvh& operator= (TriangleBvh const &);
+                TriangleBvh (TriangleBvh const&);
+
+                shared_ptr<TriangleBvhNode> root;
+        };
+
+        SEALED(TriangleBvhBuilder);
+        class TriangleBvhBuilder :
+                MAKE_SEALED(TriangleBvhBuilder)
+        {
+        public:
+                TriangleBvhBuilder ();
+                void add (Triangle prim);
+                shared_ptr<TriangleBvh> toTriangleBvh();
+        private:
+                TriangleBvhBuilder (TriangleBvhBuilder const &);
+                TriangleBvhBuilder& operator= (TriangleBvhBuilder const&);
+
+                shared_ptr<TriangleBvhNode> root;
         };
 } }
 
-#endif // LSYSTEMTREE_HH_INCLUDED_20100812
+#endif // TRIANGLEBVH_HH_INCLUDED_20100813

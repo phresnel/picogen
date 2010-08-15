@@ -60,7 +60,7 @@ optional<Intersection>
         const bool isAbove = !(scalar_cast<real_t>(ray.position.y)>height);
 
         return Intersection(
-                shared_from_this(),
+                *this,
                 DifferentialGeometry (
                         d,
                         poi,

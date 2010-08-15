@@ -45,7 +45,7 @@ DistantRadiance RedshiftIntegrator::Li (
         const optional<Intersection> I (scene.intersect (raydiff));
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
-                const shared_ptr<Bsdf> bsdf = I->getPrimitive()->getBsdf (gd);
+                const shared_ptr<Bsdf> bsdf = I->getPrimitive().getBsdf (gd);
                 const real_t       distance = I->getDistance();
                 const shared_ptr<Sky> bg (scene.getBackground());
                 const Normal normalG = gd.getGeometricNormal();

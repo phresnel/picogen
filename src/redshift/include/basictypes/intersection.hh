@@ -35,7 +35,7 @@ namespace redshift {
         class Intersection : MAKE_SEALED(Intersection) {
         public:
                 Intersection (
-                        shared_ptr<redshift::Primitive const>,
+                        redshift::Primitive const &,
                         DifferentialGeometry const &geom);
 
                 Intersection () ;
@@ -48,11 +48,12 @@ namespace redshift {
                 Normal getShadingNormal() const ;
                 DifferentialGeometry getDifferentialGeometry() const ;
 
-                shared_ptr<Primitive const> getPrimitive () const ;
+                //shared_ptr<Primitive const> getPrimitive () const ;
+                Primitive const &getPrimitive () const ;
 
         private:
 
-                shared_ptr<Primitive const> primitive;
+                Primitive const *primitive;
                 DifferentialGeometry differentialGeometry;
         };
 }

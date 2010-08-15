@@ -45,7 +45,7 @@ namespace {
                 void pushState();
                 void popState();
 
-                std::vector<redshift::shared_ptr<redshift::primitive::Triangle> > triangles;
+                std::vector<redshift::primitive::Triangle> triangles;
         private:
                 Turtle state;
                 std::stack<Turtle> stateStack;
@@ -134,18 +134,16 @@ namespace {
                         glVertex3f(oldV.x, oldV.y, oldV.z);
                         */
                         if (i>0) {
-                                triangles.push_back(shared_ptr<Triangle>(
-                                   new Triangle(
+                                triangles.push_back(Triangle(
                                         Vertex(prevOldV),
                                         Vertex(prevNewV),
                                         Vertex(oldV)
-                                )));
-                                triangles.push_back(shared_ptr<Triangle>(
-                                   new Triangle(
+                                ));
+                                triangles.push_back(Triangle(
                                         Vertex(prevNewV),
                                         Vertex(newV),
                                         Vertex(oldV)
-                                )));
+                                ));
                         }
                         prevOldV = oldV;
                         prevNewV = newV;
@@ -249,8 +247,7 @@ LSystemTree::LSystemTree(
 
         LSystem lsys;
         Pattern pat;
-        const boost::optional<LSystem> newLsys =
-                compile(code);
+        const boost::optional<LSystem> newLsys = compile(code);
         if (!newLsys) {
                 lsys = LSystem();
                 pat = Pattern();
@@ -262,13 +259,13 @@ LSystemTree::LSystemTree(
         LSystemTreeMesher mesher(slicesPerSegment);
         draw(lsys, pat, Turtle(), mesher);
 
-        BvhBuilder builder;
-        typedef std::vector<shared_ptr<Triangle> >::const_iterator It;
+        TriangleBvhBuilder builder;
+        typedef std::vector<Triangle>::const_iterator It;
         for (It it=mesher.triangles.begin(); it!=mesher.triangles.end(); ++it){
                 builder.add (*it);
         }
 
-        mesh = builder.toBvh();
+        mesh = builder.toTriangleBvh();
 }
 
 

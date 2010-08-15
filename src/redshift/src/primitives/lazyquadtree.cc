@@ -865,7 +865,7 @@ optional<Intersection>
         if (!dg)
                 return false;
         return Intersection (
-                shared_from_this(),
+                *this,
                 *dg
         );
 }
