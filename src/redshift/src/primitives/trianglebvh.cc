@@ -22,6 +22,8 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/trianglebvh.hh"
 
+#include <algorithm>
+
 
 namespace {
         using redshift::real_t;
@@ -97,6 +99,72 @@ namespace {
                 return -1;
             return 1;
         }
+
+
+        static int
+        raytri_intersect (
+            const Ray &ray,
+            const Point &a, const Point &b, const Point &c,
+            real_t &t, real_t &u, real_t &v,
+            const Vector &normal_,
+            const Vector &normalizedNormal_
+        ) {
+            Vector vect0, vect1, nvect;
+            real_t det, inv_det;
+
+            vect0 = b - a;
+            vect1 = c - a;
+
+            det = -(ray.direction * normal_);
+
+            //---------
+
+            /* if determinant is near zero, ray is parallel to the plane of triangle */
+            if (det > -tri_eps && det < tri_eps) return 0;
+
+            /* calculate vector from ray origin to a */
+            //SUB(vect0,a,orig);
+            vect0 = a - ray.position;
+
+            /* normal vector used to calculate u and v parameters */
+            //CROSS(nvect,dir,vect0);
+            nvect = cross (ray.direction, vect0);
+
+            inv_det = 1.0 / det;
+            /* calculate vector from ray origin to b*/
+            //SUB(vect1,b,orig);
+            vect1 = b - ray.position;
+
+            /* calculate v parameter and test bounds */
+            //*v = - DOT(vect1,nvect) * inv_det;
+            v = - (vect1*nvect*inv_det);
+
+            if (v < 0.0 || v > 1.0) return 0;
+
+            /* calculate vector from ray origin to c*/
+            //SUB(vect1,c,orig);
+            vect1 = c - ray.position;
+
+            /* calculate v parameter and test bounds */
+            //*u = DOT(vect1,nvect) * inv_det;
+            u = vect1*nvect*inv_det;
+
+            if (u < 0.0 || u + v > 1.0) return 0;
+
+            /* calculate t, ray intersects triangle */
+            //*t = - DOT(vect0,normal) * inv_det;
+            t = - (vect0* normal_ * inv_det);
+
+            //---------
+            // pretty crappy but sometimes useful wireframe mode
+            //if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
+
+            if (t < 0)
+                return 0;
+            if (ray.direction * normalizedNormal_ > 0.0)
+                return -1;
+            return 1;
+        }
 }
 
 
@@ -108,11 +176,18 @@ namespace redshift { namespace primitive {
 //-----------------------------------------------------------------------------
 struct TriangleBvhTri : BoundPrimitive {
         Triangle::Vertex A, B, C;
+        Vector U, V;
+        Vector normal;
+        Vector normalizedNormal;
 
         TriangleBvhTri (Triangle tri)
         : A(tri.a()), B(tri.b()), C(tri.c())
+        , U(B.position-A.position)
+        , V(C.position-A.position)
+        , normal(cross (U, V)), normalizedNormal (normalize(normal))
         {}
 
+        TriangleBvhTri() {}
 
         BoundingBox boundingBox () const {
                 BoundingBox ret;
@@ -122,26 +197,20 @@ struct TriangleBvhTri : BoundPrimitive {
                 return ret;
         }
 
-
-
         bool doesIntersect (Ray const &ray) const {
                 real_t dum0, dum1, dum2;
-                Normal dum3;
                 return 0 != raytri_intersect(ray,
                                              A.position, B.position, C.position,
                                              dum0, dum1, dum2,
-                                             dum3);
+                                             normal, normalizedNormal);
         }
-
-
 
         optional<Intersection> intersect(Ray const &ray) const {
                 real_t t, u, v;
-                Normal normal;
                 const int does = raytri_intersect(ray,
                                                   A.position, B.position, C.position,
                                                   t, u, v,
-                                                  normal);
+                                                  normal, normalizedNormal);
                 if (does != 0) {
                         const Vector du = does>0?
                                 normalize (B.position-A.position) :
@@ -149,14 +218,14 @@ struct TriangleBvhTri : BoundPrimitive {
                         const Vector dv = does>0?
                                 normalize (C.position-A.position) :
                                 normalize (B.position-A.position);
-                        const Normal n = does>0?
-                                normal :
-                                -normal;
+                        const Vector n = does>0?
+                                normalizedNormal :
+                                -normalizedNormal;
 
                         const DifferentialGeometry dg (
                                 t,
                                 ray(t),
-                                n,
+                                vector_cast<Normal>(n),
                                 du,
                                 dv,
                                 Vector(), Vector()
@@ -167,7 +236,6 @@ struct TriangleBvhTri : BoundPrimitive {
                 }
         }
 
-
         shared_ptr<Bsdf> getBsdf(
                 const DifferentialGeometry & dgGeom
         ) const {
@@ -177,75 +245,81 @@ struct TriangleBvhTri : BoundPrimitive {
         }
 };
 
+class TriangleBvhTriSort {
+        unsigned int axis;
+public:
+        TriangleBvhTriSort (unsigned int axis) : axis(axis) {}
+        bool operator() (TriangleBvhTri const &lhs,
+                         TriangleBvhTri const &rhs) const
+        {
+                return lhs.boundingBox().center(axis)
+                     < rhs.boundingBox().center(axis);
+        }
+};
 struct TriangleBvhNode {
-        std::vector<TriangleBvhTri> primitives;
+        TriangleBvhTri *from, *to;
         scoped_ptr<TriangleBvhNode> childA, childB;
         BoundingBox boundingBox;
 
-        typedef std::vector<TriangleBvhTri>::iterator It;
-        typedef std::vector<TriangleBvhTri>::const_iterator CIt;
+        TriangleBvhNode (TriangleBvhTri *from, TriangleBvhTri *to)
+        : from(from), to(to)
+        {}
 
-        void add (Triangle prim) {
-                primitives.push_back (TriangleBvhTri(prim));
+        size_t size() const {
+                return to-from;
         }
-        void add (TriangleBvhTri prim) {
-                primitives.push_back (prim);
+        bool empty() const {
+                return to == from;
         }
 
         void compile() {
-                //std::cout << "TriangleBvhNode::compile()" << std::endl;
-
-                std::cout << "  primitive-count: " << primitives.size();
-                if (primitives.size() <= 5) {
-                        std::cout << "  is done here" << std::endl;
+                if (size() <= 5) {
                         return;
                 }
-                std::cout << std::endl;
 
                 boundingBox.reset();
-                for (It it = primitives.begin(); it!=primitives.end(); ++it) {
+                for (TriangleBvhTri *it = from; it!=to; ++it) {
                         boundingBox = merge (boundingBox,
                                              it->boundingBox());
                 }
-
-                //std::cout << "  boundingBox.size   = {" << boundingBox.width() << ", " << boundingBox.height() << ", " << boundingBox.depth() << "}" << std::endl;
-                //std::cout << "  boundingBox.center = {" << boundingBox.center(0) << ", " << boundingBox.center(1) << ", " << boundingBox.center(2) << "}" << std::endl;
 
                 int splitAxis_ = 0;
                 if (boundingBox.size(1) > boundingBox.size(splitAxis_)) splitAxis_ = 1;
                 if (boundingBox.size(2) > boundingBox.size(splitAxis_)) splitAxis_ = 2;
                 const int splitAxis = splitAxis_;
-                //std::cout << "  split-axis: " << splitAxis << std::endl;
-
                 const real_t center = boundingBox.center(splitAxis);
-                //std::cout << "  center: " << center << std::endl;
 
-                childA.reset(new TriangleBvhNode);
-                childB.reset(new TriangleBvhNode);
+                std::sort (from, to, TriangleBvhTriSort(splitAxis));
 
-                for (It it = primitives.begin(); it!=primitives.end(); ++it) {
-                        const real_t s = it->boundingBox().center(splitAxis);
-                        //std::cout << s << " ";
-                        if (s < center) {
-                                //std::cout << " <" << std::endl;
-                                childA->add(*it);
-                        } else if (s > center) {
-                                //std::cout << " >" << std::endl;
-                                childB->add(*it);
-                        } else if (childA->primitives.size()<childB->primitives.size()) {
-                                //std::cout << " <" << std::endl;
-                                childA->add(*it);
-                        } else {
-                                //std::cout << " >" << std::endl;
-                                childB->add(*it);
+                TriangleBvhTri* pivot = to;
+                for (TriangleBvhTri* it = from; it != to; ++it) {
+                        if (it->boundingBox().center(splitAxis) > center) {
+                                pivot = it;
+                                break;
                         }
                 }
 
-                if (childA->primitives.empty() || childB->primitives.empty()) {
+                childA.reset(new TriangleBvhNode(from, pivot));
+                childB.reset(new TriangleBvhNode(pivot, to));
+
+                /*for (It it = primitives.begin(); it!=primitives.end(); ++it) {
+                        const real_t s = it->boundingBox().center(splitAxis);
+                        if (s < center) {
+                                childA->add(*it);
+                        } else if (s > center) {
+                                childB->add(*it);
+                        } else if (childA->primitives.size()<childB->primitives.size()) {
+                                childA->add(*it);
+                        } else {
+                                childB->add(*it);
+                        }
+                }*/
+
+                if (childA->empty() || childB->empty()) {
                         childA.reset();
                         childB.reset();
                 } else {
-                        primitives.clear();
+                        from = to = 0;
                         childA->compile();
                         childB->compile();
                 }
@@ -259,23 +333,30 @@ struct TriangleBvhNode {
                 if (childB && childB->doesIntersect(ray))
                         return true;
 
-                for (CIt it=primitives.begin(); it!=primitives.end(); ++it) {
-                        if (it->doesIntersect(ray))
-                                return true;
+                for (TriangleBvhTri* it = from; it != to; ++it) {
+                        if (it->doesIntersect((ray)))
+                            return true;
                 }
+
 
                 return false;
         }
 
         optional<Intersection> intersect(Ray const &ray) const {
-                static int d = 0;
-                ++d;
+
                 real_t nearest = constants::real_max, tmp;
                 optional<Intersection> nearestI, tmpI;
-                //std::cout << "[" << d << "]" << primitives.size() << std::endl;
-                for (CIt it=primitives.begin();
+
+                /*for (CIt it=primitives.begin();
                         it!=primitives.end(); ++it
                 ) {
+                        tmpI = it->intersect (ray);
+                        if (tmpI && (tmp=tmpI->getDistance()) < nearest) {
+                                nearest = tmp;
+                                nearestI = tmpI;
+                        }
+                }*/
+                for (TriangleBvhTri* it = from; it != to; ++it) {
                         tmpI = it->intersect (ray);
                         if (tmpI && (tmp=tmpI->getDistance()) < nearest) {
                                 nearest = tmp;
@@ -297,21 +378,27 @@ struct TriangleBvhNode {
                                 nearestI = tmpI;
                         }
                 }
-                --d;
                 return nearestI;
         }
+
+private:
+        TriangleBvhNode (TriangleBvhNode const&);
+        TriangleBvhNode& operator= (TriangleBvhNode const&);
 };
 
 
 //-----------------------------------------------------------------------------
 // TriangleBvh
 //-----------------------------------------------------------------------------
-TriangleBvh::TriangleBvh(shared_ptr<TriangleBvhNode> root) : root(root) {
+TriangleBvh::TriangleBvh(TriangleBvhTri *triangles,
+                         shared_ptr<TriangleBvhNode> root
+) : triangles(triangles), root(root) {
 }
 
 
 
 TriangleBvh::~TriangleBvh() {
+        delete [] triangles;
 }
 
 
@@ -337,20 +424,32 @@ optional<Intersection> TriangleBvh::intersect(Ray const &ray) const {
 //-----------------------------------------------------------------------------
 // Builder
 //-----------------------------------------------------------------------------
-TriangleBvhBuilder::TriangleBvhBuilder() : root(new TriangleBvhNode) {
+TriangleBvhBuilder::TriangleBvhBuilder() {
 }
 
 
 
 void TriangleBvhBuilder::add (Triangle prim) {
-        root->add(prim);
+        triangles.push_back(prim);
 }
 
 
 shared_ptr<TriangleBvh> TriangleBvhBuilder::toTriangleBvh() {
+        // Generic triangles to specialized ones.
+        TriangleBvhTri *triangles = new TriangleBvhTri[this->triangles.size()];
+        for (unsigned int u=0; u<this->triangles.size(); ++u)
+                triangles[u] = this->triangles[u];
+
+        std::cout << "  triangles: " << this->triangles.size() << std::endl;
+
+        // Generate and compile root-node.
+        shared_ptr<TriangleBvhNode> root = shared_ptr<TriangleBvhNode>(
+            new TriangleBvhNode(triangles, triangles+this->triangles.size()));
         root->compile();
-        shared_ptr<TriangleBvh> ret = shared_ptr<TriangleBvh>(new TriangleBvh(root));
-        root.reset();
+
+        // Create the BVH and get off.
+        shared_ptr<TriangleBvh> ret = shared_ptr<TriangleBvh>(
+                new TriangleBvh(triangles, root));
         return ret;
 }
 

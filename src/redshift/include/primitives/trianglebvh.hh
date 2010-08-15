@@ -29,6 +29,7 @@ namespace redshift { namespace primitive {
 
         class TriangleBvhBuilder;
         class TriangleBvhNode;
+        class TriangleBvhTri;
 
         SEALED(TriangleBvh);
         class TriangleBvh :
@@ -49,12 +50,14 @@ namespace redshift { namespace primitive {
 
         private:
                 friend class TriangleBvhBuilder;
-                TriangleBvh (shared_ptr<TriangleBvhNode> root);
+                TriangleBvh (TriangleBvhTri *triangles,
+                             shared_ptr<TriangleBvhNode> root);
 
                 TriangleBvh ();
                 TriangleBvh& operator= (TriangleBvh const &);
                 TriangleBvh (TriangleBvh const&);
 
+                TriangleBvhTri *triangles;
                 shared_ptr<TriangleBvhNode> root;
         };
 
@@ -70,7 +73,7 @@ namespace redshift { namespace primitive {
                 TriangleBvhBuilder (TriangleBvhBuilder const &);
                 TriangleBvhBuilder& operator= (TriangleBvhBuilder const&);
 
-                shared_ptr<TriangleBvhNode> root;
+                std::vector<Triangle> triangles;
         };
 } }
 
