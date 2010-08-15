@@ -77,6 +77,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/trianglebvh.hh"
 #include "primitives/triangle.hh"
 #include "primitives/lsystemtree.hh"
+#include "primitives/instance.hh"
 
 // background/
 //#include "backgrounds/visualise-direction.hh"
@@ -315,6 +316,166 @@ namespace redshift { namespace scenefile {
                 }
         };
 
+
+
+        // Transform.
+        struct Transform {
+                enum Type {
+                        move,
+                        move_left,
+                        move_right,
+                        move_up,
+                        move_down,
+                        move_forward,
+                        move_backward,
+
+                        yaw,
+                        pitch,
+                        roll
+                };
+
+                static const actuarius::Enum<Type> Typenames;
+
+                redshift::Transform toRedshiftTransform () const {
+                        using redshift::Transform;
+                        const double to_radians = redshift::constants::pi/180;
+                        switch (type) {
+                        case move: return Transform::translation(x,y,z);
+                        case move_left:
+                        case move_right: return Transform::translation(x,0,0);
+                        case move_up:
+                        case move_down: return Transform::translation(0,y,0);
+                        case move_forward:
+                        case move_backward:  return Transform::translation(0,0,z);
+
+                        case yaw:   return Transform::rotationY(angle*to_radians);
+                        case pitch: return Transform::rotationX(angle*to_radians);
+                        case roll:  return Transform::rotationZ(angle*to_radians);
+                        };
+                        return redshift::Transform();
+                }
+
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+
+                        /*
+                        switch (type) {
+                        case move:
+                                arch & pack(x) & pack(y) & pack(z);
+                                break;
+                        case move_right: arch & pack(x);            break;
+                        case move_left:  arch & pack(x); x = -x;    break;
+                        case move_up:    arch & pack(y);            break;
+                        case move_down:  arch & pack(y);  y = -y;   break;
+                        case move_forward: arch & pack(z);          break;
+                        case move_backward:
+                                if (Arch::serialize)
+                                arch & pack(z); z = -z; break;
+                        case yaw:
+                        case pitch:
+                        case roll:
+                                arch & pack(angle);
+                                break;
+                        };*/
+
+                        double left=0, right=0, up=0, down=0, forward=0, backward=0;
+
+                        if (Arch::serialize) {
+                                right = x;   left = -x;
+                                up = y;      down = -y;
+                                forward = z; backward = -z;
+                        }
+
+                        switch (type) {
+                        case move:
+                                arch & pack(right) & pack(up) & pack(forward);
+                                break;
+                        case move_right:    arch & pack(right); break;
+                        case move_left:     arch & pack(left); break;
+                        case move_up:       arch & pack(up); break;
+                        case move_down:     arch & pack(down); break;
+                        case move_forward:  arch & pack(forward); break;
+                        case move_backward:  arch & pack(backward); break;
+                        case yaw:
+                        case pitch:
+                        case roll:
+                                arch & pack(angle);
+                                break;
+                        };
+
+                        if (Arch::deserialize) {
+                                x = -left     + right;
+                                y = -down     + up;
+                                z = -backward + forward;
+                        }
+                }
+
+                Type type;
+                double x,y,z;
+                double angle;
+
+                Transform ()
+                : type(move), x(0), y(0), z(0), angle(0) {}
+
+                Transform (Transform const &rhs)
+                : type(rhs.type), x(rhs.x), y(rhs.y), z(rhs.z), angle(rhs.angle) {}
+
+                Transform &operator = (Transform const &rhs) {
+                        type = rhs.type;
+                        x = rhs.x;
+                        y = rhs.y;
+                        z = rhs.z;
+                        angle = rhs.angle;
+                        return *this;
+                }
+        };
+
+        class TransformList {
+                std::vector<Transform> transforms;
+        public:
+
+                TransformList() {}
+                TransformList(TransformList const &rhs)
+                        : transforms(rhs.transforms) {}
+                TransformList &operator = (TransformList const &rhs) {
+                        transforms = rhs.transforms;
+                        return *this;
+                }
+
+                Transform operator [] (int i) const {
+                        return transforms [i];
+                }
+
+                int size () const {
+                        return transforms.size();
+                }
+
+                void push_back (Transform const &t) {
+                        transforms.push_back (t);
+                }
+
+                redshift::Transform toRedshiftTransform () const {
+                        typedef std::vector<Transform>::const_iterator iterator;
+                        redshift::Transform ret;
+                        for (iterator it = transforms.begin(); it!=transforms.end(); ++it) {
+                                ret = ret * it->toRedshiftTransform();
+                        }
+                        return ret;
+                }
+
+                // Serialization.
+                template<typename Arch>
+                void serialize (Arch &arch) {
+                        using actuarius::pack;
+                        arch & pack (&Transform::type, Transform::Typenames, transforms);
+                }
+        };
+
+
+
         struct Material {
                 Color color;
 
@@ -389,7 +550,8 @@ namespace redshift { namespace scenefile {
                         triangle,
                         bvh,
                         triangle_bvh,
-                        lsystemtree
+                        lsystemtree,
+                        instance
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -404,6 +566,7 @@ namespace redshift { namespace scenefile {
                         case bvh: return bvhParams.toPrimitive();
                         case triangle_bvh: return triangleBvhParams.toPrimitive();
                         case lsystemtree: return lsystemTreeParams.toPrimitive();
+                        case instance: return instanceParams.toPrimitive();
                         };
                         throw std::exception();
                 }
@@ -418,6 +581,7 @@ namespace redshift { namespace scenefile {
                         case bvh: return bvhParams.toBoundPrimitive();
                         case triangle_bvh: return triangleBvhParams.toBoundPrimitive();
                         case lsystemtree: return lsystemTreeParams.toBoundPrimitive();
+                        case instance: return instanceParams.toBoundPrimitive();
                         };
                         throw std::exception();
                 }
@@ -486,6 +650,12 @@ namespace redshift { namespace scenefile {
                                 & pack("code", lsystemTreeParams.code)
                                 & pack("level", lsystemTreeParams.level)
                                 & pack("slices", lsystemTreeParams.slices)
+                                ;
+                                break;
+                        case instance:
+                                arch
+                                & pack ("transform", instanceParams.transforms)
+                                & pack(&Object::type, Object::Typenames, instanceParams.objects)
                                 ;
                                 break;
                         };
@@ -716,6 +886,53 @@ namespace redshift { namespace scenefile {
                                 return builder.toTriangleBvh();
                         }
                 };
+
+                struct InstanceParams {
+                        std::vector<Object> objects;
+                        TransformList transforms;
+
+                        shared_ptr<Primitive> toPrimitive() const {
+                                if (warnings())
+                                        return shared_ptr<Primitive>();
+
+                                return shared_ptr<Primitive>(new primitive::Instance(
+                                        transforms.toRedshiftTransform(),
+                                        objects[0].toPrimitive()
+                                ));
+                        }
+
+                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                                if (warnings())
+                                        return shared_ptr<BoundPrimitive>();
+
+                                shared_ptr<BoundPrimitive> bp = objects[0].toBoundPrimitive();
+
+                                if (!bp) {
+                                        std::cerr << "warning: Primitive is not a BoundPrimitive: '"
+                                                  << Typenames[objects[0].type] << "' in InstanceParams::toBoundPrimitive()\n";
+                                        return shared_ptr<BoundPrimitive>();
+                                }
+
+                                /*return shared_ptr<Primitive>(
+                                        objects[0].toPrimitive(),
+                                        transform.toRedshiftTransform()
+                                );*/
+                                throw std::runtime_error("FOO BAR!");
+                        }
+                private:
+                        bool warnings() const {
+                                if (objects.size() > 1) {
+                                        std::cerr << "warning: multiple objects in instance, "
+                                                "but only one object per instance is allowed\n";
+                                }
+                                if (objects.size() == 0) {
+                                        std::cerr << "warning: zero objects in instance, "
+                                                "but an object is mandatory\n";
+                                        return true;
+                                }
+                                return false;
+                        }
+                };
         public:
                 LazyQuadtreeParams lazyQuadtreeParams;
                 WaterPlaneParams waterPlaneParams;
@@ -725,6 +942,7 @@ namespace redshift { namespace scenefile {
                 BvhParams bvhParams;
                 TriangleBvhParams triangleBvhParams;
                 LSystemTreeParams lsystemTreeParams;
+                InstanceParams instanceParams;
         };
 
 
@@ -1077,162 +1295,6 @@ namespace redshift { namespace scenefile {
         };
 
 
-
-        // Transform.
-        struct Transform {
-                enum Type {
-                        move,
-                        move_left,
-                        move_right,
-                        move_up,
-                        move_down,
-                        move_forward,
-                        move_backward,
-
-                        yaw,
-                        pitch,
-                        roll
-                };
-
-                static const actuarius::Enum<Type> Typenames;
-
-                redshift::Transform toRedshiftTransform () const {
-                        using redshift::Transform;
-                        const double to_radians = redshift::constants::pi/180;
-                        switch (type) {
-                        case move: return Transform::translation(x,y,z);
-                        case move_left:
-                        case move_right: return Transform::translation(x,0,0);
-                        case move_up:
-                        case move_down: return Transform::translation(0,y,0);
-                        case move_forward:
-                        case move_backward:  return Transform::translation(0,0,z);
-
-                        case yaw:   return Transform::rotationY(angle*to_radians);
-                        case pitch: return Transform::rotationX(angle*to_radians);
-                        case roll:  return Transform::rotationZ(angle*to_radians);
-                        };
-                        return redshift::Transform();
-                }
-
-
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-
-                        /*
-                        switch (type) {
-                        case move:
-                                arch & pack(x) & pack(y) & pack(z);
-                                break;
-                        case move_right: arch & pack(x);            break;
-                        case move_left:  arch & pack(x); x = -x;    break;
-                        case move_up:    arch & pack(y);            break;
-                        case move_down:  arch & pack(y);  y = -y;   break;
-                        case move_forward: arch & pack(z);          break;
-                        case move_backward:
-                                if (Arch::serialize)
-                                arch & pack(z); z = -z; break;
-                        case yaw:
-                        case pitch:
-                        case roll:
-                                arch & pack(angle);
-                                break;
-                        };*/
-
-                        double left=0, right=0, up=0, down=0, forward=0, backward=0;
-
-                        if (Arch::serialize) {
-                                right = x;   left = -x;
-                                up = y;      down = -y;
-                                forward = z; backward = -z;
-                        }
-
-                        switch (type) {
-                        case move:
-                                arch & pack(right) & pack(up) & pack(forward);
-                                break;
-                        case move_right:    arch & pack(right); break;
-                        case move_left:     arch & pack(left); break;
-                        case move_up:       arch & pack(up); break;
-                        case move_down:     arch & pack(down); break;
-                        case move_forward:  arch & pack(forward); break;
-                        case move_backward:  arch & pack(backward); break;
-                        case yaw:
-                        case pitch:
-                        case roll:
-                                arch & pack(angle);
-                                break;
-                        };
-
-                        if (Arch::deserialize) {
-                                x = -left     + right;
-                                y = -down     + up;
-                                z = -backward + forward;
-                        }
-                }
-
-                Type type;
-                double x,y,z;
-                double angle;
-
-                Transform ()
-                : type(move), x(0), y(0), z(0), angle(0) {}
-
-                Transform (Transform const &rhs)
-                : type(rhs.type), x(rhs.x), y(rhs.y), z(rhs.z), angle(rhs.angle) {}
-
-                Transform &operator = (Transform const &rhs) {
-                        type = rhs.type;
-                        x = rhs.x;
-                        y = rhs.y;
-                        z = rhs.z;
-                        angle = rhs.angle;
-                        return *this;
-                }
-        };
-
-        class TransformList {
-                std::vector<Transform> transforms;
-        public:
-
-                TransformList() {}
-                TransformList(TransformList const &rhs)
-                        : transforms(rhs.transforms) {}
-                TransformList &operator = (TransformList const &rhs) {
-                        transforms = rhs.transforms;
-                        return *this;
-                }
-
-                Transform operator [] (int i) const {
-                        return transforms [i];
-                }
-
-                int size () const {
-                        return transforms.size();
-                }
-
-                void push_back (Transform const &t) {
-                        transforms.push_back (t);
-                }
-
-                redshift::Transform toRedshiftTransform () const {
-                        typedef std::vector<Transform>::const_iterator iterator;
-                        redshift::Transform ret;
-                        for (iterator it = transforms.begin(); it!=transforms.end(); ++it) {
-                                ret = ret * it->toRedshiftTransform();
-                        }
-                        return ret;
-                }
-
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack (&Transform::type, Transform::Typenames, transforms);
-                }
-        };
 
 
         // Camera.

@@ -61,7 +61,7 @@ CXXFLAGS += -Wextra -Wall -Wno-unused -pedantic -Wstrict-aliasing=0
 CXXFLAGS += $(INCLUDEDIRS)
 CXXFLAGS += `sdl-config --cflags`
 
-LINK := g++ -s -fopenmp \
+LINK := g++ -mconsole -s -fopenmp \
         `./machine-linker-settings.sh`
 
 # -Wl,--enable-auto-import
@@ -122,8 +122,10 @@ OBJFILES += $(PRIMITIVESOBJDIR)/horizonplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/waterplane.o
 OBJFILES += $(PRIMITIVESOBJDIR)/list.o
 OBJFILES += $(PRIMITIVESOBJDIR)/bvh.o
+OBJFILES += $(PRIMITIVESOBJDIR)/trianglebvh.o
 OBJFILES += $(PRIMITIVESOBJDIR)/triangle.o
 OBJFILES += $(PRIMITIVESOBJDIR)/lsystemtree.o
+OBJFILES += $(PRIMITIVESOBJDIR)/instance.o
 
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
@@ -317,12 +319,20 @@ $(INTERACTIONOBJDIR)/passivecommandprocessor.o: \
 # primitives
 ###############################################################################
 
+$(PRIMITIVESOBJDIR)/instance.o: \
+                     ./src/primitives/instance.cc
+	$(CXX) -o $@ $<
+
 $(PRIMITIVESOBJDIR)/lsystemtree.o: \
                      ./src/primitives/lsystemtree.cc
 	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/bvh.o: \
                      ./src/primitives/bvh.cc
+	$(CXX) -o $@ $<
+
+$(PRIMITIVESOBJDIR)/trianglebvh.o: \
+                     ./src/primitives/trianglebvh.cc
 	$(CXX) -o $@ $<
 
 $(PRIMITIVESOBJDIR)/triangle.o: \
