@@ -24,7 +24,7 @@
 
 #include "../../include/constants.hh"
 #include "../../include/basictypes/intersection.hh"
-#include "../../include/texture/constant.hh"
+#include "../../include/texture/image.hh"
 #include "../../include/primitives/lsystemtree.hh"
 #include "../../include/primitives/triangle.hh"
 #include "xyto/lsystem.hh"
@@ -261,7 +261,8 @@ LSystemTree::LSystemTree(
         pat = lsys.run(level);
 
         LSystemTreeMesher mesher(slicesPerSegment,
-                                 shared_ptr<ColorTexture>(new texture::ConstantColor(Color::FromRGB(0,0,1, ReflectanceSpectrum))));
+                                 //shared_ptr<ColorTexture>(new texture::ConstantColor(Color::FromRGB(0,0,1, ReflectanceSpectrum))));
+                                 shared_ptr<ColorTexture>(new texture::ColorImage("bark.bmp")));
         draw(lsys, pat, Turtle(), mesher);
 
         TriangleBvhBuilder builder;

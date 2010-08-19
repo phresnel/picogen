@@ -18,6 +18,7 @@ RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
 SAMPLERSOBJDIR      := $(OBJDIR)/samplers
 VOLUMESOBJDIR       := $(OBJDIR)/volume
+TEXTURESOBJDIR      := $(OBJDIR)/texture
 
 
 #------------------------------------------------------------------------------
@@ -141,6 +142,8 @@ OBJFILES += $(VOLUMESOBJDIR)/homogeneous.o
 OBJFILES += $(VOLUMESOBJDIR)/exponential.o
 OBJFILES += $(VOLUMESOBJDIR)/list.o
 
+OBJFILES += $(TEXTURESOBJDIR)/image.o
+
 
 ###############################################################################
 ## MAIN TARGETS ###############################################################
@@ -207,6 +210,19 @@ $(OBJDIR)/xyto/*.o: ../xyto/*.cc
 $(OBJDIR)/libxyto.a: $(OBJDIR)/xyto/*.o
 	cd obj/xyto && \
 	$(AR) -o $@ *
+
+
+
+        
+###############################################################################
+# texture
+###############################################################################
+
+$(TEXTURESOBJDIR)/image.o: \
+                     ./src/texture/image.cc
+	$(CXX) -o $@ $<
+
+
 
 ###############################################################################
 # backgrounds
@@ -475,6 +491,7 @@ init-dir-tree:
 	mkdir -p $(SAMPLERSOBJDIR)
 	mkdir -p $(SHAPEOBJDIR)
 	mkdir -p $(VOLUMESOBJDIR)
+	mkdir -p $(TEXTURESOBJDIR)
 	mkdir -p ./tmp/amalgam
 
 ###############################################################################
@@ -511,5 +528,6 @@ clean: init-dir-tree
 	rm -f $(SAMPLERSOBJDIR)/*.o
 	rm -f $(SHAPEOBJDIR)/*.o
 	rm -f $(VOLUMESOBJDIR)/*.o
+	rm -f $(TEXTURESOBJDIR)/*.o
 
 

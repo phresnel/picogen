@@ -39,14 +39,14 @@ Forest::Forest()
 {
         shared_ptr<LSystemTree> tree (new LSystemTree (
 
-                #if 0
+                #if 1
                 "d1 = 94.74;\n"
                 "d2 = 132.63;\n"
                 "a = 18.95;\n"
                 "lr = 1.109;\n"
                 "vr = 1.732;\n"
-                "#scale=0.05;\n"
-                "#diascale=1.5;\n"
+                "#scale=0.025;\n"
+                "#diascale=2.5;\n"
 
                 "axiom: dia(1.0) f(0) rollright(45) A;\n"
                 "p1: A --> dia(vr) f(100) \n"
@@ -55,21 +55,22 @@ Forest::Forest()
                         "[down(a) f(100) A];\n"
                 "p2: f(l) --> f(l*lr);\n"
                 "p3: dia(w) --> dia(w*vr);\n",
-                #endif
+                #else
                 "axiom:f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3);",
-                4,
-                5
+                #endif
+                6,
+                3
         ));
         BvhBuilder builder;
-        for (int i=0; i<2500; ++i) {
+        for (int i=0; i<100000; ++i) {
                 const Transform t =
                         Transform::rotationY(
                                 rand()/(double)RAND_MAX * 3.14159*2)
                         *
                         Transform::translation(
-                                (-0.5 + rand() / (double)RAND_MAX) * 1024,
+                                (-0.5 + rand() / (double)RAND_MAX) * 10240,
                                 0,
-                                (-0.5 + rand() / (double)RAND_MAX) * 1024)
+                                (-0.5 + rand() / (double)RAND_MAX) * 10240)
                         ;
                 builder.add(shared_ptr<BoundPrimitive>(
                                 new BoundInstance(t, tree)));
