@@ -222,12 +222,21 @@ struct TriangleBvhTri : BoundPrimitive {
                                 normalizedNormal :
                                 -normalizedNormal;
 
+                        const real_t suv = 1 - u - v;
+                        const real_t U = suv*A.textureCoordinates.s
+                                       +   u*B.textureCoordinates.s
+                                       +   v*C.textureCoordinates.s;
+                        const real_t V = suv*A.textureCoordinates.t
+                                       +   u*B.textureCoordinates.t
+                                       +   v*C.textureCoordinates.t;
+
                         const DifferentialGeometry dg (
                                 ray(t),
                                 vector_cast<Normal>(n),
                                 du,
                                 dv,
-                                Vector(), Vector()
+                                Vector(), Vector(),
+                                U, V, (unsigned char)(0)
                         );
                         return Intersection (*this, dg);
                 } else {
@@ -239,7 +248,16 @@ struct TriangleBvhTri : BoundPrimitive {
                 const DifferentialGeometry & dgGeom
         ) const {
                 shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color(1))));
+                //#pragma omp master
+                //std::cout << dgGeom.u() << ":" << dgGeom.v() << std::endl;
+                real_t u = dgGeom.u();
+                real_t v = dgGeom.v();
+                v = v - (int)v;
+                u = u - (int)u;
+
+                bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (
+                                                        Color::FromRGB(real_t(0.0),u,real_t(0.0),ReflectanceSpectrum)
+                                                      )));
                 return bsdf;
         }
 };

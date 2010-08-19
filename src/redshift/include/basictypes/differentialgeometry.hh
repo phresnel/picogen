@@ -38,12 +38,22 @@ namespace redshift {
                         Vector const &dpdu, Vector const &dpdv,
                         Vector const &dndu, Vector const &dndv
                 );
+                DifferentialGeometry (
+                        Point  const &center,
+                        Normal const &geometricNormal,
+                        Vector const &dpdu, Vector const &dpdv,
+                        Vector const &dndu, Vector const &dndv,
+                        real_t u, real_t v, unsigned char texId
+                );
 
                 Point  getCenter() const ;
 
                 Normal getShadingNormal() const ;
                 Normal getGeometricNormal() const ;
 
+                real_t u() const { return u_; }
+                real_t v() const { return v_; }
+                unsigned char textureId() const { return textureId_; }
 
                 // D'oh, those names are braindead.
                 Vector get_dpdu() const { return dpdu; }
@@ -60,6 +70,9 @@ namespace redshift {
 
                 Vector dpdu, dpdv; // partial derivative of position, PBRT: p.83
                 Vector dndu, dndv; // partial derivative of normal, PBRT: p.83
+
+                real_t u_, v_;
+                unsigned char textureId_;
         };
 }
 

@@ -42,6 +42,26 @@ DifferentialGeometry::DifferentialGeometry (
 , shadingNormal(vector_cast<Normal>(normalize (cross (dpdu_, dpdv_))))
 , dpdu(dpdu_), dpdv(dpdv_)
 , dndu(dpdu_), dndv(dpdv_)
+, u_(0), v_(0), textureId_(0)
+{
+}
+
+
+
+DifferentialGeometry::DifferentialGeometry (
+        //real_t distance_,
+        Point  const &center_,
+        Normal const &geometricNormal_,
+        Vector const &dpdu_, Vector const &dpdv_,
+        Vector const &dndu_, Vector const &dndv_,
+        real_t u, real_t v, unsigned char texId
+)
+: center(center_)
+, geometricNormal(geometricNormal_)
+, shadingNormal(vector_cast<Normal>(normalize (cross (dpdu_, dpdv_))))
+, dpdu(dpdu_), dpdv(dpdv_)
+, dndu(dpdu_), dndv(dpdv_)
+, u_(u), v_(v), textureId_(texId)
 {
 }
 

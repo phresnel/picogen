@@ -38,6 +38,8 @@ namespace redshift { namespace primitive {
 Forest::Forest()
 {
         shared_ptr<LSystemTree> tree (new LSystemTree (
+
+                #if 0
                 "d1 = 94.74;\n"
                 "d2 = 132.63;\n"
                 "a = 18.95;\n"
@@ -53,11 +55,13 @@ Forest::Forest()
                         "[down(a) f(100) A];\n"
                 "p2: f(l) --> f(l*lr);\n"
                 "p3: dia(w) --> dia(w*vr);\n",
+                #endif
+                "axiom:f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3);",
                 4,
                 5
         ));
         BvhBuilder builder;
-        for (int i=0; i<250; ++i) {
+        for (int i=0; i<2500; ++i) {
                 const Transform t =
                         Transform::rotationY(
                                 rand()/(double)RAND_MAX * 3.14159*2)

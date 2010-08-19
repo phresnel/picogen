@@ -101,8 +101,8 @@ namespace redshift { namespace primitive {
 
 
 
-Triangle::Triangle (Vertex A, Vertex B, Vertex C)
-: A(A), B(B), C(C)
+Triangle::Triangle (Vertex A, Vertex B, Vertex C, unsigned char texId)
+: A(A), B(B), C(C), textureId(texId)
 {
 }
 
@@ -153,12 +153,21 @@ optional<Intersection>
                         normal :
                         -normal;
 
+                const real_t suv = 1 - u - v;
+                const real_t U = suv*A.textureCoordinates.s
+                               +   u*B.textureCoordinates.s
+                               +   v*C.textureCoordinates.s;
+                const real_t V = suv*A.textureCoordinates.t
+                               +   u*B.textureCoordinates.t
+                               +   v*C.textureCoordinates.t;
+
                 const DifferentialGeometry dg (
                         ray(t),
                         n,
                         du,
                         dv,
-                        Vector(), Vector()
+                        Vector(), Vector(),
+                        U, V, textureId
                 );
                 return Intersection (*this, dg);
         } else {

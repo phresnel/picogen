@@ -36,16 +36,28 @@ namespace redshift { namespace primitive {
                 , MAKE_SEALED(Triangle)
         {
         public:
+                struct TextureCoordinates {
+                        real_t s, t;
+
+                        TextureCoordinates() {}
+                        TextureCoordinates(real_t s, real_t t) : s(s), t(t) {}
+                };
+
                 struct Vertex {
                         Point position;
 
+                        TextureCoordinates textureCoordinates;
+
                         Vertex() {}
-                        Vertex (Point position)
+                        Vertex (Point position,
+                                TextureCoordinates tex
+                               )
                         : position (position)
+                        , textureCoordinates(tex)
                         {}
                 };
 
-                Triangle(Vertex A, Vertex B, Vertex C);
+                Triangle(Vertex A, Vertex B, Vertex C, unsigned char texId);
                 ~Triangle ();
 
                 Vertex a () const { return A; }
@@ -68,6 +80,7 @@ namespace redshift { namespace primitive {
 
         private:
                 Vertex A, B, C;
+                unsigned char textureId;
         };
 } }
 

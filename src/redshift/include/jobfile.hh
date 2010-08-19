@@ -810,9 +810,13 @@ namespace redshift { namespace scenefile {
                                 using namespace redshift::primitive;
 
                                 return shared_ptr<BoundPrimitive>(new Triangle(
-                                        Triangle::Vertex (A.position),
-                                        Triangle::Vertex (B.position),
-                                        Triangle::Vertex (C.position)
+                                        Triangle::Vertex (A.position,
+                                                          Triangle::TextureCoordinates(0,0)),
+                                        Triangle::Vertex (B.position,
+                                                          Triangle::TextureCoordinates(1,0)),
+                                        Triangle::Vertex (C.position,
+                                                          Triangle::TextureCoordinates(0,1)),
+                                        0
                                 ));
                         }
 
@@ -887,9 +891,13 @@ namespace redshift { namespace scenefile {
                                                 continue;
                                         }
                                         builder.add(Triangle(
-                                                Triangle::Vertex (it->triangleParams.A.position),
-                                                Triangle::Vertex (it->triangleParams.B.position),
-                                                Triangle::Vertex (it->triangleParams.C.position)
+                                                Triangle::Vertex (it->triangleParams.A.position,
+                                                                  Triangle::TextureCoordinates(0,0)),
+                                                Triangle::Vertex (it->triangleParams.B.position,
+                                                                  Triangle::TextureCoordinates(1,0)),
+                                                Triangle::Vertex (it->triangleParams.C.position,
+                                                                  Triangle::TextureCoordinates(0,1)),
+                                                0
                                         ));
                                 }
                                 return builder.toTriangleBvh();

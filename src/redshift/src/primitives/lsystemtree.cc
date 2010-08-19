@@ -87,6 +87,7 @@ namespace {
                 using std::acos;
                 using redshift::primitive::Triangle;
                 typedef Triangle::Vertex Vertex;
+                typedef Triangle::TextureCoordinates TexCoords;
                 using namespace redshift;
 
                 const double pi = 3.14159, pi2 = pi*2;
@@ -108,11 +109,12 @@ namespace {
                         newState.rotation = state.rotation;
                 }
 
-                const double oldTexV = state.pathLength    * 0.01,
-                             newTexV = newState.pathLength * 0.01;
+                const double oldTexV = state.pathLength    * 0.1,
+                             newTexV = newState.pathLength * 0.1;
 
                 //glBegin(GL_QUAD_STRIP);
                 Point prevOldV, prevNewV;
+                TexCoords prevOldTC, prevNewTC;
                 for (unsigned int i=0; i<=slices; ++i) {
                         const double f = i / (float)slices;
                         const double phi = f * pi2;
@@ -124,29 +126,27 @@ namespace {
                         const Point oldV (oldV_.x, oldV_.y, oldV_.z);
                         const Point newV (newV_.x, newV_.y, newV_.z);
 
-                        /*
-                        glTexCoord2f(f, newTexV);
-                        glNormal3f(newN.x, newN.y, newN.z);
-                        glVertex3f(newV.x, newV.y, newV.z);
+                        const TexCoords oldTC(1-f, oldTexV);
+                        const TexCoords newTC(1-f, newTexV);
 
-                        glTexCoord2f(f, oldTexV);
-                        glNormal3f(oldN.x, oldN.y, oldN.z);
-                        glVertex3f(oldV.x, oldV.y, oldV.z);
-                        */
                         if (i>0) {
                                 triangles.push_back(Triangle(
-                                        Vertex(prevOldV),
-                                        Vertex(prevNewV),
-                                        Vertex(oldV)
+                                        Vertex(prevOldV, prevOldTC),
+                                        Vertex(prevNewV, prevNewTC),
+                                        Vertex(oldV, oldTC),
+                                        0
                                 ));
                                 triangles.push_back(Triangle(
-                                        Vertex(prevNewV),
-                                        Vertex(newV),
-                                        Vertex(oldV)
+                                        Vertex(prevNewV, prevNewTC),
+                                        Vertex(newV, newTC),
+                                        Vertex(oldV, oldTC),
+                                        0
                                 ));
                         }
                         prevOldV = oldV;
                         prevNewV = newV;
+                        prevOldTC = oldTC;
+                        prevNewTC = newTC;
                 }
                 //glEnd();
 
