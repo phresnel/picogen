@@ -64,6 +64,11 @@ shared_ptr<Bsdf> BoundInstance::getBsdf(const DifferentialGeometry &dg) const {
 
 
 BoundingBox BoundInstance::boundingBox() const {
+        const BoundingBox orig = primitive->boundingBox();
+        return BoundingBox(
+                transform.inverse() * orig.minimum(),
+                transform.inverse() * orig.maximum()
+        );
         throw std::runtime_error("BoundInstance::boundingBox() is not implemented yet");
 }
 
