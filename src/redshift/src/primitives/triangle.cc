@@ -101,8 +101,8 @@ namespace redshift { namespace primitive {
 
 
 
-Triangle::Triangle (Vertex A, Vertex B, Vertex C, unsigned char texId)
-: A(A), B(B), C(C), textureId(texId)
+Triangle::Triangle (Vertex A, Vertex B, Vertex C, shared_ptr<ColorTexture> tex)
+: A(A), B(B), C(C), texture_(tex)
 {
 }
 
@@ -167,7 +167,7 @@ optional<Intersection>
                         du,
                         dv,
                         Vector(), Vector(),
-                        U, V, textureId
+                        U, V, 0
                 );
                 return Intersection (*this, dg);
         } else {
@@ -175,6 +175,19 @@ optional<Intersection>
         }
 }
 
+
+
+shared_ptr<Bsdf> Triangle::getBsdf(const DifferentialGeometry &dg) const {
+        shared_ptr<Bsdf> bsdf (new Bsdf(dg));
+        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (texture_->color(dg))));
+        return bsdf;
+}
+
+
+
+shared_ptr<ColorTexture> Triangle::texture() const {
+        return texture_;
+}
 
 
 } }

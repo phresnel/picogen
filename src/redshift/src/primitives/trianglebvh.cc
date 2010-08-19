@@ -179,12 +179,14 @@ struct TriangleBvhTri : BoundPrimitive {
         Vector U, V;
         Vector normal;
         Vector normalizedNormal;
+        shared_ptr<ColorTexture> texture;
 
         TriangleBvhTri (Triangle tri)
         : A(tri.a()), B(tri.b()), C(tri.c())
         , U(B.position-A.position)
         , V(C.position-A.position)
         , normal(cross (U, V)), normalizedNormal (normalize(normal))
+        , texture(tri.texture())
         {}
 
         TriangleBvhTri() {}
@@ -248,16 +250,14 @@ struct TriangleBvhTri : BoundPrimitive {
                 const DifferentialGeometry & dgGeom
         ) const {
                 shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                //#pragma omp master
-                //std::cout << dgGeom.u() << ":" << dgGeom.v() << std::endl;
+
                 real_t u = dgGeom.u();
                 real_t v = dgGeom.v();
                 v = v - (int)v;
                 u = u - (int)u;
 
                 bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (
-                                                        Color::FromRGB(real_t(0.0),u,real_t(0.0),ReflectanceSpectrum)
-                                                      )));
+                                texture->color(dgGeom))));
                 return bsdf;
         }
 };

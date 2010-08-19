@@ -115,6 +115,9 @@ namespace redshift{class RenderTarget;}
 // material/
 #include "material/lambertian.hh"
 
+// texture/
+#include "texture/constant.hh"
+
 //}}}}}}}}}
 
 
@@ -816,7 +819,8 @@ namespace redshift { namespace scenefile {
                                                           Triangle::TextureCoordinates(1,0)),
                                         Triangle::Vertex (C.position,
                                                           Triangle::TextureCoordinates(0,1)),
-                                        0
+                                        shared_ptr<ColorTexture>(new texture::ConstantColor(redshift::Color::FromRGB(
+                                                                        0.25, 0.25, 1., ReflectanceSpectrum)))
                                 ));
                         }
 
@@ -897,7 +901,8 @@ namespace redshift { namespace scenefile {
                                                                   Triangle::TextureCoordinates(1,0)),
                                                 Triangle::Vertex (it->triangleParams.C.position,
                                                                   Triangle::TextureCoordinates(0,1)),
-                                                0
+                                                shared_ptr<ColorTexture>(new texture::ConstantColor(redshift::Color::FromRGB(
+                                                                        0.25, 0.25, 1., ReflectanceSpectrum)))
                                         ));
                                 }
                                 return builder.toTriangleBvh();

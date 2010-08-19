@@ -24,6 +24,7 @@
 
 #include "../../include/constants.hh"
 #include "../../include/basictypes/intersection.hh"
+#include "../../include/texture/constant.hh"
 #include "../../include/primitives/lsystemtree.hh"
 #include "../../include/primitives/triangle.hh"
 #include "xyto/lsystem.hh"
@@ -32,10 +33,11 @@ boost::optional<LSystem> compile(const char*);
 
 
 
-namespace {
+namespace redshift { namespace {
         class LSystemTreeMesher {
         public:
-                LSystemTreeMesher (unsigned int slices);
+                LSystemTreeMesher (unsigned int slices,
+                                   shared_ptr<ColorTexture> barkTexture);
                 ~LSystemTreeMesher ();
                 void moveTo (Turtle state);
                 void drawTo (Turtle newState);
@@ -50,14 +52,17 @@ namespace {
                 Turtle state;
                 std::stack<Turtle> stateStack;
                 unsigned int slices;
+
+                shared_ptr<ColorTexture> barkTexture;
                 //GLuint displayList_;
                 //std::vector<GLuint> textures_;
         };
 
 
 
-        LSystemTreeMesher::LSystemTreeMesher (unsigned int slices)
-        : slices(slices)
+        LSystemTreeMesher::LSystemTreeMesher (unsigned int slices,
+                                        shared_ptr<ColorTexture> barkTexture)
+        : slices(slices), barkTexture(barkTexture)
         {
                 //textures_.push_back(loadTexture("bark.jpg"));
                 //textures_.push_back(loadTexture("leaf.png"));
@@ -134,13 +139,13 @@ namespace {
                                         Vertex(prevOldV, prevOldTC),
                                         Vertex(prevNewV, prevNewTC),
                                         Vertex(oldV, oldTC),
-                                        0
+                                        barkTexture
                                 ));
                                 triangles.push_back(Triangle(
                                         Vertex(prevNewV, prevNewTC),
                                         Vertex(newV, newTC),
                                         Vertex(oldV, oldTC),
-                                        0
+                                        barkTexture
                                 ));
                         }
                         prevOldV = oldV;
@@ -226,8 +231,7 @@ namespace {
                 stateStack.pop();
         }
 
-
-}
+} }
 
 
 
@@ -256,7 +260,8 @@ LSystemTree::LSystemTree(
         lsys = *newLsys;
         pat = lsys.run(level);
 
-        LSystemTreeMesher mesher(slicesPerSegment);
+        LSystemTreeMesher mesher(slicesPerSegment,
+                                 shared_ptr<ColorTexture>(new texture::ConstantColor(Color::FromRGB(0,0,1, ReflectanceSpectrum))));
         draw(lsys, pat, Turtle(), mesher);
 
         TriangleBvhBuilder builder;

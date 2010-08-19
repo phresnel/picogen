@@ -26,6 +26,7 @@
 #include "../primitives/boundprimitive.hh"
 #include "../material/lambertian.hh"
 #include "../material/mirror.hh"
+#include "../basictypes/texture.hh"
 
 namespace redshift { namespace primitive {
 
@@ -57,7 +58,8 @@ namespace redshift { namespace primitive {
                         {}
                 };
 
-                Triangle(Vertex A, Vertex B, Vertex C, unsigned char texId);
+                Triangle(Vertex A, Vertex B, Vertex C,
+                         shared_ptr<ColorTexture> texture);
                 ~Triangle ();
 
                 Vertex a () const { return A; }
@@ -70,17 +72,12 @@ namespace redshift { namespace primitive {
 
                 optional<Intersection> intersect(Ray const &ray) const;
 
-                shared_ptr<Bsdf> getBsdf(
-                        const DifferentialGeometry & dgGeom
-                ) const {
-                        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color(1))));
-                        return bsdf;
-                }
+                shared_ptr<Bsdf> getBsdf(const DifferentialGeometry &) const;
 
+                shared_ptr<ColorTexture> texture() const;
         private:
                 Vertex A, B, C;
-                unsigned char textureId;
+                shared_ptr<ColorTexture> texture_;
         };
 } }
 
