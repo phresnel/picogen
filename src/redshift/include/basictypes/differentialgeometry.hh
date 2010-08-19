@@ -32,23 +32,12 @@ namespace redshift {
         public:
                 DifferentialGeometry();
 
-                /*__attribute__((deprecated))
-                DifferentialGeometry (
-                        real_t distance,
-                        Point  const &center,
-                        Normal const &shadingNormal,
-                        Normal const &geometricNormal
-                );*/
-
                 DifferentialGeometry (
                         Point  const &center,
                         Normal const &geometricNormal,
                         Vector const &dpdu, Vector const &dpdv,
                         Vector const &dndu, Vector const &dndv
                 );
-
-                /*DifferentialGeometry (DifferentialGeometry const &) ;
-                DifferentialGeometry& operator= (DifferentialGeometry const &);*/
 
                 Point  getCenter() const ;
 

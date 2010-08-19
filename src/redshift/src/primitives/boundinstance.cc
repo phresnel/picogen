@@ -26,11 +26,12 @@ namespace redshift { namespace primitive {
 
 
 
+
 BoundInstance::BoundInstance (Transform const &transform,
                               shared_ptr<BoundPrimitive> primitive
 )
 : instanceToWorld(transform)
-, worldToInstance(transform.inverse())
+, worldToInstance(instanceToWorld.inverse())
 , primitive (primitive)
 {
 }
@@ -52,7 +53,7 @@ optional<Intersection>
  BoundInstance::intersect(Ray const &ray) const {
         optional<Intersection> i = primitive->intersect (worldToInstance * ray);
         if (!i) return optional<Intersection>();
-        i->applyTransform (worldToInstance);
+        i->applyTransform (instanceToWorld);
         return i;
 }
 
@@ -85,8 +86,6 @@ lsystem-tree {
                 }
 */
 BoundingBox BoundInstance::boundingBox() const {
-        //return BoundingBox();
-        return BoundingBox(Point(-1000,-1000,-1000), Point(1000,1000,1000));
         return instanceToWorld * primitive->boundingBox();
 }
 

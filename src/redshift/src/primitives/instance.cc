@@ -30,7 +30,7 @@ Instance::Instance (Transform const &transform,
                     shared_ptr<Primitive> primitive
 )
 : instanceToWorld(transform)
-, worldToInstance(transform.inverse())
+, worldToInstance(instanceToWorld.inverse())
 , primitive (primitive)
 {
 }

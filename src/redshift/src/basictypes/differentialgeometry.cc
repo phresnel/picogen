@@ -29,22 +29,6 @@ DifferentialGeometry::DifferentialGeometry ()
 }
 
 
-/*
-DifferentialGeometry::DifferentialGeometry (
-        real_t distance_,
-        Point  const &center_,
-        Normal const &shadingNormal_,
-        Normal const &geometricNormal_
-)
-: distance (distance_)
-, center (center_)
-, geometricNormal (geometricNormal_)
-, shadingNormal (shadingNormal_)
-{
-        //std::cerr << "warning: old constructor call to DifferentialGeometry" << std::endl;
-}*/
-
-
 
 DifferentialGeometry::DifferentialGeometry (
         //real_t distance_,
@@ -59,37 +43,7 @@ DifferentialGeometry::DifferentialGeometry (
 , dpdu(dpdu_), dpdv(dpdv_)
 , dndu(dpdu_), dndv(dpdv_)
 {
-        //std::cout << shadingNormal.x << ":" << shadingNormal.y << ":" << shadingNormal.z << "L" << length(shadingNormal) << "\n";
 }
-
-
-
-/*DifferentialGeometry::DifferentialGeometry (
-        DifferentialGeometry const &dg
-)
-: distance (dg.distance)
-, center (dg.center)
-, shadingNormal (dg.shadingNormal)
-, geometricNormal (dg.geometricNormal)
-{
-}
-
-
-
-DifferentialGeometry&
-DifferentialGeometry::operator= (DifferentialGeometry const &dg) {
-        distance = dg.distance;
-        center   = dg.center;
-        shadingNormal   = dg.shadingNormal;
-        geometricNormal = dg.geometricNormal;
-        return *this;
-}*/
-
-
-
-/*real_t DifferentialGeometry::getDistance() const {
-        return distance;
-}*/
 
 
 

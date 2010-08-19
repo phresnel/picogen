@@ -468,15 +468,6 @@ namespace redshift { namespace scenefile {
                         return ret;
                 }
 
-                redshift::Transform toRedshiftObjectTransform () const {
-                        typedef std::vector<Transform>::const_iterator iterator;
-                        redshift::Transform ret;
-                        for (iterator it = transforms.begin(); it!=transforms.end(); ++it) {
-                                ret = it->toRedshiftTransform() * ret;
-                        }
-                        return ret;
-                }
-
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {
@@ -915,7 +906,7 @@ namespace redshift { namespace scenefile {
                                         return shared_ptr<Primitive>();
 
                                 return shared_ptr<Primitive>(new primitive::Instance(
-                                        transforms.toRedshiftObjectTransform(),
+                                        transforms.toRedshiftTransform(),
                                         objects[0].toPrimitive()
                                 ));
                         }
@@ -933,7 +924,7 @@ namespace redshift { namespace scenefile {
                                 }
 
                                 return shared_ptr<BoundPrimitive>(new primitive::BoundInstance(
-                                        transforms.toRedshiftObjectTransform(),
+                                        transforms.toRedshiftTransform(),
                                         bp
                                 ));
                         }

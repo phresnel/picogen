@@ -138,7 +138,34 @@ namespace kallisto {
                         );
                 }
 
-                template <typename R> R operator * (R const & rhs) const {
+                template <typename R>
+                BoundingBox<R> operator * (BoundingBox<R> const &bb) const {
+                        typedef BoundingBox<R> BoundingBox;
+                        typedef typename BoundingBox::point_t Point;
+
+                        const Point min = bb.min(), max = bb.max();
+
+                        BoundingBox ret;
+
+                        ret = merge (ret, *this * Point(min.x, min.y, min.z));
+                        ret = merge (ret, *this * Point(min.x, min.y, max.z));
+                        ret = merge (ret, *this * Point(min.x, max.y, min.z));
+                        ret = merge (ret, *this * Point(min.x, max.y, max.z));
+
+                        ret = merge (ret, *this * Point(max.x, min.y, min.z));
+                        ret = merge (ret, *this * Point(max.x, min.y, max.z));
+                        ret = merge (ret, *this * Point(max.x, max.y, min.z));
+                        ret = merge (ret, *this * Point(max.x, max.y, max.z));
+
+                        return ret;
+                }
+
+                template <typename point_t, typename direction_t>
+                Ray<point_t, direction_t> operator* (Ray<point_t, direction_t> const &rhs)
+                const
+                {
+                        typedef Ray<point_t, direction_t> R;
+
                         const Point<CARTESIAN,T>  p = vector_cast<Point<CARTESIAN,T> >(rhs.position);
                         const Vector<CARTESIAN,T> w = rhs.direction;
                         const Point<CARTESIAN,T>  p_ = (*this) * p;
@@ -148,11 +175,22 @@ namespace kallisto {
                                 w_
                         );
                 }
+                /*template <typename R> R operator * (R const & rhs) const {
+                //template <> R operator * (R const & rhs) const {
+                        const Point<CARTESIAN,T>  p = vector_cast<Point<CARTESIAN,T> >(rhs.position);
+                        const Vector<CARTESIAN,T> w = rhs.direction;
+                        const Point<CARTESIAN,T>  p_ = (*this) * p;
+                        const Vector<CARTESIAN,T> w_ = (*this) * w;
+                        return R (
+                                vector_cast<typename R::position_type>(p_),
+                                w_
+                        );
+                }*/
 
                 Transform operator * (Transform const &rhs) const {
                         return Transform (
                                 mul(m,rhs.m),
-                                mul(i,rhs.i));
+                                mul(rhs.i,i));
                 }
 
                 T operator () (unsigned int u, unsigned int v) const {

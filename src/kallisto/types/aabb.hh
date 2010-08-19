@@ -28,10 +28,12 @@ namespace kallisto {
 }
 
 namespace kallisto {
-        template <typename point_t> class BoundingBox {
+        template <typename point_t_> class BoundingBox {
         public:
+                typedef point_t_ point_t;
+
                 typedef typename
-                traits::get_scalar_type<point_t>::type scalar_t;
+                traits::get_scalar_type<point_t_>::type scalar_t;
 
                 // Use max() instead of infinity() to allow for integer types.
                 BoundingBox ()
@@ -57,13 +59,13 @@ namespace kallisto {
 
                 BoundingBox (point_t const & a, point_t const & b)
                 : minimum_ (
-                        min (a.x, b.x),
-                        min (a.y, b.y),
-                        min (a.z, b.z))
+                        kallisto::min (a.x, b.x),
+                        kallisto::min (a.y, b.y),
+                        kallisto::min (a.z, b.z))
                 , maximum_ (
-                        max (a.x, b.x),
-                        max (a.y, b.y),
-                        max (a.z, b.z))
+                        kallisto::max (a.x, b.x),
+                        kallisto::max (a.y, b.y),
+                        kallisto::max (a.z, b.z))
                 {
                 }
 
@@ -96,6 +98,8 @@ namespace kallisto {
                 // New naming scheme.
                 point_t minimum () const { return minimum_; }
                 point_t maximum () const { return maximum_; }
+                point_t min () const { return minimum_; }
+                point_t max () const { return maximum_; }
 
                 scalar_t minimumX () const { return minimum_.x; }
                 scalar_t minimumY () const { return minimum_.y; }
