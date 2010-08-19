@@ -69,7 +69,6 @@ BoundingBox BoundInstance::boundingBox() const {
                 transform.inverse() * orig.minimum(),
                 transform.inverse() * orig.maximum()
         );
-        throw std::runtime_error("BoundInstance::boundingBox() is not implemented yet");
 }
 
 

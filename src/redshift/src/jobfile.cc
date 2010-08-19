@@ -37,6 +37,7 @@ namespace redshift { namespace scenefile {
                 | actuarius::Nvp<Object::Type>(Object::triangle_bvh, "triangle-bvh")
                 | actuarius::Nvp<Object::Type>(Object::lsystemtree, "lsystem-tree")
                 | actuarius::Nvp<Object::Type>(Object::instance, "instance")
+                | actuarius::Nvp<Object::Type>(Object::forest, "forest")
         );
 
         const actuarius::Enum<SurfaceIntegrator::Type> SurfaceIntegrator::Typenames =

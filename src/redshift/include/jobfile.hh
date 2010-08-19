@@ -79,6 +79,7 @@ namespace redshift{class RenderTarget;}
 #include "primitives/lsystemtree.hh"
 #include "primitives/instance.hh"
 #include "primitives/boundinstance.hh"
+#include "primitives/forest.hh"
 
 // background/
 //#include "backgrounds/visualise-direction.hh"
@@ -552,7 +553,8 @@ namespace redshift { namespace scenefile {
                         bvh,
                         triangle_bvh,
                         lsystemtree,
-                        instance
+                        instance,
+                        forest
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -568,6 +570,7 @@ namespace redshift { namespace scenefile {
                         case triangle_bvh: return triangleBvhParams.toPrimitive();
                         case lsystemtree: return lsystemTreeParams.toPrimitive();
                         case instance: return instanceParams.toPrimitive();
+                        case forest: return forestParams.toPrimitive();
                         };
                         throw std::exception();
                 }
@@ -583,6 +586,7 @@ namespace redshift { namespace scenefile {
                         case triangle_bvh: return triangleBvhParams.toBoundPrimitive();
                         case lsystemtree: return lsystemTreeParams.toBoundPrimitive();
                         case instance: return instanceParams.toBoundPrimitive();
+                        case forest: return forestParams.toBoundPrimitive();
                         };
                         throw std::exception();
                 }
@@ -657,6 +661,10 @@ namespace redshift { namespace scenefile {
                                 arch
                                 & pack ("transform", instanceParams.transforms)
                                 & pack(&Object::type, Object::Typenames, instanceParams.objects)
+                                ;
+                                break;
+                        case forest:
+                                arch
                                 ;
                                 break;
                         };
@@ -888,6 +896,7 @@ namespace redshift { namespace scenefile {
                         }
                 };
 
+
                 struct InstanceParams {
                         std::vector<Object> objects;
                         TransformList transforms;
@@ -933,6 +942,15 @@ namespace redshift { namespace scenefile {
                                 return false;
                         }
                 };
+
+                struct ForestParams {
+                        shared_ptr<Primitive> toPrimitive() const {
+                                return toBoundPrimitive();
+                        }
+                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                                return shared_ptr<BoundPrimitive>(new primitive::Forest());
+                        }
+                };
         public:
                 LazyQuadtreeParams lazyQuadtreeParams;
                 WaterPlaneParams waterPlaneParams;
@@ -943,6 +961,7 @@ namespace redshift { namespace scenefile {
                 TriangleBvhParams triangleBvhParams;
                 LSystemTreeParams lsystemTreeParams;
                 InstanceParams instanceParams;
+                ForestParams forestParams;
         };
 
 
