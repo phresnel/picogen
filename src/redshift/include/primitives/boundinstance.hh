@@ -50,7 +50,7 @@ namespace redshift { namespace primitive {
                 BoundInstance(BoundInstance const&);
                 BoundInstance &operator = (BoundInstance const&);
 
-                Transform transform;
+                Transform instanceToWorld, worldToInstance;
                 shared_ptr<BoundPrimitive> primitive;
         };
 } }

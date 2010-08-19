@@ -50,7 +50,12 @@ namespace redshift { namespace primitive {
                         const DifferentialGeometry & dgGeom
                 ) const {
                         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color(1))));
+                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (
+                                Color(1)
+                                /*dgGeom.getCenter().x < 0 ?
+                                Color::FromRGB(1,0,0,ReflectanceSpectrum) :
+                                Color::FromRGB(0,1,0,ReflectanceSpectrum)*/
+                        )));
                         return bsdf;
                 }
 

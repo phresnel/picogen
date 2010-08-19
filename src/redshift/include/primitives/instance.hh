@@ -47,7 +47,7 @@ namespace redshift { namespace primitive {
                 Instance(Instance const&);
                 Instance &operator = (Instance const&);
 
-                Transform transform;
+                Transform instanceToWorld, worldToInstance;
                 shared_ptr<Primitive> primitive;
         };
 } }

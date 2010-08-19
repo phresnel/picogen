@@ -29,7 +29,8 @@ namespace redshift { namespace primitive {
 BoundInstance::BoundInstance (Transform const &transform,
                               shared_ptr<BoundPrimitive> primitive
 )
-: transform(transform.inverse())
+: instanceToWorld(transform)
+, worldToInstance(transform.inverse())
 , primitive (primitive)
 {
 }
@@ -42,16 +43,16 @@ BoundInstance::~BoundInstance () {
 
 
 bool BoundInstance::doesIntersect (Ray const &ray) const {
-        return primitive->doesIntersect (transform * ray);
+        return primitive->doesIntersect (worldToInstance * ray);
 }
 
 
 
 optional<Intersection>
  BoundInstance::intersect(Ray const &ray) const {
-        optional<Intersection> i = primitive->intersect (transform * ray);
+        optional<Intersection> i = primitive->intersect (worldToInstance * ray);
         if (!i) return optional<Intersection>();
-        i->applyTransform (transform.inverse());
+        i->applyTransform (worldToInstance);
         return i;
 }
 
@@ -62,13 +63,31 @@ shared_ptr<Bsdf> BoundInstance::getBsdf(const DifferentialGeometry &dg) const {
 }
 
 
-
+/*
+lsystem-tree {
+                        code:   d1 = 94.74\;
+                                d2 = 132.63\;
+                                a = 18.95\;
+                                lr = 1.109\;
+                                vr = 1.732\;
+                                #scale=0.01\;
+                                #diascale=1.5\;
+                                axiom: dia(1.0) f(0) rollright(45) A\;
+                                p1: A --> dia(vr) f(100)
+                                        [down(a) f(100) A] rollright(d1)
+                                        [down(a) f(100) A] rollright(d2)
+                                        [down(a) f(100) A]\;
+                                p2: f(l) --> f(l*lr)\;
+                                p3: dia(w) --> dia(w*vr)\;
+                        ;
+                        level:5;
+                        slices:5;
+                }
+*/
 BoundingBox BoundInstance::boundingBox() const {
-        const BoundingBox orig = primitive->boundingBox();
-        return BoundingBox(
-                transform.inverse() * orig.minimum(),
-                transform.inverse() * orig.maximum()
-        );
+        //return BoundingBox();
+        return BoundingBox(Point(-1000,-1000,-1000), Point(1000,1000,1000));
+        return instanceToWorld * primitive->boundingBox();
 }
 
 

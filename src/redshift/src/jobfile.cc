@@ -45,6 +45,8 @@ namespace redshift { namespace scenefile {
                 | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::whitted_ambient, "whitted_ambient")
                 | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::whitted, "whitted")
                 | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::path, "path")
+                | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::debug_distance, "debug-distance")
+                | actuarius::Nvp<SurfaceIntegrator::Type>(SurfaceIntegrator::debug_normals, "debug-normals")
                 );
 
         const actuarius::Enum<Volume::Type> Volume::Typenames =

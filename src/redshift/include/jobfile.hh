@@ -468,6 +468,15 @@ namespace redshift { namespace scenefile {
                         return ret;
                 }
 
+                redshift::Transform toRedshiftObjectTransform () const {
+                        typedef std::vector<Transform>::const_iterator iterator;
+                        redshift::Transform ret;
+                        for (iterator it = transforms.begin(); it!=transforms.end(); ++it) {
+                                ret = it->toRedshiftTransform() * ret;
+                        }
+                        return ret;
+                }
+
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch) {
@@ -906,7 +915,7 @@ namespace redshift { namespace scenefile {
                                         return shared_ptr<Primitive>();
 
                                 return shared_ptr<Primitive>(new primitive::Instance(
-                                        transforms.toRedshiftTransform(),
+                                        transforms.toRedshiftObjectTransform(),
                                         objects[0].toPrimitive()
                                 ));
                         }
@@ -924,7 +933,7 @@ namespace redshift { namespace scenefile {
                                 }
 
                                 return shared_ptr<BoundPrimitive>(new primitive::BoundInstance(
-                                        transforms.toRedshiftTransform(),
+                                        transforms.toRedshiftObjectTransform(),
                                         bp
                                 ));
                         }
@@ -972,7 +981,9 @@ namespace redshift { namespace scenefile {
                         none,
                         whitted,
                         whitted_ambient,
-                        path
+                        path,
+                        debug_distance,
+                        debug_normals
                 };
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
@@ -995,6 +1006,10 @@ namespace redshift { namespace scenefile {
                                 return rett(new PathIntegrator());
                         case none:
                                 return rett(new NullIntegrator());
+                        case debug_distance:
+                                return rett(new VisualizeDistance());
+                        case debug_normals:
+                                return rett(new ShowSurfaceNormals());
                         };
                         return shared_ptr<Integrator>();
                 }
@@ -1013,6 +1028,8 @@ namespace redshift { namespace scenefile {
                                 arch & pack("ambient-samples", numAmbientSamples);
                                 break;
                         case none: break;
+                        case debug_distance: break;
+                        case debug_normals: break;
                         }
                 }
         };

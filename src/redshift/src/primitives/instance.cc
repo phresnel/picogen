@@ -25,10 +25,12 @@ namespace redshift { namespace primitive {
 
 
 
+
 Instance::Instance (Transform const &transform,
                     shared_ptr<Primitive> primitive
 )
-: transform(transform.inverse())
+: instanceToWorld(transform)
+, worldToInstance(transform.inverse())
 , primitive (primitive)
 {
 }
@@ -41,16 +43,16 @@ Instance::~Instance () {
 
 
 bool Instance::doesIntersect (Ray const &ray) const {
-        return primitive->doesIntersect (transform * ray);
+        return primitive->doesIntersect (worldToInstance * ray);
 }
 
 
 
 optional<Intersection>
  Instance::intersect(Ray const &ray) const {
-        optional<Intersection> i = primitive->intersect (transform * ray);
+        optional<Intersection> i = primitive->intersect (worldToInstance * ray);
         if (!i) return optional<Intersection>();
-        i->applyTransform (transform.inverse());
+        i->applyTransform (instanceToWorld);
         return i;
 }
 
@@ -59,6 +61,5 @@ optional<Intersection>
 shared_ptr<Bsdf> Instance::getBsdf(const DifferentialGeometry &dg) const {
         return shared_ptr<Bsdf>();
 }
-
 
 } }

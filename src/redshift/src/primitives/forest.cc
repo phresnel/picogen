@@ -53,19 +53,19 @@ Forest::Forest()
                         "[down(a) f(100) A];\n"
                 "p2: f(l) --> f(l*lr);\n"
                 "p3: dia(w) --> dia(w*vr);\n",
-                5,
+                4,
                 5
         ));
         BvhBuilder builder;
-        for (int i=0; i<25000; ++i) {
+        for (int i=0; i<250; ++i) {
                 const Transform t =
-                        /*Transform::rotationY(
+                        Transform::rotationY(
                                 rand()/(double)RAND_MAX * 3.14159*2)
-                        **/
+                        *
                         Transform::translation(
-                                (-0.5 + rand() / (double)RAND_MAX) * 1024*10,
+                                (-0.5 + rand() / (double)RAND_MAX) * 1024,
                                 0,
-                                (-0.5 + rand() / (double)RAND_MAX) * 1024*10)
+                                (-0.5 + rand() / (double)RAND_MAX) * 1024)
                         ;
                 builder.add(shared_ptr<BoundPrimitive>(
                                 new BoundInstance(t, tree)));
