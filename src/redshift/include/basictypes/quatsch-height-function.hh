@@ -22,6 +22,7 @@
 #define QUATSCH_HEIGHT_FUNCTION_HH_INCLUDED_20100227
 
 #include "height-function.hh"
+#include "distribution-function.hh"
 
 #include "quatsch/quatsch.hh"
 #include "quatsch/frontend/jux.hh"
@@ -33,7 +34,8 @@
 #include "quatsch/configurable-functions/libnoise-support-def.hh"
 
 namespace redshift {
-class QuatschHeightFunction : public redshift::HeightFunction {
+template <typename BASE>
+class quatsch_function : public BASE {
 private:
         // quatsch
         typedef quatsch::backend::est::Backend <redshift::real_t, const redshift::real_t *> backend_t;
@@ -134,15 +136,15 @@ private:
         Compiler::FunctionPtr fun;
 
 public:
-        real_t operator ()
+        typename BASE::return_type operator ()
          (real_t const & u, real_t const & v) const {
                 //real_t const d = sqrt (u*u + v*v);
                 const real_t p [] = { u, v };
-                return (*fun) (p);
+                return typename BASE::return_type((*fun) (p));
         }
 
 
-        QuatschHeightFunction (const std::string code)
+        quatsch_function (const std::string code)
         : functionSet(addfuns())
         {
                 std::stringstream errors;
@@ -159,7 +161,7 @@ public:
                         errors);
         }
 
-        QuatschHeightFunction (const std::string code, std::stringstream &errors)
+        quatsch_function (const std::string code, std::stringstream &errors)
         : functionSet(addfuns())
         {
                 fun = Compiler::compile (
@@ -175,6 +177,10 @@ public:
                         errors);
         }
 };
+
+typedef quatsch_function<HeightFunction> QuatschHeightFunction;
+typedef quatsch_function<DistributionFunction> QuatschDistributionFunction;
+
 } // namespace redshift
 
 #endif // QUATSCH_HEIGHT_FUNCTION_HH_INCLUDED_20100227

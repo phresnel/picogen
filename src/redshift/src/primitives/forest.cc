@@ -28,6 +28,9 @@
 #include "../../include/primitives/lsystemtree.hh"
 #include "../../include/primitives/boundinstance.hh"
 
+#include "../../include/basictypes/height-function.hh"
+#include "../../include/basictypes/distribution-function.hh"
+
 
 namespace redshift { namespace primitive {
 
@@ -35,18 +38,41 @@ namespace redshift { namespace primitive {
 //-----------------------------------------------------------------------------
 // Bvh
 //-----------------------------------------------------------------------------
-Forest::Forest()
+Forest::Forest(
+        shared_ptr<HeightFunction const> heightFunction,
+        shared_ptr<DistributionFunction const> distFun,
+        unsigned int totalTargettedCount
+)
 {
-        shared_ptr<LSystemTree> tree (new LSystemTree (
+        BvhBuilder builder;
 
-                #if 1
+        shared_ptr<LSystemTree> A (new LSystemTree (
+                "#scale=5;\n"
+                "#diascale=0.025;\n"
+                "r1=0.9;\n"
+                "r2=0.6;\n"
+                "a0=45;\n"
+                "a2=45;\n"
+                "d=137.5;\n"
+                "wr=0.707;\n"
+                "\n"
+                "axiom: A(1, 10);\n"
+                "\n"
+                "p1 : A(l,w) --> dia(w) f(l) [down(a0)       B(l*r2, w*wr)] rollright(d) A(l*r1, w*wr);\n"
+                "p2 : B(l,w) --> dia(w) f(l) [right(a2) vert C(l*r2, w*wr)] C(l*r1, w*wr);\n"
+                "p3 : C(l,w) --> dia(w) f(l) [left(a2)  vert B(l*r2, w*wr)] B(l*r1, w*wr);\n",
+                11,//13
+                6
+        ));
+
+        shared_ptr<LSystemTree> B (new LSystemTree (
                 "d1 = 94.74;\n"
                 "d2 = 132.63;\n"
                 "a = 18.95;\n"
                 "lr = 1.109;\n"
                 "vr = 1.732;\n"
-                "#scale=0.025;\n"
-                "#diascale=2.5;\n"
+                "#scale=0.02;\n"
+                "#diascale=0.8;\n"
 
                 "axiom: dia(1.0) f(0) rollright(45) A;\n"
                 "p1: A --> dia(vr) f(100) \n"
@@ -55,27 +81,32 @@ Forest::Forest()
                         "[down(a) f(100) A];\n"
                 "p2: f(l) --> f(l*lr);\n"
                 "p3: dia(w) --> dia(w*vr);\n",
-                #else
-                "axiom:f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3) f(3);",
-                #endif
-                6,
-                3
+                6,//7
+                6
         ));
-        BvhBuilder builder;
-        for (int i=0; i<100000; ++i) {
+
+        std::cout << "{{{" << std::endl;
+        srand(44);
+        for (int i=0; i<20000; ++i) {
                 const Transform t =
-                        Transform::rotationY(
-                                rand()/(double)RAND_MAX * 3.14159*2)
-                        *
                         Transform::translation(
                                 (-0.5 + rand() / (double)RAND_MAX) * 10240,
                                 0,
                                 (-0.5 + rand() / (double)RAND_MAX) * 10240)
+                        *
+                        Transform::rotationY(
+                                rand()/(double)RAND_MAX * 3.14159*2)
                         ;
-                builder.add(shared_ptr<BoundPrimitive>(
-                                new BoundInstance(t, tree)));
+                if (rand()%2 == 0)
+                        builder.add(shared_ptr<BoundPrimitive>(
+                                        new BoundInstance(t, B)));
+                else
+                        builder.add(shared_ptr<BoundPrimitive>(
+                                        new BoundInstance(t, A)));
         }
+        std::cout << "---" << std::endl;
         aggregate = builder.toBvh();
+        std::cout << "}}}" << std::endl;
 }
 
 

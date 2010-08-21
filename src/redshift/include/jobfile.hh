@@ -668,6 +668,9 @@ namespace redshift { namespace scenefile {
                                 break;
                         case forest:
                                 arch
+                                & pack("height-code", forestParams.heightCode)
+                                & pack("distribution-code", forestParams.distributionCode)
+                                & pack("target-count", forestParams.targetCount)
                                 ;
                                 break;
                         };
@@ -957,11 +960,59 @@ namespace redshift { namespace scenefile {
                 };
 
                 struct ForestParams {
+                        std::string heightCode, distributionCode;
+                        unsigned int targetCount;
+
+                        ForestParams()
+                        : heightCode("0")
+                        , distributionCode("1")
+                        , targetCount(10000)
+                        {}
+
                         shared_ptr<Primitive> toPrimitive() const {
                                 return toBoundPrimitive();
                         }
                         shared_ptr<BoundPrimitive> toBoundPrimitive() const {
-                                return shared_ptr<BoundPrimitive>(new primitive::Forest());
+                                using namespace redshift;
+                                using namespace redshift::primitive;
+
+                                shared_ptr<redshift::HeightFunction> heightFunction;
+                                shared_ptr<redshift::DistributionFunction> distFunction;
+
+                                std::stringstream errors;
+
+                                try {
+                                        heightFunction =
+                                         shared_ptr<redshift::HeightFunction> (
+                                                new ::redshift::QuatschHeightFunction(heightCode, errors)
+                                        );
+                                } catch (quatsch::general_exception const &ex) {
+                                        // we are anyways replacing quatsch, so let's
+                                        // do it kissy
+                                        throw quatsch::general_exception(
+                                                ex.getMessage() + ":\n\n"
+                                                + errors.str()
+                                        );
+                                }
+                                try {
+                                        distFunction =
+                                         shared_ptr<redshift::DistributionFunction> (
+                                                new ::redshift::QuatschDistributionFunction(distributionCode, errors)
+                                        );
+                                } catch (quatsch::general_exception const &ex) {
+                                        // we are anyways replacing quatsch, so let's
+                                        // do it kissy
+                                        throw quatsch::general_exception(
+                                                ex.getMessage() + ":\n\n"
+                                                + errors.str()
+                                        );
+                                }
+
+                                return shared_ptr<BoundPrimitive>(new primitive::Forest(
+                                        heightFunction,
+                                        distFunction,
+                                        targetCount
+                                ));
                         }
                 };
         public:

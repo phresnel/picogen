@@ -23,6 +23,13 @@
 
 #include "../sealed.hh"
 #include "bvh.hh"
+#include "../basictypes/height-function.hh"
+#include "../basictypes/distribution-function.hh"
+
+namespace redshift {
+        class HeightFunction;
+        class DistributionFunction;
+}
 
 namespace redshift { namespace primitive {
 
@@ -32,7 +39,11 @@ namespace redshift { namespace primitive {
                 MAKE_SEALED(Forest)
         {
         public:
-                Forest();
+                Forest(
+                        shared_ptr<HeightFunction const> heightFunction,
+                        shared_ptr<DistributionFunction const> distFun,
+                        unsigned int totalTargettedCount
+                );
                 ~Forest ();
 
                 // -- BoundPrimitive ------------------------------------------

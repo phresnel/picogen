@@ -18,18 +18,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef HEIGHTFUNCTION_HH_INCLUDED_20100114
-#define HEIGHTFUNCTION_HH_INCLUDED_20100114
+#ifndef DISTRIBUTIONFUNCTION_HH_INCLUDED_20100821
+#define DISTRIBUTIONFUNCTION_HH_INCLUDED_20100821
 
 #include "../real.hh"
 
 namespace redshift {
 
-class HeightFunction {
+
+class DistributionFunction {
 public:
-        typedef real_t return_type;
+        class Probability {
+        public:
+                explicit Probability (real_t value)
+                : val(value<0 ? 0 : value>1 ? 1 : value)
+                {}
+
+                real_t value() const {
+                        return val;
+                }
+        private:
+                real_t val;
+        };
+
+        typedef Probability return_type;
+
         virtual
-         real_t operator ()
+         Probability operator ()
            (real_t const &u, real_t const &v)
          const = 0;
 };
@@ -37,4 +52,4 @@ public:
 }
 
 
-#endif
+#endif // DISTRIBUTIONFUNCTION_HH_INCLUDED_20100821
