@@ -48,7 +48,7 @@ Forest::Forest(
 
         shared_ptr<LSystemTree> A (new LSystemTree (
                 "#scale=5;\n"
-                "#diascale=0.025;\n"
+                "#diascale=0.04;\n"
                 "r1=0.9;\n"
                 "r2=0.6;\n"
                 "a0=45;\n"
@@ -61,7 +61,7 @@ Forest::Forest(
                 "p1 : A(l,w) --> dia(w) f(l) [down(a0)       B(l*r2, w*wr)] rollright(d) A(l*r1, w*wr);\n"
                 "p2 : B(l,w) --> dia(w) f(l) [right(a2) vert C(l*r2, w*wr)] C(l*r1, w*wr);\n"
                 "p3 : C(l,w) --> dia(w) f(l) [left(a2)  vert B(l*r2, w*wr)] B(l*r1, w*wr);\n",
-                11,//13
+                10,//13
                 6
         ));
 
@@ -87,17 +87,17 @@ Forest::Forest(
 
         std::cout << "{{{" << std::endl;
         srand(44);
-        for (int i=0; i<20000; ++i) {
+        for (int i=0; i<500; ++i) {
                 const Transform t =
                         Transform::translation(
-                                (-0.5 + rand() / (double)RAND_MAX) * 10240,
+                                (-0.5 + rand() / (double)RAND_MAX) * 500,
                                 0,
-                                (-0.5 + rand() / (double)RAND_MAX) * 10240)
+                                (-0.5 + rand() / (double)RAND_MAX) * 500)
                         *
                         Transform::rotationY(
                                 rand()/(double)RAND_MAX * 3.14159*2)
                         ;
-                if (rand()%2 == 0)
+                if (rand()%3 == 0)
                         builder.add(shared_ptr<BoundPrimitive>(
                                         new BoundInstance(t, B)));
                 else

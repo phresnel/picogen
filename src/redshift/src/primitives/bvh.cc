@@ -21,6 +21,8 @@
 #include "../../include/constants.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/bvh.hh"
+#include "../../include/tuple.hh"
+#include "../../include/optional.hh"
 
 
 namespace redshift { namespace primitive {
@@ -104,12 +106,31 @@ struct BvhNode {
                 return false;
         }
 
-        optional<Intersection> intersect(Ray const &ray) const {
-                if (!does_intersect<false>(ray, boundingBox))
-                        return optional<Intersection>();
+        bool intersectsBound(Ray const &ray) const {
+                return does_intersect<false>(ray, boundingBox);
+        }
 
-                real_t nearest = constants::real_max, tmp;
+        real_t intersectBound (Ray const &ray) const {
+                const optional<tuple<real_t,real_t> > t =
+                        kallisto::intersect<false>(ray, boundingBox);
+                if (!t) return constants::infinity;
+                return get<0>(*t);
+        }
+
+        bool hasChildren() const {
+                return (bool)childA || (bool)childB;
+        }
+
+        optional<Intersection> intersect(Ray const &ray) const {
+
+                using redshift::optional;
+                using redshift::tuple;
+                using redshift::get;
+
+                real_t nearest = constants::infinity;
+                real_t tmp;
                 optional<Intersection> nearestI, tmpI;
+
                 for (CIt it=primitives.begin();
                         it!=primitives.end(); ++it
                 ) {
@@ -121,22 +142,35 @@ struct BvhNode {
                         }
                 }
 
-                if (childA) {
-                        if ((tmpI = childA->intersect(ray))
+                if (hasChildren()) {
+                        const real_t min_t[2] = {
+                                childA->intersectBound(ray),
+                                childB->intersectBound(ray)
+                        };
+                        const BvhNode* children[2] = {
+                                childA.get(),
+                                childB.get()
+                        };
+                        const int near = min_t[0] < min_t[1] ? 0 : 1;
+                        const int far = 1 - near;
+
+                        if (min_t[near] < nearest)
+                        if ((tmpI = children[near]->intersect(ray))
+                         && (tmp=length(ray.position-tmpI->getCenter())) < nearest
+                        ) {
+                                nearest = tmp;
+                                nearestI = tmpI;
+                        }
+
+                        if (min_t[far] < nearest)
+                        if ((tmpI = children[far]->intersect(ray))
                          && (tmp=length(ray.position-tmpI->getCenter())) < nearest
                         ) {
                                 nearest = tmp;
                                 nearestI = tmpI;
                         }
                 }
-                if (childB) {
-                        if ((tmpI = childB->intersect(ray))
-                         && (tmp=length(ray.position-tmpI->getCenter())) < nearest
-                        ) {
-                                nearest = tmp;
-                                nearestI = tmpI;
-                        }
-                }
+
                 return nearestI;
         }
 };
@@ -168,6 +202,8 @@ bool Bvh::doesIntersect (Ray const &ray) const {
 
 
 optional<Intersection> Bvh::intersect(Ray const &ray) const {
+        if (!root->intersectsBound(ray))
+                return optional<Intersection>();
         return root->intersect(ray);
 }
 
