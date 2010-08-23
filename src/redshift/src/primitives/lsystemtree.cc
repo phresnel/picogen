@@ -161,6 +161,11 @@ namespace redshift { namespace {
 
 
         void LSystemTreeMesher::leaf() {
+                using redshift::primitive::Triangle;
+                typedef Triangle::Vertex Vertex;
+                typedef Triangle::TextureCoordinates TexCoords;
+                using namespace redshift;
+
                 Turtle state = this->state;
                 state.rollToVertical();
                 state.rollLeft(0.3*((rand()/(double)RAND_MAX)-0.5));
@@ -179,31 +184,18 @@ namespace redshift { namespace {
                                 C = (state.position + right*s + head*s) * state.scale,
                                 D = (state.position + right*s) * state.scale;
 
-                /*
-                glEnable (GL_BLEND);
-                glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                glDisable(GL_CULL_FACE);
-                glEnable(GL_ALPHA_TEST);
-                glAlphaFunc(GL_GREATER, 0.1);
-                glBindTexture(GL_TEXTURE_2D, textures_[1]);
-
-                glBegin(GL_QUADS);
-                glNormal3d(0,1,0);
-                glTexCoord2d(0, 1);
-                glVertex3f(A.x, A.y, A.z);
-                glTexCoord2d(0, 0);
-                glVertex3f(B.x, B.y, B.z);
-                glTexCoord2d(1, 0);
-                glVertex3f(C.x, C.y, C.z);
-                glTexCoord2d(1, 1);
-                glVertex3f(D.x, D.y, D.z);
-                glEnd();
-
-                glBindTexture(GL_TEXTURE_2D, textures_[0]);
-                glDisable(GL_ALPHA_TEST);
-                glEnable(GL_CULL_FACE);
-                */
+                triangles.push_back(Triangle(
+                        Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
+                        Vertex(Point(B.x, B.y, B.z), TexCoords(0,0)),
+                        Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
+                        barkTexture
+                ));
+                triangles.push_back(Triangle(
+                        Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
+                        Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
+                        Vertex(Point(D.x, D.y, D.z), TexCoords(1,1)),
+                        barkTexture
+                ));
         }
 
 
