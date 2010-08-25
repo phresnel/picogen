@@ -41,7 +41,7 @@ DistantRadiance PathIntegrator::Li (
         const bool doMirror // TODO: I think that one can die*/
 ) const {
         real_t throughput = 1;
-        if (lirec.depth()>20)
+        if (lirec.depth()>50)
                 return DistantRadiance(Color(0), Distance(constants::infinity));
         if (lirec.depth()>10) { // let us gamble then
                 const real_t continueProb = 0.5;

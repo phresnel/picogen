@@ -20,6 +20,7 @@
 
 #include <OpenEXR/ImfRgbaFile.h>
 #include "redshift/include/basictypes/film.hh"
+#include "redshift/include/constants.hh"
 
 namespace redshift {
 
@@ -29,9 +30,21 @@ void saveOpenEXR (Film const &film, const char *filename) {
         const unsigned int width = film.width(), height = film.height();
         std::vector<Imf::Rgba> imfpixels(width*height);
 
+        std::cout << "exr-export: finding min/max ... " << std::endl;
+        real_t min = constants::real_max, max = -constants::real_max;
         for (unsigned int y=0; y<height; ++y)
         for (unsigned int x=0; x<width; ++x) {
-                const PicogenRGB prgb = film.average(x, y).toRGB();
+                const real_t l = film.average(x, y).y();
+                if (l < min) min = l;
+                if (l > max) max = l;
+        }
+        std::cout << "  min: " << min << "\n  max: " << max << std::endl;
+
+        for (unsigned int y=0; y<height; ++y)
+        for (unsigned int x=0; x<width; ++x) {
+                const Color col_ = film.average(x, y),
+                            col = (col_ - Color(min)) / (max-min);
+                const PicogenRGB prgb = col.toRGB();
                 Imf::Rgba &irgb = imfpixels[y*width+x];
                 irgb.a = 1;
                 irgb.r = prgb.R;

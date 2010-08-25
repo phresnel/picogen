@@ -70,7 +70,7 @@ shared_ptr<Bsdf> ClosedSphere::getBsdf(
         const DifferentialGeometry & dgGeom
 ) const {
         shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-        bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror (Color::FromRGB(0.5,0.,0.,ReflectanceSpectrum))));
+        bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror (Color::FromRGB(0.75,0.5,0.25,ReflectanceSpectrum))));
         bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color(0.5))));
         return bsdf;
 }
