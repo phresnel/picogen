@@ -442,9 +442,6 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 $(MATERIALOBJDIR)/brdftobtdf.o: ./src/material/brdftobtdf.cc
 	$(CXX) -o $@ $<
 
-$(MATERIALOBJDIR)/transmissivelambertian.o: ./src/material/transmissivelambertian.cc
-	$(CXX) -o $@ $<
-
 $(MATERIALOBJDIR)/lambertian.o: ./src/material/lambertian.cc
 	$(CXX) -o $@ $<
 
