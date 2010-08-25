@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/basictypes/bsdf.hh"
+#include "../../include/sampling.hh"
 
 namespace redshift {
 
@@ -59,42 +60,66 @@ Vector Bsdf::localToWorld (Vector const &v) const {
 
 
 BsdfSample Bsdf::sample_f (
-        const Vector &in_, BsdfFilter filter, Random &rand
+        const Vector &out_, BsdfFilter filter, Random &rand
 ) const {
+        typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
+
+        // Choose bxdf.
         const int nc = numComponents (filter);
         if (nc == 0) {
                 return BsdfSample::null();
         }
-        if (nc != 1) {
-                throw std::runtime_error (
-                        "BSDFs with mith multiple components "
-                        "of same kind are currently not supported. "
-                        "(" __FILE__ ")\n");
-        }
-        /*Color col;
-        typedef std::vector<shared_ptr<Bxdf> >::iterator It;
-        for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
-                if ((**it).is (r,s))
-                        col = col + (**it).f (out, in);
-        }
-        return col;*/
 
-        const Vector in = worldToLocal (in_);
+        const int which_ = rand() * nc,
+                  which = which_>nc-1 ? nc-1 : which_;
+        shared_ptr<Bxdf> bxdf;
 
-        typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
+        int x = which;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
-                //if ((**it).is (type)) {
-                if (filter.allows ((**it).type())) {
-                        const BsdfSample ret = (**it).sample_f (in, rand);
-                        return BsdfSample(
-                                ret.color(),
-                                localToWorld (ret.incident()),
-                                ret.pdf(),
-                                (**it).type()
-                        );
+                if (filter.allows ((**it).type()))
+                        if (x-- == 0) {
+                                bxdf = *it;
+                                break;
+                        }
+        }
+
+        // Sample it.
+        const Vector localOut = worldToLocal (out_);
+        const BsdfSample sample = bxdf->sample_f(worldToLocal (localOut),
+                                                 rand);
+        if (sample.isNull()) {
+                return BsdfSample::null();
+        }
+        const Vector localIn = sample.incident();
+        const Vector worldIn = localToWorld (localIn);
+
+        // Compute avergage pdf.
+        real_t averagePdf = sample.pdf();
+        if (!bxdf->type().isSpecular() && nc>1) {
+                averagePdf = 0;
+                for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
+                        if (filter.allows ((**it).type())) {
+                                averagePdf += (**it).pdf (localOut, localIn);
+                        }
                 }
         }
-        throw std::runtime_error("Impossible! See bsdf.cc:Bsdf::sample_f()");
+        if (nc > 1)
+                averagePdf /= nc;
+
+        // Compute BSDF value.
+        Color f;
+        if (bxdf->type().isSpecular()) {
+                f = sample.color();
+        } else {
+                f = f_local(localOut, localIn, filter, rand);
+        }
+
+        return BsdfSample (
+                f,
+                worldIn,
+                averagePdf,
+                sample.type()
+        );
 }
 
 
@@ -106,9 +131,18 @@ Color Bsdf::f (
 ) const {
         const Vector out = worldToLocal (out_);
         const Vector in  = worldToLocal (in_);
+        return f_local(out, in, s, rand);
+}
 
-        const real_t dotIn  = dot (vector_cast<Normal>(in_), geometricNormal);
-        const real_t dotOut = dot (vector_cast<Normal>(out_), geometricNormal);
+
+
+Color Bsdf::f_local (
+        const Vector &out, const Vector &in,
+        BsdfFilter s,
+        Random &rand
+) const {
+        const real_t dotIn  = dot (vector_cast<Normal>(in), geometricNormal);
+        const real_t dotOut = dot (vector_cast<Normal>(out), geometricNormal);
         if (dotIn * dotOut > 0) {
                 // Both in same hemisphere -> BRDF only
                 s.disable (Reflective);
@@ -121,7 +155,7 @@ Color Bsdf::f (
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
                 if (s.allows ((**it).type())) {
-                        col = col + (**it).f (out, in, rand);
+                        col += (**it).f (out, in, rand);
                 }
         }
         return col;

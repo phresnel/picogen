@@ -34,6 +34,7 @@ namespace redshift { namespace bsdf {
                 ) const ;
 
                 Color f (const Vector &out, const Vector &in, Random &) const ;
+                real_t pdf (const Vector &out, const Vector &in) const;
 
         private:
                 shared_ptr<const Bxdf> brdf;

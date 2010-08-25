@@ -42,7 +42,7 @@ BsdfSample Lambertian::sample_f (
         const Vector in (get<0>(sphere), get<1>(sphere), get<2>(sphere));
         return BsdfSample(f(out, in, rand),
                           in,
-                          in.y * (1/constants::pi),
+                          fabs(in.y * (1/constants::pi)),
                           type());
 }
 
@@ -52,6 +52,11 @@ Color Lambertian::f (const Vector &out, const Vector &in, Random &) const {
         return color;
 }
 
+
+real_t Lambertian::pdf (const Vector &out, const Vector &in) const {
+        if (sameHemisphere (out, in)) return fabs(in.y * (1/constants::pi));
+        return 0;
+}
 
 
 } }

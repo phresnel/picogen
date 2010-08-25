@@ -38,6 +38,7 @@ namespace redshift { namespace bsdf {
                         const Vector &out,
                         const Vector &in,
                         Random &) const;
+                real_t pdf (const Vector &out, const Vector &in) const;
         private:
                 Color const color;
         };

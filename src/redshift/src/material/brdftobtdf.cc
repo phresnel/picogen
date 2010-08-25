@@ -55,4 +55,10 @@ Color BrdfToBtdf::f (const Vector &out, const Vector &in, Random &rand) const {
 
 
 
+real_t BrdfToBtdf::pdf (const Vector &out, const Vector &in) const {
+        return brdf->pdf(out, Vector(in.x, -in.y, in.z));
+}
+
+
+
 } }

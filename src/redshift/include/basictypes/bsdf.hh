@@ -34,6 +34,11 @@ class Bxdf;
 class Random;
 
 
+inline bool sameHemisphere (Vector const &a, Vector const &b) {
+        return a.y * b.y > 0;
+}
+
+
 enum ReflectionKind {
         Reflective,
         Transmissive
@@ -185,6 +190,10 @@ public:
                         0,
                         BsdfType(Reflective, Diffuse));
         }
+
+        bool isNull() const {
+                return pdf_ == 0;
+        }
 private:
         Color reflection_;
         Vector incident_;
@@ -238,6 +247,9 @@ public:
         bool hasComponent (SpecularKind s) const ;
 
 private:
+        Color f_local (const Vector &out, const Vector &in,
+                       BsdfFilter, Random&) const;
+
         Vector worldToLocal (Vector const &v) const ;
         Vector localToWorld (Vector const &v) const ;
         DifferentialGeometry const shadingDG;
@@ -266,6 +278,7 @@ public:
                 const Vector &in, Random &
         ) const = 0;
         virtual Color f (const Vector &out, const Vector &in, Random &) const = 0;
+        virtual real_t pdf (const Vector &out, const Vector &in) const = 0;
 
 protected:
         const BsdfType bsdfType;

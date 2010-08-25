@@ -50,4 +50,10 @@ Color Mirror::f (const Vector &out, const Vector &in, Random&) const {
 
 
 
+real_t Mirror::pdf (const Vector &out, const Vector &in) const {
+        return 0;
+}
+
+
+
 } }
