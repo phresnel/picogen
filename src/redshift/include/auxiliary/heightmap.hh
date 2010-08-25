@@ -48,7 +48,13 @@ template <typename T> class Heightmap {
                         unsigned int c = ((Uint8*)s->pixels)[2 + 3*x + y*s->pitch];
                         return (a<<16) | (b<<8) | c;
                         }
-                case 4: return ((Uint32*)s->pixels)[x + y*(s->pitch/4)];
+                case 4: {
+                        unsigned int a = ((Uint8*)s->pixels)[    4*x + y*s->pitch];
+                        unsigned int b = ((Uint8*)s->pixels)[1 + 4*x + y*s->pitch];
+                        unsigned int c = ((Uint8*)s->pixels)[2 + 4*x + y*s->pitch];
+                        unsigned int d = ((Uint8*)s->pixels)[3 + 4*x + y*s->pitch];
+                        return (d<<24) | (a<<16) | (b<<8) | c;
+                        }
                 };
                 return 0;
         }
