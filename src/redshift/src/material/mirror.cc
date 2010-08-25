@@ -25,7 +25,7 @@ namespace redshift { namespace bsdf {
 
 
 Mirror::Mirror (Color const &color_)
-: Bxdf (BsdfType(BsdfType::reflection, BsdfType::specular))
+: Bxdf (BsdfType(Reflective, Specular))
 , color (color_)
 {}
 
@@ -37,7 +37,8 @@ BsdfSample Mirror::sample_f (
         return BsdfSample (
                 color,
                 Vector(-in.x, in.y, -in.z),
-                1
+                1,
+                type()
         );
 }
 

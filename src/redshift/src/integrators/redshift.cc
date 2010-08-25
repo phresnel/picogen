@@ -53,13 +53,13 @@ DistantRadiance RedshiftIntegrator::Li (
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
 
-                if (doMirror && bsdf->hasComponent (BsdfType(BsdfType::reflection, BsdfType::specular))) {
+                if (doMirror && bsdf->hasComponent (BsdfFilter::allSpecular())) {
                         Color spec = Color(0);
 
                         Ray ray (poi, raydiff.direction);
                         const BsdfSample v = bsdf->sample_f (
                                 -ray.direction,
-                                BsdfType(BsdfType::reflection, BsdfType::specular),
+                                BsdfFilter::allSpecular(),
                                 rand);
 
                         ray.direction = v.incident();
@@ -67,7 +67,7 @@ DistantRadiance RedshiftIntegrator::Li (
                         spec = spec + rad * v.color() * (1/v.pdf());
 
                         return DistantRadiance(spec, Distance(length(raydiff.position-poi)));
-                } else if (bsdf->hasComponent(BsdfType(BsdfType::reflection, BsdfType::diffuse))) {
+                } else if (bsdf->hasComponent(BsdfFilter::allDiffuse())) {
 
                         const Ray ray (poi, raydiff.direction);
                         Color ret = Color(0);
@@ -80,7 +80,7 @@ DistantRadiance RedshiftIntegrator::Li (
                                 const Color surfaceColor = bsdf->f(
                                         -ray.direction,
                                         sunDir,
-                                        BsdfType(BsdfType::reflection, BsdfType::diffuse),
+                                        BsdfFilter::allDiffuse(),
                                         rand
                                 );
 
@@ -109,7 +109,7 @@ DistantRadiance RedshiftIntegrator::Li (
 
                                 const BsdfSample v = bsdf->sample_f (
                                         -skyRay.direction,
-                                        BsdfType(BsdfType::reflection, BsdfType::diffuse),
+                                        BsdfFilter::allDiffuse(),
                                         rand);
                                 skyRay.direction = v.incident();
 

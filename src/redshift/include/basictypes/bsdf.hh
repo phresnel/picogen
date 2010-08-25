@@ -33,84 +33,157 @@ namespace redshift {
 class Bxdf;
 class Random;
 
+
+enum ReflectionKind {
+        Reflective,
+        Transmissive
+};
+
+enum SpecularKind {
+        Specular,
+        Diffuse
+};
+
+
+class BsdfType {
+public:
+        BsdfType(ReflectionKind refl, SpecularKind spec)
+        : refl(refl), spec(spec)
+        {}
+
+        ReflectionKind reflection() const {
+                return refl;
+        }
+
+        SpecularKind specular() const {
+                return spec;
+        }
+
+        bool isReflective()   const { return refl == Reflective; }
+        bool isTransmissive() const { return refl == Transmissive; }
+        bool isSpecular()     const { return spec == Specular; }
+        bool isDiffuse()      const { return spec == Diffuse; }
+
+private:
+        ReflectionKind refl;
+        SpecularKind spec;
+};
+
+
+class BsdfFilter {
+public:
+        BsdfFilter(bool Reflective, bool Transmissive,
+                   bool Specular, bool Diffuse)
+        : Reflective_(Reflective)
+        , Transmissive_(Transmissive)
+        , Specular_(Specular)
+        , Diffuse_(Diffuse)
+        {}
+
+        static BsdfFilter all() {
+                return BsdfFilter(true, true, true, true);
+        }
+        static BsdfFilter allDiffuse() {
+                return BsdfFilter(true, true, false, true);
+        }
+        static BsdfFilter allSpecular() {
+                return BsdfFilter(true, true, true, false);
+        }
+        static BsdfFilter none() {
+                return BsdfFilter(false, false, false, false);
+        }
+        /*BsdfFilter operator | (BsdfFilter rhs) const {
+                return BsdfFilter(Reflective_  || rhs.Reflective_,
+                                  Transmissive_|| rhs.Transmissive_,
+                                  Specular_    || rhs.Specular_,
+                                  Diffuse_     || rhs.Diffuse_);
+        }*/
+
+        void enable (ReflectionKind kind) {
+                switch (kind) {
+                case Reflective: Reflective_ = true; break;
+                case Transmissive: Transmissive_ = true; break;
+                }
+        }
+        void disable (ReflectionKind kind) {
+                switch (kind) {
+                case Reflective: Reflective_ = false; break;
+                case Transmissive: Transmissive_ = false; break;
+                }
+        }
+
+
+        void enable (SpecularKind kind) {
+                switch (kind) {
+                case Specular: Specular_ = true; break;
+                case Diffuse:  Diffuse_ = true; break;
+                }
+        }
+        void disable (SpecularKind kind) {
+                switch (kind) {
+                case Specular: Specular_ = false; break;
+                case Diffuse:  Diffuse_ = false; break;
+                }
+        }
+
+        bool allows (BsdfType type) const {
+                return allows(type.reflection()) && allows(type.specular());
+        }
+
+        bool allows (ReflectionKind refl) const {
+                switch (refl) {
+                case Reflective: if (!Reflective_) return false; break;
+                case Transmissive: if (!Transmissive_) return false; break;
+                }
+                return true;
+        }
+
+        bool allows (SpecularKind spec) const {
+                switch (spec) {
+                case Specular: if (!Specular_) return false; break;
+                case Diffuse: if (!Diffuse_) return false; break;
+                }
+                return true;
+        }
+private:
+        bool Reflective_, Transmissive_;
+        bool Specular_, Diffuse_;
+};
+
+
+
+
+
 SEALED(BsdfSample);
 class BsdfSample : MAKE_SEALED(BsdfSample) {
 public:
-        BsdfSample(Color const &R, Vector const &incident, real_t pdf)
-        : reflection_(R), incident_(incident), pdf_(pdf)
+        BsdfSample(Color const &R,
+                   Vector const &incident,
+                   real_t pdf,
+                   BsdfType sampledType)
+        : reflection_(R)
+        , incident_(incident)
+        , pdf_(pdf)
+        , sampledType_(sampledType)
         {}
-
-        BsdfSample (BsdfSample const &rhs)
-        : SEALED_CONSTRUCT(BsdfSample)
-        , reflection_(rhs.reflection_)
-        , incident_(rhs.incident_)
-        , pdf_(rhs.pdf_)
-        {}
-
-        BsdfSample& operator= (BsdfSample const &rhs) {
-                reflection_ = rhs.reflection_;
-                incident_ = rhs.incident_;
-                pdf_ = rhs.pdf_;
-                return *this;
-        }
 
         Color  color ()    const { return reflection_; }
         Vector incident () const { return incident_; }
         real_t pdf ()      const { return pdf_; }
+        BsdfType type()    const { return sampledType_; }
 
         static BsdfSample null() {
-                return BsdfSample();
+                return BsdfSample(
+                        Color(0),
+                        Vector(),
+                        0,
+                        BsdfType(Reflective, Diffuse));
         }
-
 private:
         Color reflection_;
         Vector incident_;
         real_t pdf_;
-
-        BsdfSample() ;
-};
-
-class BsdfType {
-public:
-        enum Reflection {
-                reflection = 1<<0,
-                transmission = 1<<1
-        };
-        enum Specular {
-                specular = 1<<0,
-                diffuse  = 1<<1
-        };
-
-        BsdfType (Reflection refl, Specular spec)
-        : specular_(spec)
-        , reflection_(refl)
-        {
-        }
-
-        bool isDiffuse () const { return (specular_ & diffuse) == diffuse; }
-        bool isSpecular () const { return (specular_ & specular) == specular; }
-        bool is(Specular s) const {
-                if (s == 0) return false;
-                return (specular_ & s) == s;
-        }
-
-        bool isReflective () const { return (reflection_ & reflection) == reflection; }
-        bool isTransmissive () const { return (reflection_ & transmission) == transmission; }
-        bool is(Reflection s) const {
-                if (s == 0) return false;
-                return (reflection_ & s) == s;
-        }
-
-        void cancel (Reflection r) {
-                reflection_ = Reflection(reflection_ & ~r);
-        }
-
-        bool is(BsdfType s) const {
-                return is(s.specular_) && is(s.reflection_);
-        }
-private:
-        Specular specular_;
-        Reflection reflection_;
+        BsdfType sampledType_;
 };
 
 class Bsdf {
@@ -126,11 +199,11 @@ public:
         //virtual bool hasAny (Reflection, Specular) const = 0;
 
         BsdfSample sample_f (
-                const Vector &in, BsdfType, Random &
+                const Vector &in, BsdfFilter, Random &
         ) const;
 
         Color f (const Vector &out, const Vector &in,
-                BsdfType, Random&) const;
+                BsdfFilter, Random&) const;
         // HasShadingGeometry(), pbrt 10.1, p. 464
 
         DifferentialGeometry getShadingDifferentialGeometry () const {
@@ -155,8 +228,8 @@ public:
                 std::vector<shared_ptr<Bxdf> >().swap (bxdfs);
         }
 
-        bool hasComponent (BsdfType) const ;
-        bool hasComponent (BsdfType::Specular s) const ;
+        bool hasComponent (BsdfFilter) const ;
+        bool hasComponent (SpecularKind s) const ;
 
 private:
         Vector worldToLocal (Vector const &v) const ;
@@ -167,7 +240,7 @@ private:
         Normal geometricNormal, shadingNormal;
         Vector s, t;
 
-        int numComponents (BsdfType) const ;
+        int numComponents (BsdfFilter) const ;
 };
 
 
@@ -179,12 +252,8 @@ public:
 
         virtual ~Bxdf () {}
 
-        bool is (BsdfType s) const {
-                return bsdfType.is(s);
-        }
-
-        bool is (BsdfType::Specular s) const {
-                return bsdfType.is(s);
+        BsdfType type() const {
+                return bsdfType;
         }
 
         virtual BsdfSample sample_f (

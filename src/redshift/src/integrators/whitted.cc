@@ -50,12 +50,12 @@ DistantRadiance WhittedIntegrator::Li (
                 const Point poi               = gd.getCenter()+
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
-                if (doMirror && bsdf->hasComponent(BsdfType(BsdfType::reflection, BsdfType::specular))) {
+                if (doMirror && bsdf->hasComponent(BsdfFilter::allSpecular())) {
                         Color spec = Spectrum::noinit;
 
                         const BsdfSample v = bsdf->sample_f (
                                 -raydiff.direction,
-                                BsdfType(BsdfType::reflection, BsdfType::specular),
+                                BsdfFilter::allSpecular(),
                                 rand);
                         const Ray ray (poi, v.incident());
                         spec = scene.radiance (ray, sample, lirec, rand);
@@ -67,7 +67,7 @@ DistantRadiance WhittedIntegrator::Li (
                         const Color surfaceColor = bsdf->f(
                                 -raydiff.direction,
                                 sunDir,
-                                BsdfType(BsdfType::reflection, BsdfType::diffuse),
+                                BsdfFilter::allDiffuse(),
                                 rand
                         );
 

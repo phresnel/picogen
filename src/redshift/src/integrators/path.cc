@@ -52,6 +52,80 @@ DistantRadiance PathIntegrator::Li (
 
         const optional<Intersection> I (scene.intersect (raydiff));
 
+        if (!I) {
+                return DistantRadiance (
+                        Color(0),
+                        Distance(constants::infinity));
+        } else {
+                Color col (0);
+
+                const DifferentialGeometry dg = I->getDifferentialGeometry();
+                const Normal normalG = dg.getGeometricNormal();
+                const Normal normalS = dg.getShadingNormal();
+                const shared_ptr<Bsdf> bsdf = I->getPrimitive().getBsdf (dg);
+                const BsdfSample bsdfSample = bsdf->sample_f (-raydiff.direction,
+                                                             BsdfFilter::all(),
+                                                             rand);
+                const Point poi = dg.getCenter()
+                                + vector_cast<PointCompatibleVector>(
+                                        bsdfSample.type().isReflective()
+                                        ? normalG
+                                        : -normalG
+                                  ) * real_t(0.001);
+
+                const Ray ray (poi, bsdfSample.incident());
+                const Distance distance (length(raydiff.position-poi));
+
+                const bool applyDirectSunlight = bsdfSample.type().isDiffuse()
+                                               && scene.getBackground()->sun();
+                // Sunlight.
+                if (applyDirectSunlight) {
+                        const Sun& sun = *scene.getBackground()->sun();
+                        const Vector sunDir = sun.direction();
+                        const Ray sunRay (poi,sunDir);
+                        const Color surfaceColor = bsdf->f(
+                                -ray.direction,
+                                sunDir,
+                                BsdfFilter::allDiffuse(),
+                                rand
+                        );
+
+                        if (!scene.doesIntersect (sunRay)) {
+                                const real_t d = max(
+                                    real_t(0),
+                                    dot(sunDir,vector_cast<Vector>(normalS))
+                                );
+                                const Color sunColor_ = sun.color(sunRay);
+                                const Color sunColor = scene.attenuate(
+                                        sunColor_,
+                                        sunRay,
+                                        sample,
+                                        constants::infinity,
+                                        rand
+                                );
+                                col += surfaceColor * sunColor * d;
+                        }
+                }
+
+                // Recurse.
+                Scene::LiMode m;
+                m.SkipSun = applyDirectSunlight;
+                const Color incoming = scene.radiance(
+                                ray, sample, lirec, rand, m);
+
+                const real_t d =
+                        bsdfSample.type().isSpecular()
+                        ? 1
+                        : max(real_t(0),
+                              dot(ray.direction,
+                                  vector_cast<Vector>(normalS)));
+
+                col += incoming * bsdfSample.color() * d * (1/bsdfSample.pdf());
+
+                return DistantRadiance(col*throughput, distance);
+        }
+
+        /*
         if (I) {
                 const DifferentialGeometry gd = I->getDifferentialGeometry();
                 const shared_ptr<Bsdf> bsdf = I->getPrimitive().getBsdf (gd);
@@ -142,7 +216,8 @@ DistantRadiance PathIntegrator::Li (
                         Color(0),
                         Distance(constants::infinity)
                 );
-        }
+        }*/
+
 }
 
 }

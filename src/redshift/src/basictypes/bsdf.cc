@@ -59,15 +59,11 @@ Vector Bsdf::localToWorld (Vector const &v) const {
 
 
 BsdfSample Bsdf::sample_f (
-        const Vector &in_, BsdfType type, Random &rand
+        const Vector &in_, BsdfFilter filter, Random &rand
 ) const {
-        const int nc = numComponents (type);
+        const int nc = numComponents (filter);
         if (nc == 0) {
-                const char *msg = "bsdf.cc:Bsdf::sample_f() called for "
-                                  "a combination of Reflection/Specular"
-                                  " that is not present in this Bsdf.\n";
-                std::cerr << msg;
-                throw std::runtime_error(msg);
+                return BsdfSample::null();
         }
         if (nc != 1) {
                 throw std::runtime_error (
@@ -87,12 +83,14 @@ BsdfSample Bsdf::sample_f (
 
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
-                if ((**it).is (type)) {
+                //if ((**it).is (type)) {
+                if (filter.allows ((**it).type())) {
                         const BsdfSample ret = (**it).sample_f (in, rand);
                         return BsdfSample(
                                 ret.color(),
                                 localToWorld (ret.incident()),
-                                ret.pdf()
+                                ret.pdf(),
+                                (**it).type()
                         );
                 }
         }
@@ -103,7 +101,7 @@ BsdfSample Bsdf::sample_f (
 
 Color Bsdf::f (
         const Vector &out_, const Vector &in_,
-        BsdfType s,
+        BsdfFilter s,
         Random &rand
 ) const {
         const Vector out = worldToLocal (out_);
@@ -113,29 +111,28 @@ Color Bsdf::f (
         const real_t dotOut = dot (vector_cast<Normal>(out_), geometricNormal);
         if (dotIn * dotOut > 0) {
                 // Both in same hemisphere -> BRDF only
-                //r = Bsdf::Reflection (r & ~Bsdf::reflection);
-                s.cancel (BsdfType::transmission);
+                s.disable (Reflective);
         } else {
                 // Different hemisphere -> BTDF only
-                //r = Bsdf::Reflection (r & ~Bsdf::transmission);
-                s.cancel (BsdfType::reflection);
+                s.disable (Transmissive);
         }
 
         Color col;
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
-                if ((**it).is (s))
+                if (s.allows ((**it).type())) {
                         col = col + (**it).f (out, in, rand);
+                }
         }
         return col;
 }
 
 
 
-bool Bsdf::hasComponent (BsdfType s) const {
+bool Bsdf::hasComponent (BsdfFilter s) const {
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
-                if ((**it).is (s))
+                if (s.allows ((**it).type()))
                         return true;
         }
         return false;
@@ -143,21 +140,22 @@ bool Bsdf::hasComponent (BsdfType s) const {
 
 
 
-bool Bsdf::hasComponent (BsdfType::Specular s) const {
+/*bool Bsdf::hasComponent (BsdfType::Specular s) const {
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it)
-                if ((**it).is (s))
+                if (s.is ((**it).type()))
                         return true;
         return false;
-}
+}*/
 
 
 
-int Bsdf::numComponents (BsdfType s) const {
+int Bsdf::numComponents (BsdfFilter s) const {
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         int ret = 0;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it)
-                if ((**it).is (s))
+                //if ((**it).is (s))
+                if (s.allows((**it).type()))
                         ++ret;
         return ret;
 }

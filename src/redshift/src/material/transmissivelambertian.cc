@@ -30,7 +30,7 @@ TransmissiveLambertian::TransmissiveLambertian (
         Color const &color_,
         real_t transmissionProb
 )
-: Bxdf (BsdfType(BsdfType::reflection, BsdfType::diffuse))
+: Bxdf (BsdfType(Transmissive, Diffuse))
 , color (color_ * (1.f/constants::pi))
 , transmissionProb(transmissionProb)
 {}
@@ -42,7 +42,8 @@ BsdfSample TransmissiveLambertian::sample_f (
 ) const {
         return BsdfSample(
                 f(out, -out, rand),
-                -out, 1
+                -out, 1,
+                type()
         );
 
         const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
@@ -51,7 +52,10 @@ BsdfSample TransmissiveLambertian::sample_f (
                 get<0>(sphere),
                 transmission ? -get<1>(sphere) : get<1>(sphere),
                 get<2>(sphere));
-        return BsdfSample(f(out, in, rand), in, in.y * (1/constants::pi));
+        return BsdfSample(f(out, in, rand),
+                          in,
+                          in.y * (1/constants::pi),
+                          type());
 }
 
 

@@ -29,7 +29,7 @@ namespace redshift { namespace bsdf {
 Lambertian::Lambertian (
         Color const &color_
 )
-: Bxdf (BsdfType(BsdfType::reflection, BsdfType::diffuse))
+: Bxdf (BsdfType(Reflective, Diffuse))
 , color (color_ * (1.f/constants::pi))
 {}
 
@@ -40,7 +40,10 @@ BsdfSample Lambertian::sample_f (
 ) const {
         const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
         const Vector in (get<0>(sphere), get<1>(sphere), get<2>(sphere));
-        return BsdfSample(f(out, in, rand), in, in.y * (1/constants::pi));
+        return BsdfSample(f(out, in, rand),
+                          in,
+                          in.y * (1/constants::pi),
+                          type());
 }
 
 
