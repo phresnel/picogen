@@ -23,7 +23,7 @@
 
 #include "../sealed.hh"
 #include "trianglebvh.hh"
-#include "../material/lambertian.hh"
+#include "../material/transmissivelambertian.hh"
 #include "../material/mirror.hh"
 
 namespace redshift { namespace primitive {

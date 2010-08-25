@@ -62,20 +62,20 @@ DistantRadiance PathIntegrator::Li (
                         vector_cast<PointCompatibleVector>(normalG*real_t(0.001));
 
 
-                if (bsdf->hasComponent (Bsdf::reflection, Bsdf::specular)) {
+                if (bsdf->hasComponent (BsdfType(BsdfType::reflection, BsdfType::specular))) {
                         Color spec = Color(0);
 
                         Ray ray (poi, raydiff.direction);
                         const BsdfSample v = bsdf->sample_f (
                                 -ray.direction,
-                                Bsdf::reflection, Bsdf::specular,
+                                BsdfType(BsdfType::reflection, BsdfType::specular),
                                 rand);
                         ray.direction = v.incident();
                         const Color rad = scene.radiance (ray, sample, lirec, rand);
                         spec = spec + rad * v.color() * (1/v.pdf());
 
                         return DistantRadiance(spec*throughput, Distance(length(raydiff.position-poi)));
-                } else if (bsdf->hasComponent (Bsdf::reflection, Bsdf::diffuse)) {
+                } else if (bsdf->hasComponent (BsdfType(BsdfType::reflection, BsdfType::diffuse))) {
 
                         const Ray ray (poi, raydiff.direction);
                         Color ret = Color(0);
@@ -88,7 +88,7 @@ DistantRadiance PathIntegrator::Li (
                                 const Color surfaceColor = bsdf->f(
                                         -ray.direction,
                                         sunDir,
-                                        Bsdf::reflection, Bsdf::diffuse,
+                                        BsdfType(BsdfType::reflection, BsdfType::diffuse),
                                         rand
                                 );
 
@@ -112,7 +112,7 @@ DistantRadiance PathIntegrator::Li (
                         const BsdfSample bsdfSample =
                                 bsdf->sample_f(
                                         -ray.direction,
-                                        Bsdf::reflection, Bsdf::diffuse,
+                                        BsdfType(BsdfType::reflection, BsdfType::diffuse),
                                         rand);
 
                         const Color surfaceColor = bsdfSample.color();
@@ -129,7 +129,7 @@ DistantRadiance PathIntegrator::Li (
                             dot(skyRay.direction, vector_cast<Vector>(normalS))
                         );
 
-                        ret += incoming*surfaceColor * d / pdf;
+                        ret += incoming*surfaceColor * d * (1/pdf);
                         ret *= throughput;
 
                         // Done.

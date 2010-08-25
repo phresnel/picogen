@@ -70,6 +70,49 @@ private:
         BsdfSample() ;
 };
 
+class BsdfType {
+public:
+        enum Reflection {
+                reflection = 1<<0,
+                transmission = 1<<1
+        };
+        enum Specular {
+                specular = 1<<0,
+                diffuse  = 1<<1
+        };
+
+        BsdfType (Reflection refl, Specular spec)
+        : specular_(spec)
+        , reflection_(refl)
+        {
+        }
+
+        bool isDiffuse () const { return (specular_ & diffuse) == diffuse; }
+        bool isSpecular () const { return (specular_ & specular) == specular; }
+        bool is(Specular s) const {
+                if (s == 0) return false;
+                return (specular_ & s) == s;
+        }
+
+        bool isReflective () const { return (reflection_ & reflection) == reflection; }
+        bool isTransmissive () const { return (reflection_ & transmission) == transmission; }
+        bool is(Reflection s) const {
+                if (s == 0) return false;
+                return (reflection_ & s) == s;
+        }
+
+        void cancel (Reflection r) {
+                reflection_ = Reflection(reflection_ & ~r);
+        }
+
+        bool is(BsdfType s) const {
+                return is(s.specular_) && is(s.reflection_);
+        }
+private:
+        Specular specular_;
+        Reflection reflection_;
+};
+
 class Bsdf {
 public:
         Bsdf (
@@ -79,22 +122,15 @@ public:
 
         virtual ~Bsdf () {}
 
-        enum Reflection {
-                reflection = 1<<0,
-                transmission = 1<<1
-        };
-        enum Specular {
-                specular = 1<<0,
-                diffuse  = 1<<1
-        };
+
         //virtual bool hasAny (Reflection, Specular) const = 0;
 
         BsdfSample sample_f (
-                const Vector &in, Reflection, Specular, Random &
+                const Vector &in, BsdfType, Random &
         ) const;
 
         Color f (const Vector &out, const Vector &in,
-                Bsdf::Reflection r, Bsdf::Specular s, Random&) const;
+                BsdfType, Random&) const;
         // HasShadingGeometry(), pbrt 10.1, p. 464
 
         DifferentialGeometry getShadingDifferentialGeometry () const {
@@ -119,7 +155,8 @@ public:
                 std::vector<shared_ptr<Bxdf> >().swap (bxdfs);
         }
 
-        bool hasComponent (Bsdf::Reflection r, Bsdf::Specular s) const ;
+        bool hasComponent (BsdfType) const ;
+        bool hasComponent (BsdfType::Specular s) const ;
 
 private:
         Vector worldToLocal (Vector const &v) const ;
@@ -130,21 +167,24 @@ private:
         Normal geometricNormal, shadingNormal;
         Vector s, t;
 
-        int numComponents (Bsdf::Reflection r, Bsdf::Specular s) const ;
+        int numComponents (BsdfType) const ;
 };
 
 
 class Bxdf {
 public:
-        Bxdf (Bsdf::Reflection refl, Bsdf::Specular spec)
-        : reflection(refl)
-        , specular(spec)
+        Bxdf (BsdfType type)
+        : bsdfType(type)
         {}
 
         virtual ~Bxdf () {}
 
-        bool is (Bsdf::Reflection r, Bsdf::Specular s) const {
-                return ((reflection&r)==r) && ((specular&s)==s);
+        bool is (BsdfType s) const {
+                return bsdfType.is(s);
+        }
+
+        bool is (BsdfType::Specular s) const {
+                return bsdfType.is(s);
         }
 
         virtual BsdfSample sample_f (
@@ -153,8 +193,7 @@ public:
         virtual Color f (const Vector &out, const Vector &in, Random &) const = 0;
 
 protected:
-        const Bsdf::Reflection reflection;
-        const Bsdf::Specular   specular;
+        const BsdfType bsdfType;
 };
 }
 

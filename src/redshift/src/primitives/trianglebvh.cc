@@ -21,6 +21,7 @@
 #include "../../include/constants.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/trianglebvh.hh"
+#include "../../include/material/transmissivelambertian.hh"
 
 #include <algorithm>
 
@@ -260,7 +261,9 @@ struct TriangleBvhTri : BoundPrimitive {
                 u = u - (int)u;
 
                 bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (
-                                texture->color(dgGeom))));
+                                //texture->color(dgGeom),
+                                Color(1)//, 1.0
+                )));
                 return bsdf;
         }
 };

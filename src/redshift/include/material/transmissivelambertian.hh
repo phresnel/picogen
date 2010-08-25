@@ -18,37 +18,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/material/lambertian.hh"
-#include "../../include/random.hh"
-#include "../../include/sampling.hh"
+#ifndef TRANSMISSIVELAMBERTIAN_HH_INCLUDED_20100824
+#define TRANSMISSIVELAMBERTIAN_HH_INCLUDED_20100824
+
+#include "../basictypes/bsdf.hh"
 
 namespace redshift { namespace bsdf {
+        SEALED(TransmissiveLambertian);
+        class TransmissiveLambertian
+        : public Bxdf, MAKE_SEALED(TransmissiveLambertian) {
+        public:
+                TransmissiveLambertian (Color const &color_,
+                                        real_t transmissionProb);
 
+                BsdfSample sample_f (
+                        const Vector &in, Random &
+                ) const;
 
+                Color f (const Vector &out, const Vector &in, Random &) const;
 
-Lambertian::Lambertian (
-        Color const &color_
-)
-: Bxdf (BsdfType(BsdfType::reflection, BsdfType::diffuse))
-, color (color_ * (1.f/constants::pi))
-{}
-
-
-
-BsdfSample Lambertian::sample_f (
-        const Vector &out, Random &rand
-) const {
-        const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
-        const Vector in (get<0>(sphere), get<1>(sphere), get<2>(sphere));
-        return BsdfSample(f(out, in, rand), in, in.y * (1/constants::pi));
-}
-
-
-
-Color Lambertian::f (const Vector &out, const Vector &in, Random &) const {
-        return color;
-}
-
-
-
+        private:
+                Color const color;
+                real_t transmissionProb;
+        };
 } }
+
+#endif // TRANSMISSIVELAMBERTIAN_HH_INCLUDED_20100824
