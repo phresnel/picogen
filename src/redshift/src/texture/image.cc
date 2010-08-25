@@ -46,5 +46,14 @@ Color ColorImage::color(DifferentialGeometry const &dg) const {
 
 
 
+real_t ColorImage::alpha(DifferentialGeometry const &dg) const {
+        real_t u = std::fmod(dg.u(),1);
+        real_t v = std::fmod(dg.v(),1);
+        //return Color::FromRGB(1.,0.,0., ReflectanceSpectrum);
+        return image.alpha_lerp(u,v);
+}
+
+
+
 } }
 

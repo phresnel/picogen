@@ -169,6 +169,7 @@ optional<Intersection>
                         Vector(), Vector(),
                         U, V, 0
                 );
+
                 return Intersection (*this, dg);
         } else {
                 return false;

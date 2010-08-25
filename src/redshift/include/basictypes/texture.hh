@@ -31,6 +31,9 @@ namespace redshift {
         public:
                 virtual ~ColorTexture() {}
                 virtual Color color(DifferentialGeometry const &) const = 0;
+                virtual real_t alpha(DifferentialGeometry const &) const {
+                        return 1;
+                }
         };
 }
 

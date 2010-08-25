@@ -240,6 +240,9 @@ struct TriangleBvhTri : BoundPrimitive {
                                 Vector(), Vector(),
                                 U, V, (unsigned char)(0)
                         );
+
+                        if (texture && texture->alpha(dg)<0.5)
+                                return false;
                         return Intersection (*this, dg);
                 } else {
                         return false;

@@ -32,6 +32,7 @@ namespace redshift {
                         virtual ~ColorImage();
 
                         Color color(DifferentialGeometry const &) const;
+                        real_t alpha(DifferentialGeometry const &) const;
                 private:
                         aux::ColorImage image;
                 };

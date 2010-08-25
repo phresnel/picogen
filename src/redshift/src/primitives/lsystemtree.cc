@@ -117,8 +117,8 @@ namespace redshift { namespace {
                         newState.rotation = state.rotation;
                 }
 
-                const double oldTexV = state.pathLength    * 0.1,
-                             newTexV = newState.pathLength * 0.1;
+                const double oldTexV = state.pathLength    * 0.025,
+                             newTexV = newState.pathLength * 0.025;
 
                 //glBegin(GL_QUAD_STRIP);
                 Point prevOldV, prevNewV;
@@ -169,6 +169,37 @@ namespace redshift { namespace {
                 typedef Triangle::TextureCoordinates TexCoords;
                 using namespace redshift;
 
+                const unsigned int count = 20; //rand() % 15 + 1;
+                for (unsigned int i=0; i<count; ++i) {
+                        const double s = 40;
+
+                        Turtle state = this->state;
+                        state.forward (-s * i);
+                        state.turnRight(3.14159*0.25 * (i%2==0?1:-1));// 1 * ((rand()/(double)RAND_MAX)-0.5));
+
+                        const TurtleVector head = state.heading();
+                        const TurtleVector right = state.right();
+
+                        const TurtleVector
+                                        A = (state.position + right*-s) * state.scale,
+                                        B = (state.position + right*-s + head*s) * state.scale,
+                                        C = (state.position + right*s + head*s) * state.scale,
+                                        D = (state.position + right*s) * state.scale;
+
+                        triangles.push_back(Triangle(
+                                Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
+                                Vertex(Point(B.x, B.y, B.z), TexCoords(0,0)),
+                                Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
+                                leafTexture
+                        ));
+                        triangles.push_back(Triangle(
+                                Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
+                                Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
+                                Vertex(Point(D.x, D.y, D.z), TexCoords(1,1)),
+                                leafTexture
+                        ));
+                }
+#if 0
                 Turtle state = this->state;
                 state.rollToVertical();
                 state.rollLeft(0.3*((rand()/(double)RAND_MAX)-0.5));
@@ -196,6 +227,7 @@ namespace redshift { namespace {
                         Vertex(Point(D.x, D.y, D.z), TexCoords(1,1)),
                         leafTexture
                 ));
+#endif
         }
 
 

@@ -31,6 +31,7 @@ namespace redshift { namespace aux {
 
 class ColorImage {
         Color *h;
+        real_t *alpha_;
         unsigned int width_, height_;
 
         static Uint32 getPixel (SDL_Surface *s, unsigned int x, unsigned int y) {
@@ -58,7 +59,7 @@ class ColorImage {
         ColorImage & operator = (ColorImage const &) ;
 public:
         ColorImage (const std::string &filename)
-        : h(0), width_(0), height_(0)
+        : h(0), alpha_(0), width_(0), height_(0)
         {
                 if (!load (filename))
                         throw std::runtime_error("error while loading " + filename);
@@ -68,26 +69,29 @@ public:
 
         virtual ~ColorImage () {
                 delete [] h;
+                delete [] alpha_;
         }
 
         bool load (const std::string &filename) {
                 SDL_Surface *image = IMG_Load(filename.c_str());
                 if (image) {
                         h = new Color[image->w*image->h];
+                        alpha_ = new real_t[image->w*image->h];
                         width_ = image->w;
                         height_ = image->h;
 
                         for (unsigned int y=0; y<height_; ++y)
                         for (unsigned int x=0; x<width_; ++x) {
                                 const Uint32 col = getPixel (image, x, y);
-                                Uint8 r,g,b;
-                                SDL_GetRGB (col, image->format, &r, &g, &b);
+                                Uint8 r,g,b,a;
+                                SDL_GetRGBA (col, image->format, &r,&g,&b,&a);
 
                                 h[y*width_+x] = Color::FromRGB(
                                                         r/real_t(255),
                                                         g/real_t(255),
                                                         b/real_t(255),
                                                         ReflectanceSpectrum);
+                                alpha_[y*width_+x] = a/real_t(255);
 
                         }
                         SDL_FreeSurface(image);
@@ -112,6 +116,12 @@ public:
                 return h[y*width_ + x];
         }
 
+        real_t alpha_at (int x, int y) const {
+                if ((x<0) | (x>=(int)width_) | (y<0) | (y>=(int)height_))
+                        return real_t(0);
+                return alpha_[y*width_ + x];
+        }
+
         Color lerp (real_t x, real_t y) const {
                 const real_t
                         wx = x * (width_-1),
@@ -126,6 +136,22 @@ public:
                         v = wy - b;
                 return (1-v)*((1-u)*at(a,b) + u*at(c,b))
                         +v*((1-u)*at(a,d) + u*at(c,d)) ;
+        }
+
+        real_t alpha_lerp (real_t x, real_t y) const {
+                const real_t
+                        wx = x * (width_-1),
+                        wy = y * (height_-1);
+                const int
+                        a = (int)(wx),
+                        b = (int)(wy),
+                        c = 1 + (int)(wx),
+                        d = 1 + (int)(wy);
+                const real_t
+                        u = wx - a,
+                        v = wy - b;
+                return (1-v)*((1-u)*alpha_at(a,b) + u*alpha_at(c,b))
+                        +v*((1-u)*alpha_at(a,d) + u*alpha_at(c,d)) ;
         }
 
         Color cosine (real_t x, real_t y) const {
