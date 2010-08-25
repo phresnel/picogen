@@ -27,12 +27,10 @@ namespace redshift { namespace bsdf {
 
 
 TransmissiveLambertian::TransmissiveLambertian (
-        Color const &color_,
-        real_t transmissionProb
+        Color const &color_
 )
 : Bxdf (BsdfType(Transmissive, Diffuse))
 , color (color_ * (1.f/constants::pi))
-, transmissionProb(transmissionProb)
 {}
 
 
@@ -40,21 +38,14 @@ TransmissiveLambertian::TransmissiveLambertian (
 BsdfSample TransmissiveLambertian::sample_f (
         const Vector &out, Random &rand
 ) const {
-        return BsdfSample(
-                f(out, -out, rand),
-                -out, 1,
-                type()
-        );
-
         const tuple<real_t,real_t,real_t> sphere = cosineHemisphereR(rand);
-        const bool transmission = rand() <= transmissionProb;
         const Vector in (
                 get<0>(sphere),
-                transmission ? -get<1>(sphere) : get<1>(sphere),
+                -get<1>(sphere),
                 get<2>(sphere));
         return BsdfSample(f(out, in, rand),
                           in,
-                          in.y * (1/constants::pi),
+                          in.y * (-1/constants::pi),
                           type());
 }
 

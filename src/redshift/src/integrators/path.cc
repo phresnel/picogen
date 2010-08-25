@@ -72,7 +72,6 @@ DistantRadiance PathIntegrator::Li (
                                         ? normalG
                                         : -normalG
                                   ) * real_t(0.001);
-
                 const Ray ray (poi, bsdfSample.incident());
                 const Distance distance (length(raydiff.position-poi));
 
@@ -91,8 +90,7 @@ DistantRadiance PathIntegrator::Li (
                         );
 
                         if (!scene.doesIntersect (sunRay)) {
-                                const real_t d = max(
-                                    real_t(0),
+                                const real_t d = fabs(
                                     dot(sunDir,vector_cast<Vector>(normalS))
                                 );
                                 const Color sunColor_ = sun.color(sunRay);
@@ -116,9 +114,8 @@ DistantRadiance PathIntegrator::Li (
                 const real_t d =
                         bsdfSample.type().isSpecular()
                         ? 1
-                        : max(real_t(0),
-                              dot(ray.direction,
-                                  vector_cast<Vector>(normalS)));
+                        : fabs(dot(
+                                ray.direction,vector_cast<Vector>(normalS)));
 
                 col += incoming * bsdfSample.color() * d * (1/bsdfSample.pdf());
 

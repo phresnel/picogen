@@ -114,6 +114,7 @@ OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 
 OBJFILES += $(MATERIALOBJDIR)/lambertian.o
 OBJFILES += $(MATERIALOBJDIR)/mirror.o
+OBJFILES += $(MATERIALOBJDIR)/transmissivelambertian.o
 
 #OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 #OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
@@ -436,6 +437,9 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 ###############################################################################
 # materials
 ###############################################################################
+
+$(MATERIALOBJDIR)/transmissivelambertian.o: ./src/material/transmissivelambertian.cc
+	$(CXX) -o $@ $<
 
 $(MATERIALOBJDIR)/lambertian.o: ./src/material/lambertian.cc
 	$(CXX) -o $@ $<

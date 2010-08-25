@@ -260,8 +260,8 @@ struct TriangleBvhTri : BoundPrimitive {
                 v = v - (int)v;
                 u = u - (int)u;
 
-                bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (
-                                Color(0.5)//texture->color(dgGeom)
+                bsdf->add (shared_ptr<Bxdf>(new bsdf::TransmissiveLambertian (
+                                texture->color(dgGeom)
                 )));
                 return bsdf;
         }

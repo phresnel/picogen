@@ -28,8 +28,7 @@ namespace redshift { namespace bsdf {
         class TransmissiveLambertian
         : public Bxdf, MAKE_SEALED(TransmissiveLambertian) {
         public:
-                TransmissiveLambertian (Color const &color_,
-                                        real_t transmissionProb);
+                TransmissiveLambertian (Color const &color_);
 
                 BsdfSample sample_f (
                         const Vector &in, Random &
@@ -39,7 +38,6 @@ namespace redshift { namespace bsdf {
 
         private:
                 Color const color;
-                real_t transmissionProb;
         };
 } }
 
