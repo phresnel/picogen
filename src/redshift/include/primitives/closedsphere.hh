@@ -22,11 +22,8 @@
 #define PRIMITIVE_CLOSEDSPHERE_H_INCLUDED_20090313
 
 #include "../geometry.hh"
-#include "../basictypes/intersection.hh"
 #include "../shapes/closedsphere.hh"
 #include "../primitives/boundprimitive.hh"
-#include "../material/lambertian.hh"
-#include "../material/mirror.hh"
 
 namespace redshift { namespace primitive {
 
@@ -48,16 +45,7 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom
-                ) const {
-                        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (
-                                Color(1)
-                                /*dgGeom.getCenter().x < 0 ?
-                                Color::FromRGB(1,0,0,ReflectanceSpectrum) :
-                                Color::FromRGB(0,1,0,ReflectanceSpectrum)*/
-                        )));
-                        return bsdf;
-                }
+                ) const ;
 
         private:
                 shape::ClosedSphere sphereData;

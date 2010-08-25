@@ -72,7 +72,6 @@ DistantRadiance PathIntegrator::Li (
                                         ? normalG
                                         : -normalG
                                   ) * real_t(0.001);
-                const Ray ray (poi, bsdfSample.incident());
                 const Distance distance (length(raydiff.position-poi));
 
                 const bool applyDirectSunlight = bsdfSample.type().isDiffuse()
@@ -82,8 +81,9 @@ DistantRadiance PathIntegrator::Li (
                         const Sun& sun = *scene.getBackground()->sun();
                         const Vector sunDir = sun.direction();
                         const Ray sunRay (poi,sunDir);
+
                         const Color surfaceColor = bsdf->f(
-                                -ray.direction,
+                                -raydiff.direction,
                                 sunDir,
                                 BsdfFilter::allDiffuse(),
                                 rand
@@ -108,14 +108,17 @@ DistantRadiance PathIntegrator::Li (
                 // Recurse.
                 Scene::LiMode m;
                 m.SkipSun = applyDirectSunlight;
+                const Ray nextRay (poi, bsdfSample.incident());
                 const Color incoming = scene.radiance(
-                                ray, sample, lirec, rand, m);
+                                nextRay,
+                                sample,
+                                lirec, rand, m
+                );
 
                 const real_t d =
                         bsdfSample.type().isSpecular()
                         ? 1
-                        : fabs(dot(
-                                ray.direction,vector_cast<Vector>(normalS)));
+                        : fabs(dot(nextRay.direction,vector_cast<Vector>(normalS)));
 
                 col += incoming * bsdfSample.color() * d * (1/bsdfSample.pdf());
 

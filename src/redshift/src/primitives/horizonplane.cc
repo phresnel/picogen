@@ -20,6 +20,7 @@
 
 #include "../../include/primitives/horizonplane.hh"
 #include "../../include/basictypes/intersection.hh"
+#include "../../include/material/lambertian.hh"
 
 namespace redshift { namespace primitive {
 
@@ -68,6 +69,16 @@ optional<Intersection>
                         Vector(0,0,0), Vector(0,0,0)
                 )
         );
+}
+
+
+
+shared_ptr<Bsdf> HorizonPlane::getBsdf(
+        const DifferentialGeometry & dgGeom
+) const {
+        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
+        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (color)));
+        return bsdf;
 }
 
 

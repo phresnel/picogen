@@ -247,8 +247,9 @@ public:
         bool hasComponent (SpecularKind s) const ;
 
 private:
-        Color f_local (const Vector &out, const Vector &in,
-                       BsdfFilter, Random&) const;
+        Color f (const Vector &worldOut, const Vector &worldIn,
+                 const Vector &localOut, const Vector &localIn,
+                 BsdfFilter, Random&) const;
 
         Vector worldToLocal (Vector const &v) const ;
         Vector localToWorld (Vector const &v) const ;

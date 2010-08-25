@@ -21,10 +21,10 @@
 #ifndef PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119
 #define PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119
 
+#include "../sealed.hh"
 #include "../geometry.hh"
+#include "../basictypes/spectrum.hh"
 #include "../primitives/primitive.hh"
-#include "../material/lambertian.hh"
-
 
 namespace redshift { namespace primitive {
 
@@ -43,11 +43,7 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom
-                ) const {
-                        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (color)));
-                        return bsdf;
-                }
+                ) const;
 
         private:
                 HorizonPlane();

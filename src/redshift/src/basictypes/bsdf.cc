@@ -24,10 +24,10 @@
 namespace redshift {
 
 
-Bsdf::Bsdf (DifferentialGeometry const &shadingDG_
+Bsdf::Bsdf (DifferentialGeometry const &shadingDG
         // PBRT adds a refraction index parameter, see 10.1, p. 462
 )
-: shadingDG(shadingDG_)
+: shadingDG(shadingDG)
 , geometricNormal (shadingDG.getGeometricNormal())
 , shadingNormal (shadingDG.getShadingNormal())
 , s (normalize (shadingDG.get_dpdu()))
@@ -35,6 +35,7 @@ Bsdf::Bsdf (DifferentialGeometry const &shadingDG_
 //,s (normalize (shadingDG.get_dpdu()))
 //,t (normalize (shadingDG.get_dpdv()))
 {
+
 }
 
 
@@ -60,7 +61,7 @@ Vector Bsdf::localToWorld (Vector const &v) const {
 
 
 BsdfSample Bsdf::sample_f (
-        const Vector &out_, BsdfFilter filter, Random &rand
+        const Vector &worldOut, BsdfFilter filter, Random &rand
 ) const {
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
 
@@ -84,8 +85,8 @@ BsdfSample Bsdf::sample_f (
         }
 
         // Sample it.
-        const Vector localOut = worldToLocal (out_);
-        const BsdfSample sample = bxdf->sample_f(worldToLocal (localOut),
+        const Vector localOut = worldToLocal (worldOut);
+        const BsdfSample sample = bxdf->sample_f(localOut,
                                                  rand);
         if (sample.isNull()) {
                 return BsdfSample::null();
@@ -111,7 +112,10 @@ BsdfSample Bsdf::sample_f (
         if (bxdf->type().isSpecular()) {
                 f = sample.color();
         } else {
-                f = f_local(localOut, localIn, filter, rand);
+                f = this->f(
+                      worldOut, worldIn,
+                      localOut, localIn,
+                      filter, rand);
         }
 
         return BsdfSample (
@@ -125,37 +129,41 @@ BsdfSample Bsdf::sample_f (
 
 
 Color Bsdf::f (
-        const Vector &out_, const Vector &in_,
+        const Vector &wout, const Vector &win,
         BsdfFilter s,
         Random &rand
 ) const {
-        const Vector out = worldToLocal (out_);
-        const Vector in  = worldToLocal (in_);
-        return f_local(out, in, s, rand);
+        const Color ret = f(wout, win,
+                            worldToLocal (wout), worldToLocal (win),
+                            s, rand);
+        return ret;
 }
 
 
 
-Color Bsdf::f_local (
-        const Vector &out, const Vector &in,
+Color Bsdf::f (
+        const Vector &worldOut, const Vector &worldIn,
+        const Vector &localOut, const Vector &localIn,
         BsdfFilter s,
         Random &rand
 ) const {
-        const real_t dotIn  = dot (vector_cast<Normal>(in), geometricNormal);
-        const real_t dotOut = dot (vector_cast<Normal>(out), geometricNormal);
+        const real_t dotIn  = dot (vector_cast<Normal>(worldIn), geometricNormal);
+        const real_t dotOut = dot (vector_cast<Normal>(worldOut), geometricNormal);
+
+
         if (dotIn * dotOut > 0) {
                 // Both in same hemisphere -> BRDF only
-                s.disable (Reflective);
+                s.disable (Transmissive);
         } else {
                 // Different hemisphere -> BTDF only
-                s.disable (Transmissive);
+                s.disable (Reflective);
         }
 
         Color col;
         typedef std::vector<shared_ptr<Bxdf> >::const_iterator It;
         for (It it = bxdfs.begin(); it!=bxdfs.end(); ++it) {
                 if (s.allows ((**it).type())) {
-                        col += (**it).f (out, in, rand);
+                        col += (**it).f (localOut, localIn, rand);
                 }
         }
         return col;

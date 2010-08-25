@@ -20,6 +20,10 @@
 
 #include "../../include/primitives/closedsphere.hh"
 #include "../../include/sampling.hh"
+#include "../../include/basictypes/intersection.hh"
+
+#include "../../include/material/lambertian.hh"
+#include "../../include/material/mirror.hh"
 
 namespace redshift { namespace primitive {
 
@@ -58,6 +62,17 @@ optional<Intersection>
         } else {
                 return false;
         }
+}
+
+
+
+shared_ptr<Bsdf> ClosedSphere::getBsdf(
+        const DifferentialGeometry & dgGeom
+) const {
+        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
+        bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror (Color::FromRGB(0.5,0.,0.,ReflectanceSpectrum))));
+        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color(0.5))));
+        return bsdf;
 }
 
 
