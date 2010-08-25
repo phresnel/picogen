@@ -34,7 +34,7 @@ void saveOpenEXR (Film const &film, const char *filename) {
         real_t min = constants::real_max, max = -constants::real_max;
         for (unsigned int y=0; y<height; ++y)
         for (unsigned int x=0; x<width; ++x) {
-                const real_t l = film.average(x, y).y();
+                const real_t l = film.average_or_zero(x, y).y();
                 if (l < min) min = l;
                 if (l > max) max = l;
         }
@@ -42,7 +42,7 @@ void saveOpenEXR (Film const &film, const char *filename) {
 
         for (unsigned int y=0; y<height; ++y)
         for (unsigned int x=0; x<width; ++x) {
-                const Color col_ = film.average(x, y),
+                const Color col_ = film.average_or_zero(x, y),
                             col = (col_ - Color(min)) / (max-min);
                 const PicogenRGB prgb = col.toRGB();
                 Imf::Rgba &irgb = imfpixels[y*width+x];

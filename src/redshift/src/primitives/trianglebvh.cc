@@ -263,12 +263,15 @@ struct TriangleBvhTri : BoundPrimitive {
                 v = v - (int)v;
                 u = u - (int)u;
 
-                /*bsdf->add (
+                bsdf->add (
                         shared_ptr<Bxdf>(new bsdf::BrdfToBtdf(
                           shared_ptr<Bxdf>(new bsdf::Lambertian (
-                                texture->color(dgGeom)
-                )))));*/
-                bsdf->add (shared_ptr<Bxdf>(new bsdf::Mirror(Color(1))));
+                                texture->color(dgGeom)*0.5
+                )))));
+                bsdf->add (
+                        shared_ptr<Bxdf>(new bsdf::Lambertian (
+                                texture->color(dgGeom)*0.5
+                )));
                 return bsdf;
         }
 };
