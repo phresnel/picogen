@@ -54,8 +54,14 @@ public:
         ReflectionKind reflection() const {
                 return refl;
         }
+        ReflectionKind reflectionKind() const {
+                return refl;
+        }
 
         SpecularKind specular() const {
+                return spec;
+        }
+        SpecularKind specularKind() const {
                 return spec;
         }
 

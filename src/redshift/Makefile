@@ -115,6 +115,7 @@ OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(MATERIALOBJDIR)/lambertian.o
 OBJFILES += $(MATERIALOBJDIR)/mirror.o
 OBJFILES += $(MATERIALOBJDIR)/transmissivelambertian.o
+OBJFILES += $(MATERIALOBJDIR)/brdftobtdf.o
 
 #OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 #OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
@@ -214,7 +215,7 @@ $(OBJDIR)/libxyto.a: $(OBJDIR)/xyto/*.o
 
 
 
-        
+
 ###############################################################################
 # texture
 ###############################################################################
@@ -437,6 +438,9 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 ###############################################################################
 # materials
 ###############################################################################
+
+$(MATERIALOBJDIR)/brdftobtdf.o: ./src/material/brdftobtdf.cc
+	$(CXX) -o $@ $<
 
 $(MATERIALOBJDIR)/transmissivelambertian.o: ./src/material/transmissivelambertian.cc
 	$(CXX) -o $@ $<
