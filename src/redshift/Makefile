@@ -536,6 +536,7 @@ clean: init-dir-tree
 	rm -f $(BASICTYPESOBJDIR)/*.o
 	rm -f $(CAMERASOBJDIR)/*.o
 	rm -f $(BXDFOBJDIR)/*.o
+	rm -f $(MATERIALOBJDIR)/*.o
 	rm -f $(INTEGRATORSOBJDIR)/*.o
 	rm -f $(INTERACTIONOBJDIR)/*.o
 	rm -f $(OBJDIR)/*.o
