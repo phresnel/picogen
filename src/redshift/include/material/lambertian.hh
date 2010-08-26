@@ -18,27 +18,5 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef LAMBERTIAN_HH_INCLUDED_20100119
-#define LAMBERTIAN_HH_INCLUDED_20100119
-
-#include "../basictypes/bsdf.hh"
-
-namespace redshift { namespace bsdf {
-        SEALED(Lambertian);
-        class Lambertian : public Bxdf, MAKE_SEALED(Lambertian) {
-        public:
-                Lambertian (Color const &color_);
-
-                BsdfSample sample_f (
-                        const Vector &in, Random &
-                ) const;
-
-                Color f (const Vector &out, const Vector &in, Random &) const;
-                real_t pdf (const Vector &out, const Vector &in) const;
-
-        private:
-                Color const color;
-        };
-} }
-
-#endif // LAMBERTIAN_HH_INCLUDED_20100119
+#pragma message ("#include bxdf/lambertian.hh instead")
+#include "../bxdf/lambertian.hh"

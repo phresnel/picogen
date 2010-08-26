@@ -18,6 +18,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#pragma message ("#include bxdf/mirror.hh instead")
-#include "../bxdf/mirror.hh"
+#ifndef MIRROR_HH_INCLUDED_20100119
+#define MIRROR_HH_INCLUDED_20100119
 
+#include "../basictypes/bsdf.hh"
+
+namespace redshift { namespace bsdf {
+        SEALED(Mirror);
+        class Mirror : public Bxdf, MAKE_SEALED(Mirror) {
+        public:
+                Mirror (Color const &color_);
+
+                BsdfSample sample_f (
+                        const Vector &in,
+                        Random &
+                ) const;
+
+                Color f (
+                        const Vector &out,
+                        const Vector &in,
+                        Random &) const;
+                real_t pdf (const Vector &out, const Vector &in) const;
+        private:
+                Color const color;
+        };
+} }
+
+#endif // LAMBERTIAN_HH_INCLUDED_20100119

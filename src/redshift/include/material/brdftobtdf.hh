@@ -18,27 +18,5 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef BRDFTOBTDF_HH_INCLUDED_20100825
-#define BRDFTOBTDF_HH_INCLUDED_20100825
-
-#include "../basictypes/bsdf.hh"
-
-namespace redshift { namespace bsdf {
-        SEALED(BrdfToBtdf);
-        class BrdfToBtdf : public Bxdf, MAKE_SEALED(BrdfToBtdf) {
-        public:
-                BrdfToBtdf (shared_ptr<const Bxdf> brdf);
-
-                BsdfSample sample_f (
-                        const Vector &in, Random &
-                ) const ;
-
-                Color f (const Vector &out, const Vector &in, Random &) const ;
-                real_t pdf (const Vector &out, const Vector &in) const;
-
-        private:
-                shared_ptr<const Bxdf> brdf;
-        };
-} }
-
-#endif // BRDFTOBTDF_HH_INCLUDED_20100825
+#pragma message ("#include bxdf/brdftobtdf.hh instead")
+#include "../bxdf/brdftobtdf.hh"

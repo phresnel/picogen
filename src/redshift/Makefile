@@ -12,7 +12,7 @@ BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 CAMERASOBJDIR       := $(OBJDIR)/cameras
 INTEGRATORSOBJDIR   := $(OBJDIR)/integrators
 INTERACTIONOBJDIR   := $(OBJDIR)/interaction
-MATERIALOBJDIR      := $(OBJDIR)/material
+BXDFOBJDIR      := $(OBJDIR)/material
 PRIMITIVESOBJDIR    := $(OBJDIR)/primitives
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
@@ -112,10 +112,9 @@ OBJFILES += $(INTEGRATORSOBJDIR)/single-scattering.o
 OBJFILES += $(INTERACTIONOBJDIR)/sdlcommandprocessor.o
 OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 
-OBJFILES += $(MATERIALOBJDIR)/lambertian.o
-OBJFILES += $(MATERIALOBJDIR)/mirror.o
-OBJFILES += $(MATERIALOBJDIR)/transmissivelambertian.o
-OBJFILES += $(MATERIALOBJDIR)/brdftobtdf.o
+OBJFILES += $(BXDFOBJDIR)/lambertian.o
+OBJFILES += $(BXDFOBJDIR)/mirror.o
+OBJFILES += $(BXDFOBJDIR)/brdftobtdf.o
 
 #OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 #OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
@@ -439,13 +438,13 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 # materials
 ###############################################################################
 
-$(MATERIALOBJDIR)/brdftobtdf.o: ./src/material/brdftobtdf.cc
+$(BXDFOBJDIR)/brdftobtdf.o: ./src/bxdf/brdftobtdf.cc
 	$(CXX) -o $@ $<
 
-$(MATERIALOBJDIR)/lambertian.o: ./src/material/lambertian.cc
+$(BXDFOBJDIR)/lambertian.o: ./src/bxdf/lambertian.cc
 	$(CXX) -o $@ $<
 
-$(MATERIALOBJDIR)/mirror.o: ./src/material/mirror.cc
+$(BXDFOBJDIR)/mirror.o: ./src/bxdf/mirror.cc
 	$(CXX) -o $@ $<
 
 
@@ -490,7 +489,7 @@ init-dir-tree:
 	mkdir -p $(CAMERASOBJDIR)
 	mkdir -p $(INTEGRATORSOBJDIR)
 	mkdir -p $(INTERACTIONOBJDIR)
-	mkdir -p $(MATERIALOBJDIR)
+	mkdir -p $(BXDFOBJDIR)
 	mkdir -p $(PRIMITIVESOBJDIR)
 	mkdir -p $(RENDERTARGETSOBJDIR)
 	mkdir -p $(SAMPLERSOBJDIR)
@@ -524,7 +523,7 @@ clean: init-dir-tree
 	rm -f $(BACKGROUNDSOBJDIR)/*.o
 	rm -f $(BASICTYPESOBJDIR)/*.o
 	rm -f $(CAMERASOBJDIR)/*.o
-	rm -f $(MATERIALOBJDIR)/*.o
+	rm -f $(BXDFOBJDIR)/*.o
 	rm -f $(INTEGRATORSOBJDIR)/*.o
 	rm -f $(INTERACTIONOBJDIR)/*.o
 	rm -f $(OBJDIR)/*.o
