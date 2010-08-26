@@ -21,12 +21,14 @@
 #ifndef TRIANGLE_HH_INCLUDED_20100812
 #define TRIANGLE_HH_INCLUDED_20100812
 
+#include "../sealed.hh"
 #include "../geometry.hh"
-#include "../basictypes/intersection.hh"
 #include "../primitives/boundprimitive.hh"
-#include "../material/lambertian.hh"
-#include "../material/mirror.hh"
-#include "../basictypes/texture.hh"
+
+namespace redshift {
+        class Material;
+        class Intersection;
+}
 
 namespace redshift { namespace primitive {
 
@@ -59,7 +61,7 @@ namespace redshift { namespace primitive {
                 };
 
                 Triangle(Vertex A, Vertex B, Vertex C,
-                         shared_ptr<ColorTexture> texture);
+                         shared_ptr<Material> material);
                 ~Triangle ();
 
                 Vertex a () const { return A; }
@@ -74,10 +76,10 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<Bsdf> getBsdf(const DifferentialGeometry &) const;
 
-                shared_ptr<ColorTexture> texture() const;
+                shared_ptr<Material> material() const;
         private:
                 Vertex A, B, C;
-                shared_ptr<ColorTexture> texture_;
+                shared_ptr<Material> material_;
         };
 } }
 

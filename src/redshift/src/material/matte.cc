@@ -23,6 +23,8 @@
 #include "../../include/basictypes/differentialgeometry.hh"
 #include "../../include/basictypes/texture.hh"
 
+#include "../../include/bxdf/lambertian.hh"
+
 
 namespace redshift { namespace material {
 
@@ -36,8 +38,19 @@ Matte::Matte (shared_ptr<ColorTexture> color,
 
 
 
-shared_ptr<Bsdf> Matte::getBsdf(const DifferentialGeometry &) const {
-        return shared_ptr<Bsdf>();
+shared_ptr<Bsdf> Matte::getBsdf(const DifferentialGeometry &dgGeom) const {
+        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
+        shared_ptr<Bxdf> lambertian (
+                new bsdf::Lambertian (color->color(dgGeom)));
+
+        bsdf->add (lambertian);
+        return bsdf;
+}
+
+
+
+real_t Matte::alpha (const DifferentialGeometry &dgGeom) const {
+        return color->alpha(dgGeom);
 }
 
 

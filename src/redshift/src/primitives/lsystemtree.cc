@@ -29,6 +29,12 @@
 #include "../../include/primitives/triangle.hh"
 #include "xyto/lsystem.hh"
 #include "xyto/draw.hh"
+
+#include "../../include/basictypes/material.hh"
+#include "../../include/texture/image.hh"
+#include "../../include/texture/constant.hh"
+#include "../../include/material/matte.hh"
+
 boost::optional<LSystem> compile(const char*);
 
 
@@ -37,8 +43,8 @@ namespace redshift { namespace {
         class LSystemTreeMesher {
         public:
                 LSystemTreeMesher (unsigned int slices,
-                                   shared_ptr<ColorTexture> barkTexture,
-                                   shared_ptr<ColorTexture> leafTexture);
+                                   shared_ptr<Material> barkMaterial,
+                                   shared_ptr<Material> leafMaterial);
                 ~LSystemTreeMesher ();
                 void moveTo (Turtle state);
                 void drawTo (Turtle newState);
@@ -54,8 +60,8 @@ namespace redshift { namespace {
                 std::stack<Turtle> stateStack;
                 unsigned int slices;
 
-                shared_ptr<ColorTexture> barkTexture;
-                shared_ptr<ColorTexture> leafTexture;
+                shared_ptr<Material> barkMaterial;
+                shared_ptr<Material> leafMaterial;
                 //GLuint displayList_;
                 //std::vector<GLuint> textures_;
         };
@@ -63,9 +69,9 @@ namespace redshift { namespace {
 
 
         LSystemTreeMesher::LSystemTreeMesher (unsigned int slices,
-                                        shared_ptr<ColorTexture> barkTexture,
-                                        shared_ptr<ColorTexture> leafTexture)
-        : slices(slices), barkTexture(barkTexture), leafTexture(leafTexture)
+                                        shared_ptr<Material> barkMaterial,
+                                        shared_ptr<Material> leafMaterial)
+        : slices(slices), barkMaterial(barkMaterial), leafMaterial(leafMaterial)
         {
                 //textures_.push_back(loadTexture("bark.jpg"));
                 //textures_.push_back(loadTexture("leaf.png"));
@@ -142,13 +148,13 @@ namespace redshift { namespace {
                                         Vertex(prevOldV, prevOldTC),
                                         Vertex(prevNewV, prevNewTC),
                                         Vertex(oldV, oldTC),
-                                        barkTexture
+                                        barkMaterial
                                 ));
                                 triangles.push_back(Triangle(
                                         Vertex(prevNewV, prevNewTC),
                                         Vertex(newV, newTC),
                                         Vertex(oldV, oldTC),
-                                        barkTexture
+                                        barkMaterial
                                 ));
                         }
                         prevOldV = oldV;
@@ -190,13 +196,13 @@ namespace redshift { namespace {
                                 Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
                                 Vertex(Point(B.x, B.y, B.z), TexCoords(0,0)),
                                 Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
-                                leafTexture
+                                leafMaterial
                         ));
                         triangles.push_back(Triangle(
                                 Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
                                 Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
                                 Vertex(Point(D.x, D.y, D.z), TexCoords(1,1)),
-                                leafTexture
+                                leafMaterial
                         ));
                 }
 #if 0
@@ -219,13 +225,13 @@ namespace redshift { namespace {
                         Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
                         Vertex(Point(B.x, B.y, B.z), TexCoords(0,0)),
                         Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
-                        leafTexture
+                        leafMaterial
                 ));
                 triangles.push_back(Triangle(
                         Vertex(Point(A.x, A.y, A.z), TexCoords(0,1)),
                         Vertex(Point(C.x, C.y, C.z), TexCoords(1,0)),
                         Vertex(Point(D.x, D.y, D.z), TexCoords(1,1)),
-                        leafTexture
+                        leafMaterial
                 ));
 #endif
         }
@@ -284,9 +290,18 @@ LSystemTree::LSystemTree(
         lsys = *newLsys;
         pat = lsys.run(level);
 
-        LSystemTreeMesher mesher(slicesPerSegment,
-                                 shared_ptr<ColorTexture>(new texture::ColorImage("bark.bmp")),
-                                 shared_ptr<ColorTexture>(new texture::ColorImage("leaf.bmp")));
+        LSystemTreeMesher mesher(
+                slicesPerSegment,
+                shared_ptr<Material>(new material::Matte(
+                        shared_ptr<ColorTexture>(new texture::ColorImage("bark.bmp")),
+                        shared_ptr<ScalarTexture>(new texture::ConstantScalar(0))
+                )),
+                shared_ptr<Material>(new material::Matte(
+                        shared_ptr<ColorTexture>(new texture::ColorImage("leaf.bmp")),
+                        shared_ptr<ScalarTexture>(new texture::ConstantScalar(0))
+                ))
+        );
+
         draw(lsys, pat, Turtle(), mesher);
 
         TriangleBvhBuilder builder;
@@ -320,5 +335,14 @@ bool LSystemTree::doesIntersect (Ray const &ray) const {
 optional<Intersection> LSystemTree::intersect(Ray const &ray) const {
         return mesh->intersect(ray);
 }
+
+
+
+shared_ptr<Bsdf> LSystemTree::getBsdf(
+        const DifferentialGeometry & dgGeom
+) const {
+        throw std::runtime_error("LSystemTree::getBsdf() called directly.");
+}
+
 
 } }

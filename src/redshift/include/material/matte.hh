@@ -22,7 +22,9 @@
 #define MATTE_HH_INCLUDED_20100826
 
 #include "../sealed.hh"
+#include "../real.hh"
 #include "../smart_ptr.hh"
+#include "../basictypes/material.hh"
 
 namespace redshift {
         class Bsdf;
@@ -33,12 +35,13 @@ namespace redshift {
 
 namespace redshift { namespace material {
         SEALED(Matte);
-        class Matte : MAKE_SEALED(Matte) {
+        class Matte : MAKE_SEALED(Matte), public Material {
         public:
                 Matte (shared_ptr<ColorTexture> color,
                        shared_ptr<ScalarTexture> roughness);
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry &) const;
+                real_t alpha (const DifferentialGeometry &) const;
         private:
                 shared_ptr<ColorTexture> color;
                 shared_ptr<ScalarTexture> roughness;

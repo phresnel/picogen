@@ -20,11 +20,11 @@
 
 #include "../../include/constants.hh"
 #include "../../include/basictypes/intersection.hh"
+#include "../../include/tuple.hh"
 #include "../../include/primitives/trianglebvh.hh"
 
-#include "../../include/material/lambertian.hh"
-#include "../../include/material/mirror.hh"
-#include "../../include/material/brdftobtdf.hh"
+#include "../../include/basictypes/material.hh"
+#include "../../include/material/matte.hh"
 
 #include <algorithm>
 
@@ -183,14 +183,14 @@ struct TriangleBvhTri : BoundPrimitive {
         Vector U, V;
         Vector normal;
         Vector normalizedNormal;
-        shared_ptr<ColorTexture> texture;
+        shared_ptr<Material> material;
 
         TriangleBvhTri (Triangle tri)
         : A(tri.a()), B(tri.b()), C(tri.c())
         , U(B.position-A.position)
         , V(C.position-A.position)
         , normal(cross (U, V)), normalizedNormal (normalize(normal))
-        , texture(tri.texture())
+        , material(tri.material())
         {}
 
         TriangleBvhTri() {}
@@ -245,7 +245,7 @@ struct TriangleBvhTri : BoundPrimitive {
                                 U, V, (unsigned char)(0)
                         );
 
-                        if (texture && texture->alpha(dg)<0.5)
+                        if (material && material->alpha(dg)<0.1)
                                 return false;
                         return Intersection (*this, dg);
                 } else {
@@ -256,23 +256,7 @@ struct TriangleBvhTri : BoundPrimitive {
         shared_ptr<Bsdf> getBsdf(
                 const DifferentialGeometry & dgGeom
         ) const {
-                shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-
-                real_t u = dgGeom.u();
-                real_t v = dgGeom.v();
-                v = v - (int)v;
-                u = u - (int)u;
-
-                bsdf->add (
-                        shared_ptr<Bxdf>(new bsdf::BrdfToBtdf(
-                          shared_ptr<Bxdf>(new bsdf::Lambertian (
-                                texture->color(dgGeom)*0.5
-                )))));
-                bsdf->add (
-                        shared_ptr<Bxdf>(new bsdf::Lambertian (
-                                texture->color(dgGeom)*0.5
-                )));
-                return bsdf;
+                return material->getBsdf(dgGeom);
         }
 };
 

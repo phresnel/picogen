@@ -113,7 +113,8 @@ namespace redshift{class RenderTarget;}
 
 
 // material/
-#include "material/lambertian.hh"
+#include "bxdf/lambertian.hh"
+#include "material/matte.hh"
 
 // texture/
 #include "texture/constant.hh"
@@ -822,8 +823,15 @@ namespace redshift { namespace scenefile {
                                                           Triangle::TextureCoordinates(1,0)),
                                         Triangle::Vertex (C.position,
                                                           Triangle::TextureCoordinates(0,1)),
-                                        shared_ptr<ColorTexture>(new texture::ConstantColor(redshift::Color::FromRGB(
-                                                                        0.25, 0.25, 1., ReflectanceSpectrum)))
+                                        shared_ptr<redshift::Material>(new material::Matte(
+                                                shared_ptr<ColorTexture>(
+                                                        new texture::ConstantColor(redshift::Color::FromRGB(
+                                                                0.25, 0.25, 1., ReflectanceSpectrum))
+                                                ),
+                                                shared_ptr<ScalarTexture>(
+                                                        new texture::ConstantScalar(0)
+                                                )
+                                        ))
                                 ));
                         }
 
@@ -904,8 +912,15 @@ namespace redshift { namespace scenefile {
                                                                   Triangle::TextureCoordinates(1,0)),
                                                 Triangle::Vertex (it->triangleParams.C.position,
                                                                   Triangle::TextureCoordinates(0,1)),
-                                                shared_ptr<ColorTexture>(new texture::ConstantColor(redshift::Color::FromRGB(
-                                                                        0.25, 0.25, 1., ReflectanceSpectrum)))
+                                                shared_ptr<redshift::Material>(new material::Matte(
+                                                        shared_ptr<ColorTexture>(
+                                                                new texture::ConstantColor(redshift::Color::FromRGB(
+                                                                        0.25, 0.25, 1., ReflectanceSpectrum))
+                                                        ),
+                                                        shared_ptr<ScalarTexture>(
+                                                                new texture::ConstantScalar(0)
+                                                        )
+                                                ))
                                         ));
                                 }
                                 return builder.toTriangleBvh();

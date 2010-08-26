@@ -27,17 +27,36 @@ namespace redshift {
         namespace texture {
                 class ConstantColor : public ColorTexture {
                 public:
+                        ConstantColor (Color const &color, real_t alpha=1)
+                        : color_(color), alpha_(alpha)
+                        {}
                         virtual ~ConstantColor() {}
 
                         Color color(DifferentialGeometry const &) const {
                                 return color_;
                         }
 
-                        ConstantColor (Color const &color)
-                        : color_(color)
-                        {}
+                        real_t alpha (DifferentialGeometry const &) const {
+                                return alpha_;
+                        }
+
                 private:
                         Color color_;
+                        real_t alpha_;
+                };
+
+                class ConstantScalar : public ScalarTexture {
+                public:
+                        ConstantScalar (real_t value)
+                                : value_(value)
+                                {}
+                        virtual ~ConstantScalar() {}
+
+                        real_t value(DifferentialGeometry const &) const {
+                                return value_;
+                        }
+                private:
+                        real_t value_;
                 };
         }
 }

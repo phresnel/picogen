@@ -19,7 +19,9 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "../../include/primitives/triangle.hh"
+#include "../../include/basictypes/material.hh"
 #include "../../include/sampling.hh"
+#include "../../include/basictypes/intersection.hh"
 
 namespace {
         using redshift::real_t;
@@ -101,8 +103,8 @@ namespace redshift { namespace primitive {
 
 
 
-Triangle::Triangle (Vertex A, Vertex B, Vertex C, shared_ptr<ColorTexture> tex)
-: A(A), B(B), C(C), texture_(tex)
+Triangle::Triangle (Vertex A, Vertex B, Vertex C, shared_ptr<Material> mat)
+: A(A), B(B), C(C), material_(mat)
 {
 }
 
@@ -179,15 +181,13 @@ optional<Intersection>
 
 
 shared_ptr<Bsdf> Triangle::getBsdf(const DifferentialGeometry &dg) const {
-        shared_ptr<Bsdf> bsdf (new Bsdf(dg));
-        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (texture_->color(dg))));
-        return bsdf;
+        return material_->getBsdf(dg);
 }
 
 
 
-shared_ptr<ColorTexture> Triangle::texture() const {
-        return texture_;
+shared_ptr<Material> Triangle::material() const {
+        return material_;
 }
 
 

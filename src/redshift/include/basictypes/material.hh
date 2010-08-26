@@ -21,6 +21,9 @@
 #ifndef MATERIAL_HH_INCLUDED_20090223
 #define MATERIAL_HH_INCLUDED_20090223
 
+#include "../smart_ptr.hh"
+#include "../real.hh"
+
 namespace redshift {
         class Bsdf;
         class DifferentialGeometry;
@@ -28,6 +31,7 @@ namespace redshift {
         struct Material {
                 virtual shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry &) const = 0;
+                virtual real_t alpha (const DifferentialGeometry &) const = 0;
                 virtual ~Material() {}
         };
 }

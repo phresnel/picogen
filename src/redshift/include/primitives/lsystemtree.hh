@@ -23,7 +23,6 @@
 
 #include "../sealed.hh"
 #include "trianglebvh.hh"
-#include "../material/lambertian.hh"
 
 namespace redshift { namespace primitive {
 
@@ -49,11 +48,7 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<Bsdf> getBsdf(
                         const DifferentialGeometry & dgGeom
-                ) const {
-                        shared_ptr<Bsdf> bsdf (new Bsdf(dgGeom));
-                        bsdf->add (shared_ptr<Bxdf>(new bsdf::Lambertian (Color(1))));
-                        return bsdf;
-                }
+                ) const;
 
         private:
                 LSystemTree ();
