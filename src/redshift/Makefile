@@ -12,7 +12,8 @@ BASICTYPESOBJDIR    := $(OBJDIR)/basictypes
 CAMERASOBJDIR       := $(OBJDIR)/cameras
 INTEGRATORSOBJDIR   := $(OBJDIR)/integrators
 INTERACTIONOBJDIR   := $(OBJDIR)/interaction
-BXDFOBJDIR      := $(OBJDIR)/material
+BXDFOBJDIR          := $(OBJDIR)/bxdf
+MATERIALOBJDIR      := $(OBJDIR)/material
 PRIMITIVESOBJDIR    := $(OBJDIR)/primitives
 RENDERTARGETSOBJDIR := $(OBJDIR)/rendertargets
 SHAPEOBJDIR         := $(OBJDIR)/shapes
@@ -115,6 +116,8 @@ OBJFILES += $(INTERACTIONOBJDIR)/passivecommandprocessor.o
 OBJFILES += $(BXDFOBJDIR)/lambertian.o
 OBJFILES += $(BXDFOBJDIR)/mirror.o
 OBJFILES += $(BXDFOBJDIR)/brdftobtdf.o
+
+OBJFILES += $(MATERIALOBJDIR)/matte.o
 
 #OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 #OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
@@ -436,6 +439,15 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 
 ###############################################################################
 # materials
+###############################################################################
+
+$(MATERIALOBJDIR)/matte.o: ./src/material/matte.cc
+	$(CXX) -o $@ $<
+
+
+
+###############################################################################
+# bxdf
 ###############################################################################
 
 $(BXDFOBJDIR)/brdftobtdf.o: ./src/bxdf/brdftobtdf.cc

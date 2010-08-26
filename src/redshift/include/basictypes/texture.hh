@@ -35,6 +35,12 @@ namespace redshift {
                         return 1;
                 }
         };
+
+        class ScalarTexture {
+        public:
+                virtual ~ScalarTexture() {}
+                virtual real_t value(DifferentialGeometry const &) const = 0;
+        };
 }
 
 #endif // TEXTURE_HH_INCLUDED_20100817
