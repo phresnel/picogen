@@ -18,16 +18,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef MATERIAL_H_INCLUDED_20090223
-#define MATERIAL_H_INCLUDED_20090223
+#ifndef MATERIAL_HH_INCLUDED_20090223
+#define MATERIAL_HH_INCLUDED_20090223
 
 namespace redshift {
+        class Bsdf;
+        class DifferentialGeometry;
+
         struct Material {
-                // stub
-                /*virtual bool sample (
-                        IncomingRay const &incomingRay,
-                        OutgoingRay &outgoingRay) = 0;*/
+                virtual shared_ptr<Bsdf> getBsdf(
+                        const DifferentialGeometry &) const = 0;
+                virtual ~Material() {}
         };
 }
 
-#endif
+#endif // MATERIAL_HH_INCLUDED_20090223
