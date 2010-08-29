@@ -34,6 +34,7 @@
 #include "../../include/texture/image.hh"
 #include "../../include/texture/constant.hh"
 #include "../../include/material/matte.hh"
+#include "../../include/material/leaf0.hh"
 
 boost::optional<LSystem> compile(const char*);
 
@@ -317,11 +318,11 @@ LSystemTree::LSystemTree(
                          : shared_ptr<ColorTexture>(new texture::ConstantColor(Color::FromRGB(0.7,0.6,0.5,ReflectanceSpectrum))),
                         shared_ptr<ScalarTexture>(new texture::ConstantScalar(0))
                 )),
-                shared_ptr<Material>(new material::Matte(
+                shared_ptr<Material>(new material::Leaf0(
                         leaftex != ""
                          ? shared_ptr<ColorTexture>(new texture::ColorImage(leaftex))
                          : shared_ptr<ColorTexture>(new texture::ConstantColor(Color::FromRGB(0.2,0.7,0.2,ReflectanceSpectrum))),
-                        shared_ptr<ScalarTexture>(new texture::ConstantScalar(0))
+                        shared_ptr<ScalarTexture>(new texture::ConstantScalar(0.5))
                 )),
                 texuscale,
                 texvscale

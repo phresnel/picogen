@@ -89,7 +89,9 @@ DistantRadiance PathIntegrator::Li (
                                 rand
                         );
 
-                        if (!scene.doesIntersect (sunRay)) {
+                        if (!scene.doesIntersect (sunRay)) { // <-- won't give plausible results
+                                                             //     if sun-ray would go through transparent
+                                                             //     material
                                 const real_t d = fabs(
                                     dot(sunDir,vector_cast<Vector>(normalS))
                                 );

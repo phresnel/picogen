@@ -117,7 +117,6 @@ BsdfSample Bsdf::sample_f (
                       localOut, localIn,
                       filter, rand);
         }
-
         return BsdfSample (
                 f,
                 worldIn,
