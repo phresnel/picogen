@@ -205,11 +205,6 @@ struct TriangleBvhTri : BoundPrimitive {
 
         bool doesIntersect (Ray const &ray) const {
                 return (bool)intersect(ray);
-                /*real_t dum0, dum1, dum2;
-                return 0 != raytri_intersect(ray,
-                                             A.position, B.position, C.position,
-                                             dum0, dum1, dum2,
-                                             normal, normalizedNormal);*/
         }
 
         optional<Intersection> intersect(Ray const &ray) const {
@@ -363,7 +358,7 @@ struct TriangleBvhNode {
 
         optional<Intersection> intersect(Ray const &ray) const {
 
-                real_t nearest = constants::real_max, tmp;
+                real_t nearest = constants::real_max, tmp=real_t();
                 optional<Intersection> nearestI, tmpI;
 
                 /*for (CIt it=primitives.begin();

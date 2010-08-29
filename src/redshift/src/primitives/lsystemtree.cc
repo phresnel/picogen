@@ -44,7 +44,9 @@ namespace redshift { namespace {
         public:
                 LSystemTreeMesher (unsigned int slices,
                                    shared_ptr<Material> barkMaterial,
-                                   shared_ptr<Material> leafMaterial);
+                                   shared_ptr<Material> leafMaterial,
+                                   real_t texuscale, real_t texvscale
+                                  );
                 ~LSystemTreeMesher ();
                 void moveTo (Turtle state);
                 void drawTo (Turtle newState);
@@ -62,6 +64,8 @@ namespace redshift { namespace {
 
                 shared_ptr<Material> barkMaterial;
                 shared_ptr<Material> leafMaterial;
+
+                real_t texuscale, texvscale;
                 //GLuint displayList_;
                 //std::vector<GLuint> textures_;
         };
@@ -70,9 +74,12 @@ namespace redshift { namespace {
 
         LSystemTreeMesher::LSystemTreeMesher (unsigned int slices,
                                         shared_ptr<Material> barkMaterial,
-                                        shared_ptr<Material> leafMaterial)
+                                        shared_ptr<Material> leafMaterial,
+                                        real_t texuscale, real_t texvscale)
         : slices(slices), barkMaterial(barkMaterial), leafMaterial(leafMaterial)
+        , texuscale(texuscale), texvscale(texvscale)
         {
+                std::cout << texuscale << ":" << texvscale << std::endl;
                 //textures_.push_back(loadTexture("bark.jpg"));
                 //textures_.push_back(loadTexture("leaf.png"));
 
@@ -123,8 +130,8 @@ namespace redshift { namespace {
                         newState.rotation = state.rotation;
                 }
 
-                const double oldTexV = state.pathLength    * 0.025,
-                             newTexV = newState.pathLength * 0.025;
+                const double oldTexV = state.pathLength    * texvscale,
+                             newTexV = newState.pathLength * texvscale;
 
                 //glBegin(GL_QUAD_STRIP);
                 Point prevOldV, prevNewV;
@@ -140,8 +147,8 @@ namespace redshift { namespace {
                         const Point oldV (oldV_.x, oldV_.y, oldV_.z);
                         const Point newV (newV_.x, newV_.y, newV_.z);
 
-                        const TexCoords oldTC(1-f, oldTexV);
-                        const TexCoords newTC(1-f, newTexV);
+                        const TexCoords oldTC(texuscale*(1-f), oldTexV);
+                        const TexCoords newTC(texuscale*(1-f), newTexV);
 
                         if (i>0) {
                                 triangles.push_back(Triangle(
@@ -290,6 +297,14 @@ LSystemTree::LSystemTree(
         lsys = *newLsys;
         pat = lsys.run(level);
 
+
+        const real_t texuscale = lsys.constantExists("#texuscale") ?
+                                 lsys.constant("#texuscale").toReal() :
+                                 1;
+        const real_t texvscale = lsys.constantExists("#texvscale") ?
+                                 lsys.constant("#texvscale").toReal() :
+                                 1;
+
         LSystemTreeMesher mesher(
                 slicesPerSegment,
                 shared_ptr<Material>(new material::Matte(
@@ -299,7 +314,9 @@ LSystemTree::LSystemTree(
                 shared_ptr<Material>(new material::Matte(
                         shared_ptr<ColorTexture>(new texture::ColorImage("leaf.bmp")),
                         shared_ptr<ScalarTexture>(new texture::ConstantScalar(0))
-                ))
+                )),
+                texuscale,
+                texvscale
         );
 
         draw(lsys, pat, Turtle(), mesher);
