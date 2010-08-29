@@ -204,11 +204,12 @@ struct TriangleBvhTri : BoundPrimitive {
         }
 
         bool doesIntersect (Ray const &ray) const {
-                real_t dum0, dum1, dum2;
+                return (bool)intersect(ray);
+                /*real_t dum0, dum1, dum2;
                 return 0 != raytri_intersect(ray,
                                              A.position, B.position, C.position,
                                              dum0, dum1, dum2,
-                                             normal, normalizedNormal);
+                                             normal, normalizedNormal);*/
         }
 
         optional<Intersection> intersect(Ray const &ray) const {
