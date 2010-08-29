@@ -69,6 +69,59 @@ TokenVector tokenize(const char *code) {
                                 tokens.push_back (Token(Token::Integer, begin, it));
                                 it = prev;
                         }
+                } else if (c == '"') {
+                        std::cout << "parsing string ... \n";
+                        CI prev = it;
+
+                        ++it;
+                        std::string str = "";
+                        const CI begin = it;
+
+                        for(;*it != '\0' && *it!='"'; ++it) {
+                                if (*it == '\\') {
+                                        if (!it.can_peek(1)) {
+                                                std::cerr << "tokenization error in "
+                                                     << "line " << it.row()
+                                                     << ", column " << it.column()
+                                                     << ": "
+                                                     << "unexpected end-of-file"
+                                                     << " after escape-character"
+                                                     << std::endl;
+                                                return TokenVector();
+                                        }
+                                        if (it.peek(1) == '\\') {
+                                                str += '\\';
+                                        } else if (it.peek(1) == '"') {
+                                                str += '"';
+                                        } else {
+                                                std::cerr << "tokenization error in "
+                                                     << "line " << it.row()
+                                                     << ", column " << it.column()
+                                                     << ": "
+                                                     << "unknown escape sequence \""
+                                                     << "\\" << it.peek(1) << "\""
+                                                     << std::endl;
+                                                return TokenVector();
+                                        }
+                                        ++it;
+                                } else {
+                                        str += *it;
+                                }
+                        }
+
+                        if (*it == '\0') {
+                                std::cerr << "tokenization error in "
+                                     << "line " << it.row()
+                                     << ", column " << it.column()
+                                     << ": '" << *it << "', "
+                                     << "unexpected end-of-file" << std::endl;
+                                return TokenVector();
+                        }
+                        ++it;
+
+                        tokens.push_back (Token(Token::String, begin, it, str));
+
+                        std::cout << "==\"" << tokens.back().value() << "\"\n";
                 } else if (c == '<') {
                         if (it.can_peek(1) && it.peek(1) == '=') {
                                 tokens.push_back (

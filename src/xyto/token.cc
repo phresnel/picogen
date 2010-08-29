@@ -38,6 +38,19 @@ Token::Token (Type type_,
 
 
 
+Token::Token (Type type_,
+        const CodeIterator &from,
+        const CodeIterator &to,
+        const std::string &value_
+)
+: type_(type_)
+, from_(from)
+, to_(to)
+, value_(value_)
+{}
+
+
+
 Token::Token (Token const &rhs)
 : type_(rhs.type_)
 , from_(rhs.from_)

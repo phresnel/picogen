@@ -33,7 +33,7 @@ public:
                 Colon, Semicolon, Comma,
                 LeftParen, RightParen,     // ()
                 LeftBracket, RightBracket, // []
-                Identifier, Real, Integer,
+                Identifier, Real, Integer, String,
 
                 Plus, Minus,    // + -
                 Asterisk, Slash, // * /
@@ -48,6 +48,12 @@ public:
                const CodeIterator &from,
                const CodeIterator &to
         );
+        Token (Type type_,
+               const CodeIterator &from,
+               const CodeIterator &to,
+               const std::string &value
+        );
+
         Token (Token const &rhs);
         Token& operator= (Token const &rhs);
 
