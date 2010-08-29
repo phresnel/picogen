@@ -87,7 +87,7 @@ Forest::Forest(
 
         std::cout << "{{{" << std::endl;
         srand(44);
-        for (int i=0; i<500; ++i) {
+        for (int i=0; i<5; ++i) {
                 const Transform t =
                         Transform::translation(
                                 (-0.5 + rand() / (double)RAND_MAX) * 500,

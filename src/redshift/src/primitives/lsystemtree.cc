@@ -79,7 +79,6 @@ namespace redshift { namespace {
         : slices(slices), barkMaterial(barkMaterial), leafMaterial(leafMaterial)
         , texuscale(texuscale), texvscale(texvscale)
         {
-                std::cout << texuscale << ":" << texvscale << std::endl;
                 //textures_.push_back(loadTexture("bark.jpg"));
                 //textures_.push_back(loadTexture("leaf.png"));
 
@@ -297,22 +296,31 @@ LSystemTree::LSystemTree(
         lsys = *newLsys;
         pat = lsys.run(level);
 
-
         const real_t texuscale = lsys.constantExists("#texuscale") ?
                                  lsys.constant("#texuscale").toReal() :
                                  1;
         const real_t texvscale = lsys.constantExists("#texvscale") ?
                                  lsys.constant("#texvscale").toReal() :
                                  1;
+        const std::string barktex = lsys.constantExists("#barktexture") ?
+                                    lsys.constant("#barktexture").string() :
+                                    "";
+        const std::string leaftex = lsys.constantExists("#leaftexture") ?
+                                    lsys.constant("#leaftexture").string() :
+                                    "";
 
         LSystemTreeMesher mesher(
                 slicesPerSegment,
                 shared_ptr<Material>(new material::Matte(
-                        shared_ptr<ColorTexture>(new texture::ColorImage("bark.bmp")),
+                        barktex != ""
+                         ? shared_ptr<ColorTexture>(new texture::ColorImage(barktex))
+                         : shared_ptr<ColorTexture>(new texture::ConstantColor(Color::FromRGB(0.7,0.6,0.5,ReflectanceSpectrum))),
                         shared_ptr<ScalarTexture>(new texture::ConstantScalar(0))
                 )),
                 shared_ptr<Material>(new material::Matte(
-                        shared_ptr<ColorTexture>(new texture::ColorImage("leaf.bmp")),
+                        leaftex != ""
+                         ? shared_ptr<ColorTexture>(new texture::ColorImage(leaftex))
+                         : shared_ptr<ColorTexture>(new texture::ConstantColor(Color::FromRGB(0.2,0.7,0.2,ReflectanceSpectrum))),
                         shared_ptr<ScalarTexture>(new texture::ConstantScalar(0))
                 )),
                 texuscale,

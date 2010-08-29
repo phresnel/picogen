@@ -31,6 +31,12 @@ ColorImage::ColorImage (const char *filename)
 }
 
 
+ColorImage::ColorImage (const std::string &filename)
+: image(filename.c_str())
+{
+}
+
+
 
 ColorImage::~ColorImage() {
 }

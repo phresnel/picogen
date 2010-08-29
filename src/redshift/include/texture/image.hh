@@ -23,12 +23,14 @@
 
 #include "../basictypes/texture.hh"
 #include "../auxiliary/image.hh"
+#include <string>
 
 namespace redshift {
         namespace texture {
                 class ColorImage : public ColorTexture {
                 public:
                         ColorImage (const char *filename);
+                        ColorImage (const std::string &filename);
                         virtual ~ColorImage();
 
                         Color color(DifferentialGeometry const &) const;
