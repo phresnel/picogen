@@ -1049,6 +1049,9 @@ boost::optional<Constant> parse_constant (TokenIterator it,
                 c.setInteger(negative?
                              -it->valueAsInteger() :
                              it->valueAsInteger());
+        } else if (it->type() == Token::String) {
+                c.setType(Constant::String);
+                c.setString(it->value());
         }
         ++it;
 

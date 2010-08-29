@@ -25,10 +25,12 @@
 
 class Constant {
 public:
-        enum Type { Integer, Real };
+        enum Type { Integer, Real, String };
 
         std::string name() const { return name_; }
+        std::string string() const { return name_; }
         void setName (std::string const &name) { name_ = name; }
+        void setString (std::string const &string) { name_ = string; }
 
         Type type () const { return type_; }
         void setType (Type type) { type_ = type; }
@@ -40,6 +42,7 @@ public:
                 switch (type_) {
                 case Real: return real_;
                 case Integer: return integer_;
+                case String: return 0;
                 }
         }
 
@@ -47,6 +50,7 @@ public:
                 switch (type_) {
                 case Real: return real_;
                 case Integer: return integer_;
+                case String: return 0;
                 }
         }
 

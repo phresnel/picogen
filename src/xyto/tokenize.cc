@@ -117,11 +117,11 @@ TokenVector tokenize(const char *code) {
                                      << "unexpected end-of-file" << std::endl;
                                 return TokenVector();
                         }
-                        ++it;
 
-                        tokens.push_back (Token(Token::String, begin, it, str));
+                        tokens.push_back (Token(Token::String, begin, it.next(), str));
 
                         std::cout << "==\"" << tokens.back().value() << "\"\n";
+                        std::cout << "nt==" << *it << std::endl;
                 } else if (c == '<') {
                         if (it.can_peek(1) && it.peek(1) == '=') {
                                 tokens.push_back (
