@@ -44,7 +44,7 @@ BsdfSample BrdfToBtdf::sample_f (
         return BsdfSample(tmp.color(),
                           incident,
                           tmp.pdf(),
-                          tmp.type());
+                          this->type()); // <-- important
 }
 
 
