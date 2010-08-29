@@ -28,12 +28,13 @@ public:
         enum Type { Integer, Real, String };
 
         std::string name() const { return name_; }
-        std::string string() const { return name_; }
-        void setName (std::string const &name) { name_ = name; }
-        void setString (std::string const &string) { name_ = string; }
+        void setName (std::string const &s) { name_ = s; }
 
         Type type () const { return type_; }
         void setType (Type type) { type_ = type; }
+
+        std::string string() const { return string_; }
+        void setString (std::string const &s) { string_ = s; }
 
         void setReal(double f) { real_ = f; }
         void setInteger(int f) { integer_ = f; }
@@ -44,18 +45,20 @@ public:
                 case Integer: return integer_;
                 case String: return 0;
                 }
+                return 0;
         }
 
-        double toInteger () const {
+        int toInteger () const {
                 switch (type_) {
                 case Real: return real_;
                 case Integer: return integer_;
                 case String: return 0;
                 }
+                return 0;
         }
 
 private:
-        std::string name_;
+        std::string name_, string_;
         Type type_;
         int integer_;
         double real_;

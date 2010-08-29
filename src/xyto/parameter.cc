@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include <iostream>
+#include <stdexcept>
 #include "parameter.hh"
 
 Parameter::Type Parameter::type() const {
@@ -179,6 +180,10 @@ void Parameter::toConstant (::Constant c) {
                 type_ = Integer;
                 intval = c.toInteger();
                 break;
+        case ::Constant::String:
+                throw std::runtime_error(
+                        "in function xyto->Paramater::toConstant(), c is of "
+                        "type String");
         }
 }
 
