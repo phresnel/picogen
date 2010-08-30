@@ -182,13 +182,15 @@ namespace redshift { namespace {
                 typedef Triangle::TextureCoordinates TexCoords;
                 using namespace redshift;
 
-                const unsigned int count = 20; //rand() % 15 + 1;
+                const unsigned int count = rand() % 10 + 10;
                 for (unsigned int i=0; i<count; ++i) {
-                        const double s = 40;
+                        const double s = 30;
 
                         Turtle state = this->state;
-                        state.forward (-s * i);
-                        state.turnRight(3.14159*0.25 * (i%2==0?1:-1));// 1 * ((rand()/(double)RAND_MAX)-0.5));
+                        state.forward (-s * i * (rand()/(double)RAND_MAX));
+                        state.turnRight((3.14159*0.125+((rand()/(double)RAND_MAX)*0.25))
+                                        * (i%2==0?1:-1));// 1 * ((rand()/(double)RAND_MAX)-0.5));
+                        state.rollRight(0.5*3.14159*(rand()/(double)RAND_MAX));
 
                         const TurtleVector head = state.heading();
                         const TurtleVector right = state.right();

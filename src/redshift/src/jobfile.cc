@@ -79,6 +79,7 @@ namespace redshift { namespace scenefile {
 
         const actuarius::Enum<Camera::Type> Camera::Typenames =
                 ( actuarius::Nvp<Camera::Type>(Camera::pinhole, "pinhole")
+                | actuarius::Nvp<Camera::Type>(Camera::cylindrical, "cylindrical")
                 | actuarius::Nvp<Camera::Type>(Camera::cubemap_left, "cubemap-left")
                 | actuarius::Nvp<Camera::Type>(Camera::cubemap_right, "cubemap-right")
                 | actuarius::Nvp<Camera::Type>(Camera::cubemap_bottom, "cubemap-bottom")

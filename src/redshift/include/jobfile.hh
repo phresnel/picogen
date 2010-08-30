@@ -126,6 +126,7 @@ namespace redshift{class RenderTarget;}
 
 //#include "../include/rendertargets/sdlrendertarget.hh"
 //#include "../include/rendertargets/colorrendertarget.hh"
+#include "cameras/cylindrical.hh"
 #include "cameras/pinhole.hh"
 #include "cameras/cubemapface.hh"
 //#include "interaction/sdlcommandprocessor.hh"
@@ -1408,6 +1409,7 @@ namespace redshift { namespace scenefile {
 
                 enum Type {
                         pinhole,
+                        cylindrical,
                         cubemap_left,
                         cubemap_right,
                         cubemap_front,
@@ -1421,6 +1423,10 @@ namespace redshift { namespace scenefile {
                         double front;
                         PinholeParams () : front(1) {}
                 };
+                struct CylindricalParams {
+                        double front;
+                        CylindricalParams () : front(1) {}
+                };
 
 
 
@@ -1428,6 +1434,7 @@ namespace redshift { namespace scenefile {
                 TransformList transforms;
                 Type type;
                 PinholeParams pinholeParams;
+                CylindricalParams cylindricalParams;
 
 
                 Camera () : type(pinhole)
@@ -1444,6 +1451,11 @@ namespace redshift { namespace scenefile {
                         case pinhole:
                                 return shared_ptr<Camera> (new camera::Pinhole(
                                         width, height, pinholeParams.front,
+                                        transforms.toRedshiftTransform()));
+
+                        case cylindrical:
+                                return shared_ptr<Camera> (new camera::Cylindrical(
+                                        width, height, cylindricalParams.front,
                                         transforms.toRedshiftTransform()));
 
                         case cubemap_left:
@@ -1487,6 +1499,9 @@ namespace redshift { namespace scenefile {
                         switch (type) {
                         case pinhole:
                                 arch & pack ("front", pinholeParams.front);
+                                break;
+                        case cylindrical:
+                                arch & pack ("front", cylindricalParams.front);
                                 break;
                         case cubemap_front:
                         case cubemap_back:

@@ -118,6 +118,7 @@ OBJFILES += $(BXDFOBJDIR)/mirror.o
 OBJFILES += $(BXDFOBJDIR)/brdftobtdf.o
 
 OBJFILES += $(MATERIALOBJDIR)/matte.o
+OBJFILES += $(MATERIALOBJDIR)/leaf0.o
 
 #OBJFILES += $(PRIMITIVESOBJDIR)/heightmap.o
 #OBJFILES += $(PRIMITIVESOBJDIR)/booleanfield.o
@@ -134,6 +135,7 @@ OBJFILES += $(PRIMITIVESOBJDIR)/instance.o
 OBJFILES += $(PRIMITIVESOBJDIR)/boundinstance.o
 OBJFILES += $(PRIMITIVESOBJDIR)/forest.o
 
+OBJFILES += $(CAMERASOBJDIR)/cylindrical.o
 OBJFILES += $(CAMERASOBJDIR)/pinhole.o
 OBJFILES += $(CAMERASOBJDIR)/cubemapface.o
 
@@ -404,6 +406,10 @@ $(PRIMITIVESOBJDIR)/booleanfield.o: \
 # cameras
 ###############################################################################
 
+$(CAMERASOBJDIR)/cylindrical.o: \
+                     ./src/cameras/cylindrical.cc
+	$(CXX) -o $@ $<
+
 $(CAMERASOBJDIR)/pinhole.o: \
                      ./src/cameras/pinhole.cc
 	$(CXX) -o $@ $<
@@ -442,6 +448,9 @@ $(SHAPEOBJDIR)/closedsphere.o: ./src/shapes/closedsphere.cc
 ###############################################################################
 
 $(MATERIALOBJDIR)/matte.o: ./src/material/matte.cc
+	$(CXX) -o $@ $<
+
+$(MATERIALOBJDIR)/leaf0.o: ./src/material/leaf0.cc
 	$(CXX) -o $@ $<
 
 

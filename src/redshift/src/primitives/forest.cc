@@ -47,7 +47,7 @@ Forest::Forest(
         BvhBuilder builder;
 
         shared_ptr<LSystemTree> A (new LSystemTree (
-                "#scale=5;\n"
+                "#scale=0.5;\n"
                 "#diascale=0.04;\n"
                 "r1=0.9;\n"
                 "r2=0.6;\n"
@@ -66,38 +66,45 @@ Forest::Forest(
         ));
 
         shared_ptr<LSystemTree> B (new LSystemTree (
-                "d1 = 94.74;\n"
-                "d2 = 132.63;\n"
-                "a = 18.95;\n"
-                "lr = 1.109;\n"
-                "vr = 1.732;\n"
-                "#scale=0.02;\n"
-                "#diascale=0.8;\n"
-
-                "axiom: dia(1.0) f(0) rollright(45) A;\n"
-                "p1: A --> dia(vr) f(100) \n"
-                        "[down(a) f(100) A] rollright(d1)\n"
-                        "[down(a) f(100) A] rollright(d2)\n"
-                        "[down(a) f(100) A];\n"
-                "p2: f(l) --> f(l*lr);\n"
-                "p3: dia(w) --> dia(w*vr);\n",
+                        "\
+                        d1 = 94.74;\
+                        d2 = 132.63;\
+                        a = 18.95;\
+                        lr = 1.109;\
+                        vr = 1.732;\
+                        #scale=0.015;\
+                        #diascale=3.6;\
+                        #texuscale=1.0;\
+                        #texvscale=0.01;\
+                        #barktexture=\"bark.bmp\";\
+                        #leaftexture=\"leaf.bmp\";\
+\
+                        axiom: dia(1.0) f(0) rollright(45) A;\
+                        p1: A --> dia(vr) f(100)\
+                                [down(a) f(100) A] rollright(d1)\
+                                [down(a) f(100) A] rollright(d2)\
+                                [down(a) f(100) A];\
+                        p2: f(l) --> f(l*lr);\
+                        p3: dia(w) --> dia(w*vr);\
+                        "
+                ,
                 6,//7
                 6
         ));
 
         std::cout << "{{{" << std::endl;
         srand(44);
-        for (int i=0; i<5; ++i) {
+        for (int i=0; i<5000; ++i) {
                 const Transform t =
                         Transform::translation(
-                                (-0.5 + rand() / (double)RAND_MAX) * 500,
+                                (-0.5 + rand() / (double)RAND_MAX) * 1500,
                                 0,
-                                (-0.5 + rand() / (double)RAND_MAX) * 500)
+                                (-0.5 + rand() / (double)RAND_MAX) * 1500)
                         *
                         Transform::rotationY(
                                 rand()/(double)RAND_MAX * 3.14159*2)
                         ;
-                if (rand()%3 == 0)
+                if (true || rand()%3 == 0)
                         builder.add(shared_ptr<BoundPrimitive>(
                                         new BoundInstance(t, B)));
                 else
