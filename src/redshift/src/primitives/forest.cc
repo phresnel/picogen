@@ -73,7 +73,7 @@ Forest::Forest(
                         lr = 1.109;\
                         vr = 1.732;\
                         #scale=0.015;\
-                        #diascale=3.6;\
+                        #diascale=2.3;\
                         #texuscale=1.0;\
                         #texvscale=0.01;\
                         #barktexture=\"bark.bmp\";\

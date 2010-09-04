@@ -46,7 +46,7 @@ Cylindrical::Cylindrical (
                 /*x(x_*l),*/ z(z_*l) // we don't need x for dot product
         ;
 
-        angleRange = std::acos(z) * 2;
+        angleRange = std::acos(z) * 2; // "reduced" dot product and then angle
 }
 
 

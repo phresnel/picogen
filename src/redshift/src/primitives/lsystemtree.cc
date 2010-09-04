@@ -59,6 +59,7 @@ namespace redshift { namespace {
 
                 std::vector<redshift::primitive::Triangle> triangles;
         private:
+                void leaf_();
                 Turtle state;
                 std::stack<Turtle> stateStack;
                 unsigned int slices;
@@ -172,22 +173,25 @@ namespace redshift { namespace {
                 //glEnd();
 
                 state = newState;
+
+                if (state.diameter < 5) leaf_();
         }
 
 
 
-        void LSystemTreeMesher::leaf() {
+        void LSystemTreeMesher::leaf() {}
+        void LSystemTreeMesher::leaf_() {
                 using redshift::primitive::Triangle;
                 typedef Triangle::Vertex Vertex;
                 typedef Triangle::TextureCoordinates TexCoords;
                 using namespace redshift;
-
-                const unsigned int count = rand() % 10 + 10;
+                const unsigned int count = rand() % 10 + 5;
                 for (unsigned int i=0; i<count; ++i) {
                         const double s = 30;
 
                         Turtle state = this->state;
-                        state.forward (-s * i * (rand()/(double)RAND_MAX));
+                        //state.tropism = TurtleVector(0,0,0);
+                        state.forward (-17. * count * (rand()/(double)RAND_MAX), false);
                         state.turnRight((3.14159*0.125+((rand()/(double)RAND_MAX)*0.25))
                                         * (i%2==0?1:-1));// 1 * ((rand()/(double)RAND_MAX)-0.5));
                         state.rollRight(0.5*3.14159*(rand()/(double)RAND_MAX));

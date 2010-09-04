@@ -60,8 +60,14 @@ struct Turtle {
         }
 
 
-        void forward (double f) {
-                tropism_ (f, tropism, e);
+        void forward (double f, bool applyTropism = true) {
+                if (applyTropism) {
+                        tropism_ (f, tropism, e);
+                } else {
+                        const TurtleVector delta = heading(f);
+                        position += delta;
+                        pathLength += length(delta);
+                }
         }
 
         void turnLeft (double f) {
