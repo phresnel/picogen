@@ -27,6 +27,7 @@
 
 namespace cosyscene {
         class Terrain;
+        class Scene;
 }
 
 namespace Ui {
@@ -41,7 +42,8 @@ public:
         explicit TerrainWindow(QWidget *parent = 0);
         ~TerrainWindow();
 
-        void setTerrain (redshift::shared_ptr<cosyscene::Terrain>);
+        void setTerrain (redshift::shared_ptr<cosyscene::Terrain>,
+                         bool stopSignals=true);
 
 signals:
         void terrainChanged();
@@ -49,10 +51,14 @@ signals:
 public slots:
         void stash_doStash();
         void stash_doRestore();
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
         Ui::TerrainWindow *ui;
         redshift::shared_ptr<cosyscene::Terrain> terrain;
+private:
+        void showTerrainKindSelection();
+        void showQuatschEditor();
 
 private slots:
         void on_quatschCodeEditorCLB_clicked();

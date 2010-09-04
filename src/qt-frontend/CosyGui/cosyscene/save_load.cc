@@ -53,7 +53,7 @@ void load_scene (Scene &scene, std::string const &name) {
                 throw std::runtime_error(
                         "File '" + name + "' could not be opened for loading.");
         }
-        load_scene (scene, name);
+        load_scene (scene, fs);
 }
 
 }

@@ -56,6 +56,7 @@ public:
 
         Kind kind() const;
         void toQuatschSource (cosyscene::QuatschSource const &qs);
+        cosyscene::QuatschSource quatschSource() const;
 
         void stash();
         void clearStash();

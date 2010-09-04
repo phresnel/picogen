@@ -48,6 +48,12 @@ void Terrain::toQuatschSource (cosyscene::QuatschSource const &qs) {
 
 
 
+cosyscene::QuatschSource Terrain::quatschSource() const {
+        return quatschSource_;
+}
+
+
+
 void Terrain::stash() {
         stash_.stash(*this);
         stash_.back().clearStash();

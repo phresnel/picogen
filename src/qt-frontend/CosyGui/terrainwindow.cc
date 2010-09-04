@@ -22,8 +22,8 @@
 #include "terrainwindow.hh"
 #include "ui_terrainwindow.h"
 
+#include "cosyscene/scene.hh"
 #include "cosyscene/terrain.hh"
-
 
 
 TerrainWindow::TerrainWindow(QWidget *parent) :
@@ -42,17 +42,45 @@ TerrainWindow::~TerrainWindow() {
 
 
 
-void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t) {
+void TerrainWindow::showQuatschEditor() {
+        ui->stackedWidget->setCurrentWidget(ui->quatschCodeEditorPage);
+}
+
+
+
+void TerrainWindow::showTerrainKindSelection() {
+        ui->stackedWidget->setCurrentWidget(ui->selectKind);
+}
+
+
+
+void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
+                                bool stopSignals
+) {
+        bool prevBlocked;
+        if (stopSignals)
+                prevBlocked = this->blockSignals(true);
+
         terrain = t;
+        switch (t->kind()) {
+        case cosyscene::Terrain::QuatschSource:
+                ui->quatschCodeEditor->setCode(QString::fromStdString(
+                                t->quatschSource().code()));
+                showQuatschEditor();
+                break;
+        default:
+                showTerrainKindSelection();
+                break;
+        }
+
+        if (stopSignals)
+                this->blockSignals(prevBlocked);
 }
 
 
 
 void TerrainWindow::on_quatschCodeEditorCLB_clicked() {
-        ui->stackedWidget->setCurrentWidget(ui->quatschCodeEditorPage);
-        terrain->toQuatschSource (cosyscene::QuatschSource(
-                ui->quatschCodeEditor->code().toStdString()
-        ));
+        showQuatschEditor();
 }
 
 
@@ -73,4 +101,12 @@ void TerrainWindow::stash_doStash() {
 
 
 void TerrainWindow::stash_doRestore() {
+}
+
+
+
+void TerrainWindow::sceneInvalidated(
+        redshift::shared_ptr<cosyscene::Scene> scene
+) {
+        setTerrain (scene->terrain());
 }

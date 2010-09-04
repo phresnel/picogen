@@ -23,6 +23,8 @@
 #include "cosyscene/scene.hh"
 #include "cosyscene/save_load.hh"
 
+#include <iostream>
+
 //////
 #include <QFileDialog>
 #include <QDesktopServices>
@@ -92,6 +94,32 @@ QString askForNewSaveFilename (QWidget *parent) {
         }
         return "";
 }
+
+QString askForOpenFilename(QWidget *parent) {
+        // I find the OS' own file dialog to be somewhat disturbing
+        QFileDialog dialog(parent);
+        dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setWindowTitle("Select a file to load");
+
+        QStringList nameFilters;
+        nameFilters << "Picogen scene (*.picogen)"
+                    << "Everything (*)"
+                    ;
+        dialog.setNameFilters(nameFilters);
+
+        QList<QUrl> urls = dialog.sidebarUrls();
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+        dialog.setSidebarUrls(urls);
+
+        if (!dialog.exec()) {
+                return "";
+        }
+
+        return dialog.selectedFiles()[0];
+}
+
 //////
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -99,9 +127,15 @@ MainWindow::MainWindow(QWidget *parent) :
         ui(new Ui::MainWindow),
         scene(new cosyscene::Scene())
 {
+        using redshift::shared_ptr;
+        using cosyscene::Scene;
+
         // Inits.
         ui->setupUi(this);
         ui->terrain->setTerrain(scene->terrain());
+
+        connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
+                 ui->terrain, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
 
         // Aesthetics.
         on_filmCommandLink_clicked();
@@ -172,6 +206,24 @@ void MainWindow::on_restoreButton_clicked() {
 }
 
 void MainWindow::on_actionSave_triggered() {
-        askForNewSaveFilename(this);
-        //cosyscene::save_scene()
+        const QString str = askForNewSaveFilename(this);
+        if (str == "")
+                return;
+        cosyscene::save_scene(*this->scene, str.toStdString());
+}
+
+void MainWindow::on_actionLoad_triggered() {
+        const QString str = askForOpenFilename(this);
+        if (str == "")
+                return;
+        try {
+                cosyscene::Scene scene;
+                cosyscene::load_scene(scene, str.toStdString());
+                *this->scene = scene;
+                emit sceneInvalidated(this->scene);
+        } catch (std::exception const &e) {
+                std::cerr << e.what() << std::endl;
+        } catch (...) {
+                std::cerr << "unknown exception" << std::endl;
+        }
 }
