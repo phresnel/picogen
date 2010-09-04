@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>696</width>
+    <height>498</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+* { color: white; }
+
+*#MainWindow, *#centralWidget {
+	background-color:#555;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {width:0;height:0;background:none;}
+QScrollBar{padding:1px 1px 1px 1px;}
+QScrollBar::handle{
+        border-radius:4px;
+}
+QScrollBar::handle:hover {
+        border:1px solid #edd;
+}
+QScrollBar::handle:horizontal{
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #cbb, stop: 0.5 #505050,
+                                       stop: 0.6 #434343, stop:1 #caa);
+}
+QScrollBar::handle:vertical{
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                       stop:0 #cbb, stop: 0.5 #505050,
+                                       stop: 0.6 #434343, stop:1 #caa);
+}
+QScrollBar::add-page, QScrollBar::sub-page{
+        background:none;
+        color:transparent;
+}
+
+QGraphicsView, QMdiArea,
+QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
+QTreeView, QFrame#helpFrame {
+        color:white;
+        border:2px solid #ccc;
+        border-radius:10px;
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #817171, stop: 0.5 #605050,
+                                       stop: 0.6 #534343, stop:1 #857575);
+        alternate-background-color:#556;
+}
+QFrame#helpFrame, QWidget#picohelp {
+        background-color:transparent;
+}
+QFrame {
+        background-color:#222;
+        border-radius:5px;
+}
+
+
+QTreeView, QMdiArea, QTextEdit {
+        background-color:#556;
+        alternate-background-color:#556;
+}
+QMdiArea::QFrame {
+        background-color:#222;
+}
+
+
+QHeaderView { background-color: transparent; }
+QHeaderView::section {
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #616161, stop: 0.5 #505050,
+                                       stop: 0.6 #434343, stop:1 #656565);
+        color: white;
+        padding-left: 4px;
+        border: 1px solid #6c6c6c;
+        border-radius:5px;
+ }
+
+QMenuBar {
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #889, stop:1 #aab);
+ } QMenuBar::item  {
+        spacing: 3px; /* spacing between menu bar items */
+        padding: 1px 4px;
+        background: transparent;
+        border-radius: 4px;
+} QMenuBar::item:selected { /* when selected using mouse or keyboard */
+        background: #b8b8b8;
+} QMenuBar::item:pressed {
+        background: #aaa;
+}
+
+/*QMenu {
+        border: 1px solid black;
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #716161, stop: 0.5 #605050,
+                                       stop: 0.52 #534343, stop:1 #756565);
+}*/ QMenu::item {
+        background-color: #452311;
+} QMenu::item:selected {
+        background-color: #a59361;
+} QMenu::item:hover {
+        background-color: #a59361;
+}
+
+QPushButton { padding: 5px; padding-top: 1px; padding-bottom: 1px; }
+QPushButton:!flat {
+        border: 2px solid #aaa;
+        border-radius: 6px;
+        background-color: #666;
+} QPushButton:disabled {
+        color:gray;
+        background-color: black;
+}  QPushButton:hover {
+        border: 2px solid #afafc1;
+    background-color: #888;
+} QPushButton:pressed {
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #999, stop: 0.5 #555,
+                                       stop: 0.55 #444, stop:1 #999);
+} 
+
+QPushButton:checked,
+QLineEdit:focus, QSpinBox:focus,
+QDoubleSpinBox:focus, QComboBox:focus  {
+        background-color: #575;
+}
+
+QGroupBox {		
+        background-color: #444;
+        border: 2px solid #ccc;
+        border-radius: 6px;
+        margin-top: 2ex; /* leave space at the top for the title */
+        font: large;
+} QGroupBox::title {
+        color:#EFD;
+        subcontrol-origin: margin;
+        subcontrol-position: top center; /* position at the top center */
+}
+
+
+QSpinBox::up-arrow, QSpinBox::up-button,
+QDoubleSpinBox::up-arrow, QDoubleSpinBox::up-button {
+    width:0px;height:0px;
+}
+QSpinBox::down-arrow, QSpinBox::down-button,
+QDoubleSpinBox::down-arrow, QDoubleSpinBox::down-button {
+    width:0px;height:0px;
+}
+
+
+QSplitter::handle:vertical{
+        border: 1px solid transparent;
+        border-radius:4px;
+        height:5px;
+        background-color:
+                qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #91b191, stop: 0.5 #607050,
+                                       stop: 0.6 #536343, stop:1 #91b191);
+}
+QSplitter::handle:horizontal{
+        border: 1px solid transparent;
+        border-radius:4px;
+        width:5px;
+        background-color:
+                qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                       stop:0 #91b191, stop: 0.5 #607050,
+                                       stop: 0.6 #536343, stop:1 #91b191);
+}
+QSplitter::handle:hover {
+        border:1px solid #faa;
+}
+
+
+QComboBox::drop-down {
+     subcontrol-origin: padding;
+     subcontrol-position: top right;
+     width: 15px;
+
+     border-left-width: 1px;
+     border-left-color: darkgray;
+     border-left-style: solid;
+     border-top-right-radius: 3px;
+     border-bottom-right-radius: 3px;
+ }
+QComboBox QAbstractItemView {
+        background: gray;
+}
+
+
+QTabWidget::pane { /* The tab widget frame */
+        border: 2px solid #555;
+        border-radius:4px;
+} QTabWidget::tab-bar {
+        alignment:center;
+} QTabBar::tab {
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #669, stop: 0.5 #333,
+                                       stop: 0.55 #232323, stop:1 #669);
+        border: 2px solid #C4C4C3;
+        border-bottom-color: #C2C7CB; /* same as the pane color */
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        width: 128px;
+        padding: 2px;
+        color:#ccc;
+} QTabBar::tab:selected, QTabBar::tab:hover {
+        background-color:
+                        qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                       stop:0 #9191b1, stop: 0.5 #607050,
+                                       stop: 0.55 #334323, stop:1 #9191b1);
+        color:#fff;
+} QTabBar::tab:selected {
+        border-color: #9B9B9B;
+        border-bottom-color: #C2C7CB; /* same as pane color */
+} QTabBar::tab:!selected {
+        margin-top: 2px; /* make non-selected tabs look smaller */
+}
+
+QLabel{ background-color:none; }</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>12</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="verticalFrame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QCommandLinkButton" name="filmCommandLink">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Film</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/toplevel-navigation/resources/mobileicons_freeforcommercial_film.png</normaloff>:/toplevel-navigation/resources/mobileicons_freeforcommercial_film.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="description">
+          <string>Brighter? Darker?</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCommandLinkButton" name="terrainCommandLink">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Terrain</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="description">
+          <string>What we love the most.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCommandLinkButton" name="forestCommandLink">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Forest &amp;&amp; Groundcover</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/toplevel-navigation/resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</normaloff>:/toplevel-navigation/resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="description">
+          <string>What we love the most.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCommandLinkButton" name="navigationCommandLink">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Navigation</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/toplevel-navigation/resources/oldschool_freefornoncommercial_navigation.png</normaloff>:/toplevel-navigation/resources/oldschool_freefornoncommercial_navigation.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="description">
+          <string>Find a spot!</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCommandLinkButton" name="renderCommandLink">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Render</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/toplevel-navigation/resources/sleekxp_cc-noncommercial_render.png</normaloff>:/toplevel-navigation/resources/sleekxp_cc-noncommercial_render.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>48</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="description">
+          <string>Action!</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QFrame" name="stashFrame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="statusLabel">
+           <property name="text">
+            <string>&lt;meh status label&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="stashButton">
+           <property name="text">
+            <string>stash</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="restoreButton">
+           <property name="text">
+            <string>restore</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="FilmSettings" name="filmSettings"/>
+        <widget class="TerrainWindow" name="terrain"/>
+        <widget class="QWidget" name="page_2"/>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>696</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionSave">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>FilmSettings</class>
+   <extends>QWidget</extends>
+   <header>filmsettings.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TerrainWindow</class>
+   <extends>QWidget</extends>
+   <header>terrainwindow.hh</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

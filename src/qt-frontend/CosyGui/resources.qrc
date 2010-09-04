@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/toplevel-navigation">
+        <file>resources/oldschool_freefornoncommercial_navigation.png</file>
+        <file>resources/mobileicons_freeforcommercial_film.png</file>
+        <file>resources/dellipack_freeforcommercial_landscape.png</file>
+        <file>resources/sleekxp_cc-noncommercial_render.png</file>
+        <file>resources/oxygen_gpl_quatschsourceeditor.png</file>
+        <file>resources/bagsandboxes_freeforcommercial_preset.png</file>
+        <file>resources/crystalclear_lgpl_folder.png</file>
+        <file>resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</file>
+    </qresource>
+</RCC>
