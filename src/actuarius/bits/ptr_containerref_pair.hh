@@ -24,7 +24,7 @@
 namespace actuarius {
 
 //-----------------------------------------------------------------------------
-// nrp - name ptr enum reference-to-container pair
+// nrp
 //-----------------------------------------------------------------------------
 template <typename CONT, typename PTR>
 struct pcrp {

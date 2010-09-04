@@ -273,6 +273,12 @@ public:
         }
 
         template <typename T>
+        IArchive &operator & (inlineref<T> val) {
+                val.value.serialize(*this);
+                return *this;
+        }
+
+        template <typename T>
          typename detail::enable_if<
                  detail::has_serialize_function<IArchive,T>,
                  IArchive
@@ -337,6 +343,53 @@ public:
                 path.pop ();
                 return *this;
         }
+
+        template <typename CONT, typename PTR>
+        IArchive&
+        operator & (pcrp<CONT,PTR> val) {
+                using namespace detail;
+                path.push (path.top() + "?" + "/");
+
+                while (detail::block_t<iterator_t> child = doc.take_first_child()) {
+                        typename CONT::value_type value;
+
+                        std::stringstream ss;
+                        ss << child.id().c_str();
+                        ss >> value.*val.ptr;
+
+                        IArchive ia (*this, child, false);
+                        value.serialize (ia);
+                        val.value.push_back (value);
+                }
+
+                path.pop ();
+                return *this;
+        }
+
+        /*
+        template <typename CONT, typename PTR>
+        OArchive&
+        operator & (pcrp<CONT,PTR> val) {
+
+                path.push (path.top() + "?" + "/");
+
+                //++indendation;
+                for (typename CONT::iterator it = val.value.begin();
+                     it!=val.value.end();
+                     ++it
+                ) {
+                        out << indent() << (*it).*val.ptr << "{\n";
+                        ++indendation;
+                        it->serialize (*this);
+                        --indendation;
+                        out << indent() << "}\n";
+                }
+                //--indendation;
+                path.pop ();
+
+                return *this;
+        }
+        */
 
         template <typename CONT, typename ADVICE_TYPE>
         IArchive&
