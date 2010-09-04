@@ -32,6 +32,7 @@ namespace actuarius {
 
 #include "bits/enum.hh"
 #include "bits/ref.hh"
+#include "bits/inlineref.hh"
 #include "bits/containerref.hh"
 #include "bits/name_ref_pair.hh"
 #include "bits/name_enum_ref_pair.hh"
@@ -42,6 +43,7 @@ namespace actuarius {
 #include "bits/name_ptr_enum_ref_pair.hh"
 #include "bits/name_ptr_enum_containerref_pair.hh"
 #include "bits/ptr_enum_containerref_pair.hh"
+#include "bits/ptr_containerref_pair.hh"
 #include "bits/comment.hh"
 #include "bits/match_descriptors.hh"
 #include "bits/parsing.hh"

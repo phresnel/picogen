@@ -79,6 +79,12 @@ namespace actuarius {
         }
 
         template <typename T>
+        inline inlineref<T>
+        pack_inline (T &value) {
+                return make_inlineref (value);
+        }
+
+        template <typename T>
         inline
         typename detail::enable_if<
                 detail::is_container_type<T>,
@@ -221,6 +227,19 @@ namespace actuarius {
                 CONT &value
         ) {
                 return make_pecrp(ptr, enumDesc, value);
+        }
+
+        template <typename CONT, typename PTR>
+        inline
+        typename detail::enable_if<
+                detail::is_container_type<CONT>,
+                pcrp<CONT, PTR>
+        >::type
+        pack (
+                PTR CONT::value_type::* ptr,
+                CONT &value
+        ) {
+                return make_pcrp(ptr, value);
         }
 }
 

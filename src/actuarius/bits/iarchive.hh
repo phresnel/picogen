@@ -217,6 +217,37 @@ public:
                 return *this;
         }
 
+        /*template <typename T> IArchive
+        &operator & (pcrp<T> val) {
+                path.push (path.top() + val.name + "/");
+
+                while (detail::value_match_t<iterator_t>
+                        value = doc.take_value (val.name)
+                ) {
+                        using namespace detail;
+                        // Extract value (i.e. key for lookup).
+                        std::stringstream ss;
+                        ss << unescape_nonstring_terminal (value.value());
+                        std::string key;
+                        ss >> key;
+
+                        // Check if it exists.
+                        if (val.enumDesc.exists (key.c_str())) {
+                                val.value.push_back(val.enumDesc[key.c_str()]);
+                        } else if (!optional.top()) {
+                                std::cerr << "warning: found nothing for "
+                                          << path.top()
+                                          << " for value '"
+                                          << key
+                                          << "' (necrp)"
+                                          << std::endl;
+                        }
+                }
+
+                path.pop ();
+                return *this;
+        }*/
+
         template <typename T>
         typename detail::enable_if<
                 detail::has_serialize_function<IArchive,T>,
