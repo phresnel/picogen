@@ -18,15 +18,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #ifndef SAVE_LOAD_HH_20100902
 #define SAVE_LOAD_HH_20100902
+
 #include <iosfwd>
+#include <string>
 
 namespace cosyscene {
         class Scene;
-        void save_scene (const Scene &scene, std::ostream &out);
-        void load_scene (Scene &scene, std::istream &in);
+        void save_scene (const Scene &scene, std::ostream &);
+        void save_scene (const Scene &scene, std::string const &);
+        void load_scene (Scene &scene, std::istream &);
+        void load_scene (Scene &scene, std::string const &);
 }
 
 #endif // SAVE_LOAD_HH_20100902

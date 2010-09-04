@@ -43,21 +43,23 @@ int main(int argc, char *argv[])
         OArchive (fs) & pack("terrain", t);
         */
         if (0) {
-                cosyscene::Scene s;
-                s.terrain()->toQuatschSource(cosyscene::QuatschSource("/*hello world*/ 0"));
-                s.terrain()->stash();
-                s.terrain()->toQuatschSource(cosyscene::QuatschSource("/*new try*/ 1"));
-                std::ofstream fs("test.cosygui");
-                save_scene (s, fs);
-        } else {
-                cosyscene::Scene s;
-                {
-                        std::ifstream fs("test.cosygui");
-                        load_scene (s, fs);
-                }
-                {
-                        std::ofstream fs("testtest.cosygui");
+                if (0) {
+                        cosyscene::Scene s;
+                        s.terrain()->toQuatschSource(cosyscene::QuatschSource("/*hello world*/ 0"));
+                        s.terrain()->stash();
+                        s.terrain()->toQuatschSource(cosyscene::QuatschSource("/*new try*/ 1"));
+                        std::ofstream fs("test.cosygui");
                         save_scene (s, fs);
+                } else {
+                        cosyscene::Scene s;
+                        {
+                                std::ifstream fs("test.cosygui");
+                                load_scene (s, fs);
+                        }
+                        {
+                                std::ofstream fs("testtest.cosygui");
+                                save_scene (s, fs);
+                        }
                 }
         }
 

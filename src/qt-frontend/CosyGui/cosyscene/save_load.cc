@@ -18,11 +18,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #include <ostream>
+#include <fstream>
 #include <string>
-//#include <fstream>
 
 #include "../../actuarius/actuarius.hh"
 #include "cosyscene/serialization/stash.ser.hh"
@@ -30,11 +28,32 @@
 #include "cosyscene/serialization/scene.ser.hh"
 
 namespace cosyscene {
+
 void save_scene (const cosyscene::Scene &scene_, std::ostream &fs_) {
         actuarius::OArchive(fs_) & actuarius::pack("cosy", scene_);
 }
+
+void save_scene (const Scene &scene, std::string const &name) {
+        std::ofstream fs(name.c_str());
+        if (!fs.good()) {
+                throw std::runtime_error(
+                        "File '" + name + "' could not be opened for saving.");
+        }
+        save_scene (scene, fs);
+}
+
 void load_scene (cosyscene::Scene &scene, std::istream &fs) {
         scene = cosyscene::Scene();
         actuarius::IArchive (fs) & actuarius::pack("cosy", scene);
 }
+
+void load_scene (Scene &scene, std::string const &name) {
+        std::ifstream fs(name.c_str());
+        if (!fs.good()) {
+                throw std::runtime_error(
+                        "File '" + name + "' could not be opened for loading.");
+        }
+        load_scene (scene, name);
+}
+
 }
