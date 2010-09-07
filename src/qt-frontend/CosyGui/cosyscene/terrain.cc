@@ -54,8 +54,9 @@ cosyscene::QuatschSource Terrain::quatschSource() const {
 
 
 void Terrain::stash() {
-        stash_.stash(*this);
-        stash_.back().clearStash();
+        Terrain tmp = *this;
+        tmp.clearStash();
+        stash_.stash(tmp);
 }
 
 

@@ -38,19 +38,27 @@ void StashView::addItem (const StashViewItem &item) {
         items.push_back(item);
 
         ui->listWidget->clear();
+
+        const QDate today = QDateTime::currentDateTime().date();
         for (int i=0; i<items.size(); ++i) {
                 const StashViewItem &item = items.at(i);
-                QListWidgetItem *lwi = new QListWidgetItem(
-                                QDateTime::fromTime_t(item.time).toString(
-                                        "hh:mm:ss"
-                                ));
-                //lwi->setData(0, QVariant::fromValue(item));
+                const QDateTime datetime = QDateTime::fromTime_t(item.time);
+
+                const int daysAgo = datetime.date().daysTo(today);
+                const QString dateFmt =
+                                (daysAgo == 0) ? "hh:mm:ss" :
+                                (daysAgo < 7) ? "dddd, hh:mm:ss" :
+                                (daysAgo < 365) ? "MMM dd, hh:mm:ss" :
+                                "MMM dd yyyy, hh:mm:ss";
+                const QString dateString = datetime.toString(dateFmt);
+
+
+                QListWidgetItem *lwi = new QListWidgetItem(dateString);
                 ui->listWidget->addItem(lwi);
         }
 }
 
 void StashView::on_listWidget_itemDoubleClicked(QListWidgetItem* ) {
-        setResult(QDialog::Accepted);
         accept();
 }
 
@@ -60,4 +68,12 @@ bool StashView::hasSelectedData() const {
 
 int StashView::selectedIndex() const {
         return ui->listWidget->currentRow();
+}
+
+void StashView::on_okayButton_clicked() {
+        accept();
+}
+
+void StashView::on_cancelButton_clicked() {
+        reject();
 }

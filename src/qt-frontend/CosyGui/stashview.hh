@@ -71,7 +71,10 @@ public:
         bool hasSelectedData() const;
 
         int selectedIndex() const;
+
 private slots:
+        void on_cancelButton_clicked();
+        void on_okayButton_clicked();
         void on_listWidget_itemDoubleClicked(QListWidgetItem* );
 
 private:

@@ -86,6 +86,7 @@ void TerrainWindow::setTerrainByValue (cosyscene::Terrain const &t,
 
 
 void TerrainWindow::updateViews () {
+        const bool wasBlocked = blockSignals(true);
         switch (terrain->kind()) {
         case cosyscene::Terrain::QuatschSource:
                 ui->quatschCodeEditor->setCode(
@@ -97,6 +98,7 @@ void TerrainWindow::updateViews () {
                 showTerrainKindSelection();
                 break;
         }
+        blockSignals(wasBlocked);
 }
 
 
