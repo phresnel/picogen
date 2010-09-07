@@ -34,17 +34,19 @@ namespace actuarius {
 template <typename T> class StashObject {
 public:
         StashObject(T const &value)
-        : time_(time(0)), value_(value)
+        : time_(std::time(0)), value_(value)
         {}
 
         const T &value() const { return value_; }
         T &value() { return value_; }
 
+        std::time_t time() const { return time_; }
+
         // Serialization.
         template<typename Arch>
         void serialize (Arch &arch);  // stash.def.hh
 private:
-        time_t time_;
+        std::time_t time_;
         T value_;
 
         template <typename T_> friend class Stash;
@@ -56,9 +58,9 @@ private:
 template <typename T> class Stash {
 public:
         // -- Vector Interface -------------------------------------------------
-        typedef typename std::vector<StashObject<T> >::iterator
+        typedef typename std::vector<StashObject<T> >::reverse_iterator
                          iterator;
-        typedef typename std::vector<StashObject<T> >::const_iterator
+        typedef typename std::vector<StashObject<T> >::const_reverse_iterator
                          const_iterator;
 
         void stash (T const &value) {
@@ -69,12 +71,12 @@ public:
 
         bool empty() const { return objects.empty(); }
 
-        iterator       begin()       { return objects.begin(); }
-        const_iterator begin() const { return objects.begin(); }
-        iterator       end()         { return objects.end(); }
-        const_iterator end()   const { return objects.end(); }
-        T & back() { return objects.back().value(); }
-        const T & back() const { return objects.back().value(); }
+        iterator       begin()       { return objects.rbegin(); }
+        const_iterator begin() const { return objects.rbegin(); }
+        iterator       end()         { return objects.rend(); }
+        const_iterator end()   const { return objects.rend(); }
+        T & back() { return objects.front().value(); }
+        const T & back() const { return objects.front().value(); }
         // ---------------------------------------------------------------------
 
         // -- Serialization ----------------------------------------------------

@@ -166,6 +166,7 @@ void MainWindow::switchOffCommandLinks () {
 
         disconnect(SIGNAL(stash_doStash()));
         disconnect(SIGNAL(stash_doRestore()));
+        disconnect(SIGNAL(reset()));
 }
 
 void MainWindow::on_terrainCommandLink_clicked() {
@@ -176,6 +177,8 @@ void MainWindow::on_terrainCommandLink_clicked() {
                 ui->terrain, SLOT(stash_doStash()));
         connect(this, SIGNAL(stash_doRestore()),
                 ui->terrain, SLOT(stash_doRestore()));
+        connect(this, SIGNAL(reset()),
+                ui->terrain, SLOT(reset()));
 }
 
 void MainWindow::on_forestCommandLink_clicked() {
@@ -203,6 +206,11 @@ void MainWindow::on_stashButton_clicked() {
 
 void MainWindow::on_restoreButton_clicked() {
         emit stash_doRestore();
+}
+
+void MainWindow::on_stashResetButton_clicked() {
+        emit stash_doStash();
+        emit reset();
 }
 
 void MainWindow::on_actionSave_triggered() {

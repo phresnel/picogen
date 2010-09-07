@@ -58,6 +58,11 @@ public:
         void toQuatschSource (cosyscene::QuatschSource const &qs);
         cosyscene::QuatschSource quatschSource() const;
 
+        const Stash<Terrain>& getStash() const;
+        Stash<Terrain>& getStash();
+
+        void setStash(Stash<Terrain> const &);
+
         void stash();
         void clearStash();
 

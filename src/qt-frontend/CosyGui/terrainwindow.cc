@@ -25,6 +25,8 @@
 #include "cosyscene/scene.hh"
 #include "cosyscene/terrain.hh"
 
+#include "stashview.hh"
+
 
 TerrainWindow::TerrainWindow(QWidget *parent) :
     QWidget(parent),
@@ -55,32 +57,61 @@ void TerrainWindow::showTerrainKindSelection() {
 
 
 void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
-                                bool stopSignals
+                                bool blockSignals
 ) {
         bool prevBlocked;
-        if (stopSignals)
+        if (blockSignals)
                 prevBlocked = this->blockSignals(true);
-
         terrain = t;
-        switch (t->kind()) {
+        updateViews();
+        if (blockSignals)
+                this->blockSignals(prevBlocked);
+}
+
+
+
+void TerrainWindow::setTerrainByValue (cosyscene::Terrain const &t,
+                                       bool blockSignals
+) {
+        bool prevBlocked;
+        if (blockSignals)
+                prevBlocked = this->blockSignals(true);
+        *terrain = t;
+        updateViews();
+        if (blockSignals)
+                this->blockSignals(prevBlocked);
+
+}
+
+
+
+void TerrainWindow::updateViews () {
+        switch (terrain->kind()) {
         case cosyscene::Terrain::QuatschSource:
-                ui->quatschCodeEditor->setCode(QString::fromStdString(
-                                t->quatschSource().code()));
+                ui->quatschCodeEditor->setCode(
+                                QString::fromStdString(
+                                terrain->quatschSource().code()));
                 showQuatschEditor();
                 break;
         default:
                 showTerrainKindSelection();
                 break;
         }
-
-        if (stopSignals)
-                this->blockSignals(prevBlocked);
 }
 
 
 
 void TerrainWindow::on_quatschCodeEditorCLB_clicked() {
-        showQuatschEditor();
+        terrain->toQuatschSource (cosyscene::QuatschSource(
+                "/* Press F1 for help :) */\n"
+                "/* ... or move the caret over some entity and try out\n"
+                "   the contextual help via F1 */\n"
+                "([LibnoiseVoronoi \n"
+                "   enable-distance{1}\n"
+                "   displacement{0.1}\n"
+                " ] x y)\n"
+        ));
+        updateViews();
 }
 
 
@@ -101,6 +132,24 @@ void TerrainWindow::stash_doStash() {
 
 
 void TerrainWindow::stash_doRestore() {
+        StashView *sw = new StashView (this);
+        sw->addItems(terrain->getStash());
+        if (QDialog::Accepted == sw->exec()) {
+                redshift::shared_ptr<cosyscene::Terrain> newTerrain (
+                        new cosyscene::Terrain(
+                          sw->selectedData<cosyscene::Terrain>())
+                );
+                newTerrain->setStash(terrain->getStash());
+                setTerrainByValue(*newTerrain, true);
+        }
+}
+
+
+
+void TerrainWindow::reset() {
+        cosyscene::Terrain t;
+        t.setStash(terrain->getStash());
+        setTerrainByValue(t, true);
 }
 
 

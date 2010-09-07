@@ -18,7 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #include "terrain.hh"
 
 namespace cosyscene {
@@ -63,6 +62,24 @@ void Terrain::stash() {
 
 void Terrain::clearStash() {
         stash_.clear();
+}
+
+
+
+const Stash<Terrain>& Terrain::getStash() const {
+        return stash_;
+}
+
+
+
+Stash<Terrain>& Terrain::getStash() {
+        return stash_;
+}
+
+
+
+void Terrain::setStash(Stash<Terrain> const & stash) {
+        stash_ = stash;
 }
 
 

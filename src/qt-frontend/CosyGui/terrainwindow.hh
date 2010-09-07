@@ -43,7 +43,7 @@ public:
         ~TerrainWindow();
 
         void setTerrain (redshift::shared_ptr<cosyscene::Terrain>,
-                         bool stopSignals=true);
+                         bool blockSignals=true);
 
 signals:
         void terrainChanged();
@@ -51,11 +51,15 @@ signals:
 public slots:
         void stash_doStash();
         void stash_doRestore();
+        void reset();
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
         Ui::TerrainWindow *ui;
         redshift::shared_ptr<cosyscene::Terrain> terrain;
+
+        void setTerrainByValue (cosyscene::Terrain const &, bool blockSignals);
+        void updateViews ();
 private:
         void showTerrainKindSelection();
         void showQuatschEditor();

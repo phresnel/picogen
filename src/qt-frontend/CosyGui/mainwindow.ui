@@ -458,6 +458,13 @@ QLabel{ background-color:none; }</string>
           </spacer>
          </item>
          <item>
+          <widget class="QPushButton" name="stashResetButton">
+           <property name="text">
+            <string>stash + reset</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="stashButton">
            <property name="text">
             <string>stash</string>

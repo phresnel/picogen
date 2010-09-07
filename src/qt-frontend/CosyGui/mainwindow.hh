@@ -54,10 +54,12 @@ private:
 signals:
         void stash_doStash();
         void stash_doRestore();
+        void reset();
 
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private slots:
+        void on_stashResetButton_clicked();
         void on_actionLoad_triggered();
         void on_actionSave_triggered();
         void on_restoreButton_clicked();
