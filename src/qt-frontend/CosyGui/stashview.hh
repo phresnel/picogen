@@ -72,6 +72,7 @@ public:
 
         int selectedIndex() const;
 
+        template <typename T> Stash<T> itemsToStash () const;
 private slots:
         void on_cancelButton_clicked();
         void on_okayButton_clicked();
@@ -100,6 +101,18 @@ template <typename T>
 T StashView::selectedData () const {
         const int s = selectedIndex();
         return *((T*)items[s].data.get());
+}
+
+template <typename T>
+Stash<T> StashView::itemsToStash () const {
+        Stash<T> ret;
+        for (int i=0; i<items.size(); ++i) {
+                ret.push_back (StashObject<T>(
+                        items[i].time,
+                        *((T*)items[i].data.get())
+                ));
+        }
+        return ret;
 }
 
 #endif // STASHVIEW_HH

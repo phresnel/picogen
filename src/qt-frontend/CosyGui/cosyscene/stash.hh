@@ -37,6 +37,10 @@ public:
         : time_(std::time(0)), value_(value)
         {}
 
+        StashObject(std::time_t time, T const &value)
+        : time_(time), value_(value)
+        {}
+
         const T &value() const { return value_; }
         T &value() { return value_; }
 
@@ -58,25 +62,37 @@ private:
 template <typename T> class Stash {
 public:
         // -- Vector Interface -------------------------------------------------
-        typedef typename std::vector<StashObject<T> >::reverse_iterator
+        typedef typename std::vector<StashObject<T> >::iterator
                          iterator;
-        typedef typename std::vector<StashObject<T> >::const_reverse_iterator
+        typedef typename std::vector<StashObject<T> >::const_iterator
                          const_iterator;
 
         void stash (T const &value) {
                 objects.push_back(StashObject<T>(value));
         }
 
+        void push_back (StashObject<T> so) {
+                objects.push_back (so);
+        }
+
+        bool contains_data (T const &value) const {
+                for (const_iterator it = begin(); it != end(); ++it) {
+                        if (value.data_equals((*it).value()))
+                                return true;
+                }
+                return false;
+        }
+
         void clear() { objects.clear(); }
 
         bool empty() const { return objects.empty(); }
 
-        iterator       begin()       { return objects.rbegin(); }
-        const_iterator begin() const { return objects.rbegin(); }
-        iterator       end()         { return objects.rend(); }
-        const_iterator end()   const { return objects.rend(); }
-        T & back() { return objects.front().value(); }
-        const T & back() const { return objects.front().value(); }
+        iterator       begin()       { return objects.begin(); }
+        const_iterator begin() const { return objects.begin(); }
+        iterator       end()         { return objects.end(); }
+        const_iterator end()   const { return objects.end(); }
+        T & back() { return objects.back().value(); }
+        const T & back() const { return objects.back().value(); }
         // ---------------------------------------------------------------------
 
         // -- Serialization ----------------------------------------------------

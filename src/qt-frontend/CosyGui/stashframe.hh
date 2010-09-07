@@ -19,49 +19,26 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef MAINWINDOW_HH_20100902
-#define MAINWINDOW_HH_20100902
 
-#include <QMainWindow>
-#include "redshift/include/smart_ptr.hh"
+#ifndef STASHFRAME_HH
+#define STASHFRAME_HH
 
-namespace cosyscene {
-        class Scene;
-}
+#include <QFrame>
 
 namespace Ui {
-        class MainWindow;
+    class StashFrame;
 }
-class FilmSettings;
 
-class MainWindow : public QMainWindow
+class StashFrame : public QFrame
 {
-        Q_OBJECT
+    Q_OBJECT
 
 public:
-        explicit MainWindow(QWidget *parent = 0);
-        ~MainWindow();
+    explicit StashFrame(QWidget *parent = 0);
+    ~StashFrame();
 
 private:
-        Ui::MainWindow *ui;
-        redshift::shared_ptr<cosyscene::Scene> scene;
-
-        void switchOffCommandLinks ();
-
-        void indicateSaved();
-        void indicateUnsaved();
-
-signals:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
-
-private slots:
-        void on_actionLoad_triggered();
-        void on_actionSave_triggered();
-        void on_terrain_terrainChanged();
-        void on_forestCommandLink_clicked();
-        void on_terrainCommandLink_clicked();
-        void on_navigationCommandLink_clicked();
-        void on_filmCommandLink_clicked();
+    Ui::StashFrame *ui;
 };
 
-#endif // MAINWINDOW_HH_20100902
+#endif // STASHFRAME_HH

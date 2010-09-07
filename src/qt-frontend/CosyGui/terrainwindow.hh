@@ -49,9 +49,6 @@ signals:
         void terrainChanged();
 
 public slots:
-        void stash_doStash();
-        void stash_doRestore();
-        void reset();
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
@@ -67,6 +64,10 @@ private:
 private slots:
         void on_quatschCodeEditorCLB_clicked();
         void on_quatschCodeEditor_codeChanged();
+
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 };
 
 #endif // TERRAINWINDOW_HH

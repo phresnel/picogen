@@ -27,6 +27,7 @@
 
 #include "stashview.hh"
 
+#include <QMessageBox>
 
 TerrainWindow::TerrainWindow(QWidget *parent) :
     QWidget(parent),
@@ -127,13 +128,21 @@ void TerrainWindow::on_quatschCodeEditor_codeChanged() {
 
 
 
-void TerrainWindow::stash_doStash() {
+void TerrainWindow::sceneInvalidated(
+        redshift::shared_ptr<cosyscene::Scene> scene
+) {
+        setTerrain (scene->terrain());
+}
+
+
+
+void TerrainWindow::on_stashButton_clicked() {
         terrain->stash();
 }
 
 
 
-void TerrainWindow::stash_doRestore() {
+void TerrainWindow::on_stashRestoreButton_clicked() {
         StashView *sw = new StashView (this);
         sw->addItems(terrain->getStash());
         if (QDialog::Accepted == sw->exec()) {
@@ -141,23 +150,18 @@ void TerrainWindow::stash_doRestore() {
                         new cosyscene::Terrain(
                           sw->selectedData<cosyscene::Terrain>())
                 );
-                newTerrain->setStash(terrain->getStash());
+                newTerrain->setStash(sw->itemsToStash<cosyscene::Terrain>());
                 setTerrainByValue(*newTerrain, true);
         }
 }
 
 
 
-void TerrainWindow::reset() {
+void TerrainWindow::on_stashResetButton_clicked() {
+        if (!terrain->getStash().contains_data(*terrain)) {
+                QMessageBox::question(this, "unstashen data", "yeh has unstashen data");
+        }
         cosyscene::Terrain t;
         t.setStash(terrain->getStash());
         setTerrainByValue(t, true);
-}
-
-
-
-void TerrainWindow::sceneInvalidated(
-        redshift::shared_ptr<cosyscene::Scene> scene
-) {
-        setTerrain (scene->terrain());
 }

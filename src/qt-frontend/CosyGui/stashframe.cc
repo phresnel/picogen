@@ -19,49 +19,18 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef MAINWINDOW_HH_20100902
-#define MAINWINDOW_HH_20100902
 
-#include <QMainWindow>
-#include "redshift/include/smart_ptr.hh"
+#include "stashframe.hh"
+#include "ui_stashframe.h"
 
-namespace cosyscene {
-        class Scene;
-}
-
-namespace Ui {
-        class MainWindow;
-}
-class FilmSettings;
-
-class MainWindow : public QMainWindow
+StashFrame::StashFrame(QWidget *parent) :
+    QFrame(parent),
+    ui(new Ui::StashFrame)
 {
-        Q_OBJECT
+    ui->setupUi(this);
+}
 
-public:
-        explicit MainWindow(QWidget *parent = 0);
-        ~MainWindow();
-
-private:
-        Ui::MainWindow *ui;
-        redshift::shared_ptr<cosyscene::Scene> scene;
-
-        void switchOffCommandLinks ();
-
-        void indicateSaved();
-        void indicateUnsaved();
-
-signals:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
-
-private slots:
-        void on_actionLoad_triggered();
-        void on_actionSave_triggered();
-        void on_terrain_terrainChanged();
-        void on_forestCommandLink_clicked();
-        void on_terrainCommandLink_clicked();
-        void on_navigationCommandLink_clicked();
-        void on_filmCommandLink_clicked();
-};
-
-#endif // MAINWINDOW_HH_20100902
+StashFrame::~StashFrame()
+{
+    delete ui;
+}

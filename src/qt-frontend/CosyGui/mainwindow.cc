@@ -163,22 +163,12 @@ void MainWindow::switchOffCommandLinks () {
         ui->terrainCommandLink->setChecked(false);
         ui->navigationCommandLink->setChecked(false);
         ui->forestCommandLink->setChecked(false);
-
-        disconnect(SIGNAL(stash_doStash()));
-        disconnect(SIGNAL(stash_doRestore()));
-        disconnect(SIGNAL(reset()));
 }
 
 void MainWindow::on_terrainCommandLink_clicked() {
         switchOffCommandLinks();
         ui->terrainCommandLink->setChecked(true);
         ui->stackedWidget->setCurrentWidget(ui->terrain);
-        connect(this, SIGNAL(stash_doStash()),
-                ui->terrain, SLOT(stash_doStash()));
-        connect(this, SIGNAL(stash_doRestore()),
-                ui->terrain, SLOT(stash_doRestore()));
-        connect(this, SIGNAL(reset()),
-                ui->terrain, SLOT(reset()));
 }
 
 void MainWindow::on_forestCommandLink_clicked() {
@@ -191,26 +181,13 @@ void MainWindow::on_terrain_terrainChanged() {
 }
 
 void MainWindow::indicateSaved() {
-        ui->stashFrame->setStyleSheet("QFrame{background-color:#222;}");
-        ui->statusLabel->setText("");
+        //ui->stashFrame->setStyleSheet("QFrame{background-color:#222;}");
+        //ui->statusLabel->setText("");
 }
 
 void MainWindow::indicateUnsaved(){
-        ui->stashFrame->setStyleSheet("QFrame{background-color:#a66;}");
-        ui->statusLabel->setText("unsaved changes present");
-}
-
-void MainWindow::on_stashButton_clicked() {
-        emit stash_doStash();
-}
-
-void MainWindow::on_restoreButton_clicked() {
-        emit stash_doRestore();
-}
-
-void MainWindow::on_stashResetButton_clicked() {
-        emit stash_doStash();
-        emit reset();
+        //ui->stashFrame->setStyleSheet("QFrame{background-color:#a66;}");
+        //ui->statusLabel->setText("unsaved changes present");
 }
 
 void MainWindow::on_actionSave_triggered() {

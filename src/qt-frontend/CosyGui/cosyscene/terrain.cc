@@ -85,4 +85,13 @@ void Terrain::setStash(Stash<Terrain> const & stash) {
 
 
 
+bool Terrain::data_equals(Terrain const &rhs) const {
+        if (kind_ != rhs.kind_) return false;
+        switch (kind_)  {
+        case QuatschSource: return quatschSource_ == rhs.quatschSource_;
+        }
+        return true;
+}
+
+
 }

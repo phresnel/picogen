@@ -27,7 +27,8 @@ SOURCES += main.cc\
     terrainwindow.cc \
     cosyscene/scene.cc \
     cosyscene/save_load.cc \
-    stashview.cc
+    stashview.cc \
+    stashframe.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -40,12 +41,14 @@ HEADERS  += mainwindow.hh \
     cosyscene/serialization/scene.ser.hh \
     cosyscene/serialization/terrain.ser.hh \
     cosyscene/save_load.hh \
-    stashview.hh
+    stashview.hh \
+    stashframe.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
     terrainwindow.ui \
-    stashview.ui
+    stashview.ui \
+    stashframe.ui
 
 LIBS += \
     ../../redshift/lib/libpicogen.a \

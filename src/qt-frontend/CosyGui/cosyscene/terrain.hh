@@ -43,6 +43,9 @@ public:
 private:
         std::string code_;
 };
+inline bool operator == (QuatschSource const &lhs, QuatschSource const &rhs) {
+        return lhs.code() == rhs.code();
+}
 
 
 class Terrain
@@ -65,6 +68,8 @@ public:
 
         void stash();
         void clearStash();
+
+        bool data_equals(Terrain const &rhs) const;
 
         template<typename Arch>
         void serialize (Arch &arch);
