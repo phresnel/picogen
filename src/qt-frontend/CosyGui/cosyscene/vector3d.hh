@@ -18,42 +18,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#ifndef COSYSCENE_HH_20100902
-#define COSYSCENE_HH_20100902
-
-#include "redshift/include/smart_ptr.hh"
-#include "stash.hh"
+#ifndef VECTOR3D_HH_20100910
+#define VECTOR3D_HH_20100910
 
 namespace cosyscene {
 
-class Terrain;
-class SunSky;
-
-class Scene
-{
+class Vector3d {
 public:
-        Scene();
+        double x, y, z;
 
-        redshift::shared_ptr<Terrain> terrain() const {
-                return terrain_;
-        }
-        redshift::shared_ptr<SunSky> sunSky() const {
-                return sunSky_;
-        }
-
-        template <typename Arch>
-        void serialize (Arch &arch); // inl/scene.inl.hh
-
-        template <typename Arch>
-        void serialize (Arch &arch) const {
-                Scene tmp = *this; // feels better than const_cast
-                return tmp.serialize(arch);
-        }
-private:
-        redshift::shared_ptr<Terrain> terrain_;
-        redshift::shared_ptr<SunSky> sunSky_;
+        template<typename Arch>
+        inline void serialize (Arch &arch);
 };
-}
 
-#endif // COSYSCENE_HH_20100902
+} // namespace cosyscene
+
+#endif // VECTOR3D_HH_20100910

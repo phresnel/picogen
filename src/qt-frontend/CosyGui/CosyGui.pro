@@ -29,7 +29,8 @@ SOURCES += main.cc\
     cosyscene/save_load.cc \
     stashview.cc \
     stashframe.cc \
-    sunskywindow.cc
+    sunskywindow.cc \
+    cosyscene/sunsky.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -44,7 +45,11 @@ HEADERS  += mainwindow.hh \
     cosyscene/save_load.hh \
     stashview.hh \
     stashframe.hh \
-    sunskywindow.hh
+    sunskywindow.hh \
+    cosyscene/sunsky.hh \
+    cosyscene/serialization/sunsky.ser.hh \
+    cosyscene/vector3d.hh \
+    cosyscene/serialization/vector3d.ser.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
@@ -74,6 +79,7 @@ RESOURCES += \
 
 include(../widgets/QuatschSourceEditor/QuatschSourceEditor.pri)
 include(../widgets/Picohelp/picohelp.pri)
+include(../widgets/QtSunSkyEditor/qtsunskyeditor.pri)
 
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release

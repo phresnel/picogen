@@ -19,41 +19,19 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef COSYSCENE_HH_20100902
-#define COSYSCENE_HH_20100902
+#ifndef VECTOR3D_SERIALIZATION_HH_20100910
+#define VECTOR3D_SERIALIZATION_HH_20100910
 
-#include "redshift/include/smart_ptr.hh"
-#include "stash.hh"
+#include "../vector3d.hh"
 
 namespace cosyscene {
 
-class Terrain;
-class SunSky;
-
-class Scene
-{
-public:
-        Scene();
-
-        redshift::shared_ptr<Terrain> terrain() const {
-                return terrain_;
-        }
-        redshift::shared_ptr<SunSky> sunSky() const {
-                return sunSky_;
-        }
-
-        template <typename Arch>
-        void serialize (Arch &arch); // inl/scene.inl.hh
-
-        template <typename Arch>
-        void serialize (Arch &arch) const {
-                Scene tmp = *this; // feels better than const_cast
-                return tmp.serialize(arch);
-        }
-private:
-        redshift::shared_ptr<Terrain> terrain_;
-        redshift::shared_ptr<SunSky> sunSky_;
-};
+template<typename Arch>
+inline void Vector3d::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack(x) & pack(y) & pack(z);
 }
 
-#endif // COSYSCENE_HH_20100902
+} // namespace cosyscene
+
+#endif // VECTOR3D_SERIALIZATION_HH_20100910

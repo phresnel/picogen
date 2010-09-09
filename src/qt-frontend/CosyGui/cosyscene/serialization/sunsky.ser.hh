@@ -19,22 +19,32 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef TERRAIN_SERIALIZATION_HH_20100902
-#define TERRAIN_SERIALIZATION_HH_20100902
+#ifndef SUNSKY_SERIALIZATION_HH_20100910
+#define SUNSKY_SERIALIZATION_HH_20100910
 
-#include "../terrain.hh"
+#include "../sunsky.hh"
 #include "cosyscene/serialization/stash.ser.hh"
+#include "cosyscene/serialization/vector3d.ser.hh"
 
 namespace cosyscene {
 
 template<typename Arch>
-inline void QuatschSource::serialize (Arch &arch) {
+inline void UtahSky::serialize (Arch &arch) {
         using actuarius::pack;
-        arch & pack("code", code_);
+        arch & actuarius::push_optional(true);
+        arch & pack ("sun-direction", sunDirection);
+        arch & pack ("sun-size-factor", sunSizeFactor);
+        arch & pack ("sun-brightness-factor", sunBrightnessFactor);
+        arch & pack ("atmosphere-brightness-factor", atmosphereBrightnessFactor);
+        arch & pack ("atmospheric-effects-factor", atmosphericFxFactor);
+        arch & pack ("atmospheric-effects", atmosphericEffects);
+        arch & pack ("turbidity", turbidity);
+        arch & pack ("overcast", overcast);
+        arch & actuarius::pop_optional;
 }
 
 template<typename Arch>
-inline void Terrain::serialize (Arch &arch) {
+inline void SunSky::serialize (Arch &arch) {
         using actuarius::pack;
         if (Arch::deserialize || !stash_.empty())
                 arch & pack("stash", stash_);
@@ -42,10 +52,10 @@ inline void Terrain::serialize (Arch &arch) {
         arch & pack("type", kind_, Typenames);
 
         switch (kind_) {
-        case QuatschSource: arch & pack ("parameters", quatschSource_); break;
+        case UtahSky: arch & pack ("parameters", utahSky_); break;
         }
 }
 
 } // namespace cosyscene
 
-#endif // TERRAIN_SERIALIZATION_HH
+#endif // SUNSKY_SERIALIZATION_HH_20100910

@@ -18,14 +18,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #include "scene.hh"
 #include "terrain.hh"
+#include "sunsky.hh"
 
 namespace cosyscene {
 
 Scene::Scene()
 : terrain_(new Terrain())
+, sunSky_(new SunSky())
 {
 }
 

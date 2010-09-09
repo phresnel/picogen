@@ -47,6 +47,11 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QtSunSkyEditor" name="widget" native="true"/>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
@@ -56,6 +61,12 @@
    <class>StashFrame</class>
    <extends>QFrame</extends>
    <header>stashframe.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QtSunSkyEditor</class>
+   <extends>QWidget</extends>
+   <header>qtsunskyeditor.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

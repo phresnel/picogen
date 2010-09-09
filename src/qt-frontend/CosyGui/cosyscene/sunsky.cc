@@ -18,84 +18,84 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "terrain.hh"
+#include "sunsky.hh"
 
 namespace cosyscene {
 
 
-const actuarius::Enum<Terrain::Kind> Terrain::Typenames =
-( actuarius::Nvp<Terrain::Kind>(Terrain::QuatschSource, "quatsch-source")
-| actuarius::Nvp<Terrain::Kind>(Terrain::None, "none")
+const actuarius::Enum<SunSky::Kind> SunSky::Typenames =
+( actuarius::Nvp<SunSky::Kind>(SunSky::UtahSky, "utah")
+| actuarius::Nvp<SunSky::Kind>(SunSky::None, "none")
 );
 
 
 
-Terrain::Terrain() : kind_(None) {
+SunSky::SunSky() : kind_(None) {
 }
 
 
 
-Terrain::Kind Terrain::kind() const {
+SunSky::Kind SunSky::kind() const {
         return kind_;
 }
 
 
 
-void Terrain::reset() {
+void SunSky::reset() {
         kind_ = None;
 }
 
 
 
-void Terrain::toQuatschSource (cosyscene::QuatschSource const &qs) {
-        quatschSource_ = qs;
-        kind_ = QuatschSource;
+void SunSky::toUtahSky(cosyscene::UtahSky const &qs) {
+        utahSky_ = qs;
+        kind_ = UtahSky;
 }
 
 
 
-cosyscene::QuatschSource Terrain::quatschSource() const {
-        return quatschSource_;
+cosyscene::UtahSky SunSky::utahSky() const {
+        return utahSky_;
 }
 
 
 
-void Terrain::stash() {
-        Terrain tmp = *this;
+void SunSky::stash() {
+        SunSky tmp = *this;
         tmp.clearStash();
         stash_.stash(tmp);
 }
 
 
 
-void Terrain::clearStash() {
+void SunSky::clearStash() {
         stash_.clear();
 }
 
 
 
-const Stash<Terrain>& Terrain::getStash() const {
+const Stash<SunSky>& SunSky::getStash() const {
         return stash_;
 }
 
 
 
-Stash<Terrain>& Terrain::getStash() {
+Stash<SunSky>& SunSky::getStash() {
         return stash_;
 }
 
 
 
-void Terrain::setStash(Stash<Terrain> const & stash) {
+void SunSky::setStash(Stash<SunSky> const & stash) {
         stash_ = stash;
 }
 
 
 
-bool Terrain::data_equals(Terrain const &rhs) const {
+bool SunSky::data_equals(SunSky const &rhs) const {
         if (kind_ != rhs.kind_) return false;
         switch (kind_)  {
-        case QuatschSource: return quatschSource_ == rhs.quatschSource_;
+        case UtahSky: return utahSky_ == rhs.utahSky_;
         case None: return true;
         }
         return true;

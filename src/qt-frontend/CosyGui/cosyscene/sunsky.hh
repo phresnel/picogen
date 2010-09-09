@@ -19,70 +19,76 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef TERRAIN_HH_20100902
-#define TERRAIN_HH_20100902
+#ifndef SUNSKY_HH_20100910
+#define SUNSKY_HH_20100910
 
 #include "stash.hh"
 #include <string>
 #include <actuarius/bits/enum.hh>
 
+#include "vector3d.hh"
+
 namespace cosyscene {
-class QuatschSource;
-class Terrain;
+class UtahSky;
+class SunSky;
 
-class QuatschSource {
+class UtahSky {
 public:
-        QuatschSource() {}
-        QuatschSource(std::string const &code) : code_(code) {}
-
-        void setCode (std::string const &code) { code_ = code; }
-        std::string code () const { return code_; }
+        UtahSky() {}
 
         template<typename Arch>
         void serialize (Arch &arch);
-private:
-        std::string code_;
+
+        Vector3d sunDirection;
+        double turbidity;
+        double sunSizeFactor;
+        double sunBrightnessFactor;
+        double atmosphereBrightnessFactor;
+        double atmosphericFxFactor;
+        double overcast;
+        bool   atmosphericEffects;
+
 };
-inline bool operator == (QuatschSource const &lhs, QuatschSource const &rhs) {
-        return lhs.code() == rhs.code();
+inline bool operator == (UtahSky const &lhs, UtahSky const &rhs) {
+        return false;
 }
 
 
-class Terrain
+class SunSky
 {
 public:
         enum Kind {
                 None,
-                QuatschSource
+                UtahSky
         };
 
-        Terrain();
+        SunSky();
 
         Kind kind() const;
-        void reset ();
-        void toQuatschSource (cosyscene::QuatschSource const &qs);
-        cosyscene::QuatschSource quatschSource() const;
+        void reset();
+        void toUtahSky (cosyscene::UtahSky const &qs);
+        cosyscene::UtahSky utahSky() const;
 
-        const Stash<Terrain>& getStash() const;
-        Stash<Terrain>& getStash();
+        const Stash<SunSky>& getStash() const;
+        Stash<SunSky>& getStash();
 
-        void setStash(Stash<Terrain> const &);
+        void setStash(Stash<SunSky> const &);
 
         void stash();
         void clearStash();
 
-        bool data_equals(Terrain const &rhs) const;
+        bool data_equals(SunSky const &rhs) const;
 
         template<typename Arch>
         void serialize (Arch &arch);
         static const actuarius::Enum<Kind> Typenames;
 private:
-        Stash<Terrain> stash_;
+        Stash<SunSky> stash_;
         Kind kind_;
 
-        cosyscene::QuatschSource quatschSource_;
+        cosyscene::UtahSky utahSky_;
 };
 
 } // namespace cosyscene
 
-#endif // TERRAIN_HH_20100902
+#endif // SUNSKY_HH_20100910

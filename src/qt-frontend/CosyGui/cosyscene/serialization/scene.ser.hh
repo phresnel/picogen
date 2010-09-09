@@ -24,11 +24,15 @@
 
 #include "../scene.hh"
 
+#include "cosyscene/serialization/terrain.ser.hh"
+#include "cosyscene/serialization/sunsky.ser.hh"
+
 namespace cosyscene {
 template<typename Arch>
 inline void Scene::serialize (Arch &arch) {
         using actuarius::pack;
         arch & pack("terrain", *terrain_);
+        arch & pack("sunsky", *sunSky_);
 }
 }
 
