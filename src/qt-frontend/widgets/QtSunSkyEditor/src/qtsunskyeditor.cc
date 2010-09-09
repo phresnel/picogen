@@ -205,56 +205,67 @@ QtSunSkyEditor::screenToHemisphereSat (float u, float v) const {
 
 
 
-void QtSunSkyEditor::on_previewResolution_valueChanged(int) {
+void QtSunSkyEditor::on_previewResolution_valueChanged(int res) {
         redraw(false);
+        previewResolutionChanged(res);
 }
 
 
 
 void QtSunSkyEditor::on_turbiditySpinBox_valueChanged(double value) {
         redraw(true);
+        emit turbidityChanged(value);
 }
 
 
 
-void QtSunSkyEditor::on_previewMultiplier_valueChanged(double ) {
+void QtSunSkyEditor::on_previewMultiplier_valueChanged(double value) {
         redraw(false);
+        emit previewMultiplierChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_sunIntensitySpinBox_valueChanged(double value) {
         redraw(true);
+        emit sunIntensityChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_atmosphereIntensitySpinBox_valueChanged(double value) {
         redraw(true);
+        emit atmosphereIntensityChanged(value);
 }
 
 
 
-void QtSunSkyEditor::on_diskSizeSpinBox_valueChanged(double) {
+void QtSunSkyEditor::on_diskSizeSpinBox_valueChanged(double value) {
         redraw(true);
+        emit diskSizeChanged(value);
 }
 
 
 
-void QtSunSkyEditor::on_enableAtmosphericEffects_stateChanged(int ) {
+void QtSunSkyEditor::on_enableAtmosphericEffects_stateChanged(int state) {
         redraw(true);
+        emit atmosphericEffectsEnabledChanged(state != 0);
 }
 
 
 
-void QtSunSkyEditor::on_atmosphericEffectsFactorSpinBox_valueChanged(double ) {
+void QtSunSkyEditor::on_atmosphericEffectsFactorSpinBox_valueChanged(
+        double value
+) {
         redraw(true);
+        emit atmosphericEffectsFactorChanged(value);
 }
 
 
 
-void QtSunSkyEditor::on_overcastSpinBox_valueChanged(double ) {
+void QtSunSkyEditor::on_overcastSpinBox_valueChanged(double value) {
         redraw(true);
+        emit overcastChanged(value);
 }
 
 

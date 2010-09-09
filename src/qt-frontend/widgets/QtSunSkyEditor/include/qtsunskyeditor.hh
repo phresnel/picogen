@@ -48,6 +48,17 @@ public:
         QtSunSkyEditor(QWidget *parent = 0);
         ~QtSunSkyEditor();
 
+signals:
+        void overcastChanged(double );
+        void atmosphericEffectsEnabledChanged(bool);
+        void atmosphericEffectsFactorChanged(double );
+        void previewResolutionChanged(int );
+        void diskSizeChanged(double );
+        void turbidityChanged(double );
+        void previewMultiplierChanged(double );
+        void sunIntensityChanged(double );
+        void atmosphereIntensityChanged(double );
+
 protected:
         void changeEvent(QEvent *e);
         void resizeEvent (QResizeEvent*);
