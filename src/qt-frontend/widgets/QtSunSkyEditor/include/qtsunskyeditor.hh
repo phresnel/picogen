@@ -48,6 +48,28 @@ public:
         QtSunSkyEditor(QWidget *parent = 0);
         ~QtSunSkyEditor();
 
+        double overcast() const;
+        bool atmosphericEffectsEnabled() const;
+        double atmosphericEffectsFactor() const;
+        int previewResolution() const;
+        double diskSize() const;
+        double turbidity() const;
+        double previewMultiplier() const;
+        double sunIntensity() const;
+        double atmosphereIntensity() const;
+        redshift::Vector sunDirection() const;
+
+        void setOvercast(double );
+        void setAtmosphericEffectsEnabled(bool);
+        void setAtmosphericEffectsFactor(double );
+        void setPreviewResolution(int );
+        void setDiskSize(double );
+        void setTurbidity(double );
+        void setPreviewMultiplier(double );
+        void setSunIntensity(double );
+        void setAtmosphereIntensity(double );
+        void setSunDirection (redshift::Vector);
+
 signals:
         void overcastChanged(double );
         void atmosphericEffectsEnabledChanged(bool);
@@ -58,6 +80,7 @@ signals:
         void previewMultiplierChanged(double );
         void sunIntensityChanged(double );
         void atmosphereIntensityChanged(double );
+        void sunDirectionChanged (redshift::Vector);
 
 protected:
         void changeEvent(QEvent *e);
@@ -70,6 +93,7 @@ protected:
 private:
         void redraw(bool recalc, bool drawCross=false, float crossU=0, float crossV=0);
         void updatePreethamSettings();
+        void updatePreethamSettingsAndRedraw();
 
         redshift::Vector direction;
 

@@ -95,7 +95,7 @@ void TerrainWindow::updateViews () {
                                 terrain->quatschSource().code()));
                 showQuatschEditor();
                 break;
-        default:
+        case cosyscene::Terrain::None:
                 showTerrainKindSelection();
                 break;
         }

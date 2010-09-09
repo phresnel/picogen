@@ -24,21 +24,57 @@
 #define SUNSKYWINDOW_HH
 
 #include <QWidget>
+#include "redshift/include/smart_ptr.hh"
+#include "redshift/include/geometry.hh"
+
+namespace cosyscene {
+        class SunSky;
+        class Scene;
+}
 
 namespace Ui {
-    class SunSkyWindow;
+        class SunSkyWindow;
 }
 
 class SunSkyWindow : public QWidget
 {
-    Q_OBJECT
+        Q_OBJECT
 
 public:
-    explicit SunSkyWindow(QWidget *parent = 0);
-    ~SunSkyWindow();
+        explicit SunSkyWindow(QWidget *parent = 0);
+        ~SunSkyWindow();
+
+        void setSunSky (redshift::shared_ptr<cosyscene::SunSky>,
+                        bool blockSignals=true);
+
+
+signals:
+        void skyChanged ();
+
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
-    Ui::SunSkyWindow *ui;
+        Ui::SunSkyWindow *ui;
+        redshift::shared_ptr<cosyscene::SunSky> sunSky;
+
+        void setSunSkyByValue (cosyscene::SunSky const &, bool blockSignals);
+        void updateViews ();
+
+        void updateFromUtahSunSkyEditor();
+        void updateToUtahSunSkyEditor();
+
+private slots:
+        void on_utahSkyEditor_overcastChanged(double );
+        void on_utahSkyEditor_atmosphericEffectsEnabledChanged(bool);
+        void on_utahSkyEditor_atmosphericEffectsFactorChanged(double );
+        void on_utahSkyEditor_previewResolutionChanged(int );
+        void on_utahSkyEditor_diskSizeChanged(double );
+        void on_utahSkyEditor_turbidityChanged(double );
+        void on_utahSkyEditor_previewMultiplierChanged(double );
+        void on_utahSkyEditor_sunIntensityChanged(double );
+        void on_utahSkyEditor_atmosphereIntensityChanged(double );
+        void on_utahSkyEditor_sunDirectionChanged(redshift::Vector );
 };
 
 #endif // SUNSKYWINDOW_HH

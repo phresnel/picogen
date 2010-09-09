@@ -133,9 +133,12 @@ MainWindow::MainWindow(QWidget *parent) :
         // Inits.
         ui->setupUi(this);
         ui->terrain->setTerrain(scene->terrain());
+        ui->sunSky->setSunSky(scene->sunSky());
 
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->terrain, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
+        connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
+                 ui->sunSky, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
 
         // Aesthetics.
         on_filmCommandLink_clicked();
@@ -186,6 +189,10 @@ void MainWindow::on_sunskyCommandLink_clicked() {
 }
 
 void MainWindow::on_terrain_terrainChanged() {
+        indicateUnsaved();
+}
+
+void MainWindow::on_sunSky_skyChanged() {
         indicateUnsaved();
 }
 

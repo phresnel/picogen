@@ -18,19 +18,145 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #include "sunskywindow.hh"
 #include "ui_sunskywindow.h"
+#include "cosyscene/sunsky.hh"
+#include "cosyscene/scene.hh"
+
+
 
 SunSkyWindow::SunSkyWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SunSkyWindow)
 {
-    ui->setupUi(this);
+        ui->setupUi(this);
 }
 
-SunSkyWindow::~SunSkyWindow()
-{
-    delete ui;
+
+
+SunSkyWindow::~SunSkyWindow() {
+        delete ui;
+}
+
+
+
+void SunSkyWindow::setSunSky (redshift::shared_ptr<cosyscene::SunSky> t,
+                              bool blockSignals
+) {
+        bool prevBlocked;
+        if (blockSignals)
+                prevBlocked = this->blockSignals(true);
+        sunSky = t;
+        updateViews();
+        if (blockSignals)
+                this->blockSignals(prevBlocked);
+}
+
+
+
+void SunSkyWindow::setSunSkyByValue (cosyscene::SunSky const &t,
+                                     bool blockSignals
+) {
+        bool prevBlocked;
+        if (blockSignals)
+                prevBlocked = this->blockSignals(true);
+        *sunSky = t;
+        updateViews();
+        if (blockSignals)
+                this->blockSignals(prevBlocked);
+
+}
+
+
+
+void SunSkyWindow::updateViews () {
+        const bool wasBlocked = blockSignals(true);
+        switch (sunSky->kind()) {
+        case cosyscene::SunSky::UtahSky:
+                updateToUtahSunSkyEditor();
+                break;
+        case cosyscene::SunSky::None:
+                break;
+        }
+        blockSignals(wasBlocked);
+}
+
+
+
+void SunSkyWindow::sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene) {
+        setSunSky(scene->sunSky());
+}
+
+
+
+void SunSkyWindow::on_utahSkyEditor_overcastChanged(double value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_atmosphericEffectsEnabledChanged(bool value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_atmosphericEffectsFactorChanged(double value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_previewResolutionChanged(int value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_diskSizeChanged(double value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_turbidityChanged(double value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_previewMultiplierChanged(double value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_sunIntensityChanged(double value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_atmosphereIntensityChanged(double value) {
+        updateFromUtahSunSkyEditor();
+}
+void SunSkyWindow::on_utahSkyEditor_sunDirectionChanged(redshift::Vector ) {
+        updateFromUtahSunSkyEditor();
+}
+
+void SunSkyWindow::updateFromUtahSunSkyEditor() {
+        qWarning("SunSkyWindow::updateFromUtahSunSkyEditor()");
+        const QtSunSkyEditor &u = *ui->utahSkyEditor;
+        cosyscene::UtahSky utah;
+
+        utah.atmosphereBrightnessFactor = u.atmosphereIntensity();
+        utah.atmosphericEffects = u.atmosphericEffectsEnabled();
+        utah.atmosphericFxFactor = u.atmosphericEffectsFactor();
+        utah.overcast = u.overcast();
+        utah.sunBrightnessFactor = u.sunIntensity();
+
+        utah.sunDirection.x = u.sunDirection().x;
+        utah.sunDirection.y = u.sunDirection().y;
+        utah.sunDirection.z = u.sunDirection().z;
+
+        utah.sunSizeFactor = u.diskSize();
+        utah.turbidity = u.turbidity();
+
+        sunSky->toUtahSky(utah);
+
+        emit skyChanged();
+}
+
+void SunSkyWindow::updateToUtahSunSkyEditor() {
+        QtSunSkyEditor &u = *ui->utahSkyEditor;
+        const cosyscene::UtahSky utah = sunSky->utahSky();
+
+        u.setAtmosphereIntensity(utah.atmosphereBrightnessFactor);
+        u.setAtmosphericEffectsEnabled(utah.atmosphericEffects);
+        u.setAtmosphericEffectsFactor(utah.atmosphericFxFactor);
+        u.setOvercast(utah.overcast);
+        u.setSunIntensity(utah.sunBrightnessFactor);
+
+        u.setSunDirection(redshift::Vector(utah.sunDirection.x,
+                                           utah.sunDirection.y,
+                                           utah.sunDirection.z));
+
+        u.setDiskSize(utah.sunSizeFactor);
+        u.setTurbidity(utah.turbidity);
 }

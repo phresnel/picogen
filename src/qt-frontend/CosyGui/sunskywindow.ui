@@ -49,7 +49,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QtSunSkyEditor" name="widget" native="true"/>
+       <widget class="QtSunSkyEditor" name="utahSkyEditor" native="true"/>
       </item>
      </layout>
     </widget>

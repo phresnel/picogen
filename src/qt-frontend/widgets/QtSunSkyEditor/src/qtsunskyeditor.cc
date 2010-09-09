@@ -82,9 +82,8 @@ void QtSunSkyEditor::mouseMoveEvent (QMouseEvent* e) {
                         ;
                         this->direction = screenToHemisphereSat(u,v);
                         updatePreethamSettings();
-                        //preetham.setSunDirection(d);
-                        //preetham.invalidate();
                         redraw(true, false, u, v);
+                        emit sunDirectionChanged(this->direction);
                 }
         }
 }
@@ -285,4 +284,86 @@ void QtSunSkyEditor::updatePreethamSettings() {
                         ui->sunIntensitySpinBox->value(),
                         ui->atmosphereIntensitySpinBox->value(),
                         ui->atmosphericEffectsFactorSpinBox->value()));
+}
+
+
+
+double QtSunSkyEditor::overcast() const {
+        return ui->overcastSpinBox->value();
+}
+bool QtSunSkyEditor::atmosphericEffectsEnabled() const {
+        return ui->enableAtmosphericEffects->checkState() == Qt::Checked;
+}
+double QtSunSkyEditor::atmosphericEffectsFactor() const {
+        return ui->atmosphericEffectsFactorSpinBox->value();
+}
+int QtSunSkyEditor::previewResolution() const {
+        return ui->previewResolution->value();
+}
+double QtSunSkyEditor::diskSize() const {
+        return ui->diskSizeSpinBox->value();
+}
+double QtSunSkyEditor::turbidity() const {
+        return ui->turbiditySpinBox->value();
+}
+double QtSunSkyEditor::previewMultiplier() const {
+        return ui->previewMultiplier->value();
+}
+double QtSunSkyEditor::sunIntensity() const {
+        return ui->sunIntensitySpinBox->value();
+}
+double QtSunSkyEditor::atmosphereIntensity() const {
+        return ui->atmosphereIntensitySpinBox->value();
+}
+redshift::Vector QtSunSkyEditor::sunDirection() const {
+        return direction;
+}
+
+
+void QtSunSkyEditor::setOvercast(double value) {
+        ui->overcastSpinBox->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setAtmosphericEffectsEnabled(bool value) {
+        ui->enableAtmosphericEffects->setChecked(value?Qt::Checked:Qt::Unchecked);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setAtmosphericEffectsFactor(double value) {
+        ui->atmosphericEffectsFactorSpinBox->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setPreviewResolution(int value) {
+        ui->previewResolution->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setDiskSize(double value) {
+        ui->diskSizeSpinBox->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setTurbidity(double value) {
+        ui->turbiditySpinBox->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setPreviewMultiplier(double value) {
+        ui->previewMultiplier->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setSunIntensity(double value) {
+        ui->sunIntensitySpinBox->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setAtmosphereIntensity(double value) {
+        ui->atmosphereIntensitySpinBox->setValue(value);
+        updatePreethamSettingsAndRedraw();
+}
+void QtSunSkyEditor::setSunDirection (redshift::Vector value) {
+        this->direction = value;
+        updatePreethamSettingsAndRedraw();
+}
+
+
+
+void QtSunSkyEditor::updatePreethamSettingsAndRedraw() {
+        updatePreethamSettings();
+        redraw(true);
 }
