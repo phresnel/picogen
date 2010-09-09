@@ -245,41 +245,6 @@ QLabel{ background-color:none; }</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QCommandLinkButton" name="filmCommandLink">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Film</string>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/toplevel-navigation/resources/mobileicons_freeforcommercial_film.png</normaloff>:/toplevel-navigation/resources/mobileicons_freeforcommercial_film.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>40</width>
-           <height>48</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="description">
-          <string>Brighter? Darker?</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCommandLinkButton" name="terrainCommandLink">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -350,6 +315,35 @@ QLabel{ background-color:none; }</string>
         </widget>
        </item>
        <item>
+        <widget class="QCommandLinkButton" name="sunskyCommandLink">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Sky &amp;&amp; Atmosphere</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/toplevel-navigation/resources/humano2_freeforcommercial_weather-few-clouds.png</normaloff>:/toplevel-navigation/resources/humano2_freeforcommercial_weather-few-clouds.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="description">
+          <string>... and time of day.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCommandLinkButton" name="navigationCommandLink">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -392,6 +386,41 @@ QLabel{ background-color:none; }</string>
         </spacer>
        </item>
        <item>
+        <widget class="QCommandLinkButton" name="filmCommandLink">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Film</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/toplevel-navigation/resources/mobileicons_freeforcommercial_film.png</normaloff>:/toplevel-navigation/resources/mobileicons_freeforcommercial_film.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>40</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="description">
+          <string>Brighter? Darker?</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCommandLinkButton" name="renderCommandLink">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -431,11 +460,12 @@ QLabel{ background-color:none; }</string>
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="FilmSettings" name="filmSettings"/>
+        <widget class="QWidget" name="page"/>
         <widget class="TerrainWindow" name="terrain"/>
-        <widget class="QWidget" name="page_2"/>
+        <widget class="SunSkyWindow" name="sunSky"/>
        </widget>
       </item>
      </layout>
@@ -498,6 +528,12 @@ QLabel{ background-color:none; }</string>
    <class>TerrainWindow</class>
    <extends>QWidget</extends>
    <header>terrainwindow.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SunSkyWindow</class>
+   <extends>QWidget</extends>
+   <header>sunskywindow.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

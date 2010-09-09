@@ -19,50 +19,26 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef MAINWINDOW_HH_20100902
-#define MAINWINDOW_HH_20100902
 
-#include <QMainWindow>
-#include "redshift/include/smart_ptr.hh"
+#ifndef SUNSKYWINDOW_HH
+#define SUNSKYWINDOW_HH
 
-namespace cosyscene {
-        class Scene;
-}
+#include <QWidget>
 
 namespace Ui {
-        class MainWindow;
+    class SunSkyWindow;
 }
-class FilmSettings;
 
-class MainWindow : public QMainWindow
+class SunSkyWindow : public QWidget
 {
-        Q_OBJECT
+    Q_OBJECT
 
 public:
-        explicit MainWindow(QWidget *parent = 0);
-        ~MainWindow();
+    explicit SunSkyWindow(QWidget *parent = 0);
+    ~SunSkyWindow();
 
 private:
-        Ui::MainWindow *ui;
-        redshift::shared_ptr<cosyscene::Scene> scene;
-
-        void switchOffCommandLinks ();
-
-        void indicateSaved();
-        void indicateUnsaved();
-
-signals:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
-
-private slots:
-        void on_sunskyCommandLink_clicked();
-        void on_actionLoad_triggered();
-        void on_actionSave_triggered();
-        void on_terrain_terrainChanged();
-        void on_forestCommandLink_clicked();
-        void on_terrainCommandLink_clicked();
-        void on_navigationCommandLink_clicked();
-        void on_filmCommandLink_clicked();
+    Ui::SunSkyWindow *ui;
 };
 
-#endif // MAINWINDOW_HH_20100902
+#endif // SUNSKYWINDOW_HH

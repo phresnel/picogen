@@ -146,6 +146,15 @@ MainWindow::~MainWindow() {
         delete ui;
 }
 
+
+void MainWindow::switchOffCommandLinks () {
+        ui->filmCommandLink->setChecked(false);
+        ui->terrainCommandLink->setChecked(false);
+        ui->navigationCommandLink->setChecked(false);
+        ui->forestCommandLink->setChecked(false);
+        ui->sunskyCommandLink->setChecked(false);
+}
+
 void MainWindow::on_filmCommandLink_clicked() {
         switchOffCommandLinks();
         ui->filmCommandLink->setChecked(true);
@@ -155,14 +164,7 @@ void MainWindow::on_filmCommandLink_clicked() {
 void MainWindow::on_navigationCommandLink_clicked() {
         switchOffCommandLinks();
         ui->navigationCommandLink->setChecked(true);
-        ui->stackedWidget->setCurrentWidget(ui->page_2);
-}
-
-void MainWindow::switchOffCommandLinks () {
-        ui->filmCommandLink->setChecked(false);
-        ui->terrainCommandLink->setChecked(false);
-        ui->navigationCommandLink->setChecked(false);
-        ui->forestCommandLink->setChecked(false);
+        ui->stackedWidget->setCurrentWidget(0);
 }
 
 void MainWindow::on_terrainCommandLink_clicked() {
@@ -174,6 +176,13 @@ void MainWindow::on_terrainCommandLink_clicked() {
 void MainWindow::on_forestCommandLink_clicked() {
         switchOffCommandLinks();
         ui->forestCommandLink->setChecked(true);
+        ui->stackedWidget->setCurrentWidget(0);
+}
+
+void MainWindow::on_sunskyCommandLink_clicked() {
+        switchOffCommandLinks();
+        ui->sunskyCommandLink->setChecked(true);
+        ui->stackedWidget->setCurrentWidget(ui->sunSky);
 }
 
 void MainWindow::on_terrain_terrainChanged() {
