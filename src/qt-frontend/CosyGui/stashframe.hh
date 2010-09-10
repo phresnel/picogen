@@ -41,4 +41,11 @@ private:
     Ui::StashFrame *ui;
 };
 
+enum ConfirmReset {
+        ConfirmReset_Abort,
+        ConfirmReset_StashBeforeReset,
+        ConfirmReset_Reset
+};
+ConfirmReset confirmReset (QWidget *parent);
+
 #endif // STASHFRAME_HH

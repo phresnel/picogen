@@ -38,6 +38,11 @@ public:
 private:
         double x_, y_, z_;
 };
+inline bool operator == (Direction3d const & lhs, Direction3d const & rhs) {
+        return lhs.x() == rhs.x()
+            && lhs.y() == rhs.y()
+            && lhs.z() == rhs.z();
+}
 
 
 } // namespace cosyscene

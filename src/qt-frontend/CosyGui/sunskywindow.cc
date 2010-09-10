@@ -22,6 +22,10 @@
 #include "ui_sunskywindow.h"
 #include "cosyscene/sunsky.hh"
 #include "cosyscene/scene.hh"
+#include "stashview.hh"
+#include "redshift/include/smart_ptr.hh"
+
+#include <QMessageBox>
 
 
 
@@ -118,6 +122,8 @@ void SunSkyWindow::on_utahSkyEditor_sunDirectionChanged(redshift::Vector ) {
         updateFromUtahSunSkyEditor();
 }
 
+
+
 void SunSkyWindow::updateFromUtahSunSkyEditor() {
         const QtSunSkyEditor &u = *ui->utahSkyEditor;
         cosyscene::UtahSky utah;
@@ -140,6 +146,8 @@ void SunSkyWindow::updateFromUtahSunSkyEditor() {
         emit skyChanged();
 }
 
+
+
 void SunSkyWindow::updateToUtahSunSkyEditor() {
         QtSunSkyEditor &u = *ui->utahSkyEditor;
         const bool blocked = u.blockSignals(true);
@@ -161,3 +169,41 @@ void SunSkyWindow::updateToUtahSunSkyEditor() {
 
         u.blockSignals(blocked);
 }
+
+
+
+void SunSkyWindow::on_stashButton_clicked() {
+        sunSky->stash();
+}
+
+
+
+void SunSkyWindow::on_stashRestoreButton_clicked() {
+        StashView *sw = new StashView (this);
+        sw->addItems(sunSky->getStash());
+        if (QDialog::Accepted == sw->exec()) {
+                redshift::shared_ptr<cosyscene::SunSky> newSunSky (
+                        new cosyscene::SunSky(
+                          sw->selectedData<cosyscene::SunSky>())
+                );
+                newSunSky->setStash(sw->itemsToStash<cosyscene::SunSky>());
+                setSunSkyByValue(*newSunSky, true);
+        }
+}
+
+
+
+void SunSkyWindow::on_stashResetButton_clicked() {
+        if (!sunSky->getStash().contains_data(*sunSky)) {
+                switch (confirmReset (this)) {
+                case ConfirmReset_Abort: return;
+                case ConfirmReset_StashBeforeReset: sunSky->stash(); break;
+                case ConfirmReset_Reset: break;
+                }
+        }
+        cosyscene::SunSky t;
+        t.toUtahSky(cosyscene::UtahSky());
+        t.setStash(sunSky->getStash());
+        setSunSkyByValue(t, true);
+}
+

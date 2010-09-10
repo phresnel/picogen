@@ -65,6 +65,10 @@ private:
         void updateToUtahSunSkyEditor();
 
 private slots:
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
+
         void on_utahSkyEditor_overcastChanged(double );
         void on_utahSkyEditor_atmosphericEffectsEnabledChanged(bool);
         void on_utahSkyEditor_atmosphericEffectsFactorChanged(double );

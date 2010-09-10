@@ -18,10 +18,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #include "stashframe.hh"
 #include "ui_stashframe.h"
+#include "redshift/include/smart_ptr.hh"
+#include <QMessageBox>
+
+
+ConfirmReset confirmReset (QWidget *parent) {
+        redshift::shared_ptr<QMessageBox> msgBox (new QMessageBox (parent));
+        QPushButton *resetButton = msgBox->addButton("Reset now!", QMessageBox::ActionRole);
+        QPushButton *stashButton = msgBox->addButton("Stash, then reset", QMessageBox::ActionRole);
+        QPushButton *abortButton = msgBox->addButton(QMessageBox::Abort);
+
+        msgBox->setDefaultButton(abortButton);
+        msgBox->setIcon(QMessageBox::Warning);
+        msgBox->setText("This deletes your settings.");
+        msgBox->exec();
+        if (msgBox->clickedButton() == (QAbstractButton*)stashButton) {
+                return ConfirmReset_StashBeforeReset;
+        } else if (msgBox->clickedButton() == (QAbstractButton*)resetButton) {
+                return ConfirmReset_Reset;
+        }
+        return ConfirmReset_Abort;
+}
+
 
 StashFrame::StashFrame(QWidget *parent) :
     QFrame(parent),

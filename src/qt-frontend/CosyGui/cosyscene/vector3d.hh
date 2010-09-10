@@ -39,6 +39,11 @@ public:
 private:
         double x_, y_, z_;
 };
+inline bool operator == (Vector3d const & lhs, Vector3d const & rhs) {
+        return lhs.x() == rhs.x()
+            && lhs.y() == rhs.y()
+            && lhs.z() == rhs.z();
+}
 double length (Vector3d);
 
 

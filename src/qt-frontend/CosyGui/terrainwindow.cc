@@ -159,7 +159,11 @@ void TerrainWindow::on_stashRestoreButton_clicked() {
 
 void TerrainWindow::on_stashResetButton_clicked() {
         if (!terrain->getStash().contains_data(*terrain)) {
-                QMessageBox::question(this, "unstashen data", "yeh has unstashen data");
+                switch (confirmReset (this)) {
+                case ConfirmReset_Abort: return;
+                case ConfirmReset_StashBeforeReset: terrain->stash(); break;
+                case ConfirmReset_Reset: break;
+                }
         }
         cosyscene::Terrain t;
         t.setStash(terrain->getStash());

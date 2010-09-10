@@ -49,17 +49,28 @@ public:
         void serialize (Arch &arch);
 
         Direction3d sunDirection;
+
         double turbidity;
+
         double sunSizeFactor;
         double sunBrightnessFactor;
+
         double atmosphereBrightnessFactor;
         double atmosphericFxFactor;
+
         double overcast;
         bool   atmosphericEffects;
 
 };
 inline bool operator == (UtahSky const &lhs, UtahSky const &rhs) {
-        return false;
+        return lhs.sunDirection == rhs.sunDirection
+            && lhs.turbidity == rhs.turbidity
+            && lhs.sunSizeFactor == rhs.sunSizeFactor
+            && lhs.sunBrightnessFactor == rhs.sunBrightnessFactor
+            && lhs.atmosphereBrightnessFactor == rhs.atmosphereBrightnessFactor
+            && lhs.overcast == rhs.overcast
+            && lhs.atmosphericEffects == rhs.atmosphericEffects
+        ;
 }
 
 
