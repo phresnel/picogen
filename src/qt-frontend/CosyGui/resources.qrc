@@ -10,4 +10,8 @@
         <file>resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</file>
         <file>resources/humano2_freeforcommercial_weather-few-clouds.png</file>
     </qresource>
+    <qresource prefix="/style">
+        <file alias="checkbox-yes">resources/crystalclear_lgpl_yes.png</file>
+        <file alias="checkbox-no">resources/crystalclear_lgpl_no.png</file>
+    </qresource>
 </RCC>

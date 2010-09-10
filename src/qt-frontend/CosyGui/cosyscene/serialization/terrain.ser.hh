@@ -43,6 +43,7 @@ inline void Terrain::serialize (Arch &arch) {
 
         switch (kind_) {
         case QuatschSource: arch & pack ("parameters", quatschSource_); break;
+        case None: break;
         }
 }
 

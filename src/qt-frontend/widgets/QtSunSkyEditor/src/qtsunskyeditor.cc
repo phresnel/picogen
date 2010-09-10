@@ -34,6 +34,8 @@ QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
         ui->setupUi(this);
         ui->previewScreen->setScaledContents(true);
 
+        ui->previewScreen->installEventFilter(this);
+
         using namespace redshift;
         direction = normalize(Vector(1,1,1));
         ui->turbiditySpinBox->setValue(7.2f);
@@ -69,12 +71,13 @@ void QtSunSkyEditor::resizeEvent (QResizeEvent*) {
 
 
 
-void QtSunSkyEditor::mouseMoveEvent (QMouseEvent* e) {
-        using namespace redshift;
-
-        if (ui->previewScreen->rect().contains(e->pos())) {
-                QPointF P = e->posF()-ui->previewScreen->pos();
-
+bool QtSunSkyEditor::eventFilter(QObject *object, QEvent *event) {
+        if (object == ui->previewScreen
+            && (event->type() == QEvent::MouseMove
+                || event->type() == QEvent::MouseButtonPress)
+        ) {
+                const QMouseEvent *e = (QMouseEvent*)event;
+                const QPoint P = e->pos();
                 if (e->buttons() & Qt::LeftButton) {
                         const float
                                 u = P.x() / (float)ui->previewScreen->width(),
@@ -85,13 +88,10 @@ void QtSunSkyEditor::mouseMoveEvent (QMouseEvent* e) {
                         redraw(true, false, u, v);
                         emit sunDirectionChanged(this->direction);
                 }
+
+                return true;
         }
-}
-
-
-
-void QtSunSkyEditor::mousePressEvent (QMouseEvent* e) {
-        mouseMoveEvent(e);
+        return false;
 }
 
 

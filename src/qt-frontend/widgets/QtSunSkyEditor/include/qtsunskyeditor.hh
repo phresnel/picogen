@@ -86,9 +86,9 @@ protected:
         void changeEvent(QEvent *e);
         void resizeEvent (QResizeEvent*);
 
-        void mouseMoveEvent(QMouseEvent*);
-        void mousePressEvent(QMouseEvent*);
         void wheelEvent(QWheelEvent*);
+        bool eventFilter(QObject *object, QEvent *event);
+
 
 private:
         void redraw(bool recalc, bool drawCross=false, float crossU=0, float crossV=0);

@@ -53,6 +53,7 @@ inline void SunSky::serialize (Arch &arch) {
 
         switch (kind_) {
         case UtahSky: arch & pack ("parameters", utahSky_); break;
+        case None: break;
         }
 }
 

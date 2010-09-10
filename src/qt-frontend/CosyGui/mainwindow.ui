@@ -44,6 +44,13 @@ QScrollBar::add-page, QScrollBar::sub-page{
         color:transparent;
 }
 
+QCheckBox::indicator {
+     width: 13px;
+     height: 13px;
+}
+QCheckBox::indicator:checked { image: url(:/style/checkbox-yes); }
+QCheckBox::indicator:unchecked { image: url(:/style/checkbox-no); }
+
 QGraphicsView, QMdiArea,
 QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
 QTreeView, QFrame#helpFrame {
