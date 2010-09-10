@@ -24,6 +24,8 @@
 #include "cosyscene/sunsky.hh"
 #include "cosyscene/save_load.hh"
 
+#include "renderwindow.hh"
+
 #include <iostream>
 
 //////
@@ -231,4 +233,15 @@ void MainWindow::on_actionLoad_triggered() {
         } catch (...) {
                 std::cerr << "unknown exception" << std::endl;
         }
+}
+
+
+void MainWindow::on_renderCommandLink_clicked() {
+        // Et hop.
+        RenderWindow *r = new RenderWindow (scene->toRedshiftScene(),
+                                            0,
+                                            0,
+                                            this,
+                                            1);
+        r->exec();
 }

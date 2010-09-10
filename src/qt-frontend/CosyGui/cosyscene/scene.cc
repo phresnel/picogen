@@ -22,6 +22,8 @@
 #include "terrain.hh"
 #include "sunsky.hh"
 
+#include "redshift/include/jobfile.hh"
+
 namespace cosyscene {
 
 Scene::Scene()
@@ -29,5 +31,56 @@ Scene::Scene()
 , sunSky_(new SunSky())
 {
 }
+
+
+redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const{
+        using namespace ::redshift;
+        shared_ptr<scenefile::Scene> scenePtr(new scenefile::Scene);
+        scenefile::Scene &scene = *scenePtr;
+
+        // Camera
+        scenefile::Camera cam;
+        cam.type = scenefile::Camera::pinhole;
+        cam.pinholeParams.front = 1;
+
+        scenefile::Transform t;
+        t.type = t.move;
+        t.x = 0; t.x = 2; t.z = 0;
+        cam.transforms.push_back(t);
+        scene.addCamera(cam);
+
+        // Render Settings
+        scenefile::RenderSettings rs;
+        rs.width = 320;
+        rs.height = 240;
+        rs.samplesPerPixel = 1;
+
+        rs.surfaceIntegrator.type = scenefile::SurfaceIntegrator::whitted;
+        rs.volumeIntegrator.type = scenefile::VolumeIntegrator::none;
+
+        scene.addRenderSettings(rs);
+
+        // Film settings.
+        scenefile::FilmSettings fs;
+        fs.colorscale = 0.00001;
+        fs.convertToSrgb = false;
+        scene.setFilmSettings(fs);
+
+        // Backgrounds.
+        scenefile::Background bg;
+        bg.type = scenefile::Background::pss_sunsky;
+        scene.addBackground(bg);
+
+        // Objects.
+        scenefile::Object ob;
+        ob.type = scenefile::Object::closed_sphere;
+        ob.closedSphereParams.center = scenefile::Point(0,0,10);
+        ob.closedSphereParams.radius = 3;
+        scene.addObject(ob);
+
+
+        return scenePtr;
+}
+
 
 } // namespace

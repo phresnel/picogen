@@ -25,6 +25,10 @@
 #include "redshift/include/smart_ptr.hh"
 #include "stash.hh"
 
+namespace redshift { namespace scenefile {
+         class Scene;
+} }
+
 namespace cosyscene {
 
 class Terrain;
@@ -34,6 +38,8 @@ class Scene
 {
 public:
         Scene();
+
+        redshift::shared_ptr<redshift::scenefile::Scene> toRedshiftScene()const;
 
         redshift::shared_ptr<Terrain> terrain() const {
                 return terrain_;
