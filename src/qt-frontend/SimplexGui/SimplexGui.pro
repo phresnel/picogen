@@ -58,7 +58,7 @@ LIBS += \
     -lnoise \
     -lSDL -lSDL_image
 # pkg-config --libs OpenEXR
-LIBS += -pthread -lIlmImf -lz -lImath -lHalf -lIex -lIlmThread
+LIBS += -lpthread -lIlmImf -lz -lImath -lHalf -lIex -lIlmThread
 unix:LIBS += \
     /usr/lib/libboost_program_options.a \
     /usr/lib/libboost_filesystem.a \

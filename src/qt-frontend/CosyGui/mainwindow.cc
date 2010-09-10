@@ -172,7 +172,7 @@ void MainWindow::on_filmCommandLink_clicked() {
 void MainWindow::on_navigationCommandLink_clicked() {
         switchOffCommandLinks();
         ui->navigationCommandLink->setChecked(true);
-        ui->stackedWidget->setCurrentWidget(0);
+        ui->stackedWidget->setCurrentWidget(ui->navigation);
 }
 
 void MainWindow::on_terrainCommandLink_clicked() {

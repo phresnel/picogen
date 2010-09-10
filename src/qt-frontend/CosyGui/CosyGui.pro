@@ -33,7 +33,8 @@ SOURCES += main.cc\
     cosyscene/sunsky.cc \
     cosyscene/geometry.cc \
     cosyscene/vector3d.cc \
-    cosyscene/direction3d.cc
+    cosyscene/direction3d.cc \
+    navigationwindow.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -57,14 +58,16 @@ HEADERS  += mainwindow.hh \
     cosyscene/serialization/vector3d.ser.hh \
     cosyscene/serialization/direction3d.ser.hh \
     cosyscene/vector3d.hh \
-    cosyscene/direction3d.hh
+    cosyscene/direction3d.hh \
+    navigationwindow.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
     terrainwindow.ui \
     stashview.ui \
     stashframe.ui \
-    sunskywindow.ui
+    sunskywindow.ui \
+    navigationwindow.ui
 
 LIBS += \
     ../../redshift/lib/libpicogen.a \

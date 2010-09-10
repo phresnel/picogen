@@ -470,7 +470,7 @@ QLabel{ background-color:none; }</string>
          <number>1</number>
         </property>
         <widget class="FilmSettings" name="filmSettings"/>
-        <widget class="QWidget" name="page"/>
+        <widget class="NavigationWindow" name="navigation"/>
         <widget class="TerrainWindow" name="terrain"/>
         <widget class="SunSkyWindow" name="sunSky"/>
        </widget>
@@ -541,6 +541,12 @@ QLabel{ background-color:none; }</string>
    <class>SunSkyWindow</class>
    <extends>QWidget</extends>
    <header>sunskywindow.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NavigationWindow</class>
+   <extends>QWidget</extends>
+   <header>navigationwindow.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
