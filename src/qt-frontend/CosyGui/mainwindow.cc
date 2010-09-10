@@ -21,6 +21,7 @@
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
 #include "cosyscene/scene.hh"
+#include "cosyscene/sunsky.hh"
 #include "cosyscene/save_load.hh"
 
 #include <iostream>
@@ -133,6 +134,8 @@ MainWindow::MainWindow(QWidget *parent) :
         // Inits.
         ui->setupUi(this);
         ui->terrain->setTerrain(scene->terrain());
+
+        scene->sunSky()->toUtahSky (cosyscene::UtahSky());
         ui->sunSky->setSunSky(scene->sunSky());
 
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
@@ -221,6 +224,7 @@ void MainWindow::on_actionLoad_triggered() {
                 cosyscene::Scene scene;
                 cosyscene::load_scene(scene, str.toStdString());
                 *this->scene = scene;
+
                 emit sceneInvalidated(this->scene);
         } catch (std::exception const &e) {
                 std::cerr << e.what() << std::endl;

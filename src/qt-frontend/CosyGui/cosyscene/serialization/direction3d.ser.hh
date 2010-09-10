@@ -19,19 +19,19 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef VECTOR3D_SERIALIZATION_HH_20100910
-#define VECTOR3D_SERIALIZATION_HH_20100910
+#ifndef DIRECTION3D_SERIALIZATION_HH_20100910
+#define DIRECTION3d_SERIALIZATION_HH_20100910
 
-#include "../vector3d.hh"
+#include "../direction3d.hh"
 
 namespace cosyscene {
 
 template<typename Arch>
-inline void Vector3d::serialize (Arch &arch) {
+inline void Direction3d::serialize (Arch &arch) {
         using actuarius::pack;
         arch & pack(x_) & pack(y_) & pack(z_);
 }
 
 } // namespace cosyscene
 
-#endif // VECTOR3D_SERIALIZATION_HH_20100910
+#endif // DIRECTION3D_SERIALIZATION_HH_20100910

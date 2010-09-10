@@ -23,13 +23,24 @@
 
 namespace cosyscene {
 
+
 class Vector3d {
 public:
-        double x, y, z;
+        Vector3d () ;
+        Vector3d (double x, double y, double z);
+
+        double x() const;
+        double y() const;
+        double z() const;
 
         template<typename Arch>
         inline void serialize (Arch &arch);
+
+private:
+        double x_, y_, z_;
 };
+double length (Vector3d);
+
 
 } // namespace cosyscene
 

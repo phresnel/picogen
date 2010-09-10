@@ -18,20 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#ifndef VECTOR3D_SERIALIZATION_HH_20100910
-#define VECTOR3D_SERIALIZATION_HH_20100910
-
-#include "../vector3d.hh"
+#include "geometry.hh"
+#include <cmath>
 
 namespace cosyscene {
 
-template<typename Arch>
-inline void Vector3d::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack(x_) & pack(y_) & pack(z_);
+double length (double x, double y, double z) {
+        return std::sqrt(x*x + y*y + z*z);
 }
 
-} // namespace cosyscene
-
-#endif // VECTOR3D_SERIALIZATION_HH_20100910
+}

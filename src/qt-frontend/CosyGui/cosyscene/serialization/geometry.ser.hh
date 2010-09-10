@@ -19,19 +19,13 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#ifndef VECTOR3D_SERIALIZATION_HH_20100910
-#define VECTOR3D_SERIALIZATION_HH_20100910
+#ifndef GEOMETRY_SERIALIZATION_HH_20100910
+#define GEOMETRY_SERIALIZATION_HH_20100910
 
-#include "../vector3d.hh"
+#include "../geometry.hh"
 
 namespace cosyscene {
 
-template<typename Arch>
-inline void Vector3d::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack(x_) & pack(y_) & pack(z_);
-}
-
 } // namespace cosyscene
 
-#endif // VECTOR3D_SERIALIZATION_HH_20100910
+#endif // GEOMETRY_SERIALIZATION_HH_20100910

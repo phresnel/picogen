@@ -18,20 +18,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#ifndef VECTOR3D_SERIALIZATION_HH_20100910
-#define VECTOR3D_SERIALIZATION_HH_20100910
-
-#include "../vector3d.hh"
+#ifndef DIRECTION3D_HH_20100910
+#define DIRECTION3D_HH_20100910
 
 namespace cosyscene {
 
-template<typename Arch>
-inline void Vector3d::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack(x_) & pack(y_) & pack(z_);
-}
+class Direction3d {
+public:
+        Direction3d () ;
+        Direction3d (double x, double y, double z);
+
+        double x() const;
+        double y() const;
+        double z() const;
+
+        template<typename Arch>
+        inline void serialize (Arch &arch);
+
+private:
+        double x_, y_, z_;
+};
+
 
 } // namespace cosyscene
 
-#endif // VECTOR3D_SERIALIZATION_HH_20100910
+#endif // DIRECTION3D_HH_20100910

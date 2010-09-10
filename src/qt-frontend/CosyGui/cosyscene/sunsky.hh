@@ -26,7 +26,7 @@
 #include <string>
 #include <actuarius/bits/enum.hh>
 
-#include "vector3d.hh"
+#include "direction3d.hh"
 
 namespace cosyscene {
 class UtahSky;
@@ -34,12 +34,21 @@ class SunSky;
 
 class UtahSky {
 public:
-        UtahSky() {}
+        UtahSky() :
+                sunDirection(0,0.5,1),
+                turbidity(2.3),
+                sunSizeFactor(1),
+                sunBrightnessFactor(1),
+                atmosphereBrightnessFactor(1),
+                atmosphericFxFactor(1),
+                overcast(0),
+                atmosphericEffects(0)
+        {}
 
         template<typename Arch>
         void serialize (Arch &arch);
 
-        Vector3d sunDirection;
+        Direction3d sunDirection;
         double turbidity;
         double sunSizeFactor;
         double sunBrightnessFactor;

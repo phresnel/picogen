@@ -18,20 +18,45 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "vector3d.hh"
+#include "geometry.hh"
 
-#ifndef VECTOR3D_SERIALIZATION_HH_20100910
-#define VECTOR3D_SERIALIZATION_HH_20100910
-
-#include "../vector3d.hh"
+#include <cmath>
 
 namespace cosyscene {
 
-template<typename Arch>
-inline void Vector3d::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack(x_) & pack(y_) & pack(z_);
+
+
+Vector3d::Vector3d() : x_(0), y_(0), z_(0) {
 }
 
-} // namespace cosyscene
 
-#endif // VECTOR3D_SERIALIZATION_HH_20100910
+
+Vector3d::Vector3d(double x, double y, double z) : x_(x), y_(y), z_(z) {
+}
+
+
+
+double Vector3d::x() const {
+        return x_;
+}
+
+
+
+double Vector3d::y() const {
+        return y_;
+}
+
+
+
+double Vector3d::z() const {
+        return z_;
+}
+
+
+
+double length (Vector3d d) {
+        return length(d.x(), d.y(), d.z());
+}
+
+}

@@ -70,7 +70,6 @@ void SunSkyWindow::setSunSkyByValue (cosyscene::SunSky const &t,
 
 
 void SunSkyWindow::updateViews () {
-        const bool wasBlocked = blockSignals(true);
         switch (sunSky->kind()) {
         case cosyscene::SunSky::UtahSky:
                 updateToUtahSunSkyEditor();
@@ -78,7 +77,6 @@ void SunSkyWindow::updateViews () {
         case cosyscene::SunSky::None:
                 break;
         }
-        blockSignals(wasBlocked);
 }
 
 
@@ -121,7 +119,6 @@ void SunSkyWindow::on_utahSkyEditor_sunDirectionChanged(redshift::Vector ) {
 }
 
 void SunSkyWindow::updateFromUtahSunSkyEditor() {
-        qWarning("SunSkyWindow::updateFromUtahSunSkyEditor()");
         const QtSunSkyEditor &u = *ui->utahSkyEditor;
         cosyscene::UtahSky utah;
 
@@ -131,9 +128,9 @@ void SunSkyWindow::updateFromUtahSunSkyEditor() {
         utah.overcast = u.overcast();
         utah.sunBrightnessFactor = u.sunIntensity();
 
-        utah.sunDirection.x = u.sunDirection().x;
-        utah.sunDirection.y = u.sunDirection().y;
-        utah.sunDirection.z = u.sunDirection().z;
+        utah.sunDirection = cosyscene::Direction3d(u.sunDirection().x,
+                                                   u.sunDirection().y,
+                                                   u.sunDirection().z);
 
         utah.sunSizeFactor = u.diskSize();
         utah.turbidity = u.turbidity();
@@ -145,6 +142,8 @@ void SunSkyWindow::updateFromUtahSunSkyEditor() {
 
 void SunSkyWindow::updateToUtahSunSkyEditor() {
         QtSunSkyEditor &u = *ui->utahSkyEditor;
+        const bool blocked = u.blockSignals(true);
+
         const cosyscene::UtahSky utah = sunSky->utahSky();
 
         u.setAtmosphereIntensity(utah.atmosphereBrightnessFactor);
@@ -153,10 +152,12 @@ void SunSkyWindow::updateToUtahSunSkyEditor() {
         u.setOvercast(utah.overcast);
         u.setSunIntensity(utah.sunBrightnessFactor);
 
-        u.setSunDirection(redshift::Vector(utah.sunDirection.x,
-                                           utah.sunDirection.y,
-                                           utah.sunDirection.z));
+        u.setSunDirection(redshift::Vector(utah.sunDirection.x(),
+                                           utah.sunDirection.y(),
+                                           utah.sunDirection.z()));
 
         u.setDiskSize(utah.sunSizeFactor);
         u.setTurbidity(utah.turbidity);
+
+        u.blockSignals(blocked);
 }

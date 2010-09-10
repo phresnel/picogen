@@ -30,7 +30,10 @@ SOURCES += main.cc\
     stashview.cc \
     stashframe.cc \
     sunskywindow.cc \
-    cosyscene/sunsky.cc
+    cosyscene/sunsky.cc \
+    cosyscene/geometry.cc \
+    cosyscene/vector3d.cc \
+    cosyscene/direction3d.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -48,8 +51,13 @@ HEADERS  += mainwindow.hh \
     sunskywindow.hh \
     cosyscene/sunsky.hh \
     cosyscene/serialization/sunsky.ser.hh \
+    cosyscene/serialization/vector3d.ser.hh \
+    cosyscene/geometry.hh \
+    cosyscene/serialization/geometry.ser.hh \
+    cosyscene/serialization/vector3d.ser.hh \
+    cosyscene/serialization/direction3d.ser.hh \
     cosyscene/vector3d.hh \
-    cosyscene/serialization/vector3d.ser.hh
+    cosyscene/direction3d.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
