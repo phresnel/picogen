@@ -62,6 +62,9 @@ private:
         void showQuatschEditor();
 
 private slots:
+        void on_showWorldFittingTab_clicked();
+        void on_showTexturingTab_clicked();
+        void on_showFormationTab_clicked();
         void on_quatschCodeEditorCLB_clicked();
         void on_quatschCodeEditor_codeChanged();
 

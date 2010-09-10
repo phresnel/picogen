@@ -169,3 +169,24 @@ void TerrainWindow::on_stashResetButton_clicked() {
         t.setStash(terrain->getStash());
         setTerrainByValue(t, true);
 }
+
+void TerrainWindow::on_showFormationTab_clicked() {
+        ui->showFormationTab->setChecked(true);
+        ui->showTexturingTab->setChecked(false);
+        ui->showWorldFittingTab->setChecked(false);
+        ui->terrainTaskStackedWidget->setCurrentIndex(0);
+}
+
+void TerrainWindow::on_showTexturingTab_clicked() {
+        ui->showFormationTab->setChecked(false);
+        ui->showTexturingTab->setChecked(true);
+        ui->showWorldFittingTab->setChecked(false);
+        ui->terrainTaskStackedWidget->setCurrentIndex(1);
+}
+
+void TerrainWindow::on_showWorldFittingTab_clicked() {
+        ui->showFormationTab->setChecked(false);
+        ui->showTexturingTab->setChecked(false);
+        ui->showWorldFittingTab->setChecked(true);
+        ui->terrainTaskStackedWidget->setCurrentIndex(2);
+}

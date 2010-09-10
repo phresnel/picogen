@@ -9,6 +9,9 @@
         <file>resources/crystalclear_lgpl_folder.png</file>
         <file>resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</file>
         <file>resources/humano2_freeforcommercial_weather-few-clouds.png</file>
+        <file>resources/oxygen_gpl_ruler.png</file>
+        <file>resources/oxygen_gpl_texturing.png</file>
+        <file>resources/sketchy_cc-attribution-noncommercial_mountain-sketch.png</file>
     </qresource>
     <qresource prefix="/style">
         <file alias="checkbox-yes">resources/crystalclear_lgpl_yes.png</file>

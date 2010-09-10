@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
-    <height>436</height>
+    <width>580</width>
+    <height>558</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_7">
    <property name="margin">
     <number>0</number>
    </property>
@@ -34,6 +34,84 @@
     </widget>
    </item>
    <item>
+    <widget class="QFrame" name="horizontalFrame">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="topMargin">
+       <number>10</number>
+      </property>
+      <item>
+       <widget class="QCommandLinkButton" name="showFormationTab">
+        <property name="text">
+         <string>Formation</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/toplevel-navigation/resources/sketchy_cc-attribution-noncommercial_mountain-sketch.png</normaloff>:/toplevel-navigation/resources/sketchy_cc-attribution-noncommercial_mountain-sketch.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="description">
+         <string>Shape of Terrain.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCommandLinkButton" name="showTexturingTab">
+        <property name="text">
+         <string>Texturing</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/toplevel-navigation/resources/oxygen_gpl_texturing.png</normaloff>:/toplevel-navigation/resources/oxygen_gpl_texturing.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="description">
+         <string>Paint your Terrain.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCommandLinkButton" name="showWorldFittingTab">
+        <property name="text">
+         <string>World Fitting</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/toplevel-navigation/resources/oxygen_gpl_ruler.png</normaloff>:/toplevel-navigation/resources/oxygen_gpl_ruler.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="description">
+         <string>Total Extent and Detail-Level.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QFrame" name="frame_4">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -43,138 +121,154 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QStackedWidget" name="stackedWidget">
+       <widget class="QStackedWidget" name="terrainTaskStackedWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
-        <widget class="QWidget" name="selectKind">
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+        <widget class="QWidget" name="formationStackedWidget">
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <property name="margin">
            <number>0</number>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+           <widget class="QStackedWidget" name="stackedWidget">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="selectKind">
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <property name="margin">
+               <number>0</number>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame">
-              <property name="styleSheet">
-               <string notr="true">QFrame{background-color:#575;}</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_4">
-               <property name="margin">
-                <number>16</number>
-               </property>
-               <item>
-                <widget class="QCommandLinkButton" name="commandLinkButton_3">
-                 <property name="text">
-                  <string>Import</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resources.qrc">
-                   <normaloff>:/toplevel-navigation/resources/crystalclear_lgpl_folder.png</normaloff>:/toplevel-navigation/resources/crystalclear_lgpl_folder.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>92</width>
-                   <height>64</height>
-                  </size>
-                 </property>
-                 <property name="description">
-                  <string>Re-use existing terrain.</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCommandLinkButton" name="commandLinkButton">
-                 <property name="text">
-                  <string>Parametric Preset</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resources.qrc">
-                   <normaloff>:/toplevel-navigation/resources/bagsandboxes_freeforcommercial_preset.png</normaloff>:/toplevel-navigation/resources/bagsandboxes_freeforcommercial_preset.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>92</width>
-                   <height>64</height>
-                  </size>
-                 </property>
-                 <property name="description">
-                  <string>Complex terrain ready to use!</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame_2">
-              <property name="styleSheet">
-               <string notr="true">QFrame{background-color:#755;}</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
-               <property name="margin">
-                <number>16</number>
-               </property>
-               <item>
-                <widget class="QCommandLinkButton" name="quatschCodeEditorCLB">
-                 <property name="text">
-                  <string>Quatsch Code Editor</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resources.qrc">
-                   <normaloff>:/toplevel-navigation/resources/oxygen_gpl_quatschsourceeditor.png</normaloff>:/toplevel-navigation/resources/oxygen_gpl_quatschsourceeditor.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>64</width>
-                   <height>64</height>
-                  </size>
-                 </property>
-                 <property name="description">
-                  <string>Reveal Turing-Completeness for your terrain!</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <spacer name="verticalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame">
+                  <property name="styleSheet">
+                   <string notr="true">QFrame{background-color:#575;}</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_4">
+                   <property name="margin">
+                    <number>16</number>
+                   </property>
+                   <item>
+                    <widget class="QCommandLinkButton" name="commandLinkButton_3">
+                     <property name="text">
+                      <string>Import</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="resources.qrc">
+                       <normaloff>:/toplevel-navigation/resources/crystalclear_lgpl_folder.png</normaloff>:/toplevel-navigation/resources/crystalclear_lgpl_folder.png</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>92</width>
+                       <height>64</height>
+                      </size>
+                     </property>
+                     <property name="description">
+                      <string>Re-use existing terrain.</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCommandLinkButton" name="commandLinkButton">
+                     <property name="text">
+                      <string>Parametric Preset</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="resources.qrc">
+                       <normaloff>:/toplevel-navigation/resources/bagsandboxes_freeforcommercial_preset.png</normaloff>:/toplevel-navigation/resources/bagsandboxes_freeforcommercial_preset.png</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>92</width>
+                       <height>64</height>
+                      </size>
+                     </property>
+                     <property name="description">
+                      <string>Complex terrain ready to use!</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_2">
+                  <property name="styleSheet">
+                   <string notr="true">QFrame{background-color:#755;}</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_5">
+                   <property name="margin">
+                    <number>16</number>
+                   </property>
+                   <item>
+                    <widget class="QCommandLinkButton" name="quatschCodeEditorCLB">
+                     <property name="text">
+                      <string>Quatsch Code Editor</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="resources.qrc">
+                       <normaloff>:/toplevel-navigation/resources/oxygen_gpl_quatschsourceeditor.png</normaloff>:/toplevel-navigation/resources/oxygen_gpl_quatschsourceeditor.png</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>64</width>
+                       <height>64</height>
+                      </size>
+                     </property>
+                     <property name="description">
+                      <string>Reveal Turing-Completeness for your terrain!</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="quatschCodeEditorPage">
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
+               <widget class="QuatschSourceEditor" name="quatschCodeEditor" native="true"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="quatschCodeEditorPage">
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QuatschSourceEditor" name="quatschCodeEditor" native="true"/>
-          </item>
-         </layout>
-        </widget>
+        <widget class="QWidget" name="stackedWidgetPage2"/>
+        <widget class="QWidget" name="stackedWidgetPage3"/>
        </widget>
       </item>
      </layout>
