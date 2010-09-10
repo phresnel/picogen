@@ -62,13 +62,35 @@ redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const{
 
         // Film settings.
         scenefile::FilmSettings fs;
-        fs.colorscale = 0.00001;
+        fs.colorscale = 0.00005;
         fs.convertToSrgb = false;
         scene.setFilmSettings(fs);
 
         // Backgrounds.
         scenefile::Background bg;
-        bg.type = scenefile::Background::pss_sunsky;
+
+        SunSky const & ss = *sunSky_;
+        switch (ss.kind()) {
+        case SunSky::UtahSky: {
+                bg.type = scenefile::Background::pss_sunsky;
+                const UtahSky us = ss.utahSky();
+                bg.atmosphereBrightnessFactor = us.atmosphereBrightnessFactor;
+                bg.atmosphericEffects = us.atmosphericEffects;
+                bg.atmosphericFxFactor = us.atmosphericFxFactor;
+                bg.overcast = us.overcast;
+                bg.sunBrightnessFactor = us.sunBrightnessFactor;
+                bg.sunDirection = scenefile::Normal(us.sunDirection.x(),
+                                                    us.sunDirection.y(),
+                                                    us.sunDirection.z());
+                bg.sunSizeFactor = us.sunSizeFactor;
+                bg.turbidity = us.turbidity;
+                break;
+        }
+        case SunSky::None:
+                bg.type = scenefile::Background::pss_sunsky;
+                break;
+        }
+
         scene.addBackground(bg);
 
         // Objects.
