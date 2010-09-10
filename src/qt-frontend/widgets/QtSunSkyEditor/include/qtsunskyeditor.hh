@@ -86,7 +86,6 @@ protected:
         void changeEvent(QEvent *e);
         void resizeEvent (QResizeEvent*);
 
-        void wheelEvent(QWheelEvent*);
         bool eventFilter(QObject *object, QEvent *event);
 
 
@@ -94,6 +93,7 @@ private:
         void redraw(bool recalc, bool drawCross=false, float crossU=0, float crossV=0);
         void updatePreethamSettings();
         void updatePreethamSettingsAndRedraw();
+        void updateSunDirectionFromSpinBoxes();
 
         redshift::Vector direction;
 
@@ -114,6 +114,10 @@ private:
         redshift::shared_ptr<redshift::backgrounds::PssAdapter> preetham;
 
 private slots:
+        void on_directionXSpinBox_editingFinished();
+        void on_directionYSpinBox_editingFinished();
+        void on_directionZSpinBox_editingFinished();
+
         void on_overcastSpinBox_valueChanged(double );
         void on_enableAtmosphericEffects_stateChanged(int );
         void on_atmosphericEffectsFactorSpinBox_valueChanged(double );

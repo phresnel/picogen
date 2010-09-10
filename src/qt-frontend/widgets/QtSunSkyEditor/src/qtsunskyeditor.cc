@@ -24,9 +24,6 @@
 #include "backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <QPainter>
 
-//#include <omp.h>
-
-
 QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
 : QWidget(parent)
 , ui(new Ui::qtsunskyeditor)
@@ -83,29 +80,12 @@ bool QtSunSkyEditor::eventFilter(QObject *object, QEvent *event) {
                                 u = P.x() / (float)ui->previewScreen->width(),
                                 v = P.y() / (float)ui->previewScreen->height()
                         ;
-                        this->direction = screenToHemisphereSat(u,v);
-                        updatePreethamSettings();
-                        redraw(true, false, u, v);
-                        emit sunDirectionChanged(this->direction);
+                        setSunDirection(screenToHemisphereSat(u,v));
                 }
 
                 return true;
         }
         return false;
-}
-
-
-
-void QtSunSkyEditor::wheelEvent(QWheelEvent* e) {
-        if (ui->previewScreen->rect().contains(e->pos())) {
-                const float speed = 10.f;/* /
-                        (e->modifiers()&Qt::ControlModifier)?10.f:1.f;*/
-                ui->turbiditySpinBox->setValue(
-                        ui->turbiditySpinBox->value()
-                        + e->delta() / (speed*(8.f*15.f))
-                );
-                redraw(true);
-        }
 }
 
 
@@ -133,8 +113,6 @@ void QtSunSkyEditor::redraw (bool recalc, bool drawCross, float crossU, float cr
                         b = b_<0?0:b_>255?255:b_
                 ;
                 img.setPixel(x, y, QColor(r,g,b).rgb());
-                //QRgb const color = QColor(r,g,b).rgb();
-                //painter.fillRect(x,y,pixelSize,pixelSize, color);
         }
 
         if (false&&drawCross) {
@@ -269,6 +247,26 @@ void QtSunSkyEditor::on_overcastSpinBox_valueChanged(double value) {
 
 
 
+void QtSunSkyEditor::on_directionXSpinBox_editingFinished() {
+        updateSunDirectionFromSpinBoxes();
+}
+void QtSunSkyEditor::on_directionYSpinBox_editingFinished() {
+        updateSunDirectionFromSpinBoxes();
+}
+void QtSunSkyEditor::on_directionZSpinBox_editingFinished() {
+        updateSunDirectionFromSpinBoxes();
+}
+void QtSunSkyEditor::updateSunDirectionFromSpinBoxes() {
+        using redshift::Vector;
+        this->direction = normalize(Vector(ui->directionXSpinBox->value(),
+                                           ui->directionYSpinBox->value(),
+                                           ui->directionZSpinBox->value()));
+        emit sunDirectionChanged(this->direction);
+        updatePreethamSettingsAndRedraw();
+}
+
+
+
 void QtSunSkyEditor::updatePreethamSettings() {
         using namespace redshift;
         shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
@@ -357,8 +355,14 @@ void QtSunSkyEditor::setAtmosphereIntensity(double value) {
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setSunDirection (redshift::Vector value) {
-        this->direction = value;
+        direction = value;
+        const bool blocked = blockSignals(true);
+        ui->directionXSpinBox->setValue(value.x);
+        ui->directionYSpinBox->setValue(value.y);
+        ui->directionZSpinBox->setValue(value.z);
         updatePreethamSettingsAndRedraw();
+        blockSignals(blocked);
+        emit sunDirectionChanged(this->direction);
 }
 
 
