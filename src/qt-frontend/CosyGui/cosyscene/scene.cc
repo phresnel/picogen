@@ -67,38 +67,52 @@ redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const{
         scene.setFilmSettings(fs);
 
         // Backgrounds.
-        scenefile::Background bg;
+        {
+                scenefile::Background bg;
 
-        SunSky const & ss = *sunSky_;
-        switch (ss.kind()) {
-        case SunSky::UtahSky: {
-                bg.type = scenefile::Background::pss_sunsky;
-                const UtahSky us = ss.utahSky();
-                bg.atmosphereBrightnessFactor = us.atmosphereBrightnessFactor;
-                bg.atmosphericEffects = us.atmosphericEffects;
-                bg.atmosphericFxFactor = us.atmosphericFxFactor;
-                bg.overcast = us.overcast;
-                bg.sunBrightnessFactor = us.sunBrightnessFactor;
-                bg.sunDirection = scenefile::Normal(us.sunDirection.x(),
-                                                    us.sunDirection.y(),
-                                                    us.sunDirection.z());
-                bg.sunSizeFactor = us.sunSizeFactor;
-                bg.turbidity = us.turbidity;
-                break;
+                SunSky const & ss = *sunSky_;
+                switch (ss.kind()) {
+                case SunSky::UtahSky: {
+                        bg.type = scenefile::Background::pss_sunsky;
+                        const UtahSky us = ss.utahSky();
+                        bg.atmosphereBrightnessFactor = us.atmosphereBrightnessFactor;
+                        bg.atmosphericEffects = us.atmosphericEffects;
+                        bg.atmosphericFxFactor = us.atmosphericFxFactor;
+                        bg.overcast = us.overcast;
+                        bg.sunBrightnessFactor = us.sunBrightnessFactor;
+                        bg.sunDirection = scenefile::Normal(us.sunDirection.x(),
+                                                            us.sunDirection.y(),
+                                                            us.sunDirection.z());
+                        bg.sunSizeFactor = us.sunSizeFactor;
+                        bg.turbidity = us.turbidity;
+                        break;
+                }
+                case SunSky::None:
+                        bg.type = scenefile::Background::pss_sunsky;
+                        break;
+                }
+
+                scene.addBackground(bg);
         }
-        case SunSky::None:
-                bg.type = scenefile::Background::pss_sunsky;
-                break;
+
+        // Terrain.
+        {
+                scenefile::Object ob;
+
+                Terrain const &t = *terrain_;
+                if (Terrain::None != t.kind()) {
+                        ob.type = scenefile::Object::lazy_quadtree;
+
+                        switch (t.kind()) {
+                        case Terrain::QuatschSource:
+                                ob.lazyQuadtreeParams.code = t.quatschSource().code();
+                                break;
+                        }
+
+                        ob.lazyQuadtreeParams.size = 10000;
+                        scene.addObject(ob);
+                }
         }
-
-        scene.addBackground(bg);
-
-        // Objects.
-        scenefile::Object ob;
-        ob.type = scenefile::Object::closed_sphere;
-        ob.closedSphereParams.center = scenefile::Point(0,0,10);
-        ob.closedSphereParams.radius = 3;
-        scene.addObject(ob);
 
 
         return scenePtr;

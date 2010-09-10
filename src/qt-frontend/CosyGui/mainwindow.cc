@@ -226,7 +226,6 @@ void MainWindow::on_actionLoad_triggered() {
                 cosyscene::Scene scene;
                 cosyscene::load_scene(scene, str.toStdString());
                 *this->scene = scene;
-
                 emit sceneInvalidated(this->scene);
         } catch (std::exception const &e) {
                 std::cerr << e.what() << std::endl;
