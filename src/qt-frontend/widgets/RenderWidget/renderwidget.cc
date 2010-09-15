@@ -34,6 +34,14 @@ RenderWidget::RenderWidget(QWidget *parent) :
     renderThread(0)
 {
         ui->setupUi(this);
+
+        connect (this, SIGNAL(_invokeUpdateImage(QImage)),
+                 this, SLOT(_updateImageSlot(QImage)),
+                 Qt::QueuedConnection); // << according to docs,
+                                        // *queued* means "slot runs in
+                                        // receiver's thread"; needed
+                                        // because pixmaps are not safe
+                                        // outside the master thread
 }
 
 
@@ -102,6 +110,12 @@ void RenderWidget::updateImage (const redshift::Film &film,
                 );
         }
 
+        emit _invokeUpdateImage(image);
+}
+
+
+
+void RenderWidget::_updateImageSlot(QImage const &image) {
         if (!image.size().isNull()) {
                 /*ui->image->setPixmap(QPixmap::fromImage(image).scaled(
                         ui->image->size(),
@@ -161,7 +175,7 @@ void RenderWidgetThread::run() {
 
 
         } catch (std::exception const &ex) {
-                qWarning(ex.what());
+                qWarning("%s", ex.what());
                 error_ = true;
                 errorMessage_ = QString()
                         + "Critical exception occured:\n"

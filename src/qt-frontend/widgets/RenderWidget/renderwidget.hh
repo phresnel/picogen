@@ -72,7 +72,10 @@ public:
         // Sync.
         void updateImage (const redshift::Film &,
                           const redshift::scenefile::FilmSettings &);
-
+signals:
+        void _invokeUpdateImage (QImage const &image);
+private slots:
+        void _updateImageSlot (QImage const &image);
 private:
         // Ui.
         Ui::RenderWidget *ui;
@@ -98,6 +101,11 @@ public:
                             int renderSettingsIndex, int cameraIndex);
         virtual ~RenderWidgetThread();
         void run();
+
+        RenderWidget* renderWidget() const { return renderWidget_; }
+
+        void report (int completed, int total);
+
 private:
 
         friend class RenderWidgetProgressReporter;
@@ -105,7 +113,6 @@ private:
         void renderImage (redshift::shared_ptr<redshift::Film>,
                           const redshift::scenefile::Scene &,
                           int renderSettingsIndex, int cameraIndex);
-        void report (int completed, int total);
 
         // Redshift.
         RenderWidget *renderWidget_;
@@ -143,7 +150,8 @@ class RenderWidgetProgressReporter
 {
 public:
         RenderWidgetProgressReporter(RenderWidgetThread *rw)
-        : done_(false), renderThread_(rw) {}
+        : done_(false), renderThread_(rw) {
+        }
 
         virtual void report (int completed, int total) {
                 renderThread_->report (completed, total);
