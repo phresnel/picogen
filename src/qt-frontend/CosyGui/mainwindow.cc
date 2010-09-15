@@ -237,10 +237,12 @@ void MainWindow::on_actionLoad_triggered() {
 
 void MainWindow::on_renderCommandLink_clicked() {
         // Et hop.
-        RenderWindow *r = new RenderWindow (scene->toRedshiftScene(),
+        /*RenderWindow *r = new RenderWindow (scene->toRedshiftScene(),
                                             0,
                                             0,
                                             this,
                                             1);
         r->show();
+        */
+        ui->renderWidget->setSceneAndRender(scene->toRedshiftScene(), true);
 }

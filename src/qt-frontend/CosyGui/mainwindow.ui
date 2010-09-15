@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>696</width>
-    <height>498</height>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -436,7 +436,7 @@ QLabel{ background-color:none; }</string>
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Render</string>
+          <string>Preview (F5)</string>
          </property>
          <property name="icon">
           <iconset resource="resources.qrc">
@@ -448,12 +448,27 @@ QLabel{ background-color:none; }</string>
            <height>48</height>
           </size>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
+         <property name="shortcut">
+          <string>F5</string>
          </property>
          <property name="description">
           <string>Action!</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="margin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="RenderWidget" name="renderWidget" native="true"/>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -547,6 +562,12 @@ QLabel{ background-color:none; }</string>
    <class>NavigationWindow</class>
    <extends>QWidget</extends>
    <header>navigationwindow.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RenderWidget</class>
+   <extends>QWidget</extends>
+   <header>renderwidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

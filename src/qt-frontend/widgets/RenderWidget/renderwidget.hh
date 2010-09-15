@@ -56,13 +56,15 @@ public:
 
 
         void setSceneAndRender (
-                redshift::shared_ptr<const redshift::scenefile::Scene> scene
+                redshift::shared_ptr<const redshift::scenefile::Scene> scene,
+                bool overrideFilmSizeWithWidgetSize = false
         ) {
-                setSceneAndRender (scene, 0, 0);
+                setSceneAndRender (scene, 0, 0, overrideFilmSizeWithWidgetSize);
         }
         void setSceneAndRender (
                 redshift::shared_ptr<const redshift::scenefile::Scene>,
-                int renderSettingsIndex, int cameraIndex);
+                int renderSettingsIndex, int cameraIndex,
+                bool overrideFilmSizeWithWidgetSize = false);
 
         bool error() const { return error_; }
         QString errorMessage() const { return errorMessage_; }

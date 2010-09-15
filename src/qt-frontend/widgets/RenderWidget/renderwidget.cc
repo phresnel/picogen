@@ -47,10 +47,25 @@ RenderWidget::~RenderWidget() {
 
 void RenderWidget::setSceneAndRender (
         redshift::shared_ptr<const redshift::scenefile::Scene> scenefile,
-        int renderSettingsIndex, int cameraIndex
+        int renderSettingsIndex, int cameraIndex,
+        bool overrideFilmSizeWithWidgetSize
 ) {
         //redshift::ScopedLock lock_(mutex);
         if (renderThread) delete renderThread;
+
+        if (overrideFilmSizeWithWidgetSize) {
+                redshift::scenefile::Scene tmp = *scenefile;
+                redshift::scenefile::RenderSettings rs =
+                                tmp.renderSettings(renderSettingsIndex);
+
+                const double aspect = rs.height / (double)rs.width;
+                rs.width = ui->image->width();
+                rs.height = aspect * rs.width;
+                tmp.renderSettings(renderSettingsIndex) = rs;
+
+                scenefile = redshift::shared_ptr<const redshift::scenefile::Scene>(
+                                new redshift::scenefile::Scene(tmp));
+        }
         renderThread = new RenderWidgetThread(this, scenefile, renderSettingsIndex, cameraIndex);
         renderThread->start();
 }
@@ -88,11 +103,11 @@ void RenderWidget::updateImage (const redshift::Film &film,
         }
 
         if (!image.size().isNull()) {
-                ui->image->setPixmap(QPixmap::fromImage(image).scaled(
+                /*ui->image->setPixmap(QPixmap::fromImage(image).scaled(
                         ui->image->size(),
                         Qt::KeepAspectRatio,
-                        Qt::SmoothTransformation));
-                //ui->pix->setPixmap(QPixmap::fromImage(image));
+                        Qt::SmoothTransformation));*/
+                ui->image->setPixmap(QPixmap::fromImage(image));
         }
 }
 
