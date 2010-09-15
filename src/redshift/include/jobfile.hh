@@ -1531,7 +1531,10 @@ namespace redshift { namespace scenefile {
                 unsigned int renderSettingsCount() const {
                         return renderSettings_.size();
                 }
-                RenderSettings const & renderSettings(unsigned int index) const {
+                RenderSettings renderSettings(unsigned int index) const {
+                        return renderSettings_[index];
+                }
+                RenderSettings & renderSettings(unsigned int index) {
                         return renderSettings_[index];
                 }
                 void pruneRenderSettings () {
