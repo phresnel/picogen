@@ -242,5 +242,5 @@ void MainWindow::on_renderCommandLink_clicked() {
                                             0,
                                             this,
                                             1);
-        r->exec();
+        r->show();
 }

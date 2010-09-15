@@ -92,6 +92,7 @@ include(../widgets/QuatschSourceEditor/QuatschSourceEditor.pri)
 include(../widgets/Picohelp/picohelp.pri)
 include(../widgets/QtSunSkyEditor/qtsunskyeditor.pri)
 include(../widgets/RenderWindow/renderwindow.pri)
+include(../widgets/RenderWidget/renderwidget.pri)
 
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release

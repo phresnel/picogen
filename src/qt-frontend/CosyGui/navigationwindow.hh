@@ -38,8 +38,16 @@ private:
         Ui::NavigationWindow *ui;
 
 private slots:
-        void on_yawSpin_valueChanged(double );
-        void on_yawDial_valueChanged(int value);
+        void on_refreshButton_clicked();
+        void on_rollSpin_valueChanged(double);
+        void on_rollDial_sliderMoved(int);
+
+        void on_pitchSpin_valueChanged(double );
+        void on_pitchSlider_sliderMoved(int);
+
+        void on_yawSpin_valueChanged(double);
+        void on_yawDial_sliderMoved(int);
+
         void on_showRenderTab_clicked();
         void on_showRealTimeTab_clicked();
         void on_showPrecisionTab_clicked();

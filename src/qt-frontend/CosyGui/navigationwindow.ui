@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>458</height>
+    <width>741</width>
+    <height>568</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,7 +126,7 @@
             <x>10</x>
             <y>10</y>
             <width>241</width>
-            <height>271</height>
+            <height>241</height>
            </rect>
           </property>
           <property name="title">
@@ -196,6 +196,9 @@
              </item>
              <item row="3" column="1">
               <widget class="QDoubleSpinBox" name="yawSpin">
+               <property name="wrapping">
+                <bool>true</bool>
+               </property>
                <property name="decimals">
                 <number>3</number>
                </property>
@@ -217,7 +220,7 @@
             <x>260</x>
             <y>10</y>
             <width>111</width>
-            <height>271</height>
+            <height>241</height>
            </rect>
           </property>
           <property name="title">
@@ -247,20 +250,20 @@
               </widget>
              </item>
              <item row="3" column="0">
-              <widget class="QDoubleSpinBox" name="yawSpin_2">
+              <widget class="QDoubleSpinBox" name="pitchSpin">
                <property name="decimals">
                 <number>3</number>
                </property>
                <property name="minimum">
-                <double>-180.000000000000000</double>
+                <double>-90.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>180.000000000000000</double>
+                <double>90.000000000000000</double>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QSlider" name="verticalSlider">
+              <widget class="QSlider" name="pitchSlider">
                <property name="minimum">
                 <number>-90</number>
                </property>
@@ -282,13 +285,131 @@
            </item>
           </layout>
          </widget>
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="geometry">
+           <rect>
+            <x>380</x>
+            <y>10</y>
+            <width>241</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <property name="title">
+           <string>Roll</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,2,0" columnstretch="0,2,0">
+             <item row="1" column="1">
+              <widget class="QDial" name="rollDial">
+               <property name="minimum">
+                <number>-180</number>
+               </property>
+               <property name="maximum">
+                <number>180</number>
+               </property>
+               <property name="wrapping">
+                <bool>true</bool>
+               </property>
+               <property name="notchTarget">
+                <double>22.500000000000000</double>
+               </property>
+               <property name="notchesVisible">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Up</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Right</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Left</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QDoubleSpinBox" name="rollSpin">
+               <property name="wrapping">
+                <bool>true</bool>
+               </property>
+               <property name="decimals">
+                <number>3</number>
+               </property>
+               <property name="minimum">
+                <double>-180.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>180.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QGroupBox" name="previewGroupBox">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>260</y>
+            <width>241</width>
+            <height>181</height>
+           </rect>
+          </property>
+          <property name="title">
+           <string>Preview</string>
+          </property>
+          <widget class="RenderWidget" name="redshiftWidget" native="true">
+           <property name="geometry">
+            <rect>
+             <x>9</x>
+             <y>19</y>
+             <width>221</width>
+             <height>151</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QPushButton" name="refreshButton">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>270</y>
+            <width>75</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Refresh</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="page_2"/>
        </widget>
       </item>
      </layout>
-     <zorder>groupBox</zorder>
-     <zorder>stackedWidget</zorder>
     </widget>
    </item>
   </layout>
@@ -298,6 +419,12 @@
    <class>StashFrame</class>
    <extends>QFrame</extends>
    <header>stashframe.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RenderWidget</class>
+   <extends>QWidget</extends>
+   <header>renderwidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -53,9 +53,34 @@ void NavigationWindow::on_showRenderTab_clicked() {
         ui->stackedWidget->setCurrentIndex(2);
 }
 
-void NavigationWindow::on_yawDial_valueChanged(int value) {
+void NavigationWindow::on_yawDial_sliderMoved(int value) {
         ui->yawSpin->setValue(value);
 }
 void NavigationWindow::on_yawSpin_valueChanged(double value) {
         ui->yawDial->setValue(value);
+}
+
+void NavigationWindow::on_pitchSlider_sliderMoved(int position) {
+        ui->pitchSpin->setValue(position);
+}
+
+void NavigationWindow::on_pitchSpin_valueChanged(double value) {
+        ui->pitchSlider->setValue(value);
+}
+
+void NavigationWindow::on_rollDial_sliderMoved(int position) {
+        ui->rollSpin->setValue(position);
+}
+
+void NavigationWindow::on_rollSpin_valueChanged(double value) {
+        ui->rollDial->setValue(value);
+}
+
+#include "renderwindow.hh"
+#include "cosyscene/scene.hh"
+void NavigationWindow::on_refreshButton_clicked() {
+        qWarning("{{{");
+        redshift::shared_ptr<redshift::scenefile::Scene> tmp = cosyscene::Scene().toRedshiftScene();
+        ui->redshiftWidget->setSceneAndRender(tmp);
+        qWarning("}}}");
 }

@@ -498,19 +498,6 @@ void RenderWindow::updateImage (double percentage) {
 
 
 
-void RenderWindow::changeEvent(QEvent *e) {
-        QDialog::changeEvent(e);
-        switch (e->type()) {
-        case QEvent::LanguageChange:
-                ui->retranslateUi(this);
-                break;
-        default:
-                break;
-        }
-}
-
-
-
 void RenderWindow::on_saveImageButton_clicked() {
         const QString path = getImageSavePath(this);
         if ("" != path) {

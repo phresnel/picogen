@@ -69,7 +69,6 @@ public:
                               int renderSettings, int camera);
 
 protected:
-        void changeEvent(QEvent *e);
         void resizeEvent(QResizeEvent *);
 
 private slots:
