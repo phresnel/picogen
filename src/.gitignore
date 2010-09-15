@@ -86,6 +86,12 @@ qt-frontend/widgets/Picohelp/help-content
 qt-frontend/widgets/Picohelp/debug/
 qt-frontend/widgets/Picohelp/release/
 
+qt-frontend/CosyGui/Makefile
+qt-frontend/CosyGui/Makefile.Debug
+qt-frontend/CosyGui/Makefile.Release
+qt-frontend/CosyGui/release/
+qt-frontend/CosyGui/debug/
+
 xyto/Xytoplax/Makefile
 xyto/Xytoplax/Xytoplax
 
