@@ -59,31 +59,43 @@ void NavigationWindow::on_showRenderTab_clicked() {
 }
 
 void NavigationWindow::on_yawDial_sliderMoved(int value) {
+        const bool was = ui->yawSpin->blockSignals(true);
         ui->yawSpin->setValue(value);
+        ui->yawSpin->blockSignals(was);
         updateFromViews();
 }
 void NavigationWindow::on_yawSpin_valueChanged(double value) {
+        const bool was = ui->yawDial->blockSignals(true);
         ui->yawDial->setValue(value);
+        ui->yawDial->blockSignals(was);
         updateFromViews();
 }
 
-void NavigationWindow::on_pitchSlider_sliderMoved(int position) {
-        ui->pitchSpin->setValue(position);
+void NavigationWindow::on_pitchSlider_valueChanged(int position) {
+        const bool was = ui->pitchSpin->blockSignals(true);
+        ui->pitchSpin->setValue(-position);
+        ui->pitchSpin->blockSignals(was);
         updateFromViews();
 }
 
 void NavigationWindow::on_pitchSpin_valueChanged(double value) {
+        const bool was = ui->pitchSlider->blockSignals(true);
         ui->pitchSlider->setValue(value);
+        ui->pitchSlider->blockSignals(was);
         updateFromViews();
 }
 
-void NavigationWindow::on_rollDial_sliderMoved(int position) {
-        ui->rollSpin->setValue(position);
+void NavigationWindow::on_rollDial_valueChanged(int position) {
+        const bool was = ui->rollSpin->blockSignals(true);
+        ui->rollSpin->setValue(-position);
+        ui->rollSpin->blockSignals(was);
         updateFromViews();
 }
 
 void NavigationWindow::on_rollSpin_valueChanged(double value) {
+        const bool was = ui->rollDial->blockSignals(true);
         ui->rollDial->setValue(value);
+        ui->rollDial->blockSignals(was);
         updateFromViews();
 }
 

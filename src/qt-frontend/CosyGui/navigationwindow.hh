@@ -61,11 +61,12 @@ private slots:
         void on_ySpin_valueChanged(double );
         void on_xSpin_valueChanged(double );
         void on_refreshButton_clicked();
+
         void on_rollSpin_valueChanged(double);
-        void on_rollDial_sliderMoved(int);
+        void on_rollDial_valueChanged(int);
 
         void on_pitchSpin_valueChanged(double );
-        void on_pitchSlider_sliderMoved(int);
+        void on_pitchSlider_valueChanged(int);
 
         void on_yawSpin_valueChanged(double);
         void on_yawDial_sliderMoved(int);

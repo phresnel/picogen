@@ -37,20 +37,43 @@ Scene::Scene()
 }
 
 
-redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const{
+redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const {
         using namespace ::redshift;
         shared_ptr<scenefile::Scene> scenePtr(new scenefile::Scene);
         scenefile::Scene &scene = *scenePtr;
 
         // Camera
+        const cosyscene::Navigation &nav = *navigation_;
+
         scenefile::Camera cam;
         cam.type = scenefile::Camera::pinhole;
         cam.pinholeParams.front = 1;
 
-        scenefile::Transform t;
-        t.type = t.move;
-        t.x = 0; t.x = 2; t.z = 0;
-        cam.transforms.push_back(t);
+        switch (nav.kind()) {
+        case cosyscene::Navigation::YawPitchRoll: {
+                        cosyscene::YawPitchRoll ypr = nav.yawPitchRoll();
+                        scenefile::Transform t;
+                        t.type = scenefile::Transform::move;
+                        t.x = ypr.position.x();
+                        t.y = ypr.position.y();
+                        t.z = ypr.position.z();
+                        cam.transforms.push_back(t);
+
+                        t.type = scenefile::Transform::yaw;
+                        t.angle = ypr.yaw;
+                        cam.transforms.push_back(t);
+
+                        t.type = scenefile::Transform::pitch;
+                        t.angle = ypr.pitch;
+                        cam.transforms.push_back(t);
+
+                        t.type = scenefile::Transform::roll;
+                        t.angle = ypr.roll;
+                        cam.transforms.push_back(t);
+                } break;
+        case cosyscene::Navigation::None:
+                break;
+        }
         scene.addCamera(cam);
 
         // Render Settings
