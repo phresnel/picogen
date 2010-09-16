@@ -74,7 +74,7 @@ inline bool operator == (UtahSky const &lhs, UtahSky const &rhs) {
 }
 
 
-class SunSky
+class SunSky : public StashableMixin<SunSky>
 {
 public:
         enum Kind {
@@ -88,14 +88,6 @@ public:
         void reset();
         void toUtahSky (cosyscene::UtahSky const &qs);
         cosyscene::UtahSky utahSky() const;
-
-        const Stash<SunSky>& getStash() const;
-        Stash<SunSky>& getStash();
-
-        void setStash(Stash<SunSky> const &);
-
-        void stash();
-        void clearStash();
 
         bool data_equals(SunSky const &rhs) const;
 

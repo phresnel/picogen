@@ -18,52 +18,53 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "sunsky.hh"
+#include "navigation.hh"
 
 namespace cosyscene {
 
 
-const actuarius::Enum<SunSky::Kind> SunSky::Typenames =
-( actuarius::Nvp<SunSky::Kind>(SunSky::UtahSky, "utah")
-| actuarius::Nvp<SunSky::Kind>(SunSky::None, "none")
+const actuarius::Enum<Navigation::Kind> Navigation::Typenames =
+( actuarius::Nvp<Navigation::Kind>(Navigation::YawPitchRoll, "yawpitchroll")
+| actuarius::Nvp<Navigation::Kind>(Navigation::None, "none")
 );
 
 
 
-SunSky::SunSky() : kind_(None) {
+Navigation::Navigation() : kind_(None) {
 }
 
 
 
-SunSky::Kind SunSky::kind() const {
+Navigation::Kind Navigation::kind() const {
         return kind_;
 }
 
 
 
-void SunSky::reset() {
+void Navigation::reset() {
         kind_ = None;
 }
 
 
 
-void SunSky::toUtahSky(cosyscene::UtahSky const &qs) {
-        utahSky_ = qs;
-        kind_ = UtahSky;
+void Navigation::toYawPitchRoll(cosyscene::YawPitchRoll const &ypr) {
+        yawPitchRoll_ = ypr;
+        kind_ = YawPitchRoll;
 }
 
 
 
-cosyscene::UtahSky SunSky::utahSky() const {
-        return utahSky_;
+cosyscene::YawPitchRoll Navigation::yawPitchRoll() const {
+        return yawPitchRoll_;
 }
 
 
 
-bool SunSky::data_equals(SunSky const &rhs) const {
+
+bool Navigation::data_equals(Navigation const &rhs) const {
         if (kind_ != rhs.kind_) return false;
         switch (kind_)  {
-        case UtahSky: return utahSky_ == rhs.utahSky_;
+        case YawPitchRoll: return yawPitchRoll_ == rhs.yawPitchRoll_;
         case None: return true;
         }
         return true;

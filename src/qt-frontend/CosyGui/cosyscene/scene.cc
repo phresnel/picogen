@@ -21,6 +21,7 @@
 #include "scene.hh"
 #include "terrain.hh"
 #include "sunsky.hh"
+#include "navigation.hh"
 
 #include "redshift/include/jobfile.hh"
 
@@ -29,7 +30,10 @@ namespace cosyscene {
 Scene::Scene()
 : terrain_(new Terrain())
 , sunSky_(new SunSky())
+, navigation_(new Navigation())
 {
+        navigation_->toYawPitchRoll(cosyscene::YawPitchRoll());
+        sunSky_->toUtahSky(cosyscene::UtahSky());
 }
 
 
@@ -107,6 +111,7 @@ redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const{
                         case Terrain::QuatschSource:
                                 ob.lazyQuadtreeParams.code = t.quatschSource().code();
                                 break;
+                        case Terrain::None: /* never the case */ break;
                         }
 
                         ob.lazyQuadtreeParams.size = 10000;

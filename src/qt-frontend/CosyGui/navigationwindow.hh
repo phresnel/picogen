@@ -22,9 +22,15 @@
 #define NAVIGATIONWINDOW_HH
 
 #include <QWidget>
+#include "redshift/include/smart_ptr.hh"
 
 namespace Ui {
         class NavigationWindow;
+}
+
+namespace cosyscene {
+        class Navigation;
+        class Scene;
 }
 
 class NavigationWindow : public QWidget {
@@ -34,10 +40,26 @@ public:
         explicit NavigationWindow(QWidget *parent = 0);
         ~NavigationWindow();
 
+        void setNavigation (redshift::shared_ptr<cosyscene::Navigation>,
+                            bool blockSignals=true);
+
+signals:
+        void navigationChanged ();
+
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+
 private:
         Ui::NavigationWindow *ui;
+        redshift::shared_ptr<cosyscene::Navigation> navigation_;
+
+        void updateViews ();
+        void updateFromViews();
 
 private slots:
+        void on_zSpin_valueChanged(double );
+        void on_ySpin_valueChanged(double );
+        void on_xSpin_valueChanged(double );
         void on_refreshButton_clicked();
         void on_rollSpin_valueChanged(double);
         void on_rollDial_sliderMoved(int);

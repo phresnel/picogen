@@ -18,56 +18,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "sunsky.hh"
+
+#ifndef NAVIGATION_SERIALIZATION_HH_20101015
+#define NAVIGATION_SERIALIZATION_HH_20101015
+
+#include "../navigation.hh"
+#include "cosyscene/serialization/stash.ser.hh"
+#include "cosyscene/serialization/point3d.ser.hh"
 
 namespace cosyscene {
 
-
-const actuarius::Enum<SunSky::Kind> SunSky::Typenames =
-( actuarius::Nvp<SunSky::Kind>(SunSky::UtahSky, "utah")
-| actuarius::Nvp<SunSky::Kind>(SunSky::None, "none")
-);
-
-
-
-SunSky::SunSky() : kind_(None) {
+template<typename Arch>
+inline void YawPitchRoll::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack("position", position);
+        arch & pack("yaw", yaw);
+        arch & pack("pitch", pitch);
+        arch & pack("roll", roll);
 }
 
+template<typename Arch>
+inline void Navigation::serialize (Arch &arch) {
+        using actuarius::pack;
+        if (Arch::deserialize || !stash_.empty())
+                arch & pack("stash", stash_);
 
+        arch & pack("type", kind_, Typenames);
 
-SunSky::Kind SunSky::kind() const {
-        return kind_;
-}
-
-
-
-void SunSky::reset() {
-        kind_ = None;
-}
-
-
-
-void SunSky::toUtahSky(cosyscene::UtahSky const &qs) {
-        utahSky_ = qs;
-        kind_ = UtahSky;
-}
-
-
-
-cosyscene::UtahSky SunSky::utahSky() const {
-        return utahSky_;
-}
-
-
-
-bool SunSky::data_equals(SunSky const &rhs) const {
-        if (kind_ != rhs.kind_) return false;
-        switch (kind_)  {
-        case UtahSky: return utahSky_ == rhs.utahSky_;
-        case None: return true;
+        switch (kind_) {
+        case YawPitchRoll: arch & pack ("parameters", yawPitchRoll_); break;
+        case None: break;
         }
-        return true;
 }
 
+} // namespace cosyscene
 
-}
+#endif // NAVIGATION_SERIALIZATION_HH_20101015

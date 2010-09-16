@@ -61,6 +61,7 @@ private slots:
         void on_actionSave_triggered();
         void on_terrain_terrainChanged();
         void on_sunSky_skyChanged();
+        void on_navigation_navigationChanged();
         void on_forestCommandLink_clicked();
         void on_terrainCommandLink_clicked();
         void on_navigationCommandLink_clicked();

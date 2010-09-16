@@ -18,63 +18,61 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#ifndef TERRAIN_HH_20100902
-#define TERRAIN_HH_20100902
+#ifndef NAVIGATION_HH_20100915
+#define NAVIGATION_HH_20100915
 
 #include "stash.hh"
+#include "point3d.hh"
 #include <string>
 #include <actuarius/bits/enum.hh>
 
 namespace cosyscene {
-class QuatschSource;
-class Terrain;
 
-class QuatschSource {
+class YawPitchRoll {
 public:
-        QuatschSource() {}
-        QuatschSource(std::string const &code) : code_(code) {}
+        YawPitchRoll() : yaw(0), pitch(0), roll(0) {}
 
-        void setCode (std::string const &code) { code_ = code; }
-        std::string code () const { return code_; }
+        double yaw, pitch, roll;
+        Point3d position;
 
         template<typename Arch>
         void serialize (Arch &arch);
-private:
-        std::string code_;
 };
-inline bool operator == (QuatschSource const &lhs, QuatschSource const &rhs) {
-        return lhs.code() == rhs.code();
+inline bool operator == (YawPitchRoll const &lhs, YawPitchRoll const &rhs) {
+        return lhs.position == rhs.position
+            && lhs.yaw   == rhs.yaw
+            && lhs.pitch == rhs.pitch
+            && lhs.roll  == rhs.roll;
 }
 
 
-class Terrain : public StashableMixin<Terrain>
+
+class Navigation : public StashableMixin<Navigation>
 {
 public:
         enum Kind {
                 None,
-                QuatschSource
+                YawPitchRoll
         };
 
-        Terrain();
+        Navigation();
 
         Kind kind() const;
         void reset ();
-        void toQuatschSource (cosyscene::QuatschSource const &qs);
-        cosyscene::QuatschSource quatschSource() const;
-
-        bool data_equals(Terrain const &rhs) const;
+        void toYawPitchRoll (cosyscene::YawPitchRoll const &);
+        cosyscene::YawPitchRoll yawPitchRoll() const;
 
         template<typename Arch>
         void serialize (Arch &arch);
         static const actuarius::Enum<Kind> Typenames;
 
+        bool data_equals(Navigation const &rhs) const;
 private:
         Kind kind_;
 
-        cosyscene::QuatschSource quatschSource_;
+        cosyscene::YawPitchRoll yawPitchRoll_;
 };
 
 } // namespace cosyscene
 
-#endif // TERRAIN_HH_20100902
+#endif // NAVIGATION_HH_20100915

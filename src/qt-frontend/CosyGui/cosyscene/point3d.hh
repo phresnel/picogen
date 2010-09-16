@@ -18,56 +18,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "sunsky.hh"
+#ifndef POINT3D_HH_20100915
+#define POINT3D_HH_20100915
 
 namespace cosyscene {
 
 
-const actuarius::Enum<SunSky::Kind> SunSky::Typenames =
-( actuarius::Nvp<SunSky::Kind>(SunSky::UtahSky, "utah")
-| actuarius::Nvp<SunSky::Kind>(SunSky::None, "none")
-);
+class Point3d {
+public:
+        Point3d () ;
+        Point3d (double x, double y, double z);
 
+        double x() const;
+        double y() const;
+        double z() const;
 
+        template<typename Arch>
+        inline void serialize (Arch &arch);
 
-SunSky::SunSky() : kind_(None) {
+private:
+        double x_, y_, z_;
+};
+inline bool operator == (Point3d const & lhs, Point3d const & rhs) {
+        return lhs.x() == rhs.x()
+            && lhs.y() == rhs.y()
+            && lhs.z() == rhs.z();
 }
 
 
+} // namespace cosyscene
 
-SunSky::Kind SunSky::kind() const {
-        return kind_;
-}
-
-
-
-void SunSky::reset() {
-        kind_ = None;
-}
-
-
-
-void SunSky::toUtahSky(cosyscene::UtahSky const &qs) {
-        utahSky_ = qs;
-        kind_ = UtahSky;
-}
-
-
-
-cosyscene::UtahSky SunSky::utahSky() const {
-        return utahSky_;
-}
-
-
-
-bool SunSky::data_equals(SunSky const &rhs) const {
-        if (kind_ != rhs.kind_) return false;
-        switch (kind_)  {
-        case UtahSky: return utahSky_ == rhs.utahSky_;
-        case None: return true;
-        }
-        return true;
-}
-
-
-}
+#endif // POINT3D_HH_20100915

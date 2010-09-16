@@ -34,7 +34,9 @@ SOURCES += main.cc\
     cosyscene/geometry.cc \
     cosyscene/vector3d.cc \
     cosyscene/direction3d.cc \
-    navigationwindow.cc
+    navigationwindow.cc \
+    cosyscene/navigation.cc \
+    cosyscene/point3d.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -59,7 +61,11 @@ HEADERS  += mainwindow.hh \
     cosyscene/serialization/direction3d.ser.hh \
     cosyscene/vector3d.hh \
     cosyscene/direction3d.hh \
-    navigationwindow.hh
+    navigationwindow.hh \
+    cosyscene/navigation.hh \
+    cosyscene/serialization/navigation.ser.hh \
+    cosyscene/point3d.hh \
+    cosyscene/serialization/point3d.ser.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \

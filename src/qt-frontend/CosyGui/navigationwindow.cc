@@ -18,8 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "cosyscene/navigation.hh"
+#include "cosyscene/scene.hh"
+
 #include "navigationwindow.hh"
 #include "ui_navigationwindow.h"
+
+#include <stdexcept>
 
 NavigationWindow::NavigationWindow(QWidget *parent) :
     QWidget(parent),
@@ -55,26 +60,102 @@ void NavigationWindow::on_showRenderTab_clicked() {
 
 void NavigationWindow::on_yawDial_sliderMoved(int value) {
         ui->yawSpin->setValue(value);
+        updateFromViews();
 }
 void NavigationWindow::on_yawSpin_valueChanged(double value) {
         ui->yawDial->setValue(value);
+        updateFromViews();
 }
 
 void NavigationWindow::on_pitchSlider_sliderMoved(int position) {
         ui->pitchSpin->setValue(position);
+        updateFromViews();
 }
 
 void NavigationWindow::on_pitchSpin_valueChanged(double value) {
         ui->pitchSlider->setValue(value);
+        updateFromViews();
 }
 
 void NavigationWindow::on_rollDial_sliderMoved(int position) {
         ui->rollSpin->setValue(position);
+        updateFromViews();
 }
 
 void NavigationWindow::on_rollSpin_valueChanged(double value) {
         ui->rollDial->setValue(value);
+        updateFromViews();
 }
+
+void NavigationWindow::on_xSpin_valueChanged(double value) {
+        updateFromViews();
+}
+
+void NavigationWindow::on_ySpin_valueChanged(double value) {
+        updateFromViews();
+}
+
+void NavigationWindow::on_zSpin_valueChanged(double value) {
+        updateFromViews();
+}
+
+
+
+
+void NavigationWindow::setNavigation (redshift::shared_ptr<cosyscene::Navigation> nav,
+                                bool blockSignals
+) {
+        bool prevBlocked;
+        if (blockSignals)
+                prevBlocked = this->blockSignals(true);
+        navigation_ = nav;
+        updateViews();
+        if (blockSignals)
+                this->blockSignals(prevBlocked);
+}
+
+
+
+void NavigationWindow::updateViews() {
+        switch (navigation_->kind()) {
+        case cosyscene::Navigation::YawPitchRoll: {
+                const cosyscene::YawPitchRoll&ypr = navigation_->yawPitchRoll();
+                ui->yawSpin->setValue(ypr.yaw);
+                ui->pitchSpin->setValue(ypr.pitch);
+                ui->rollSpin->setValue(ypr.roll);
+        } break;
+        case cosyscene::Navigation::None:
+                throw std::runtime_error ("Navigation::updateViews() called"
+                                          " for kind 'None'");
+        }
+}
+
+
+
+void NavigationWindow::updateFromViews() {
+        cosyscene::YawPitchRoll ypr;
+        ypr.yaw = ui->yawSpin->value();
+        ypr.pitch = ui->pitchSpin->value();
+        ypr.roll = ui->rollSpin->value();
+
+        ypr.position = cosyscene::Point3d(
+                ui->xSpin->value(),
+                ui->ySpin->value(),
+                ui->zSpin->value()
+        );
+        navigation_->toYawPitchRoll(ypr);
+}
+
+
+
+void NavigationWindow::sceneInvalidated(
+        redshift::shared_ptr<cosyscene::Scene> scene
+) {
+        setNavigation (scene->navigation());
+}
+
+
+
 
 #include "renderwindow.hh"
 #include "cosyscene/scene.hh"

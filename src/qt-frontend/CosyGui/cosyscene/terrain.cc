@@ -60,38 +60,6 @@ cosyscene::QuatschSource Terrain::quatschSource() const {
 
 
 
-void Terrain::stash() {
-        Terrain tmp = *this;
-        tmp.clearStash();
-        stash_.stash(tmp);
-}
-
-
-
-void Terrain::clearStash() {
-        stash_.clear();
-}
-
-
-
-const Stash<Terrain>& Terrain::getStash() const {
-        return stash_;
-}
-
-
-
-Stash<Terrain>& Terrain::getStash() {
-        return stash_;
-}
-
-
-
-void Terrain::setStash(Stash<Terrain> const & stash) {
-        stash_ = stash;
-}
-
-
-
 bool Terrain::data_equals(Terrain const &rhs) const {
         if (kind_ != rhs.kind_) return false;
         switch (kind_)  {

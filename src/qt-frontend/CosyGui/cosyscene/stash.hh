@@ -103,4 +103,39 @@ private:
         std::vector<StashObject<T> > objects;
 };
 
+
+
+// This brings some stash function to derived classes.
+template <typename DERIVED> class StashableMixin {
+public:
+        const Stash<DERIVED>& getStash() const {
+                return stash_;
+        }
+
+        Stash<DERIVED>& getStash() {
+                return stash_;
+        }
+
+        void setStash(Stash<DERIVED> const &stash) {
+                stash_ = stash;
+        }
+
+        void stash() {
+                DERIVED tmp = *static_cast<DERIVED*>(this);
+                tmp.clearStash();
+                stash_.stash(tmp);
+        }
+
+        void clearStash() {
+                stash_.clear();
+        }
+
+        // The following should be implemented by derivers
+        // (used by some widgets)
+        //  bool data_equals(DERIVED const &rhs) const;
+protected:
+        Stash<DERIVED> stash_;
+};
+
+
 #endif // STASH_HH_20100902

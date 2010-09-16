@@ -33,6 +33,7 @@ namespace cosyscene {
 
 class Terrain;
 class SunSky;
+class Navigation;
 
 class Scene
 {
@@ -47,6 +48,9 @@ public:
         redshift::shared_ptr<SunSky> sunSky() const {
                 return sunSky_;
         }
+        redshift::shared_ptr<Navigation> navigation() const {
+                return navigation_;
+        }
 
         template <typename Arch>
         void serialize (Arch &arch); // inl/scene.inl.hh
@@ -56,9 +60,11 @@ public:
                 Scene tmp = *this; // feels better than const_cast
                 return tmp.serialize(arch);
         }
+
 private:
         redshift::shared_ptr<Terrain> terrain_;
         redshift::shared_ptr<SunSky> sunSky_;
+        redshift::shared_ptr<Navigation > navigation_;
 };
 }
 

@@ -18,55 +18,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "sunsky.hh"
+#include "point3d.hh"
+#include "geometry.hh"
+
+#include <cmath>
 
 namespace cosyscene {
 
 
-const actuarius::Enum<SunSky::Kind> SunSky::Typenames =
-( actuarius::Nvp<SunSky::Kind>(SunSky::UtahSky, "utah")
-| actuarius::Nvp<SunSky::Kind>(SunSky::None, "none")
-);
 
-
-
-SunSky::SunSky() : kind_(None) {
+Point3d::Point3d() : x_(0), y_(0), z_(0) {
 }
 
 
 
-SunSky::Kind SunSky::kind() const {
-        return kind_;
+Point3d::Point3d(double x, double y, double z) : x_(x), y_(y), z_(z) {
 }
 
 
 
-void SunSky::reset() {
-        kind_ = None;
+double Point3d::x() const {
+        return x_;
 }
 
 
 
-void SunSky::toUtahSky(cosyscene::UtahSky const &qs) {
-        utahSky_ = qs;
-        kind_ = UtahSky;
+double Point3d::y() const {
+        return y_;
 }
 
 
 
-cosyscene::UtahSky SunSky::utahSky() const {
-        return utahSky_;
-}
-
-
-
-bool SunSky::data_equals(SunSky const &rhs) const {
-        if (kind_ != rhs.kind_) return false;
-        switch (kind_)  {
-        case UtahSky: return utahSky_ == rhs.utahSky_;
-        case None: return true;
-        }
-        return true;
+double Point3d::z() const {
+        return z_;
 }
 
 
