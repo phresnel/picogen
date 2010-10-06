@@ -334,7 +334,7 @@ QLabel{ background-color:none; }</string>
          </property>
          <property name="icon">
           <iconset resource="resources.qrc">
-           <normaloff>:/toplevel-navigation/resources/humano2_freeforcommercial_weather-few-clouds.png</normaloff>:/toplevel-navigation/resources/humano2_freeforcommercial_weather-few-clouds.png</iconset>
+           <normaloff>:/toplevel-navigation/skyatmosphere</normaloff>:/toplevel-navigation/skyatmosphere</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -500,7 +500,7 @@ QLabel{ background-color:none; }</string>
      <x>0</x>
      <y>0</y>
      <width>696</width>
-     <height>16</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -541,6 +541,12 @@ QLabel{ background-color:none; }</string>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>RenderWidget</class>
+   <extends>QWidget</extends>
+   <header>renderwidget.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>FilmSettings</class>
    <extends>QWidget</extends>
    <header>filmsettings.hh</header>
@@ -562,12 +568,6 @@ QLabel{ background-color:none; }</string>
    <class>NavigationWindow</class>
    <extends>QWidget</extends>
    <header>navigationwindow.hh</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>RenderWidget</class>
-   <extends>QWidget</extends>
-   <header>renderwidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

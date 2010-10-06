@@ -22,6 +22,7 @@
 #include "ui_stashframe.h"
 #include "redshift/include/smart_ptr.hh"
 #include <QMessageBox>
+#include <QPixmap>
 
 
 ConfirmReset confirmReset (QWidget *parent) {
@@ -53,4 +54,16 @@ StashFrame::StashFrame(QWidget *parent) :
 StashFrame::~StashFrame()
 {
     delete ui;
+}
+
+void StashFrame::setTitle (QString title)
+{
+        ui->title->setText(title);
+}
+
+void StashFrame::setPixmap (QString name)
+{
+        ui->icon->setPixmap(
+                QPixmap(name).scaledToHeight(ui->title->height(),
+                                             Qt::SmoothTransformation));
 }

@@ -24,6 +24,7 @@
 #define STASHFRAME_HH
 
 #include <QFrame>
+class QPixmap;
 
 namespace Ui {
     class StashFrame;
@@ -34,11 +35,14 @@ class StashFrame : public QFrame
     Q_OBJECT
 
 public:
-    explicit StashFrame(QWidget *parent = 0);
-    ~StashFrame();
+        explicit StashFrame(QWidget *parent = 0);
+        ~StashFrame();
+
+        void setTitle (QString title);
+        void setPixmap (QString name);
 
 private:
-    Ui::StashFrame *ui;
+        Ui::StashFrame *ui;
 };
 
 enum ConfirmReset {

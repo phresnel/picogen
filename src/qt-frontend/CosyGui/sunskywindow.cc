@@ -34,6 +34,8 @@ SunSkyWindow::SunSkyWindow(QWidget *parent) :
     ui(new Ui::SunSkyWindow)
 {
         ui->setupUi(this);
+        ui->stashFrame->setTitle("Sky & Atmosphere");
+        ui->stashFrame->setPixmap(":/toplevel-navigation/skyatmosphere");
 }
 
 

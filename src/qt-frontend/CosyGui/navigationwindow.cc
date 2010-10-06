@@ -30,11 +30,12 @@ NavigationWindow::NavigationWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::NavigationWindow)
 {
-    ui->setupUi(this);
+        ui->setupUi(this);
+        ui->stashFrame->setTitle("Navigation");
 }
 
 NavigationWindow::~NavigationWindow() {
-    delete ui;
+        delete ui;
 }
 
 void NavigationWindow::on_showPrecisionTab_clicked() {
