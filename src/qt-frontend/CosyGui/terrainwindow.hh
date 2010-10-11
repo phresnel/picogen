@@ -55,7 +55,6 @@ private:
         Ui::TerrainWindow *ui;
         redshift::shared_ptr<cosyscene::Terrain> terrain;
 
-        void setTerrainByValue (cosyscene::Terrain const &, bool blockSignals);
         void updateViews ();
 
 
@@ -63,10 +62,6 @@ private slots:
         void on_showWorldFittingTab_clicked();
         void on_showTexturingTab_clicked();
         void on_showFormationTab_clicked();
-
-        void on_stashButton_clicked();
-        void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
 };
 
 #endif // TERRAINWINDOW_HH

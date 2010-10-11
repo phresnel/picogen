@@ -81,14 +81,12 @@ private:
 #include "redshift/include/smart_ptr.hh"
 namespace cosyscene {
 
-class Terrain : public StashableMixin<Terrain>
+class Terrain
 {
 public:
         Terrain() ;
 
         redshift::shared_ptr<TerrainFormation> formation() const;
-
-        bool data_equals(Terrain const &rhs) const;
 
         template<typename Arch>
         void serialize (Arch &arch);

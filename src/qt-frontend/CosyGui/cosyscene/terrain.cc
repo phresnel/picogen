@@ -78,9 +78,6 @@ Terrain::Terrain()
 redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
         return formation_;
 }
-bool Terrain::data_equals(Terrain const &rhs) const {
-        return formation_->data_equals(*rhs.formation_);
-}
 
 
 }

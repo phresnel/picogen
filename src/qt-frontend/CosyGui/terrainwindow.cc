@@ -52,25 +52,11 @@ void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
         if (blockSignals)
                 prevBlocked = this->blockSignals(true);
         terrain = t;
+        ui->formationStackedWidget->setFormation(terrain->formation(),
+                                                 blockSignals);
         updateViews();
         if (blockSignals)
                 this->blockSignals(prevBlocked);
-}
-
-
-
-void TerrainWindow::setTerrainByValue (cosyscene::Terrain const &t,
-                                       bool blockSignals
-) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
-        *terrain = t;
-        ui->formationStackedWidget->setFormation(t.formation(), blockSignals);
-        updateViews();
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
-
 }
 
 
@@ -88,40 +74,6 @@ void TerrainWindow::sceneInvalidated(
         setTerrain (scene->terrain());
 }
 
-
-
-void TerrainWindow::on_stashButton_clicked() {
-        terrain->stash();
-}
-
-
-
-void TerrainWindow::on_stashRestoreButton_clicked() {
-        StashView *sw = new StashView (this);
-        sw->addItems(terrain->getStash());
-        if (QDialog::Accepted == sw->exec()) {
-                redshift::shared_ptr<cosyscene::Terrain> newTerrain (
-                  new cosyscene::Terrain(sw->selectedData<cosyscene::Terrain>())
-                );
-                newTerrain->setStash(sw->itemsToStash<cosyscene::Terrain>());
-                setTerrainByValue(*newTerrain, true);
-        }
-}
-
-
-
-void TerrainWindow::on_stashResetButton_clicked() {
-        if (!terrain->getStash().contains_data(*terrain)) {
-                switch (confirmReset (this)) {
-                case ConfirmReset_Abort: return;
-                case ConfirmReset_StashBeforeReset: terrain->stash(); break;
-                case ConfirmReset_Reset: break;
-                }
-        }
-        cosyscene::Terrain t;
-        t.setStash(terrain->getStash());
-        setTerrainByValue(t, true);
-}
 
 void TerrainWindow::on_showFormationTab_clicked() {
         ui->showFormationTab->setChecked(true);
