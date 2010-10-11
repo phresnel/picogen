@@ -34,7 +34,7 @@ inline void QuatschSource::serialize (Arch &arch) {
 }
 
 template<typename Arch>
-inline void Terrain::serialize (Arch &arch) {
+inline void TerrainFormation::serialize (Arch &arch) {
         using actuarius::pack;
         if (Arch::deserialize || !stash_.empty())
                 arch & pack("stash", stash_);
@@ -45,6 +45,12 @@ inline void Terrain::serialize (Arch &arch) {
         case QuatschSource: arch & pack ("parameters", quatschSource_); break;
         case None: break;
         }
+}
+
+template<typename Arch>
+inline void Terrain::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack("formation", *formation_);
 }
 
 } // namespace cosyscene

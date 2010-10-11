@@ -126,15 +126,15 @@ redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const 
         {
                 scenefile::Object ob;
 
-                Terrain const &t = *terrain_;
-                if (Terrain::None != t.kind()) {
+                TerrainFormation const &t = *terrain_->formation();
+                if (TerrainFormation::None != t.kind()) {
                         ob.type = scenefile::Object::lazy_quadtree;
 
                         switch (t.kind()) {
-                        case Terrain::QuatschSource:
+                        case TerrainFormation::QuatschSource:
                                 ob.lazyQuadtreeParams.code = t.quatschSource().code();
                                 break;
-                        case Terrain::None: /* never the case */ break;
+                        case TerrainFormation::None: /* never the case */ break;
                         }
 
                         ob.lazyQuadtreeParams.size = 10000;

@@ -88,14 +88,14 @@ void TerrainWindow::setTerrainByValue (cosyscene::Terrain const &t,
 
 void TerrainWindow::updateViews () {
         const bool wasBlocked = blockSignals(true);
-        switch (terrain->kind()) {
-        case cosyscene::Terrain::QuatschSource:
+        switch (terrain->formation()->kind()) {
+        case cosyscene::TerrainFormation::QuatschSource:
                 ui->quatschCodeEditor->setCode(
                                 QString::fromStdString(
-                                terrain->quatschSource().code()));
+                                terrain->formation()->quatschSource().code()));
                 showQuatschEditor();
                 break;
-        case cosyscene::Terrain::None:
+        case cosyscene::TerrainFormation::None:
                 showTerrainKindSelection();
                 break;
         }
@@ -105,7 +105,7 @@ void TerrainWindow::updateViews () {
 
 
 void TerrainWindow::on_quatschCodeEditorCLB_clicked() {
-        terrain->toQuatschSource (cosyscene::QuatschSource(
+        terrain->formation()->toQuatschSource(cosyscene::QuatschSource(
                 "/* Press F1 for help :) */\n"
                 "/* ... or move the caret over some entity and try out\n"
                 "   the contextual help via F1 */\n"
@@ -120,7 +120,7 @@ void TerrainWindow::on_quatschCodeEditorCLB_clicked() {
 
 
 void TerrainWindow::on_quatschCodeEditor_codeChanged() {
-        terrain->toQuatschSource (cosyscene::QuatschSource(
+        terrain->formation()->toQuatschSource(cosyscene::QuatschSource(
                 ui->quatschCodeEditor->code().toStdString()
         ));
         emit terrainChanged();
@@ -147,8 +147,7 @@ void TerrainWindow::on_stashRestoreButton_clicked() {
         sw->addItems(terrain->getStash());
         if (QDialog::Accepted == sw->exec()) {
                 redshift::shared_ptr<cosyscene::Terrain> newTerrain (
-                        new cosyscene::Terrain(
-                          sw->selectedData<cosyscene::Terrain>())
+                  new cosyscene::Terrain(sw->selectedData<cosyscene::Terrain>())
                 );
                 newTerrain->setStash(sw->itemsToStash<cosyscene::Terrain>());
                 setTerrainByValue(*newTerrain, true);

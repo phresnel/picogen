@@ -28,7 +28,7 @@
 
 namespace cosyscene {
 class QuatschSource;
-class Terrain;
+class TerrainFormation;
 
 class QuatschSource {
 public:
@@ -48,7 +48,7 @@ inline bool operator == (QuatschSource const &lhs, QuatschSource const &rhs) {
 }
 
 
-class Terrain : public StashableMixin<Terrain>
+class TerrainFormation : public StashableMixin<TerrainFormation>
 {
 public:
         enum Kind {
@@ -56,14 +56,14 @@ public:
                 QuatschSource
         };
 
-        Terrain();
+        TerrainFormation();
 
         Kind kind() const;
         void reset ();
         void toQuatschSource (cosyscene::QuatschSource const &qs);
         cosyscene::QuatschSource quatschSource() const;
 
-        bool data_equals(Terrain const &rhs) const;
+        bool data_equals(TerrainFormation const &rhs) const;
 
         template<typename Arch>
         void serialize (Arch &arch);
@@ -73,6 +73,28 @@ private:
         Kind kind_;
 
         cosyscene::QuatschSource quatschSource_;
+};
+
+} // namespace cosyscene
+
+
+#include "redshift/include/smart_ptr.hh"
+namespace cosyscene {
+
+class Terrain : public StashableMixin<Terrain>
+{
+public:
+        Terrain() ;
+
+        redshift::shared_ptr<TerrainFormation> formation() const;
+
+        bool data_equals(Terrain const &rhs) const;
+
+        template<typename Arch>
+        void serialize (Arch &arch);
+
+private:
+        redshift::shared_ptr<TerrainFormation> formation_;
 };
 
 } // namespace cosyscene

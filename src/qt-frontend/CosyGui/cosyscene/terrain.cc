@@ -23,50 +23,63 @@
 namespace cosyscene {
 
 
-const actuarius::Enum<Terrain::Kind> Terrain::Typenames =
-( actuarius::Nvp<Terrain::Kind>(Terrain::QuatschSource, "quatsch-source")
-| actuarius::Nvp<Terrain::Kind>(Terrain::None, "none")
+const actuarius::Enum<TerrainFormation::Kind> TerrainFormation::Typenames =
+( actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::QuatschSource, "quatsch-source")
+| actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::None, "none")
 );
 
 
 
-Terrain::Terrain() : kind_(None) {
+TerrainFormation::TerrainFormation() : kind_(None) {
 }
 
 
 
-Terrain::Kind Terrain::kind() const {
+TerrainFormation::Kind TerrainFormation::kind() const {
         return kind_;
 }
 
 
 
-void Terrain::reset() {
+void TerrainFormation::reset() {
         kind_ = None;
 }
 
 
 
-void Terrain::toQuatschSource (cosyscene::QuatschSource const &qs) {
+void TerrainFormation::toQuatschSource (cosyscene::QuatschSource const &qs) {
         quatschSource_ = qs;
         kind_ = QuatschSource;
 }
 
 
 
-cosyscene::QuatschSource Terrain::quatschSource() const {
+cosyscene::QuatschSource TerrainFormation::quatschSource() const {
         return quatschSource_;
 }
 
 
 
-bool Terrain::data_equals(Terrain const &rhs) const {
+bool TerrainFormation::data_equals(TerrainFormation const &rhs) const {
         if (kind_ != rhs.kind_) return false;
         switch (kind_)  {
         case QuatschSource: return quatschSource_ == rhs.quatschSource_;
         case None: return true;
         }
         return true;
+}
+
+
+// Terrain
+Terrain::Terrain()
+: formation_(new TerrainFormation())
+{
+}
+redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
+        return formation_;
+}
+bool Terrain::data_equals(Terrain const &rhs) const {
+        return formation_->data_equals(*rhs.formation_);
 }
 
 
