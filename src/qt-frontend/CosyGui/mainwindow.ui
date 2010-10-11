@@ -237,7 +237,79 @@ QTabWidget::pane { /* The tab widget frame */
         margin-top: 2px; /* make non-selected tabs look smaller */
 }
 
-QLabel{ background-color:none; }</string>
+QLabel{ background-color:none; }
+
+
+QSlider::groove:horizontal {
+	border: 1px solid #bbb;
+	background: white;
+	height: 10px;
+	border-radius: 4px;
+}
+QSlider::sub-page:horizontal {
+	background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
+    	stop: 0 #66e, stop: 1 #bbf);
+	background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
+    	stop: 0 #bbf, stop: 1 #55f);
+	border: 1px solid #777;
+	height: 10px;
+	border-radius: 4px;
+}
+QSlider::add-page:horizontal {
+	background: #fff;
+	border: 1px solid #777;
+	height: 10px;
+	border-radius: 4px;
+}
+QSlider::handle:horizontal {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+	    stop:0 #eee, stop:1 #ccc);
+	border: 1px solid #777;
+	width: 13px;
+	margin-top: -2px;
+	margin-bottom: -2px;
+	border-radius: 4px;
+}
+QSlider::handle:horizontal:hover {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+	    stop:0 #fff, stop:1 #ddd);
+	border: 1px solid #444;
+	border-radius: 4px;
+}
+
+QSlider::groove:horizontal
+{
+border: 1px solid #bbb;
+background: white;
+width: 10px;
+border-radius: 4px;
+}
+QSlider::sub-page:vertical
+{
+	background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #fff, stop: 0.4999 #eee, stop: 0.5 #ddd, stop: 1 #eee );
+	border: 1px solid #777;
+	width: 10px;
+	border-radius: 4px;
+}
+QSlider::add-page:vertical {
+	background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #78d, stop: 0.4999 #46a, stop: 0.5 #45a, stop: 1 #238 );
+	border: 1px solid #777;
+	width: 10px;
+	border-radius: 4px;
+}
+QSlider::handle:vertical {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eee, stop:1 #ccc);
+	border: 1px solid #777;
+	height: 13px;
+	margin-top: -2px;
+	margin-bottom: -2px;
+	border-radius: 4px;
+}
+QSlider::handle:vertical:hover {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #ddd);
+	border: 1px solid #444;
+	border-radius: 4px;
+}</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -253,23 +325,6 @@ QLabel{ background-color:none; }</string>
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton">
-         <property name="text">
-          <string>RadioButton</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkBox">
-         <property name="text">
-          <string>CheckBox</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="QCommandLinkButton" name="terrainCommandLink">
          <property name="sizePolicy">
