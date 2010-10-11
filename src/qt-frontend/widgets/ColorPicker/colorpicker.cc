@@ -28,16 +28,6 @@ ColorPicker::ColorPicker(QWidget *parent) :
         ui(new Ui::ColorPicker)
 {
         ui->setupUi(this);
-
-        on_tabWidget_currentChanged(ui->tabWidget->currentIndex());
-
-        connect (ui->tristimulusPicker, SIGNAL(colorChanged(TristimulusColor)),
-                 this, SLOT(tristimulusColorChanged(TristimulusColor)));
-        connect (ui->spectralPicker, SIGNAL(colorChanged(QVector<SpectralSample> const &)),
-                 this, SLOT(spectralColorChanged(QVector<SpectralSample> const &)));
-
-        color_.spectral = ui->spectralPicker->samples();
-        color_.tristimulus = ui->tristimulusPicker->color();
 }
 
 ColorPicker::~ColorPicker() {
@@ -64,40 +54,9 @@ void ColorPicker::on_cancelButton_clicked() {
 }
 
 void ColorPicker::setColor (ColorPickerColor const &color) {
-        this->color_ = color;
-
-        ui->tristimulusPicker->setColor(color.tristimulus);
-        ui->spectralPicker->setSamples(color.spectral);
-
-        switch (color.mode) {
-        case ColorPickerColor::Tristimulus:
-                ui->tabWidget->setCurrentIndex(0);
-                break;
-        case ColorPickerColor::Spectral:
-                ui->tabWidget->setCurrentIndex(1);
-                break;
-        }
+        ui->pickerWidget->setColor(color);
 }
 
 ColorPickerColor ColorPicker::color () const {
-        return color_;
-}
-
-void ColorPicker::on_tabWidget_currentChanged(int index) {
-        switch (index) {
-        case 0:
-                color_.mode = ColorPickerColor::Tristimulus;
-                break;
-        case 1:
-                color_.mode = ColorPickerColor::Spectral;
-                break;
-        }
-}
-
-void ColorPicker::tristimulusColorChanged (TristimulusColor c) {
-        color_.tristimulus = c;
-}
-
-void ColorPicker::spectralColorChanged (QVector<SpectralSample> const & c) {
-        color_.spectral = c;
+        return ui->pickerWidget->color();
 }

@@ -13,33 +13,9 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
    <item>
-    <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="tristimulusTab">
-      <attribute name="title">
-       <string>Tristimulus</string>
-      </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="TristimulusColorPicker" name="tristimulusPicker" native="true"/>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="spectralTab">
-      <attribute name="title">
-       <string>Spectral</string>
-      </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="SpectralColorPicker" name="spectralPicker" native="true"/>
-       </item>
-      </layout>
-     </widget>
-    </widget>
+    <widget class="ColorPickerWidget" name="pickerWidget" native="true"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -72,15 +48,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TristimulusColorPicker</class>
+   <class>ColorPickerWidget</class>
    <extends>QWidget</extends>
-   <header location="global">tristimuluscolorpicker.hh</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SpectralColorPicker</class>
-   <extends>QWidget</extends>
-   <header location="global">spectralcolorpicker.hh</header>
+   <header>colorpickerwidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
