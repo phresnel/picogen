@@ -20,6 +20,8 @@
 
 
 #include <QtGui/QApplication>
+#include <QCleanlooksStyle>
+
 #include "mainwindow.hh"
 
 #include <fstream>
@@ -33,6 +35,9 @@
 int main(int argc, char *argv[])
 {
         redshift::static_init();
+
+        QCleanlooksStyle *style = new QCleanlooksStyle ();
+        QApplication::setStyle(style);
 
         QApplication a(argc, argv);
         MainWindow w;

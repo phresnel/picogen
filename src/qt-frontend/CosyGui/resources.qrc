@@ -14,7 +14,9 @@
         <file>resources/sketchy_cc-attribution-noncommercial_mountain-sketch.png</file>
     </qresource>
     <qresource prefix="/style">
-        <file alias="checkbox-yes">resources/crystalclear_lgpl_yes.png</file>
-        <file alias="checkbox-no">resources/crystalclear_lgpl_no.png</file>
+        <file alias="checkbox-yes">resources/woothemes_gpl_checkbox-yes.png</file>
+        <file alias="checkbox-no">resources/woothemes_gpl_checkbox-no.png</file>
+        <file alias="radio-yes">resources/developpers_freecommercial_radio-yes.png</file>
+        <file alias="radio-no">resources/developpers_freecommercial_radio-no.png</file>
     </qresource>
 </RCC>

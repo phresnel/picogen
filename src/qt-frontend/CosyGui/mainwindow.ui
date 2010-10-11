@@ -44,19 +44,21 @@ QScrollBar::add-page, QScrollBar::sub-page{
         color:transparent;
 }
 
-QCheckBox::indicator {
+QRadioButton::indicator, QCheckBox::indicator {
      width: 13px;
      height: 13px;
 }
 QCheckBox::indicator:checked { image: url(:/style/checkbox-yes); }
 QCheckBox::indicator:unchecked { image: url(:/style/checkbox-no); }
+QRadioButton::indicator:checked { image: url(:/style/radio-yes); }
+QRadioButton::indicator:unchecked { image: url(:/style/radio-no); }
 
 QGraphicsView, QMdiArea,
 QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
 QTreeView, QFrame#helpFrame {
         color:white;
         border:2px solid #ccc;
-        border-radius:10px;
+        border-radius:5px;
         background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #817171, stop: 0.5 #605050,
                                        stop: 0.6 #534343, stop:1 #857575);
@@ -251,6 +253,23 @@ QLabel{ background-color:none; }</string>
        </sizepolicy>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="text">
+          <string>RadioButton</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string>CheckBox</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QCommandLinkButton" name="terrainCommandLink">
          <property name="sizePolicy">
@@ -500,7 +519,7 @@ QLabel{ background-color:none; }</string>
      <x>0</x>
      <y>0</y>
      <width>696</width>
-     <height>19</height>
+     <height>16</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
