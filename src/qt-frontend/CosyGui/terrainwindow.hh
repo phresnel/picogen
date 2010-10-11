@@ -57,16 +57,12 @@ private:
 
         void setTerrainByValue (cosyscene::Terrain const &, bool blockSignals);
         void updateViews ();
-private:
-        void showTerrainKindSelection();
-        void showQuatschEditor();
+
 
 private slots:
         void on_showWorldFittingTab_clicked();
         void on_showTexturingTab_clicked();
         void on_showFormationTab_clicked();
-        void on_quatschCodeEditorCLB_clicked();
-        void on_quatschCodeEditor_codeChanged();
 
         void on_stashButton_clicked();
         void on_stashRestoreButton_clicked();

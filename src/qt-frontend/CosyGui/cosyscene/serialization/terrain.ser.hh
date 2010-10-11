@@ -50,6 +50,10 @@ inline void TerrainFormation::serialize (Arch &arch) {
 template<typename Arch>
 inline void Terrain::serialize (Arch &arch) {
         using actuarius::pack;
+
+        if (Arch::deserialize || !stash_.empty())
+                arch & pack("stash", stash_);
+
         arch & pack("formation", *formation_);
 }
 

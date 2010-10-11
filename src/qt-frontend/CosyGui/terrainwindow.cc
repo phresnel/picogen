@@ -45,18 +45,6 @@ TerrainWindow::~TerrainWindow() {
 
 
 
-void TerrainWindow::showQuatschEditor() {
-        ui->stackedWidget->setCurrentWidget(ui->quatschCodeEditorPage);
-}
-
-
-
-void TerrainWindow::showTerrainKindSelection() {
-        ui->stackedWidget->setCurrentWidget(ui->selectKind);
-}
-
-
-
 void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
                                 bool blockSignals
 ) {
@@ -78,6 +66,7 @@ void TerrainWindow::setTerrainByValue (cosyscene::Terrain const &t,
         if (blockSignals)
                 prevBlocked = this->blockSignals(true);
         *terrain = t;
+        ui->formationStackedWidget->setFormation(t.formation(), blockSignals);
         updateViews();
         if (blockSignals)
                 this->blockSignals(prevBlocked);
@@ -88,42 +77,7 @@ void TerrainWindow::setTerrainByValue (cosyscene::Terrain const &t,
 
 void TerrainWindow::updateViews () {
         const bool wasBlocked = blockSignals(true);
-        switch (terrain->formation()->kind()) {
-        case cosyscene::TerrainFormation::QuatschSource:
-                ui->quatschCodeEditor->setCode(
-                                QString::fromStdString(
-                                terrain->formation()->quatschSource().code()));
-                showQuatschEditor();
-                break;
-        case cosyscene::TerrainFormation::None:
-                showTerrainKindSelection();
-                break;
-        }
         blockSignals(wasBlocked);
-}
-
-
-
-void TerrainWindow::on_quatschCodeEditorCLB_clicked() {
-        terrain->formation()->toQuatschSource(cosyscene::QuatschSource(
-                "/* Press F1 for help :) */\n"
-                "/* ... or move the caret over some entity and try out\n"
-                "   the contextual help via F1 */\n"
-                "([LibnoiseVoronoi \n"
-                "   enable-distance{1}\n"
-                "   displacement{0.1}\n"
-                " ] x y)\n"
-        ));
-        updateViews();
-}
-
-
-
-void TerrainWindow::on_quatschCodeEditor_codeChanged() {
-        terrain->formation()->toQuatschSource(cosyscene::QuatschSource(
-                ui->quatschCodeEditor->code().toStdString()
-        ));
-        emit terrainChanged();
 }
 
 

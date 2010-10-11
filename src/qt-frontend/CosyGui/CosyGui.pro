@@ -36,7 +36,8 @@ SOURCES += main.cc\
     cosyscene/direction3d.cc \
     navigationwindow.cc \
     cosyscene/navigation.cc \
-    cosyscene/point3d.cc
+    cosyscene/point3d.cc \
+    terrainformation.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -65,7 +66,8 @@ HEADERS  += mainwindow.hh \
     cosyscene/navigation.hh \
     cosyscene/serialization/navigation.ser.hh \
     cosyscene/point3d.hh \
-    cosyscene/serialization/point3d.ser.hh
+    cosyscene/serialization/point3d.ser.hh \
+    terrainformation.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
@@ -73,7 +75,8 @@ FORMS    += mainwindow.ui \
     stashview.ui \
     stashframe.ui \
     sunskywindow.ui \
-    navigationwindow.ui
+    navigationwindow.ui \
+    terrainformation.ui
 
 LIBS += \
     ../../redshift/lib/libpicogen.a \
