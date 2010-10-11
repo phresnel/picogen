@@ -52,8 +52,8 @@ void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
         if (blockSignals)
                 prevBlocked = this->blockSignals(true);
         terrain = t;
-        ui->formationStackedWidget->setFormation(terrain->formation(),
-                                                 blockSignals);
+        ui->formation->setFormation(terrain->formation(),
+                                    blockSignals);
         updateViews();
         if (blockSignals)
                 this->blockSignals(prevBlocked);

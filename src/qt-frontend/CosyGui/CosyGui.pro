@@ -37,7 +37,8 @@ SOURCES += main.cc\
     navigationwindow.cc \
     cosyscene/navigation.cc \
     cosyscene/point3d.cc \
-    terrainformation.cc
+    terrainformation.cc \
+    terraintexturing.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -67,7 +68,8 @@ HEADERS  += mainwindow.hh \
     cosyscene/serialization/navigation.ser.hh \
     cosyscene/point3d.hh \
     cosyscene/serialization/point3d.ser.hh \
-    terrainformation.hh
+    terrainformation.hh \
+    terraintexturing.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
@@ -76,7 +78,8 @@ FORMS    += mainwindow.ui \
     stashframe.ui \
     sunskywindow.ui \
     navigationwindow.ui \
-    terrainformation.ui
+    terrainformation.ui \
+    terraintexturing.ui
 
 LIBS += \
     ../../redshift/lib/libpicogen.a \
@@ -102,6 +105,7 @@ include(../widgets/Picohelp/picohelp.pri)
 include(../widgets/QtSunSkyEditor/qtsunskyeditor.pri)
 include(../widgets/RenderWindow/renderwindow.pri)
 include(../widgets/RenderWidget/renderwidget.pri)
+include(../widgets/ColorPicker/colorpicker.pri)
 
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release

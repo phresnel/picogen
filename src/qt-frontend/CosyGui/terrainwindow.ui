@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
+    <width>582</width>
     <height>558</height>
    </rect>
   </property>
@@ -49,7 +49,7 @@
       <item>
        <widget class="QCommandLinkButton" name="showTexturingTab">
         <property name="text">
-         <string>Texturing</string>
+         <string>Colouring</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
@@ -100,14 +100,14 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="TerrainFormation" name="formationStackedWidget">
+     <widget class="TerrainFormation" name="formation">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="margin">
         <number>0</number>
        </property>
       </layout>
      </widget>
-     <widget class="QWidget" name="stackedWidgetPage2"/>
+     <widget class="TerrainTexturing" name="texturing"/>
      <widget class="QWidget" name="stackedWidgetPage3"/>
     </widget>
    </item>
@@ -118,6 +118,12 @@
    <class>TerrainFormation</class>
    <extends>QWidget</extends>
    <header>terrainformation.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TerrainTexturing</class>
+   <extends>QWidget</extends>
+   <header>terraintexturing.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
