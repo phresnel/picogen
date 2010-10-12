@@ -182,9 +182,6 @@ redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const 
                 }
         }
 
-        std::ofstream ofs ("C:\\Dokumente und Einstellungen\\smach\\Desktop\\foobar.txt");
-        actuarius::OArchive(ofs) & actuarius::pack ("micmac", scene);
-
         return scenePtr;
 }
 

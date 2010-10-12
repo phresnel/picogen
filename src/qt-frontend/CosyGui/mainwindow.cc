@@ -159,6 +159,7 @@ MainWindow::~MainWindow() {
 
 
 void MainWindow::switchOffCommandLinks () {
+        ui->renderingSetupCommandLink->setChecked(false);
         ui->filmCommandLink->setChecked(false);
         ui->terrainCommandLink->setChecked(false);
         ui->navigationCommandLink->setChecked(false);
@@ -194,6 +195,12 @@ void MainWindow::on_sunskyCommandLink_clicked() {
         switchOffCommandLinks();
         ui->sunskyCommandLink->setChecked(true);
         ui->stackedWidget->setCurrentWidget(ui->sunSky);
+}
+
+void MainWindow::on_renderingSetupCommandLink_clicked() {
+        switchOffCommandLinks();
+        ui->renderingSetupCommandLink->setChecked(true);
+        ui->stackedWidget->setCurrentWidget(ui->renderingSetup);
 }
 
 void MainWindow::on_terrain_terrainChanged() {
@@ -241,7 +248,7 @@ void MainWindow::on_actionLoad_triggered() {
         }
 }
 
-#include <QDebug>
+
 void MainWindow::on_renderCommandLink_clicked() {
         // Et hop.
         /*RenderWindow *r = new RenderWindow (scene->toRedshiftScene(),
@@ -253,3 +260,4 @@ void MainWindow::on_renderCommandLink_clicked() {
         */
         ui->renderWidget->setSceneAndRender(scene->toRedshiftScene(), true);
 }
+

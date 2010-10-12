@@ -39,7 +39,9 @@ SOURCES += main.cc\
     cosyscene/point3d.cc \
     terrainformation.cc \
     terraintexturing.cc \
-    cosyscene/color.cc
+    cosyscene/color.cc \
+    rendersettings.cc \
+    twinrendersettings.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -72,7 +74,9 @@ HEADERS  += mainwindow.hh \
     terrainformation.hh \
     terraintexturing.hh \
     cosyscene/color.hh \
-    cosyscene/serialization/color.ser.hh
+    cosyscene/serialization/color.ser.hh \
+    rendersettings.hh \
+    twinrendersettings.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
@@ -82,7 +86,9 @@ FORMS    += mainwindow.ui \
     sunskywindow.ui \
     navigationwindow.ui \
     terrainformation.ui \
-    terraintexturing.ui
+    terraintexturing.ui \
+    rendersettings.ui \
+    twinrendersettings.ui
 
 LIBS += \
     ../../redshift/lib/libpicogen.a \
