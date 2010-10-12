@@ -193,7 +193,6 @@ namespace redshift { namespace scenefile {
 
         struct Rgb {
                 double r,g,b;
-                std::vector<WavelengthAmplitudePair> test;
 
                 Rgb (double r, double g, double b) : r(r), g(g), b(b) {}
                 Rgb () : r(1), g(1), b(1) {}
