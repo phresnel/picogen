@@ -136,6 +136,10 @@ void NavigationWindow::updateViews() {
                 ui->yawSpin->setValue(ypr.yaw);
                 ui->pitchSpin->setValue(ypr.pitch);
                 ui->rollSpin->setValue(ypr.roll);
+
+                ui->xSpin->setValue(ypr.position.x());
+                ui->ySpin->setValue(ypr.position.y());
+                ui->zSpin->setValue(ypr.position.z());
         } break;
         case cosyscene::Navigation::None:
                 throw std::runtime_error ("Navigation::updateViews() called"

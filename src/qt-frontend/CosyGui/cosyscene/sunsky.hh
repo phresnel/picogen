@@ -26,6 +26,8 @@
 #include <string>
 #include <actuarius/bits/enum.hh>
 
+#include <boost/noncopyable.hpp>
+
 #include "direction3d.hh"
 
 namespace cosyscene {

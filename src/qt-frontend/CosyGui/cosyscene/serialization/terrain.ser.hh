@@ -48,6 +48,20 @@ inline void TerrainFormation::serialize (Arch &arch) {
 }
 
 template<typename Arch>
+inline void TerrainMaterial::serialize (Arch &arch) {
+        using actuarius::pack;
+        if (Arch::deserialize || !stash_.empty())
+                arch & pack("stash", stash_);
+
+        arch & pack("type", kind_, Typenames);
+
+        switch (kind_) {
+        case Monochrome: break;
+        case None: break;
+        }
+}
+
+template<typename Arch>
 inline void Terrain::serialize (Arch &arch) {
         using actuarius::pack;
 
@@ -55,6 +69,7 @@ inline void Terrain::serialize (Arch &arch) {
                 arch & pack("stash", stash_);*/
 
         arch & pack("formation", *formation_);
+        arch & pack("material", *material_);
 }
 
 } // namespace cosyscene

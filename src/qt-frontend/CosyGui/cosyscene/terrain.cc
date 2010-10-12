@@ -28,6 +28,11 @@ const actuarius::Enum<TerrainFormation::Kind> TerrainFormation::Typenames =
 | actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::None, "none")
 );
 
+const actuarius::Enum<TerrainMaterial::Kind> TerrainMaterial::Typenames =
+( actuarius::Nvp<TerrainMaterial::Kind>(TerrainMaterial::None, "none")
+| actuarius::Nvp<TerrainMaterial::Kind>(TerrainMaterial::Monochrome, "monochrome")
+);
+
 
 
 TerrainFormation::TerrainFormation() : kind_(None) {
@@ -66,17 +71,53 @@ bool TerrainFormation::data_equals(TerrainFormation const &rhs) const {
         case QuatschSource: return quatschSource_ == rhs.quatschSource_;
         case None: return true;
         }
-        return true;
+        throw std::runtime_error("TerrainFormation::data_equals() not "
+                                 "fully defined");
+}
+
+
+
+
+TerrainMaterial::TerrainMaterial() : kind_(None) {
+}
+
+
+
+TerrainMaterial::Kind TerrainMaterial::kind() const {
+        return kind_;
+}
+
+
+
+void TerrainMaterial::reset() {
+        kind_ = None;
+}
+
+
+
+bool TerrainMaterial::data_equals(const TerrainMaterial &rhs) const {
+        if (kind_ != rhs.kind_) return false;
+
+        switch (kind_) {
+        case None: return true;
+        //case Monochrome:
+        }
+        throw std::runtime_error("TerrainMaterial::data_equals() not "
+                                 "fully defined");
 }
 
 
 // Terrain
 Terrain::Terrain()
 : formation_(new TerrainFormation())
+, material_(new TerrainMaterial())
 {
 }
 redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
         return formation_;
+}
+redshift::shared_ptr<TerrainMaterial> Terrain::material() const {
+        return material_;
 }
 
 

@@ -38,7 +38,8 @@ SOURCES += main.cc\
     cosyscene/navigation.cc \
     cosyscene/point3d.cc \
     terrainformation.cc \
-    terraintexturing.cc
+    terraintexturing.cc \
+    cosyscene/color.cc
 
 HEADERS  += mainwindow.hh \
     filmsettings.hh \
@@ -69,7 +70,9 @@ HEADERS  += mainwindow.hh \
     cosyscene/point3d.hh \
     cosyscene/serialization/point3d.ser.hh \
     terrainformation.hh \
-    terraintexturing.hh
+    terraintexturing.hh \
+    cosyscene/color.hh \
+    cosyscene/serialization/color.ser.hh
 
 FORMS    += mainwindow.ui \
     filmsettings.ui \
