@@ -55,17 +55,32 @@ void ColorPickerWidget::spectralColorChanged (QVector<SpectralSample> const & c)
 }
 
 void ColorPickerWidget::setColor (ColorPickerColor const &color) {
-        this->color_ = color;
 
+        bool prev = ui->tristimulusPicker->blockSignals(true);
         ui->tristimulusPicker->setColor(color.tristimulus);
+        ui->tristimulusPicker->blockSignals(prev);
+
+        prev = ui->spectralPicker->blockSignals(true);
         ui->spectralPicker->setSamples(color.spectral);
+        ui->spectralPicker->blockSignals(prev);
+
+        this->color_ = color;
 
         switch (color.mode) {
         case ColorPickerColor::Tristimulus:
                 ui->stackedWidget->setCurrentIndex(0);
+
+                prev = ui->tristimulusRadioButton->blockSignals(true);
+                ui->tristimulusRadioButton->setChecked(true);
+                ui->tristimulusRadioButton->blockSignals(prev);
+
                 break;
         case ColorPickerColor::Spectral:
                 ui->stackedWidget->setCurrentIndex(1);
+
+                prev = ui->spectralRadioButton->blockSignals(true);
+                ui->spectralRadioButton->setChecked(true);
+                ui->spectralRadioButton->blockSignals(prev);
                 break;
         }
 

@@ -241,7 +241,7 @@ void MainWindow::on_actionLoad_triggered() {
         }
 }
 
-
+#include <QDebug>
 void MainWindow::on_renderCommandLink_clicked() {
         // Et hop.
         /*RenderWindow *r = new RenderWindow (scene->toRedshiftScene(),

@@ -33,6 +33,11 @@ namespace Ui {
 struct SpectralSample {
         double wavelength, amplitude;
 
+        SpectralSample() {}
+        SpectralSample(double wavelength, double amplitude)
+                : wavelength(wavelength), amplitude(amplitude)
+        {}
+
         bool operator == (SpectralSample const & rhs) const {
                 return wavelength == rhs.wavelength
                     && amplitude == rhs.amplitude;

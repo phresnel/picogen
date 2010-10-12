@@ -37,6 +37,7 @@ Scene::Scene()
 }
 
 
+
 redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const {
         using namespace ::redshift;
         shared_ptr<scenefile::Scene> scenePtr(new scenefile::Scene);
@@ -126,22 +127,63 @@ redshift::shared_ptr<redshift::scenefile::Scene> Scene::toRedshiftScene() const 
         {
                 scenefile::Object ob;
 
-                TerrainFormation const &t = *terrain_->formation();
-                if (TerrainFormation::None != t.kind()) {
+                TerrainFormation const &formation = *terrain_->formation();
+                TerrainMaterial const &material = *terrain_->material();
+                if (TerrainFormation::None != formation.kind()) {
                         ob.type = scenefile::Object::lazy_quadtree;
 
-                        switch (t.kind()) {
+                        // Formation
+                        switch (formation.kind()) {
                         case TerrainFormation::QuatschSource:
-                                ob.lazyQuadtreeParams.code = t.quatschSource().code();
+                                ob.lazyQuadtreeParams.code = formation.quatschSource().code();
                                 break;
                         case TerrainFormation::None: /* never the case */ break;
                         }
 
+                        // Fitting
                         ob.lazyQuadtreeParams.size = 10000;
+
+                        // Material
+                        switch (material.kind()) {
+                        case TerrainMaterial::None:
+                                ob.lazyQuadtreeParams.material.color = redshift::scenefile::Color(1,1,1);
+                                break;
+                        case TerrainMaterial::Monochrome: {
+                                        cosyscene::Color mono = material.monochrome();
+                                        redshift::scenefile::Color redcol;
+
+
+                                        switch (mono.kind()) {
+                                        case cosyscene::Color::Rgb:
+                                                redcol = redshift::scenefile::Color(mono.rgb().r(),
+                                                                                    mono.rgb().g(),
+                                                                                    mono.rgb().b());
+                                                break;
+                                        case cosyscene::Color::Spectrum:
+                                                redcol.type = redshift::scenefile::Color::Spectrum;
+                                                redshift::scenefile::Spectrum &redspec = redcol.spectrum;
+                                                cosyscene::Spectrum cospec = mono.spectrum();
+
+                                                for (size_t i=0; i<cospec.size(); ++i) {
+                                                        redshift::scenefile::WavelengthAmplitudePair wa;
+                                                        wa.wavelength = cospec[i].wavelength();
+                                                        wa.amplitude = cospec[i].amplitude();
+
+                                                        redspec.samples.push_back(wa);
+                                                }
+                                                break;
+                                        }
+
+                                        ob.lazyQuadtreeParams.material.color = redcol;
+                                } break;
+                        }
+
                         scene.addObject(ob);
                 }
         }
 
+        std::ofstream ofs ("C:\\Dokumente und Einstellungen\\smach\\Desktop\\foobar.txt");
+        actuarius::OArchive(ofs) & actuarius::pack ("micmac", scene);
 
         return scenePtr;
 }
