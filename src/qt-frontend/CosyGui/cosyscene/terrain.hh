@@ -81,6 +81,8 @@ private:
 } // namespace cosyscene
 
 
+
+#include "color.hh"
 namespace cosyscene {
 class TerrainMaterial : public StashableMixin<TerrainMaterial> {
 public:
@@ -92,7 +94,10 @@ public:
         TerrainMaterial();
 
         Kind kind() const;
+        Color monochrome() const;
         void reset();
+
+        void toMonochrome(Color const &);
 
         bool data_equals(TerrainMaterial const &rhs) const;
 
@@ -102,6 +107,7 @@ public:
 
 private:
         Kind kind_;
+        Color monochrome_;
 
 };
 } // namespace cosyscene

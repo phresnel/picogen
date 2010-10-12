@@ -54,6 +54,8 @@ void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
         terrain = t;
         ui->formation->setFormation(terrain->formation(),
                                     blockSignals);
+        ui->texturing->setMaterial(terrain->material(),
+                                   blockSignals);
         updateViews();
         if (blockSignals)
                 this->blockSignals(prevBlocked);

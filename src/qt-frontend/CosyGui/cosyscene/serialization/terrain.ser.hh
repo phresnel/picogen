@@ -24,6 +24,7 @@
 
 #include "../terrain.hh"
 #include "cosyscene/serialization/stash.ser.hh"
+#include "cosyscene/serialization/color.ser.hh"
 
 namespace cosyscene {
 
@@ -56,7 +57,7 @@ inline void TerrainMaterial::serialize (Arch &arch) {
         arch & pack("type", kind_, Typenames);
 
         switch (kind_) {
-        case Monochrome: break;
+        case Monochrome: arch & pack ("parameters", monochrome_); break;
         case None: break;
         }
 }

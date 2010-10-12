@@ -24,9 +24,13 @@
 #define TERRAINTEXTURING_HH
 
 #include <QWidget>
+#include "redshift/include/smart_ptr.hh"
 
 namespace Ui {
     class TerrainTexturing;
+}
+namespace cosyscene {
+        class TerrainMaterial;
 }
 class ColorPickerColor;
 
@@ -38,8 +42,14 @@ public:
         explicit TerrainTexturing(QWidget *parent = 0);
         ~TerrainTexturing();
 
+        void setMaterial (
+                redshift::shared_ptr<cosyscene::TerrainMaterial> t,
+                bool blockSignals
+        );
+
 private:
         Ui::TerrainTexturing *ui;
+        redshift::shared_ptr<cosyscene::TerrainMaterial> material;
 
 private slots:
         void on_colorPicker_colorChanged(ColorPickerColor const &);

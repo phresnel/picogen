@@ -22,6 +22,7 @@
 #define COLOR_HH_20101012
 
 #include <vector>
+#include "actuarius/bits/enum.hh"
 
 namespace cosyscene {
 
@@ -98,6 +99,50 @@ public:
 private:
         double r_, g_, b_;
 };
+inline bool operator == (Rgb const &lhs, Rgb const &rhs) {
+        return lhs.r() == rhs.r()
+            && lhs.g() == rhs.g()
+            && lhs.b() == rhs.b();
+}
+
+
+
+//------------------------------------------------------------------------------
+class Color {
+public:
+        enum Kind {
+                Spectrum,
+                Rgb
+        };
+
+        static const actuarius::Enum<Kind> Typenames;
+
+        Kind kind() const;
+        cosyscene::Rgb rgb() const;
+        cosyscene::Spectrum spectrum() const;
+
+        void toRgb (cosyscene::Rgb const &);
+        void toSpectrum(cosyscene::Spectrum const &);
+
+        // Serialization.
+        template<typename Arch>
+        void serialize (Arch &arch);
+
+private:
+        Kind kind_;
+        cosyscene::Rgb rgb_;
+        cosyscene::Spectrum spectrum_;
+};
+inline bool operator == (Color const &lhs, Color const &rhs) {
+        if (lhs.kind() != rhs.kind())
+                return false;
+        switch (lhs.kind()) {
+        case Color::Spectrum:
+                return lhs.spectrum() == rhs.spectrum();
+        case Color::Rgb:
+                return lhs.rgb() == rhs.rgb();
+        }
+}
 
 } // namespace cosyscene
 

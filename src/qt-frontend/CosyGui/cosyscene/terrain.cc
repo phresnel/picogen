@@ -89,6 +89,19 @@ TerrainMaterial::Kind TerrainMaterial::kind() const {
 
 
 
+Color TerrainMaterial::monochrome() const {
+        return monochrome_;
+}
+
+
+
+void TerrainMaterial::toMonochrome(Color const &val) {
+        kind_ = Monochrome;
+        monochrome_ = val;
+}
+
+
+
 void TerrainMaterial::reset() {
         kind_ = None;
 }
@@ -100,7 +113,7 @@ bool TerrainMaterial::data_equals(const TerrainMaterial &rhs) const {
 
         switch (kind_) {
         case None: return true;
-        //case Monochrome:
+        case Monochrome: return monochrome_ == rhs.monochrome_;
         }
         throw std::runtime_error("TerrainMaterial::data_equals() not "
                                  "fully defined");

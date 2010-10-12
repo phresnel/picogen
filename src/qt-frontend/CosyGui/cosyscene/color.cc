@@ -24,6 +24,11 @@
 
 namespace cosyscene {
 
+const actuarius::Enum<Color::Kind> Color::Typenames =
+( actuarius::Nvp<Color::Kind>(Color::Rgb, "rgb")
+| actuarius::Nvp<Color::Kind>(Color::Spectrum, "spectrum")
+);
+
 
 //------------------------------------------------------------------------------
 WavelengthAmplitudePair::WavelengthAmplitudePair()
@@ -94,6 +99,26 @@ double Rgb::b() const {
         return b_;
 }
 
+
+
+//------------------------------------------------------------------------------
+Color::Kind Color::kind() const {
+        return kind_;
+}
+Rgb Color::rgb() const {
+        return rgb_;
+}
+Spectrum Color::spectrum() const {
+        return spectrum_;
+}
+void Color::toRgb (cosyscene::Rgb const &val) {
+        kind_ = Rgb;
+        rgb_ = val;
+}
+void Color::toSpectrum(cosyscene::Spectrum const &val) {
+        kind_ = Spectrum;
+        spectrum_ = val;
+}
 
 
 

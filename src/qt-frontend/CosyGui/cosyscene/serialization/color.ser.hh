@@ -48,6 +48,19 @@ inline void Rgb::serialize (Arch &arch) {
         arch & pack(r_) & pack(g_) & pack(b_);
 }
 
+//------------------------------------------------------------------------------
+template<typename Arch>
+inline void Color::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack ("type", kind_, Typenames);
+
+        switch (kind_) {
+        case Rgb: arch & pack ("parameters", rgb_); break;
+        case Spectrum: arch & pack ("parameters", spectrum_); break;
+        }
+}
+
+
 } // namespace cosyscene
 
-#endif // POINT3D_SERIALIZATION_HH_20100915
+#endif // COLOR_SERIALIZATION_HH_20101012
