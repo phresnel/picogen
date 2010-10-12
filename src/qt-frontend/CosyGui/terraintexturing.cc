@@ -34,3 +34,6 @@ TerrainTexturing::~TerrainTexturing()
 {
     delete ui;
 }
+
+void TerrainTexturing::on_colorPicker_colorChanged(ColorPickerColor const &) {
+}

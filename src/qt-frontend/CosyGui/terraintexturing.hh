@@ -28,17 +28,22 @@
 namespace Ui {
     class TerrainTexturing;
 }
+class ColorPickerColor;
 
 class TerrainTexturing : public QWidget
 {
-    Q_OBJECT
+        Q_OBJECT
 
 public:
-    explicit TerrainTexturing(QWidget *parent = 0);
-    ~TerrainTexturing();
+        explicit TerrainTexturing(QWidget *parent = 0);
+        ~TerrainTexturing();
 
 private:
-    Ui::TerrainTexturing *ui;
+        Ui::TerrainTexturing *ui;
+
+private slots:
+        void on_colorPicker_colorChanged(ColorPickerColor const &);
+
 };
 
 #endif // TERRAINTEXTURING_HH

@@ -46,10 +46,12 @@ ColorPickerWidget::~ColorPickerWidget() {
 
 void ColorPickerWidget::tristimulusColorChanged (TristimulusColor c) {
         color_.tristimulus = c;
+        emit colorChanged (color_);
 }
 
 void ColorPickerWidget::spectralColorChanged (QVector<SpectralSample> const & c) {
         color_.spectral = c;
+        emit colorChanged (color_);
 }
 
 void ColorPickerWidget::setColor (ColorPickerColor const &color) {
@@ -66,6 +68,8 @@ void ColorPickerWidget::setColor (ColorPickerColor const &color) {
                 ui->stackedWidget->setCurrentIndex(1);
                 break;
         }
+
+        emit colorChanged (color_);
 }
 
 ColorPickerColor ColorPickerWidget::color () const {
@@ -76,6 +80,7 @@ void ColorPickerWidget::on_tristimulusRadioButton_toggled(bool checked) {
         if (checked) {
                 color_.mode = ColorPickerColor::Tristimulus;
                 ui->stackedWidget->setCurrentIndex(0);
+                emit colorChanged (color_);
         }
 }
 
@@ -83,5 +88,6 @@ void ColorPickerWidget::on_spectralRadioButton_toggled(bool checked) {
         if (checked) {
                 color_.mode = ColorPickerColor::Spectral;
                 ui->stackedWidget->setCurrentIndex(1);
+                emit colorChanged (color_);
         }
 }

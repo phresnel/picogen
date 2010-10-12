@@ -35,7 +35,7 @@ SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
 {
         ui->setupUi(this);
 
-        on_lockSampleCount_toggled(ui->lockSampleCount->checkState());        
+        on_lockSampleCount_toggled(ui->lockSampleCount->checkState());
         setSliderCount(ui->sampleCount->value());
         updatePixmap();
 }
@@ -107,6 +107,7 @@ void SpectralColorPicker::updatePixmap() {
 
 void SpectralColorPicker::on_sampleCount_valueChanged(int n) {
         setSliderCount(n);
+        emit colorChanged(samples());
 }
 
 
@@ -211,7 +212,7 @@ void SpectralColorPicker::on_importRawDataButton_clicked() {
         }
 }
 
-void SpectralColorPicker::on_maxAmp_editingFinished() {        
+void SpectralColorPicker::on_maxAmp_editingFinished() {
         ui->spectralCurve->setMaxEnergy(ui->maxAmp->value());
         ui->spectralCurve->repaint();
 

@@ -27,7 +27,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="ColorPickerWidget" name="widget" native="true"/>
+       <widget class="ColorPickerWidget" name="colorPicker" native="true"/>
       </item>
      </layout>
     </widget>

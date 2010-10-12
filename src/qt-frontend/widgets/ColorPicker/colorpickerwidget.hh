@@ -40,6 +40,9 @@ public:
         void setColor (ColorPickerColor const &color);
         ColorPickerColor color () const;
 
+signals:
+        void colorChanged (ColorPickerColor const &);
+
 private:
         Ui::ColorPickerWidget *ui;
         ColorPickerColor color_;
