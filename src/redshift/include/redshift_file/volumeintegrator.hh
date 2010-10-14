@@ -24,9 +24,6 @@
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
-#include "integrators/emission.hh"
-#include "integrators/single-scattering.hh"
-
 namespace redshift_file {
         struct VolumeIntegrator {
                 enum Type {
@@ -40,30 +37,9 @@ namespace redshift_file {
 
                 VolumeIntegrator ()
                 : type(none), stepSize(100.), cutoffDistance(5000.)
-                {}
+                {}                
 
-
-                shared_ptr<redshift::VolumeIntegrator> toVolumeIntegrator() const {
-                        switch (type) {
-                        case emission:
-                                return shared_ptr<redshift::VolumeIntegrator>(
-                                        new redshift::Emission(stepSize, cutoffDistance)
-                                );
-                        case single:
-                                return shared_ptr<redshift::VolumeIntegrator>(
-                                        new redshift::SingleScattering(stepSize, cutoffDistance)
-                                );
-                        case none:
-                                return shared_ptr<redshift::VolumeIntegrator>(
-                                        new redshift::NullIntegrator()
-                                );
-                        };
-                        return shared_ptr<redshift::VolumeIntegrator>();
-                }
-
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch);
+                template<typename Arch> void serialize (Arch &arch);
         };
 }
 

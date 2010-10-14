@@ -21,18 +21,12 @@
 #ifndef POINT_HH_20101013
 #define POINT_HH_20101013
 
-#include "redshift/include/geometry.hh"
-
 namespace redshift_file {
         struct Point {
                 double x,y,z;
 
                 Point (double x, double y, double z) : x(x), y(y), z(z) {}
-                Point () : x(0), y(0), z(0) {}
-
-                operator redshift::Point () const {
-                        return redshift::Point(x,y,z);
-                }
+                Point () : x(0), y(0), z(0) {}               
 
                 template<typename Arch> void serialize (Arch &arch);
         };

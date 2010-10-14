@@ -25,9 +25,6 @@
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
-#include "redshift/include/geometry.hh"
-#include "redshift/include/constants.hh"
-
 namespace redshift_file {
         struct Transform {
                 enum Type {
@@ -45,26 +42,6 @@ namespace redshift_file {
                 };
 
                 static const actuarius::Enum<Type> Typenames;
-
-                redshift::Transform toRedshiftTransform () const {
-                        using redshift::Transform;
-                        const double to_radians = redshift::constants::pi/180;
-                        switch (type) {
-                        case move: return Transform::translation(x,y,z);
-                        case move_left:
-                        case move_right: return Transform::translation(x,0,0);
-                        case move_up:
-                        case move_down: return Transform::translation(0,y,0);
-                        case move_forward:
-                        case move_backward:  return Transform::translation(0,0,z);
-
-                        case yaw:   return Transform::rotationY(angle*to_radians);
-                        case pitch: return Transform::rotationX(angle*to_radians);
-                        case roll:  return Transform::rotationZ(angle*to_radians);
-                        };
-                        return redshift::Transform();
-                }
-
 
                 // Serialization.
                 template<typename Arch>
@@ -91,7 +68,7 @@ namespace redshift_file {
         };
 
         class TransformList {
-                std::vector<Transform> transforms;
+                std::vector<Transform> transforms;                
         public:
 
                 TransformList() {}
@@ -113,16 +90,14 @@ namespace redshift_file {
                 void push_back (Transform const &t) {
                         transforms.push_back (t);
                 }
-
-                redshift::Transform toRedshiftTransform () const {
-                        typedef std::vector<Transform>::const_iterator iterator;
-                        redshift::Transform ret;
-                        for (iterator it = transforms.begin(); it!=transforms.end(); ++it) {
-                                ret = ret * it->toRedshiftTransform();
-                        }
-                        return ret;
-                }
-
+                
+                typedef std::vector<Transform>::iterator iterator;
+                typedef std::vector<Transform>::const_iterator const_iterator;
+                iterator       begin()       { return transforms.begin(); }
+                const_iterator begin() const { return transforms.begin(); }
+                iterator       end()         { return transforms.end(); }
+                const_iterator end()   const { return transforms.end(); }
+                
                 template<typename Arch> void serialize (Arch &arch);
         };
 }

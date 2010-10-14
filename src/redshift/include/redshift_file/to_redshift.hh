@@ -26,14 +26,30 @@ namespace redshift {
         class Sky;
         class Camera;
         class Primitive;
+        
+        class Integrator;
+        class VolumeIntegrator;
+        class VolumeRegion;
 }
+#include "redshift/include/geometry.hh"
 
 
 // redshift_file fwd+Co.
 namespace redshift_file {
         class Background;
         class Camera;
+        
         class Object;
+        class Volume;
+        
+        class Point;
+        class Normal;
+        
+        class SurfaceIntegrator;
+        class VolumeIntegrator;
+        
+        class Transform;
+        class TransformList;
 }
 #include "color_to_redshift.hh"
 #include "object_to_redshift.hh"
@@ -44,7 +60,17 @@ namespace redshift_file {
         redshift::shared_ptr<redshift::Sky>    toRedshift (Background const &);
         redshift::shared_ptr<redshift::Camera> toRedshift (Camera const &,
                                                            unsigned int width, 
-                                                           unsigned int height);        
+                                                           unsigned int height);
+        redshift::Point toRedshift (Point const &);
+        redshift::Normal toRedshift (Normal const &);
+        
+        redshift::shared_ptr<redshift::Integrator> toRedshift(SurfaceIntegrator const &);
+        redshift::shared_ptr<redshift::VolumeIntegrator> toRedshift(VolumeIntegrator const &integrator);
+
+        redshift::Transform toRedshift (Transform const &);
+        redshift::Transform toRedshift (TransformList const &);
+        
+        redshift::shared_ptr<redshift::VolumeRegion> toRedshift (Volume const &);
 }
 
 #endif // TO_REDSHIFT_HH_20101014

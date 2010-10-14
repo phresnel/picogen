@@ -24,13 +24,6 @@
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
-#include "integrators/visualize-distance.hh"
-#include "integrators/show-surface-normals.hh"
-#include "integrators/redshift.hh"
-#include "integrators/whitted.hh"
-#include "integrators/null.hh"
-#include "integrators/path.hh"
-
 namespace redshift_file {
         struct SurfaceIntegrator {
                 enum Type {
@@ -48,27 +41,7 @@ namespace redshift_file {
 
                 SurfaceIntegrator ()
                 : type(whitted_ambient), numAmbientSamples(10)
-                {}
-
-
-                shared_ptr<redshift::Integrator> toSurfaceIntegrator() const {
-                        typedef shared_ptr<redshift::Integrator> rett;
-                        switch (type) {
-                        case whitted_ambient:
-                                return rett(new redshift::RedshiftIntegrator(numAmbientSamples));
-                        case whitted:
-                                return rett(new redshift::WhittedIntegrator());
-                        case path:
-                                return rett(new redshift::PathIntegrator());
-                        case none:
-                                return rett(new redshift::NullIntegrator());
-                        case debug_distance:
-                                return rett(new redshift::VisualizeDistance());
-                        case debug_normals:
-                                return rett(new redshift::ShowSurfaceNormals());
-                        };
-                        return shared_ptr<redshift::Integrator>();
-                }
+                {}                
 
                 // Serialization.
                 template<typename Arch>

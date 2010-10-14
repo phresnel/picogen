@@ -185,7 +185,7 @@ redshift::shared_ptr<redshift::Scene>
         // Add volumes.
         volume::List *volumeList = new volume::List;
         for (unsigned int i=0; i<scene.volumeCount(); ++i) {
-                volumeList->add (scene.volume(i).toVolume());
+                volumeList->add (toRedshift(scene.volume(i)));
         }
         shared_ptr<VolumeRegion> volumeAgg (volumeList);
 
@@ -225,15 +225,13 @@ redshift::shared_ptr<redshift::Scene>
                 sky,
 
                 shared_ptr<Integrator>(
-                        scene.renderSettings(renderSettingsIndex)
-                                .surfaceIntegrator
-                                .toSurfaceIntegrator()),
+                        toRedshift(scene.renderSettings(renderSettingsIndex)
+                                   .surfaceIntegrator)),
 
                 volumeAgg,
                 shared_ptr<VolumeIntegrator>(
-                        scene.renderSettings(renderSettingsIndex)
-                                .volumeIntegrator
-                                .toVolumeIntegrator())
+                        toRedshift(scene.renderSettings(renderSettingsIndex)
+                                   .volumeIntegrator))
         ));
 }
 
@@ -286,38 +284,37 @@ redshift::shared_ptr<redshift::Camera> toRedshift (Camera const & camera,
         case Camera::pinhole:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::Pinhole(
                         width, height, camera.pinholeParams.front,
-                        camera.transforms.toRedshiftTransform()));
+                        toRedshift(camera.transforms)));
 
         case Camera::cylindrical:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::Cylindrical(
                         width, height, camera.cylindricalParams.front,
-                        camera.transforms.toRedshiftTransform()));
-
+                        toRedshift(camera.transforms)));
+                        
         case Camera::cubemap_left:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
                         width, height, redshift::camera::CubeMapFace::left,
-                        camera.transforms.toRedshiftTransform()));
+                        toRedshift(camera.transforms)));
         case Camera::cubemap_right:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
                         width, height, redshift::camera::CubeMapFace::right,
-                        camera.transforms.toRedshiftTransform()));
+                        toRedshift(camera.transforms)));
         case Camera::cubemap_bottom:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
                         width, height, redshift::camera::CubeMapFace::bottom,
-                        camera.transforms.toRedshiftTransform()));
+                        toRedshift(camera.transforms)));
         case Camera::cubemap_top:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
                         width, height, redshift::camera::CubeMapFace::top,
-                        camera.transforms.toRedshiftTransform()));
+                        toRedshift(camera.transforms)));
         case Camera::cubemap_front:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
                         width, height, redshift::camera::CubeMapFace::front,
-                        camera.transforms.toRedshiftTransform()));
+                        toRedshift(camera.transforms)));
         case Camera::cubemap_back:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
                         width, height, redshift::camera::CubeMapFace::back,
-                        camera.transforms.toRedshiftTransform()));
-
+                        toRedshift(camera.transforms)));
         default:
                 throw std::runtime_error("only  pinhole supported");
         };
@@ -362,6 +359,110 @@ redshift::Color toRedshift (Color const &color, redshift::SpectrumKind kind) {
 }
 
 
-      
+
+redshift::Point toRedshift (Point const &point) {
+        return redshift::Point(point.x, point.y, point.z);
+}
+redshift::Normal toRedshift (Normal const &normal) {
+        return redshift::Normal(normal.x, normal.y, normal.z);
+}
+
+
+redshift::shared_ptr<redshift::Integrator> toRedshift(SurfaceIntegrator const &si) {
+        typedef shared_ptr<redshift::Integrator> rett;
+        switch (si.type) {
+        case SurfaceIntegrator::whitted_ambient:
+                return rett(new redshift::RedshiftIntegrator(si.numAmbientSamples));
+        case SurfaceIntegrator::whitted:
+                return rett(new redshift::WhittedIntegrator());
+        case SurfaceIntegrator::path:
+                return rett(new redshift::PathIntegrator());
+        case SurfaceIntegrator::none:
+                return rett(new redshift::NullIntegrator());
+        case SurfaceIntegrator::debug_distance:
+                return rett(new redshift::VisualizeDistance());
+        case SurfaceIntegrator::debug_normals:
+                return rett(new redshift::ShowSurfaceNormals());
+        };
+        return shared_ptr<redshift::Integrator>();
+}
+
+
+
+redshift::Transform toRedshift (Transform const &transform)  {
+        typedef redshift::Transform RedT;
+        const double to_radians = redshift::constants::pi/180;
+        switch (transform.type) {
+        case Transform::move: return RedT::translation(transform.x,transform.y,transform.z);
+        case Transform::move_left:
+        case Transform::move_right: return RedT::translation(transform.x,0,0);
+        case Transform::move_up:
+        case Transform::move_down: return RedT::translation(0,transform.y,0);
+        case Transform::move_forward:
+        case Transform::move_backward:  return RedT::translation(0,0,transform.z);
+
+        case Transform::yaw:   return RedT::rotationY(transform.angle*to_radians);
+        case Transform::pitch: return RedT::rotationX(transform.angle*to_radians);
+        case Transform::roll:  return RedT::rotationZ(transform.angle*to_radians);
+        };
+        return RedT();
+}
+redshift::Transform toRedshift (TransformList const &transformList) {
+        redshift::Transform ret;
+        for (TransformList::const_iterator it = transformList.begin(); 
+             it!=transformList.end(); 
+             ++it
+        ) {
+                ret = ret * toRedshift(*it);
+        }
+        return ret;
+}
+
+
+
+redshift::shared_ptr<redshift::VolumeRegion> toRedshift (Volume const &volume) {
+        switch (volume.type) {
+        case Volume::homogeneous:
+                return shared_ptr<redshift::VolumeRegion> (
+                   new redshift::volume::Homogeneous(
+                        toRedshift (volume.sigma_a, redshift::IlluminantSpectrum),
+                        toRedshift (volume.sigma_s, redshift::IlluminantSpectrum),
+                        toRedshift (volume.Lve, redshift::IlluminantSpectrum),
+                        volume.hg
+                ));
+        case Volume::exponential:
+                return shared_ptr<redshift::VolumeRegion> (
+                   new redshift::volume::Exponential(
+                        toRedshift (volume.sigma_a, redshift::IlluminantSpectrum),
+                        toRedshift (volume.sigma_s, redshift::IlluminantSpectrum),
+                        toRedshift (volume.Lve, redshift::IlluminantSpectrum),
+                        volume.hg,
+                        volume.baseFactor,
+                        volume.exponentFactor,
+                        toRedshift (volume.min),
+                        redshift::vector_cast<redshift::Vector>(toRedshift (volume.up)),
+                        volume.epsilon
+                ));
+        };
+        return shared_ptr<redshift::VolumeRegion>();
+}
+
+redshift::shared_ptr<redshift::VolumeIntegrator> toRedshift(VolumeIntegrator const &integrator) {
+        switch (integrator.type) {
+        case VolumeIntegrator::emission:
+                return shared_ptr<redshift::VolumeIntegrator>(
+                        new redshift::Emission(integrator.stepSize,
+                                               integrator.cutoffDistance));
+        case VolumeIntegrator::single:
+                return shared_ptr<redshift::VolumeIntegrator>(
+                    new redshift::SingleScattering(integrator.stepSize,
+                                                   integrator.cutoffDistance));
+        case VolumeIntegrator::none:
+                return shared_ptr<redshift::VolumeIntegrator>(
+                        new redshift::NullIntegrator()
+                );
+        };
+        return shared_ptr<redshift::VolumeIntegrator>();
+}
 
 }

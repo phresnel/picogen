@@ -21,6 +21,8 @@
 #ifndef NORMAL_HH_20101013
 #define NORMAL_HH_20101013
 
+#include <cmath>
+
 namespace redshift_file {
         struct Normal {
                 double x,y,z;
@@ -33,9 +35,7 @@ namespace redshift_file {
                 }
                 Normal () : x(0), y(1), z(0) {}
 
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch);
+                template<typename Arch> void serialize (Arch &arch);
         };
 }
 

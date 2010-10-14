@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "redshift_file/to_redshift.hh"
 #include "redshift_file/object_to_redshift.hh"
 #include "redshift_file/color_to_redshift.hh"
 #include "redshift_file/object.hh"
@@ -147,11 +148,11 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(TriangleParams c
         );
         
         Triangle* triangle = new Triangle(
-                Triangle::Vertex (ob.A.position,
+                Triangle::Vertex (toRedshift(ob.A.position),
                                   Triangle::TextureCoordinates(0,0)),
-                Triangle::Vertex (ob.B.position,
+                Triangle::Vertex (toRedshift(ob.B.position),
                                   Triangle::TextureCoordinates(1,0)),
-                Triangle::Vertex (ob.C.position,
+                Triangle::Vertex (toRedshift(ob.C.position),
                                   Triangle::TextureCoordinates(0,1)),
                 shared_ptr<redshift::Material>(material)
         );
@@ -212,11 +213,11 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(TriangleBvhParam
                         continue;
                 }
                 builder.add(Triangle(
-                        Triangle::Vertex (it->triangleParams.A.position,
+                        Triangle::Vertex (toRedshift(it->triangleParams.A.position),
                                           Triangle::TextureCoordinates(0,0)),
-                        Triangle::Vertex (it->triangleParams.B.position,
+                        Triangle::Vertex (toRedshift(it->triangleParams.B.position),
                                           Triangle::TextureCoordinates(1,0)),
-                        Triangle::Vertex (it->triangleParams.C.position,
+                        Triangle::Vertex (toRedshift(it->triangleParams.C.position),
                                           Triangle::TextureCoordinates(0,1)),
                         shared_ptr<redshift::Material>(new material::Matte(
                                 shared_ptr<ColorTexture>(
@@ -241,7 +242,7 @@ redshift::shared_ptr<redshift::Primitive> toPrimitive(InstanceParams const &ob) 
                 return shared_ptr<redshift::Primitive>();
 
         return shared_ptr<redshift::Primitive>(new redshift::primitive::Instance(
-                ob.transforms.toRedshiftTransform(),
+                toRedshift (ob.transforms),
                 toRedshift (ob.objects[0])
         ));
 }
@@ -260,7 +261,7 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(InstanceParams c
         }
 
         return shared_ptr<redshift::BoundPrimitive>(new redshift::primitive::BoundInstance(
-                ob.transforms.toRedshiftTransform(),
+                toRedshift (ob.transforms),
                 bp
         ));
 }
