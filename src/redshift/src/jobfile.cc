@@ -20,7 +20,7 @@
 
 #include "../include/jobfile.hh"
 
-namespace redshift { namespace scenefile {
+namespace redshift_file {
 
         const actuarius::Enum<Color::Type> Color::Typenames =
                 ( actuarius::Nvp<Color::Type>(Color::RGB, "rgb")
@@ -88,4 +88,4 @@ namespace redshift { namespace scenefile {
                 | actuarius::Nvp<Camera::Type>(Camera::cubemap_back, "cubemap-back")
                 );
 
-} }
+}

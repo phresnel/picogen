@@ -365,10 +365,10 @@ namespace parsi {
 namespace {
 
         int queryRenderSettingsMatch (
-                redshift::scenefile::Scene const &scene,
+                redshift_file::Scene const &scene,
                 std::string const & str
         ) {
-                using namespace redshift::scenefile;
+                using namespace redshift_file;
                 using namespace std;
 
                 int index = -1;
@@ -399,8 +399,8 @@ namespace {
                 }
                 return index;
         }
-        void queryRenderSettings (redshift::scenefile::Scene &scene, const Options & options) {
-                using namespace redshift::scenefile;
+        void queryRenderSettings (redshift_file::Scene &scene, const Options & options) {
+                using namespace redshift_file;
                 using namespace std;
                 if (scene.renderSettingsCount()>1) {
                         int index = -1;
@@ -462,10 +462,10 @@ namespace {
 
         // Stupid code dup from above.
         int queryCameraMatch (
-                redshift::scenefile::Scene const &scene,
+                redshift_file::Scene const &scene,
                 std::string const & str
         ) {
-                using namespace redshift::scenefile;
+                using namespace redshift_file;
                 using namespace std;
                 int index = -1;
 
@@ -496,8 +496,8 @@ namespace {
                 }
                 return index;
         }
-        void queryCamera (redshift::scenefile::Scene &scene, const Options & options) {
-                using namespace redshift::scenefile;
+        void queryCamera (redshift_file::Scene &scene, const Options & options) {
+                using namespace redshift_file;
                 using namespace std;
                 if (scene.cameraCount()>1) {
                         int index = -1;
@@ -541,7 +541,7 @@ namespace {
 
 
         void renderSdl (
-                redshift::scenefile::Scene const &scened,
+                redshift_file::Scene const &scened,
                 const Options & options
         ) {
                 using namespace redshift;
@@ -612,7 +612,7 @@ namespace {
 
 redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (
-        redshift::scenefile::Scene const &scene,
+        redshift_file::Scene const &scene,
         redshift::shared_ptr<redshift::Film> film,
         int renderSettingsIndex, int cameraIndex
 ) {
@@ -714,7 +714,7 @@ namespace redshift {
 
 void read_and_render (Options const & options) {
         // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
-        using namespace redshift::scenefile;
+        using namespace redshift_file;
         using namespace actuarius;
         using namespace std;
         Scene scene;

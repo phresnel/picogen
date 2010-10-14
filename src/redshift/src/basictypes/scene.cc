@@ -467,7 +467,7 @@ void Scene::renderToFilm(
                 (minY<maxY && maxY<(unsigned int)film->height())
                 ? maxY
                 : film->height();
-//#define NO_OMP_THREADING
+#define NO_OMP_THREADING
 
         // TODO: needs to be tested
         const int

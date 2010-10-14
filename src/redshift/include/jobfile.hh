@@ -143,7 +143,10 @@ namespace redshift{class RenderTarget;}
 
 #include <iostream>
 #include <cstdio>
-namespace redshift { namespace scenefile {
+namespace redshift_file {
+
+        using redshift::shared_ptr;
+        using redshift::real_t;
 
         // Rgb.
         struct WavelengthAmplitudePair {
@@ -177,7 +180,7 @@ namespace redshift { namespace scenefile {
                                 amplitudes.push_back(it->amplitude);
                         }
 
-                        return Color::FromSampled (
+                        return redshift::Color::FromSampled (
                                         &amplitudes[0],
                                         &wavelengths[0],
                                         samples.size());
@@ -197,8 +200,8 @@ namespace redshift { namespace scenefile {
                 Rgb (double r, double g, double b) : r(r), g(g), b(b) {}
                 Rgb () : r(1), g(1), b(1) {}
 
-                redshift::Color toColor (SpectrumKind kind) const {
-                        return Color::FromRGB(r,g,b, kind);
+                redshift::Color toColor (redshift::SpectrumKind kind) const {
+                        return redshift::Color::FromRGB(r,g,b, kind);
                 }
 
                 // Serialization.
@@ -207,80 +210,7 @@ namespace redshift { namespace scenefile {
                         using actuarius::pack;
                         arch & pack(r) & pack(g) & pack(b);
                 }
-        };
-
-        /*struct Color {
-
-                enum Type {
-                        RGB, Spectrum
-                };
-                static const actuarius::Enum<Type> Typenames;
-                Type type;
-
-                Rgb rgb;
-                scenefile::Spectrum spectrum;
-
-                Color () : type(RGB), rgb(0,1,1) {}
-                Color (double r, double g, double b) : type(RGB), rgb(r,g,b) {}
-
-                // to redshift
-                redshift::Color toColor(SpectrumKind kind) const {
-                        switch (type) {
-                        case RGB: return rgb.toColor(kind);
-                        case Spectrum: return spectrum.toColor();
-                        }
-                        throw std::runtime_error("unknown color type in "
-                                "scenefile::Color::toColor()");
-                }
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        switch (type) {
-                        case RGB:
-                                arch & pack(rgb); break;
-                        case Spectrum:
-                                arch & pack(spectrum); break;
-                        }
-                }
-        };
-
-        struct ColorSum {
-                std::vector<Color> colors;
-
-        private:
-                Rgb defaultColor;
-        public:
-
-                ColorSum () {}
-                ColorSum (double r, double g, double b)
-                : defaultColor(r,g,b)
-                {}
-
-                redshift::Color toColor(SpectrumKind kind) const {
-                        typedef std::vector<Color>::const_iterator iterator;
-                        using namespace redshift;
-                        typedef redshift::Color RC;
-
-                        if (colors.size() == 0)
-                                return defaultColor.toColor(kind);
-
-                        RC sum = RC(RC::real_t(0));
-                        for (iterator it=colors.begin(); it != colors.end();
-                             ++it
-                        ) {
-                                sum = sum + it->toColor(kind);
-                        }
-                        return sum;
-                }
-
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack(&Color::type, Color::Typenames, colors);
-                }
-        };*/
+        };        
 
         struct Color {
 
@@ -291,13 +221,13 @@ namespace redshift { namespace scenefile {
                 Type type;
 
                 Rgb rgb;
-                scenefile::Spectrum spectrum;
+                redshift_file::Spectrum spectrum;
 
                 Color () : type(RGB), rgb(0,1,1) {}
                 Color (double r, double g, double b) : type(RGB), rgb(r,g,b) {}
 
                 // to redshift
-                redshift::Color toColor(SpectrumKind kind) const {
+                redshift::Color toColor(redshift::SpectrumKind kind) const {
                         switch (type) {
                         case RGB: return rgb.toColor(kind);
                         case Spectrum: return spectrum.toColor();
@@ -563,7 +493,7 @@ namespace redshift { namespace scenefile {
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
 
-                inline shared_ptr<Primitive> toPrimitive () const {
+                inline shared_ptr<redshift::Primitive> toPrimitive () const {
                         switch (type) {
                         case lazy_quadtree: return lazyQuadtreeParams.toPrimitive();
                         case water_plane: return waterPlaneParams.toPrimitive();
@@ -579,11 +509,11 @@ namespace redshift { namespace scenefile {
                         throw std::exception();
                 }
 
-                inline shared_ptr<BoundPrimitive> toBoundPrimitive () const {
+                inline shared_ptr<redshift::BoundPrimitive> toBoundPrimitive () const {
                         switch (type) {
-                        case lazy_quadtree: return shared_ptr<BoundPrimitive>();
-                        case water_plane: return shared_ptr<BoundPrimitive>();
-                        case horizon_plane: return shared_ptr<BoundPrimitive>();
+                        case lazy_quadtree: return shared_ptr<redshift::BoundPrimitive>();
+                        case water_plane: return shared_ptr<redshift::BoundPrimitive>();
+                        case horizon_plane: return shared_ptr<redshift::BoundPrimitive>();
                         case closed_sphere: return closedSphereParams.toBoundPrimitive();
                         case triangle: return triangleParams.toBoundPrimitive();
                         case bvh: return bvhParams.toBoundPrimitive();
@@ -699,7 +629,7 @@ namespace redshift { namespace scenefile {
                         , material(0.7,0.7,0.7)
                         {}
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
@@ -720,7 +650,7 @@ namespace redshift { namespace scenefile {
                                                 + errors.str()
                                         );
                                 }
-                                return shared_ptr<Primitive>(new LazyQuadtree(
+                                return shared_ptr<redshift::Primitive>(new LazyQuadtree(
                                         heightFunction,
                                         size,
                                         maxRecursion,
@@ -748,7 +678,7 @@ namespace redshift { namespace scenefile {
                         , material(1,1,1)
                         {}
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
@@ -756,7 +686,7 @@ namespace redshift { namespace scenefile {
                                         shared_ptr<redshift::HeightFunction> (
                                                 new ::redshift::QuatschHeightFunction(code)
                                         );
-                                return shared_ptr<Primitive>(new WaterPlane(
+                                return shared_ptr<redshift::Primitive>(new WaterPlane(
                                         height,
                                         heightFunction,
                                         material.color.toColor(ReflectanceSpectrum)
@@ -772,11 +702,11 @@ namespace redshift { namespace scenefile {
                         , material(1,1,1)
                         {}
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
-                                return shared_ptr<Primitive>(new HorizonPlane(
+                                return shared_ptr<redshift::Primitive>(new HorizonPlane(
                                         height,
                                         material.color.toColor(ReflectanceSpectrum)
                                 ));
@@ -794,17 +724,17 @@ namespace redshift { namespace scenefile {
                         , material(1,1,1)
                         {}
 
-                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
-                                return shared_ptr<BoundPrimitive>(new ClosedSphere(
+                                return shared_ptr<redshift::BoundPrimitive>(new ClosedSphere(
                                         redshift::Point(center.x, center.y, center.z),
                                         radius
                                 ));
                         }
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 return toBoundPrimitive();
                         }
                 };
@@ -812,11 +742,11 @@ namespace redshift { namespace scenefile {
                 struct TriangleParams {
                         Vertex A, B, C;
 
-                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
-                                return shared_ptr<BoundPrimitive>(new Triangle(
+                                return shared_ptr<redshift::BoundPrimitive>(new Triangle(
                                         Triangle::Vertex (A.position,
                                                           Triangle::TextureCoordinates(0,0)),
                                         Triangle::Vertex (B.position,
@@ -835,7 +765,7 @@ namespace redshift { namespace scenefile {
                                 ));
                         }
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 return toBoundPrimitive();
                         }
                 };
@@ -846,16 +776,16 @@ namespace redshift { namespace scenefile {
                         unsigned int level;
                         unsigned int slices;
 
-                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
-                                return shared_ptr<BoundPrimitive>(new LSystemTree(
+                                return shared_ptr<redshift::BoundPrimitive>(new LSystemTree(
                                         code.c_str(), level, slices
                                 ));
                         }
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 return toBoundPrimitive();
                         }
                 };
@@ -863,17 +793,17 @@ namespace redshift { namespace scenefile {
                 struct BvhParams {
                         std::vector<Object> objects;
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 return toBoundPrimitive();
                         }
-                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
                                 typedef std::vector<Object>::const_iterator I;
 
                                 primitive::BvhBuilder builder;
                                 for (I it = objects.begin(); it != objects.end(); ++it) {
-                                        shared_ptr<BoundPrimitive> bp = it->toBoundPrimitive();
+                                        shared_ptr<redshift::BoundPrimitive> bp = it->toBoundPrimitive();
                                         if (bp.get()) {
                                                 builder.add (bp);
                                         } else {
@@ -889,10 +819,10 @@ namespace redshift { namespace scenefile {
                 struct TriangleBvhParams {
                         std::vector<Object> objects;
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 return toBoundPrimitive();
                         }
-                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
                                 typedef std::vector<Object>::const_iterator I;
@@ -932,29 +862,29 @@ namespace redshift { namespace scenefile {
                         std::vector<Object> objects;
                         TransformList transforms;
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 if (warnings())
-                                        return shared_ptr<Primitive>();
+                                        return shared_ptr<redshift::Primitive>();
 
-                                return shared_ptr<Primitive>(new primitive::Instance(
+                                return shared_ptr<redshift::Primitive>(new redshift::primitive::Instance(
                                         transforms.toRedshiftTransform(),
                                         objects[0].toPrimitive()
                                 ));
                         }
 
-                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 if (warnings())
-                                        return shared_ptr<BoundPrimitive>();
+                                        return shared_ptr<redshift::BoundPrimitive>();
 
-                                shared_ptr<BoundPrimitive> bp = objects[0].toBoundPrimitive();
+                                shared_ptr<redshift::BoundPrimitive> bp = objects[0].toBoundPrimitive();
 
                                 if (!bp) {
                                         std::cerr << "warning: Primitive is not a BoundPrimitive: '"
                                                   << Typenames[objects[0].type] << "' in InstanceParams::toBoundPrimitive()\n";
-                                        return shared_ptr<BoundPrimitive>();
+                                        return shared_ptr<redshift::BoundPrimitive>();
                                 }
 
-                                return shared_ptr<BoundPrimitive>(new primitive::BoundInstance(
+                                return shared_ptr<redshift::BoundPrimitive>(new redshift::primitive::BoundInstance(
                                         transforms.toRedshiftTransform(),
                                         bp
                                 ));
@@ -984,10 +914,10 @@ namespace redshift { namespace scenefile {
                         , targetCount(10000)
                         {}
 
-                        shared_ptr<Primitive> toPrimitive() const {
+                        shared_ptr<redshift::Primitive> toPrimitive() const {
                                 return toBoundPrimitive();
                         }
-                        shared_ptr<BoundPrimitive> toBoundPrimitive() const {
+                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
 
@@ -1023,7 +953,7 @@ namespace redshift { namespace scenefile {
                                         );
                                 }
 
-                                return shared_ptr<BoundPrimitive>(new primitive::Forest(
+                                return shared_ptr<redshift::BoundPrimitive>(new primitive::Forest(
                                         heightFunction,
                                         distFunction,
                                         targetCount
@@ -1069,19 +999,19 @@ namespace redshift { namespace scenefile {
                         typedef shared_ptr<redshift::Integrator> rett;
                         switch (type) {
                         case whitted_ambient:
-                                return rett(new RedshiftIntegrator(numAmbientSamples));
+                                return rett(new redshift::RedshiftIntegrator(numAmbientSamples));
                         case whitted:
-                                return rett(new WhittedIntegrator());
+                                return rett(new redshift::WhittedIntegrator());
                         case path:
-                                return rett(new PathIntegrator());
+                                return rett(new redshift::PathIntegrator());
                         case none:
-                                return rett(new NullIntegrator());
+                                return rett(new redshift::NullIntegrator());
                         case debug_distance:
-                                return rett(new VisualizeDistance());
+                                return rett(new redshift::VisualizeDistance());
                         case debug_normals:
-                                return rett(new ShowSurfaceNormals());
+                                return rett(new redshift::ShowSurfaceNormals());
                         };
-                        return shared_ptr<Integrator>();
+                        return shared_ptr<redshift::Integrator>();
                 }
 
                 // Serialization.
@@ -1115,20 +1045,22 @@ namespace redshift { namespace scenefile {
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
 
-                shared_ptr<VolumeRegion> toVolume () const {
+                shared_ptr<redshift::VolumeRegion> toVolume () const {
                         switch (type) {
                         case homogeneous:
-                                return shared_ptr<VolumeRegion> (new volume::Homogeneous(
-                                        sigma_a.toColor(IlluminantSpectrum),
-                                        sigma_s.toColor(IlluminantSpectrum),
-                                        Lve.toColor(IlluminantSpectrum),
+                                return shared_ptr<redshift::VolumeRegion> (
+                                   new redshift::volume::Homogeneous(
+                                        sigma_a.toColor(redshift::IlluminantSpectrum),
+                                        sigma_s.toColor(redshift::IlluminantSpectrum),
+                                        Lve.toColor(redshift::IlluminantSpectrum),
                                         hg
                                 ));
                         case exponential:
-                                return shared_ptr<VolumeRegion> (new volume::Exponential(
-                                        sigma_a.toColor(IlluminantSpectrum),
-                                        sigma_s.toColor(IlluminantSpectrum),
-                                        Lve.toColor(IlluminantSpectrum),
+                                return shared_ptr<redshift::VolumeRegion> (
+                                   new redshift::volume::Exponential(
+                                        sigma_a.toColor(redshift::IlluminantSpectrum),
+                                        sigma_s.toColor(redshift::IlluminantSpectrum),
+                                        Lve.toColor(redshift::IlluminantSpectrum),
                                         hg,
                                         baseFactor,
                                         exponentFactor,
@@ -1137,7 +1069,7 @@ namespace redshift { namespace scenefile {
                                         epsilon
                                 ));
                         };
-                        return shared_ptr<VolumeRegion>();
+                        return shared_ptr<redshift::VolumeRegion>();
                 }
 
                 Color sigma_a, sigma_s, Lve;
@@ -1211,15 +1143,15 @@ namespace redshift { namespace scenefile {
                         switch (type) {
                         case emission:
                                 return shared_ptr<redshift::VolumeIntegrator>(
-                                        new Emission(stepSize, cutoffDistance)
+                                        new redshift::Emission(stepSize, cutoffDistance)
                                 );
                         case single:
                                 return shared_ptr<redshift::VolumeIntegrator>(
-                                        new SingleScattering(stepSize, cutoffDistance)
+                                        new redshift::SingleScattering(stepSize, cutoffDistance)
                                 );
                         case none:
                                 return shared_ptr<redshift::VolumeIntegrator>(
-                                        new NullIntegrator()
+                                        new redshift::NullIntegrator()
                                 );
                         };
                         return shared_ptr<redshift::VolumeIntegrator>();
@@ -1448,38 +1380,38 @@ namespace redshift { namespace scenefile {
 
                         switch (type) {
                         case pinhole:
-                                return shared_ptr<Camera> (new camera::Pinhole(
+                                return shared_ptr<redshift::Camera> (new redshift::camera::Pinhole(
                                         width, height, pinholeParams.front,
                                         transforms.toRedshiftTransform()));
 
                         case cylindrical:
-                                return shared_ptr<Camera> (new camera::Cylindrical(
+                                return shared_ptr<redshift::Camera> (new redshift::camera::Cylindrical(
                                         width, height, cylindricalParams.front,
                                         transforms.toRedshiftTransform()));
 
                         case cubemap_left:
-                                return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        width, height, camera::CubeMapFace::left,
+                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                                        width, height, redshift::camera::CubeMapFace::left,
                                         transforms.toRedshiftTransform()));
                         case cubemap_right:
-                                return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        width, height, camera::CubeMapFace::right,
+                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                                        width, height, redshift::camera::CubeMapFace::right,
                                         transforms.toRedshiftTransform()));
                         case cubemap_bottom:
-                                return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        width, height, camera::CubeMapFace::bottom,
+                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                                        width, height, redshift::camera::CubeMapFace::bottom,
                                         transforms.toRedshiftTransform()));
                         case cubemap_top:
-                                return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        width, height, camera::CubeMapFace::top,
+                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                                        width, height, redshift::camera::CubeMapFace::top,
                                         transforms.toRedshiftTransform()));
                         case cubemap_front:
-                                return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        width, height, camera::CubeMapFace::front,
+                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                                        width, height, redshift::camera::CubeMapFace::front,
                                         transforms.toRedshiftTransform()));
                         case cubemap_back:
-                                return shared_ptr<Camera> (new camera::CubeMapFace(
-                                        width, height, camera::CubeMapFace::back,
+                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                                        width, height, redshift::camera::CubeMapFace::back,
                                         transforms.toRedshiftTransform()));
 
                         default:
@@ -1606,12 +1538,12 @@ namespace redshift { namespace scenefile {
                         arch & pack ("film-settings", filmSettings_);
                 }
         };
-} }
+}
 
 
 redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (
-        redshift::scenefile::Scene const &scene,
+        redshift_file::Scene const &scene,
         redshift::shared_ptr<redshift::Film> renderBuffer,
         int renderSettingsIndex, int cameraIndex
 );
