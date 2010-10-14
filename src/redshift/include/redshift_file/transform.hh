@@ -25,6 +25,9 @@
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
+#include "redshift/include/geometry.hh"
+#include "redshift/include/constants.hh"
+
 namespace redshift_file {
         struct Transform {
                 enum Type {

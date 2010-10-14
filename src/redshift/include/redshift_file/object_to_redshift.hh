@@ -32,6 +32,7 @@ namespace redshift_file {
         class Object;
 }
 
+#include "redshift/include/smart_ptr.hh"
 // Historically, redshift_file::Object had two functions "toPrimitive" and
 // "toBoundPrimitive", but for ease of use I wanted to name all conversion
 // functions "toRedshift()". The following closure enables this.
@@ -39,7 +40,7 @@ namespace redshift_file { namespace detail {
 struct RedshiftPrimitiveOrBoundPrimitive {
         operator redshift::shared_ptr<redshift::Primitive> () const;
         operator redshift::shared_ptr<redshift::BoundPrimitive> () const;
-        Object const &object;
+        Object const & object;
         
         RedshiftPrimitiveOrBoundPrimitive (Object const &object)
         : object(object)
@@ -47,7 +48,6 @@ struct RedshiftPrimitiveOrBoundPrimitive {
 };
 } }
 
-#include "redshift/include/smart_ptr.hh"
 namespace redshift_file {
         detail::RedshiftPrimitiveOrBoundPrimitive toRedshift (Object const &ob);
 }

@@ -362,46 +362,6 @@ redshift::Color toRedshift (Color const &color, redshift::SpectrumKind kind) {
 }
 
 
-
-
-
-
-detail::RedshiftPrimitiveOrBoundPrimitive toRedshift (Object const &ob) {
-        return detail::RedshiftPrimitiveOrBoundPrimitive(ob);
-}
-
-detail::RedshiftPrimitiveOrBoundPrimitive::operator redshift::shared_ptr<redshift::Primitive> () const {
-        switch (object.type) {
-        case Object::lazy_quadtree: return object.lazyQuadtreeParams.toPrimitive();
-        case Object::water_plane: return object.waterPlaneParams.toPrimitive();
-        case Object::horizon_plane: return object.horizonPlaneParams.toPrimitive();
-        case Object::closed_sphere: return object.closedSphereParams.toPrimitive();
-        case Object::triangle: return object.triangleParams.toPrimitive();
-        case Object::bvh: return object.bvhParams.toPrimitive();
-        case Object::triangle_bvh: return object.triangleBvhParams.toPrimitive();
-        case Object::lsystemtree: return object.lsystemTreeParams.toPrimitive();
-        case Object::instance: return object.instanceParams.toPrimitive();
-        case Object::forest: return object.forestParams.toPrimitive();
-        };
-        throw std::runtime_error("RedshiftPrimitiveOrBoundPrimitive::operator shared_ptr<Primitive> (), unknown primitive type");
-}
-
-detail::RedshiftPrimitiveOrBoundPrimitive::operator redshift::shared_ptr<redshift::BoundPrimitive> () const {
-        switch (object.type) {
-        case Object::lazy_quadtree: return redshift::shared_ptr<redshift::BoundPrimitive>();
-        case Object::water_plane: return redshift::shared_ptr<redshift::BoundPrimitive>();
-        case Object::horizon_plane: return redshift::shared_ptr<redshift::BoundPrimitive>();
-        case Object::closed_sphere: return object.closedSphereParams.toBoundPrimitive();
-        case Object::triangle: return object.triangleParams.toBoundPrimitive();
-        case Object::bvh: return object.bvhParams.toBoundPrimitive();
-        case Object::triangle_bvh: return object.triangleBvhParams.toBoundPrimitive();
-        case Object::lsystemtree: return object.lsystemTreeParams.toBoundPrimitive();
-        case Object::instance: return object.instanceParams.toBoundPrimitive();
-        case Object::forest: return object.forestParams.toBoundPrimitive();
-        };
-        throw std::runtime_error("RedshiftPrimitiveOrBoundPrimitive::operator shared_ptr<BoundPrimitive> (), unknown primitive type");
-}
-
-       
+      
 
 }

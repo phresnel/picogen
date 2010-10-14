@@ -21,42 +21,110 @@
 #ifndef OBJECT_HH_20101013
 #define OBJECT_HH_20101013
 
-#include "primitives/primitive.hh"
-#include "primitives/instance.hh"
-#include "primitives/boundprimitive.hh"
-#include "primitives/boundinstance.hh"
-#include "primitives/closedsphere.hh"
-#include "primitives/lazyquadtree.hh"
-#include "primitives/horizonplane.hh"
-#include "primitives/waterplane.hh"
-#include "primitives/list.hh"
-#include "primitives/triangle.hh"
-#include "primitives/trianglebvh.hh"
-#include "primitives/lsystemtree.hh"
-#include "primitives/forest.hh"
-
-#include "material/matte.hh"
-#include "material/leaf0.hh"
-#include "material/brdftobtdf.hh"
-#include "texture/constant.hh"
-#include "texture/image.hh"
-
-#include "../include/basictypes/height-function.hh"
-#include "../include/basictypes/quatsch-height-function.hh"
-
 #include "material.hh"
 #include "vertex.hh"
 #include "transform.hh"
-#include "basictypes/rgb.hh"
-
-#include "color_to_redshift.hh"
 
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
-#include "object_to_redshift.hh"
-
 namespace redshift_file {
+
+        class Object;
+
+        struct LazyQuadtreeParams {
+                std::string code;
+                double size;
+                unsigned int maxRecursion;
+                double lodFactor;
+                Material material;
+
+                LazyQuadtreeParams ()
+                : code(
+                        "(* 1000\n"
+                        "   ([LibnoiseRidgedMulti\n"
+                        "     frequency{0.0001}\n"
+                        "     octave-count{12}\n"
+                        "    ] x y)\n"
+                        ")\n"
+                )
+                , size(50000)
+                , maxRecursion(7)
+                , lodFactor(0.00125)
+                , material(0.7,0.7,0.7)
+                {}                       
+        };
+        struct WaterPlaneParams {
+                std::string code;
+                double height;
+                Material material;
+
+                WaterPlaneParams ()
+                : code("(* 0.1 \n"
+                       "   (- 1 \n"
+                       "      ([LibnoiseBillow\n"
+                       "        frequency{0.1}\n"
+                       "        octave-count{10}\n"
+                       "        persistence{0.5}\n"
+                       "       ] x y)"
+                       "   )"
+                       ")")
+                , height(0)
+                , material(1,1,1)
+                {}                        
+        };
+        struct HorizonPlaneParams {
+                double height;
+                Material material;
+
+                HorizonPlaneParams ()
+                : height(0)
+                , material(1,1,1)
+                {}
+        };
+        struct ClosedSphereParams {
+                Point center;
+                double radius;
+                Material material;
+
+                ClosedSphereParams ()
+                : center(0,0,0)
+                , radius(1)
+                , material(1,1,1)
+                {}
+        };
+        struct TriangleParams {
+                Vertex A, B, C;                        
+        };
+        struct LSystemTreeParams {
+                std::string code;
+                unsigned int level;
+                unsigned int slices;
+        };        
+        struct BvhParams {
+                std::vector<Object> objects;                        
+        };
+        struct TriangleBvhParams {
+                std::vector<Object> objects;                        
+        };
+        struct InstanceParams {
+                std::vector<Object> objects;
+                TransformList transforms;                        
+                bool warnings() const;
+        };
+        struct ForestParams {
+                std::string heightCode, distributionCode;
+                unsigned int targetCount;
+
+                ForestParams()
+                : heightCode("0")
+                , distributionCode("1")
+                , targetCount(10000)
+                {}                        
+        };
+
+
+
 
         struct Object {
                 enum Type {
@@ -72,388 +140,11 @@ namespace redshift_file {
                         forest
                 };
                 static const actuarius::Enum<Type> Typenames;
-                Type type;
-
-                
+                Type type;                
 
                 // Serialization.
                 template<typename Arch>
                 void serialize (Arch &arch);
-        private:
-                struct LazyQuadtreeParams {
-                        std::string code;
-                        double size;
-                        unsigned int maxRecursion;
-                        double lodFactor;
-                        Material material;
-
-                        LazyQuadtreeParams ()
-                        : code(
-                                "(* 1000\n"
-                                "   ([LibnoiseRidgedMulti\n"
-                                "     frequency{0.0001}\n"
-                                "     octave-count{12}\n"
-                                "    ] x y)\n"
-                                ")\n"
-                        )
-                        , size(50000)
-                        , maxRecursion(7)
-                        , lodFactor(0.00125)
-                        , material(0.7,0.7,0.7)
-                        {}
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-
-                                shared_ptr<redshift::HeightFunction> heightFunction;
-
-                                std::stringstream errors;
-                                /*
-                                redshift::primitive::LazyQuadtree::LazyQuadtree(boost::shared_ptr<redshift::HeightFunction>&, 
-                                                                                double, 
-                                                                                const unsigned int&, 
-                                                                                double, 
-                                                                                redshift::Color)
-                                
-                                redshift::primitive::LazyQuadtree::LazyQuadtree(boost::shared_ptr<const redshift::HeightFunction>,
-                                                                                redshift::real_t,
-                                                                                unsigned int,
-                                                                                redshift::real_t,
-                                                                                int)
-                                */
-
-                                try {
-                                        heightFunction =
-                                         shared_ptr<redshift::HeightFunction> (
-                                                new ::redshift::QuatschHeightFunction(code, errors)
-                                        );
-                                } catch (quatsch::general_exception const &ex) {
-                                        // we are anyways replacing quatsch, so let's
-                                        // do it kissy
-                                        throw quatsch::general_exception(
-                                                ex.getMessage() + ":\n\n"
-                                                + errors.str()
-                                        );
-                                }
-                                return shared_ptr<redshift::Primitive>(new LazyQuadtree(
-                                        heightFunction,
-                                        (redshift::real_t)size,
-                                        maxRecursion,
-                                        (redshift::real_t)lodFactor,
-                                        toRedshift(material.color, ReflectanceSpectrum)
-                                ));
-                        }
-                };
-                struct WaterPlaneParams {
-                        std::string code;
-                        double height;
-                        Material material;
-
-                        WaterPlaneParams ()
-                        : code("(* 0.1 \n"
-                               "   (- 1 \n"
-                               "      ([LibnoiseBillow\n"
-                               "        frequency{0.1}\n"
-                               "        octave-count{10}\n"
-                               "        persistence{0.5}\n"
-                               "       ] x y)"
-                               "   )"
-                               ")")
-                        , height(0)
-                        , material(1,1,1)
-                        {}
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-
-                                shared_ptr<redshift::HeightFunction> heightFunction =
-                                        shared_ptr<redshift::HeightFunction> (
-                                                new ::redshift::QuatschHeightFunction(code)
-                                        );
-                                return shared_ptr<redshift::Primitive>(new WaterPlane(
-                                        height,
-                                        heightFunction,
-                                        toRedshift (material.color, ReflectanceSpectrum)
-                                ));
-                        }
-                };
-                struct HorizonPlaneParams {
-                        double height;
-                        Material material;
-
-                        HorizonPlaneParams ()
-                        : height(0)
-                        , material(1,1,1)
-                        {}
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-
-                                return shared_ptr<redshift::Primitive>(new HorizonPlane(
-                                        height,
-                                        toRedshift (material.color, ReflectanceSpectrum)
-                                ));
-                        }
-                };
-
-                struct ClosedSphereParams {
-                        Point center;
-                        double radius;
-                        Material material;
-
-                        ClosedSphereParams ()
-                        : center(0,0,0)
-                        , radius(1)
-                        , material(1,1,1)
-                        {}
-
-                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-
-                                return shared_ptr<redshift::BoundPrimitive>(new ClosedSphere(
-                                        redshift::Point(center.x, center.y, center.z),
-                                        radius
-                                ));
-                        }
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                return toBoundPrimitive();
-                        }
-                };
-
-                struct TriangleParams {
-                        Vertex A, B, C;
-
-                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-                                using redshift::BoundPrimitive;
-                                
-                                typedef shared_ptr<redshift::BoundPrimitive> foo;
-                                
-                                redshift::Material *material = new material::Matte(
-                                        shared_ptr<ColorTexture>(
-                                                new texture::ConstantColor(redshift::Color::FromRGB(
-                                                        0.25, 0.25, 1., ReflectanceSpectrum))
-                                        ),
-                                        shared_ptr<ScalarTexture>(
-                                                new texture::ConstantScalar(0)
-                                        )
-                                );
-                                
-                                Triangle* triangle = new Triangle(
-                                        Triangle::Vertex (A.position,
-                                                          Triangle::TextureCoordinates(0,0)),
-                                        Triangle::Vertex (B.position,
-                                                          Triangle::TextureCoordinates(1,0)),
-                                        Triangle::Vertex (C.position,
-                                                          Triangle::TextureCoordinates(0,1)),
-                                        shared_ptr<redshift::Material>(material)
-                                );
-
-                                return shared_ptr<redshift::BoundPrimitive>(triangle);
-                        }
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                return toBoundPrimitive();
-                        }
-                };
-
-
-                struct LSystemTreeParams {
-                        std::string code;
-                        unsigned int level;
-                        unsigned int slices;
-
-                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-
-                                return shared_ptr<redshift::BoundPrimitive>(new LSystemTree(
-                                        code.c_str(), level, slices
-                                ));
-                        }
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                return toBoundPrimitive();
-                        }
-                };
-
-                struct BvhParams {
-                        std::vector<Object> objects;
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                return toBoundPrimitive();
-                        }
-                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-                                typedef std::vector<Object>::const_iterator I;
-
-                                primitive::BvhBuilder builder;
-                                for (I it = objects.begin(); it != objects.end(); ++it) {
-                                        shared_ptr<redshift::BoundPrimitive> bp = toRedshift (*it);
-                                        if (bp.get()) {
-                                                builder.add (bp);
-                                        } else {
-                                                std::cerr << "warning: unsupported primitive within Bvh: '"
-                                                        << Typenames[it->type] << "'\n";
-                                        }
-                                }
-                                return builder.toBvh();
-                        }
-                };
-
-
-                struct TriangleBvhParams {
-                        std::vector<Object> objects;
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                return toBoundPrimitive();
-                        }
-                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-                                typedef std::vector<Object>::const_iterator I;
-
-                                primitive::TriangleBvhBuilder builder;
-                                for (I it = objects.begin(); it != objects.end(); ++it) {
-                                        if (it->type != triangle) {
-                                                std::cerr << "warning: only triangles are allowed "
-                                                        "within a triangle-bvh, but found a '"
-                                                        << Typenames[it->type] << "'\n";
-                                                continue;
-                                        }
-                                        builder.add(Triangle(
-                                                Triangle::Vertex (it->triangleParams.A.position,
-                                                                  Triangle::TextureCoordinates(0,0)),
-                                                Triangle::Vertex (it->triangleParams.B.position,
-                                                                  Triangle::TextureCoordinates(1,0)),
-                                                Triangle::Vertex (it->triangleParams.C.position,
-                                                                  Triangle::TextureCoordinates(0,1)),
-                                                shared_ptr<redshift::Material>(new material::Matte(
-                                                        shared_ptr<ColorTexture>(
-                                                                new texture::ConstantColor(redshift::Color::FromRGB(
-                                                                        0.25, 0.25, 1., ReflectanceSpectrum))
-                                                        ),
-                                                        shared_ptr<ScalarTexture>(
-                                                                new texture::ConstantScalar(0)
-                                                        )
-                                                ))
-                                        ));
-                                }
-                                return builder.toTriangleBvh();
-                        }
-                };
-
-
-                struct InstanceParams {
-                        std::vector<Object> objects;
-                        TransformList transforms;
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                if (warnings())
-                                        return shared_ptr<redshift::Primitive>();
-
-                                return shared_ptr<redshift::Primitive>(new redshift::primitive::Instance(
-                                        transforms.toRedshiftTransform(),
-                                        toRedshift (objects[0])
-                                ));
-                        }
-
-                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
-                                if (warnings())
-                                        return shared_ptr<redshift::BoundPrimitive>();
-
-                                shared_ptr<redshift::BoundPrimitive> bp = 
-                                        toRedshift (objects[0]);
-
-                                if (!bp) {
-                                        std::cerr << "warning: Primitive is not a BoundPrimitive: '"
-                                                  << Typenames[objects[0].type] << "' in InstanceParams::toBoundPrimitive()\n";
-                                        return shared_ptr<redshift::BoundPrimitive>();
-                                }
-
-                                return shared_ptr<redshift::BoundPrimitive>(new redshift::primitive::BoundInstance(
-                                        transforms.toRedshiftTransform(),
-                                        bp
-                                ));
-                        }
-                private:
-                        bool warnings() const {
-                                if (objects.size() > 1) {
-                                        std::cerr << "warning: multiple objects in instance, "
-                                                "but only one object per instance is allowed\n";
-                                }
-                                if (objects.size() == 0) {
-                                        std::cerr << "warning: zero objects in instance, "
-                                                "but an object is mandatory\n";
-                                        return true;
-                                }
-                                return false;
-                        }
-                };
-
-                struct ForestParams {
-                        std::string heightCode, distributionCode;
-                        unsigned int targetCount;
-
-                        ForestParams()
-                        : heightCode("0")
-                        , distributionCode("1")
-                        , targetCount(10000)
-                        {}
-
-                        shared_ptr<redshift::Primitive> toPrimitive() const {
-                                return toBoundPrimitive();
-                        }
-                        shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
-                                using namespace redshift;
-                                using namespace redshift::primitive;
-
-                                shared_ptr<redshift::HeightFunction> heightFunction;
-                                shared_ptr<redshift::DistributionFunction> distFunction;
-
-                                std::stringstream errors;
-
-                                try {
-                                        heightFunction =
-                                         shared_ptr<redshift::HeightFunction> (
-                                                new ::redshift::QuatschHeightFunction(heightCode, errors)
-                                        );
-                                } catch (quatsch::general_exception const &ex) {
-                                        // we are anyways replacing quatsch, so let's
-                                        // do it kissy
-                                        throw quatsch::general_exception(
-                                                ex.getMessage() + ":\n\n"
-                                                + errors.str()
-                                        );
-                                }
-                                try {
-                                        distFunction =
-                                         shared_ptr<redshift::DistributionFunction> (
-                                                new ::redshift::QuatschDistributionFunction(distributionCode, errors)
-                                        );
-                                } catch (quatsch::general_exception const &ex) {
-                                        // we are anyways replacing quatsch, so let's
-                                        // do it kissy
-                                        throw quatsch::general_exception(
-                                                ex.getMessage() + ":\n\n"
-                                                + errors.str()
-                                        );
-                                }
-
-                                return shared_ptr<redshift::BoundPrimitive>(new primitive::Forest(
-                                        heightFunction,
-                                        distFunction,
-                                        targetCount
-                                ));
-                        }
-                };
         public:
                 LazyQuadtreeParams lazyQuadtreeParams;
                 WaterPlaneParams waterPlaneParams;

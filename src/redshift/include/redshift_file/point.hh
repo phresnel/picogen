@@ -21,6 +21,8 @@
 #ifndef POINT_HH_20101013
 #define POINT_HH_20101013
 
+#include "redshift/include/geometry.hh"
+
 namespace redshift_file {
         struct Point {
                 double x,y,z;
