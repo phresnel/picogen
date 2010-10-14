@@ -18,22 +18,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef POINT_HH_20101013
-#define POINT_HH_20101013
+#ifndef TO_REDSHIFT_HH_20101014
+#define TO_REDSHIFT_HH_20101014
 
-namespace redshift_file {
-        struct Point {
-                double x,y,z;
-
-                Point (double x, double y, double z) : x(x), y(y), z(z) {}
-                Point () : x(0), y(0), z(0) {}
-
-                operator redshift::Point () const {
-                        return redshift::Point(x,y,z);
-                }
-
-                template<typename Arch> void serialize (Arch &arch);
-        };
+// redshift fwd+Co.
+namespace redshift {
+        class Sky;
+        class Camera;
 }
 
-#endif // POINT_HH_20101013
+
+// redshift_file fwd+Co.
+namespace redshift_file {
+        class Background;
+        class Camera;
+}
+#include "color_to_redshift.hh"
+
+#include "redshift/include/smart_ptr.hh"
+
+namespace redshift_file {
+        redshift::shared_ptr<redshift::Sky>    toRedshift (Background const &);
+        redshift::shared_ptr<redshift::Camera> toRedshift (Camera const &,
+                                                           unsigned int width, 
+                                                           unsigned int height);        
+}
+
+#endif // TO_REDSHIFT_HH_20101014

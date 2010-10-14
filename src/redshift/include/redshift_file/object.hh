@@ -49,6 +49,8 @@
 #include "transform.hh"
 #include "basictypes/rgb.hh"
 
+#include "color_to_redshift.hh"
+
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
@@ -167,7 +169,7 @@ namespace redshift_file {
                                         (redshift::real_t)size,
                                         maxRecursion,
                                         (redshift::real_t)lodFactor,
-                                        material.color.toColor(ReflectanceSpectrum)
+                                        toRedshift(material.color, ReflectanceSpectrum)
                                 ));
                         }
                 };
@@ -201,7 +203,7 @@ namespace redshift_file {
                                 return shared_ptr<redshift::Primitive>(new WaterPlane(
                                         height,
                                         heightFunction,
-                                        material.color.toColor(ReflectanceSpectrum)
+                                        toRedshift (material.color, ReflectanceSpectrum)
                                 ));
                         }
                 };
@@ -220,7 +222,7 @@ namespace redshift_file {
 
                                 return shared_ptr<redshift::Primitive>(new HorizonPlane(
                                         height,
-                                        material.color.toColor(ReflectanceSpectrum)
+                                        toRedshift (material.color, ReflectanceSpectrum)
                                 ));
                         }
                 };

@@ -36,29 +36,6 @@ namespace redshift_file {
 
         struct Spectrum {
                 std::vector<WavelengthAmplitudePair> samples;
-
-                redshift::Color toColor() const {
-                        typedef redshift::Color::real_t real_t;
-                        typedef std::vector<WavelengthAmplitudePair>::
-                                const_iterator iterator;
-
-                        std::vector<real_t> wavelengths;
-                        std::vector<real_t> amplitudes;
-
-                        for (iterator it = samples.begin();
-                             it != samples.end();
-                             ++it
-                        ) {
-                                wavelengths.push_back(it->wavelength);
-                                amplitudes.push_back(it->amplitude);
-                        }
-
-                        return redshift::Color::FromSampled (
-                                        &amplitudes[0],
-                                        &wavelengths[0],
-                                        samples.size());
-                }
-
                 template<typename Arch> void serialize (Arch &arch);
         };
 
@@ -67,10 +44,6 @@ namespace redshift_file {
 
                 Rgb (double r, double g, double b) : r(r), g(g), b(b) {}
                 Rgb () : r(1), g(1), b(1) {}
-
-                redshift::Color toColor (redshift::SpectrumKind kind) const {
-                        return redshift::Color::FromRGB(r,g,b, kind);
-                }
 
                 template<typename Arch> void serialize (Arch &arch);
         };        
@@ -87,17 +60,7 @@ namespace redshift_file {
                 redshift_file::Spectrum spectrum;
 
                 Color () : type(RGB), rgb(0,1,1) {}
-                Color (double r, double g, double b) : type(RGB), rgb(r,g,b) {}
-
-                // to redshift
-                redshift::Color toColor(redshift::SpectrumKind kind) const {
-                        switch (type) {
-                        case RGB: return rgb.toColor(kind);
-                        case Spectrum: return spectrum.toColor();
-                        }
-                        throw std::runtime_error("unknown color type in "
-                                "scenefile::Color::toColor()");
-                }
+                Color (double r, double g, double b) : type(RGB), rgb(r,g,b) {}                
 
                 template<typename Arch> void serialize (Arch &arch);
         };

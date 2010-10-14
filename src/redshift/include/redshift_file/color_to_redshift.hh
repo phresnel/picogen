@@ -18,22 +18,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef POINT_HH_20101013
-#define POINT_HH_20101013
+#ifndef COLOR_TO_REDSHIFT_HH_20101014
+#define COLOR_TO_REDSHIFT_HH_20101014
 
+#include "redshift/include/basictypes/spectrum.hh"
+
+// redshift_file fwd+Co.
 namespace redshift_file {
-        struct Point {
-                double x,y,z;
-
-                Point (double x, double y, double z) : x(x), y(y), z(z) {}
-                Point () : x(0), y(0), z(0) {}
-
-                operator redshift::Point () const {
-                        return redshift::Point(x,y,z);
-                }
-
-                template<typename Arch> void serialize (Arch &arch);
-        };
+        class Spectrum;
+        class Rgb;
+        class Color;
 }
 
-#endif // POINT_HH_20101013
+#include "redshift/include/smart_ptr.hh"
+
+namespace redshift_file {
+        redshift::Color toRedshift (Spectrum const &);
+        redshift::Color toRedshift (Rgb const &, redshift::SpectrumKind kind);
+        redshift::Color toRedshift (Color const &, redshift::SpectrumKind kind);
+}
+
+#endif // COLOR_TO_REDSHIFT_HH_20101014

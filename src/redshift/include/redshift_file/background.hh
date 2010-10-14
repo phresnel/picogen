@@ -21,10 +21,6 @@
 #ifndef BACKGROUND_HH_20101013
 #define BACKGROUND_HH_20101013
 
-#include "backgrounds/pss-adapter.hh"
-#include "backgrounds/pss-adapter.hh"
-#include "backgrounds/preetham-shirley-smits/sunsky.hh"
-
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
@@ -63,43 +59,6 @@ namespace redshift_file {
                 , skyFilter(0.05,0.05,0.05)
                 , atmosphericEffects(true)
                 {}
-
-                shared_ptr<redshift::Sky> toSky() const {
-                        using namespace redshift;
-                        switch (type) {
-                        case pss_sunsky: {
-                        #if 1
-                                shared_ptr<redshift::background::PssSunSky> preetham (
-                                 new background::PssSunSky(
-                                        normalize(Vector(sunDirection.x,sunDirection.y,sunDirection.z)),
-                                        turbidity,
-                                        overcast,
-                                        atmosphericEffects
-                                ));
-                                return shared_ptr<redshift::Sky> (
-                                  new backgrounds::PssAdapter (
-                                        preetham,
-                                        sunSizeFactor, sunBrightnessFactor,
-                                        atmosphereBrightnessFactor, atmosphericFxFactor
-                                ));
-                        #else
-                                shared_ptr<redshift::background::Preetham> preetham (
-                                 new redshift::background::Preetham());
-
-                                preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
-                                preetham->setTurbidity(turbidity);
-                                preetham->setSunColor(Color::FromRGB(sunColor.r,sunColor.g,sunColor.b));
-                                preetham->setColorFilter(Color::FromRGB(skyFilter.r,skyFilter.g,skyFilter.b));
-                                preetham->enableFogHack (false, 0.00025f, 150000);
-                                preetham->invalidate();
-                                return shared_ptr<redshift::Background> (
-                                        new backgrounds::PreethamAdapter (preetham)
-                                );
-                        #endif
-                        } break;
-                        };
-                        return shared_ptr<redshift::Sky>();
-                }
 
                 template<typename Arch>  void serialize (Arch &arch);
         };

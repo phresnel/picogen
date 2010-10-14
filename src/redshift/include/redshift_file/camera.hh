@@ -21,10 +21,8 @@
 #ifndef CAMERA_HH_20101013
 #define CAMERA_HH_20101013
 
+#include <string>
 #include "transform.hh"
-#include "../include/cameras/pinhole.hh"
-#include "../include/cameras/cylindrical.hh"
-#include "../include/cameras/cubemapface.hh"
 
 namespace redshift_file {
         struct Camera {
@@ -61,54 +59,6 @@ namespace redshift_file {
 
                 Camera () : type(pinhole)
                 {}
-
-
-
-                shared_ptr<redshift::Camera> toRedshiftCamera (
-                        unsigned int width, unsigned int height
-                ) const {
-                        using redshift::Camera;
-
-                        switch (type) {
-                        case pinhole:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::Pinhole(
-                                        width, height, pinholeParams.front,
-                                        transforms.toRedshiftTransform()));
-
-                        case cylindrical:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::Cylindrical(
-                                        width, height, cylindricalParams.front,
-                                        transforms.toRedshiftTransform()));
-
-                        case cubemap_left:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
-                                        width, height, redshift::camera::CubeMapFace::left,
-                                        transforms.toRedshiftTransform()));
-                        case cubemap_right:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
-                                        width, height, redshift::camera::CubeMapFace::right,
-                                        transforms.toRedshiftTransform()));
-                        case cubemap_bottom:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
-                                        width, height, redshift::camera::CubeMapFace::bottom,
-                                        transforms.toRedshiftTransform()));
-                        case cubemap_top:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
-                                        width, height, redshift::camera::CubeMapFace::top,
-                                        transforms.toRedshiftTransform()));
-                        case cubemap_front:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
-                                        width, height, redshift::camera::CubeMapFace::front,
-                                        transforms.toRedshiftTransform()));
-                        case cubemap_back:
-                                return shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
-                                        width, height, redshift::camera::CubeMapFace::back,
-                                        transforms.toRedshiftTransform()));
-
-                        default:
-                                throw std::runtime_error("only  pinhole supported");
-                        };
-                }
 
 
                 // Serialization.

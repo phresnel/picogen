@@ -144,6 +144,7 @@ namespace redshift{class RenderTarget;}
 
 #include "../include/auxiliary/filename_extension.hh"
 
+#include "redshift/include/redshift_file/to_redshift.hh"
 
 
 redshift::shared_ptr<redshift::Scene>
@@ -160,11 +161,9 @@ redshift::shared_ptr<redshift::Scene>
 
         shared_ptr<Camera> camera;
         if (scene.cameraCount()) {
-                camera = scene.
-                         camera(cameraIndex).
-                         toRedshiftCamera (
-                                film->width(),
-                                film->height());
+                camera = toRedshift (scene.camera(cameraIndex),
+                                     film->width(),
+                                     film->height());
         } else {
                 camera = shared_ptr<Camera> (new Pinhole(
                         film->width(),
@@ -195,7 +194,7 @@ redshift::shared_ptr<redshift::Scene>
         // TODO: support arbitrary many backgrounds (Starsky!)
         shared_ptr<Sky> sky;
         if (scene.backgroundCount()) {
-                sky = scene.background(0).toSky();
+                sky = toRedshift (scene.background(0));
         } else {
 
                 /*shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
@@ -238,5 +237,125 @@ redshift::shared_ptr<redshift::Scene>
         ));
 }
 
+namespace redshift_file {
+
+redshift::shared_ptr<redshift::Sky> toRedshift (Background const &bg) {
+        using namespace redshift;
+        switch (bg.type) {
+        case redshift_file::Background::pss_sunsky: {
+        #if 1
+                shared_ptr<redshift::background::PssSunSky> preetham (
+                 new background::PssSunSky(
+                        normalize(Vector(bg.sunDirection.x,bg.sunDirection.y,bg.sunDirection.z)),
+                        bg.turbidity,
+                        bg.overcast,
+                        bg.atmosphericEffects
+                ));
+                return redshift::shared_ptr<redshift::Sky> (
+                  new backgrounds::PssAdapter (
+                        preetham,
+                        bg.sunSizeFactor, bg.sunBrightnessFactor,
+                        bg.atmosphereBrightnessFactor, bg.atmosphericFxFactor
+                ));
+        #else
+                shared_ptr<redshift::background::Preetham> preetham (
+                 new redshift::background::Preetham());
+
+                preetham->setSunDirection(Vector(sunDirection.x,sunDirection.y,sunDirection.z));
+                preetham->setTurbidity(turbidity);
+                preetham->setSunColor(Color::FromRGB(sunColor.r,sunColor.g,sunColor.b));
+                preetham->setColorFilter(Color::FromRGB(skyFilter.r,skyFilter.g,skyFilter.b));
+                preetham->enableFogHack (false, 0.00025f, 150000);
+                preetham->invalidate();
+                return shared_ptr<redshift::Background> (
+                        new backgrounds::PreethamAdapter (preetham)
+                );
+        #endif
+        } break;
+        };
+        return shared_ptr<redshift::Sky>();
+}
 
 
+
+redshift::shared_ptr<redshift::Camera> toRedshift (Camera const & camera,
+                                                   unsigned int width, 
+                                                   unsigned int height)
+{
+        switch (camera.type) {
+        case Camera::pinhole:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::Pinhole(
+                        width, height, camera.pinholeParams.front,
+                        camera.transforms.toRedshiftTransform()));
+
+        case Camera::cylindrical:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::Cylindrical(
+                        width, height, camera.cylindricalParams.front,
+                        camera.transforms.toRedshiftTransform()));
+
+        case Camera::cubemap_left:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                        width, height, redshift::camera::CubeMapFace::left,
+                        camera.transforms.toRedshiftTransform()));
+        case Camera::cubemap_right:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                        width, height, redshift::camera::CubeMapFace::right,
+                        camera.transforms.toRedshiftTransform()));
+        case Camera::cubemap_bottom:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                        width, height, redshift::camera::CubeMapFace::bottom,
+                        camera.transforms.toRedshiftTransform()));
+        case Camera::cubemap_top:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                        width, height, redshift::camera::CubeMapFace::top,
+                        camera.transforms.toRedshiftTransform()));
+        case Camera::cubemap_front:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                        width, height, redshift::camera::CubeMapFace::front,
+                        camera.transforms.toRedshiftTransform()));
+        case Camera::cubemap_back:
+                return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
+                        width, height, redshift::camera::CubeMapFace::back,
+                        camera.transforms.toRedshiftTransform()));
+
+        default:
+                throw std::runtime_error("only  pinhole supported");
+        };
+}
+
+
+redshift::Color toRedshift (Spectrum const &spectrum) {
+        typedef redshift::Color::real_t real_t;
+        typedef std::vector<WavelengthAmplitudePair>::const_iterator iterator;
+
+        std::vector<real_t> wavelengths;
+        std::vector<real_t> amplitudes;
+
+        for (iterator it = spectrum.samples.begin();
+             it != spectrum.samples.end();
+             ++it
+        ) {
+                wavelengths.push_back(it->wavelength);
+                amplitudes.push_back(it->amplitude);
+        }
+
+        return redshift::Color::FromSampled (
+                        &amplitudes[0],
+                        &wavelengths[0],
+                        spectrum.samples.size());
+}
+
+redshift::Color toRedshift (Rgb const &rgb, redshift::SpectrumKind kind) {
+        return redshift::Color::FromRGB(rgb.r, rgb.g, rgb.b, kind);
+}
+
+redshift::Color toRedshift (Color const &color, redshift::SpectrumKind kind) {
+        switch (color.type) {
+        case Color::RGB:      return toRedshift (color.rgb, kind);
+        case Color::Spectrum: return toRedshift (color.spectrum);
+        }
+        throw std::runtime_error("unknown color type in "
+                "toRedshift (Color const &color, redshift::SpectrumKind kind)");
+}
+
+}

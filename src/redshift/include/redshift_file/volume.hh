@@ -30,6 +30,8 @@
 
 #include "normal.hh"
 
+#include "color_to_redshift.hh"
+
 namespace redshift_file {
         struct Volume {
                 enum Type {
@@ -44,17 +46,17 @@ namespace redshift_file {
                         case homogeneous:
                                 return shared_ptr<redshift::VolumeRegion> (
                                    new redshift::volume::Homogeneous(
-                                        sigma_a.toColor(redshift::IlluminantSpectrum),
-                                        sigma_s.toColor(redshift::IlluminantSpectrum),
-                                        Lve.toColor(redshift::IlluminantSpectrum),
+                                        toRedshift (sigma_a, redshift::IlluminantSpectrum),
+                                        toRedshift (sigma_s, redshift::IlluminantSpectrum),
+                                        toRedshift (Lve, redshift::IlluminantSpectrum),
                                         hg
                                 ));
                         case exponential:
                                 return shared_ptr<redshift::VolumeRegion> (
                                    new redshift::volume::Exponential(
-                                        sigma_a.toColor(redshift::IlluminantSpectrum),
-                                        sigma_s.toColor(redshift::IlluminantSpectrum),
-                                        Lve.toColor(redshift::IlluminantSpectrum),
+                                        toRedshift (sigma_a, redshift::IlluminantSpectrum),
+                                        toRedshift (sigma_s, redshift::IlluminantSpectrum),
+                                        toRedshift (Lve, redshift::IlluminantSpectrum),
                                         hg,
                                         baseFactor,
                                         exponentFactor,
