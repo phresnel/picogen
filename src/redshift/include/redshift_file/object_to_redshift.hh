@@ -18,33 +18,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef TO_REDSHIFT_HH_20101014
-#define TO_REDSHIFT_HH_20101014
+#ifndef OBJECT_TO_REDSHIFT_HH_20101014
+#define OBJECT_TO_REDSHIFT_HH_20101014
 
 // redshift fwd+Co.
 namespace redshift {
-        class Sky;
-        class Camera;
         class Primitive;
+        class BoundPrimitive;
 }
-
 
 // redshift_file fwd+Co.
 namespace redshift_file {
-        class Background;
-        class Camera;
         class Object;
 }
-#include "color_to_redshift.hh"
-#include "object_to_redshift.hh"
+
+// Historically, redshift_file::Object had two functions "toPrimitive" and
+// "toBoundPrimitive", but for ease of use I wanted to name all conversion
+// functions "toRedshift()". The following closure enables this.
+namespace redshift_file { namespace detail {
+struct RedshiftPrimitiveOrBoundPrimitive {
+        operator redshift::shared_ptr<redshift::Primitive> () const;
+        operator redshift::shared_ptr<redshift::BoundPrimitive> () const;
+        Object const &object;
+        
+        RedshiftPrimitiveOrBoundPrimitive (Object const &object)
+        : object(object)
+        {}
+};
+} }
 
 #include "redshift/include/smart_ptr.hh"
-
 namespace redshift_file {
-        redshift::shared_ptr<redshift::Sky>    toRedshift (Background const &);
-        redshift::shared_ptr<redshift::Camera> toRedshift (Camera const &,
-                                                           unsigned int width, 
-                                                           unsigned int height);        
+        detail::RedshiftPrimitiveOrBoundPrimitive toRedshift (Object const &ob);
 }
 
-#endif // TO_REDSHIFT_HH_20101014
+#endif // OBJECT_TO_REDSHIFT_HH_20101014

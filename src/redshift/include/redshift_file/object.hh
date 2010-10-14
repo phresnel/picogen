@@ -54,6 +54,8 @@
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
+#include "object_to_redshift.hh"
+
 namespace redshift_file {
 
         struct Object {
@@ -72,37 +74,7 @@ namespace redshift_file {
                 static const actuarius::Enum<Type> Typenames;
                 Type type;
 
-                inline shared_ptr<redshift::Primitive> toPrimitive () const {
-                        switch (type) {
-                        case lazy_quadtree: return lazyQuadtreeParams.toPrimitive();
-                        case water_plane: return waterPlaneParams.toPrimitive();
-                        case horizon_plane: return horizonPlaneParams.toPrimitive();
-                        case closed_sphere: return closedSphereParams.toPrimitive();
-                        case triangle: return triangleParams.toPrimitive();
-                        case bvh: return bvhParams.toPrimitive();
-                        case triangle_bvh: return triangleBvhParams.toPrimitive();
-                        case lsystemtree: return lsystemTreeParams.toPrimitive();
-                        case instance: return instanceParams.toPrimitive();
-                        case forest: return forestParams.toPrimitive();
-                        };
-                        throw std::exception();
-                }
-
-                inline shared_ptr<redshift::BoundPrimitive> toBoundPrimitive () const {
-                        switch (type) {
-                        case lazy_quadtree: return shared_ptr<redshift::BoundPrimitive>();
-                        case water_plane: return shared_ptr<redshift::BoundPrimitive>();
-                        case horizon_plane: return shared_ptr<redshift::BoundPrimitive>();
-                        case closed_sphere: return closedSphereParams.toBoundPrimitive();
-                        case triangle: return triangleParams.toBoundPrimitive();
-                        case bvh: return bvhParams.toBoundPrimitive();
-                        case triangle_bvh: return triangleBvhParams.toBoundPrimitive();
-                        case lsystemtree: return lsystemTreeParams.toBoundPrimitive();
-                        case instance: return instanceParams.toBoundPrimitive();
-                        case forest: return forestParams.toBoundPrimitive();
-                        };
-                        throw std::exception();
-                }
+                
 
                 // Serialization.
                 template<typename Arch>
@@ -324,7 +296,7 @@ namespace redshift_file {
 
                                 primitive::BvhBuilder builder;
                                 for (I it = objects.begin(); it != objects.end(); ++it) {
-                                        shared_ptr<redshift::BoundPrimitive> bp = it->toBoundPrimitive();
+                                        shared_ptr<redshift::BoundPrimitive> bp = toRedshift (*it);
                                         if (bp.get()) {
                                                 builder.add (bp);
                                         } else {
@@ -389,7 +361,7 @@ namespace redshift_file {
 
                                 return shared_ptr<redshift::Primitive>(new redshift::primitive::Instance(
                                         transforms.toRedshiftTransform(),
-                                        objects[0].toPrimitive()
+                                        toRedshift (objects[0])
                                 ));
                         }
 
@@ -397,7 +369,8 @@ namespace redshift_file {
                                 if (warnings())
                                         return shared_ptr<redshift::BoundPrimitive>();
 
-                                shared_ptr<redshift::BoundPrimitive> bp = objects[0].toBoundPrimitive();
+                                shared_ptr<redshift::BoundPrimitive> bp = 
+                                        toRedshift (objects[0]);
 
                                 if (!bp) {
                                         std::cerr << "warning: Primitive is not a BoundPrimitive: '"
