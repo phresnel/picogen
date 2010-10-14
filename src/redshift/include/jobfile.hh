@@ -170,6 +170,12 @@ namespace redshift_file {
 
 #include "redshift_file/scene.hh"
 
+namespace redshift_file {
+  void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_);
+  void save_scene (const redshift_file::Scene &scene, std::string const &name);
+  void load_scene (redshift_file::Scene &scene, std::istream &fs);
+  void load_scene (Scene &scene, std::string const &name);
+}
 
 redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (

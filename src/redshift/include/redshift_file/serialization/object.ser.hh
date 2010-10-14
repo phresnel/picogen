@@ -21,6 +21,8 @@
 #ifndef OBJECT_SER_HH_20101013
 #define OBJECT_SER_HH_20101013
 
+#include "../object.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void Object::serialize (Arch &arch) {

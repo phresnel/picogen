@@ -21,6 +21,10 @@
 #ifndef RENDERSETTINGS_SER_HH_20101013
 #define RENDERSETTINGS_SER_HH_20101013
 
+#include "../rendersettings.hh"
+#include "surfaceintegrator.ser.hh"
+#include "volumeintegrator.ser.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void RenderSettings::serialize (Arch &arch) {

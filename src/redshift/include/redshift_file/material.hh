@@ -21,6 +21,8 @@
 #ifndef MATERIAL_HH_20101013
 #define MATERIAL_HH_20101013
 
+#include "color.hh"
+
 namespace redshift_file {
         struct Material {
                 Color color;

@@ -21,6 +21,8 @@
 #ifndef TRANSFORM_SER_HH_20101013
 #define TRANSFORM_SER_HH_20101013
 
+#include "../transform.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void Transform::serialize (Arch &arch) {

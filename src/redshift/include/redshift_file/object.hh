@@ -21,7 +21,22 @@
 #ifndef OBJECT_HH_20101013
 #define OBJECT_HH_20101013
 
+#include "primitives/primitive.hh"
+#include "primitives/closedsphere.hh"
+#include "primitives/lazyquadtree.hh"
+#include "primitives/horizonplane.hh"
+#include "primitives/waterplane.hh"
+#include "primitives/list.hh"
+//#include "basictypes/material.hh"
+
+#include "material.hh"
+#include "vertex.hh"
+
+#include <boost/shared_ptr.hpp>
+
 namespace redshift_file {
+        using boost::shared_ptr;
+
         struct Object {
                 enum Type {
                         water_plane,

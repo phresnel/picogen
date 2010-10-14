@@ -21,88 +21,56 @@
 #ifndef SCENE_HH_20101013
 #define SCENE_HH_20101013
 
+#include "filmsettings.hh"
+#include <boost/shared_ptr.hpp>
+
 namespace redshift_file {
+        class Object;
+        class Volume;
+        class RenderSettings;
+        class Camera;
+        class Background;
+        
+        class SceneImpl;
+        
         // Scene = (RenderSettings+)(FilmSettings)(Objects*)
-        class Scene {
-                std::vector<Object> objects_;
-                std::vector<Volume> volumes_;
-                std::vector<RenderSettings> renderSettings_;
-                std::vector<Camera> cameras_;
-                std::vector<Background> backgrounds_;
-                FilmSettings filmSettings_;
+        class Scene {                
         public:
-                void addRenderSettings (RenderSettings const &rs) {
-                        renderSettings_.push_back (rs);
-                }
-                unsigned int renderSettingsCount() const {
-                        return renderSettings_.size();
-                }
-                RenderSettings renderSettings(unsigned int index) const {
-                        return renderSettings_[index];
-                }
-                RenderSettings & renderSettings(unsigned int index) {
-                        return renderSettings_[index];
-                }
-                void pruneRenderSettings () {
-                        renderSettings_.clear();
-                }
+                Scene();
+                Scene (Scene const &);
+                Scene& operator= (Scene const &);
 
-                void addObject (Object const &o) {
-                        objects_.push_back (o);
-                }
-                unsigned int objectCount() const {
-                        return objects_.size();
-                }
-                Object const & object(unsigned int index) const {
-                        return objects_[index];
-                }
+                void addRenderSettings (RenderSettings const &rs);
+                unsigned int renderSettingsCount() const;
+                RenderSettings renderSettings(unsigned int index) const;
+                RenderSettings & renderSettings(unsigned int index);
+                void pruneRenderSettings ();
 
+                void addObject (Object const &o);
+                unsigned int objectCount() const;
+                Object const & object(unsigned int index) const;
 
-                void addVolume (Volume const &o) {
-                        volumes_.push_back (o);
-                }
-                unsigned int volumeCount() const {
-                        return volumes_.size();
-                }
-                Volume const & volume(unsigned int index) const {
-                        return volumes_[index];
-                }
+                void addVolume (Volume const &o);
+                unsigned int volumeCount() const;
+                Volume const & volume(unsigned int index) const;
 
-                void addBackground (Background const &o) {
-                        backgrounds_.push_back (o);
-                }
-                unsigned int backgroundCount() const {
-                        return backgrounds_.size();
-                }
-                Background const & background(unsigned int index) const {
-                        return backgrounds_[index];
-                }
-
-
-                void addCamera (Camera const &o) {
-                        cameras_.push_back (o);
-                }
-                unsigned int cameraCount() const {
-                        return cameras_.size();
-                }
-                Camera const & camera(unsigned int index) const {
-                        return cameras_[index];
-                }
-                void pruneCameras () {
-                        cameras_.clear();
-                }
-
-                FilmSettings filmSettings () const {
-                        return filmSettings_;
-                }
-                void setFilmSettings (FilmSettings const &fs) {
-                        filmSettings_ = fs;
-                }
-
+                void addBackground (Background const &o);
+                unsigned int backgroundCount() const;                
+                Background const & background(unsigned int index) const;
+                
+                void addCamera (Camera const &o);
+                unsigned int cameraCount() const;                
+                Camera const & camera(unsigned int index) const;
+                void pruneCameras ();
+                
+                FilmSettings filmSettings () const;
+                void setFilmSettings (FilmSettings const &fs);
 
                 // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch);
+                template<typename Arch> void serialize (Arch &arch);
+                
+        private:
+                boost::shared_ptr<SceneImpl> impl;                
         };
 }
 

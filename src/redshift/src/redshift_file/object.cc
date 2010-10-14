@@ -18,31 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef RENDERSETTINGS_HH_20101013
-#define RENDERSETTINGS_HH_20101013
-
-#include <string>
-#include "surfaceintegrator.hh"
-#include "volumeintegrator.hh"
+#include "redshift_file/object.hh"
 
 namespace redshift_file {
-        struct RenderSettings {
-                unsigned int width, height, samplesPerPixel;
-                unsigned int min_y, max_y;
-                unsigned int userSeed;
-                std::string title;
-                SurfaceIntegrator surfaceIntegrator;
-                VolumeIntegrator volumeIntegrator;
-
-                RenderSettings ()
-                : width(800), height(600), samplesPerPixel(1)
-                , min_y(0), max_y(0), userSeed(0)
-                {}
-
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch);
-        };
 }
-
-#endif // RENDERSETTINGS_HH_20101013

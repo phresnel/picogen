@@ -21,6 +21,8 @@
 #ifndef SURFACEINTEGRATOR_SER_HH_20101013
 #define SURFACEINTEGRATOR_SER_HH_20101013
 
+#include "../surfaceintegrator.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void SurfaceIntegrator::serialize (Arch &arch) {

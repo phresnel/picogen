@@ -610,100 +610,6 @@ namespace {
 
 
 
-redshift::shared_ptr<redshift::Scene>
- sceneDescriptionToScene (
-        redshift_file::Scene const &scene,
-        redshift::shared_ptr<redshift::Film> film,
-        int renderSettingsIndex, int cameraIndex
-) {
-        using namespace redshift;
-        using namespace redshift::camera;
-        using namespace redshift::interaction;
-        using namespace redshift::primitive;
-
-
-        shared_ptr<Camera> camera;
-        if (scene.cameraCount()) {
-                camera = scene.
-                         camera(cameraIndex).
-                         toRedshiftCamera (
-                                film->width(),
-                                film->height());
-        } else {
-                camera = shared_ptr<Camera> (new Pinhole(
-                        film->width(),
-                        film->height(),
-                        1.0f,
-                        Transform::translation(0.f,0.1f,0.f)
-                ));
-        }
-
-
-        // Add objects.
-        primitive::List *list = new List;
-        for (unsigned int i=0; i<scene.objectCount(); ++i) {
-                list->add (scene.object(i).toPrimitive());
-        }
-        shared_ptr<Primitive> agg (list);
-
-
-        // Add volumes.
-        volume::List *volumeList = new volume::List;
-        for (unsigned int i=0; i<scene.volumeCount(); ++i) {
-                volumeList->add (scene.volume(i).toVolume());
-        }
-        shared_ptr<VolumeRegion> volumeAgg (volumeList);
-
-
-
-        // TODO: support arbitrary many backgrounds (Starsky!)
-        shared_ptr<Sky> sky;
-        if (scene.backgroundCount()) {
-                sky = scene.background(0).toSky();
-        } else {
-
-                /*shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
-                        30, // [in] lat Latitude (0-360)
-                        30,			// [in] long Longitude (-90,90) south to north
-                        0,			// [in] sm  Standard Meridian
-                        90,			// [in] jd  Julian Day (1-365)
-                        8.0,			// [in] tod Time Of Day (0.0,23.99) 14.25 = 2:15PM
-                        7,			// [in] turb  Turbidity (1.0,30+) 2-6 are most useful for clear days.
-                        true			// [in] initAtmEffects  if atm effects are not initialized, bad things will
-                                                // happen if you try to use them....
-                ));*/
-                shared_ptr<background::PssSunSky> pss (new background::PssSunSky(
-                        Vector(1,.25,1),
-                        7,
-                        0,
-                        true
-                ));
-                sky = shared_ptr<redshift::Sky> (
-                        new backgrounds::PssAdapter (pss,1,1,1,1));
-        }
-        // ----------
-
-        return shared_ptr<Scene> (new Scene (
-                film,
-                camera,
-                agg,
-                sky,
-
-                shared_ptr<Integrator>(
-                        scene.renderSettings(renderSettingsIndex)
-                                .surfaceIntegrator
-                                .toSurfaceIntegrator()),
-
-                volumeAgg,
-                shared_ptr<VolumeIntegrator>(
-                        scene.renderSettings(renderSettingsIndex)
-                                .volumeIntegrator
-                                .toVolumeIntegrator())
-        ));
-}
-
-
-
 namespace redshift {
         const char *getCompilationInfo () {
                 return PICOGEN_COMPILATION_INFO;
@@ -752,7 +658,7 @@ void read_and_render (Options const & options) {
                 scene.addCamera (c);
 
                 std::ofstream ofs("test.red");
-                OArchive (ofs) & pack("scene", scene);
+                save_scene (scene, ofs);
         }
 
         {
@@ -766,7 +672,8 @@ void read_and_render (Options const & options) {
                         return;
                 }
                 Scene scene;
-                IArchive (ifs) & pack("scene", scene);
+                load_scene (scene, ifs);
+                //IArchive (ifs) & pack("scene", scene);
 
                 queryRenderSettings (scene, options);
                 queryCamera (scene, options);

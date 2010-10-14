@@ -21,6 +21,8 @@
 #ifndef VERTEX_HH_20101013
 #define VERTEX_HH_20101013
 
+#include "point.hh"
+
 namespace redshift_file {
         struct Vertex {
                 Point position;
