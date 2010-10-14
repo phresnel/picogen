@@ -78,6 +78,10 @@ AMALGAM := g++ $(CXXFLAGS) \
 
 OBJFILES :=
 # main.o is intentionally excluded, and must be included by main targets
+OBJFILES += $(OBJDIR)/redshift_file_to_redshift.o
+OBJFILES += $(OBJDIR)/redshift_file_save_load.o
+OBJFILES += $(OBJDIR)/redshift_file_scene.o
+
 OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/jobfile.o
 OBJFILES += $(OBJDIR)/save_openexr.o
@@ -188,6 +192,18 @@ obtain-amalgam: init-dir-tree
 ###############################################################################
 
 
+$(OBJDIR)/redshift_file_to_redshift.o: \
+                ./src/redshift_file/redshift_file_to_redshift.cc
+	$(CXX) -o $@ $<
+
+$(OBJDIR)/redshift_file_save_load.o: ./src/redshift_file/save_load.cc
+	$(CXX) -o $@ $<
+
+$(OBJDIR)/redshift_file_scene.o: ./src/redshift_file/scene.cc
+	$(CXX) -o $@ $<
+
+
+        
 $(OBJDIR)/main.o: ./src/main.cc
 	$(CXX) -o $@ $<
 

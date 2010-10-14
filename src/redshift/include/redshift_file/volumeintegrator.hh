@@ -21,6 +21,12 @@
 #ifndef VOLUMEINTEGRATOR_HH_20101013
 #define VOLUMEINTEGRATOR_HH_20101013
 
+#include "shared_ptr.hh"
+#include "actuarius/bits/enum.hh"
+
+#include "integrators/emission.hh"
+#include "integrators/single-scattering.hh"
+
 namespace redshift_file {
         struct VolumeIntegrator {
                 enum Type {

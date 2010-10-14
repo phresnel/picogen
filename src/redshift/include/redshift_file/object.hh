@@ -22,20 +22,35 @@
 #define OBJECT_HH_20101013
 
 #include "primitives/primitive.hh"
+#include "primitives/instance.hh"
+#include "primitives/boundprimitive.hh"
+#include "primitives/boundinstance.hh"
 #include "primitives/closedsphere.hh"
 #include "primitives/lazyquadtree.hh"
 #include "primitives/horizonplane.hh"
 #include "primitives/waterplane.hh"
 #include "primitives/list.hh"
-//#include "basictypes/material.hh"
+#include "primitives/triangle.hh"
+#include "primitives/trianglebvh.hh"
+#include "primitives/lsystemtree.hh"
+#include "primitives/forest.hh"
+
+#include "material/matte.hh"
+#include "material/leaf0.hh"
+#include "material/brdftobtdf.hh"
+#include "texture/constant.hh"
+#include "texture/image.hh"
+
+#include "../include/basictypes/height-function.hh"
+#include "../include/basictypes/quatsch-height-function.hh"
 
 #include "material.hh"
 #include "vertex.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "shared_ptr.hh"
+#include "actuarius/bits/enum.hh"
 
 namespace redshift_file {
-        using boost::shared_ptr;
 
         struct Object {
                 enum Type {
@@ -227,24 +242,31 @@ namespace redshift_file {
                         shared_ptr<redshift::BoundPrimitive> toBoundPrimitive() const {
                                 using namespace redshift;
                                 using namespace redshift::primitive;
-
-                                return shared_ptr<redshift::BoundPrimitive>(new Triangle(
+                                using redshift::BoundPrimitive;
+                                
+                                typedef shared_ptr<redshift::BoundPrimitive> foo;
+                                
+                                redshift::Material *material = new material::Matte(
+                                        shared_ptr<ColorTexture>(
+                                                new texture::ConstantColor(redshift::Color::FromRGB(
+                                                        0.25, 0.25, 1., ReflectanceSpectrum))
+                                        ),
+                                        shared_ptr<ScalarTexture>(
+                                                new texture::ConstantScalar(0)
+                                        )
+                                );
+                                
+                                Triangle* triangle = new Triangle(
                                         Triangle::Vertex (A.position,
                                                           Triangle::TextureCoordinates(0,0)),
                                         Triangle::Vertex (B.position,
                                                           Triangle::TextureCoordinates(1,0)),
                                         Triangle::Vertex (C.position,
                                                           Triangle::TextureCoordinates(0,1)),
-                                        shared_ptr<redshift::Material>(new material::Matte(
-                                                shared_ptr<ColorTexture>(
-                                                        new texture::ConstantColor(redshift::Color::FromRGB(
-                                                                0.25, 0.25, 1., ReflectanceSpectrum))
-                                                ),
-                                                shared_ptr<ScalarTexture>(
-                                                        new texture::ConstantScalar(0)
-                                                )
-                                        ))
-                                ));
+                                        shared_ptr<redshift::Material>(material)
+                                );
+
+                                return shared_ptr<redshift::BoundPrimitive>(triangle);
                         }
 
                         shared_ptr<redshift::Primitive> toPrimitive() const {

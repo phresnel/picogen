@@ -21,6 +21,11 @@
 #ifndef CAMERA_HH_20101013
 #define CAMERA_HH_20101013
 
+#include "transform.hh"
+#include "../include/cameras/pinhole.hh"
+#include "../include/cameras/cylindrical.hh"
+#include "../include/cameras/cubemapface.hh"
+
 namespace redshift_file {
         struct Camera {
 

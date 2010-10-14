@@ -21,7 +21,10 @@
 #ifndef SHOWSURFACENORMALS_HH_INCLUDED_20090110
 #define SHOWSURFACENORMALS_HH_INCLUDED_20090110
 
+#include "../basictypes/scene.hh"
 #include "../basictypes/transport.hh"
+#include "../basictypes/intersection.hh"
+#include "../optional.hh"
 
 namespace redshift {
         class ShowSurfaceNormals : public Integrator {

@@ -21,6 +21,16 @@
 #ifndef SURFACEINTEGRATOR_HH_20101013
 #define SURFACEINTEGRATOR_HH_20101013
 
+#include "shared_ptr.hh"
+#include "actuarius/bits/enum.hh"
+
+#include "integrators/visualize-distance.hh"
+#include "integrators/show-surface-normals.hh"
+#include "integrators/redshift.hh"
+#include "integrators/whitted.hh"
+#include "integrators/null.hh"
+#include "integrators/path.hh"
+
 namespace redshift_file {
         struct SurfaceIntegrator {
                 enum Type {
