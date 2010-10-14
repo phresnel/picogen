@@ -37,26 +37,7 @@ namespace redshift_file {
 
                 // Serialization.
                 template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-
-                        //arch & pack ("title", title);
-                        arch & pack ("width", width);
-                        arch & pack ("height", height);
-                        arch & actuarius::push_optional(true);
-                        arch & pack ("min-y", min_y);
-                        arch & pack ("max-y", max_y);
-                        arch & pack ("seed", userSeed);
-                        arch & pack ("samples-per-pixel", samplesPerPixel);
-                        arch & pack ("surface-integrator", surfaceIntegrator);
-                        arch & actuarius::pop_optional;
-                        if (Arch::deserialize || volumeIntegrator.type != VolumeIntegrator::none) {
-                                arch & actuarius::push_optional(true)
-                                     & pack ("volume-integrator", volumeIntegrator)
-                                     & actuarius::pop_optional
-                                ;
-                        }
-                }
+                void serialize (Arch &arch);
         };
 }
 

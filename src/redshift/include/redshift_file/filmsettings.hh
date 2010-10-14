@@ -42,13 +42,8 @@ namespace redshift_file {
                         return *this;
                 }
 
-                // Serialization.
                 template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack ("color-scale", colorscale);
-                        arch & pack ("convert-to-srgb", convertToSrgb);
-                }
+                void serialize (Arch &arch);
         };
 }
 

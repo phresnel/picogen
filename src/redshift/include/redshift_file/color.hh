@@ -27,12 +27,7 @@ namespace redshift_file {
                 double wavelength;
                 double amplitude;
 
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack(wavelength) & pack(amplitude);
-                }
+                template<typename Arch> void serialize (Arch &arch);
         };
 
         struct Spectrum {
@@ -60,12 +55,7 @@ namespace redshift_file {
                                         samples.size());
                 }
 
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack(samples);
-                }
+                template<typename Arch> void serialize (Arch &arch);
         };
 
         struct Rgb {
@@ -78,12 +68,7 @@ namespace redshift_file {
                         return redshift::Color::FromRGB(r,g,b, kind);
                 }
 
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack(r) & pack(g) & pack(b);
-                }
+                template<typename Arch> void serialize (Arch &arch);
         };        
 
         struct Color {
@@ -109,21 +94,8 @@ namespace redshift_file {
                         throw std::runtime_error("unknown color type in "
                                 "scenefile::Color::toColor()");
                 }
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack ("type", type, Typenames);
 
-                        switch (type) {
-                        case RGB:
-                                arch & pack("rgb", rgb);
-                                break;
-                        case Spectrum:
-                                arch & pack("spectrum", spectrum);
-                                break;
-                        }
-                }
+                template<typename Arch> void serialize (Arch &arch);
         };
 }
 

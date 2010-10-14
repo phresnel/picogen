@@ -102,16 +102,7 @@ namespace redshift_file {
 
                 // Serialization.
                 template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-
-                        arch & pack ("render-settings", &RenderSettings::title, renderSettings_);
-                        arch & pack ("cameras", &Camera::title, cameras_);
-                        arch & pack ("objects", &Object::type, Object::Typenames, objects_);
-                        arch & pack ("volumes", &Volume::type, Volume::Typenames, volumes_);
-                        arch & pack ("backgrounds", &Background::type, Background::Typenames, backgrounds_);
-                        arch & pack ("film-settings", filmSettings_);
-                }
+                void serialize (Arch &arch);
         };
 }
 

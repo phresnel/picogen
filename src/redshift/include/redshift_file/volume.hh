@@ -79,31 +79,7 @@ namespace redshift_file {
 
                 // Serialization.
                 template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-
-                        arch & actuarius::push_optional(true);
-                        switch (type) {
-                        case homogeneous:
-                                arch & pack("absorption", sigma_a);
-                                arch & pack("out-scatter", sigma_s);
-                                arch & pack("emission", Lve);
-                                arch & pack("phase-function", hg);
-                                break;
-                        case exponential:
-                                arch & pack("absorption", sigma_a);
-                                arch & pack("out-scatter", sigma_s);
-                                arch & pack("emission", Lve);
-                                arch & pack("phase-function", hg);
-                                arch & pack("up", up);
-                                arch & pack("min", min);
-                                arch & pack("base-factor", baseFactor);
-                                arch & pack("exponent-factor", exponentFactor);
-                                arch & pack("epsilon", epsilon);
-                                break;
-                        };
-                        arch & actuarius::pop_optional;
-                }
+                void serialize (Arch &arch);
         };
 }
 

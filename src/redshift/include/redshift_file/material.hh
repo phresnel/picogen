@@ -32,12 +32,8 @@ namespace redshift_file {
                 {
                 }
 
-                // Serialization.
                 template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack("color", color);
-                }
+                void serialize (Arch &arch);
         };
 }
 

@@ -91,28 +91,7 @@ namespace redshift_file {
                         return shared_ptr<redshift::Sky>();
                 }
 
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-
-                        switch (type) {
-                        case pss_sunsky:
-                                arch & actuarius::push_optional(true);
-                                arch & pack ("sun-direction", sunDirection);
-                                arch & pack ("sun-size-factor", sunSizeFactor);
-                                arch & pack ("sun-brightness-factor", sunBrightnessFactor);
-                                arch & pack ("atmosphere-brightness-factor", atmosphereBrightnessFactor);
-                                arch & pack ("atmospheric-effects-factor", atmosphericFxFactor);
-                                arch & pack ("atmospheric-effects", atmosphericEffects);
-                                arch & pack ("turbidity", turbidity);
-                                arch & pack ("overcast", overcast);
-                                /*arch & pack ("sun-color", sunColor);
-                                arch & pack ("sky-filter", skyFilter);*/
-                                arch & actuarius::pop_optional;
-                                break;
-                        };
-                }
+                template<typename Arch>  void serialize (Arch &arch);
         };
 }
 

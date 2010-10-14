@@ -57,12 +57,7 @@ namespace redshift_file {
 
                 // Serialization.
                 template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack("type", Typenames, type);
-                        arch & pack("step-size", stepSize);
-                        arch & pack("cutoff-distance", cutoffDistance);
-                }
+                void serialize (Arch &arch);
         };
 }
 

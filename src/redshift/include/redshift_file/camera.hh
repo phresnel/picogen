@@ -107,28 +107,7 @@ namespace redshift_file {
 
 
                 // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack ("transform", transforms);
-                        arch & pack ("type", Typenames, type);
-
-                        switch (type) {
-                        case pinhole:
-                                arch & pack ("front", pinholeParams.front);
-                                break;
-                        case cylindrical:
-                                arch & pack ("front", cylindricalParams.front);
-                                break;
-                        case cubemap_front:
-                        case cubemap_back:
-                        case cubemap_left:
-                        case cubemap_right:
-                        case cubemap_bottom:
-                        case cubemap_top:
-                                break;
-                        };
-                }
+                template<typename Arch> void serialize (Arch &arch);
         };
 }
 

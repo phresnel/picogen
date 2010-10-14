@@ -62,22 +62,7 @@ namespace redshift_file {
 
                 // Serialization.
                 template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-
-                        arch & pack("type", Typenames, type);
-
-                        switch (type) {
-                        case path: break;
-                        case whitted: break;
-                        case whitted_ambient:
-                                arch & pack("ambient-samples", numAmbientSamples);
-                                break;
-                        case none: break;
-                        case debug_distance: break;
-                        case debug_normals: break;
-                        }
-                }
+                void serialize (Arch &arch);
         };
 }
 
