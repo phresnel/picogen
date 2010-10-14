@@ -195,7 +195,7 @@ obtain-amalgam: init-dir-tree
 
 
 $(OBJDIR)/redshift_file_to_redshift.o: \
-                ./src/redshift_file/redshift_file_to_redshift.cc
+                ./src/redshift_file/to_redshift/redshift_file_to_redshift.cc
 	$(CXX) -o $@ $<
 
 $(OBJDIR)/redshift_file_save_load.o: ./src/redshift_file/save_load.cc
@@ -208,7 +208,7 @@ $(OBJDIR)/redshift_file_object.o: ./src/redshift_file/object.cc
 	$(CXX) -o $@ $<
 
 $(OBJDIR)/redshift_file_object_to_redshift.o: \
-                ./src/redshift_file/object_to_redshift.cc
+                ./src/redshift_file/to_redshift/object_to_redshift.cc
 	$(CXX) -o $@ $<
 
 

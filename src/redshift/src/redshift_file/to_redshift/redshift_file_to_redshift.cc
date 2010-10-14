@@ -22,97 +22,97 @@
 // TODO: check if boost reports on cerr or cout
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-#include "../include/auxiliary/currentdate.hh"
-#include "../include/auxiliary/remove_filename_extension.hh"
-#include "../include/static_init.hh"
+#include "redshift/include/auxiliary/currentdate.hh"
+#include "redshift/include/auxiliary/remove_filename_extension.hh"
+#include "redshift/include/static_init.hh"
 
-#include "../include/image-export.hh"
+#include "redshift/include/image-export.hh"
 
-#include "../include/meta/compiler.hh"
+#include "redshift/include/meta/compiler.hh"
 
 //{{{{{{{{{
 // Color types.
-#include "basictypes/rgb.hh"
+#include "redshift/include/basictypes/rgb.hh"
 
 
 // TODO reorder
 
 // coordinates/
-#include "coordinates/uvcoordinates.hh"
-#include "coordinates/imagecoordinates.hh"
-#include "coordinates/lenscoordinates.hh"
-#include "coordinates/texture2dcoordinates.hh"
+#include "redshift/include/coordinates/uvcoordinates.hh"
+#include "redshift/include/coordinates/imagecoordinates.hh"
+#include "redshift/include/coordinates/lenscoordinates.hh"
+#include "redshift/include/coordinates/texture2dcoordinates.hh"
 
 // interaction/
-#include "interaction/usercommandprocessor.hh"
-#include "interaction/passivecommandprocessor.hh"
-#include "interaction/progressreporter.hh"
+#include "redshift/include/interaction/usercommandprocessor.hh"
+#include "redshift/include/interaction/passivecommandprocessor.hh"
+#include "redshift/include/interaction/progressreporter.hh"
 
 // basictypes/
 namespace redshift{class RenderTarget;}
-#include "basictypes/rectangle.hh"
-#include "basictypes/sample.hh"
+#include "redshift/include/basictypes/rectangle.hh"
+#include "redshift/include/basictypes/sample.hh"
 
 // cameras/
-#include "cameras/camera.hh"
+#include "redshift/include/cameras/camera.hh"
 
 // basictypes/
-#include "basictypes/differentialgeometry.hh"
-#include "basictypes/material.hh"
-#include "basictypes/intersection.hh"
-#include "basictypes/background.hh"
-#include "basictypes/volume.hh"
-#include "basictypes/film.hh"
+#include "redshift/include/basictypes/differentialgeometry.hh"
+#include "redshift/include/basictypes/material.hh"
+#include "redshift/include/basictypes/intersection.hh"
+#include "redshift/include/basictypes/background.hh"
+#include "redshift/include/basictypes/volume.hh"
+#include "redshift/include/basictypes/film.hh"
 
 // rendertargets/
-#include "rendertargets/rendertargetlock.hh"
-#include "rendertargets/rendertarget.hh"
+#include "redshift/include/rendertargets/rendertargetlock.hh"
+#include "redshift/include/rendertargets/rendertarget.hh"
 
 
 
 // shapes/
-#include "shapes/shape.hh"
-#include "shapes/closedsphere.hh"
+#include "redshift/include/shapes/shape.hh"
+#include "redshift/include/shapes/closedsphere.hh"
 
 // primitive/
-#include "primitives/primitive.hh"
+#include "redshift/include/primitives/primitive.hh"
 //#include "primitives/heightmap.hh"
 //#include "primitives/booleanfield.hh"
-#include "primitives/closedsphere.hh"
-#include "primitives/lazyquadtree.hh"
-#include "primitives/horizonplane.hh"
-#include "primitives/waterplane.hh"
-#include "primitives/list.hh"
+#include "redshift/include/primitives/closedsphere.hh"
+#include "redshift/include/primitives/lazyquadtree.hh"
+#include "redshift/include/primitives/horizonplane.hh"
+#include "redshift/include/primitives/waterplane.hh"
+#include "redshift/include/primitives/list.hh"
 
 // background/
 //#include "backgrounds/visualise-direction.hh"
 //#include "backgrounds/monochrome.hh"
 //#include "backgrounds/preetham-adapter.hh"
-#include "backgrounds/pss-adapter.hh"
+#include "redshift/include/backgrounds/pss-adapter.hh"
 
 // Cameras.
-#include "cameras/camera.hh"
+#include "redshift/include/cameras/camera.hh"
 
 // basictypes/
-#include "basictypes/transport.hh"
-#include "basictypes/scene.hh"
+#include "redshift/include/basictypes/transport.hh"
+#include "redshift/include/basictypes/scene.hh"
 //#include "basictypes/heightmap.hh"
-#include "basictypes/bsdf.hh"
+#include "redshift/include/basictypes/bsdf.hh"
 
 // integrators/
-#include "integrators/visualize-distance.hh"
-#include "integrators/show-surface-normals.hh"
-#include "integrators/redshift.hh"
-#include "integrators/whitted.hh"
-#include "integrators/emission.hh"
-#include "integrators/single-scattering.hh"
-#include "integrators/null.hh"
-#include "integrators/path.hh"
+#include "redshift/include/integrators/visualize-distance.hh"
+#include "redshift/include/integrators/show-surface-normals.hh"
+#include "redshift/include/integrators/redshift.hh"
+#include "redshift/include/integrators/whitted.hh"
+#include "redshift/include/integrators/emission.hh"
+#include "redshift/include/integrators/single-scattering.hh"
+#include "redshift/include/integrators/null.hh"
+#include "redshift/include/integrators/path.hh"
 
 // volume/
-#include "volume/homogeneous.hh"
-#include "volume/exponential.hh"
-#include "volume/list.hh"
+#include "redshift/include/volume/homogeneous.hh"
+#include "redshift/include/volume/exponential.hh"
+#include "redshift/include/volume/list.hh"
 
 
 // material/
@@ -120,16 +120,16 @@ namespace redshift{class RenderTarget;}
 
 //}}}}}}}}}
 
-#include "../include/rendertargets/sdlrendertarget.hh"
-#include "../include/rendertargets/colorrendertarget.hh"
-#include "../include/cameras/pinhole.hh"
-#include "../include/interaction/sdlcommandprocessor.hh"
-#include "../include/interaction/rendertarget-copying-reporter.hh"
-#include "../include/interaction/film-to-rendertarget-copying-reporter.hh"
-#include "../include/basictypes/height-function.hh"
-#include "../include/basictypes/quatsch-height-function.hh"
-#include "../../actuarius/actuarius.hh"
-#include "../include/jobfile.hh"
+#include "redshift/include/rendertargets/sdlrendertarget.hh"
+#include "redshift/include/rendertargets/colorrendertarget.hh"
+#include "redshift/include/cameras/pinhole.hh"
+#include "redshift/include/interaction/sdlcommandprocessor.hh"
+#include "redshift/include/interaction/rendertarget-copying-reporter.hh"
+#include "redshift/include/interaction/film-to-rendertarget-copying-reporter.hh"
+#include "redshift/include/basictypes/height-function.hh"
+#include "redshift/include/basictypes/quatsch-height-function.hh"
+#include "actuarius/actuarius.hh"
+#include "redshift/include/jobfile.hh"
 
 #include <string>
 #include <iostream>
@@ -142,9 +142,9 @@ namespace redshift{class RenderTarget;}
 
 #include <boost/program_options.hpp>
 
-#include "../include/auxiliary/filename_extension.hh"
+#include "redshift/include/auxiliary/filename_extension.hh"
 
-#include "redshift/include/redshift_file/to_redshift.hh"
+#include "redshift/include/redshift_file/to_redshift/to_redshift.hh"
 
 
 redshift::shared_ptr<redshift::Scene>
