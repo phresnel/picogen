@@ -22,6 +22,7 @@
 #define LAZY_QUADTREE_HH_INCLUDED_20100116
 
 
+#include "../basictypes/spectrum.hh"
 #include "../primitives/primitive.hh"
 
 namespace redshift {

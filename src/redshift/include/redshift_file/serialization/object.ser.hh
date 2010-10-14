@@ -21,6 +21,10 @@
 #ifndef OBJECT_SER_HH_20101013
 #define OBJECT_SER_HH_20101013
 
+#include "transform.ser.hh"
+#include "material.ser.hh"
+#include "color.ser.hh"
+#include "vertex.ser.hh"
 #include "../object.hh"
 
 namespace redshift_file {

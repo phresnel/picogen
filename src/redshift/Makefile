@@ -81,6 +81,7 @@ OBJFILES :=
 OBJFILES += $(OBJDIR)/redshift_file_to_redshift.o
 OBJFILES += $(OBJDIR)/redshift_file_save_load.o
 OBJFILES += $(OBJDIR)/redshift_file_scene.o
+OBJFILES += $(OBJDIR)/redshift_file_object.o
 
 OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/jobfile.o
@@ -200,6 +201,9 @@ $(OBJDIR)/redshift_file_save_load.o: ./src/redshift_file/save_load.cc
 	$(CXX) -o $@ $<
 
 $(OBJDIR)/redshift_file_scene.o: ./src/redshift_file/scene.cc
+	$(CXX) -o $@ $<
+
+$(OBJDIR)/redshift_file_object.o: ./src/redshift_file/object.cc
 	$(CXX) -o $@ $<
 
 

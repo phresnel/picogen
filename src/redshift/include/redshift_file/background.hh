@@ -21,6 +21,16 @@
 #ifndef BACKGROUND_HH_20101013
 #define BACKGROUND_HH_20101013
 
+#include "backgrounds/pss-adapter.hh"
+#include "backgrounds/pss-adapter.hh"
+#include "backgrounds/preetham-shirley-smits/sunsky.hh"
+
+#include "shared_ptr.hh"
+#include "actuarius/bits/enum.hh"
+
+#include "normal.hh"
+#include "color.hh"
+
 namespace redshift_file {
         struct Background {
                 enum Type {

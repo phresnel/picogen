@@ -59,6 +59,13 @@ namespace redshift_file {
                         z = -backward + forward;
                 }
         }
+        
+        
+        template<typename Arch>
+        void TransformList::serialize (Arch &arch) {
+                using actuarius::pack;
+                arch & pack (&Transform::type, Transform::Typenames, transforms);
+        }
 }
 
 #endif // TRANSFORM_SER_HH_20101013

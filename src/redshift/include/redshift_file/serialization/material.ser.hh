@@ -21,6 +21,9 @@
 #ifndef MATERIAL_SER_HH_20101013
 #define MATERIAL_SER_HH_20101013
 
+#include "../material.hh"
+#include "color.ser.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void Material::serialize (Arch &arch) {

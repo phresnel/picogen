@@ -21,6 +21,9 @@
 #ifndef VERTEX_SER_HH_20101013
 #define VERTEX_SER_HH_20101013
 
+#include "../vertex.hh"
+#include "point.ser.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void Vertex::serialize (Arch &arch) {

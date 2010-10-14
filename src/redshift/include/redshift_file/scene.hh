@@ -22,7 +22,7 @@
 #define SCENE_HH_20101013
 
 #include "filmsettings.hh"
-#include <boost/shared_ptr.hpp>
+#include "shared_ptr.hh"
 
 namespace redshift_file {
         class Object;
@@ -68,6 +68,14 @@ namespace redshift_file {
 
                 // Serialization.
                 template<typename Arch> void serialize (Arch &arch);
+                
+                // For saving away a const-referenced-scene. Feels way
+                // better than a const_cast.
+                template <typename Arch>
+                void serialize (Arch &arch) const {
+                        Scene tmp = *this;
+                        return tmp.serialize(arch);
+                }
                 
         private:
                 boost::shared_ptr<SceneImpl> impl;                

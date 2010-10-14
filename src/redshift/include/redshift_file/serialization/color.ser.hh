@@ -21,6 +21,8 @@
 #ifndef COLOR_SER_HH_20101013
 #define COLOR_SER_HH_20101013
 
+#include "../color.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void WavelengthAmplitudePair::serialize (Arch &arch) {

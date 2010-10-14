@@ -23,7 +23,7 @@
 
 namespace redshift_file {
 
-Scene() : impl(new SceneImpl)
+Scene::Scene() : impl(new SceneImpl)
 {
 }
 
@@ -31,8 +31,9 @@ Scene::Scene (Scene const &rhs) : impl (new SceneImpl(*rhs.impl))
 {
 }
 
-Scene& operator= (Scene const &rhs) {
+Scene& Scene::operator= (Scene const &rhs) {
         impl.reset (new SceneImpl(*rhs.impl));
+        return *this;
 }
                 
 

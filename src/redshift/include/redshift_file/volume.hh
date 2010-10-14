@@ -21,6 +21,15 @@
 #ifndef VOLUME_HH_20101013
 #define VOLUME_HH_20101013
 
+#include "volume/homogeneous.hh"
+#include "volume/exponential.hh"
+#include "volume/list.hh"
+
+#include "shared_ptr.hh"
+#include "actuarius/bits/enum.hh"
+
+#include "normal.hh"
+
 namespace redshift_file {
         struct Volume {
                 enum Type {
@@ -62,7 +71,7 @@ namespace redshift_file {
 
                 Normal up;
                 Point min;
-                real_t baseFactor, exponentFactor;
+                double baseFactor, exponentFactor;
                 double epsilon; // minimum supported density, required to build bounding volumes
 
                 Volume ()

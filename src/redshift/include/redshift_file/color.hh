@@ -21,6 +21,10 @@
 #ifndef COLOR_HH_INCLUDED_20101013
 #define COLOR_HH_INCLUDED_20101013
 
+#include <vector>
+#include "shared_ptr.hh"
+#include "actuarius/bits/enum.hh"
+
 namespace redshift_file {
         // Rgb.
         struct WavelengthAmplitudePair {

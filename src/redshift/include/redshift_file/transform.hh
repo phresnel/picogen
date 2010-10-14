@@ -21,6 +21,10 @@
 #ifndef TRANSFORM_HH_20101013
 #define TRANSFORM_HH_20101013
 
+#include <vector>
+#include "shared_ptr.hh"
+#include "actuarius/bits/enum.hh"
+
 namespace redshift_file {
         struct Transform {
                 enum Type {
@@ -116,12 +120,7 @@ namespace redshift_file {
                         return ret;
                 }
 
-                // Serialization.
-                template<typename Arch>
-                void serialize (Arch &arch) {
-                        using actuarius::pack;
-                        arch & pack (&Transform::type, Transform::Typenames, transforms);
-                }
+                template<typename Arch> void serialize (Arch &arch);
         };
 }
 

@@ -21,6 +21,8 @@
 #ifndef NORMAL_SER_HH_20101013
 #define NORMAL_SER_HH_20101013
 
+#include "../normal.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void Normal::serialize (Arch &arch) {

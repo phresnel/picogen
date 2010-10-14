@@ -46,6 +46,8 @@
 
 #include "material.hh"
 #include "vertex.hh"
+#include "transform.hh"
+#include "basictypes/rgb.hh"
 
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
@@ -133,6 +135,19 @@ namespace redshift_file {
                                 shared_ptr<redshift::HeightFunction> heightFunction;
 
                                 std::stringstream errors;
+                                /*
+                                redshift::primitive::LazyQuadtree::LazyQuadtree(boost::shared_ptr<redshift::HeightFunction>&, 
+                                                                                double, 
+                                                                                const unsigned int&, 
+                                                                                double, 
+                                                                                redshift::Color)
+                                
+                                redshift::primitive::LazyQuadtree::LazyQuadtree(boost::shared_ptr<const redshift::HeightFunction>,
+                                                                                redshift::real_t,
+                                                                                unsigned int,
+                                                                                redshift::real_t,
+                                                                                int)
+                                */
 
                                 try {
                                         heightFunction =
@@ -149,9 +164,9 @@ namespace redshift_file {
                                 }
                                 return shared_ptr<redshift::Primitive>(new LazyQuadtree(
                                         heightFunction,
-                                        size,
+                                        (redshift::real_t)size,
                                         maxRecursion,
-                                        lodFactor,
+                                        (redshift::real_t)lodFactor,
                                         material.color.toColor(ReflectanceSpectrum)
                                 ));
                         }

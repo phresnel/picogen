@@ -21,6 +21,8 @@
 #ifndef POINT_SER_HH_20101013
 #define POINT_SER_HH_20101013
 
+#include "../point.hh"
+
 namespace redshift_file {
         template<typename Arch>
         void Point::serialize (Arch &arch) {

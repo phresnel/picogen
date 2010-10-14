@@ -21,6 +21,14 @@
 #ifndef SCENE_IMPL_HH_20101013
 #define SCENE_IMPL_HH_20101013
 
+#include <vector>
+#include "object.hh"
+#include "volume.hh"
+#include "rendersettings.hh"
+#include "camera.hh"
+#include "background.hh"
+#include "filmsettings.hh"
+
 namespace redshift_file {
         class Scene;
         struct SceneImpl {
