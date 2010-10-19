@@ -23,6 +23,7 @@
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
+#include "createredshiftsceneclosure.hh"
 
 namespace Ui {
         class NavigationWindow;
@@ -42,6 +43,7 @@ public:
 
         void setNavigation (redshift::shared_ptr<cosyscene::Navigation>,
                             bool blockSignals=true);
+        void setCreateRedshiftClosure (CreateRedshiftSceneClosure::Ptr);
 
 signals:
         void navigationChanged ();
@@ -52,6 +54,7 @@ public slots:
 private:
         Ui::NavigationWindow *ui;
         redshift::shared_ptr<cosyscene::Navigation> navigation_;
+        CreateRedshiftSceneClosure::Ptr createRedshiftScene;
 
         void updateViews ();
         void updateFromViews();

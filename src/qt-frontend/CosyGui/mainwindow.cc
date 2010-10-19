@@ -128,7 +128,8 @@ QString askForOpenFilename(QWidget *parent) {
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
-        scene(new cosyscene::Scene())
+        scene(new cosyscene::Scene()),
+        redshiftSceneCreator(new RedshiftSceneCreator())
 {
         using redshift::shared_ptr;
         using cosyscene::Scene;
@@ -140,6 +141,7 @@ MainWindow::MainWindow(QWidget *parent) :
         scene->sunSky()->toUtahSky (cosyscene::UtahSky());
         ui->sunSky->setSunSky(scene->sunSky());
         ui->navigation->setNavigation(scene->navigation());
+        ui->navigation->setCreateRedshiftClosure(redshiftSceneCreator);
         ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
 
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
@@ -150,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
                  ui->navigation, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->renderingSetup, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
+        redshiftSceneCreator->scene = scene;
 
         // Aesthetics.
         on_filmCommandLink_clicked();
@@ -264,3 +267,16 @@ void MainWindow::on_renderCommandLink_clicked() {
         ui->renderWidget->setSceneAndRender(scene->toRedshiftScene(), true);
 }
 
+
+
+redshift::shared_ptr<redshift_file::Scene>
+  MainWindow::RedshiftSceneCreator::createPreviewScene() const
+{
+        return scene->toRedshiftScene();
+}
+
+redshift::shared_ptr<redshift_file::Scene>
+  MainWindow::RedshiftSceneCreator::createProductionScene() const
+{
+        return scene->toRedshiftScene();
+}

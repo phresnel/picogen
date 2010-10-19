@@ -24,6 +24,7 @@
 
 #include <QMainWindow>
 #include "redshift/include/smart_ptr.hh"
+#include "createredshiftsceneclosure.hh"
 
 namespace cosyscene {
         class Scene;
@@ -50,6 +51,18 @@ private:
 
         void indicateSaved();
         void indicateUnsaved();
+
+        struct RedshiftSceneCreator : CreateRedshiftSceneClosure {
+                redshift::shared_ptr<redshift_file::Scene>
+                                createPreviewScene() const;
+                redshift::shared_ptr<redshift_file::Scene>
+                                createProductionScene() const;
+
+                redshift::shared_ptr<cosyscene::Scene> scene;
+
+                typedef redshift::shared_ptr<RedshiftSceneCreator> Ptr;
+        };
+        RedshiftSceneCreator::Ptr redshiftSceneCreator;
 
 signals:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);

@@ -142,6 +142,13 @@ void NavigationWindow::on_zSpin_valueChanged(double value) {
 
 
 
+void NavigationWindow::setCreateRedshiftClosure (
+        CreateRedshiftSceneClosure::Ptr val
+) {
+        createRedshiftScene = val;
+}
+
+
 
 void NavigationWindow::setNavigation (
         redshift::shared_ptr<cosyscene::Navigation> nav,
@@ -255,8 +262,8 @@ void NavigationWindow::on_stashResetButton_clicked() {
 #include "cosyscene/scene.hh"
 void NavigationWindow::on_refreshButton_clicked() {
         qWarning("{{{");
-        redshift::shared_ptr<redshift_file::Scene> tmp = cosyscene::Scene()
-                                                         .toRedshiftScene();
+        redshift::shared_ptr<redshift_file::Scene> tmp =
+                        createRedshiftScene->createPreviewScene();
         ui->redshiftWidget->setSceneAndRender(tmp);
         qWarning("}}}");
 }

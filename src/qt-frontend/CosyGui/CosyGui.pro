@@ -1,27 +1,21 @@
-#-------------------------------------------------
-#
+# -------------------------------------------------
 # Project created by QtCreator 2010-08-27T13:22:12
-#
-#-------------------------------------------------
-
-QT += core gui
+# -------------------------------------------------
+QT += core \
+    gui
 DEFINES += __STDC_LIMIT_MACROS
 CONFIG += debug_and_release
 QMAKE_CXXFLAGS += -fopenmp
-INCLUDEPATH += \
-        ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/ \
-        ../widgets/ \
-        ../widgets/QuatschSourceEditor/ \
-        ../widgets/SimpleInputBox/ \
-        ../widgets/RenderWindow/ \
-        ../../
-
+INCLUDEPATH += ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/ \
+    ../widgets/ \
+    ../widgets/QuatschSourceEditor/ \
+    ../widgets/SimpleInputBox/ \
+    ../widgets/RenderWindow/ \
+    ../../
 TARGET = CosyGui
 TEMPLATE = app
-
-
-SOURCES += main.cc\
-        mainwindow.cc \
+SOURCES += main.cc \
+    mainwindow.cc \
     cosyscene/terrain.cc \
     terrainwindow.cc \
     cosyscene/scene.cc \
@@ -43,8 +37,7 @@ SOURCES += main.cc\
     filmsettingswindow.cc \
     twinrendersettingswindow.cc \
     rendersettingswindow.cc
-
-HEADERS  += mainwindow.hh \
+HEADERS += mainwindow.hh \
     cosyscene/stash.hh \
     cosyscene/terrain.hh \
     terrainwindow.hh \
@@ -79,9 +72,9 @@ HEADERS  += mainwindow.hh \
     cosyscene/serialization/rendersettings.ser.hh \
     filmsettingswindow.hh \
     twinrendersettingswindow.hh \
-    rendersettingswindow.hh
-
-FORMS    += mainwindow.ui \
+    rendersettingswindow.hh \
+    createredshiftsceneclosure.hh
+FORMS += mainwindow.ui \
     terrainwindow.ui \
     stashview.ui \
     stashframe.ui \
@@ -92,32 +85,30 @@ FORMS    += mainwindow.ui \
     filmsettingswindow.ui \
     twinrendersettingswindow.ui \
     rendersettingswindow.ui
-
-LIBS += \
-    ../../redshift/lib/libpicogen.a \
+LIBS += ../../redshift/lib/libpicogen.a \
     -lgomp \
     -lnoise \
-    -lSDL -lSDL_image
-
-LIBS += -lpthread -lIlmImf -lz -lImath -lHalf -lIex -lIlmThread
-unix:LIBS += \
-    /usr/lib/libboost_program_options.a \
+    -lSDL \
+    -lSDL_image
+LIBS += -lpthread \
+    -lIlmImf \
+    -lz \
+    -lImath \
+    -lHalf \
+    -lIex \
+    -lIlmThread
+unix:LIBS += /usr/lib/libboost_program_options.a \
     /usr/lib/libboost_filesystem.a \
     /usr/lib/libboost_system.a
-windows:LIBS += \
-    -lboost_program_options \
+windows:LIBS += -lboost_program_options \
     -lboost_filesystem \
     -lboost_system
-
-RESOURCES += \
-    resources.qrc
-
+RESOURCES += resources.qrc
 include(../widgets/QuatschSourceEditor/QuatschSourceEditor.pri)
 include(../widgets/Picohelp/picohelp.pri)
 include(../widgets/QtSunSkyEditor/qtsunskyeditor.pri)
 include(../widgets/RenderWindow/renderwindow.pri)
 include(../widgets/RenderWidget/renderwidget.pri)
 include(../widgets/ColorPicker/colorpicker.pri)
-
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release
