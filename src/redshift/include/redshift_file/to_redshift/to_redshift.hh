@@ -30,12 +30,16 @@ namespace redshift {
         class Integrator;
         class VolumeIntegrator;
         class VolumeRegion;
+        
+        class Scene;
 }
 #include "redshift/include/geometry.hh"
 
 
 // redshift_file fwd+Co.
 namespace redshift_file {
+        class Scene;
+
         class Background;
         class Camera;
         
@@ -71,6 +75,17 @@ namespace redshift_file {
         redshift::Transform toRedshift (TransformList const &);
         
         redshift::shared_ptr<redshift::VolumeRegion> toRedshift (Volume const &);
+        
+        redshift::shared_ptr<redshift::Scene> toRedshift (
+                redshift_file::Scene const &scene,
+                redshift::shared_ptr<redshift::Film> film,
+                int renderSettingsIndex, int cameraIndex
+        );
 }
+redshift::shared_ptr<redshift::Scene> sceneDescriptionToScene (
+        redshift_file::Scene const &scene,
+        redshift::shared_ptr<redshift::Film> film,
+        int renderSettingsIndex, int cameraIndex
+);
 
 #endif // TO_REDSHIFT_HH_20101014

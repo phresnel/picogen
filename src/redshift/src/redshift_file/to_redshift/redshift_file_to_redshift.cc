@@ -153,33 +153,46 @@ redshift::shared_ptr<redshift::Scene>
         redshift::shared_ptr<redshift::Film> film,
         int renderSettingsIndex, int cameraIndex
 ) {
+        return redshift_file::toRedshift (scene, film, 
+                                          renderSettingsIndex, cameraIndex);
+}
+
+namespace redshift_file {
+
+redshift::shared_ptr<redshift::Scene>
+ toRedshift (
+        redshift_file::Scene const &scene,
+        redshift::shared_ptr<redshift::Film> film,
+        int renderSettingsIndex, int cameraIndex
+) {
         using namespace redshift;
         using namespace redshift::camera;
         using namespace redshift::interaction;
         using namespace redshift::primitive;
 
 
-        shared_ptr<Camera> camera;
+        shared_ptr<redshift::Camera> camera;
         if (scene.cameraCount()) {
                 camera = toRedshift (scene.camera(cameraIndex),
                                      film->width(),
                                      film->height());
         } else {
-                camera = shared_ptr<Camera> (new Pinhole(
+                camera = shared_ptr<redshift::Camera> (
+                    new redshift::camera::Pinhole(
                         film->width(),
                         film->height(),
                         1.0f,
-                        Transform::translation(0.f,0.1f,0.f)
+                        redshift::Transform::translation(0.f,0.1f,0.f)
                 ));
         }
 
 
         // Add objects.
-        primitive::List *list = new List;
+        redshift::primitive::List *list = new List;
         for (unsigned int i=0; i<scene.objectCount(); ++i) {
                 list->add (toRedshift (scene.object(i)));
         }
-        shared_ptr<Primitive> agg (list);
+        shared_ptr<redshift::Primitive> agg (list);
 
 
         // Add volumes.
@@ -187,12 +200,12 @@ redshift::shared_ptr<redshift::Scene>
         for (unsigned int i=0; i<scene.volumeCount(); ++i) {
                 volumeList->add (toRedshift(scene.volume(i)));
         }
-        shared_ptr<VolumeRegion> volumeAgg (volumeList);
+        shared_ptr<redshift::VolumeRegion> volumeAgg (volumeList);
 
 
 
         // TODO: support arbitrary many backgrounds (Starsky!)
-        shared_ptr<Sky> sky;
+        shared_ptr<redshift::Sky> sky;
         if (scene.backgroundCount()) {
                 sky = toRedshift (scene.background(0));
         } else {
@@ -218,24 +231,23 @@ redshift::shared_ptr<redshift::Scene>
         }
         // ----------
 
-        return shared_ptr<Scene> (new Scene (
+        return redshift::shared_ptr<redshift::Scene> (new redshift::Scene (
                 film,
                 camera,
                 agg,
                 sky,
 
-                shared_ptr<Integrator>(
+                redshift::shared_ptr<redshift::Integrator>(
                         toRedshift(scene.renderSettings(renderSettingsIndex)
                                    .surfaceIntegrator)),
 
                 volumeAgg,
-                shared_ptr<VolumeIntegrator>(
+                redshift::shared_ptr<redshift::VolumeIntegrator>(
                         toRedshift(scene.renderSettings(renderSettingsIndex)
                                    .volumeIntegrator))
         ));
 }
 
-namespace redshift_file {
 
 redshift::shared_ptr<redshift::Sky> toRedshift (Background const &bg) {
         using namespace redshift;
