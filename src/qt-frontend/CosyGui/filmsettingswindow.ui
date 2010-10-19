@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FilmSettings</class>
- <widget class="QWidget" name="FilmSettings">
+ <class>FilmSettingsWindow</class>
+ <widget class="QWidget" name="FilmSettingsWindow">
   <property name="geometry">
    <rect>
     <x>0</x>

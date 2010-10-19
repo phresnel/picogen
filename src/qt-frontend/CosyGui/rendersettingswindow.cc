@@ -18,27 +18,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "rendersettingswindow.hh"
+#include "ui_rendersettingswindow.h"
 
-
-#ifndef RENDERSETTINGS_HH
-#define RENDERSETTINGS_HH
-
-#include <QWidget>
-
-namespace Ui {
-    class RenderSettings;
+RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::RenderSettingsWindow)
+{
+    ui->setupUi(this);
 }
 
-class RenderSettings : public QWidget
+RenderSettingsWindow::~RenderSettingsWindow()
 {
-    Q_OBJECT
-
-public:
-    explicit RenderSettings(QWidget *parent = 0);
-    ~RenderSettings();
-
-private:
-    Ui::RenderSettings *ui;
-};
-
-#endif // RENDERSETTINGS_HH
+    delete ui;
+}

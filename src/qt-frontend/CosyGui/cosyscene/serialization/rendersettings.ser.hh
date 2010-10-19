@@ -19,18 +19,21 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+#ifndef RENDERSETTINGS_SERIALIZATION_HH_20101019
+#define RENDERSETTINGS_SERIALIZATION_HH_20101019
 
-#include "twinrendersettings.hh"
-#include "ui_twinrendersettings.h"
+#include "../rendersettings.hh"
+#include "cosyscene/serialization/stash.ser.hh"
 
-TwinRenderSettings::TwinRenderSettings(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::TwinRenderSettings)
-{
-    ui->setupUi(this);
+namespace cosyscene {
+
+template<typename Arch>
+inline void RenderSettings::serialize (Arch &arch) {
+        using actuarius::pack;
+        if (Arch::deserialize || !stash_.empty())
+                arch & pack("stash", stash_);
 }
 
-TwinRenderSettings::~TwinRenderSettings()
-{
-    delete ui;
-}
+} // namespace cosyscene
+
+#endif // RENDERSETTINGS_SERIALIZATION_HH_20101019

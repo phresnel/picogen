@@ -22,6 +22,7 @@
 #include "terrain.hh"
 #include "sunsky.hh"
 #include "navigation.hh"
+#include "rendersettings.hh"
 
 #include "redshift/include/jobfile.hh"
 
@@ -31,6 +32,8 @@ Scene::Scene()
 : terrain_(new Terrain())
 , sunSky_(new SunSky())
 , navigation_(new Navigation())
+, previewRenderSettings_(new RenderSettings())
+, renderSettings_(new RenderSettings())
 {
         navigation_->toYawPitchRoll(cosyscene::YawPitchRoll());
         sunSky_->toUtahSky(cosyscene::UtahSky());

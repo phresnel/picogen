@@ -22,7 +22,6 @@ TEMPLATE = app
 
 SOURCES += main.cc\
         mainwindow.cc \
-    filmsettings.cc \
     cosyscene/terrain.cc \
     terrainwindow.cc \
     cosyscene/scene.cc \
@@ -40,11 +39,12 @@ SOURCES += main.cc\
     terrainformation.cc \
     terraintexturing.cc \
     cosyscene/color.cc \
-    rendersettings.cc \
-    twinrendersettings.cc
+    cosyscene/rendersettings.cc \
+    filmsettingswindow.cc \
+    twinrendersettingswindow.cc \
+    rendersettingswindow.cc
 
 HEADERS  += mainwindow.hh \
-    filmsettings.hh \
     cosyscene/stash.hh \
     cosyscene/terrain.hh \
     terrainwindow.hh \
@@ -75,11 +75,13 @@ HEADERS  += mainwindow.hh \
     terraintexturing.hh \
     cosyscene/color.hh \
     cosyscene/serialization/color.ser.hh \
-    rendersettings.hh \
-    twinrendersettings.hh
+    cosyscene/rendersettings.hh \
+    cosyscene/serialization/rendersettings.ser.hh \
+    filmsettingswindow.hh \
+    twinrendersettingswindow.hh \
+    rendersettingswindow.hh
 
 FORMS    += mainwindow.ui \
-    filmsettings.ui \
     terrainwindow.ui \
     stashview.ui \
     stashframe.ui \
@@ -87,8 +89,9 @@ FORMS    += mainwindow.ui \
     navigationwindow.ui \
     terrainformation.ui \
     terraintexturing.ui \
-    rendersettings.ui \
-    twinrendersettings.ui
+    filmsettingswindow.ui \
+    twinrendersettingswindow.ui \
+    rendersettingswindow.ui
 
 LIBS += \
     ../../redshift/lib/libpicogen.a \

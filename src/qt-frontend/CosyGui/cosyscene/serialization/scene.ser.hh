@@ -27,6 +27,7 @@
 #include "cosyscene/serialization/terrain.ser.hh"
 #include "cosyscene/serialization/sunsky.ser.hh"
 #include "cosyscene/serialization/navigation.ser.hh"
+#include "cosyscene/serialization/rendersettings.ser.hh"
 
 namespace cosyscene {
 template<typename Arch>
@@ -35,6 +36,8 @@ inline void Scene::serialize (Arch &arch) {
         arch & pack("terrain", *terrain_);
         arch & pack("sunsky", *sunSky_);
         arch & pack("navigation", *navigation_);
+        arch & pack("preview-render-settings", *previewRenderSettings_);
+        arch & pack("render-settings", *renderSettings_);
 }
 }
 

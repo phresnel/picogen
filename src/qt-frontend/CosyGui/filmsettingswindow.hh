@@ -19,18 +19,25 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+#ifndef FILMSETTINGSWINDOW_HH_20100902
+#define FILMSETTINGSWINDOW_HH_20100902
 
-#include "rendersettings.hh"
-#include "ui_rendersettings.h"
+#include <QWidget>
 
-RenderSettings::RenderSettings(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::RenderSettings)
-{
-    ui->setupUi(this);
+namespace Ui {
+    class FilmSettingsWindow;
 }
 
-RenderSettings::~RenderSettings()
+class FilmSettingsWindow : public QWidget
 {
-    delete ui;
-}
+    Q_OBJECT
+
+public:
+    explicit FilmSettingsWindow(QWidget *parent = 0);
+    ~FilmSettingsWindow();
+
+private:
+    Ui::FilmSettingsWindow *ui;
+};
+
+#endif // FILMSETTINGSWINDOW_HH

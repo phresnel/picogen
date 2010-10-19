@@ -18,26 +18,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "filmsettingswindow.hh"
+#include "ui_filmsettingswindow.h"
 
-#ifndef FILMSETTINGS_HH_20100902
-#define FILMSETTINGS_HH_20100902
-
-#include <QWidget>
-
-namespace Ui {
-    class FilmSettings;
+FilmSettingsWindow::FilmSettingsWindow(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::FilmSettingsWindow)
+{
+    ui->setupUi(this);
 }
 
-class FilmSettings : public QWidget
+FilmSettingsWindow::~FilmSettingsWindow()
 {
-    Q_OBJECT
-
-public:
-    explicit FilmSettings(QWidget *parent = 0);
-    ~FilmSettings();
-
-private:
-    Ui::FilmSettings *ui;
-};
-
-#endif // FILMSETTINGS_HH
+    delete ui;
+}

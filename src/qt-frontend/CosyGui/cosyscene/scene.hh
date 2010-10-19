@@ -34,6 +34,7 @@ namespace cosyscene {
 class Terrain;
 class SunSky;
 class Navigation;
+class RenderSettings;
 
 class Scene
 {
@@ -52,6 +53,13 @@ public:
                 return navigation_;
         }
 
+        redshift::shared_ptr<RenderSettings> previewRenderSettings() const {
+                return previewRenderSettings_;
+        }
+        redshift::shared_ptr<RenderSettings> renderSettings() const {
+                return renderSettings_;
+        }
+
         template <typename Arch>
         void serialize (Arch &arch); // inl/scene.inl.hh
 
@@ -64,7 +72,10 @@ public:
 private:
         redshift::shared_ptr<Terrain> terrain_;
         redshift::shared_ptr<SunSky> sunSky_;
-        redshift::shared_ptr<Navigation > navigation_;
+        redshift::shared_ptr<Navigation> navigation_;
+
+        redshift::shared_ptr<RenderSettings> previewRenderSettings_;
+        redshift::shared_ptr<RenderSettings> renderSettings_;
 };
 }
 

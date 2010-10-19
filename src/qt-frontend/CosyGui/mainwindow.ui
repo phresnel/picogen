@@ -593,11 +593,11 @@ QSlider::handle:vertical:hover {
         <property name="currentIndex">
          <number>4</number>
         </property>
-        <widget class="FilmSettings" name="filmSettings"/>
+        <widget class="FilmSettingsWindow" name="filmSettings"/>
         <widget class="NavigationWindow" name="navigation"/>
         <widget class="TerrainWindow" name="terrain"/>
         <widget class="SunSkyWindow" name="sunSky"/>
-        <widget class="TwinRenderSettings" name="renderingSetup"/>
+        <widget class="TwinRenderSettingsWindow" name="renderingSetup"/>
        </widget>
       </item>
      </layout>
@@ -657,9 +657,9 @@ QSlider::handle:vertical:hover {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FilmSettings</class>
+   <class>FilmSettingsWindow</class>
    <extends>QWidget</extends>
-   <header>filmsettings.hh</header>
+   <header>filmsettingswindow.hh</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -681,9 +681,9 @@ QSlider::handle:vertical:hover {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TwinRenderSettings</class>
+   <class>TwinRenderSettingsWindow</class>
    <extends>QWidget</extends>
-   <header>twinrendersettings.hh</header>
+   <header>twinrendersettingswindow.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

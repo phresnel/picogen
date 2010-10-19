@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TwinRenderSettings</class>
- <widget class="QWidget" name="TwinRenderSettings">
+ <class>TwinRenderSettingsWindow</class>
+ <widget class="QWidget" name="TwinRenderSettingsWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -53,7 +53,7 @@
          </widget>
         </item>
         <item>
-         <widget class="RenderSettings" name="widget_2" native="true"/>
+         <widget class="RenderSettingsWindow" name="widget_2" native="true"/>
         </item>
        </layout>
       </widget>
@@ -82,7 +82,7 @@
          </widget>
         </item>
         <item>
-         <widget class="RenderSettings" name="widget" native="true"/>
+         <widget class="RenderSettingsWindow" name="widget" native="true"/>
         </item>
        </layout>
       </widget>
@@ -99,9 +99,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>RenderSettings</class>
+   <class>RenderSettingsWindow</class>
    <extends>QWidget</extends>
-   <header>rendersettings.hh</header>
+   <header>rendersettingswindow.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

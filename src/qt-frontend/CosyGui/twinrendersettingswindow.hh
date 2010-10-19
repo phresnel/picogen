@@ -18,27 +18,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #ifndef TWINRENDERSETTINGS_HH
 #define TWINRENDERSETTINGS_HH
 
 #include <QWidget>
 
 namespace Ui {
-    class TwinRenderSettings;
+    class TwinRenderSettingsWindow;
 }
 
-class TwinRenderSettings : public QWidget
+class TwinRenderSettingsWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit TwinRenderSettings(QWidget *parent = 0);
-    ~TwinRenderSettings();
+    explicit TwinRenderSettingsWindow(QWidget *parent = 0);
+    ~TwinRenderSettingsWindow();
 
 private:
-    Ui::TwinRenderSettings *ui;
+    Ui::TwinRenderSettingsWindow *ui;
 };
 
 #endif // TWINRENDERSETTINGS_HH
