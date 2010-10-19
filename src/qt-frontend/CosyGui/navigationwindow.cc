@@ -267,9 +267,7 @@ void NavigationWindow::on_stashResetButton_clicked() {
 #include "renderwindow.hh"
 #include "cosyscene/scene.hh"
 void NavigationWindow::on_refreshButton_clicked() {
-        qWarning("{{{");
         refreshPreview();
-        qWarning("}}}");
 }
 
 

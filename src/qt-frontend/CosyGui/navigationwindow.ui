@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>741</width>
+    <width>830</width>
     <height>568</height>
    </rect>
   </property>
@@ -199,6 +199,9 @@
                <property name="wrapping">
                 <bool>true</bool>
                </property>
+               <property name="suffix">
+                <string>°</string>
+               </property>
                <property name="decimals">
                 <number>3</number>
                </property>
@@ -251,6 +254,9 @@
              </item>
              <item row="3" column="0">
               <widget class="QDoubleSpinBox" name="pitchSpin">
+               <property name="suffix">
+                <string>°</string>
+               </property>
                <property name="decimals">
                 <number>3</number>
                </property>
@@ -354,6 +360,9 @@
                <property name="wrapping">
                 <bool>true</bool>
                </property>
+               <property name="suffix">
+                <string>°</string>
+               </property>
                <property name="decimals">
                 <number>3</number>
                </property>
@@ -372,56 +381,62 @@
          <widget class="QGroupBox" name="previewGroupBox">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>260</y>
-            <width>241</width>
+            <x>350</x>
+            <y>270</y>
+            <width>261</width>
             <height>181</height>
            </rect>
           </property>
           <property name="title">
            <string>Preview</string>
           </property>
-          <widget class="RenderWidget" name="redshiftWidget" native="true">
-           <property name="geometry">
-            <rect>
-             <x>9</x>
-             <y>19</y>
-             <width>221</width>
-             <height>151</height>
-            </rect>
-           </property>
-          </widget>
-         </widget>
-         <widget class="QPushButton" name="refreshButton">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>270</y>
-            <width>75</width>
-            <height>23</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Refresh</string>
-          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="refreshButton">
+             <property name="text">
+              <string>Refresh</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="RenderWidget" name="redshiftWidget" native="true"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="QCheckBox" name="autoRefreshCheckBox">
+             <property name="text">
+              <string>Auto-Refresh</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
          <widget class="QGroupBox" name="groupBox_4">
           <property name="geometry">
            <rect>
-            <x>380</x>
-            <y>260</y>
-            <width>101</width>
-            <height>107</height>
+            <x>10</x>
+            <y>270</y>
+            <width>281</width>
+            <height>96</height>
            </rect>
           </property>
           <property name="title">
            <string>Position</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>west:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
             <widget class="QDoubleSpinBox" name="xSpin">
+             <property name="suffix">
+              <string>m</string>
+             </property>
              <property name="decimals">
-              <number>6</number>
+              <number>3</number>
              </property>
              <property name="minimum">
               <double>-999999999.000000000000000</double>
@@ -431,23 +446,43 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="ySpin">
-             <property name="decimals">
-              <number>6</number>
-             </property>
-             <property name="minimum">
-              <double>-999999999.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>999999999.000000000000000</double>
+           <item row="0" column="3">
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>north:</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="4">
             <widget class="QDoubleSpinBox" name="zSpin">
+             <property name="suffix">
+              <string>m</string>
+             </property>
              <property name="decimals">
-              <number>6</number>
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-999999999.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>999999999.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>up:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="ySpin">
+             <property name="suffix">
+              <string>m</string>
+             </property>
+             <property name="decimals">
+              <number>3</number>
              </property>
              <property name="minimum">
               <double>-999999999.000000000000000</double>
@@ -458,19 +493,6 @@
             </widget>
            </item>
           </layout>
-         </widget>
-         <widget class="QCheckBox" name="autoRefreshCheckBox">
-          <property name="geometry">
-           <rect>
-            <x>270</x>
-            <y>310</y>
-            <width>111</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Auto-Refresh</string>
-          </property>
          </widget>
         </widget>
         <widget class="QWidget" name="page_2"/>
