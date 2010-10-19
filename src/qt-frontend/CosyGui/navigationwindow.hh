@@ -57,10 +57,12 @@ private:
         CreateRedshiftSceneClosure::Ptr createRedshiftScene;
 
         void updateViews ();
-        void updateFromViews();
+        void updateFromViews(bool refreshIfAutoRefreshEnabled = false);
 
         void setNavigationByValue (cosyscene::Navigation const &,
                                    bool blockSignals=true);
+
+        void refreshPreview();
 
 private slots:
         void on_zSpin_valueChanged(double );

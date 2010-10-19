@@ -91,53 +91,53 @@ void NavigationWindow::on_yawDial_sliderMoved(int value) {
         const bool was = ui->yawSpin->blockSignals(true);
         ui->yawSpin->setValue(value);
         ui->yawSpin->blockSignals(was);
-        updateFromViews();
+        updateFromViews(true);
 }
 void NavigationWindow::on_yawSpin_valueChanged(double value) {
         const bool was = ui->yawDial->blockSignals(true);
         ui->yawDial->setValue(value);
         ui->yawDial->blockSignals(was);
-        updateFromViews();
+        updateFromViews(true);
 }
 
 void NavigationWindow::on_pitchSlider_valueChanged(int position) {
         const bool was = ui->pitchSpin->blockSignals(true);
         ui->pitchSpin->setValue(-position);
         ui->pitchSpin->blockSignals(was);
-        updateFromViews();
+        updateFromViews(true);
 }
 
 void NavigationWindow::on_pitchSpin_valueChanged(double value) {
         const bool was = ui->pitchSlider->blockSignals(true);
         ui->pitchSlider->setValue(-value);
         ui->pitchSlider->blockSignals(was);
-        updateFromViews();
+        updateFromViews(true);
 }
 
 void NavigationWindow::on_rollDial_valueChanged(int position) {
         const bool was = ui->rollSpin->blockSignals(true);
         ui->rollSpin->setValue(-position);
         ui->rollSpin->blockSignals(was);
-        updateFromViews();
+        updateFromViews(true);
 }
 
 void NavigationWindow::on_rollSpin_valueChanged(double value) {
         const bool was = ui     ->rollDial->blockSignals(true);
         ui->rollDial->setValue(-value);
         ui->rollDial->blockSignals(was);
-        updateFromViews();
+        updateFromViews(true);
 }
 
 void NavigationWindow::on_xSpin_valueChanged(double value) {
-        updateFromViews();
+        updateFromViews(true);
 }
 
 void NavigationWindow::on_ySpin_valueChanged(double value) {
-        updateFromViews();
+        updateFromViews(true);
 }
 
 void NavigationWindow::on_zSpin_valueChanged(double value) {
-        updateFromViews();
+        updateFromViews(true);
 }
 
 
@@ -199,7 +199,7 @@ void NavigationWindow::updateViews() {
 
 
 
-void NavigationWindow::updateFromViews() {
+void NavigationWindow::updateFromViews(bool refreshIfAutoRefreshEnabled) {
         cosyscene::YawPitchRoll ypr;
         ypr.yaw = ui->yawSpin->value();
         ypr.pitch = ui->pitchSpin->value();
@@ -211,6 +211,12 @@ void NavigationWindow::updateFromViews() {
                 ui->zSpin->value()
         );
         navigation_->toYawPitchRoll(ypr);
+
+        if (refreshIfAutoRefreshEnabled
+            && ui->autoRefreshCheckBox->checkState() == Qt::Checked
+        ){
+                refreshPreview();
+        }
 }
 
 
@@ -262,8 +268,14 @@ void NavigationWindow::on_stashResetButton_clicked() {
 #include "cosyscene/scene.hh"
 void NavigationWindow::on_refreshButton_clicked() {
         qWarning("{{{");
+        refreshPreview();
+        qWarning("}}}");
+}
+
+
+
+void NavigationWindow::refreshPreview() {
         redshift::shared_ptr<redshift_file::Scene> tmp =
                         createRedshiftScene->createPreviewScene();
         ui->redshiftWidget->setSceneAndRender(tmp);
-        qWarning("}}}");
 }
