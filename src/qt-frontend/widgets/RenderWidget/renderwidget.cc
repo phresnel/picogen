@@ -54,7 +54,7 @@ RenderWidget::~RenderWidget() {
 
 
 void RenderWidget::setSceneAndRender (
-        redshift::shared_ptr<const redshift::scenefile::Scene> scenefile,
+        redshift::shared_ptr<const redshift_file::Scene> scenefile,
         int renderSettingsIndex, int cameraIndex,
         bool overrideFilmSizeWithWidgetSize
 ) {
@@ -62,8 +62,8 @@ void RenderWidget::setSceneAndRender (
         if (renderThread) delete renderThread;
 
         if (overrideFilmSizeWithWidgetSize) {
-                redshift::scenefile::Scene tmp = *scenefile;
-                redshift::scenefile::RenderSettings rs =
+                redshift_file::Scene tmp = *scenefile;
+                redshift_file::RenderSettings rs =
                                 tmp.renderSettings(renderSettingsIndex);
 
                 const double aspect = rs.height / (double)rs.width;
@@ -71,8 +71,8 @@ void RenderWidget::setSceneAndRender (
                 rs.height = aspect * rs.width;
                 tmp.renderSettings(renderSettingsIndex) = rs;
 
-                scenefile = redshift::shared_ptr<const redshift::scenefile::Scene>(
-                                new redshift::scenefile::Scene(tmp));
+                scenefile = redshift::shared_ptr<const redshift_file::Scene>(
+                                new redshift_file::Scene(tmp));
         }
         renderThread = new RenderWidgetThread(this, scenefile, renderSettingsIndex, cameraIndex);
         renderThread->start();
@@ -82,11 +82,11 @@ void RenderWidget::setSceneAndRender (
 
 
 void RenderWidget::updateImage (const redshift::Film &film,
-                                const redshift::scenefile::FilmSettings &fs
+                                const redshift_file::FilmSettings &fs
 ) {
         redshift::ScopedLock lock_(mutex);
         using redshift::Color;
-        using redshift::scenefile::RenderSettings;
+        using redshift_file::RenderSettings;
 
         QImage image(film.width(), film.height(), QImage::Format_RGB32);
 
@@ -132,7 +132,7 @@ void RenderWidget::_updateImageSlot(QImage const &image) {
 
 RenderWidgetThread::RenderWidgetThread(
         RenderWidget *renderWidget,
-        redshift::shared_ptr<const redshift::scenefile::Scene> scenefile,
+        redshift::shared_ptr<const redshift_file::Scene> scenefile,
         int renderSettingsIndex,
         int cameraIndex
 )
@@ -193,16 +193,16 @@ void RenderWidgetThread::run() {
 
 void RenderWidgetThread::renderImage (
                   redshift::shared_ptr<redshift::Film> film,
-                  const redshift::scenefile::Scene &scenef,
+                  const redshift_file::Scene &scenef,
                   int renderSettingsIndex, int cameraIndex)
 {
         using namespace redshift;
         using namespace redshift::interaction;
 
         // Prepare.
-        const redshift::scenefile::RenderSettings rs =
+        const redshift_file::RenderSettings rs =
                         scenef.renderSettings(renderSettingsIndex);
-        const redshift::scenefile::FilmSettings fs =
+        const redshift_file::FilmSettings fs =
                         scenef.filmSettings();
 
         redshift::shared_ptr<redshift::Scene> scene;

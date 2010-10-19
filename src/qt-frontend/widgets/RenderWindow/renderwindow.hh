@@ -48,11 +48,11 @@ namespace redshift {
         class ColorRenderTarget;
         class Scene;
         class Film;
+}
 
-        namespace scenefile {
-                class Scene;
-                class FilmSettings;
-        }
+namespace redshift_file {
+        class Scene;
+        class FilmSettings;
 }
 
 
@@ -60,7 +60,7 @@ namespace redshift {
 class RenderWindow : public QDialog {
         Q_OBJECT
 public:
-        RenderWindow(redshift::shared_ptr<redshift::scenefile::Scene>,
+        RenderWindow(redshift::shared_ptr<redshift_file::Scene>,
                      int renderSettings, int camera,
                      QWidget* parent=0, double updateLatency=1.);
         ~RenderWindow();
@@ -83,8 +83,8 @@ private:
         redshift::Mutex updateMutex;
         friend class RenderWindowImpl;
 
-        redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
-        redshift::shared_ptr<redshift::scenefile::FilmSettings> filmSettings;
+        redshift::shared_ptr<redshift_file::Scene> scenefile;
+        redshift::shared_ptr<redshift_file::FilmSettings> filmSettings;
         QImage image;
         double updateLatency;
         redshift::StopWatch realTime;
@@ -115,7 +115,7 @@ class RenderWindowImpl
 {
         Q_OBJECT
 public:
-        RenderWindowImpl (redshift::shared_ptr<redshift::scenefile::Scene>,
+        RenderWindowImpl (redshift::shared_ptr<redshift_file::Scene>,
                           int renderSettings, int camera, double latency);
         virtual ~RenderWindowImpl ();
 
@@ -152,7 +152,7 @@ private:
         int renderSettings, camera;
         //redshift::shared_ptr<redshift::QImageRenderTarget> target;
         redshift::shared_ptr<redshift::Film> renderBuffer;
-        redshift::shared_ptr<redshift::scenefile::Scene> scenefile;
+        redshift::shared_ptr<redshift_file::Scene> scenefile;
 
         bool error_;
         QString errorMessage_;

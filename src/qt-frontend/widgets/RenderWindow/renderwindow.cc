@@ -158,7 +158,7 @@ QString getImageSavePath (QWidget *parent) {
 // RenderWindowImpl
 //=============================================================================
 RenderWindowImpl::RenderWindowImpl (
-                redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
+                redshift::shared_ptr<redshift_file::Scene> scenefile,
                 int renderSettings, int camera, double updateLatency
 ) : renderSettings(renderSettings), camera(camera)
   , scenefile(scenefile)
@@ -331,7 +331,7 @@ void RenderWindow::RenderProcess (QString pathToSource,
 
 
 RenderWindow::RenderWindow(
-        redshift::shared_ptr<redshift::scenefile::Scene> scenefile,
+        redshift::shared_ptr<redshift_file::Scene> scenefile,
         int renderSettings, int camera,
         QWidget *parent,
         double updateLatency
@@ -339,7 +339,7 @@ RenderWindow::RenderWindow(
     QDialog(parent),
     ui(new Ui::RenderWindow),
     scenefile(scenefile),
-    filmSettings(new redshift::scenefile::FilmSettings(
+    filmSettings(new redshift_file::FilmSettings(
                     scenefile->filmSettings())),
     updateLatency(updateLatency),
     realTime(), compTime()

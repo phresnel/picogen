@@ -33,11 +33,12 @@ namespace Ui {
 }
 
 namespace redshift {
-        namespace scenefile {
-                class Scene;
-                class FilmSettings;
-        }
         class Film;
+}
+
+namespace redshift_file {
+        class Scene;
+        class FilmSettings;
 }
 
 
@@ -56,13 +57,13 @@ public:
 
 
         void setSceneAndRender (
-                redshift::shared_ptr<const redshift::scenefile::Scene> scene,
+                redshift::shared_ptr<const redshift_file::Scene> scene,
                 bool overrideFilmSizeWithWidgetSize = false
         ) {
                 setSceneAndRender (scene, 0, 0, overrideFilmSizeWithWidgetSize);
         }
         void setSceneAndRender (
-                redshift::shared_ptr<const redshift::scenefile::Scene>,
+                redshift::shared_ptr<const redshift_file::Scene>,
                 int renderSettingsIndex, int cameraIndex,
                 bool overrideFilmSizeWithWidgetSize = false);
 
@@ -71,7 +72,7 @@ public:
 
         // Sync.
         void updateImage (const redshift::Film &,
-                          const redshift::scenefile::FilmSettings &);
+                          const redshift_file::FilmSettings &);
 signals:
         void _invokeUpdateImage (QImage const &image);
 private slots:
@@ -97,7 +98,7 @@ class RenderWidgetProgressReporter;
 class RenderWidgetThread : public QThread {
 public:
         RenderWidgetThread (RenderWidget *,
-                            redshift::shared_ptr<const redshift::scenefile::Scene>,
+                            redshift::shared_ptr<const redshift_file::Scene>,
                             int renderSettingsIndex, int cameraIndex);
         virtual ~RenderWidgetThread();
         void run();
@@ -111,12 +112,12 @@ private:
         friend class RenderWidgetProgressReporter;
 
         void renderImage (redshift::shared_ptr<redshift::Film>,
-                          const redshift::scenefile::Scene &,
+                          const redshift_file::Scene &,
                           int renderSettingsIndex, int cameraIndex);
 
         // Redshift.
         RenderWidget *renderWidget_;
-        redshift::shared_ptr<const redshift::scenefile::Scene> scenefile_;
+        redshift::shared_ptr<const redshift_file::Scene> scenefile_;
         redshift::shared_ptr<redshift::Film> renderBuffer_;
         int renderSettingsIndex_;
         int cameraIndex_;
