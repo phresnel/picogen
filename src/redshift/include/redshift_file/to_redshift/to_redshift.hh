@@ -32,6 +32,8 @@ namespace redshift {
         class VolumeRegion;
         
         class Scene;
+	
+	class Film;
 }
 #include "redshift/include/geometry.hh"
 
