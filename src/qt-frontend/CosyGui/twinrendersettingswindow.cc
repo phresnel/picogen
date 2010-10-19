@@ -21,14 +21,36 @@
 #include "twinrendersettingswindow.hh"
 #include "ui_twinrendersettingswindow.h"
 
+#include "cosyscene/scene.hh"
+#include "cosyscene/rendersettings.hh"
+
 TwinRenderSettingsWindow::TwinRenderSettingsWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TwinRenderSettingsWindow)
 {
-    ui->setupUi(this);
+        ui->setupUi(this);
 }
 
 TwinRenderSettingsWindow::~TwinRenderSettingsWindow()
 {
-    delete ui;
+        delete ui;
+}
+
+void TwinRenderSettingsWindow::setTwinRenderSettings (
+        redshift::shared_ptr<cosyscene::TwinRenderSettings> tw,
+        bool blockSignals
+) {
+        const bool wasBlocked = this->blockSignals(blockSignals);
+
+        twinRenderSettings_ = tw;
+        ui->renderSettingsWindow->setRenderSettings(tw->production());
+        ui->previewRenderSettingsWindow->setRenderSettings(tw->preview());
+
+        this->blockSignals (wasBlocked);
+}
+
+void TwinRenderSettingsWindow::sceneInvalidated(
+        redshift::shared_ptr<cosyscene::Scene> scene
+) {
+        setTwinRenderSettings (scene->renderSettings());
 }

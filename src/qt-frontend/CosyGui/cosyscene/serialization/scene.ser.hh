@@ -36,7 +36,6 @@ inline void Scene::serialize (Arch &arch) {
         arch & pack("terrain", *terrain_);
         arch & pack("sunsky", *sunSky_);
         arch & pack("navigation", *navigation_);
-        arch & pack("preview-render-settings", *previewRenderSettings_);
         arch & pack("render-settings", *renderSettings_);
 }
 }

@@ -140,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent) :
         scene->sunSky()->toUtahSky (cosyscene::UtahSky());
         ui->sunSky->setSunSky(scene->sunSky());
         ui->navigation->setNavigation(scene->navigation());
+        ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
 
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->terrain, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
@@ -147,6 +148,8 @@ MainWindow::MainWindow(QWidget *parent) :
                  ui->sunSky, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->navigation, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
+        connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
+                 ui->renderingSetup, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
 
         // Aesthetics.
         on_filmCommandLink_clicked();

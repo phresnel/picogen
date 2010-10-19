@@ -35,6 +35,7 @@ class Terrain;
 class SunSky;
 class Navigation;
 class RenderSettings;
+class TwinRenderSettings;
 
 class Scene
 {
@@ -53,10 +54,7 @@ public:
                 return navigation_;
         }
 
-        redshift::shared_ptr<RenderSettings> previewRenderSettings() const {
-                return previewRenderSettings_;
-        }
-        redshift::shared_ptr<RenderSettings> renderSettings() const {
+        redshift::shared_ptr<TwinRenderSettings> renderSettings() const {
                 return renderSettings_;
         }
 
@@ -74,8 +72,7 @@ private:
         redshift::shared_ptr<SunSky> sunSky_;
         redshift::shared_ptr<Navigation> navigation_;
 
-        redshift::shared_ptr<RenderSettings> previewRenderSettings_;
-        redshift::shared_ptr<RenderSettings> renderSettings_;
+        redshift::shared_ptr<TwinRenderSettings> renderSettings_;
 };
 }
 

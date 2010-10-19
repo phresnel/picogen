@@ -53,7 +53,7 @@
          </widget>
         </item>
         <item>
-         <widget class="RenderSettingsWindow" name="widget_2" native="true"/>
+         <widget class="RenderSettingsWindow" name="previewRenderSettingsWindow" native="true"/>
         </item>
        </layout>
       </widget>
@@ -82,7 +82,7 @@
          </widget>
         </item>
         <item>
-         <widget class="RenderSettingsWindow" name="widget" native="true"/>
+         <widget class="RenderSettingsWindow" name="renderSettingsWindow" native="true"/>
         </item>
        </layout>
       </widget>

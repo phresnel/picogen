@@ -22,21 +22,38 @@
 #define RENDERSETTINGS_HH
 
 #include <QWidget>
+#include "redshift/include/smart_ptr.hh"
 
 namespace Ui {
-    class RenderSettingsWindow;
+        class RenderSettingsWindow;
+}
+namespace cosyscene {
+        class RenderSettings;
 }
 
 class RenderSettingsWindow : public QWidget
 {
-    Q_OBJECT
+        Q_OBJECT
 
 public:
-    explicit RenderSettingsWindow(QWidget *parent = 0);
-    ~RenderSettingsWindow();
+        explicit RenderSettingsWindow(QWidget *parent = 0);
+        ~RenderSettingsWindow();
+
+        void setRenderSettings (redshift::shared_ptr<cosyscene::RenderSettings>,
+                                bool blockSignals=true);
 
 private:
-    Ui::RenderSettingsWindow *ui;
+        Ui::RenderSettingsWindow *ui;
+        redshift::shared_ptr<cosyscene::RenderSettings> renderSettings_;
+
+private:
+        void updateViews();
+
+private slots:
+        void on_seedSpin_editingFinished();
+        void on_samplesPerPixelSpin_editingFinished();
+        void on_heightSpin_editingFinished();
+        void on_widthSpin_editingFinished();
 };
 
 #endif // RENDERSETTINGS_HH

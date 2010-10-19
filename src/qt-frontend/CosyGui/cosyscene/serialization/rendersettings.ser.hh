@@ -32,7 +32,20 @@ inline void RenderSettings::serialize (Arch &arch) {
         using actuarius::pack;
         if (Arch::deserialize || !stash_.empty())
                 arch & pack("stash", stash_);
+
+        arch & pack("width", width_)
+             & pack("height", height_)
+             & pack("samples-per-pixel", samplesPerPixel_)
+             & pack("random-seed", randomSeed_);
 }
+
+template<typename Arch>
+inline void TwinRenderSettings::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack("preview", *preview_)
+             & pack("production", *production_);
+}
+
 
 } // namespace cosyscene
 

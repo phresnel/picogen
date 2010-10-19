@@ -118,13 +118,10 @@ void NavigationWindow::on_zSpin_valueChanged(double value) {
 void NavigationWindow::setNavigation (redshift::shared_ptr<cosyscene::Navigation> nav,
                                 bool blockSignals
 ) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
+        const bool prevBlocked = this->blockSignals(blockSignals);
         navigation_ = nav;
         updateViews();
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
+        this->blockSignals(prevBlocked);
 }
 
 

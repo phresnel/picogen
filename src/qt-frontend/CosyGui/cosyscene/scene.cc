@@ -32,8 +32,7 @@ Scene::Scene()
 : terrain_(new Terrain())
 , sunSky_(new SunSky())
 , navigation_(new Navigation())
-, previewRenderSettings_(new RenderSettings())
-, renderSettings_(new RenderSettings())
+, renderSettings_(new TwinRenderSettings())
 {
         navigation_->toYawPitchRoll(cosyscene::YawPitchRoll());
         sunSky_->toUtahSky(cosyscene::UtahSky());

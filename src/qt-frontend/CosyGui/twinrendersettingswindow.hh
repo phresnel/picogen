@@ -22,21 +22,33 @@
 #define TWINRENDERSETTINGS_HH
 
 #include <QWidget>
+#include "rendersettingswindow.hh"
 
 namespace Ui {
     class TwinRenderSettingsWindow;
 }
+namespace cosyscene {
+        class Scene;
+        class TwinRenderSettings;
+}
 
 class TwinRenderSettingsWindow : public QWidget
 {
-    Q_OBJECT
+        Q_OBJECT
 
 public:
-    explicit TwinRenderSettingsWindow(QWidget *parent = 0);
-    ~TwinRenderSettingsWindow();
+        explicit TwinRenderSettingsWindow(QWidget *parent = 0);
+        ~TwinRenderSettingsWindow();
+
+        void setTwinRenderSettings (redshift::shared_ptr<cosyscene::TwinRenderSettings>,
+                                    bool blockSignals=true);
+
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
-    Ui::TwinRenderSettingsWindow *ui;
+        Ui::TwinRenderSettingsWindow *ui;
+        redshift::shared_ptr<cosyscene::TwinRenderSettings> twinRenderSettings_;
 };
 
 #endif // TWINRENDERSETTINGS_HH

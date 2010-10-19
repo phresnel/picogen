@@ -18,6 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "cosyscene/rendersettings.hh"
+
 #include "rendersettingswindow.hh"
 #include "ui_rendersettingswindow.h"
 
@@ -25,10 +27,42 @@ RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderSettingsWindow)
 {
-    ui->setupUi(this);
+        ui->setupUi(this);
 }
 
-RenderSettingsWindow::~RenderSettingsWindow()
-{
-    delete ui;
+RenderSettingsWindow::~RenderSettingsWindow() {
+        delete ui;
+}
+
+void RenderSettingsWindow::setRenderSettings (
+        redshift::shared_ptr<cosyscene::RenderSettings> rs,
+        bool blockSignals
+) {
+        const bool prev = this->blockSignals(blockSignals);
+        renderSettings_ = rs;
+        updateViews();
+        this->blockSignals(prev);
+}
+
+void RenderSettingsWindow::updateViews() {
+        ui->widthSpin->setValue(renderSettings_->width());
+        ui->heightSpin->setValue(renderSettings_->height());
+        ui->seedSpin->setValue(renderSettings_->randomSeed());
+        ui->samplesPerPixelSpin->setValue(renderSettings_->samplesPerPixel());
+}
+
+void RenderSettingsWindow::on_widthSpin_editingFinished() {
+        renderSettings_->setWidth (ui->widthSpin->value());
+}
+
+void RenderSettingsWindow::on_heightSpin_editingFinished() {
+        renderSettings_->setHeight (ui->heightSpin->value());
+}
+
+void RenderSettingsWindow::on_samplesPerPixelSpin_editingFinished() {
+        renderSettings_->setSamplesPerPixel (ui->samplesPerPixelSpin->value());
+}
+
+void RenderSettingsWindow::on_seedSpin_editingFinished() {
+        renderSettings_->setRandomSeed (ui->seedSpin->value());
 }
