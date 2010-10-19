@@ -56,6 +56,9 @@ private:
         void updateViews ();
         void updateFromViews();
 
+        void setNavigationByValue (cosyscene::Navigation const &,
+                                   bool blockSignals=true);
+
 private slots:
         void on_zSpin_valueChanged(double );
         void on_ySpin_valueChanged(double );
@@ -74,6 +77,10 @@ private slots:
         void on_showRenderTab_clicked();
         void on_showRealTimeTab_clicked();
         void on_showPrecisionTab_clicked();
+
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 };
 
 #endif // NAVIGATIONWINDOW_HH

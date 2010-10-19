@@ -24,7 +24,35 @@
 #include "navigationwindow.hh"
 #include "ui_navigationwindow.h"
 
+#include "stashview.hh"
+
 #include <stdexcept>
+
+
+#include <QDebug>
+#include "redshift/include/sealed.hh"
+SEALED(ScopedQtSignalBlock);
+class ScopedQtSignalBlock : MAKE_SEALED(ScopedQtSignalBlock) {
+public:
+        ScopedQtSignalBlock (QObject *obj, bool block)
+        : obj(obj), wasBlocked (obj->blockSignals(block))
+        {
+        }
+        ~ScopedQtSignalBlock () {
+                obj->blockSignals(wasBlocked);
+        }
+
+private:
+        ScopedQtSignalBlock();
+        ScopedQtSignalBlock(ScopedQtSignalBlock const&);
+        ScopedQtSignalBlock& operator=(ScopedQtSignalBlock const&);
+
+        QObject *obj;
+        bool wasBlocked;
+};
+
+
+
 
 NavigationWindow::NavigationWindow(QWidget *parent) :
     QWidget(parent),
@@ -81,7 +109,7 @@ void NavigationWindow::on_pitchSlider_valueChanged(int position) {
 
 void NavigationWindow::on_pitchSpin_valueChanged(double value) {
         const bool was = ui->pitchSlider->blockSignals(true);
-        ui->pitchSlider->setValue(value);
+        ui->pitchSlider->setValue(-value);
         ui->pitchSlider->blockSignals(was);
         updateFromViews();
 }
@@ -94,8 +122,8 @@ void NavigationWindow::on_rollDial_valueChanged(int position) {
 }
 
 void NavigationWindow::on_rollSpin_valueChanged(double value) {
-        const bool was = ui->rollDial->blockSignals(true);
-        ui->rollDial->setValue(value);
+        const bool was = ui     ->rollDial->blockSignals(true);
+        ui->rollDial->setValue(-value);
         ui->rollDial->blockSignals(was);
         updateFromViews();
 }
@@ -115,8 +143,9 @@ void NavigationWindow::on_zSpin_valueChanged(double value) {
 
 
 
-void NavigationWindow::setNavigation (redshift::shared_ptr<cosyscene::Navigation> nav,
-                                bool blockSignals
+void NavigationWindow::setNavigation (
+        redshift::shared_ptr<cosyscene::Navigation> nav,
+        bool blockSignals
 ) {
         const bool prevBlocked = this->blockSignals(blockSignals);
         navigation_ = nav;
@@ -126,14 +155,31 @@ void NavigationWindow::setNavigation (redshift::shared_ptr<cosyscene::Navigation
 
 
 
+void NavigationWindow::setNavigationByValue (
+        const cosyscene::Navigation &nav,
+        bool blockSignals
+) {
+        ScopedQtSignalBlock (this, blockSignals);
+        *navigation_ = nav;
+        updateViews();
+}
+
+#include <QDebug>
 void NavigationWindow::updateViews() {
+        /*ScopedQtSignalBlock
+                yawBlocked (ui->yawSpin, true),
+                pitchBlocked (ui->pitchSpin, true),
+                rollBlocked (ui->rollSpin, true),
+                xBlocked (ui->xSpin, true),
+                yBlocked (ui->ySpin, true),
+                zBlocked (ui->zSpin, true);*/
+
         switch (navigation_->kind()) {
         case cosyscene::Navigation::YawPitchRoll: {
                 const cosyscene::YawPitchRoll&ypr = navigation_->yawPitchRoll();
                 ui->yawSpin->setValue(ypr.yaw);
                 ui->pitchSpin->setValue(ypr.pitch);
                 ui->rollSpin->setValue(ypr.roll);
-
                 ui->xSpin->setValue(ypr.position.x());
                 ui->ySpin->setValue(ypr.position.y());
                 ui->zSpin->setValue(ypr.position.z());
@@ -168,6 +214,40 @@ void NavigationWindow::sceneInvalidated(
         setNavigation (scene->navigation());
 }
 
+
+
+void NavigationWindow::on_stashButton_clicked() {
+        navigation_->stash();
+}
+
+
+
+void NavigationWindow::on_stashRestoreButton_clicked() {
+        StashView *sw = new StashView (this);
+        sw->addItems(navigation_->getStash());
+        if (QDialog::Accepted == sw->exec()) {
+                cosyscene::Navigation newNav =
+                          sw->selectedData<cosyscene::Navigation>();
+                newNav.setStash(sw->itemsToStash<cosyscene::Navigation>());
+                setNavigationByValue(newNav);
+        }
+}
+
+
+
+void NavigationWindow::on_stashResetButton_clicked() {
+        if (!navigation_->getStash().contains_data(*navigation_)) {
+                switch (confirmReset (this)) {
+                case ConfirmReset_Abort: return;
+                case ConfirmReset_StashBeforeReset: navigation_->stash(); break;
+                case ConfirmReset_Reset: break;
+                }
+        }
+        cosyscene::Navigation t;
+        t.toYawPitchRoll(cosyscene::YawPitchRoll());
+        t.setStash(navigation_->getStash());
+        setNavigationByValue(t);
+}
 
 
 
