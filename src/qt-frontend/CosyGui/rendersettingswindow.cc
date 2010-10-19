@@ -70,3 +70,15 @@ void RenderSettingsWindow::on_seedSpin_editingFinished() {
 void RenderSettingsWindow::setTitle (QString title) {
         ui->stashFrame->setTitle(title);
 }
+
+void RenderSettingsWindow::on_widthSpin_valueChanged(int ) {
+        const double mp = (ui->widthSpin->value()*ui->heightSpin->value())
+                          / 1000000.;
+        ui->megapixelsDisplay->setText("(" + QString::number(mp, 'f', 1) + " MPixels)");
+}
+
+void RenderSettingsWindow::on_heightSpin_valueChanged(int ) {
+        const double mp = (ui->widthSpin->value()*ui->heightSpin->value())
+                          / 1000000.;
+        ui->megapixelsDisplay->setText("(" + QString::number(mp, 'f', 1) + " MPixels)");
+}

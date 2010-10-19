@@ -52,6 +52,8 @@ private:
         void updateViews();
 
 private slots:
+        void on_widthSpin_valueChanged(int );
+        void on_heightSpin_valueChanged(int );
         void on_seedSpin_editingFinished();
         void on_samplesPerPixelSpin_editingFinished();
         void on_heightSpin_editingFinished();
