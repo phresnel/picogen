@@ -66,3 +66,7 @@ void RenderSettingsWindow::on_samplesPerPixelSpin_editingFinished() {
 void RenderSettingsWindow::on_seedSpin_editingFinished() {
         renderSettings_->setRandomSeed (ui->seedSpin->value());
 }
+
+void RenderSettingsWindow::setTitle (QString title) {
+        ui->stashFrame->setTitle(title);
+}

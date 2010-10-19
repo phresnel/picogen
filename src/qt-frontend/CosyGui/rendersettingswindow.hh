@@ -39,6 +39,8 @@ public:
         explicit RenderSettingsWindow(QWidget *parent = 0);
         ~RenderSettingsWindow();
 
+        void setTitle (QString string);
+
         void setRenderSettings (redshift::shared_ptr<cosyscene::RenderSettings>,
                                 bool blockSignals=true);
 

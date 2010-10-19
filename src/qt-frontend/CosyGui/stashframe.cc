@@ -53,7 +53,7 @@ StashFrame::StashFrame(QWidget *parent) :
 
 StashFrame::~StashFrame()
 {
-    delete ui;
+        delete ui;
 }
 
 void StashFrame::setTitle (QString title)

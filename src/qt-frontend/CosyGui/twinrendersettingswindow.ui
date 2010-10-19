@@ -13,91 +13,31 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1">
    <property name="margin">
     <number>0</number>
    </property>
    <item>
-    <widget class="StashFrame" name="frame_3">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QFrame" name="frame_2">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Preview</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="RenderSettingsWindow" name="previewRenderSettingsWindow" native="true"/>
-        </item>
-       </layout>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1">
+       <item>
+        <widget class="RenderSettingsWindow" name="previewRenderSettingsWindow" native="true"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QFrame" name="frame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Production</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="RenderSettingsWindow" name="renderSettingsWindow" native="true"/>
-        </item>
-       </layout>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1">
+       <item>
+        <widget class="RenderSettingsWindow" name="renderSettingsWindow" native="true"/>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>StashFrame</class>
-   <extends>QFrame</extends>
-   <header>stashframe.hh</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>RenderSettingsWindow</class>
    <extends>QWidget</extends>

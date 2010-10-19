@@ -29,6 +29,8 @@ TwinRenderSettingsWindow::TwinRenderSettingsWindow(QWidget *parent) :
     ui(new Ui::TwinRenderSettingsWindow)
 {
         ui->setupUi(this);
+        ui->previewRenderSettingsWindow->setTitle("Preview");
+        ui->renderSettingsWindow->setTitle("Production");
 }
 
 TwinRenderSettingsWindow::~TwinRenderSettingsWindow()
