@@ -5,7 +5,7 @@ include $(top_srcdir)/filelist.am
 
 
 noinst_LIBRARIES = libxyto.a libredshift.a
-bin_PROGRAMS     = picogenpure
+bin_PROGRAMS     = picogen-pure
 
 
 AM_CXXFLAGS = -fopenmp -D__STDC_LIMIT_MACROS
@@ -18,11 +18,11 @@ libredshift_a_CXXFLAGS     = $(AM_CXXFLAGS) `sdl-config --cflags` -I/usr/include
 libredshift_a_SOURCES      = $(redshiftfiles)
 libredshift_a_DEPENDENCIES = libxyto.a
 
-picogenpure_CPPFLAGS     = $(AM_CPPFLAGS) -I./auxiliary/ -I./renderer/ -I./renderer/redshift/include
-picogenpure_CXXFLAGS     = $(libredshift_a_CXXFLAGS) 
-picogenpure_SOURCES      = $(redshiftfiles) $(xytofiles)
-picogenpure_DEPENDENCIES = libxyto.a
-picogenpure_LDADD        =  $(picogenpure_libs) \
+picogen_pure_CPPFLAGS     = $(AM_CPPFLAGS) -I./auxiliary/ -I./renderer/ -I./renderer/redshift/include
+picogen_pure_CXXFLAGS     = $(libredshift_a_CXXFLAGS) 
+picogen_pure_SOURCES      = $(redshiftfiles) $(xytofiles)
+picogen_pure_DEPENDENCIES = libxyto.a
+picogen_pure_LDADD        =  $(picogen_pure_libs) \
                            -lSDL_image -lnoise -lz \
                            -lIlmImf -lImath -lHalf -lIex -lIlmThread \
                            -lboost_program_options \
