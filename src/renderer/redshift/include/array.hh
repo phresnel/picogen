@@ -21,7 +21,7 @@
 #ifndef ARRAY_HH_INCLUDED_20100702
 #define ARRAY_HH_INCLUDED_20100702
 
-#include "../../kallisto/types/array.hh"
+#include "kallisto/types/array.hh"
 namespace redshift {
         using kallisto::array;
 }

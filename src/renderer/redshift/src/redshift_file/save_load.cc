@@ -22,7 +22,7 @@
 #include <fstream>
 #include <string>
 
-#include "../../actuarius/actuarius.hh"
+#include "actuarius/actuarius.hh"
 #include "redshift_file/serialization/scene.ser.hh"
 
 namespace redshift_file {

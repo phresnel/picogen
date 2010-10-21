@@ -137,7 +137,7 @@ namespace redshift{class RenderTarget;}
 #include "backgrounds/pss-adapter.hh"
 #include "backgrounds/preetham-shirley-smits/sunsky.hh"
 
-#include "../../actuarius/actuarius.hh"
+#include "actuarius/actuarius.hh"
 #include <cmath>
 
 

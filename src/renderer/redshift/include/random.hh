@@ -22,7 +22,7 @@
 #define RANDOM_HH_INCLUDED_20100701
 
 #include <stdint.h>
-#include "../../kallisto/rng/kiss.hh"
+#include "kallisto/rng/kiss.hh"
 
 namespace redshift {
 

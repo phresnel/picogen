@@ -25,7 +25,7 @@
 // Assimilate kallisto-types and define some convenience types.
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "../../kallisto/common.hh"
+#include "kallisto/common.hh"
 #include "real.hh"
 
 namespace redshift {

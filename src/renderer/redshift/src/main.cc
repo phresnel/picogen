@@ -144,7 +144,7 @@ namespace redshift{class RenderTarget;}
 #include "../include/interaction/film-to-rendertarget-copying-reporter.hh"
 #include "../include/basictypes/height-function.hh"
 #include "../include/basictypes/quatsch-height-function.hh"
-#include "../../actuarius/actuarius.hh"
+#include "actuarius/actuarius.hh"
 #include "../include/jobfile.hh"
 
 #include <string>
