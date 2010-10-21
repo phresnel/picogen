@@ -14,12 +14,12 @@ AM_LDFLAGS  = -lgomp
 
 
 libredshift_a_CPPFLAGS     = $(picogenpure_CPPFLAGS) -DPICOGENLIB         
-libredshift_a_CXXFLAGS     = $(AM_CXXFLAGS) -I/usr/include/OpenEXR/ -I/mingw/include/OpenEXR/
+libredshift_a_CXXFLAGS     = $(AM_CXXFLAGS) `sdl-config --cflags` -I/usr/include/OpenEXR/ -I/mingw/include/OpenEXR/
 libredshift_a_SOURCES      = $(redshiftfiles)
 libredshift_a_DEPENDENCIES = libxyto.a
 
 picogenpure_CPPFLAGS     = $(AM_CPPFLAGS) -I./auxiliary/ -I./renderer/ -I./renderer/redshift/include
-picogenpure_CXXFLAGS     = $(libredshift_a_CXXFLAGS) `sdl-config --cflags`
+picogenpure_CXXFLAGS     = $(libredshift_a_CXXFLAGS) 
 picogenpure_SOURCES      = $(redshiftfiles) $(xytofiles)
 picogenpure_DEPENDENCIES = libxyto.a
 picogenpure_LDADD        =  $(picogenpure_libs) \
