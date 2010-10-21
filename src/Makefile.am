@@ -1,20 +1,33 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
-include $(top_srcdir)/flags.am
+
 include $(top_srcdir)/filelist.am
 
+
 noinst_LIBRARIES = libxyto.a libredshift.a
-bin_PROGRAMS = picogenpure
+bin_PROGRAMS     = picogenpure
 
-libxyto_a_SOURCES     = $(xytofiles)
-libredshift_a_SOURCES = $(redshiftfiles)
 
-picogenpure_SOURCES   = $(redshiftfiles) $(xytofiles)
+AM_CXXFLAGS = -fopenmp -D__STDC_LIMIT_MACROS
+AM_CCFLAGS  = -fopenmp
+AM_LDFLAGS  = -lgomp
+
+
+libredshift_a_CPPFLAGS   = $(picogenpure_CPPFLAGS) -DPICOGENLIB         
+libredshift_a_CXXFLAGS   = $(AM_CXXFLAGS) -I/usr/include/OpenEXR/ -I/mingw/include/OpenEXR/
+libredshift_a_SOURCES    = $(redshiftfiles)
+libredshift_DEPENDENCIES = libxyto.a
+
+picogenpure_CPPFLAGS     = $(AM_CPPFLAGS) -I./auxiliary/ -I./renderer/ -I./renderer/redshift/include
+picogenpure_CXXFLAGS     = $(libredshift_a_CXXFLAGS) `sdl-config --cflags`
+picogenpure_SOURCES      = $(redshiftfiles) $(xytofiles)
 picogenpure_DEPENDENCIES = libxyto.a
-picogenpure_LDADD    =  $(picogenpure_libs) \
-                        -lSDL_image -lnoise -lz \
-                         -lIlmImf -lImath -lHalf -lIex -lIlmThread \
-                         -lboost_program_options \
-                         -lboost_filesystem \
-                         -lboost_system \
-                         libxyto.a
+picogenpure_LDADD        =  $(picogenpure_libs) \
+                           -lSDL_image -lnoise -lz \
+                           -lIlmImf -lImath -lHalf -lIex -lIlmThread \
+                           -lboost_program_options \
+                           -lboost_filesystem \
+                           -lboost_system \
+                           libxyto.a
+
+libxyto_a_SOURCES        = $(xytofiles)
