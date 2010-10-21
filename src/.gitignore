@@ -97,3 +97,11 @@ aux/xyto/Xytoplax/Xytoplax
 
 upstream/*
 BUILD/
+
+compile
+configure
+depcomp
+install-sh
+missing
+Makefile.in
+aclocal.m4

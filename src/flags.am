@@ -1,0 +1,16 @@
+AM_CXXFLAGS = -fopenmp -D__STDC_LIMIT_MACROS
+AM_CCFLAGS = -fopenmp
+AM_LDFLAGS = -lgomp
+
+picogenpure_CPPFLAGS = \
+        $(AM_CPPFLAGS) \
+        -I./auxiliary/ \
+        -I./renderer/ \
+        -I./renderer/redshift/include
+        
+libredshift_a_CPPFLAGS = $(picogenpure_CPPFLAGS) -DPICOGENLIB
+
+         
+libredshift_a_CXXFLAGS = $(AM_CXXFLAGS) \
+        -I/usr/include/OpenEXR/ -I/mingw/include/OpenEXR/
+picogenpure_CXXFLAGS = $(libredshift_a_CXXFLAGS) `sdl-config --cflags`
