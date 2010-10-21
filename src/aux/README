@@ -1,0 +1,8 @@
+This folder contains some "sub-projects" of picogen which are too non-trivial
+to be contained in the renderer/ directory.
+
+* actuarius: header only serialization library
+* kallisto:  header only math, crunch and PRNG library
+* quatsch:   one-source-file-only functional scripting library
+* quatsch2:  successor to quatsch (see git branch "quatsch2")
+* xyto:      LSystem library
