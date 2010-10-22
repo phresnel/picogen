@@ -42,7 +42,6 @@ HEADERS += mainwindow.hh \
     cosyscene/stash.hh \
     cosyscene/terrain.hh \
     terrainwindow.hh \
-    cosyscene/terrain.serialization.hh \
     cosyscene/scene.hh \
     cosyscene/serialization/stash.ser.hh \
     cosyscene/serialization/scene.ser.hh \
