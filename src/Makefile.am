@@ -14,7 +14,7 @@ AM_LDFLAGS  = -lgomp
 
 redshiftCPPFlags = $(AM_CPPFLAGS) -I./auxiliary/ -I./renderer/ -I./renderer/redshift/include
 libredshift_a_CPPFLAGS     = -DPICOGENLIB $(redshiftCPPFlags)
-libredshift_a_CXXFLAGS     = $(AM_CXXFLAGS) -O5 `sdl-config --cflags` -I/usr/include/OpenEXR/ -I/mingw/include/OpenEXR/
+libredshift_a_CXXFLAGS     = $(AM_CXXFLAGS) `sdl-config --cflags` -I/usr/include/OpenEXR/ -I/mingw/include/OpenEXR/
 libredshift_a_SOURCES      = $(redshiftfiles)
 libredshift_a_DEPENDENCIES = libxyto.a
 
