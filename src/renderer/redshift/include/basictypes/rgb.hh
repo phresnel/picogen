@@ -22,7 +22,7 @@
 #define RGB_H_INCLUDED_20090224
 
 #include <cmath>
-#include "real.hh"
+#include "../real.hh"
 
 namespace redshift {
 

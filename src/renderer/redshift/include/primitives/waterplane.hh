@@ -23,7 +23,7 @@
 
 #include "../geometry.hh"
 #include "../primitives/primitive.hh"
-#include "../material/mirror.hh"
+#include "../bxdf/mirror.hh"
 #include "../basictypes/height-function.hh"
 
 namespace redshift {

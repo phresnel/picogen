@@ -49,13 +49,10 @@ SunSkyWindow::~SunSkyWindow() {
 void SunSkyWindow::setSunSky (redshift::shared_ptr<cosyscene::SunSky> t,
                               bool blockSignals
 ) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
+        const bool prevBlocked = this->blockSignals(blockSignals);
         sunSky = t;
         updateViews();
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
+        this->blockSignals(prevBlocked);
 }
 
 
@@ -63,13 +60,10 @@ void SunSkyWindow::setSunSky (redshift::shared_ptr<cosyscene::SunSky> t,
 void SunSkyWindow::setSunSkyByValue (cosyscene::SunSky const &t,
                                      bool blockSignals
 ) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
+        const bool prevBlocked = this->blockSignals(blockSignals);
         *sunSky = t;
         updateViews();
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
+        this->blockSignals(prevBlocked);
 
 }
 
@@ -93,34 +87,34 @@ void SunSkyWindow::sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene
 
 
 
-void SunSkyWindow::on_utahSkyEditor_overcastChanged(double value) {
+void SunSkyWindow::on_utahSkyEditor_overcastChanged(double) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_atmosphericEffectsEnabledChanged(bool value) {
+void SunSkyWindow::on_utahSkyEditor_atmosphericEffectsEnabledChanged(bool) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_atmosphericEffectsFactorChanged(double value) {
+void SunSkyWindow::on_utahSkyEditor_atmosphericEffectsFactorChanged(double) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_previewResolutionChanged(int value) {
+void SunSkyWindow::on_utahSkyEditor_previewResolutionChanged(int) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_diskSizeChanged(double value) {
+void SunSkyWindow::on_utahSkyEditor_diskSizeChanged(double) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_turbidityChanged(double value) {
+void SunSkyWindow::on_utahSkyEditor_turbidityChanged(double) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_previewMultiplierChanged(double value) {
+void SunSkyWindow::on_utahSkyEditor_previewMultiplierChanged(double) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_sunIntensityChanged(double value) {
+void SunSkyWindow::on_utahSkyEditor_sunIntensityChanged(double) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_atmosphereIntensityChanged(double value) {
+void SunSkyWindow::on_utahSkyEditor_atmosphereIntensityChanged(double) {
         updateFromUtahSunSkyEditor();
 }
-void SunSkyWindow::on_utahSkyEditor_sunDirectionChanged(redshift::Vector ) {
+void SunSkyWindow::on_utahSkyEditor_sunDirectionChanged(redshift::Vector) {
         updateFromUtahSunSkyEditor();
 }
 

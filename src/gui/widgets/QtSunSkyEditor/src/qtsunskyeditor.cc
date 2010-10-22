@@ -20,8 +20,8 @@
 
 
 #include "include/qtsunskyeditor.hh"
-#include "backgrounds/pss-adapter.hh"
-#include "backgrounds/preetham-shirley-smits/sunsky.hh"
+#include "redshift/include/backgrounds/pss-adapter.hh"
+#include "redshift/include/backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <QPainter>
 
 QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)

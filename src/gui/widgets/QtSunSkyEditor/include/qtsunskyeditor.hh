@@ -21,9 +21,9 @@
 #ifndef QTSUNSKYEDITOR_HH
 #define QTSUNSKYEDITOR_HH
 
-#include "geometry.hh"
-#include "optional.hh"
-#include "smart_ptr.hh"
+#include "redshift/include/geometry.hh"
+#include "redshift/include/optional.hh"
+#include "redshift/include/smart_ptr.hh"
 
 #include <QWidget>
 #include <QImage>

@@ -32,12 +32,12 @@
 
 #include "renderwindow.hh"
 #include "ui_renderwindow.h"
-#include "../../redshift/include/jobfile.hh"
-#include "../../redshift/include/image-export.hh"
-#include "../../redshift/include/interaction/progressreporter.hh"
-#include "../../redshift/include/rendertargets/colorrendertarget.hh"
-#include "../../redshift/include/rendertargets/rendertargetlock.hh"
-#include "../../redshift/include/basictypes/film.hh"
+#include "redshift/include/jobfile.hh"
+#include "redshift/include/image-export.hh"
+#include "redshift/include/interaction/progressreporter.hh"
+#include "redshift/include/rendertargets/colorrendertarget.hh"
+#include "redshift/include/rendertargets/rendertargetlock.hh"
+#include "redshift/include/basictypes/film.hh"
 
 
 

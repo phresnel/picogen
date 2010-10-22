@@ -25,8 +25,8 @@
 #include <QThread>
 #include "redshift/include/smart_ptr.hh"
 #include "redshift/include/auxiliary/mutex.hh"
-#include "../../redshift/include/auxiliary/stopwatch.hh"
-#include "../../redshift/include/auxiliary/computationtime.hh"
+#include "redshift/include/auxiliary/stopwatch.hh"
+#include "redshift/include/auxiliary/computationtime.hh"
 
 namespace Ui {
         class RenderWidget;

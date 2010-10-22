@@ -11,7 +11,8 @@ INCLUDEPATH += ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/ \
     ../widgets/QuatschSourceEditor/ \
     ../widgets/SimpleInputBox/ \
     ../widgets/RenderWindow/ \
-    ../../
+    ../../renderer/ \
+    ../../auxiliary/
 TARGET = CosyGui
 TEMPLATE = app
 SOURCES += main.cc \
@@ -85,7 +86,7 @@ FORMS += mainwindow.ui \
     filmsettingswindow.ui \
     twinrendersettingswindow.ui \
     rendersettingswindow.ui
-LIBS += ../../redshift/lib/libpicogen.a \
+LIBS += ../../libredshift.a ../../libxyto.a \
     -lgomp \
     -lnoise \
     -lSDL \

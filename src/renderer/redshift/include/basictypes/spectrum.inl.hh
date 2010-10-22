@@ -24,7 +24,7 @@
 //   * And then, un-inline all functions herein
 
 #include <sstream>
-#include "algorithm.hh"
+#include "../algorithm.hh"
 
 namespace redshift {
 

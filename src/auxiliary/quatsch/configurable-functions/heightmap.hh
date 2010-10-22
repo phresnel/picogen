@@ -26,13 +26,13 @@
 
 #include <boost/shared_array.hpp>
 //#include <picogen/picogen.h>
-#include "../../kallisto/common.hh"
+#include "kallisto/common.hh"
 
 #include "../quatsch.hh"
 #include "../frontend/jux.hh"
 #include "../backend/est/backend.hh"
 
-#include "../../redshift/include/auxiliary/heightmap.hh"
+#include "redshift/include/auxiliary/heightmap.hh"
 
 #include <map>
 //#include <picogen/picogen.h>
