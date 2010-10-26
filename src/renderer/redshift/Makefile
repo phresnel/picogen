@@ -90,6 +90,7 @@ OBJFILES += $(OBJDIR)/constants.o
 OBJFILES += $(OBJDIR)/jobfile.o
 OBJFILES += $(OBJDIR)/save_openexr.o
 OBJFILES += $(OBJDIR)/quatsch-integration.o
+OBJFILES += $(OBJDIR)/get_compilation_info.o
 OBJFILES += $(OBJDIR)/xyto/*.o
 
 OBJFILES += $(BACKGROUNDSOBJDIR)/pss-adapter.o
@@ -231,6 +232,9 @@ $(OBJDIR)/save_openexr.o: ./src/save_openexr.cc
 	$(CXX) -o $@ $<
 
 $(OBJDIR)/quatsch-integration.o: ./src/quatsch-integration.cc
+	$(CXX) -o $@ $<
+
+$(OBJDIR)/get_compilation_info.o: ./src/get_compilation_info.cc
 	$(CXX) -o $@ $<
 
 

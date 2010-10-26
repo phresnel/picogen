@@ -18,22 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#if 0
-
-#include <iostream>
-
-#include "../include/basictypes/volume.hh"
-#include "../include/basictypes/volume.hh"
-using namespace redshift;
-
-#undef main
-int main (int argc, char *argv[]) {
-        /*redshift::static_init();
-        Color a(3), b(2), c=a*a-b;
-        std::cout << c.y() << std::endl;**/
-}
-
-#else
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: check if boost reports on cerr or cout
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -608,16 +592,6 @@ namespace {
         }
 }
 
-
-
-namespace redshift {
-        const char *getCompilationInfo () {
-                return PICOGEN_COMPILATION_INFO;
-        }
-}
-
-#ifndef PICOGENLIB
-
 void read_and_render (Options const & options) {
         // TODO: make render settings an advice-thing, have multiple skies, have if-render-is member in sky (so that e.g. in "preview" there could be no ckouds)
         using namespace redshift_file;
@@ -725,6 +699,3 @@ int main (int argc, char *argv[]) {
         read_and_render(*oo);
         return 0;
 }
-
-#endif // PICOGENLIB
-#endif
