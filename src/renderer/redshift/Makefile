@@ -238,10 +238,10 @@ $(OBJDIR)/get_compilation_info.o: ./src/get_compilation_info.cc
 	$(CXX) -o $@ $<
 
 
-$(OBJDIR)/xyto/*.o: ../xyto/*.cc
+$(OBJDIR)/xyto/*.o: ../../auxiliary/xyto/*.cc
 	mkdir -p obj/xyto && \
 	cd obj/xyto && \
-	$(CXX) ../../../xyto/*.cc
+	$(CXX) ../../../../auxiliary/xyto/*.cc
 
 
 $(OBJDIR)/libxyto.a: $(OBJDIR)/xyto/*.o
