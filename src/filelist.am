@@ -16,10 +16,10 @@ xytofiles = \
         auxiliary/xyto/xyto_ios.cc
 
 redshiftfiles = \
-        renderer/redshift/src/main.cc \
         renderer/redshift/src/constants.cc \
         renderer/redshift/src/jobfile.cc \
         renderer/redshift/src/quatsch-integration.cc \
+        renderer/redshift/src/get_compilation_info.cc \
         renderer/redshift/src/save_openexr.cc \
         \
         renderer/redshift/src/backgrounds/pss-adapter.cc \

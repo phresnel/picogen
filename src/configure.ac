@@ -10,7 +10,8 @@ m4_include([m4/boost.m4])
 m4_include([m4/autotroll.m4])
 
 
-AC_SUBST(picogenpure_libs, `sdl-config --static-libs`)
+AC_SUBST(picogenpure_add_libs, `sdl-config --static-libs`)
+#AC_CONFIG_SUBDIRS([gui/CosyGuiAutomakeProxy])
 
 AM_PROG_CC_C_O
 AC_PROG_CXX
@@ -18,6 +19,7 @@ AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
 AT_WITH_QT
+AT_REQUIRE_QT_VERSION([4.6])
 
 BOOST_REQUIRE([1.40.0])
 BOOST_FILESYSTEM
