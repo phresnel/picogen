@@ -51,18 +51,12 @@ picogen_pure_LDADD        = $(picogen_pure_libs) $(LDADD)
 moc_%.cpp: %.hh
 	$(MOC) $(QT_CPPFLAGS) $< -o $@
 
-qrc_%.cpp: %.hh
+qrc_%.cpp: %.qrc
 	$(RCC) -name `echo "$<" | sed 's/\.qrc$$//'` $< -o $@
 
 ui_%.h: %.ui
 	$(UIC) $< -o $@
 
-
-#%($EXEEXT): %.pro
-#	$(QMAKE) $<
-
-#gui/%/Makefile: gui/%/CosyGui.pro
-#	$(QMAKE) $< -o $@
 ###############################################################################
 
 
