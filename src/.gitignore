@@ -7,7 +7,7 @@
 a.out
 moc_*
 ui_*
-qrc_icons.*
+qrc_*
 *.pro.user
 renderer/redshift/bin/
 
@@ -111,6 +111,7 @@ autom4te.cache
 config.log
 config.status
 Makefile
+libtool
 picogen-pure
 
 m4/config.guess
