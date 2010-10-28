@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "include/qtsunskyeditor.hh"
+#include "qtsunskyeditor.hh"
 #include "redshift/include/backgrounds/pss-adapter.hh"
 #include "redshift/include/backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <QPainter>

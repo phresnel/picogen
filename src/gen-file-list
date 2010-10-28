@@ -1,0 +1,5 @@
+qmake \
+        -special -filelist -prefix COSYGUI \
+        -relateto "$(pwd)" \
+        -prefix COSY \
+        gui/CosyGui/CosyGui.pro

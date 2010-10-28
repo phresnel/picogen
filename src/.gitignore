@@ -112,3 +112,12 @@ config.log
 config.status
 Makefile
 picogen-pure
+
+m4/config.guess
+m4/config.sub
+m4/libtool.m4
+m4/ltmain.sh
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4

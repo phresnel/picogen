@@ -1,7 +1,7 @@
-INCLUDEPATH += $$PWD $$PWD/include $$PWD/../../../redshift/include/
+INCLUDEPATH += $$PWD $$PWD/../../../redshift/include/
 
-HEADERS += $$PWD/include/qtsunskyeditor.hh
-SOURCES += $$PWD/src/qtsunskyeditor.cc
-FORMS += $$PWD/forms/qtsunskyeditor.ui
+HEADERS += $$PWD/qtsunskyeditor.hh
+SOURCES += $$PWD/qtsunskyeditor.cc
+FORMS += $$PWD/qtsunskyeditor.ui
 
 QT += webkit
