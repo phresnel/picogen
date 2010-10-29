@@ -8,6 +8,8 @@ a.out
 moc_*
 ui_*
 qrc_*
+*.lo
+*.la
 *.pro.user
 renderer/redshift/bin/
 
@@ -115,6 +117,7 @@ config.status
 Makefile
 libtool
 picogen-pure
+cosygui
 
 m4/config.guess
 m4/config.sub

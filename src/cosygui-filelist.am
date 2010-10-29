@@ -87,7 +87,8 @@ COSY_MOCFILES =  \
         gui/widgets/SpectralColorPicker/moc_spectralslider.cpp \
         gui/widgets/SpectralColorPicker/moc_spectrumdisplay.cpp \
         gui/widgets/SpectralColorPicker/moc_spectralcurve.cpp \
-        gui/widgets/SpectralColorPicker/moc_importrawdatawizard.cpp
+        gui/widgets/SpectralColorPicker/moc_importrawdatawizard.cpp \
+        upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/moc_qtcolortriangle.cpp
 
 COSY_RESOURCEFILES =  \
         gui/CosyGui/qrc_resources.cpp
