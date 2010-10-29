@@ -10,8 +10,10 @@ m4_include([m4/boost.m4])
 m4_include([m4/autotroll.m4])
 
 
-AC_SUBST(picogenpure_add_libs, `sdl-config --static-libs`)
+#AC_SUBST(picogenpure_add_libs, `sdl-config --libs`)
 #AC_CONFIG_SUBDIRS([gui/CosyGuiAutomakeProxy])
+
+AM_SILENT_RULES([yes])
 
 AM_PROG_CC_C_O
 AC_PROG_CXX

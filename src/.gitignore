@@ -95,7 +95,9 @@ gui/CosyGui/debug/
 aux/xyto/Xytoplax/Makefile
 aux/xyto/Xytoplax/Xytoplax
 
-upstream/*
+upstream/QtSolutions
+upstream/qt-widgets
+
 BUILD/
 
 compile
@@ -122,3 +124,6 @@ m4/ltoptions.m4
 m4/ltsugar.m4
 m4/ltversion.m4
 m4/lt~obsolete.m4
+
+.deps
+.libs

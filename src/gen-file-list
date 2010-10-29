@@ -1,4 +1,4 @@
-qmake \
+/c/qt-phresnels-qt/bin/qmake.exe \
         -special -filelist -prefix COSYGUI \
         -relateto "$(pwd)" \
         -prefix COSY \
