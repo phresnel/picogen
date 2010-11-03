@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 include $(top_srcdir)/filelist.am
 include $(top_srcdir)/cosygui-filelist.am
 
-CLEANFILES = 
+CLEANFILES =
 
 
 AM_CXXFLAGS = -fopenmp -D__STDC_LIMIT_MACROS
@@ -31,7 +31,7 @@ libredshift_la_LIBADD       = libxyto.la \
                               -lIlmImf -lImath -lHalf -lIex -lIlmThread \
                               $(BOOST_FILESYSTEM_LIBS) \
                               $(BOOST_SYSTEM_LIBS) \
-                              $(BOOST_PROGRAM_OPTIONS_LIBS)                              
+                              $(BOOST_PROGRAM_OPTIONS_LIBS)
 libredshift_la_LDFLAGS      = \
                               $(BOOST_FILESYSTEM_LDFLAGS) \
                               $(BOOST_SYSTEM_LDFLAGS) \
@@ -49,16 +49,16 @@ picogen_pure_CPPFLAGS     = $(redshiftCPPFlags)            $(AM_CPPFLAGS)
 ## Qt specific rules
 ###############################################################################
 moc_%.cpp: %.hh
-	$(MOC) $(QT_CPPFLAGS) $< -o $@
+	$(AM_V_GEN)$(MOC) $(QT_CPPFLAGS) $< -o $@
 
 moc_%.cpp: %.h
-	$(MOC) $(QT_CPPFLAGS) $< -o $@
+	$(AM_V_GEN)$(MOC) $(QT_CPPFLAGS) $< -o $@
 
 qrc_%.cpp: %.qrc
-	$(RCC) -name `echo "$<" | sed 's/\.qrc$$//'` $< -o $@
+	$(AM_V_GEN)$(RCC) -name `echo "$<" | sed 's/\.qrc$$//'` $< -o $@
 
 ui_%.h: %.ui
-	$(UIC) $< -o $@
+	$(AM_V_GEN)$(UIC) $< -o $@
 
 
 #%($EXEEXT): %.pro
