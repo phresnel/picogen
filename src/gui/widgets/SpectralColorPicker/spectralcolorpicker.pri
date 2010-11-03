@@ -24,6 +24,6 @@ FORMS += \
     $$PWD/spectrumdisplay.ui \
     $$PWD/spectralcurve.ui \
     $$PWD/importrawdatawizard.ui
-LIBS += $$PWD/../../../libredshift.a
+LIBS += $$PWD/../../../.libs/libredshift.a
 
 

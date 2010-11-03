@@ -85,7 +85,7 @@ FORMS += mainwindow.ui \
     filmsettingswindow.ui \
     twinrendersettingswindow.ui \
     rendersettingswindow.ui
-LIBS += ../../libredshift.a ../../libxyto.a \
+LIBS += ../../.libs/libredshift.a ../../.libs/libxyto.a \
     -lgomp \
     -lnoise \
     -lSDL \
