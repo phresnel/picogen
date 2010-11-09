@@ -18,10 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include <list>
-
 #ifndef MATCH_DESCRIPTORS_HH_INCLUDED_20090918
 #define MATCH_DESCRIPTORS_HH_INCLUDED_20090918
+
+#include <list>
 
 namespace actuarius { namespace detail {
         template <typename iterator_t>
@@ -84,7 +84,8 @@ namespace actuarius { namespace detail {
                 : id_(id)
                 , content_(content)
                 , success_ (true)
-                {}
+                {
+                }
 
                 block_match_t (
                         match_t<iterator_t> content

@@ -30,15 +30,13 @@ namespace actuarius {
 class IArchive {
         typedef std::string::iterator iterator_t;
 
-        template <typename T> void read_val (std::string const & from, T &to) {
+        template <typename T> static void read_val (std::string const & from, T &to) {
                 std::stringstream ss;
                 ss << from;
                 ss >> to;
         }
-        void read_val (std::string const & from, std::string &to) {
-                std::stringstream ss;
-                ss << from;
-                to = ss.str();
+        static void read_val (std::string const & from, std::string &to) {
+                to = from;
         }
 public:
 
@@ -127,10 +125,8 @@ public:
                 if (value_match_t<iterator_t> value=doc.take_value (val.name)){
 
                         // Extract value (i.e. key for lookup).
-                        std::stringstream ss;
-                        ss << unescape_nonstring_terminal (value.value());
-                        std::string key;
-                        ss >> key;
+                        const std::string key =
+                                unescape_nonstring_terminal (value.value());
 
                         // Check if it exists.
                         if (val.enumDesc.exists (key.c_str())) {
@@ -195,10 +191,8 @@ public:
                 ) {
                         using namespace detail;
                         // Extract value (i.e. key for lookup).
-                        std::stringstream ss;
-                        ss << unescape_nonstring_terminal (value.value());
-                        std::string key;
-                        ss >> key;
+                        const std::string key =
+                                unescape_nonstring_terminal (value.value());
 
                         // Check if it exists.
                         if (val.enumDesc.exists (key.c_str())) {
@@ -216,37 +210,6 @@ public:
                 path.pop ();
                 return *this;
         }
-
-        /*template <typename T> IArchive
-        &operator & (pcrp<T> val) {
-                path.push (path.top() + val.name + "/");
-
-                while (detail::value_match_t<iterator_t>
-                        value = doc.take_value (val.name)
-                ) {
-                        using namespace detail;
-                        // Extract value (i.e. key for lookup).
-                        std::stringstream ss;
-                        ss << unescape_nonstring_terminal (value.value());
-                        std::string key;
-                        ss >> key;
-
-                        // Check if it exists.
-                        if (val.enumDesc.exists (key.c_str())) {
-                                val.value.push_back(val.enumDesc[key.c_str()]);
-                        } else if (!optional.top()) {
-                                std::cerr << "warning: found nothing for "
-                                          << path.top()
-                                          << " for value '"
-                                          << key
-                                          << "' (necrp)"
-                                          << std::endl;
-                        }
-                }
-
-                path.pop ();
-                return *this;
-        }*/
 
         template <typename T>
         typename detail::enable_if<
@@ -299,9 +262,8 @@ public:
                 if (detail::value_match_t<iterator_t>
                       value = doc.take_value (val.name)
                 ) {
-                        std::stringstream ss;
-                        ss << unescape_nonstring_terminal (value.value());
-                        val.value = ss.str();
+                        val.value =
+                                unescape_nonstring_terminal (value.value());
                 } else if (!optional.top()) {
                         std::cerr << "warning: found nothing for "
                                   << path.top()
@@ -325,9 +287,7 @@ public:
                         while (detail::block_t<iterator_t> child = block.take_first_child()) {
                                 typename CONT::value_type value;
 
-                                std::stringstream ss;
-                                ss << child.id().c_str();
-                                ss >> value.*val.ptr;
+                                read_val(child.id().c_str(), value.*val.ptr);
 
                                 IArchive ia (*this, child, false);
                                 value.serialize (ia);
@@ -353,9 +313,7 @@ public:
                 while (detail::block_t<iterator_t> child = doc.take_first_child()) {
                         typename CONT::value_type value;
 
-                        std::stringstream ss;
-                        ss << child.id().c_str();
-                        ss >> value.*val.ptr;
+                        read_val(child.id().c_str(), value.*val.ptr);
 
                         IArchive ia (*this, child, false);
                         value.serialize (ia);
@@ -365,31 +323,6 @@ public:
                 path.pop ();
                 return *this;
         }
-
-        /*
-        template <typename CONT, typename PTR>
-        OArchive&
-        operator & (pcrp<CONT,PTR> val) {
-
-                path.push (path.top() + "?" + "/");
-
-                //++indendation;
-                for (typename CONT::iterator it = val.value.begin();
-                     it!=val.value.end();
-                     ++it
-                ) {
-                        out << indent() << (*it).*val.ptr << "{\n";
-                        ++indendation;
-                        it->serialize (*this);
-                        --indendation;
-                        out << indent() << "}\n";
-                }
-                //--indendation;
-                path.pop ();
-
-                return *this;
-        }
-        */
 
         template <typename CONT, typename ADVICE_TYPE>
         IArchive&

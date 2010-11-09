@@ -236,15 +236,34 @@ namespace actuarius { namespace detail {
 template <typename iterator_t>
 inline match_t<iterator_t>
 identifier (iterator_t it, iterator_t end) {
-
         if (is_idchar (it)) {
                 const iterator_t id_begin = it;
                 const std::string name = parse_id (it, end);
                 const iterator_t id_end = it;
                 return match_t<iterator_t>(id_begin, id_end);
         }
-
         return match_t<iterator_t>();
+}
+
+
+template <typename iterator_t>
+inline match_t<iterator_t>
+block_name (iterator_t it, iterator_t end) {
+        const iterator_t id_begin = it;
+        iterator_t lastNonWhitespace = it;
+        bool anonymous = true;
+        while (it != end && *it != '{') {
+                if (!is_whitespace (it)) {
+                        lastNonWhitespace = it;
+                        anonymous = false;
+                }
+                ++it;
+        }
+        if (it == end || *it != '{' || anonymous)
+                return match_t<iterator_t>();
+        const iterator_t id_end = lastNonWhitespace+1;
+
+        return match_t<iterator_t>(id_begin, id_end);
 }
 
 
@@ -255,7 +274,7 @@ block (iterator_t it, iterator_t end) {
         const iterator_t block_begin = it;
 
         // Parse Id.
-        const match_t<iterator_t> id_match = identifier (it, end);
+        const match_t<iterator_t> id_match = block_name (it, end);
         if (!id_match)
                 return block_match_t<iterator_t>();
 
