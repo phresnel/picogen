@@ -416,6 +416,8 @@ redshift::Transform toRedshift (Transform const &transform)  {
         case Transform::yaw:   return RedT::rotationY(transform.angle*to_radians);
         case Transform::pitch: return RedT::rotationX(transform.angle*to_radians);
         case Transform::roll:  return RedT::rotationZ(transform.angle*to_radians);
+        
+        case Transform::scale:  return RedT::scaling(transform.x, transform.y, transform.z);
         };
         return RedT();
 }

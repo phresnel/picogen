@@ -38,7 +38,9 @@ namespace redshift_file {
 
                         yaw,
                         pitch,
-                        roll
+                        roll,
+
+                        scale
                 };
 
                 static const actuarius::Enum<Type> Typenames;
@@ -68,7 +70,7 @@ namespace redshift_file {
         };
 
         class TransformList {
-                std::vector<Transform> transforms;                
+                std::vector<Transform> transforms;
         public:
 
                 TransformList() {}
@@ -90,14 +92,14 @@ namespace redshift_file {
                 void push_back (Transform const &t) {
                         transforms.push_back (t);
                 }
-                
+
                 typedef std::vector<Transform>::iterator iterator;
                 typedef std::vector<Transform>::const_iterator const_iterator;
                 iterator       begin()       { return transforms.begin(); }
                 const_iterator begin() const { return transforms.begin(); }
                 iterator       end()         { return transforms.end(); }
                 const_iterator end()   const { return transforms.end(); }
-                
+
                 template<typename Arch> void serialize (Arch &arch);
         };
 }

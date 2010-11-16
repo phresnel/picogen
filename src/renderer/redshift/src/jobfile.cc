@@ -75,6 +75,7 @@ namespace redshift_file {
                 | actuarius::Nvp<Transform::Type>(Transform::yaw, "yaw")
                 | actuarius::Nvp<Transform::Type>(Transform::pitch, "pitch")
                 | actuarius::Nvp<Transform::Type>(Transform::roll, "roll")
+                | actuarius::Nvp<Transform::Type>(Transform::scale, "scale")
                 );
 
         const actuarius::Enum<Camera::Type> Camera::Typenames =
