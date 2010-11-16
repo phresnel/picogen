@@ -32,6 +32,7 @@
 
 #include "redshift/include/static_init.hh"
 
+#undef main
 int main(int argc, char *argv[])
 {
         redshift::static_init();

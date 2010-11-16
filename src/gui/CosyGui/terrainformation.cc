@@ -31,6 +31,7 @@ TerrainFormation::TerrainFormation(QWidget *parent) :
     formation_(new cosyscene::TerrainFormation())
 {
     ui->setupUi(this);
+    ui->importCLB->setVisible(false);
 }
 
 
@@ -46,13 +47,10 @@ void TerrainFormation::setFormation (
         redshift::shared_ptr<cosyscene::TerrainFormation> t,
         bool blockSignals
 ) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
+        const bool prevBlocked = this->blockSignals(blockSignals);
         formation_ = t;
         updateViews();
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
+        this->blockSignals(prevBlocked);
 }
 
 
@@ -60,13 +58,10 @@ void TerrainFormation::setFormation (
 void TerrainFormation::setFormationByValue(cosyscene::TerrainFormation const &t,
                                            bool blockSignals
 ) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
+        const bool prevBlocked = this->blockSignals(blockSignals);
         *formation_ = t;
         updateViews();
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
+        this->blockSignals(prevBlocked);
 }
 
 

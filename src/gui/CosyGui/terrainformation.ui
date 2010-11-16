@@ -71,7 +71,7 @@
                 <number>16</number>
                </property>
                <item>
-                <widget class="QCommandLinkButton" name="commandLinkButton_3">
+                <widget class="QCommandLinkButton" name="importCLB">
                  <property name="text">
                   <string>Import</string>
                  </property>
@@ -91,7 +91,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCommandLinkButton" name="commandLinkButton">
+                <widget class="QCommandLinkButton" name="parametricPresetCLB">
                  <property name="text">
                   <string>Parametric Preset</string>
                  </property>
@@ -178,15 +178,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QuatschSourceEditor</class>
-   <extends>QWidget</extends>
-   <header>quatschsourceeditor.hh</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>StashFrame</class>
    <extends>QFrame</extends>
    <header>stashframe.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QuatschSourceEditor</class>
+   <extends>QWidget</extends>
+   <header>quatschsourceeditor.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

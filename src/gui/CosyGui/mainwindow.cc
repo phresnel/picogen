@@ -144,6 +144,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->navigation->setCreateRedshiftClosure(redshiftSceneCreator);
         ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
 
+        ui->forestCommandLink->setVisible(false);
+
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->terrain, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
