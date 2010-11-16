@@ -245,7 +245,6 @@ identifier (iterator_t it, iterator_t end) {
         return match_t<iterator_t>();
 }
 
-
 template <typename iterator_t>
 inline match_t<iterator_t>
 block_name (iterator_t it, iterator_t end) {
@@ -253,6 +252,12 @@ block_name (iterator_t it, iterator_t end) {
         iterator_t lastNonWhitespace = it;
         bool anonymous = true;
         while (it != end && *it != '{') {
+                if (*it == ':') {
+                        // can't be block name
+                        return match_t<iterator_t>();
+                }
+                // TODO: Escape characters. But then, we'd need to return
+                // a string and possibly modify match_t.
                 if (!is_whitespace (it)) {
                         lastNonWhitespace = it;
                         anonymous = false;
@@ -277,7 +282,6 @@ block (iterator_t it, iterator_t end) {
         const match_t<iterator_t> id_match = block_name (it, end);
         if (!id_match)
                 return block_match_t<iterator_t>();
-
 
         // Forward and eat whitespace.
         it = id_match.end();
