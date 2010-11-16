@@ -27,6 +27,7 @@
 #include "renderwindow.hh"
 
 #include <iostream>
+#include <QDebug>
 
 //////
 #include <QFileDialog>
@@ -239,7 +240,7 @@ void MainWindow::on_actionSave_triggered() {
                 return;
         cosyscene::save_scene(*this->scene, str.toStdString());
 }
-
+#include "cosyscene/navigation.hh"
 void MainWindow::on_actionLoad_triggered() {
         const QString str = askForOpenFilename(this);
         if (str == "")
@@ -249,6 +250,7 @@ void MainWindow::on_actionLoad_triggered() {
                 cosyscene::load_scene(scene, str.toStdString());
                 *this->scene = scene;
                 emit sceneInvalidated(this->scene);
+
         } catch (std::exception const &e) {
                 std::cerr << e.what() << std::endl;
         } catch (...) {

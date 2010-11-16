@@ -44,21 +44,17 @@ TerrainWindow::~TerrainWindow() {
 }
 
 
-
 void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
                                 bool blockSignals
 ) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
+        const bool prevBlocked = this->blockSignals(blockSignals);
         terrain = t;
         ui->formation->setFormation(terrain->formation(),
                                     blockSignals);
         ui->texturing->setMaterial(terrain->material(),
                                    blockSignals);
         updateViews();
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
+        this->blockSignals(prevBlocked);
 }
 
 

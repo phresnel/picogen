@@ -47,6 +47,7 @@ void TerrainFormation::setFormation (
         redshift::shared_ptr<cosyscene::TerrainFormation> t,
         bool blockSignals
 ) {
+
         const bool prevBlocked = this->blockSignals(blockSignals);
         formation_ = t;
         updateViews();
