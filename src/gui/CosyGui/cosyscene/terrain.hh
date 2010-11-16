@@ -113,6 +113,27 @@ private:
 } // namespace cosyscene
 
 
+
+#include "vector3d.hh"
+namespace cosyscene {
+class WorldFitting
+{
+public:
+        WorldFitting();
+
+        void setSizeFactor (Vector3d);
+        Vector3d sizeFactor() const;
+
+        void setPositionOffset (Vector3d);
+        Vector3d positionOffset() const;
+
+        template <typename Arch> void serialize (Arch &arch);
+private:
+        Vector3d sizeFactor_, positionOffset_;
+};
+} // namespace cosyscene
+
+
 #include "redshift/include/smart_ptr.hh"
 namespace cosyscene {
 
@@ -123,6 +144,7 @@ public:
 
         redshift::shared_ptr<TerrainFormation> formation() const;
         redshift::shared_ptr<TerrainMaterial>  material() const;
+        redshift::shared_ptr<WorldFitting> fitting() const;
 
         template<typename Arch>
         void serialize (Arch &arch);
@@ -130,6 +152,7 @@ public:
 private:
         redshift::shared_ptr<TerrainFormation> formation_;
         redshift::shared_ptr<TerrainMaterial> material_;
+        redshift::shared_ptr<WorldFitting> fitting_;
 };
 
 } // namespace cosyscene

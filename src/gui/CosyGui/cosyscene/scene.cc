@@ -181,7 +181,17 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
                                 } break;
                         }
 
-                        scene.addObject(ob);
+                        redshift_file::Object inst;
+                        inst.type = redshift_file::Object::instance;
+                        inst.instanceParams.objects.push_back(ob);
+
+                        redshift_file::Transform scale;
+                        scale.type = redshift_file::Transform::scale;
+                        scale.x = 1;
+                        scale.y = 1;
+                        scale.z = 1;
+                        inst.instanceParams.transforms.push_back(scale);
+                        scene.addObject(inst);
                 }
         }
 

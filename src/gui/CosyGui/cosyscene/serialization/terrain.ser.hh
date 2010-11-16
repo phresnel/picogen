@@ -25,6 +25,7 @@
 #include "../terrain.hh"
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/color.ser.hh"
+#include "cosyscene/serialization/vector3d.ser.hh"
 
 namespace cosyscene {
 
@@ -63,6 +64,13 @@ inline void TerrainMaterial::serialize (Arch &arch) {
 }
 
 template<typename Arch>
+inline void WorldFitting::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack("size-factor", sizeFactor_);
+        arch & pack("position-offset", positionOffset_);
+}
+
+template<typename Arch>
 inline void Terrain::serialize (Arch &arch) {
         using actuarius::pack;
 
@@ -71,6 +79,7 @@ inline void Terrain::serialize (Arch &arch) {
 
         arch & pack("formation", *formation_);
         arch & pack("material", *material_);
+        arch & pack("world-fitting", *fitting_);
 }
 
 } // namespace cosyscene

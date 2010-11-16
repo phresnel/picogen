@@ -120,10 +120,29 @@ bool TerrainMaterial::data_equals(const TerrainMaterial &rhs) const {
 }
 
 
+
+WorldFitting::WorldFitting() : sizeFactor_(1,1,1), positionOffset_(0,0,0)
+{
+}
+void WorldFitting::setSizeFactor(Vector3d v) {
+        sizeFactor_ = v;
+}
+Vector3d WorldFitting::sizeFactor() const {
+        return sizeFactor_;
+}
+void WorldFitting::setPositionOffset(Vector3d v) {
+        positionOffset_ = v;
+}
+Vector3d WorldFitting::positionOffset() const {
+        return positionOffset_;
+}
+
+
 // Terrain
 Terrain::Terrain()
 : formation_(new TerrainFormation())
 , material_(new TerrainMaterial())
+, fitting_(new WorldFitting())
 {
 }
 redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
@@ -131,6 +150,9 @@ redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
 }
 redshift::shared_ptr<TerrainMaterial> Terrain::material() const {
         return material_;
+}
+redshift::shared_ptr<WorldFitting> Terrain::fitting() const {
+        return fitting_;
 }
 
 
