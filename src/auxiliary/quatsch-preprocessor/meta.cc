@@ -30,6 +30,30 @@ namespace quatsch_preprocessor {
         void DomainScalar::setValue (double val) { value_ = val; }
         double DomainScalar::value () const { return value_; }
 
+        bool operator < (DomainScalar const &lhs,
+                                 DomainScalar const &rhs)
+        {
+                return lhs.value() < rhs.value();
+        }
+        bool operator > (DomainScalar const &lhs,
+                                 DomainScalar const &rhs)
+        {
+                return lhs.value() > rhs.value();
+        }
+        bool operator <= (DomainScalar const &lhs,
+                                 DomainScalar const &rhs)
+        {
+                return lhs.value() <= rhs.value();
+        }
+        bool operator >= (DomainScalar const &lhs,
+                                 DomainScalar const &rhs)
+        {
+                return lhs.value() >= rhs.value();
+        }
+        DomainScalar operator- (DomainScalar const &rhs) {
+                return DomainScalar (-rhs.value());
+        }
+
 
         DomainInterval::DomainInterval() {}
         DomainInterval::DomainInterval (DomainScalar from, DomainScalar to)
@@ -80,7 +104,49 @@ namespace quatsch_preprocessor {
                 return *interval_;
         }
 
+        DomainScalar DomainValue::min() const {
+                switch (type()) {
+                case Scalar: return scalar();
+                case Interval: return interval_->from() < interval_->to() ?
+                                        interval_->from() :
+                                        interval_->to()
+                                        ;
+                }
+        }
+        DomainScalar DomainValue::max() const {
+                switch (type()) {
+                case Scalar: return scalar();
+                case Interval: return interval_->from() > interval_->to() ?
+                                        interval_->from() :
+                                        interval_->to()
+                                        ;
+                }
+        }
 
+
+
+        DomainScalar Domain::min() const {
+                DomainScalar val = DomainScalar::max();
+                for (const_iterator it = values_.begin(), end = values_.end();
+                        it != end; ++it)
+                {
+                        DomainScalar tmp = it->min();
+                        if (tmp < val)
+                                val = tmp;
+                }
+                return val;
+        }
+        DomainScalar Domain::max() const {
+                DomainScalar val = -DomainScalar::max();
+                for (const_iterator it = values_.begin(), end = values_.end();
+                        it != end; ++it)
+                {
+                        DomainScalar tmp = it->max();
+                        if (tmp > val)
+                                val = tmp;
+                }
+                return val;
+        }
 
         void Domain::push_back (DomainValue const &d) { values_.push_back (d); }
 
@@ -128,7 +194,40 @@ namespace quatsch_preprocessor {
         Domain Declaration::domain() const { return domain_; }
         void Declaration::setDomain(Domain const &d) { domain_ = d; }
 
+        DomainScalar Declaration::domainMin() const {
+                return domain_.min();
+        }
+        DomainScalar Declaration::domainMax() const {
+                return domain_.max();
+        }
 
+
+
+        DomainScalar Declarations::domainMin() const {
+                DomainScalar val = DomainScalar::max();
+                for (const_iterator
+                        it = declarations_.begin(), end = declarations_.end();
+                        it != end; ++it)
+                {
+                        const DomainScalar tmp = it->domainMin();
+                        if (tmp < val)
+                                val = tmp;
+                }
+                return val;
+        }
+
+        DomainScalar Declarations::domainMax() const {
+                DomainScalar val = -DomainScalar::max();
+                for (const_iterator
+                        it = declarations_.begin(), end = declarations_.end();
+                        it != end; ++it)
+                {
+                        const DomainScalar tmp = it->domainMax();
+                        if (tmp > val)
+                                val = tmp;
+                }
+                return val;
+        }
 
         void Declarations::push_back (Declaration const &d) { declarations_.push_back (d); }
 

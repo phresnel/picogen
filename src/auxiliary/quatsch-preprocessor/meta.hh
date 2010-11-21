@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <string>
+#include <limits>
 #include "optional.hh"
 
 namespace quatsch_preprocessor {
@@ -33,9 +34,18 @@ public:
 
         void setValue (double val);
         double value () const;
+
+        static DomainScalar max() {
+                return std::numeric_limits<double>::max();
+        }
 private:
         double value_;
 };
+bool operator < (DomainScalar const &lhs, DomainScalar const &rhs);
+bool operator > (DomainScalar const &lhs, DomainScalar const &rhs);
+bool operator <= (DomainScalar const &lhs, DomainScalar const &rhs);
+bool operator >= (DomainScalar const &lhs, DomainScalar const &rhs);
+DomainScalar operator - (DomainScalar const &rhs);
 
 
 
@@ -75,6 +85,9 @@ public:
         DomainScalar scalar() const;
         DomainInterval interval() const;
 
+        DomainScalar min() const;
+        DomainScalar max() const;
+
 private:
         DomainType type_;
         optional<DomainScalar> scalar_;
@@ -87,6 +100,10 @@ private:
 
 class Domain {
 public:
+        // Query.
+        DomainScalar min() const;
+        DomainScalar max() const;
+
         // Container.
         typedef std::vector<DomainValue>::iterator        iterator;
         typedef std::vector<DomainValue>::const_iterator  const_iterator;
@@ -134,6 +151,9 @@ public:
 
         Domain domain() const;
         void setDomain(Domain const &d);
+
+        DomainScalar domainMin() const;
+        DomainScalar domainMax() const;
 private:
         std::string id_;
         DeclaredType type_;
@@ -145,9 +165,8 @@ private:
 class Declarations {
 public:
         // Queries.
-        bool isContinous () const;
-        DomainScalar min() const;
-        DomainScalar max() const;
+        DomainScalar domainMin() const;
+        DomainScalar domainMax() const;
 
         // Container.
         typedef std::vector<Declaration>::iterator        iterator;
