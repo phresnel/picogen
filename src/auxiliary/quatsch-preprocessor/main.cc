@@ -21,8 +21,11 @@
 #include <iostream>
 #include <string>
 #include <cctype>
-#include <boost/optional.hpp>
 #include <vector>
+#include <sstream>
+#include <stdexcept>
+
+#include <boost/optional.hpp>
 
 using boost::optional;
 
@@ -48,16 +51,106 @@ private:
 class PossibleInterval : public PossibleValue {
 };*/
 
+
+
 class DomainScalar {
+public:
+        DomainScalar() {}
+        DomainScalar (double val) : value_ (val) {}
+
+        void setValue (double val) { value_ = val; }
+        double value () const { return value_; }
+private:
+        double value_;
 };
+std::ostream& operator<< (std::ostream& o, DomainScalar const& v) {
+        return o << v.value();
+}
+
+
+
 class DomainInterval {
+public:
+        DomainInterval() {}
+        DomainInterval (DomainScalar from, DomainScalar to)
+        : from_(from), to_(to)
+        {}
+
+        DomainScalar from() const { return from_; }
+        DomainScalar to  () const { return to_; }
+
+        void setFrom (DomainScalar val) { from_ = val; }
+        void setTo   (DomainScalar val) { to_ = val; }
+private:
+        DomainScalar from_, to_;
 };
+std::ostream& operator<< (std::ostream& o, DomainInterval const& v) {
+        return o << "[" << v.from() << ".." << v.to() << "]";
+}
+
+
+
+enum DomainType {
+        Scalar,
+        Interval
+};
+
+
 
 class DomainValue {
 public:
-        static DomainValue FromScalar  (DomainScalar)   { return DomainValue(); }
-        static DomainValue FromInterval(DomainInterval) { return DomainValue(); }
+        DomainValue (DomainScalar scalar) : type_(Scalar), scalar_(scalar) {}
+        DomainValue (DomainInterval inter): type_(Interval), interval_(inter) {}
+        
+        DomainType type() const { return type_; }       
+        
+        void toScalar (DomainScalar scalar) {
+                type_ = Scalar;
+                scalar_ = scalar;
+        }
+        
+        void toInterval (DomainInterval interval) {
+                type_ = Interval;
+                interval_ = interval;
+        }
+        
+        DomainScalar scalar() const {
+                if (!scalar_) {
+                        throw std::runtime_error(
+                                "DomainValue::scalar() called,"
+                                " but it is not a scalar"
+                        );
+                }
+                return *scalar_;
+        }
+        
+        DomainInterval interval() const {
+                if (!interval_) {
+                        throw std::runtime_error(
+                                "DomainValue::interval() called,"
+                                " but it is not an interval"
+                        );
+                }
+                return *interval_;
+        }
+private:
+        DomainType type_;
+        optional<DomainScalar> scalar_;
+        optional<DomainInterval> interval_;
+        
+        DomainValue();
 };
+std::ostream& operator<< (std::ostream& o, DomainValue const& v) {
+        switch (v.type()) {
+        case Scalar: return o << v.scalar();
+        case Interval: return o << v.interval();
+        }
+        throw std::runtime_error (
+        "in std::ostream& operator<< (std::ostream& o, DomainValue const& v): "
+        "unhandled value"
+        );
+};
+
 
 class Domain {
 public:
@@ -81,11 +174,36 @@ public:
 private:
         std::vector<DomainValue> values_;
 };
+std::ostream& operator<< (std::ostream& o, Domain const& v) {
+        typedef Domain::const_iterator iterator;
+        
+        bool first = true;
+        for (iterator it=v.begin(), end=v.end(); it!=end; ++it) {
+                if (!first) o << ", ";
+                o << *it;
+                first = false;
+        }
+        return o;
+}
+
+
 
 enum DeclaredType {
         Integer,
         Real
 };
+std::ostream& operator<< (std::ostream& o, DeclaredType const& v) {
+        switch (v) {
+        case Integer: return o << "integer";
+        case Real:    return o << "integer";
+        }
+        throw std::runtime_error (
+        "in std::ostream& operator<< (std::ostream& o, DeclaredType const& v): "
+        "unhandled value"
+        );
+}
+
+
 
 class Declaration {
 public:
@@ -105,6 +223,12 @@ private:
         DeclaredType type_;
         Domain domain_;
 };
+std::ostream& operator<< (std::ostream& o, Declaration const& v) {
+        return o << v.id() << " : " << v.type()
+                 << " = {" << v.domain() << "}";
+}
+
+
 
 // C++ std::isalpha() may depend on locale, hence our own
 bool isAlpha(char c) {
@@ -167,6 +291,7 @@ optional<DomainScalar> parseScalar (iterator &it_, const iterator &end) {
         if (it == end || !isdigit (*it))
                 return false;
 
+        const iterator value_begin (it);
         while (it != end && isdigit (*it)) {
                 ++it;
         }
@@ -179,9 +304,15 @@ optional<DomainScalar> parseScalar (iterator &it_, const iterator &end) {
                         }
                 }
         }
+        const iterator value_end (it);
+        
+        double val;
+        std::stringstream ss;
+        ss << std::string (value_begin, value_end);
+        ss >> val;
         
         it_ = it;
-        return DomainScalar(); // TODO: <<
+        return DomainScalar(val); // TODO: <<
 }
 template <typename iterator>
 optional<DomainScalar> parseScalarValue (iterator &it_, const iterator &end) {
@@ -198,7 +329,9 @@ optional<DomainInterval> parseInterval (iterator &it_, const iterator &end) {
         ++it;
         
         eatWhitespace (it, end);
-        if (!parseScalar (it, end))
+        
+        const optional<DomainScalar> from = parseScalar (it, end);
+        if (!from)
                 return false;
         eatWhitespace (it, end);
                 
@@ -210,7 +343,8 @@ optional<DomainInterval> parseInterval (iterator &it_, const iterator &end) {
         it += 2;
         
         eatWhitespace (it, end);
-        if (!parseScalar (it, end))
+        const optional<DomainScalar> to = parseScalar (it, end);
+        if (!to)
                 return false;
         eatWhitespace (it, end);        
         
@@ -220,7 +354,7 @@ optional<DomainInterval> parseInterval (iterator &it_, const iterator &end) {
         
 
         it_ = it;
-        return DomainInterval(); // TODO: <<
+        return DomainInterval(*from, *to); // TODO: <<
 }
 template <typename iterator>
 optional<DomainInterval> parseIntervalValue (iterator &it_, const iterator &end) {        
@@ -237,11 +371,11 @@ optional<DomainValue> parseValue (iterator &it_, const iterator &end) {
         
         if (optional<DomainScalar> d = parseScalarValue (it, end)) {
                 it_ = it;
-                return DomainValue::FromScalar(*d);
+                return DomainValue(*d);
         }
         if (optional<DomainInterval> d = parseIntervalValue (it, end)) {
                 it_ = it;
-                return DomainValue::FromInterval(*d);
+                return DomainValue(*d);
         }
                 
         return false;
@@ -388,8 +522,10 @@ void find (std::string code) {
                                 statement += *it;
                                 ++it;
                         }
-                        if (parseDeclaration (statement)) {
-                                std::cout << "nice declaration\n";
+                        if (const optional<Declaration> decl = parseDeclaration (statement)) {
+                                std::cout << "nice declaration{{\n";
+                                std::cout << *decl << '\n';
+                                std::cout << "}}\n";
                         } else {
                                 std::cerr << "not a declaration\n";
                         }
