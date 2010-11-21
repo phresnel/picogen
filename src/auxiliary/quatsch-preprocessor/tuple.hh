@@ -17,16 +17,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#ifndef PARSING_HH_20101118_INCLUDED
-#define PARSING_HH_20101118_INCLUDED
-
-#include <string>
-#include "tuple.hh"
-#include "meta.hh"
-
+#ifndef TUPLE_HH_20101118_INCLUDED
+#define TUPLE_HH_20101118_INCLUDED
+#include <boost/tuple/tuple.hpp>
 namespace quatsch_preprocessor {
-        std::vector<Declaration> findDeclarations (std::string const &code);
-        std::string replace (std::string const &code);
+using boost::tuple;
+using boost::make_tuple;
+using boost::get;
 }
-#endif // PARSING_HH_20101118_INCLUDED
+#endif // MAKE_HH_20101118_INCLUDED

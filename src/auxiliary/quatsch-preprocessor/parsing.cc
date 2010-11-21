@@ -297,21 +297,15 @@ optional<Declaration> parseDeclaration (std::string statement) {
         
         return ret;
 }
-} // namespace {
-} // namespace quatsch_preprocessor {
 
-#include "ios.hh"
-
-namespace quatsch_preprocessor {
-void findDeclarations (std::string code) {
-        typedef std::string::const_iterator iterator;
-
-        for (iterator it=code.begin(), end=code.end();
-             it != end; )
-        {
+template <typename iterator>
+optional<tuple<iterator, iterator> >
+findNextStatement (iterator it, iterator const &end) {
+        while (it != end) {
                 if (*it == '(' 
                     && (it+1!=end) && *(it+1) == '(')
                 {
+                        const iterator stmt_begin = it;
                         bool valid = false;
                         it += 2;
                         
@@ -320,22 +314,80 @@ void findDeclarations (std::string code) {
                                 if (*it == ')' 
                                     && (it+1!=end) && *(it+1) == ')')
                                 {
+                                        it+=2;
                                         valid = true;
                                         break;
                                 }
                                 statement += *it;
                                 ++it;
                         }
-                        if (const optional<Declaration> decl = parseDeclaration (statement)) {
-                                std::cout << "nice declaration{{\n";
-                                std::cout << *decl << '\n';
-                                std::cout << "}}\n";
-                        } else {
-                                std::cerr << "not a declaration\n";
+                        
+                        if (valid) {
+                                const iterator stmt_end = it;
+                                return make_tuple (stmt_begin, stmt_end);
                         }
                 } else {
                         ++it;
+                }                
+        }
+        return false;
+}
+
+std::string actualStatement (tuple<std::string::const_iterator,
+                                   std::string::const_iterator> stmt)
+{
+        return std::string(get<0>(stmt)+2, 
+                           get<1>(stmt)-2);
+}
+
+template<typename iterator>
+iterator behindStatement (tuple<iterator,iterator> stmt) {
+        return get<1>(stmt);
+}
+
+template<typename iterator>
+iterator beforeStatement (tuple<iterator,iterator> stmt) {
+        return get<0>(stmt);
+}
+
+} // namespace {
+} // namespace quatsch_preprocessor {
+
+#include "ios.hh"
+
+namespace quatsch_preprocessor {
+
+std::vector<Declaration> findDeclarations (std::string const &code)
+{
+        typedef std::string::const_iterator iterator;
+        
+        std::vector<Declaration> decls;
+
+        iterator it = code.begin();
+        const iterator end = code.end();
+        while (optional<tuple<iterator,iterator> > 
+                stmt_ = findNextStatement (it, end))
+        {
+                const std::string stmt (actualStatement(*stmt_));
+                it = behindStatement(*stmt_);
+                
+                if (const optional<Declaration> decl = parseDeclaration (stmt)) {
+                        std::cout << "nice declaration{{\n";
+                        std::cout << *decl << '\n';
+                        std::cout << "}}\n";
+                        decls.push_back (*decl);
+                } else {
+                        std::cerr << "not a declaration\n";
                 }
         }
+        
+        return decls;
 }
+
+
+std::string replace(
+        std::string const &code
+) {
+}
+
 }

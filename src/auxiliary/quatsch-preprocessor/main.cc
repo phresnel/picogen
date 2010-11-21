@@ -22,6 +22,9 @@
 #include "parsing.hh"
 #include "ios.hh"
 
+#include <vector>
+#include <tuple>
+
 int main () {
         std::string code = 
         //"((frob = {"Disabled"=0 10 [15..20],0 }))\n"
