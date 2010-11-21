@@ -46,6 +46,7 @@ bool operator > (DomainScalar const &lhs, DomainScalar const &rhs);
 bool operator <= (DomainScalar const &lhs, DomainScalar const &rhs);
 bool operator >= (DomainScalar const &lhs, DomainScalar const &rhs);
 DomainScalar operator - (DomainScalar const &rhs);
+DomainScalar operator - (DomainScalar const &lhs, DomainScalar const &rhs);
 
 
 
@@ -59,6 +60,11 @@ public:
 
         void setFrom (DomainScalar val);
         void setTo   (DomainScalar val);
+
+        DomainScalar min() const;
+        DomainScalar max() const;
+        bool isLinear() const;
+        bool isFinite() const;
 private:
         DomainScalar from_, to_;
 };
@@ -87,6 +93,8 @@ public:
 
         DomainScalar min() const;
         DomainScalar max() const;
+        bool isLinear() const;
+        bool isFinite() const;
 
 private:
         DomainType type_;
@@ -103,6 +111,9 @@ public:
         // Query.
         DomainScalar min() const;
         DomainScalar max() const;
+
+        bool isLinear () const;
+        bool isFinite () const;
 
         // Container.
         typedef std::vector<DomainValue>::iterator        iterator;
@@ -154,6 +165,7 @@ public:
 
         DomainScalar domainMin() const;
         DomainScalar domainMax() const;
+        bool hasFiniteDomain() const;
 private:
         std::string id_;
         DeclaredType type_;
@@ -165,8 +177,8 @@ private:
 class Declarations {
 public:
         // Queries.
-        DomainScalar domainMin() const;
-        DomainScalar domainMax() const;
+        //DomainScalar domainMin() const;
+        //DomainScalar domainMax() const;
 
         // Container.
         typedef std::vector<Declaration>::iterator        iterator;

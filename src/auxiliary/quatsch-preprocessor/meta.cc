@@ -53,6 +53,11 @@ namespace quatsch_preprocessor {
         DomainScalar operator- (DomainScalar const &rhs) {
                 return DomainScalar (-rhs.value());
         }
+        DomainScalar operator - (DomainScalar const &lhs,
+                                 DomainScalar const &rhs
+        ) {
+                return DomainScalar (lhs.value() - rhs.value());
+        }
 
 
         DomainInterval::DomainInterval() {}
@@ -65,6 +70,20 @@ namespace quatsch_preprocessor {
 
         void DomainInterval::setFrom (DomainScalar val) { from_ = val; }
         void DomainInterval::setTo   (DomainScalar val) { to_ = val; }
+        DomainScalar DomainInterval::min() const {
+                return from_<to_ ? from_ : to_;
+        }
+        DomainScalar DomainInterval::max() const {
+                return from_>to_ ? from_ : to_;
+        }
+        bool DomainInterval::isLinear() const {
+                return true;
+        }
+        bool DomainInterval::isFinite() const {
+                return false;
+                // note that a Declaration's type might still make the
+                // declaration finite.
+        }
 
 
 
@@ -107,20 +126,28 @@ namespace quatsch_preprocessor {
         DomainScalar DomainValue::min() const {
                 switch (type()) {
                 case Scalar: return scalar();
-                case Interval: return interval_->from() < interval_->to() ?
-                                        interval_->from() :
-                                        interval_->to()
-                                        ;
+                case Interval: return interval_->min();
                 }
         }
         DomainScalar DomainValue::max() const {
                 switch (type()) {
                 case Scalar: return scalar();
-                case Interval: return interval_->from() > interval_->to() ?
-                                        interval_->from() :
-                                        interval_->to()
-                                        ;
+                case Interval: return interval_->max();
                 }
+        }
+        bool DomainValue::isLinear() const {
+                switch (type()) {
+                case Scalar: return true;
+                case Interval: return interval_->isLinear();
+                }
+                return false;
+        }
+        bool DomainValue::isFinite() const {
+                switch (type()) {
+                case Scalar: return true;
+                case Interval: return interval_->isFinite();
+                }
+                return false;
         }
 
 
@@ -146,6 +173,50 @@ namespace quatsch_preprocessor {
                                 val = tmp;
                 }
                 return val;
+        }
+        bool Domain::isLinear () const {
+                if (values_.size() == 1) {
+                        return values_[0].isLinear();
+                } /*else if (values_.size() >= 2) {
+
+                        if (values_[0].type() != Scalar
+                            || values_[1].type() != Scalar)
+                                return false;
+
+                        const DomainScalar step = values_[1].scalar() -
+                                                  values_[0].scalar();
+                        for (const_iterator
+                             it=values_.begin()+1, end=values_.end()-1;
+                             it != end; ++it)
+                        {
+                                if (it->type() != Scalar
+                                    || (it+1)->type() != Scalar)
+                                        return false;
+
+                                const DomainScalar diff = (it+1)->scalar()-
+                                                          it->scalar();
+                                if (std::fabs(step, diff) > 0.0001)
+                                        return false;
+                        }
+                        return true;
+                }*/
+                return false;
+        }
+        bool Domain::isFinite() const {
+                if (values_.size() == 0) {
+                        return false;
+                } else if (values_.size() == 1) {
+                        return values_[0].isFinite();
+                } else {
+                        for (const_iterator
+                             it=values_.begin(), end=values_.end();
+                             it != end; ++it)
+                        {
+                                if (!it->isFinite())
+                                        return false;
+                        }
+                        return true;
+                }
         }
 
         void Domain::push_back (DomainValue const &d) { values_.push_back (d); }
@@ -200,10 +271,24 @@ namespace quatsch_preprocessor {
         DomainScalar Declaration::domainMax() const {
                 return domain_.max();
         }
+        bool Declaration::hasFiniteDomain() const {
+                if (domain_.isFinite())
+                        return true;
+                // It might still be finite as for the declared type.
+                if (type_ == Boolean)
+                        return true;
+                if (type_ == Integer) {
+                        // Guess. What is too large for a dropdown box?
+                        if (domainMax() - domainMin() < 100) //<-- lame ...
+                                return true;
+                }
+
+                return false;
+        }
 
 
 
-        DomainScalar Declarations::domainMin() const {
+        /*DomainScalar Declarations::domainMin() const {
                 DomainScalar val = DomainScalar::max();
                 for (const_iterator
                         it = declarations_.begin(), end = declarations_.end();
@@ -227,7 +312,7 @@ namespace quatsch_preprocessor {
                                 val = tmp;
                 }
                 return val;
-        }
+        }*/
 
         void Declarations::push_back (Declaration const &d) { declarations_.push_back (d); }
 
