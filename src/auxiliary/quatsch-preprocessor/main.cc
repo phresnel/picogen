@@ -25,11 +25,30 @@
 #include <vector>
 #include <tuple>
 
+#include <iostream>
+
 int main () {
         std::string code = 
         //"((frob = {"Disabled"=0 10 [15..20],0 }))\n"
         "(($frob:real = {0.0, 10, [15.5  ..  20 ] , 7}))\n"
-        "foobar (($frob))";
+        "(+ foobar (*(($frob))0.5))";
         
-        quatsch_preprocessor::findDeclarations (code);
+        using quatsch_preprocessor::Declaration;
+        std::vector<Declaration> 
+                decls = quatsch_preprocessor::findDeclarations (code);
+        std::map<std::string,std::string> reps;
+        
+        for (std::vector<Declaration>::const_iterator 
+                it=decls.begin(), end=decls.end(); it!=end; ++it)
+        {
+                reps[it->id()] = "Hello World!";
+        }
+        
+        std::cout << "--------------------------------------\n";
+        std::cout << "original code:\n";
+        std::cout << code << '\n';
+        std::cout << "--------------------------------------\n";
+        std::cout << "preprocessed code:\n";
+        std::cout << quatsch_preprocessor::replace(code, reps) << '\n';
+        std::cout << "--------------------------------------\n";
 }

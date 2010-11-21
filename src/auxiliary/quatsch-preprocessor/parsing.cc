@@ -194,7 +194,6 @@ optional<Domain> parseDomain (iterator &it_, const iterator &end) {
         bool first = true;
         while (it != end && *it != '}') {
                 
-                std::cout << "$";
                 if (!first) {
                         if (it == end || *it != ',') {
                                 return false;
@@ -208,7 +207,6 @@ optional<Domain> parseDomain (iterator &it_, const iterator &end) {
                 ret.push_back (*value);
                 eatWhitespace (it, end);
 
-                std::cout << "parsed value\n";
                 first = false;
         }
         if (it == end || *it != '}') {
@@ -251,6 +249,23 @@ optional<DeclaredType> parseType (iterator &it, const iterator &end) {
         return false;
 }
 
+optional<std::string> parsePlaceholder (std::string statement) {
+        typedef std::string::const_iterator iterator;
+        
+        iterator it = statement.begin();
+        const iterator end = statement.end();
+
+        eatWhitespace (it, end);
+        const std::string id = parseId (it, end);        
+        eatWhitespace(it, end);
+        
+        // A simple placeholder is the only thing in the statement, so we must
+        // be at the end by now.
+        if (it != end || id == "")
+                return false;        
+        return id;
+}
+
 optional<Declaration> parseDeclaration (std::string statement) {
         typedef std::string::const_iterator iterator;
 
@@ -265,8 +280,6 @@ optional<Declaration> parseDeclaration (std::string statement) {
                 return false;
         }
         ret.setId (id);
-        
-        std::clog << "id:" << id << "\n";
         
         eatWhitespace(it, end);
         if (it != end && *it == ':') {
@@ -290,7 +303,6 @@ optional<Declaration> parseDeclaration (std::string statement) {
         
         optional<Domain> domain = parseDomain (it, end);
         if (!domain) {
-                std::clog << "invalid set\n";
                 return false;
         }
         ret.setDomain (*domain);
@@ -371,13 +383,8 @@ std::vector<Declaration> findDeclarations (std::string const &code)
                 const std::string stmt (actualStatement(*stmt_));
                 it = behindStatement(*stmt_);
                 
-                if (const optional<Declaration> decl = parseDeclaration (stmt)) {
-                        std::cout << "nice declaration{{\n";
-                        std::cout << *decl << '\n';
-                        std::cout << "}}\n";
+                if (const optional<Declaration> decl = parseDeclaration (stmt)) {                        
                         decls.push_back (*decl);
-                } else {
-                        std::cerr << "not a declaration\n";
                 }
         }
         
@@ -386,8 +393,38 @@ std::vector<Declaration> findDeclarations (std::string const &code)
 
 
 std::string replace(
-        std::string const &code
+        std::string const &code,
+        std::map<std::string,std::string> const &rep
 ) {
+        typedef std::string::const_iterator iterator;
+
+        std::string ret;
+        iterator it = code.begin();
+        const iterator end = code.end();
+        
+        while (optional<tuple<iterator,iterator> > 
+                stmt_ = findNextStatement (it, end))
+        {
+                const iterator before = beforeStatement(*stmt_),
+                               behind = behindStatement(*stmt_);
+                const std::string stmt (actualStatement(*stmt_));
+                            
+                // Add part before preprocessor-statement.
+                ret += std::string (it, before);
+                
+                // Add replaced preprocessor-statement.
+                if (const optional<std::string> 
+                        placeholder = parsePlaceholder(stmt))
+                {
+                        if (rep.count(*placeholder) != 0)
+                                ret += rep.find(*placeholder)->second;                        
+                }
+                
+
+                it = behind;
+        }
+        ret += std::string (it, end);
+        return ret;
 }
 
 }
