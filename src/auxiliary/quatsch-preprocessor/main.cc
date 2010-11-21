@@ -23,7 +23,6 @@
 #include "ios.hh"
 
 #include <vector>
-#include <tuple>
 
 #include <iostream>
 
@@ -42,6 +41,7 @@ int main () {
                 it=decls.begin(), end=decls.end(); it!=end; ++it)
         {
                 reps[it->id()] = "Hello World!";
+                //reps.at("foo");
         }
         
         std::cout << "--------------------------------------\n";

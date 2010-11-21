@@ -66,20 +66,20 @@ class DomainValue {
 public:
         DomainValue (DomainScalar scalar);
         DomainValue (DomainInterval inter);
-        
+
         DomainType type() const;
-        
-        void toScalar (DomainScalar scalar);        
+
+        void toScalar (DomainScalar scalar);
         void toInterval (DomainInterval interval);
-        
-        DomainScalar scalar() const;        
+
+        DomainScalar scalar() const;
         DomainInterval interval() const;
 
 private:
         DomainType type_;
         optional<DomainScalar> scalar_;
         optional<DomainInterval> interval_;
-        
+
         DomainValue();
 };
 
@@ -87,18 +87,19 @@ private:
 
 class Domain {
 public:
+        // Container.
         typedef std::vector<DomainValue>::iterator        iterator;
         typedef std::vector<DomainValue>::const_iterator  const_iterator;
         typedef std::vector<DomainValue>::size_type       size_type;
 
         void push_back (DomainValue const &d);
-                
+
         iterator       begin();
         const_iterator begin() const;
-        
+
         iterator       end();
         const_iterator end() const;
-        
+
         size_type      size () const;
 
         DomainValue       &at         (size_t i);
@@ -113,7 +114,8 @@ private:
 
 enum DeclaredType {
         Integer,
-        Real
+        Real,
+        Boolean
 };
 
 
@@ -124,16 +126,50 @@ public:
 
         std::string id() const;
         void setId(std::string const & id);
-        
+
+        std::string displayName() const;
+
         DeclaredType type() const;
         void setType(DeclaredType const &t);
-        
+
         Domain domain() const;
         void setDomain(Domain const &d);
 private:
         std::string id_;
         DeclaredType type_;
         Domain domain_;
+};
+
+
+
+class Declarations {
+public:
+        // Queries.
+        bool isContinous () const;
+        DomainScalar min() const;
+        DomainScalar max() const;
+
+        // Container.
+        typedef std::vector<Declaration>::iterator        iterator;
+        typedef std::vector<Declaration>::const_iterator  const_iterator;
+        typedef std::vector<Declaration>::size_type       size_type;
+
+        void push_back (Declaration const &d);
+
+        iterator       begin();
+        const_iterator begin() const;
+
+        iterator       end();
+        const_iterator end() const;
+
+        size_type      size () const;
+
+        Declaration       &at         (size_t i);
+        const Declaration &at         (size_t i) const;
+        Declaration       &operator[] (size_t i);
+        const Declaration &operator[] (size_t i) const;
+private:
+        std::vector<Declaration> declarations_;
 };
 
 }

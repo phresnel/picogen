@@ -32,17 +32,17 @@ namespace {
 // C++ std::isalpha() may depend on locale, hence our own
 bool isAlpha(char c) {
         switch (c) {
-        case 'a': case 'b': case 'c': case 'd': 
+        case 'a': case 'b': case 'c': case 'd':
         case 'e': case 'f': case 'g': case 'h':
         case 'i': case 'j': case 'k': case 'l':
-        case 'm': case 'n': case 'o': case 'p':         
+        case 'm': case 'n': case 'o': case 'p':
         case 'q': case 'r': case 's': case 't':
         case 'u': case 'v': case 'w': case 'x':
         case 'y': case 'z':
-        case 'A': case 'B': case 'C': case 'D': 
+        case 'A': case 'B': case 'C': case 'D':
         case 'E': case 'F': case 'G': case 'H':
         case 'I': case 'J': case 'K': case 'L':
-        case 'M': case 'N': case 'O': case 'P':         
+        case 'M': case 'N': case 'O': case 'P':
         case 'Q': case 'R': case 'S': case 'T':
         case 'U': case 'V': case 'W': case 'X':
         case 'Y': case 'Z':
@@ -57,7 +57,7 @@ bool isAlphaNum (char c) {
 
 template <typename iterator>
 void eatWhitespace (iterator &it, iterator end) {
-        while (it != end && (*it==' ' || *it=='\n' || *it=='\t'))        
+        while (it != end && (*it==' ' || *it=='\n' || *it=='\t'))
                 ++it;
 }
 
@@ -79,7 +79,7 @@ std::string parseId (iterator &it_, const iterator &end) {
         }
         if (ret != "") {
                 it_ = it;
-        }                
+        }
         return ret;
 }
 
@@ -94,7 +94,7 @@ optional<DomainScalar> parseScalar (iterator &it_, const iterator &end) {
         while (it != end && isdigit (*it)) {
                 ++it;
         }
-        
+
         if (it != end && *it == '.') {
                 if (it+1 != end && isdigit(*(it+1))) {
                         ++it;
@@ -104,12 +104,12 @@ optional<DomainScalar> parseScalar (iterator &it_, const iterator &end) {
                 }
         }
         const iterator value_end (it);
-        
+
         double val;
         std::stringstream ss;
         ss << std::string (value_begin, value_end);
         ss >> val;
-        
+
         it_ = it;
         return DomainScalar(val); // TODO: <<
 }
@@ -126,37 +126,37 @@ optional<DomainInterval> parseInterval (iterator &it_, const iterator &end) {
         if (it == end || *it != '[')
                 return false;
         ++it;
-        
+
         eatWhitespace (it, end);
-        
+
         const optional<DomainScalar> from = parseScalar (it, end);
         if (!from)
                 return false;
         eatWhitespace (it, end);
-                
+
         if (it == end || it+1 == end ||
             *it != '.' || *(it+1) != '.')
         {
                 return false;
         }
         it += 2;
-        
+
         eatWhitespace (it, end);
         const optional<DomainScalar> to = parseScalar (it, end);
         if (!to)
                 return false;
-        eatWhitespace (it, end);        
-        
+        eatWhitespace (it, end);
+
         if (it == end || *it != ']')
                 return false;
         ++it;
-        
+
 
         it_ = it;
         return DomainInterval(*from, *to); // TODO: <<
 }
 template <typename iterator>
-optional<DomainInterval> parseIntervalValue (iterator &it_, const iterator &end) {        
+optional<DomainInterval> parseIntervalValue (iterator &it_, const iterator &end) {
         return parseInterval (it_, end);
 }
 
@@ -167,7 +167,7 @@ optional<DomainValue> parseValue (iterator &it_, const iterator &end) {
 
         if (it == end)
                 return false;
-        
+
         if (optional<DomainScalar> d = parseScalarValue (it, end)) {
                 it_ = it;
                 return DomainValue(*d);
@@ -176,24 +176,24 @@ optional<DomainValue> parseValue (iterator &it_, const iterator &end) {
                 it_ = it;
                 return DomainValue(*d);
         }
-                
+
         return false;
 }
 
 template <typename iterator>
 optional<Domain> parseDomain (iterator &it_, const iterator &end) {
         iterator it = it_;
-        
+
         Domain ret;
 
         if (it == end || *it != '{')
-                return false;        
+                return false;
         ++it;
         eatWhitespace (it, end);
-    
+
         bool first = true;
         while (it != end && *it != '}') {
-                
+
                 if (!first) {
                         if (it == end || *it != ',') {
                                 return false;
@@ -220,12 +220,12 @@ optional<Domain> parseDomain (iterator &it_, const iterator &end) {
 
 
 template <typename iterator>
-bool parseLiteral (iterator &it_, const iterator &end, 
+bool parseString (iterator &it_, const iterator &end,
                    const std::string &literal
 ) {
         iterator it = it_;
-        
-        iterator lit=literal.begin(), 
+
+        iterator lit=literal.begin(),
                  lend=literal.end();
         while (lit!=lend && it!=end) {
                 if (*it != *lit)
@@ -242,27 +242,29 @@ bool parseLiteral (iterator &it_, const iterator &end,
 
 template <typename iterator>
 optional<DeclaredType> parseType (iterator &it, const iterator &end) {
-        if (parseLiteral (it, end, "integer"))
+        if (parseString (it, end, "integer"))
                 return Integer;
-        if (parseLiteral (it, end, "real"))
+        if (parseString (it, end, "real"))
                 return Real;
+        if (parseString (it, end, "boolean"))
+                return Boolean;
         return false;
 }
 
 optional<std::string> parsePlaceholder (std::string statement) {
         typedef std::string::const_iterator iterator;
-        
+
         iterator it = statement.begin();
         const iterator end = statement.end();
 
         eatWhitespace (it, end);
-        const std::string id = parseId (it, end);        
+        const std::string id = parseId (it, end);
         eatWhitespace(it, end);
-        
+
         // A simple placeholder is the only thing in the statement, so we must
         // be at the end by now.
         if (it != end || id == "")
-                return false;        
+                return false;
         return id;
 }
 
@@ -270,7 +272,7 @@ optional<Declaration> parseDeclaration (std::string statement) {
         typedef std::string::const_iterator iterator;
 
         Declaration ret;
-        
+
         iterator it = statement.begin();
         const iterator end = statement.end();
 
@@ -280,33 +282,32 @@ optional<Declaration> parseDeclaration (std::string statement) {
                 return false;
         }
         ret.setId (id);
-        
+
         eatWhitespace(it, end);
-        if (it != end && *it == ':') {
-                ++it;
-                eatWhitespace(it, end);
-                
-                const optional<DeclaredType> dt = parseType (it, end);
-                if (!dt)
-                        return false;
-                
-                ret.setType (*dt);
-                        
-                eatWhitespace(it, end);
-        }        
+        if (it == end || *it != ':')
+                return false;
+        ++it;
+
+        eatWhitespace(it, end);
+        const optional<DeclaredType> dt = parseType (it, end);
+        if (!dt)
+                return false;
+        ret.setType (*dt);
+        eatWhitespace(it, end);
+
 
         if (it == end || *it != '=') {
-                return false;
+                return ret;
         }
         ++it;
         eatWhitespace(it, end);
-        
+
         optional<Domain> domain = parseDomain (it, end);
-        if (!domain) {
+        if (domain && ret.type() == Boolean) {
                 return false;
         }
         ret.setDomain (*domain);
-        
+
         return ret;
 }
 
@@ -314,16 +315,16 @@ template <typename iterator>
 optional<tuple<iterator, iterator> >
 findNextStatement (iterator it, iterator const &end) {
         while (it != end) {
-                if (*it == '(' 
+                if (*it == '('
                     && (it+1!=end) && *(it+1) == '(')
                 {
                         const iterator stmt_begin = it;
                         bool valid = false;
                         it += 2;
-                        
+
                         std::string statement = "";
                         for (; it != end; ) {
-                                if (*it == ')' 
+                                if (*it == ')'
                                     && (it+1!=end) && *(it+1) == ')')
                                 {
                                         it+=2;
@@ -333,14 +334,14 @@ findNextStatement (iterator it, iterator const &end) {
                                 statement += *it;
                                 ++it;
                         }
-                        
+
                         if (valid) {
                                 const iterator stmt_end = it;
                                 return make_tuple (stmt_begin, stmt_end);
                         }
                 } else {
                         ++it;
-                }                
+                }
         }
         return false;
 }
@@ -348,7 +349,7 @@ findNextStatement (iterator it, iterator const &end) {
 std::string actualStatement (tuple<std::string::const_iterator,
                                    std::string::const_iterator> stmt)
 {
-        return std::string(get<0>(stmt)+2, 
+        return std::string(get<0>(stmt)+2,
                            get<1>(stmt)-2);
 }
 
@@ -365,29 +366,27 @@ iterator beforeStatement (tuple<iterator,iterator> stmt) {
 } // namespace {
 } // namespace quatsch_preprocessor {
 
-#include "ios.hh"
 
 namespace quatsch_preprocessor {
 
-std::vector<Declaration> findDeclarations (std::string const &code)
-{
+Declarations findDeclarations (std::string const &code) {
         typedef std::string::const_iterator iterator;
-        
-        std::vector<Declaration> decls;
+
+        Declarations decls;
 
         iterator it = code.begin();
         const iterator end = code.end();
-        while (optional<tuple<iterator,iterator> > 
+        while (optional<tuple<iterator,iterator> >
                 stmt_ = findNextStatement (it, end))
         {
                 const std::string stmt (actualStatement(*stmt_));
                 it = behindStatement(*stmt_);
-                
-                if (const optional<Declaration> decl = parseDeclaration (stmt)) {                        
+
+                if (const optional<Declaration> decl = parseDeclaration (stmt)) {
                         decls.push_back (*decl);
                 }
         }
-        
+
         return decls;
 }
 
@@ -401,25 +400,25 @@ std::string replace(
         std::string ret;
         iterator it = code.begin();
         const iterator end = code.end();
-        
-        while (optional<tuple<iterator,iterator> > 
+
+        while (optional<tuple<iterator,iterator> >
                 stmt_ = findNextStatement (it, end))
         {
                 const iterator before = beforeStatement(*stmt_),
                                behind = behindStatement(*stmt_);
                 const std::string stmt (actualStatement(*stmt_));
-                            
+
                 // Add part before preprocessor-statement.
                 ret += std::string (it, before);
-                
+
                 // Add replaced preprocessor-statement.
-                if (const optional<std::string> 
+                if (const optional<std::string>
                         placeholder = parsePlaceholder(stmt))
                 {
                         if (rep.count(*placeholder) != 0)
-                                ret += rep.find(*placeholder)->second;                        
+                                ret += rep.find(*placeholder)->second;
                 }
-                
+
 
                 it = behind;
         }

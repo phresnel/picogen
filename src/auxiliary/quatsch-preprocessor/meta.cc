@@ -43,23 +43,23 @@ namespace quatsch_preprocessor {
         void DomainInterval::setTo   (DomainScalar val) { to_ = val; }
 
 
-        
-        
+
+
         DomainValue::DomainValue (DomainScalar scalar) : type_(Scalar), scalar_(scalar) {}
         DomainValue::DomainValue (DomainInterval inter): type_(Interval), interval_(inter) {}
-        
-        DomainType DomainValue::type() const { return type_; }       
-        
+
+        DomainType DomainValue::type() const { return type_; }
+
         void DomainValue::toScalar (DomainScalar scalar) {
                 type_ = Scalar;
                 scalar_ = scalar;
         }
-        
+
         void DomainValue::toInterval (DomainInterval interval) {
                 type_ = Interval;
                 interval_ = interval;
         }
-        
+
         DomainScalar DomainValue::scalar() const {
                 if (!scalar_) {
                         throw std::runtime_error(
@@ -69,7 +69,7 @@ namespace quatsch_preprocessor {
                 }
                 return *scalar_;
         }
-        
+
         DomainInterval DomainValue::interval() const {
                 if (!interval_) {
                         throw std::runtime_error(
@@ -83,30 +83,64 @@ namespace quatsch_preprocessor {
 
 
         void Domain::push_back (DomainValue const &d) { values_.push_back (d); }
-        
+
         Domain::iterator       Domain::begin()       { return values_.begin(); }
-        Domain::const_iterator Domain::begin() const { return values_.begin(); }        
+        Domain::const_iterator Domain::begin() const { return values_.begin(); }
         Domain::iterator       Domain::end()         { return values_.end();   }
         Domain::const_iterator Domain::end()   const { return values_.end();   }
-        
-        Domain::size_type      Domain::size () const { return values_.size(); } 
+
+        Domain::size_type      Domain::size () const { return values_.size(); }
 
         DomainValue       &Domain::at         (size_t i)       { return values_.at(i); }
-        const DomainValue &Domain::at         (size_t i) const { return values_.at(i); }        
+        const DomainValue &Domain::at         (size_t i) const { return values_.at(i); }
         DomainValue       &Domain::operator[] (size_t i)       { return values_[i]; }
         const DomainValue &Domain::operator[] (size_t i) const { return values_[i]; }
 
 
 
-        Declaration::Declaration () : type_(Real) 
+        Declaration::Declaration () : type_(Real)
         {}
 
         std::string Declaration::id() const { return id_; }
         void Declaration::setId(std::string const & id) { id_ = id; }
-        
+
+        std::string Declaration::displayName() const {
+                // 0) remove leading $
+                const std::string nd = id_.substr(1);
+
+                // 1) insert whitespace before inner uppercase letters
+                std::string tmp;
+                bool isInner = false;
+                for (std::string::const_iterator it=nd.begin(), end=nd.end();
+                        it != end; ++it)
+                {
+                        if (isInner && isupper(*it))
+                                tmp += " ";
+                        tmp += *it;
+                        isInner = true;
+                }
+                return tmp;
+        }
+
         DeclaredType Declaration::type() const { return type_; }
         void Declaration::setType(DeclaredType const &t) { type_ = t; }
-        
+
         Domain Declaration::domain() const { return domain_; }
         void Declaration::setDomain(Domain const &d) { domain_ = d; }
+
+
+
+        void Declarations::push_back (Declaration const &d) { declarations_.push_back (d); }
+
+        Declarations::iterator       Declarations::begin()       { return declarations_.begin(); }
+        Declarations::const_iterator Declarations::begin() const { return declarations_.begin(); }
+        Declarations::iterator       Declarations::end()         { return declarations_.end();   }
+        Declarations::const_iterator Declarations::end()   const { return declarations_.end();   }
+
+        Declarations::size_type      Declarations::size () const { return declarations_.size(); }
+
+        Declaration       &Declarations::at         (size_t i)       { return declarations_.at(i); }
+        const Declaration &Declarations::at         (size_t i) const { return declarations_.at(i); }
+        Declaration       &Declarations::operator[] (size_t i)       { return declarations_[i]; }
+        const Declaration &Declarations::operator[] (size_t i) const { return declarations_[i]; }
 }

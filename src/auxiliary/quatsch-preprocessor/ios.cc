@@ -45,7 +45,7 @@ std::ostream& operator<< (std::ostream& o, DomainValue const& v) {
 
 std::ostream& operator<< (std::ostream& o, Domain const& v) {
         typedef Domain::const_iterator iterator;
-        
+
         bool first = true;
         for (iterator it=v.begin(), end=v.end(); it!=end; ++it) {
                 if (!first) o << ", ";
@@ -58,7 +58,8 @@ std::ostream& operator<< (std::ostream& o, Domain const& v) {
 std::ostream& operator<< (std::ostream& o, DeclaredType const& v) {
         switch (v) {
         case Integer: return o << "integer";
-        case Real:    return o << "integer";
+        case Real:    return o << "real";
+        case Boolean: return o << "boolean";
         }
         throw std::runtime_error (
         "in std::ostream& operator<< (std::ostream& o, DeclaredType const& v): "

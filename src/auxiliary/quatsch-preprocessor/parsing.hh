@@ -28,8 +28,8 @@
 #include "meta.hh"
 
 namespace quatsch_preprocessor {
-        std::vector<Declaration> findDeclarations (std::string const &code);
-        std::string replace (std::string const &code, 
+        Declarations findDeclarations (std::string const &code);
+        std::string replace (std::string const &code,
                              std::map<std::string,std::string> const &rep);
 }
 #endif // PARSING_HH_20101118_INCLUDED
