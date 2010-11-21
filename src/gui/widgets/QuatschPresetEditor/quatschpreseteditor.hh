@@ -23,6 +23,7 @@
 
 #include <QWidget>
 #include <string>
+#include <map>
 
 #include "quatsch-preprocessor/meta.hh"
 
@@ -45,6 +46,12 @@ private:
 
         std::string preset;
         quatsch_preprocessor::Declarations declarations;
+
+private:
+        std::map<std::string, std::string> replacements() const;
+
+private slots:
+    void on_showPreprocessedCode_clicked();
 };
 
 #endif // QUATSCHPRESETEDITOR_HH

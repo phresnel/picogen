@@ -17,6 +17,20 @@
    <item>
     <layout class="QFormLayout" name="layout"/>
    </item>
+   <item>
+    <widget class="QPushButton" name="showPreprocessedCode">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="preprocessedCode">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

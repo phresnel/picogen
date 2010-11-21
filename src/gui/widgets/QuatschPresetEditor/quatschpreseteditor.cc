@@ -33,7 +33,8 @@ QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     ui(new Ui::QuatschPresetEditor)
 {
         ui->setupUi(this);
-        setPreset ("(($foobar:integer = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))");
+        setPreset ("(($foobar:integer = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
+                   "(+ (($foobar)) (($frob)) (if (($ExtraNoise)) 1 0))");
 }
 
 QuatschPresetEditor::~QuatschPresetEditor() {
@@ -70,6 +71,8 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
                         break;
                 }
 
+                widget->setObjectName(QString::fromStdString(decl.id()));
+
                 ui->layout->addRow(QString::fromStdString(decl.displayName()),
                                    widget);
         }
@@ -81,4 +84,32 @@ void QuatschPresetEditor::setPreset (QString const &str) {
 
 void QuatschPresetEditor::setPreset (const char *str) {
         setPreset (std::string(str));
+}
+
+std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
+        std::map<std::string, std::string> ret;
+        for (int i=0; i<ui->layout->rowCount(); ++i) {
+                QLayoutItem *item = ui->layout->itemAt(i,
+                                                       QFormLayout::FieldRole);
+                QWidget *widget = item->widget();
+                if (!widget)
+                        continue;
+                const std::string name = widget->objectName().toStdString();
+
+                if (QDoubleSpinBox *ed = qobject_cast<QDoubleSpinBox*>(widget))
+                        ret[name] = QString::number(ed->value()).toStdString();
+                else if (QSpinBox *ed = qobject_cast<QSpinBox*>(widget))
+                        ret[name] = QString::number(ed->value()).toStdString();
+                else if (QCheckBox *ed = qobject_cast<QCheckBox*>(widget))
+                        ret[name] = ed->isChecked() ? "1" : "0";
+                else
+                        ret[name] = "???";
+        }
+        return ret;
+}
+
+void QuatschPresetEditor::on_showPreprocessedCode_clicked() {
+        ui->preprocessedCode->setText(QString::fromStdString(
+                quatsch_preprocessor::replace(preset, replacements())
+        ));
 }
