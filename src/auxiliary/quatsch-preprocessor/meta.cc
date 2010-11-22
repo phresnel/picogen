@@ -84,6 +84,16 @@ namespace quatsch_preprocessor {
                 // note that a Declaration's type might still make the
                 // declaration finite.
         }
+        unsigned int DomainInterval::elementCount() const {
+                throw std::runtime_error("DomainInterval::elementCount() "
+                                         "called for non-finite DomainInterval"
+                                         );
+        }
+        std::list<DomainScalar> DomainInterval::elements() const {
+                throw std::runtime_error("DomainInterval::elements() "
+                                 "called for non-finite DomainInterval"
+                                 );
+        }
 
 
 
@@ -148,6 +158,31 @@ namespace quatsch_preprocessor {
                 case Interval: return interval_->isFinite();
                 }
                 return false;
+        }
+        unsigned int DomainValue::elementCount() const {
+                if (!isFinite())
+                        throw std::runtime_error("DomainValue::elementCount() "
+                                                 "called for DomainValue that "
+                                                 "is not finite");
+                switch (type()) {
+                case Scalar: return 1;
+                case Interval: return interval_->elementCount();
+                }
+        }
+        std::list<DomainScalar> DomainValue::elements() const {
+                if (!isFinite())
+                        throw std::runtime_error("DomainValue::elements() "
+                                 "called for non-finite DomainValue");
+
+                switch (type()) {
+                case Scalar: {
+                        std::list<DomainScalar> ret(1);
+                        ret.push_back (*scalar_);
+                        return ret;
+                }
+                case Interval:
+                        return interval_->elements();
+                }
         }
 
 
@@ -218,6 +253,33 @@ namespace quatsch_preprocessor {
                         return true;
                 }
         }
+        unsigned int Domain::elementCount() const {
+                if (!isFinite())
+                        throw std::runtime_error("Domain::elementCount() called"
+                                                 " for non-finite Domain");
+                unsigned int ret = 0;
+                for (const_iterator
+                     it=values_.begin(), end=values_.end();
+                     it != end; ++it)
+                {
+                        ret += it->elementCount();
+                }
+                return ret;
+        }
+        std::list<DomainScalar> Domain::elements() const {
+                if (!isFinite())
+                        throw std::runtime_error("Domain::elements() called"
+                                                 " for non-finite Domain");
+                std::list<DomainScalar> ret;
+                for (const_iterator
+                     it=values_.begin(), end=values_.end();
+                     it != end; ++it)
+                {
+                        std::list<DomainScalar> l = it->elements();
+                        ret.insert (ret.end(), l.begin(), l.end());
+                }
+                return ret;
+        }
 
         void Domain::push_back (DomainValue const &d) { values_.push_back (d); }
 
@@ -277,13 +339,23 @@ namespace quatsch_preprocessor {
                 // It might still be finite as for the declared type.
                 if (type_ == Boolean)
                         return true;
-                if (type_ == Integer) {
-                        // Guess. What is too large for a dropdown box?
-                        if (domainMax() - domainMin() < 100) //<-- lame ...
-                                return true;
-                }
-
                 return false;
+        }
+        unsigned int Declaration::domainElementCount() const {
+                if (!hasFiniteDomain())
+                        throw std::runtime_error(
+                                "Declaration::domainElementCount() called for "
+                                "Declaration that does not have a finite "
+                                "Domain");
+                return domain_.elementCount();
+        }
+        std::list<DomainScalar> Declaration::domainElements() const {
+                if (!hasFiniteDomain())
+                        throw std::runtime_error(
+                                "Declaration::domainElements() called for "
+                                "Declaration that does not have a finite "
+                                "Domain");
+                return domain_.elements();
         }
 
 

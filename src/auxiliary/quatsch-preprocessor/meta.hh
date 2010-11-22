@@ -21,6 +21,7 @@
 #ifndef META_HH_INCLUDED_20101118
 #define META_HH_INCLUDED_20101118
 
+#include <list>
 #include <vector>
 #include <string>
 #include <limits>
@@ -65,6 +66,8 @@ public:
         DomainScalar max() const;
         bool isLinear() const;
         bool isFinite() const;
+        unsigned int elementCount() const;
+        std::list<DomainScalar> elements() const;
 private:
         DomainScalar from_, to_;
 };
@@ -95,6 +98,8 @@ public:
         DomainScalar max() const;
         bool isLinear() const;
         bool isFinite() const;
+        unsigned int elementCount() const;
+        std::list<DomainScalar> elements() const;
 
 private:
         DomainType type_;
@@ -114,6 +119,8 @@ public:
 
         bool isLinear () const;
         bool isFinite () const;
+        unsigned int elementCount() const;
+        std::list<DomainScalar> elements() const;
 
         // Container.
         typedef std::vector<DomainValue>::iterator        iterator;
@@ -166,6 +173,8 @@ public:
         DomainScalar domainMin() const;
         DomainScalar domainMax() const;
         bool hasFiniteDomain() const;
+        unsigned int domainElementCount() const;
+        std::list<DomainScalar> domainElements() const;
 private:
         std::string id_;
         DeclaredType type_;
