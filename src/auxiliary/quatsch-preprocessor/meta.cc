@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <sstream>
 #include "meta.hh"
 
 namespace quatsch_preprocessor {
@@ -29,6 +30,12 @@ namespace quatsch_preprocessor {
 
         void DomainScalar::setValue (double val) { value_ = val; }
         double DomainScalar::value () const { return value_; }
+
+        std::string DomainScalar::displayValue() const {
+                std::stringstream ss;
+                ss << std::fixed << value_;
+                return ss.str();
+        }
 
         bool operator < (DomainScalar const &lhs,
                                  DomainScalar const &rhs)
@@ -347,6 +354,8 @@ namespace quatsch_preprocessor {
                                 "Declaration::domainElementCount() called for "
                                 "Declaration that does not have a finite "
                                 "Domain");
+                if (type_ == Boolean)
+                        return 2;
                 return domain_.elementCount();
         }
         std::list<DomainScalar> Declaration::domainElements() const {
@@ -355,6 +364,12 @@ namespace quatsch_preprocessor {
                                 "Declaration::domainElements() called for "
                                 "Declaration that does not have a finite "
                                 "Domain");
+                if (type_ == Boolean) {
+                        std::list<DomainScalar> ds;
+                        ds.push_back (0);
+                        ds.push_back (1);
+                        return ds;
+                }
                 return domain_.elements();
         }
 

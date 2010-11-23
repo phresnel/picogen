@@ -36,6 +36,8 @@ public:
         void setValue (double val);
         double value () const;
 
+        std::string displayValue() const;
+
         static DomainScalar max() {
                 return std::numeric_limits<double>::max();
         }

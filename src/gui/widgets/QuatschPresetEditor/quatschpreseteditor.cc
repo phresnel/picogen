@@ -27,6 +27,7 @@
 #include <QDoubleSpinBox>
 #include <QSpacerItem>
 #include <QCheckBox>
+#include <QComboBox>
 
 QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     QWidget(parent),
@@ -59,16 +60,45 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
         foreach (quatsch_preprocessor::Declaration decl, declarations) {
                 QWidget *widget = 0;
 
-                switch (decl.type()) {
-                case quatsch_preprocessor::Real:
-                        widget = new QDoubleSpinBox(this);
+                if (decl.domain().isLinear()) {
+                        switch (decl.type()) {
+                        case quatsch_preprocessor::Real:
+                        {
+                                QDoubleSpinBox *dsb = new QDoubleSpinBox(this);
+                                dsb->setMinimum(decl.domainMin().value());
+                                dsb->setMaximum(decl.domainMax().value());
+                                widget = dsb;
+                        }
                         break;
-                case quatsch_preprocessor::Integer:
-                        widget = new QSpinBox(this);
+                        case quatsch_preprocessor::Integer:
+                        {
+                                QSpinBox *dsb = new QSpinBox(this);
+                                dsb->setMinimum(decl.domainMin().value());
+                                dsb->setMaximum(decl.domainMax().value());
+                                widget = dsb;
+                        }
                         break;
-                case quatsch_preprocessor::Boolean:
-                        widget = new QCheckBox(this);
-                        break;
+                        case quatsch_preprocessor::Boolean:
+                                widget = new QCheckBox(this);
+                                break;
+                        }
+                } else if (decl.hasFiniteDomain()
+                        && decl.domainElementCount()<100)
+                {
+                        QComboBox *cb = new QComboBox(this);
+                        typedef std::list<quatsch_preprocessor::DomainScalar>::
+                                        const_iterator
+                                dsiterator;
+                        foreach (quatsch_preprocessor::DomainScalar ds,
+                                 decl.domainElements())
+                        {
+                                cb->addItem(QString::fromStdString(
+                                                ds.displayValue()),
+                                            ds.value());
+                        }
+                        widget = cb;
+                } else {
+                        widget = new QTextEdit(this);
                 }
 
                 widget->setObjectName(QString::fromStdString(decl.id()));
