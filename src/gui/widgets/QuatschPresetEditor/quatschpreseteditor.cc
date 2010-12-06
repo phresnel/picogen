@@ -90,7 +90,7 @@ QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     ui(new Ui::QuatschPresetEditor)
 {
         ui->setupUi(this);
-        setPreset ("(($foobar:rel = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
+        setPreset ("(($foobar:real = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
                    "(sin (* (($frob)) x))");
         ui->preprocessedCode->setVisible(false);
         ui->preprocessedCode->setEnabled(false);
