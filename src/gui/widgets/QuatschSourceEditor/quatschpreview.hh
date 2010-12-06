@@ -18,43 +18,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef QUATSCHPRESETEDITOR_HH
-#define QUATSCHPRESETEDITOR_HH
+#ifndef QUATSCHPREVIEW_HH
+#define QUATSCHPREVIEW_HH
 
 #include <QWidget>
 #include <string>
-#include <map>
-
-#include "quatsch-preprocessor/meta.hh"
 
 namespace Ui {
-        class QuatschPresetEditor;
+        class QuatschPreview;
 }
 
-class QuatschPresetEditor : public QWidget {
+class QuatschPreview : public QWidget
+{
         Q_OBJECT
 
 public:
-        explicit QuatschPresetEditor(QWidget *parent = 0);
-        ~QuatschPresetEditor();
+        explicit QuatschPreview(QWidget *parent = 0);
+        ~QuatschPreview();
 
-        void setPreset (std::string const &str);
-        void setPreset (QString const &str);
-        void setPreset (const char *str);
-
-        std::string getPreprocessedCode() const;
-private:
-        Ui::QuatschPresetEditor *ui;
-
-        std::string preset;
-        quatsch_preprocessor::Declarations declarations;
+        void setCode (std::string const &str);
+        void setCode (QString str);
+        void compileAndRun();
 
 private:
-        std::map<std::string, std::string> replacements() const;
-
-private slots:
-    void on_showPreview_clicked();
-    void on_showPreprocessedCode_clicked();
+        Ui::QuatschPreview *ui;
+        std::string code;
 };
 
-#endif // QUATSCHPRESETEDITOR_HH
+#endif // QUATSCHPREVIEW_HH

@@ -25,14 +25,32 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="showPreview">
+     <property name="text">
+      <string>&amp;Preview</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QTextEdit" name="preprocessedCode">
      <property name="readOnly">
       <bool>true</bool>
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QuatschPreview" name="preview" native="true"/>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QuatschPreview</class>
+   <extends>QWidget</extends>
+   <header>quatschpreview.hh</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

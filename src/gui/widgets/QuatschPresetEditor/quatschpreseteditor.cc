@@ -90,8 +90,8 @@ QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     ui(new Ui::QuatschPresetEditor)
 {
         ui->setupUi(this);
-        setPreset ("(($foobar:integer = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
-                   "(+ (($foobar)) (($frob)) (if (($ExtraNoise)) 1 0))");
+        setPreset ("(($foobar:rel = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
+                   "(sin (* (($frob)) x))");
         ui->preprocessedCode->setVisible(false);
         ui->preprocessedCode->setEnabled(false);
         ui->showPreprocessedCode->setVisible(false);
@@ -168,4 +168,8 @@ void QuatschPresetEditor::on_showPreprocessedCode_clicked() {
 
 std::string QuatschPresetEditor::getPreprocessedCode() const {
         return quatsch_preprocessor::replace(preset, replacements());
+}
+
+void QuatschPresetEditor::on_showPreview_clicked() {
+        ui->preview->compileAndRun(getPreprocessedCode());
 }

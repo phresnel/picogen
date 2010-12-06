@@ -5,14 +5,11 @@ TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
 SOURCES += main.cc \
     mainwindow.cc \
-    quatschsourceeditor.cc \
-    quatschpreview.cc
+    quatschsourceeditor.cc
 HEADERS += mainwindow.hh \
-    quatschsourceeditor.hh \
-    quatschpreview.hh
+    quatschsourceeditor.hh
 FORMS += mainwindow.ui \
-    quatschsourceeditor.ui \
-    quatschpreview.ui
+    quatschsourceeditor.ui
 INCLUDEPATH += \
         ../../../auxiliary/ \
         ../../../renderer/
@@ -28,6 +25,7 @@ windows:LIBS += -lboost_program_options \
     -lboost_filesystem \
     -lboost_system
 include(../Picohelp/picohelp.pri)
+include(../QuatschPreview/quatschpreview.pri)
 RESOURCES += ../../SimplexGui/resources.qrc
 RC_FILE += icon.rc
 OTHER_FILES += icon.rc \
