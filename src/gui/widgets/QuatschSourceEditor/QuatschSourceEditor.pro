@@ -10,9 +10,10 @@ HEADERS += mainwindow.hh \
     quatschsourceeditor.hh
 FORMS += mainwindow.ui \
     quatschsourceeditor.ui
-INCLUDEPATH += ../../../ \
-    ../../../redshift/include
-LIBS += ../../../redshift/lib/libpicogen.a \
+INCLUDEPATH += \
+        ../../../auxiliary/ \
+        ../../../renderer/
+LIBS += ../../../libredshift.a \
     -lgomp \
     -lnoise \
     -lSDL \
@@ -26,7 +27,8 @@ windows:LIBS += -lboost_program_options \
 include(../Picohelp/picohelp.pri)
 RESOURCES += ../../SimplexGui/resources.qrc
 RC_FILE += icon.rc
-OTHER_FILES += icon.rc
+OTHER_FILES += icon.rc \
+    QuatschSourceEditor.pri
 CONFIG+=debug_and_release
 TARGET=picogen-quatsch-editor
 
@@ -35,5 +37,3 @@ CONFIG(debug, debug|release) {
 } else {
     DESTDIR = release
 }
-
-
