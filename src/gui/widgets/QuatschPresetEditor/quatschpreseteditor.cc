@@ -42,6 +42,56 @@ QuatschPresetEditor::~QuatschPresetEditor() {
         delete ui;
 }
 
+QWidget* createWidgetForDeclaration (
+        quatsch_preprocessor::Declaration const &decl,
+        QWidget *parent
+)
+{
+        QWidget *widget = 0;
+
+        if (decl.domain().isLinear()) {
+                switch (decl.type()) {
+                case quatsch_preprocessor::Real:
+                {
+                        QDoubleSpinBox *dsb = new QDoubleSpinBox(parent);
+                        dsb->setMinimum(decl.domainMin().value());
+                        dsb->setMaximum(decl.domainMax().value());
+                        widget = dsb;
+                }
+                break;
+                case quatsch_preprocessor::Integer:
+                {
+                        QSpinBox *dsb = new QSpinBox(parent);
+                        dsb->setMinimum(decl.domainMin().value());
+                        dsb->setMaximum(decl.domainMax().value());
+                        widget = dsb;
+                }
+                break;
+                case quatsch_preprocessor::Boolean:
+                        widget = new QCheckBox(parent);
+                        break;
+                }
+        } else if (decl.hasFiniteDomain()
+                && decl.domainElementCount()<100)
+        {
+                QComboBox *cb = new QComboBox(parent);
+                typedef std::list<quatsch_preprocessor::DomainScalar>::
+                                const_iterator
+                        dsiterator;
+                foreach (quatsch_preprocessor::DomainScalar ds,
+                         decl.domainElements())
+                {
+                        cb->addItem(QString::fromStdString(ds.displayValue()),
+                                    ds.value());
+                }
+                widget = cb;
+        } else {
+                widget = new QTextEdit(parent);
+        }
+
+        return widget;
+}
+
 void QuatschPresetEditor::setPreset (std::string const &str) {
         using quatsch_preprocessor::Declaration;
         using quatsch_preprocessor::Declarations;
@@ -58,48 +108,7 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
                 delete child;
         }
         foreach (quatsch_preprocessor::Declaration decl, declarations) {
-                QWidget *widget = 0;
-
-                if (decl.domain().isLinear()) {
-                        switch (decl.type()) {
-                        case quatsch_preprocessor::Real:
-                        {
-                                QDoubleSpinBox *dsb = new QDoubleSpinBox(this);
-                                dsb->setMinimum(decl.domainMin().value());
-                                dsb->setMaximum(decl.domainMax().value());
-                                widget = dsb;
-                        }
-                        break;
-                        case quatsch_preprocessor::Integer:
-                        {
-                                QSpinBox *dsb = new QSpinBox(this);
-                                dsb->setMinimum(decl.domainMin().value());
-                                dsb->setMaximum(decl.domainMax().value());
-                                widget = dsb;
-                        }
-                        break;
-                        case quatsch_preprocessor::Boolean:
-                                widget = new QCheckBox(this);
-                                break;
-                        }
-                } else if (decl.hasFiniteDomain()
-                        && decl.domainElementCount()<100)
-                {
-                        QComboBox *cb = new QComboBox(this);
-                        typedef std::list<quatsch_preprocessor::DomainScalar>::
-                                        const_iterator
-                                dsiterator;
-                        foreach (quatsch_preprocessor::DomainScalar ds,
-                                 decl.domainElements())
-                        {
-                                cb->addItem(QString::fromStdString(
-                                                ds.displayValue()),
-                                            ds.value());
-                        }
-                        widget = cb;
-                } else {
-                        widget = new QTextEdit(this);
-                }
+                QWidget *widget = createWidgetForDeclaration(decl, this);
 
                 widget->setObjectName(QString::fromStdString(decl.id()));
 
@@ -132,8 +141,11 @@ std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
                         ret[name] = QString::number(ed->value()).toStdString();
                 else if (QCheckBox *ed = qobject_cast<QCheckBox*>(widget))
                         ret[name] = ed->isChecked() ? "1" : "0";
+                else if (QComboBox *ed = qobject_cast<QComboBox*>(widget))
+                        ret[name] = ed->itemData(ed->currentIndex())
+                                    .toString().toStdString();
                 else
-                        ret[name] = "???";
+                        ret[name] = "???Error: Unsupported Editor???";
         }
         return ret;
 }
