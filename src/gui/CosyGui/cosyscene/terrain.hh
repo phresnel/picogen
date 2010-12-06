@@ -49,13 +49,33 @@ inline bool operator == (QuatschSource const &lhs, QuatschSource const &rhs) {
 
 } // namespace cosyscene
 
+
+
+namespace cosyscene {
+class QuatschPreset {
+public:
+        QuatschPreset() {}
+
+        template<typename Arch>
+        void serialize (Arch &arch);
+private:
+};
+inline bool operator == (QuatschPreset const &lhs, QuatschPreset const &rhs) {
+        return true;
+}
+
+} // namespace cosyscene
+
+
+
 namespace cosyscene {
 class TerrainFormation : public StashableMixin<TerrainFormation>
 {
 public:
         enum Kind {
                 None,
-                QuatschSource
+                QuatschSource,
+                QuatschPreset
         };
 
         TerrainFormation();
@@ -65,6 +85,9 @@ public:
 
         void toQuatschSource (cosyscene::QuatschSource const &qs);
         cosyscene::QuatschSource quatschSource() const;
+
+        void toQuatschPreset(cosyscene::QuatschPreset const &);
+        cosyscene::QuatschPreset quatschPreset() const;
 
         bool data_equals(TerrainFormation const &rhs) const;
 
@@ -76,6 +99,7 @@ private:
         Kind kind_;
 
         cosyscene::QuatschSource quatschSource_;
+        cosyscene::QuatschPreset quatschPreset_;
 };
 
 } // namespace cosyscene

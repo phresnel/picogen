@@ -73,10 +73,15 @@ void TerrainFormation::showQuatschEditor() {
 
 
 
+void TerrainFormation::showQuatschPresetEditor() {
+        ui->stackedWidget->setCurrentWidget(ui->quatschPresetEditorPage);
+}
+
+
+
 void TerrainFormation::showTerrainKindSelection() {
         ui->stackedWidget->setCurrentWidget(ui->selectKind);
 }
-
 
 
 
@@ -90,6 +95,13 @@ void TerrainFormation::on_quatschCodeEditorCLB_clicked() {
                 "   displacement{0.1}\n"
                 " ] x y)\n"
         ));
+        updateViews();
+}
+
+
+
+void TerrainFormation::on_parametricPresetCLB_clicked() {
+        formation_->toQuatschPreset(cosyscene::QuatschPreset());
         updateViews();
 }
 
@@ -111,6 +123,9 @@ void TerrainFormation::updateViews() {
                                 QString::fromStdString(
                                 formation_->quatschSource().code()));
                 showQuatschEditor();
+                break;
+        case cosyscene::TerrainFormation::QuatschPreset:
+                showQuatschPresetEditor();
                 break;
         case cosyscene::TerrainFormation::None:
                 showTerrainKindSelection();
@@ -148,3 +163,4 @@ void TerrainFormation::on_stashResetButton_clicked() {
         t.setStash(formation_->getStash());
         setFormationByValue(t, true);
 }
+

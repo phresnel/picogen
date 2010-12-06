@@ -25,6 +25,7 @@ namespace cosyscene {
 
 const actuarius::Enum<TerrainFormation::Kind> TerrainFormation::Typenames =
 ( actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::QuatschSource, "quatsch-source")
+| actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::QuatschPreset, "quatsch-preset")
 | actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::None, "none")
 );
 
@@ -65,10 +66,24 @@ cosyscene::QuatschSource TerrainFormation::quatschSource() const {
 
 
 
+void TerrainFormation::toQuatschPreset (cosyscene::QuatschPreset const &qs) {
+        quatschPreset_ = qs;
+        kind_ = QuatschPreset;
+}
+
+
+
+cosyscene::QuatschPreset TerrainFormation::quatschPreset() const {
+        return quatschPreset_;
+}
+
+
+
 bool TerrainFormation::data_equals(TerrainFormation const &rhs) const {
         if (kind_ != rhs.kind_) return false;
         switch (kind_)  {
         case QuatschSource: return quatschSource_ == rhs.quatschSource_;
+        case QuatschPreset: return quatschPreset_ == rhs.quatschPreset_;
         case None: return true;
         }
         throw std::runtime_error("TerrainFormation::data_equals() not "

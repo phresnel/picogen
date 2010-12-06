@@ -42,7 +42,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="selectKind">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -169,6 +169,13 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="quatschPresetEditorPage">
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QuatschPresetEditor" name="quatschPresetEditor" native="true"/>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>
@@ -187,6 +194,12 @@
    <class>QuatschSourceEditor</class>
    <extends>QWidget</extends>
    <header>quatschsourceeditor.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QuatschPresetEditor</class>
+   <extends>QWidget</extends>
+   <header>quatschpreseteditor.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

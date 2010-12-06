@@ -54,6 +54,7 @@ signals:
 private:
         void showTerrainKindSelection();
         void showQuatschEditor();
+        void showQuatschPresetEditor();
 
         void setFormationByValue (cosyscene::TerrainFormation const &,
                                   bool blockSignals);
@@ -64,6 +65,7 @@ private:
         redshift::shared_ptr<cosyscene::TerrainFormation> formation_;
 
 private slots:
+        void on_parametricPresetCLB_clicked();
         void on_quatschCodeEditorCLB_clicked();
         void on_quatschCodeEditor_codeChanged();
 

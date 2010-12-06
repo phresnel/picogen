@@ -110,5 +110,7 @@ include(../widgets/QtSunSkyEditor/qtsunskyeditor.pri)
 include(../widgets/RenderWindow/renderwindow.pri)
 include(../widgets/RenderWidget/renderwidget.pri)
 include(../widgets/ColorPicker/colorpicker.pri)
+include(../widgets/QuatschPreview/quatschpreview.pri)
+include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release
