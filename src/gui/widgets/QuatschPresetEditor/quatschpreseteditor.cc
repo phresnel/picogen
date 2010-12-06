@@ -29,18 +29,8 @@
 #include <QCheckBox>
 #include <QComboBox>
 
-QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::QuatschPresetEditor)
-{
-        ui->setupUi(this);
-        setPreset ("(($foobar:integer = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
-                   "(+ (($foobar)) (($frob)) (if (($ExtraNoise)) 1 0))");
-}
-
-QuatschPresetEditor::~QuatschPresetEditor() {
-        delete ui;
-}
+//-----------------------------------------------------------------------------
+namespace {
 
 QWidget* createWidgetForDeclaration (
         quatsch_preprocessor::Declaration const &decl,
@@ -90,6 +80,26 @@ QWidget* createWidgetForDeclaration (
         }
 
         return widget;
+}
+
+} // namespace {
+//-----------------------------------------------------------------------------
+
+QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::QuatschPresetEditor)
+{
+        ui->setupUi(this);
+        setPreset ("(($foobar:integer = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
+                   "(+ (($foobar)) (($frob)) (if (($ExtraNoise)) 1 0))");
+        ui->preprocessedCode->setVisible(false);
+        ui->preprocessedCode->setEnabled(false);
+        ui->showPreprocessedCode->setVisible(false);
+        ui->showPreprocessedCode->setEnabled(false);
+}
+
+QuatschPresetEditor::~QuatschPresetEditor() {
+        delete ui;
 }
 
 void QuatschPresetEditor::setPreset (std::string const &str) {
@@ -152,6 +162,10 @@ std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
 
 void QuatschPresetEditor::on_showPreprocessedCode_clicked() {
         ui->preprocessedCode->setText(QString::fromStdString(
-                quatsch_preprocessor::replace(preset, replacements())
+                getPreprocessedCode()
         ));
+}
+
+std::string QuatschPresetEditor::getPreprocessedCode() const {
+        return quatsch_preprocessor::replace(preset, replacements());
 }

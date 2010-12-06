@@ -41,6 +41,8 @@ public:
         void setPreset (std::string const &str);
         void setPreset (QString const &str);
         void setPreset (const char *str);
+
+        std::string getPreprocessedCode() const;
 private:
         Ui::QuatschPresetEditor *ui;
 
