@@ -51,15 +51,12 @@ void TextBlockData::insert(ParenthesisInfo *info)
 
 
 
-
 QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
 : QWidget(parent), ui(new Ui::QuatschEditor), softLock(false),
   helpBrowser(0)
 {
         setAttribute(Qt::WA_DeleteOnClose);
         ui->setupUi(this);
-
-        ui->status->setText("");
 
         QFont font;
         font.setStyleHint (QFont::TypeWriter, QFont::PreferAntialias);
@@ -482,60 +479,8 @@ void QuatschHighlighter::highlightBlock(const QString &text) {
 
 
 void QuatschSourceEditor::on_compileAndRunButton_clicked() {
-        std::stringstream errors;
-
-        try {
-                ui->status->setText("");
-                redshift::QuatschHeightFunction q (code().toStdString(), errors);
-                const unsigned int width = ui->imageSize->value(), height = width;
-                QImage image (width, height, QImage::Format_RGB888);
-
-
-                const float centerX = ui->centerX->value();
-                const float centerY = ui->centerY->value();
-                const float edgeSize = ui->edgeSize->value();
-
-                float min = std::numeric_limits<float>::infinity(),
-                      max = -std::numeric_limits<float>::infinity();
-                std::vector<float> values(width*height);
-                for (unsigned int y=0; y<height; ++y) {
-                        const float v_ = (y/(float)height)-0.5f,
-                                    v = (v_*edgeSize) + centerY;
-
-                        for (unsigned int x=0; x<width; ++x) {
-                                const float u_ = (x/(float)width)-0.5f,
-                                            u = (u_*edgeSize) + centerX;
-                                const float h = q(u,v);
-                                if (h<min) min=h;
-                                if (h>max) max=h;
-                                values[x+y*width] = h;
-                        }
-                }
-                const float range = 1 / (max - min);
-                for (unsigned int y=0; y<height; ++y) {
-                        for (unsigned int x=0; x<width; ++x) {
-                                const float h = (values[x+y*width]-min) * range;
-                                const int hi_ = h * 255,
-                                          hi = hi_<0?0:hi_>255?255:hi_;
-                                image.setPixel(x, y, QColor(hi,hi,hi).rgb());
-                        }
-                }
-                //ui->status->setScaledContents(true);
-                ui->status->setWordWrap(false);
-                ui->status->setPixmap(QPixmap::fromImage(image));
-
-        } catch (quatsch::general_exception const &ex) {
-                ui->status->setWordWrap(true);
-                ui->status->setText (QString::fromStdString(
-                        ex.getMessage() + ".\n\n"
-                        + errors.str()));
-        } catch (std::exception const &e) {
-                ui->status->setWordWrap(true);
-                ui->status->setText(e.what());
-        } catch (...) {
-                ui->status->setWordWrap(true);
-                ui->status->setText("some weird exception occured");
-        }
+        ui->quatschPreview->setCode (code());
+        ui->quatschPreview->compileAndRun();
 }
 
 

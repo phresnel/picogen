@@ -5,11 +5,14 @@ TEMPLATE = app
 DEFINES += __STDC_LIMIT_MACROS
 SOURCES += main.cc \
     mainwindow.cc \
-    quatschsourceeditor.cc
+    quatschsourceeditor.cc \
+    quatschpreview.cc
 HEADERS += mainwindow.hh \
-    quatschsourceeditor.hh
+    quatschsourceeditor.hh \
+    quatschpreview.hh
 FORMS += mainwindow.ui \
-    quatschsourceeditor.ui
+    quatschsourceeditor.ui \
+    quatschpreview.ui
 INCLUDEPATH += \
         ../../../auxiliary/ \
         ../../../renderer/
