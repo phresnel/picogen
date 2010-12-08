@@ -43,8 +43,8 @@ INCLUDEDIRS  := -I../../auxiliary/ \
 SDLLIBS := `sdl-config --static-libs` -lSDL_image
 BOOSTLIBS := `./boost-libs.sh`
 
-LIBS   := $(SDLLIBS) $(BOOSTLIBS) -lIlmImf \
-	  -lz -lImath -lHalf -lIex -lIlmThread -lnoise 
+LIBS   := $(SDLLIBS) -lnoise $(BOOSTLIBS) -lIlmImf \
+	  -lz -lImath -lHalf -lIex -lIlmThread
 
 #------------------------------------------------------------------------------
 # compiler flags

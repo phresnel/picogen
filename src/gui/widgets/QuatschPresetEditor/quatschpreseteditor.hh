@@ -31,6 +31,10 @@ namespace Ui {
         class QuatschPresetEditor;
 }
 
+namespace cosyscene {
+        class QuatschPreset;
+}
+
 class QuatschPresetEditor : public QWidget {
         Q_OBJECT
 
@@ -43,18 +47,31 @@ public:
         void setPreset (const char *str);
 
         std::string getPreprocessedCode() const;
+        cosyscene::QuatschPreset toCosy() const;
+        void fromCosy (cosyscene::QuatschPreset const &);
+
+signals:
+        void formationChanged();
+
 private:
         Ui::QuatschPresetEditor *ui;
 
         std::string preset;
         quatsch_preprocessor::Declarations declarations;
 
+        QWidget* createWidgetForDeclaration(
+                quatsch_preprocessor::Declaration const &decl,
+                QWidget *parent
+        );
+
 private:
         std::map<std::string, std::string> replacements() const;
 
 private slots:
-    void on_showPreview_clicked();
-    void on_showPreprocessedCode_clicked();
+        void on_showPreview_clicked();
+        void on_showPreprocessedCode_clicked();
+        void childWidgetEditingFinished();
+
 };
 
 #endif // QUATSCHPRESETEDITOR_HH

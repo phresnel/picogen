@@ -25,6 +25,7 @@
 #include "rendersettings.hh"
 
 #include "redshift/include/jobfile.hh"
+#include "auxiliary/quatsch-preprocessor/parsing.hh"
 
 namespace cosyscene {
 
@@ -138,9 +139,18 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
                         // Formation
                         switch (formation.kind()) {
                         case TerrainFormation::QuatschSource:
-                                ob.lazyQuadtreeParams.code = formation.quatschSource().code();
+                                ob.lazyQuadtreeParams.code = formation
+                                                             .quatschSource()
+                                                             .code();
                                 break;
-                        case TerrainFormation::None: /* never the case */ break;
+                        case TerrainFormation::None: /* never the case */
+                                break;
+                        case TerrainFormation::QuatschPreset:
+                                ob.lazyQuadtreeParams.code =
+                                                formation
+                                                .quatschPreset()
+                                                .getPreprocessedCode();
+                                break;
                         }
 
                         // Fitting

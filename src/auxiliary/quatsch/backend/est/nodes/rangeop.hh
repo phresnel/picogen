@@ -86,7 +86,7 @@ namespace quatsch {  namespace backend {  namespace est {
 
 
 
-    template <typename TYPES, typename min_predicate_t, typename max_predicate_t, unsigned int min_operand_count=1, unsigned int max_fold=8>
+    template <typename TYPES, typename min_predicate_t, typename max_predicate_t, unsigned int min_operand_count=1, unsigned int max_fold=4>
     class RangeOp : public TYPES::Function {
 
             enum { debug = 0 };

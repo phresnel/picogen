@@ -24,6 +24,9 @@
 #include <QWidget>
 #include <string>
 
+#include <QRect>
+#include <boost/optional.hpp>
+
 namespace Ui {
         class QuatschPreview;
 }
@@ -44,6 +47,12 @@ public:
 private:
         Ui::QuatschPreview *ui;
         std::string code;
+
+        boost::optional<QRect> drawRect;
+
+        bool eventFilter(QObject *, QEvent *);
+
+private slots:
 };
 
 #endif // QUATSCHPREVIEW_HH

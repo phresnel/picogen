@@ -52,13 +52,35 @@ inline bool operator == (QuatschSource const &lhs, QuatschSource const &rhs) {
 
 
 namespace cosyscene {
+struct StringKeyValue {
+        std::string key, value;
+
+        StringKeyValue() {}
+        StringKeyValue(std::string const &key, std::string const &value)
+                : key(key), value(value)
+        {}
+
+        template <typename Arch>
+        void serialize (Arch &arch);
+};
 class QuatschPreset {
 public:
         QuatschPreset() {}
 
+        void setPreset (std::string const &preset);
+        std::string preset () const;
+
+        void setReplacement (std::string const &key, std::string const &value);
+        std::string replacement (std::string const &key) const;
+        std::map<std::string, std::string> replacements() const;
+
+        std::string getPreprocessedCode() const;
+
         template<typename Arch>
         void serialize (Arch &arch);
 private:
+        std::string preset_;
+        std::map<std::string, std::string> replacements_;
 };
 inline bool operator == (QuatschPreset const &lhs, QuatschPreset const &rhs) {
         return true;

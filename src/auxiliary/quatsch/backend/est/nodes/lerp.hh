@@ -97,7 +97,7 @@ public:
 
 
 // I hereby request a better name. Thanks.
-template <typename TYPES, unsigned int min_operand_count=3, unsigned int max_fold=8>
+template <typename TYPES, unsigned int min_operand_count=3, unsigned int max_fold=4>
 class Lerp : public TYPES::Function
 {
 

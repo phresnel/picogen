@@ -23,6 +23,8 @@
 #include <sstream>
 #include "meta.hh"
 
+#include <QDebug>
+
 namespace quatsch_preprocessor {
 
         DomainScalar::DomainScalar() {}
@@ -145,12 +147,16 @@ namespace quatsch_preprocessor {
                 case Scalar: return scalar();
                 case Interval: return interval_->min();
                 }
+                throw std::runtime_error("in DomainValue::min(), "
+                        "an enum value is not handled in a switch statement");
         }
         DomainScalar DomainValue::max() const {
                 switch (type()) {
                 case Scalar: return scalar();
                 case Interval: return interval_->max();
                 }
+                throw std::runtime_error("in DomainValue::max(), "
+                        "an enum value is not handled in a switch statement");
         }
         bool DomainValue::isLinear() const {
                 switch (type()) {
@@ -175,6 +181,8 @@ namespace quatsch_preprocessor {
                 case Scalar: return 1;
                 case Interval: return interval_->elementCount();
                 }
+                throw std::runtime_error("in DomainValue::elementCount(), "
+                        "an enum value is not handled in a switch statement");
         }
         std::list<DomainScalar> DomainValue::elements() const {
                 if (!isFinite())
@@ -183,13 +191,15 @@ namespace quatsch_preprocessor {
 
                 switch (type()) {
                 case Scalar: {
-                        std::list<DomainScalar> ret(1);
+                        std::list<DomainScalar> ret;
                         ret.push_back (*scalar_);
                         return ret;
                 }
                 case Interval:
                         return interval_->elements();
                 }
+                throw std::runtime_error("in DomainValue::elements(), "
+                        "an enum value is not handled in a switch statement");
         }
 
 

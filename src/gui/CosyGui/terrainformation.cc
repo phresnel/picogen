@@ -107,6 +107,13 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
 
 
 
+void TerrainFormation::on_quatschPresetEditor_formationChanged() {
+        formation_->toQuatschPreset(ui->quatschPresetEditor->toCosy());
+        emit formationChanged();
+}
+
+
+
 void TerrainFormation::on_quatschCodeEditor_codeChanged() {
         formation_->toQuatschSource(cosyscene::QuatschSource(
                 ui->quatschCodeEditor->code().toStdString()
@@ -124,9 +131,13 @@ void TerrainFormation::updateViews() {
                                 formation_->quatschSource().code()));
                 showQuatschEditor();
                 break;
-        case cosyscene::TerrainFormation::QuatschPreset:
+        case cosyscene::TerrainFormation::QuatschPreset: {
+                const bool blocked = ui->quatschPresetEditor->blockSignals(true);
+                cosyscene::QuatschPreset qp = formation_->quatschPreset();
+                ui->quatschPresetEditor->fromCosy(qp);
                 showQuatschPresetEditor();
-                break;
+                ui->quatschPresetEditor->blockSignals(blocked);
+        } break;
         case cosyscene::TerrainFormation::None:
                 showTerrainKindSelection();
                 break;

@@ -62,7 +62,7 @@ namespace quatsch {  namespace backend {  namespace est {
     
     
     // I hereby request a better name. Thanks.
-    template <typename TYPES, class predicate_t, unsigned int min_operand_count=2, unsigned int max_fold=8> 
+    template <typename TYPES, class predicate_t, unsigned int min_operand_count=2, unsigned int max_fold=4> 
     class BoolAccu : public TYPES::Function, public predicate_t {
         
             enum { debug = 0 };

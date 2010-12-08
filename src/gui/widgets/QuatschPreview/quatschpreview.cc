@@ -23,12 +23,17 @@
 #include "quatschpreview.hh"
 #include "ui_quatschpreview.h"
 
+#include <QMouseEvent>
+#include <QPainter>
+
 QuatschPreview::QuatschPreview(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::QuatschPreview)
 {
         ui->setupUi(this);
         ui->status->setText("");
+
+        ui->status->installEventFilter(this);
 }
 
 QuatschPreview::~QuatschPreview() {
@@ -109,3 +114,41 @@ void QuatschPreview::compileAndRun(QString str) {
         setCode (str);
         compileAndRun();
 }
+
+bool QuatschPreview::eventFilter(QObject *ob, QEvent *e) {
+        drawRect.reset();
+        if (ob == ui->status) {
+                if (e->type() == QEvent::MouseButtonPress) {
+                        return true;
+                } else if (e->type() == QEvent::MouseButtonRelease) {
+                        //QMouseEvent *m = e;
+                        return true;
+                } else if (e->type() == QEvent::MouseMove) {
+                        QMouseEvent *m = (QMouseEvent*)e;
+                        if (m->buttons().testFlag(Qt::LeftButton)) {
+                                /*QPixmap pix = *ui->status->pixmap();
+                                QPainter painter (&pix);
+                                painter.drawRect(QRect(0, 0,
+                                                       m->pos().x(), m->pos().y()));
+                                ui->status->setPixmap(pix);*/
+                                drawRect = QRect(0, 0,
+                                                 m->pos().x(), m->pos().y());
+                                return true;
+                        }
+                } else if (e->type() == QEvent::Paint) {
+                        /*QPainter p (ui->status);
+                        ui->status->paintEvent((QPaintEvent*)e);
+                        if (ui->status->pixmap()) {
+                                //p.drawPixmap(0, 0, *ui->status->pixmap());
+                                //if (drawRect) {
+                                        //p.drawRect(*drawRect);
+                                        p.drawRect(0,0, 20,20);
+                                //}
+                        }*/
+                        //p.end();
+                        return true;
+                }
+        }
+        return QWidget::eventFilter(ob, e);
+}
+

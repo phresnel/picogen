@@ -19,3 +19,4 @@ OTHER_FILES += \
     quatschpreseteditor.pri
 
 include(quatschpreseteditor.pri)
+include(../QuatschPreview/quatschpreview.pri)

@@ -67,7 +67,9 @@ private:
 private slots:
         void on_parametricPresetCLB_clicked();
         void on_quatschCodeEditorCLB_clicked();
+
         void on_quatschCodeEditor_codeChanged();
+        void on_quatschPresetEditor_formationChanged();
 
         void on_stashButton_clicked();
         void on_stashRestoreButton_clicked();

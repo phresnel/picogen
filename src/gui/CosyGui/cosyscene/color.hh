@@ -142,6 +142,9 @@ inline bool operator == (Color const &lhs, Color const &rhs) {
         case Color::Rgb:
                 return lhs.rgb() == rhs.rgb();
         }
+        throw std::runtime_error(
+                "in bool operator==(Color const &, Color const &): "
+                "unhandled switch-value");
 }
 
 } // namespace cosyscene

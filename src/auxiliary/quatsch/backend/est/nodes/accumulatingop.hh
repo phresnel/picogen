@@ -183,7 +183,7 @@ template <
         typename TYPES, 
         typename OP_T,
         unsigned int MIN_OPERAND_COUNT=2,
-        unsigned int MAX_FOLD=8,
+        unsigned int MAX_FOLD=4,
         class PREFIX_T=typename TYPES::Prefixes::verbatim
 >
 class AccumulatingOp

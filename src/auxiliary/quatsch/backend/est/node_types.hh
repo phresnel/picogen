@@ -734,7 +734,7 @@ template <typename BACKEND_T> struct node_types {
                 const operand_vector_t &operands_
         ) {
 
-                const int max_fold = 16;
+                const int max_fold = 4;
                 if ("+" == operator_) {
                         return AccumulatingOp <node_types, 
                                 typename Operators::add, 1, max_fold

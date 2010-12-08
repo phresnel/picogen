@@ -35,6 +35,37 @@ inline void QuatschSource::serialize (Arch &arch) {
         arch & pack("code", code_);
 }
 
+template <typename Arch>
+inline void QuatschPreset::serialize(Arch &arch) {
+        using actuarius::pack;
+        arch & pack("preset", preset_);
+
+        std::vector<StringKeyValue> repls;
+        if (Arch::serialize) {
+                typedef std::map<std::string, std::string>::const_iterator iter;
+                for (iter it=replacements_.begin(), end=replacements_.end();
+                        it!=end; ++it)
+                {
+                        repls.push_back(StringKeyValue(it->first,
+                                                       it->second));
+                }
+        }
+
+        arch & pack ("replacement", repls);
+
+        if (Arch::deserialize) {
+                typedef std::vector<StringKeyValue>::const_iterator iter;
+                for (iter it=repls.begin(), end=repls.end(); it!=end; ++it) {
+                        replacements_[it->key] = it->value;
+                }
+        }
+}
+template <typename Arch>
+inline void StringKeyValue::serialize (Arch &arch) {
+        using actuarius::pack;
+        arch & pack("key", key) & pack("value", value);
+}
+
 template<typename Arch>
 inline void TerrainFormation::serialize (Arch &arch) {
         using actuarius::pack;
@@ -45,6 +76,7 @@ inline void TerrainFormation::serialize (Arch &arch) {
 
         switch (kind_) {
         case QuatschSource: arch & pack ("parameters", quatschSource_); break;
+        case QuatschPreset: arch & pack ("parameters", quatschPreset_); break;
         case None: break;
         }
 }

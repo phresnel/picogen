@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "terrain.hh"
+#include "quatsch-preprocessor/parsing.hh"
 
 namespace cosyscene {
 
@@ -33,6 +34,28 @@ const actuarius::Enum<TerrainMaterial::Kind> TerrainMaterial::Typenames =
 ( actuarius::Nvp<TerrainMaterial::Kind>(TerrainMaterial::None, "none")
 | actuarius::Nvp<TerrainMaterial::Kind>(TerrainMaterial::Monochrome, "monochrome")
 );
+
+
+std::string QuatschPreset::getPreprocessedCode() const {
+        return quatsch_preprocessor::replace(preset_, replacements_);
+}
+void QuatschPreset::setPreset (std::string const &preset) {
+        preset_ = preset;
+}
+std::string QuatschPreset::preset () const {
+        return preset_;
+}
+void QuatschPreset::setReplacement (
+        std::string const &key, std::string const &value
+) {
+        replacements_[key] = value;
+}
+std::string QuatschPreset::replacement (std::string const &key) const {
+        return replacements_.find(key)->second;
+}
+std::map<std::string, std::string> QuatschPreset::replacements() const {
+        return replacements_;
+}
 
 
 
