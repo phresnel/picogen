@@ -54,8 +54,8 @@ QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
 
         setPreset(
         "(($Filename:filename))\n"
-        //"(($Mode:enum={Bilinear, Cubic}))\n"
-        "(frob <--(($Filename))-->)"
+        "(($Mode:enumeration={Bilinear, Cubic}))\n"
+        "(frob <--(($Filename))--> [(($Mode))])"
         );
 }
 
@@ -72,6 +72,11 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
 
         if (decl.hasImplicitDomain()) {
                 switch (decl.type()) {
+                case quatsch_preprocessor::EnumerationValue:
+                        throw std::runtime_error(
+                        "QuatschPresetEditor::createWidgetForDeclaration(): "
+                        "'EnumerationValue' is not a possible type for implicit domains."
+                        );
                 case quatsch_preprocessor::Filename: {
                         FilenameEdit *te = new FilenameEdit (parent);
                         widget = te;
@@ -117,6 +122,11 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                         "QuatschPresetEditor::createWidgetForDeclaration(): "
                         "'Boolean' is not a possible type for linear domains."
                         );
+                case quatsch_preprocessor::EnumerationValue:
+                        throw std::runtime_error(
+                        "QuatschPresetEditor::createWidgetForDeclaration(): "
+                        "'EnumerationValue' is not a possible type for linear domains."
+                        );
                 case quatsch_preprocessor::Real: {
                         QDoubleSpinBox *dsb = new QDoubleSpinBox(parent);
                         dsb->setRange(decl.domainMin().value(),
@@ -146,14 +156,28 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                 QComboBox *cb = new QComboBox(parent);
                 QObject::connect(cb, SIGNAL(currentIndexChanged(int)),
                                  SLOT(childWidgetEditingFinished()));
-                typedef std::list<quatsch_preprocessor::DomainScalar>::
-                                const_iterator
-                        dsiterator;
-                foreach (quatsch_preprocessor::DomainScalar ds,
-                         decl.domainElements())
-                {
-                        cb->addItem(QString::fromStdString(ds.displayValue()),
-                                    ds.value());
+
+                if (decl.domain().isEnumeration()) {
+                        using quatsch_preprocessor::DomainEnumeration;
+
+                        quatsch_preprocessor::DomainEnumeration e =
+                                        decl.domain().asEnumeration();
+                        for (DomainEnumeration::const_iterator it=e.begin(),
+                                end = e.end(); it != end; ++it)
+                        {
+                                cb->addItem(QString::fromStdString(*it),
+                                            QString::fromStdString(*it));
+                        }
+                } else {
+                        typedef std::list<quatsch_preprocessor::DomainScalar>::
+                                        const_iterator
+                                dsiterator;
+                        foreach (quatsch_preprocessor::DomainScalar ds,
+                                 decl.domainElements())
+                        {
+                                cb->addItem(QString::fromStdString(ds.displayValue()),
+                                            ds.value());
+                        }
                 }
                 widget = cb;
         } else {
