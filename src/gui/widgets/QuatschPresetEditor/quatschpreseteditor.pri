@@ -4,12 +4,14 @@ CXXFLAGS += -Wall
 SOURCES += $$PWD/quatschpreseteditor.cc \
         $$PWD/../../../auxiliary/quatsch-preprocessor/ios.cc \
         $$PWD/../../../auxiliary/quatsch-preprocessor/meta.cc \
-        $$PWD/../../../auxiliary/quatsch-preprocessor/parsing.cc
+        $$PWD/../../../auxiliary/quatsch-preprocessor/parsing.cc \
+    filenameedit.cc
 HEADERS += $$PWD/quatschpreseteditor.hh \
         $$PWD/../../../auxiliary/quatsch-preprocessor/ios.hh \
         $$PWD/../../../auxiliary/quatsch-preprocessor/meta.hh \
         $$PWD/../../../auxiliary/quatsch-preprocessor/parsing.hh \
         $$PWD/../../../auxiliary/quatsch-preprocessor/optional.hh \
-        $$PWD/../../../auxiliary/quatsch-preprocessor/tuple.hh
-FORMS   += $$PWD/quatschpreseteditor.ui
-
+        $$PWD/../../../auxiliary/quatsch-preprocessor/tuple.hh \
+    filenameedit.hh
+FORMS   += $$PWD/quatschpreseteditor.ui \
+    filenameedit.ui

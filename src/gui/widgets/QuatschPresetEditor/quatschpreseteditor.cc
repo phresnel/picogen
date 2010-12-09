@@ -23,7 +23,12 @@
 #include "quatsch-preprocessor/parsing.hh"
 #include "cosyscene/terrain.hh"
 
+#include <cmath>
+
+#include "filenameedit.hh"
+
 #include <QTextEdit>
+#include <QLineEdit>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QSpacerItem>
@@ -34,16 +39,24 @@
 #include <QFormLayout>
 
 
-
 QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QuatschPresetEditor)
 {
         ui->setupUi(this);
-        ui->preprocessedCode->setVisible(false);
-        ui->preprocessedCode->setEnabled(false);
-        ui->showPreprocessedCode->setVisible(false);
-        ui->showPreprocessedCode->setEnabled(false);
+
+        if (0) {
+                ui->preprocessedCode->setVisible(false);
+                ui->preprocessedCode->setEnabled(false);
+                ui->showPreprocessedCode->setVisible(false);
+                ui->showPreprocessedCode->setEnabled(false);
+        }
+
+        setPreset(
+        "(($Filename:filename))\n"
+        //"(($Mode:enum={Bilinear, Cubic}))\n"
+        "(frob <--(($Filename))-->)"
+        );
 }
 
 QuatschPresetEditor::~QuatschPresetEditor() {
@@ -57,37 +70,75 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
 {
         QWidget *widget = 0;
 
-        if (decl.domain().isLinear()) {
+        if (decl.hasImplicitDomain()) {
                 switch (decl.type()) {
-                case quatsch_preprocessor::Real:
-                {
-                        QDoubleSpinBox *dsb = new QDoubleSpinBox(parent);
-                        dsb->setMinimum(decl.domainMin().value());
-                        dsb->setMaximum(decl.domainMax().value());
-                        widget = dsb;
-                        QObject::connect(dsb, SIGNAL(editingFinished()),
+                case quatsch_preprocessor::Filename: {
+                        FilenameEdit *te = new FilenameEdit (parent);
+                        widget = te;
+                        QObject::connect(te, SIGNAL(textChanged()),
                                          SLOT(childWidgetEditingFinished()));
-                }
-                break;
-                case quatsch_preprocessor::Integer:
-                {
-                        QSpinBox *dsb = new QSpinBox(parent);
-                        dsb->setMinimum(decl.domainMin().value());
-                        dsb->setMaximum(decl.domainMax().value());
-                        widget = dsb;
-
-                        QObject::connect(dsb, SIGNAL(editingFinished()),
-                                         SLOT(childWidgetEditingFinished()));
-                }
-                break;
+                } break;
                 case quatsch_preprocessor::Boolean:
                 {
                         QCheckBox *cb = new QCheckBox(parent);
                         widget = cb;
                         QObject::connect(cb, SIGNAL(toggled(bool)),
                                          SLOT(childWidgetEditingFinished()));
-                }
-                break;
+                } break;
+                case quatsch_preprocessor::Real:
+                {
+                        QDoubleSpinBox *dsb = new QDoubleSpinBox(parent);
+                        dsb->setRange(-99999999,
+                                      +99999999);
+                        widget = dsb;
+                        QObject::connect(dsb, SIGNAL(editingFinished()),
+                                         SLOT(childWidgetEditingFinished()));
+                } break;
+                case quatsch_preprocessor::Integer:
+                {
+                        QSpinBox *dsb = new QSpinBox(parent);
+                        dsb->setRange(-99999999,
+                                      +99999999);
+                        widget = dsb;
+
+                        QObject::connect(dsb, SIGNAL(editingFinished()),
+                                         SLOT(childWidgetEditingFinished()));
+                } break;
+                };
+        } else if (decl.domain().isLinear()) {
+                switch (decl.type()) {
+                case quatsch_preprocessor::Filename:
+                        throw std::runtime_error(
+                        "QuatschPresetEditor::createWidgetForDeclaration(): "
+                        "'Filename' is not a possible type for linear domains."
+                        );
+                case quatsch_preprocessor::Boolean:
+                        throw std::runtime_error(
+                        "QuatschPresetEditor::createWidgetForDeclaration(): "
+                        "'Boolean' is not a possible type for linear domains."
+                        );
+                case quatsch_preprocessor::Real: {
+                        QDoubleSpinBox *dsb = new QDoubleSpinBox(parent);
+                        dsb->setRange(decl.domainMin().value(),
+                                      decl.domainMax().value());
+                        double d = std::fabs(decl.domainMin().value()
+                                             -decl.domainMax().value())
+                                   / 100.;
+                        dsb->setSingleStep(d>1.?1.:d);
+                        dsb->setDecimals(6);
+                        widget = dsb;
+                        QObject::connect(dsb, SIGNAL(editingFinished()),
+                                         SLOT(childWidgetEditingFinished()));
+                } break;
+                case quatsch_preprocessor::Integer: {
+                        QSpinBox *dsb = new QSpinBox(parent);
+                        dsb->setRange(decl.domainMin().value(),
+                                      decl.domainMax().value());
+                        widget = dsb;
+
+                        QObject::connect(dsb, SIGNAL(editingFinished()),
+                                         SLOT(childWidgetEditingFinished()));
+                } break;
                 }
         } else if (decl.hasFiniteDomain()
                 && decl.domainElementCount()<100)
@@ -106,10 +157,13 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                 }
                 widget = cb;
         } else {
+                // TODO: build up regex
+                //switch (decl.type())
+                /*
                 QTextEdit *te = new QTextEdit(parent);
                 widget = te;
                 QObject::connect(te, SIGNAL(textChanged()),
-                                 SLOT(childWidgetEditingFinished()));
+                                 SLOT(childWidgetEditingFinished()));*/
         }
 
         return widget;
@@ -123,7 +177,6 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
         using quatsch_preprocessor::Declaration;
         using quatsch_preprocessor::Declarations;
 
-
         // Creating a whole new layout. See
         // * http://bugreports.qt.nokia.com/browse/QTBUG-15990
         // * http://bugreports.qt.nokia.com/browse/QTBUG-15991
@@ -134,7 +187,6 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
 
         preset = str;
         declarations = quatsch_preprocessor::findDeclarations(str);
-
         foreach (quatsch_preprocessor::Declaration decl, declarations) {
                 QWidget *widget = createWidgetForDeclaration(decl, this);
                 widget->setObjectName(QString::fromStdString(decl.id()));
@@ -162,8 +214,6 @@ void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
         for (int i=0; i<layout->rowCount(); ++i) {
                 QLayoutItem *item = layout->itemAt(i,
                                                    QFormLayout::FieldRole);
-                //QMessageBox::information(this, "", QString::number((int)item));
-                //continue;
                 QWidget *widget = item->widget();
                 if (!widget)
                         continue;
@@ -182,6 +232,10 @@ void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
                 } else if (QComboBox *ed = qobject_cast<QComboBox*>(widget)) {
                         int d = ed->findData(var);
                         ed->setCurrentIndex(d);
+                } else if (QLineEdit *ed = qobject_cast<QLineEdit*>(widget)) {
+                        ed->setText(var.toString());
+                } else if (FilenameEdit *ed = qobject_cast<FilenameEdit*>(widget)) {
+                        ed->setFilename(var.toString());
                 } else {
                         QMessageBox::warning(this, "Error", "unknown editor in "
                                              "QuatschPresetEditor::fromCosy()");
@@ -194,7 +248,6 @@ std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
         QFormLayout *layout = (QFormLayout*)ui->scrollAreaWidgetContents->layout();
         if (!layout)
                 return ret;
-        QMessageBox::information(const_cast<QWidget*>((QWidget*)this), "++", "++");
         for (int i=0; i<layout->rowCount(); ++i) {
                 QLayoutItem *item = layout->itemAt(i,
                                                    QFormLayout::FieldRole);
@@ -203,17 +256,22 @@ std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
                         continue;
                 const std::string name = widget->objectName().toStdString();
 
-                if (QDoubleSpinBox *ed = qobject_cast<QDoubleSpinBox*>(widget))
+                if (QDoubleSpinBox *ed = qobject_cast<QDoubleSpinBox*>(widget)){
                         ret[name] = QString::number(ed->value()).toStdString();
-                else if (QSpinBox *ed = qobject_cast<QSpinBox*>(widget))
+                } else if (QSpinBox *ed = qobject_cast<QSpinBox*>(widget)){
                         ret[name] = QString::number(ed->value()).toStdString();
-                else if (QCheckBox *ed = qobject_cast<QCheckBox*>(widget))
+                } else if (QCheckBox *ed = qobject_cast<QCheckBox*>(widget)){
                         ret[name] = ed->isChecked() ? "1" : "0";
-                else if (QComboBox *ed = qobject_cast<QComboBox*>(widget))
+                } else if (QComboBox *ed = qobject_cast<QComboBox*>(widget)){
                         ret[name] = ed->itemData(ed->currentIndex())
                                     .toString().toStdString();
-                else
+                } else if (QLineEdit *ed = qobject_cast<QLineEdit*>(widget)){
+                        ret[name] = ed->text().toStdString();
+                } else if (FilenameEdit *ed = qobject_cast<FilenameEdit*>(widget)){
+                        ret[name] = ed->filename().toStdString();
+                } else {
                         ret[name] = "???Error: Unsupported Editor???";
+                }
         }
         return ret;
 }
