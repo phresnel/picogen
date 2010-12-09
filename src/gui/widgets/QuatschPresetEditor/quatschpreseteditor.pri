@@ -1,5 +1,5 @@
 QT      += core gui
-INCLUDEPATH += $$PWD $$PWD/../../../auxiliary
+INCLUDEPATH += $$PWD $$PWD/../../../auxiliary $$PWD/../../cosygui/
 CXXFLAGS += -Wall
 SOURCES += $$PWD/quatschpreseteditor.cc \
         $$PWD/../../../auxiliary/quatsch-preprocessor/ios.cc \

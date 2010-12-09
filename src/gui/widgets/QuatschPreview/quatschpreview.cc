@@ -101,7 +101,7 @@ void QuatschPreview::setCode (std::string const &str) {
         code = str;
 }
 
-void QuatschPreview::setCode (QString str) {
+void QuatschPreview::setCode (QString const& str) {
         setCode (str.toStdString());
 }
 
@@ -110,7 +110,7 @@ void QuatschPreview::compileAndRun(std::string const &str) {
         compileAndRun();
 }
 
-void QuatschPreview::compileAndRun(QString str) {
+void QuatschPreview::compileAndRun(QString const& str) {
         setCode (str);
         compileAndRun();
 }
@@ -135,8 +135,8 @@ bool QuatschPreview::eventFilter(QObject *ob, QEvent *e) {
                                                  m->pos().x(), m->pos().y());
                                 return true;
                         }
-                } else if (e->type() == QEvent::Paint) {
-                        /*QPainter p (ui->status);
+                } /*else if (e->type() == QEvent::Paint) {
+                        QPainter p (ui->status);
                         ui->status->paintEvent((QPaintEvent*)e);
                         if (ui->status->pixmap()) {
                                 //p.drawPixmap(0, 0, *ui->status->pixmap());
@@ -144,11 +144,14 @@ bool QuatschPreview::eventFilter(QObject *ob, QEvent *e) {
                                         //p.drawRect(*drawRect);
                                         p.drawRect(0,0, 20,20);
                                 //}
-                        }*/
+                        }
                         //p.end();
                         return true;
-                }
+                }*/
         }
         return QWidget::eventFilter(ob, e);
 }
 
+void QuatschPreview::setStatusText (QString const &str) {
+        ui->status->setText(str);
+}

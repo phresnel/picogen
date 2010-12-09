@@ -25,7 +25,7 @@
 #include "rendersettings.hh"
 
 #include "redshift/include/jobfile.hh"
-#include "auxiliary/quatsch-preprocessor/parsing.hh"
+#include "quatsch-preprocessor/parsing.hh"
 
 namespace cosyscene {
 

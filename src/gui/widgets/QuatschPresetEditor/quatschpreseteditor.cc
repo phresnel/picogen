@@ -192,6 +192,9 @@ void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
 std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
         std::map<std::string, std::string> ret;
         QFormLayout *layout = (QFormLayout*)ui->scrollAreaWidgetContents->layout();
+        if (!layout)
+                return ret;
+        QMessageBox::information(const_cast<QWidget*>((QWidget*)this), "++", "++");
         for (int i=0; i<layout->rowCount(); ++i) {
                 QLayoutItem *item = layout->itemAt(i,
                                                    QFormLayout::FieldRole);
@@ -238,5 +241,15 @@ cosyscene::QuatschPreset QuatschPresetEditor::toCosy() const {
 }
 
 void QuatschPresetEditor::on_showPreview_clicked() {
-        ui->preview->compileAndRun(getPreprocessedCode());
+        try {
+                if (QString::fromStdString(preset).trimmed().length() == 0) {
+                        ui->preview->setStatusText("Preset is empty.");
+                        return;
+                }
+                std::string const code = getPreprocessedCode();
+                ui->preview->compileAndRun(code);
+        } catch (std::exception const &ex) {
+                ui->preview->setStatusText("An error occurred: " +
+                                           QString::fromAscii(ex.what()));
+        }
 }

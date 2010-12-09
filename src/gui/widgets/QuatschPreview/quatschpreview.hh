@@ -39,11 +39,13 @@ public:
         explicit QuatschPreview(QWidget *parent = 0);
         ~QuatschPreview();
 
+        void setStatusText (QString const &str);
+
         void setCode (std::string const &str);
-        void setCode (QString str);
+        void setCode (QString const &str);
         void compileAndRun();
         void compileAndRun(std::string const &str);
-        void compileAndRun(QString str);
+        void compileAndRun(QString const &str);
 private:
         Ui::QuatschPreview *ui;
         std::string code;
