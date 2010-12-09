@@ -31,3 +31,4 @@ OTHER_FILES += \
 
 include(quatschpreseteditor.pri)
 include(../QuatschPreview/quatschpreview.pri)
+include(../FilenameEdit/filenameedit.pri)

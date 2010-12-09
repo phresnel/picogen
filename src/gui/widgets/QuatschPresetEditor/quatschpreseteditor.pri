@@ -12,4 +12,3 @@ HEADERS += $$PWD/quatschpreseteditor.hh \
         $$PWD/../../../auxiliary/quatsch-preprocessor/optional.hh \
         $$PWD/../../../auxiliary/quatsch-preprocessor/tuple.hh
 FORMS   += $$PWD/quatschpreseteditor.ui
-

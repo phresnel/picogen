@@ -25,6 +25,8 @@
 
 #include <cmath>
 
+#include "filenameedit.hh"
+
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QSpinBox>
@@ -35,7 +37,6 @@
 #include <QMessageBox>
 
 #include <QFormLayout>
-
 
 
 QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
@@ -72,7 +73,7 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
         if (decl.hasImplicitDomain()) {
                 switch (decl.type()) {
                 case quatsch_preprocessor::Filename: {
-                        QLineEdit *te = new QLineEdit (parent);
+                        FilenameEdit *te = new FilenameEdit (parent);
                         widget = te;
                         QObject::connect(te, SIGNAL(textChanged()),
                                          SLOT(childWidgetEditingFinished()));
@@ -233,6 +234,8 @@ void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
                         ed->setCurrentIndex(d);
                 } else if (QLineEdit *ed = qobject_cast<QLineEdit*>(widget)) {
                         ed->setText(var.toString());
+                } else if (FilenameEdit *ed = qobject_cast<FilenameEdit*>(widget)) {
+                        ed->setFilename(var.toString());
                 } else {
                         QMessageBox::warning(this, "Error", "unknown editor in "
                                              "QuatschPresetEditor::fromCosy()");
@@ -264,6 +267,8 @@ std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
                                     .toString().toStdString();
                 } else if (QLineEdit *ed = qobject_cast<QLineEdit*>(widget)){
                         ret[name] = ed->text().toStdString();
+                } else if (FilenameEdit *ed = qobject_cast<FilenameEdit*>(widget)){
+                        ret[name] = ed->filename().toStdString();
                 } else {
                         ret[name] = "???Error: Unsupported Editor???";
                 }
