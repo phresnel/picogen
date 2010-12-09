@@ -31,21 +31,15 @@
 #include <QComboBox>
 #include <QMessageBox>
 
-//-----------------------------------------------------------------------------
-namespace {
+#include <QFormLayout>
 
 
-
-} // namespace {
-//-----------------------------------------------------------------------------
 
 QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QuatschPresetEditor)
 {
         ui->setupUi(this);
-        /*setPreset ("(($foobar:real = {1,2,3}))(($frob:real = {1,2,3}))(($ExtraNoise:boolean))\n"
-                   "(sin (* (($frob)) x))");*/
         ui->preprocessedCode->setVisible(false);
         ui->preprocessedCode->setEnabled(false);
         ui->showPreprocessedCode->setVisible(false);
@@ -129,29 +123,24 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
         using quatsch_preprocessor::Declaration;
         using quatsch_preprocessor::Declarations;
 
+
+        // Creating a whole new layout. See
+        // * http://bugreports.qt.nokia.com/browse/QTBUG-15990
+        // * http://bugreports.qt.nokia.com/browse/QTBUG-15991
+        QFormLayout *newLayout = new QFormLayout();
+
+        delete ui->scrollAreaWidgetContents->layout();
+        ui->scrollAreaWidgetContents->setLayout(newLayout);
+
         preset = str;
         declarations = quatsch_preprocessor::findDeclarations(str);
 
-        // According to documentation for QLayoutItem*QLayout::takeAt(int index)
-        // (Qt 4.7) this is the safe way to remove all items from a QLayout.
-        // (note: takeAt(0) yields a warning if there is no item, so we first
-        //        check the item count to not get that warning)
-        const bool block = ui->layout->blockSignals(true);
-        while (ui->layout->rowCount() > 0) {
-                QLayoutItem *child = ui->layout->takeAt(0);
-                if (!child) break;
-                delete child;
-        }
-
         foreach (quatsch_preprocessor::Declaration decl, declarations) {
                 QWidget *widget = createWidgetForDeclaration(decl, this);
-
                 widget->setObjectName(QString::fromStdString(decl.id()));
-
-                ui->layout->addRow(QString::fromStdString(decl.displayName()),
-                                   widget);
+                newLayout->addRow(QString::fromStdString(decl.displayName()),
+                                  widget);
         }
-        ui->layout->blockSignals(block);
 }
 
 void QuatschPresetEditor::setPreset (QString const &str) {
@@ -169,9 +158,12 @@ void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
 
         map<string,string> repls = qp.replacements();
 
-        for (int i=0; i<ui->layout->rowCount(); ++i) {
-                QLayoutItem *item = ui->layout->itemAt(i,
-                                                       QFormLayout::FieldRole);
+        QFormLayout *layout = (QFormLayout*)ui->scrollAreaWidgetContents->layout();
+        for (int i=0; i<layout->rowCount(); ++i) {
+                QLayoutItem *item = layout->itemAt(i,
+                                                   QFormLayout::FieldRole);
+                //QMessageBox::information(this, "", QString::number((int)item));
+                //continue;
                 QWidget *widget = item->widget();
                 if (!widget)
                         continue;
@@ -199,9 +191,10 @@ void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
 
 std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
         std::map<std::string, std::string> ret;
-        for (int i=0; i<ui->layout->rowCount(); ++i) {
-                QLayoutItem *item = ui->layout->itemAt(i,
-                                                       QFormLayout::FieldRole);
+        QFormLayout *layout = (QFormLayout*)ui->scrollAreaWidgetContents->layout();
+        for (int i=0; i<layout->rowCount(); ++i) {
+                QLayoutItem *item = layout->itemAt(i,
+                                                   QFormLayout::FieldRole);
                 QWidget *widget = item->widget();
                 if (!widget)
                         continue;
