@@ -20,7 +20,7 @@
       <enum>QPlainTextEdit::NoWrap</enum>
      </property>
      <property name="tabStopWidth">
-      <number>8</number>
+      <number>20</number>
      </property>
     </widget>
    </item>
@@ -32,6 +32,14 @@
     </widget>
    </item>
   </layout>
+  <action name="actionApply">
+   <property name="text">
+    <string>apply</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

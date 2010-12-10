@@ -42,6 +42,7 @@ private:
         QWidget *applyTo;
 
 private slots:
+        void on_actionApply_triggered();
         void on_buttonBox_clicked(QAbstractButton* button);
 };
 

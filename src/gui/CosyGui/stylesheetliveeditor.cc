@@ -48,3 +48,8 @@ void StylesheetLiveEditor::on_buttonBox_clicked(QAbstractButton* button)
                 break;
         }
 }
+
+void StylesheetLiveEditor::on_actionApply_triggered()
+{
+        applyTo->setStyleSheet(ui->plainTextEdit->toPlainText());
+}
