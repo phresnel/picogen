@@ -101,7 +101,20 @@ void TerrainFormation::on_quatschCodeEditorCLB_clicked() {
 
 
 void TerrainFormation::on_parametricPresetCLB_clicked() {
-        formation_->toQuatschPreset(cosyscene::QuatschPreset());
+        formation_->toQuatschPreset(cosyscene::QuatschPreset(
+        "(($Width:real = {[-99999..99999]} ))\n"
+        "(($Height:real={[-99999..99999]}))\n"
+        "(($Depth:real={[-99999..99999]}))\n"
+        "(($Filename:filename))\n"
+        "(($Filter:enumeration={nearest, bilinear, cosine, cubic}))\n"
+        "\n"
+        "([Heightmap filter{(($Filter))}\n"
+        "            width {(($Width))}\n"
+        "            depth {(($Depth))}\n"
+        "            height{(($Height))}\n"
+        "            filename{(($Filename))}\n"
+        " ] x y)"
+        ));
         updateViews();
 }
 

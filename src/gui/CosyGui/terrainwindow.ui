@@ -18,7 +18,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QFrame" name="horizontalFrame">
+    <widget class="QFrame" name="subNavigationFrame">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="topMargin">
        <number>10</number>

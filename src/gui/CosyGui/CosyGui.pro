@@ -112,5 +112,6 @@ include(../widgets/RenderWidget/renderwidget.pri)
 include(../widgets/ColorPicker/colorpicker.pri)
 include(../widgets/QuatschPreview/quatschpreview.pri)
 include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
+include(../widgets/FilenameEdit/filenameedit.pri)
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release

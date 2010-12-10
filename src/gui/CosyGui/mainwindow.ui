@@ -14,315 +14,137 @@
    <string>picogen:CosyGui</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-* { color: white; }
-
-*#MainWindow, *#centralWidget {
-	background-color:#555;
+   <string notr="true">#centralWidget {
+	background: qlineargradient(x1: 0, y1: 0, x2:0, y2: 1,
+		stop: 0 #b6b6b6, stop: 0.08 #8f8f8f,
+		stop: 0.4 #727272,
+		stop: 0.9 #5c5c5c, stop: 1 #434343);
 }
 
-QScrollBar::add-line, QScrollBar::sub-line {width:0;height:0;background:none;}
-QScrollBar{padding:1px 1px 1px 1px;}
-QScrollBar::handle{
-        border-radius:4px;
-}
-QScrollBar::handle:hover {
-        border:1px solid #edd;
-}
-QScrollBar::handle:horizontal{
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #cbb, stop: 0.5 #505050,
-                                       stop: 0.6 #434343, stop:1 #caa);
-}
-QScrollBar::handle:vertical{
-        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                       stop:0 #cbb, stop: 0.5 #505050,
-                                       stop: 0.6 #434343, stop:1 #caa);
-}
-QScrollBar::add-page, QScrollBar::sub-page{
-        background:none;
-        color:transparent;
-}
-
-QRadioButton::indicator, QCheckBox::indicator {
-     width: 13px;
-     height: 13px;
-}
-QCheckBox::indicator:checked { image: url(:/style/checkbox-yes); }
-QCheckBox::indicator:unchecked { image: url(:/style/checkbox-no); }
-QRadioButton::indicator:checked { image: url(:/style/radio-yes); }
-QRadioButton::indicator:unchecked { image: url(:/style/radio-no); }
-
-QGraphicsView, QMdiArea,
-QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
-QTreeView, QFrame#helpFrame {
-        color:white;
-        border:2px solid #ccc;
-        border-radius:5px;
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #817171, stop: 0.5 #605050,
-                                       stop: 0.6 #534343, stop:1 #857575);
-        alternate-background-color:#556;
-}
-QFrame#helpFrame, QWidget#picohelp {
-        background-color:transparent;
-}
-QFrame {
-        background-color:#333;
-        border-radius:5px;
-}
-QStackedWidget {
-        background-color:transparent;
+/* Main Frame *************************************************/
+#mainFrame {
+       background-color: green;
 }
 
 
-QTreeView, QMdiArea, QTextEdit {
-        background-color:#556;
-        alternate-background-color:#556;
+
+/* Navigation Frame *************************************************/
+/* largely inspired by http://thesmithfam.org/blog/2009/09/17/qt-stylesheets-button-bar-tutorial/ */
+#navigationFrame {
+	border: none;
+	background: qlineargradient(x1: 0, y1: 0, x2:0, y2: 1,
+		stop: 0 #a6a6a6, stop: 0.08 #7f7f7f,
+		stop: 0.4 #626262,
+		stop: 0.9 #4c4c4c, stop: 1 #333333);
 }
-QMdiArea::QFrame {
-        background-color:#222;
+#navigationFrame QPushButton {
+	color: #333;
+	border: 2px solid #555;
+	border-radius: 11px;
+	padding: 5px;
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: -0.4,
+		radius: 1.35, stop: 0 #fff, stop: 1 #888);
+	min-width: 80px;
+}
+#navigationFrame QPushButton:checked {
+	color: #333;
+	border: 2px solid #555;
+	border-radius: 11px;
+	padding: 5px;
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: 0.4,
+		radius: 1.35, 
+		stop: 0 #efd, stop: 1 #888);
+	min-width: 80px;
+}
+#navigationFrame QPushButton:hover {
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: -0.4,
+		radius: 1.35, stop: 0 #fff, stop: 1 #bbb);
+}
+#navigationFrame QPushButton:pressed {
+	background: qradialgradient(cx: 0.4, cy: -0.1,
+		fx: 0.4, fy: -0.1,
+		radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
+}
+#navigationFrame QPushButton:checked:hover {
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: 0.4,
+		radius: 1.35, 
+		stop: 0 #efd, stop: 1 #bbb);
 }
 
 
-QHeaderView { background-color: transparent; }
-QHeaderView::section {
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #616161, stop: 0.5 #505050,
-                                       stop: 0.6 #434343, stop:1 #656565);
-        color: white;
-        padding-left: 4px;
-        border: 1px solid #6c6c6c;
-        border-radius:5px;
- }
 
-QMenuBar {
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #889, stop:1 #aab);
- } QMenuBar::item  {
-        spacing: 3px; /* spacing between menu bar items */
-        padding: 1px 4px;
-        background: transparent;
-        border-radius: 4px;
-} QMenuBar::item:selected { /* when selected using mouse or keyboard */
-        background: #b8b8b8;
-} QMenuBar::item:pressed {
-        background: #aaa;
+/* Sub Navigation Frame *************************************************/
+/* largely inspired by http://thesmithfam.org/blog/2009/09/17/qt-stylesheets-button-bar-tutorial/ */
+#subNavigationFrame {
+	border: none;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 #a6a6a6, stop: 0.08 #7f7f7f,
+		stop: 0.39999 #717171, stop: 0.4 #626262,
+		stop: 0.9 #4c4c4c, stop: 1 #333333);
 }
-
-/*QMenu {
-        border: 1px solid black;
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #716161, stop: 0.5 #605050,
-                                       stop: 0.52 #534343, stop:1 #756565);
-}*/ QMenu::item {
-        background-color: #452311;
-} QMenu::item:selected {
-        background-color: #a59361;
-} QMenu::item:hover {
-        background-color: #a59361;
+#subNavigationFrame QPushButton {
+	color: #333;
+	border: 2px solid #555;
+	border-radius: 11px;
+	padding: 5px;
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: -0.4,
+		radius: 1.35, stop: 0 #fff, stop: 1 #888);
+	min-width: 80px;
 }
-
-QPushButton { padding: 5px; padding-top: 1px; padding-bottom: 1px; }
-QPushButton:!flat {
-        border: 2px solid #aaa;
-        border-radius: 6px;
-        background-color: #666;
-} QPushButton:disabled {
-        color:gray;
-        background-color: black;
-}  QPushButton:hover {
-        border: 2px solid #afafc1;
-    background-color: #888;
-} QPushButton:pressed {
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #999, stop: 0.5 #555,
-                                       stop: 0.55 #444, stop:1 #999);
-} 
-
-QPushButton:checked,
-QLineEdit:focus, QSpinBox:focus,
-QDoubleSpinBox:focus, QComboBox:focus  {
-        background-color: #575;
+#subNavigationFrame QPushButton:checked {
+	color: #333;
+	border: 2px solid #555;
+	border-radius: 11px;
+	padding: 5px;
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: 0.4,
+		radius: 1.35, 
+		stop: 0 #fed, stop: 1 #888);
+	min-width: 80px;
 }
-
-QGroupBox {		
-        background-color: #444;
-        border: 2px solid #ccc;
-        border-radius: 6px;
-        margin-top: 2ex; /* leave space at the top for the title */
-        font: large;
-} QGroupBox::title {
-        color:#EFD;
-        subcontrol-origin: margin;
-        subcontrol-position: top center; /* position at the top center */
+#subNavigationFrame QPushButton:hover {
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: -0.4,
+		radius: 1.35, stop: 0 #fff, stop: 1 #bbb);
 }
-
-
-QSpinBox::up-arrow, QSpinBox::up-button,
-QDoubleSpinBox::up-arrow, QDoubleSpinBox::up-button {
-    width:0px;height:0px;
+#subNavigationFrame QPushButton:pressed {
+	background: qradialgradient(cx: 0.4, cy: -0.1,
+		fx: 0.4, fy: -0.1,
+		radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
 }
-QSpinBox::down-arrow, QSpinBox::down-button,
-QDoubleSpinBox::down-arrow, QDoubleSpinBox::down-button {
-    width:0px;height:0px;
-}
-
-
-QSplitter::handle:vertical{
-        border: 1px solid transparent;
-        border-radius:4px;
-        height:5px;
-        background-color:
-                qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #91b191, stop: 0.5 #607050,
-                                       stop: 0.6 #536343, stop:1 #91b191);
-}
-QSplitter::handle:horizontal{
-        border: 1px solid transparent;
-        border-radius:4px;
-        width:5px;
-        background-color:
-                qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                       stop:0 #91b191, stop: 0.5 #607050,
-                                       stop: 0.6 #536343, stop:1 #91b191);
-}
-QSplitter::handle:hover {
-        border:1px solid #faa;
-}
-
-
-QComboBox::drop-down {
-     subcontrol-origin: padding;
-     subcontrol-position: top right;
-     width: 15px;
-
-     border-left-width: 1px;
-     border-left-color: darkgray;
-     border-left-style: solid;
-     border-top-right-radius: 3px;
-     border-bottom-right-radius: 3px;
- }
-QComboBox QAbstractItemView {
-        background: gray;
-}
-
-
-QTabWidget::pane { /* The tab widget frame */
-        border: 2px solid #555;
-        border-radius:4px;
-} QTabWidget::tab-bar {
-        alignment:center;
-} QTabBar::tab {
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #669, stop: 0.5 #333,
-                                       stop: 0.55 #232323, stop:1 #669);
-        border: 2px solid #C4C4C3;
-        border-bottom-color: #C2C7CB; /* same as the pane color */
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
-        width: 128px;
-        padding: 2px;
-        color:#ccc;
-} QTabBar::tab:selected, QTabBar::tab:hover {
-        background-color:
-                        qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                       stop:0 #9191b1, stop: 0.5 #607050,
-                                       stop: 0.55 #334323, stop:1 #9191b1);
-        color:#fff;
-} QTabBar::tab:selected {
-        border-color: #9B9B9B;
-        border-bottom-color: #C2C7CB; /* same as pane color */
-} QTabBar::tab:!selected {
-        margin-top: 2px; /* make non-selected tabs look smaller */
-}
-
-QLabel{ background-color:none; }
-
-
-QSlider::groove:horizontal {
-	border: 1px solid #bbb;
-	background: white;
-	height: 10px;
-	border-radius: 4px;
-}
-QSlider::sub-page:horizontal {
-	background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    	stop: 0 #66e, stop: 1 #bbf);
-	background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    	stop: 0 #bbf, stop: 1 #55f);
-	border: 1px solid #777;
-	height: 10px;
-	border-radius: 4px;
-}
-QSlider::add-page:horizontal {
-	background: #fff;
-	border: 1px solid #777;
-	height: 10px;
-	border-radius: 4px;
-}
-QSlider::handle:horizontal {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-	    stop:0 #eee, stop:1 #ccc);
-	border: 1px solid #777;
-	width: 13px;
-	margin-top: -2px;
-	margin-bottom: -2px;
-	border-radius: 4px;
-}
-QSlider::handle:horizontal:hover {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-	    stop:0 #fff, stop:1 #ddd);
-	border: 1px solid #444;
-	border-radius: 4px;
-}
-
-QSlider::groove:horizontal
-{
-border: 1px solid #bbb;
-background: white;
-width: 10px;
-border-radius: 4px;
-}
-QSlider::sub-page:vertical
-{
-	background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #fff, stop: 0.4999 #eee, stop: 0.5 #ddd, stop: 1 #eee );
-	border: 1px solid #777;
-	width: 10px;
-	border-radius: 4px;
-}
-QSlider::add-page:vertical {
-	background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #78d, stop: 0.4999 #46a, stop: 0.5 #45a, stop: 1 #238 );
-	border: 1px solid #777;
-	width: 10px;
-	border-radius: 4px;
-}
-QSlider::handle:vertical {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #eee, stop:1 #ccc);
-	border: 1px solid #777;
-	height: 13px;
-	margin-top: -2px;
-	margin-bottom: -2px;
-	border-radius: 4px;
-}
-QSlider::handle:vertical:hover {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #fff, stop:1 #ddd);
-	border: 1px solid #444;
-	border-radius: 4px;
+#subNavigationFrame QPushButton:checked:hover {
+	background: qradialgradient(cx: 0.3, cy: -0.4,
+		fx: 0.3, fy: 0.4,
+		radius: 1.35, 
+		stop: 0 #fed, stop: 1 #bbb);
 }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
-     <number>24</number>
+     <number>8</number>
+    </property>
+    <property name="margin">
+     <number>0</number>
     </property>
     <item>
-     <widget class="QFrame" name="verticalFrame">
+     <widget class="QFrame" name="navigationFrame">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>218</width>
+        <height>0</height>
+       </size>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -584,23 +406,31 @@ QSlider::handle:vertical:hover {
      </widget>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="spacing">
-       <number>12</number>
+     <widget class="QFrame" name="mainFrame">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
       </property>
-      <item>
-       <widget class="QStackedWidget" name="stackedWidget">
-        <property name="currentIndex">
-         <number>4</number>
-        </property>
-        <widget class="FilmSettingsWindow" name="filmSettings"/>
-        <widget class="NavigationWindow" name="navigation"/>
-        <widget class="TerrainWindow" name="terrain"/>
-        <widget class="SunSkyWindow" name="sunSky"/>
-        <widget class="TwinRenderSettingsWindow" name="renderingSetup"/>
-       </widget>
-      </item>
-     </layout>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QStackedWidget" name="stackedWidget">
+         <property name="currentIndex">
+          <number>4</number>
+         </property>
+         <widget class="FilmSettingsWindow" name="filmSettings"/>
+         <widget class="NavigationWindow" name="navigation"/>
+         <widget class="TerrainWindow" name="terrain"/>
+         <widget class="SunSkyWindow" name="sunSky"/>
+         <widget class="TwinRenderSettingsWindow" name="renderingSetup"/>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -610,7 +440,7 @@ QSlider::handle:vertical:hover {
      <x>0</x>
      <y>0</y>
      <width>781</width>
-     <height>19</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

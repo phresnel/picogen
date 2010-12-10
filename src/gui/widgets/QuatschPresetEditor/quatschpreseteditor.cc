@@ -45,7 +45,7 @@ QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
 {
         ui->setupUi(this);
 
-        if (0) {
+        if (1) {
                 ui->preprocessedCode->setVisible(false);
                 ui->preprocessedCode->setEnabled(false);
                 ui->showPreprocessedCode->setVisible(false);
@@ -206,7 +206,13 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
         // * http://bugreports.qt.nokia.com/browse/QTBUG-15991
         QFormLayout *newLayout = new QFormLayout();
 
-        delete ui->scrollAreaWidgetContents->layout();
+        if (QLayout *oldLayout = ui->scrollAreaWidgetContents->layout()) {
+                while (QLayoutItem *it = oldLayout->takeAt(0)) {
+                        delete it->widget();
+                        delete it;
+                }
+                delete oldLayout;
+        }
         ui->scrollAreaWidgetContents->setLayout(newLayout);
 
         preset = str;

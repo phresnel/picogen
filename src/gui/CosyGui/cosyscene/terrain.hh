@@ -66,6 +66,7 @@ struct StringKeyValue {
 class QuatschPreset {
 public:
         QuatschPreset() {}
+        QuatschPreset(std::string const &preset) : preset_(preset) {}
 
         void setPreset (std::string const &preset);
         std::string preset () const;

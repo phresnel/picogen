@@ -60,7 +60,7 @@ NavigationWindow::NavigationWindow(QWidget *parent) :
 {
         ui->setupUi(this);
         ui->stashFrame->setTitle("Navigation");
-        ui->horizontalFrame->setVisible(false);
+        ui->subNavigationFrame->setVisible(false);
 }
 
 NavigationWindow::~NavigationWindow() {
