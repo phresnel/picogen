@@ -76,9 +76,56 @@ private:
 
 
 
+class DomainEnumeration {
+public:
+        typedef std::string value_type;
+
+        DomainEnumeration();
+
+        std::vector<value_type> elements() const;
+
+        // Container.
+        typedef std::vector<value_type>::iterator        iterator;
+        typedef std::vector<value_type>::const_iterator  const_iterator;
+        typedef std::vector<value_type>::size_type       size_type;
+
+        void push_back (value_type const &d);
+
+        iterator       begin();
+        const_iterator begin() const;
+
+        iterator       end();
+        const_iterator end() const;
+
+        size_type      size () const;
+
+        value_type       &at         (size_type i);
+        const value_type &at         (size_type i) const;
+        value_type       &operator[] (size_type i);
+        const value_type &operator[] (size_type i) const;
+private:
+        std::vector<std::string> elements_;
+};
+
+
+
+/*class DomainFilename {
+public:
+        DomainFilename();
+        DomainFilename(std::string const &);
+
+        void setValue (std::string const &);
+        std::string value() const;
+private:
+        std::string value_;
+};*/
+
+
+
 enum DomainType {
         Scalar,
-        Interval
+        Interval,
+        Enumeration
 };
 
 
@@ -87,14 +134,17 @@ class DomainValue {
 public:
         DomainValue (DomainScalar scalar);
         DomainValue (DomainInterval inter);
+        DomainValue (DomainEnumeration Enum);
 
         DomainType type() const;
 
         void toScalar (DomainScalar scalar);
         void toInterval (DomainInterval interval);
+        void toEnumeration(DomainEnumeration enumeration);
 
         DomainScalar scalar() const;
         DomainInterval interval() const;
+        DomainEnumeration enumeration() const;
 
         DomainScalar min() const;
         DomainScalar max() const;
@@ -104,9 +154,11 @@ public:
         std::list<DomainScalar> elements() const;
 
 private:
+        void reset();
         DomainType type_;
         optional<DomainScalar> scalar_;
         optional<DomainInterval> interval_;
+        optional<DomainEnumeration> enumeration_;
 
         DomainValue();
 };
@@ -121,8 +173,11 @@ public:
 
         bool isLinear () const;
         bool isFinite () const;
+        bool isEnumeration () const;
+        bool empty() const;
         unsigned int elementCount() const;
         std::list<DomainScalar> elements() const;
+        DomainEnumeration asEnumeration() const;
 
         // Container.
         typedef std::vector<DomainValue>::iterator        iterator;
@@ -139,10 +194,10 @@ public:
 
         size_type      size () const;
 
-        DomainValue       &at         (size_t i);
-        const DomainValue &at         (size_t i) const;
-        DomainValue       &operator[] (size_t i);
-        const DomainValue &operator[] (size_t i) const;
+        DomainValue       &at         (size_type i);
+        const DomainValue &at         (size_type i) const;
+        DomainValue       &operator[] (size_type i);
+        const DomainValue &operator[] (size_type i) const;
 private:
         std::vector<DomainValue> values_;
 };
@@ -152,8 +207,11 @@ private:
 enum DeclaredType {
         Integer,
         Real,
-        Boolean
+        Boolean,
+        Filename,
+        EnumerationValue
 };
+bool domainMustBeImplicit(DeclaredType t);
 
 
 
@@ -175,6 +233,7 @@ public:
         DomainScalar domainMin() const;
         DomainScalar domainMax() const;
         bool hasFiniteDomain() const;
+        bool hasImplicitDomain() const;
         unsigned int domainElementCount() const;
         std::list<DomainScalar> domainElements() const;
 private:

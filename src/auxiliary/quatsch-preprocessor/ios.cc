@@ -32,10 +32,25 @@ std::ostream& operator<< (std::ostream& o, DomainInterval const& v) {
         return o << "[" << v.from() << " .. " << v.to() << "]";
 }
 
+std::ostream& operator<< (std::ostream& o, DomainEnumeration const& v) {
+        o << "{";
+        bool first = true;
+        for (DomainEnumeration::const_iterator it=v.begin(), end=v.end();
+                it!=end; ++it)
+        {
+                if (!first) o << ", ";
+                o << *it;
+                first = false;
+        }
+        o << "}";
+        return o;
+}
+
 std::ostream& operator<< (std::ostream& o, DomainValue const& v) {
         switch (v.type()) {
         case Scalar: return o << v.scalar();
         case Interval: return o << v.interval();
+        case Enumeration: return o << v.enumeration();
         }
         throw std::runtime_error (
         "in std::ostream& operator<< (std::ostream& o, DomainValue const& v): "
@@ -60,6 +75,8 @@ std::ostream& operator<< (std::ostream& o, DeclaredType const& v) {
         case Integer: return o << "integer";
         case Real:    return o << "real";
         case Boolean: return o << "boolean";
+        case Filename: return o << "filename";
+        case EnumerationValue: return o << "enumeration";
         }
         throw std::runtime_error (
         "in std::ostream& operator<< (std::ostream& o, DeclaredType const& v): "

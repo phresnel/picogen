@@ -69,7 +69,9 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
         string nonExistantParameterNames (""); // To collect together parameter names that don't exist, for dumping errors in the end.
 
         width = height = depth = 1000;
-        iwidth = iheight = idepth = 1/1000;
+        iwidth = 1/width;
+        iheight = 1/height;
+        idepth = 1/depth;
         filter = cubic;
         for (Map::const_iterator it=static_parameters.begin();
              it!=static_parameters.end();
@@ -91,7 +93,7 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
                         idepth = 1 / depth;
                 } else if (name == string("filename")) {
                         istringstream hmmm (static_parameters[name]);
-                        hmmm >> filename;
+                        filename = hmmm.str();
                 } else if (name == string("filter")) {
                         istringstream hmmm (static_parameters[name]);
                         string filterType;

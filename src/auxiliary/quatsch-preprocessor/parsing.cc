@@ -87,10 +87,13 @@ template <typename iterator>
 optional<DomainScalar> parseScalar (iterator &it_, const iterator &end) {
         iterator it = it_;
 
-        if (it == end || !isdigit (*it))
+        if (it == end || !(isdigit (*it) || *it=='-'))
                 return false;
 
         const iterator value_begin (it);
+        if (*it == '-') {
+                ++it;
+        }
         while (it != end && isdigit (*it)) {
                 ++it;
         }
@@ -220,6 +223,46 @@ optional<Domain> parseDomain (iterator &it_, const iterator &end) {
 
 
 template <typename iterator>
+optional<DomainEnumeration> parseEnumeration (iterator &it_, const iterator &end) {
+        iterator it = it_;
+
+        DomainEnumeration ret;
+
+        if (it == end || *it != '{')
+                return false;
+        ++it;
+        eatWhitespace (it, end);
+
+        bool first = true;
+        while (it != end && *it != '}') {
+
+                if (!first) {
+                        if (it == end || *it != ',') {
+                                return false;
+                        }
+                        ++it;
+                        eatWhitespace (it, end);
+                }
+                optional<std::string> value = parseString(it, end);
+                if (!value)
+                        return false;
+                ret.push_back (*value);
+                eatWhitespace (it, end);
+
+                first = false;
+        }
+        if (it == end || *it != '}') {
+                return false;
+        }
+        ++it;
+
+        it_ = it;
+        return ret;
+}
+
+
+
+template <typename iterator>
 bool parseString (iterator &it_, const iterator &end,
                    const std::string &literal
 ) {
@@ -240,6 +283,29 @@ bool parseString (iterator &it_, const iterator &end,
         return true;
 }
 
+
+template <typename iterator>
+optional<std::string> parseString (iterator &it_, const iterator &end) {
+        iterator it = it_;
+
+        std::string ret;
+
+        if (it == end || !isAlpha(*it))
+                return optional<std::string>();
+        ret += *it;
+        ++it;
+        while (it != end) {
+                if (!isAlphaNum(*it))
+                        break;
+                ret += *it;
+                ++it;
+        }
+        if (ret != "") {
+                it_ = it;
+        }
+        return ret;
+}
+
 template <typename iterator>
 optional<DeclaredType> parseType (iterator &it, const iterator &end) {
         if (parseString (it, end, "integer"))
@@ -248,6 +314,10 @@ optional<DeclaredType> parseType (iterator &it, const iterator &end) {
                 return Real;
         if (parseString (it, end, "boolean"))
                 return Boolean;
+        if (parseString (it, end, "filename"))
+                return Filename;
+        if (parseString (it, end, "enumeration"))
+                return EnumerationValue;
         return false;
 }
 
@@ -302,8 +372,17 @@ optional<Declaration> parseDeclaration (std::string statement) {
         ++it;
         eatWhitespace(it, end);
 
-        optional<Domain> domain = parseDomain (it, end);
-        if (domain && ret.type() == Boolean) {
+        optional<Domain> domain;
+        if (EnumerationValue == *dt) {
+                const optional<DomainEnumeration> e = parseEnumeration(it, end);
+                if (!e) return false;
+                Domain dom;
+                dom.push_back(*e);
+                domain = dom;
+        } else {
+                domain = parseDomain (it, end);
+        }
+        if (domain && domainMustBeImplicit(ret.type())) {
                 return false;
         }
         ret.setDomain (*domain);
