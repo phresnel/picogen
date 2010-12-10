@@ -165,7 +165,7 @@ optional<DomainInterval> parseIntervalValue (iterator &it_, const iterator &end)
 
 
 template <typename iterator>
-optional<DomainValue> parseValue (iterator &it_, const iterator &end) {
+optional<DomainValue> parseDomainValue (iterator &it_, const iterator &end) {
         iterator it = it_;
 
         if (it == end)
@@ -204,7 +204,7 @@ optional<Domain> parseDomain (iterator &it_, const iterator &end) {
                         ++it;
                         eatWhitespace (it, end);
                 }
-                optional<DomainValue> value = parseValue (it, end);
+                optional<DomainValue> value = parseDomainValue (it, end);
                 if (!value)
                         return false;
                 ret.push_back (*value);
@@ -365,27 +365,45 @@ optional<Declaration> parseDeclaration (std::string statement) {
         ret.setType (*dt);
         eatWhitespace(it, end);
 
-
-        if (it == end || *it != '=') {
+        if (it == end) {
                 return ret;
         }
-        ++it;
-        eatWhitespace(it, end);
 
-        optional<Domain> domain;
-        if (EnumerationValue == *dt) {
-                const optional<DomainEnumeration> e = parseEnumeration(it, end);
-                if (!e) return false;
-                Domain dom;
-                dom.push_back(*e);
-                domain = dom;
-        } else {
-                domain = parseDomain (it, end);
+        if (*it == '=') {
+                ++it;
+                eatWhitespace(it, end);
+
+
+                optional<Domain> domain;
+                if (EnumerationValue == *dt) {
+                        const optional<DomainEnumeration> e = parseEnumeration(it, end);
+                        if (!e) return false;
+                        Domain dom;
+                        dom.push_back(*e);
+                        domain = dom;
+                } else {
+                        domain = parseDomain (it, end);
+                }
+                if (domain && domainMustBeImplicit(ret.type())) {
+                        return false;
+                }
+                if (domain)
+                        ret.setDomain (*domain);
         }
-        if (domain && domainMustBeImplicit(ret.type())) {
-                return false;
+
+        eatWhitespace(it, end);
+        if (parseString(it, end, "default")) {
+                eatWhitespace(it, end);
+                if ('=' != *it)
+                        return false;
+                ++it;
+                eatWhitespace(it, end);
+
+                const optional<DomainValue> val = parseDomainValue(it, end);
+                if (!val || val->elementCount()>1)
+                        return false;
+                ret.setDefaultValue(*val);
         }
-        ret.setDomain (*domain);
 
         return ret;
 }

@@ -86,6 +86,8 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                 case quatsch_preprocessor::Boolean:
                 {
                         QCheckBox *cb = new QCheckBox(parent);
+                        if (decl.hasDefaultValue())
+                                cb->setChecked(decl.defaultValue().scalar().asBool());
                         widget = cb;
                         QObject::connect(cb, SIGNAL(toggled(bool)),
                                          SLOT(childWidgetEditingFinished()));
@@ -95,6 +97,9 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                         QDoubleSpinBox *dsb = new QDoubleSpinBox(parent);
                         dsb->setRange(-99999999,
                                       +99999999);
+                        dsb->setDecimals(6);
+                        if (decl.hasDefaultValue())
+                                dsb->setValue(decl.defaultValue().scalar().value());
                         widget = dsb;
                         QObject::connect(dsb, SIGNAL(editingFinished()),
                                          SLOT(childWidgetEditingFinished()));
@@ -104,6 +109,8 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                         QSpinBox *dsb = new QSpinBox(parent);
                         dsb->setRange(-99999999,
                                       +99999999);
+                        if (decl.hasDefaultValue())
+                                dsb->setValue(decl.defaultValue().scalar().value());
                         widget = dsb;
 
                         QObject::connect(dsb, SIGNAL(editingFinished()),
@@ -136,6 +143,8 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                                    / 100.;
                         dsb->setSingleStep(d>1.?1.:d);
                         dsb->setDecimals(6);
+                        if (decl.hasDefaultValue())
+                                dsb->setValue(decl.defaultValue().scalar().value());
                         widget = dsb;
                         QObject::connect(dsb, SIGNAL(editingFinished()),
                                          SLOT(childWidgetEditingFinished()));
@@ -144,6 +153,8 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                         QSpinBox *dsb = new QSpinBox(parent);
                         dsb->setRange(decl.domainMin().value(),
                                       decl.domainMax().value());
+                        if (decl.hasDefaultValue())
+                                dsb->setValue(decl.defaultValue().scalar().value());
                         widget = dsb;
 
                         QObject::connect(dsb, SIGNAL(editingFinished()),
@@ -154,6 +165,7 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                 && decl.domainElementCount()<100)
         {
                 QComboBox *cb = new QComboBox(parent);
+                cb->setMaxVisibleItems(16);
                 QObject::connect(cb, SIGNAL(currentIndexChanged(int)),
                                  SLOT(childWidgetEditingFinished()));
 
@@ -168,6 +180,10 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                                 cb->addItem(QString::fromStdString(*it),
                                             QString::fromStdString(*it));
                         }
+
+                        if (decl.hasDefaultValue()) {
+                                cb->setCurrentIndex(decl.defaultValue().scalar().value());
+                        }
                 } else {
                         typedef std::list<quatsch_preprocessor::DomainScalar>::
                                         const_iterator
@@ -177,6 +193,9 @@ QWidget* QuatschPresetEditor::createWidgetForDeclaration (
                         {
                                 cb->addItem(QString::fromStdString(ds.displayValue()),
                                             ds.value());
+                        }
+                        if (decl.hasDefaultValue()) {
+                                cb->setCurrentIndex(decl.defaultValue().scalar().value());
                         }
                 }
                 widget = cb;

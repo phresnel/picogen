@@ -36,6 +36,8 @@ public:
         void setValue (double val);
         double value () const;
 
+        bool asBool() const;
+
         std::string displayValue() const;
 
         static DomainScalar max() {
@@ -236,10 +238,15 @@ public:
         bool hasImplicitDomain() const;
         unsigned int domainElementCount() const;
         std::list<DomainScalar> domainElements() const;
+
+        bool hasDefaultValue() const;
+        DomainValue defaultValue() const;
+        void setDefaultValue (DomainValue const &);
 private:
         std::string id_;
         DeclaredType type_;
         Domain domain_;
+        optional<DomainValue> defaultValue_;
 };
 
 

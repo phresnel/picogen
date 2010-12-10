@@ -46,6 +46,7 @@ namespace quatsch_preprocessor {
 
         void DomainScalar::setValue (double val) { value_ = val; }
         double DomainScalar::value () const { return value_; }
+        bool DomainScalar::asBool() const { return value_ > 0.5; }
 
         std::string DomainScalar::displayValue() const {
                 std::stringstream ss;
@@ -518,6 +519,15 @@ namespace quatsch_preprocessor {
                         return ds;
                 }
                 return domain_.elements();
+        }
+        bool Declaration::hasDefaultValue() const {
+                return defaultValue_;
+        }
+        DomainValue Declaration::defaultValue() const {
+                return *defaultValue_;
+        }
+        void Declaration::setDefaultValue (DomainValue const &d) {
+                defaultValue_ = d;
         }
 
 
