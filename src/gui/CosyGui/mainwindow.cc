@@ -284,3 +284,9 @@ redshift::shared_ptr<redshift_file::Scene>
 {
         return scene->toRedshiftScene();
 }
+
+#include "stylesheetliveeditor.hh""
+void MainWindow::on_action_Stylesheet_triggered() {
+        StylesheetLiveEditor *editor = new StylesheetLiveEditor(this, this);
+        editor->show();
+}

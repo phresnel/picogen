@@ -450,7 +450,14 @@
     <addaction name="actionSave"/>
     <addaction name="actionLoad"/>
    </widget>
+   <widget class="QMenu" name="menu_Debug">
+    <property name="title">
+     <string>&amp;Debug</string>
+    </property>
+    <addaction name="action_Stylesheet"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menu_Debug"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -475,6 +482,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="action_Stylesheet">
+   <property name="text">
+    <string>&amp;Stylesheet</string>
    </property>
   </action>
  </widget>

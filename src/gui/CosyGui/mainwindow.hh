@@ -68,6 +68,7 @@ signals:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private slots:
+        void on_action_Stylesheet_triggered();
         void on_renderingSetupCommandLink_clicked();
         void on_renderCommandLink_clicked();
         void on_sunskyCommandLink_clicked();
