@@ -27,6 +27,8 @@ FilenameEdit::FilenameEdit(QWidget *parent) :
     ui(new Ui::FilenameEdit)
 {
         ui->setupUi(this);
+        ui->lineEdit->setPlaceholderText(
+                "type a filename or press that button");
 }
 
 FilenameEdit::~FilenameEdit() {
