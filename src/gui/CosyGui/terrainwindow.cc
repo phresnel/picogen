@@ -35,6 +35,7 @@ TerrainWindow::TerrainWindow(QWidget *parent) :
     terrain(new cosyscene::Terrain)
 {
         ui->setupUi(this);
+        on_showFormationTab_clicked();
 }
 
 
@@ -53,6 +54,8 @@ void TerrainWindow::setTerrain (redshift::shared_ptr<cosyscene::Terrain> t,
                                     blockSignals);
         ui->texturing->setMaterial(terrain->material(),
                                    blockSignals);
+        ui->fitting->setFitting (terrain->fitting(),
+                                 blockSignals);
         updateViews();
         this->blockSignals(prevBlocked);
 }

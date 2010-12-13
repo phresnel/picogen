@@ -24,7 +24,6 @@
 #define TERRAINFORMATION_HH
 
 #include <QWidget>
-
 #include "redshift/include/smart_ptr.hh"
 
 namespace cosyscene {

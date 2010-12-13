@@ -77,7 +77,8 @@ HEADERS += mainwindow.hh \
     rendersettingswindow.hh \
     createredshiftsceneclosure.hh \
     stylesheetliveeditor.hh \
-    terrainfitting.hh
+    terrainfitting.hh \
+    scopedblocksignals.hh
 FORMS += mainwindow.ui \
     terrainwindow.ui \
     stashview.ui \

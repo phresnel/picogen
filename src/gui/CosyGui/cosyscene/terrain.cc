@@ -159,20 +159,34 @@ bool TerrainMaterial::data_equals(const TerrainMaterial &rhs) const {
 
 
 
-WorldFitting::WorldFitting() : sizeFactor_(1,1,1), positionOffset_(0,0,0)
+TerrainFitting::TerrainFitting()
+: sizeFactor_(1,1,1), positionOffset_(0,0,0)
+, lazyQuadtreeMaxRecursion_(8), lazyQuadtreeVisibleExtent_(10000)
 {
 }
-void WorldFitting::setSizeFactor(Vector3d v) {
+void TerrainFitting::setSizeFactor(Vector3d v) {
         sizeFactor_ = v;
 }
-Vector3d WorldFitting::sizeFactor() const {
+Vector3d TerrainFitting::sizeFactor() const {
         return sizeFactor_;
 }
-void WorldFitting::setPositionOffset(Vector3d v) {
+void TerrainFitting::setPositionOffset(Vector3d v) {
         positionOffset_ = v;
 }
-Vector3d WorldFitting::positionOffset() const {
+Vector3d TerrainFitting::positionOffset() const {
         return positionOffset_;
+}
+void TerrainFitting::setLazyQuadtreeMaxRecursion (unsigned int rec) {
+        lazyQuadtreeMaxRecursion_ = rec;
+}
+unsigned int TerrainFitting::lazyQuadtreeMaxRecursion() const {
+        return lazyQuadtreeMaxRecursion_;
+}
+void TerrainFitting::setLazyQuadtreeVisibleExtent (double s) {
+        lazyQuadtreeVisibleExtent_ = s;
+}
+double TerrainFitting::lazyQuadtreeVisibleExtent() const {
+        return lazyQuadtreeVisibleExtent_;
 }
 
 
@@ -180,7 +194,7 @@ Vector3d WorldFitting::positionOffset() const {
 Terrain::Terrain()
 : formation_(new TerrainFormation())
 , material_(new TerrainMaterial())
-, fitting_(new WorldFitting())
+, fitting_(new TerrainFitting())
 {
 }
 redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
@@ -189,7 +203,7 @@ redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
 redshift::shared_ptr<TerrainMaterial> Terrain::material() const {
         return material_;
 }
-redshift::shared_ptr<WorldFitting> Terrain::fitting() const {
+redshift::shared_ptr<TerrainFitting> Terrain::fitting() const {
         return fitting_;
 }
 

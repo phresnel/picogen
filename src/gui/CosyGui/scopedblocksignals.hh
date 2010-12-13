@@ -18,45 +18,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef TERRAINFITTING_HH
-#define TERRAINFITTING_HH
+#ifndef SCOPEDBLOCKSIGNALS_HH
+#define SCOPEDBLOCKSIGNALS_HH
 
-#include <QWidget>
-#include "redshift/include/smart_ptr.hh"
-
-namespace Ui {
-        class TerrainFitting;
-}
-
-namespace cosyscene {
-        class TerrainFitting;
-}
-
-class TerrainFitting : public QWidget
-{
-        Q_OBJECT
-
+#include <QObject>
+#include "redshift/include/sealed.hh"
+SEALED(ScopedQtSignalBlock);
+class ScopedQtSignalBlock : MAKE_SEALED(ScopedQtSignalBlock) {
 public:
-        explicit TerrainFitting(QWidget *parent = 0);
-        ~TerrainFitting();
-
-        void setFitting (
-                redshift::shared_ptr<cosyscene::TerrainFitting> t,
-                bool blockSignals
-        );
-
-signals:
-        void fittingChanged();
+        ScopedQtSignalBlock (QObject *obj, bool block)
+        : obj(obj), wasBlocked (obj->blockSignals(block))
+        {
+        }
+        ~ScopedQtSignalBlock () {
+                obj->blockSignals(wasBlocked);
+        }
 
 private:
-        Ui::TerrainFitting *ui;
+        ScopedQtSignalBlock();
+        ScopedQtSignalBlock(ScopedQtSignalBlock const&);
+        ScopedQtSignalBlock& operator=(ScopedQtSignalBlock const&);
 
-        int previousMaxRecursion;
-        redshift::shared_ptr<cosyscene::TerrainFitting> fitting_;
-
-private slots:
-        void on_visibleExtent_editingFinished();
-        void on_maxRecursion_editingFinished();
+        QObject *obj;
+        bool wasBlocked;
 };
 
-#endif // TERRAINFITTING_HH
+#endif // SCOPEDBLOCKSIGNALS_HH

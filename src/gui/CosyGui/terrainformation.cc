@@ -30,8 +30,8 @@ TerrainFormation::TerrainFormation(QWidget *parent) :
     ui(new Ui::TerrainFormation),
     formation_(new cosyscene::TerrainFormation())
 {
-    ui->setupUi(this);
-    ui->importCLB->setVisible(false);
+        ui->setupUi(this);
+        ui->importCLB->setVisible(false);
 }
 
 

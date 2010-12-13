@@ -20,12 +20,15 @@
 
 #include "terrainfitting.hh"
 #include "ui_terrainfitting.h"
+#include "cosyscene/terrain.hh"
+#include "scopedblocksignals.hh"
 
 #include <QMessageBox>
 
 TerrainFitting::TerrainFitting(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::TerrainFitting)
+    ui(new Ui::TerrainFitting),
+    fitting_(new cosyscene::TerrainFitting())
 {
         ui->setupUi(this);
         previousMaxRecursion = ui->maxRecursion->value();
@@ -35,7 +38,32 @@ TerrainFitting::~TerrainFitting() {
         delete ui;
 }
 
-void TerrainFitting::on_maxRecursion_valueChanged(int val) {
+void TerrainFitting::setFitting(
+        redshift::shared_ptr<cosyscene::TerrainFitting> t,
+        bool blockSignals)
+{
+        ScopedQtSignalBlock blockMe (this, blockSignals);
+
+        fitting_ = t;
+        cosyscene::TerrainFitting const &f = *t;
+
+        ScopedQtSignalBlock blockMaxRecursion (ui->maxRecursion, blockSignals);
+        ui->maxRecursion->setValue(f.lazyQuadtreeMaxRecursion());
+
+        ScopedQtSignalBlock blockVisibleExtent (ui->visibleExtent, blockSignals);
+        ui->visibleExtent->setValue(f.lazyQuadtreeVisibleExtent());
+}
+
+void TerrainFitting::on_visibleExtent_editingFinished() {
+        fitting_->setLazyQuadtreeVisibleExtent (ui->visibleExtent->value());
+        emit fittingChanged();
+}
+
+
+void TerrainFitting::on_maxRecursion_editingFinished() {
+        const int val = ui->maxRecursion->value();
+
+        // Larger quadtrees can become gigabytes in size. Therefore warn users.
         if (val >= 16 &&
             val > previousMaxRecursion &&
             previousMaxRecursion<16
@@ -48,4 +76,7 @@ void TerrainFitting::on_maxRecursion_valueChanged(int val) {
                 "applications.");
         }
         previousMaxRecursion = val;
+        fitting_->setLazyQuadtreeMaxRecursion (val);
+
+        emit fittingChanged();
 }

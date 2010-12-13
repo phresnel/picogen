@@ -27,31 +27,8 @@
 #include "stashview.hh"
 
 #include <stdexcept>
-
-
 #include <QDebug>
-#include "redshift/include/sealed.hh"
-SEALED(ScopedQtSignalBlock);
-class ScopedQtSignalBlock : MAKE_SEALED(ScopedQtSignalBlock) {
-public:
-        ScopedQtSignalBlock (QObject *obj, bool block)
-        : obj(obj), wasBlocked (obj->blockSignals(block))
-        {
-        }
-        ~ScopedQtSignalBlock () {
-                obj->blockSignals(wasBlocked);
-        }
-
-private:
-        ScopedQtSignalBlock();
-        ScopedQtSignalBlock(ScopedQtSignalBlock const&);
-        ScopedQtSignalBlock& operator=(ScopedQtSignalBlock const&);
-
-        QObject *obj;
-        bool wasBlocked;
-};
-
-
+#include "scopedblocksignals.hh"
 
 
 NavigationWindow::NavigationWindow(QWidget *parent) :

@@ -163,10 +163,10 @@ private:
 
 #include "vector3d.hh"
 namespace cosyscene {
-class WorldFitting
+class TerrainFitting
 {
 public:
-        WorldFitting();
+        TerrainFitting();
 
         void setSizeFactor (Vector3d);
         Vector3d sizeFactor() const;
@@ -174,9 +174,17 @@ public:
         void setPositionOffset (Vector3d);
         Vector3d positionOffset() const;
 
+        void setLazyQuadtreeMaxRecursion (unsigned int);
+        unsigned int lazyQuadtreeMaxRecursion() const;
+
+        void setLazyQuadtreeVisibleExtent (double);
+        double lazyQuadtreeVisibleExtent() const;
+
         template <typename Arch> void serialize (Arch &arch);
 private:
         Vector3d sizeFactor_, positionOffset_;
+        unsigned int lazyQuadtreeMaxRecursion_;
+        double lazyQuadtreeVisibleExtent_;
 };
 } // namespace cosyscene
 
@@ -191,7 +199,7 @@ public:
 
         redshift::shared_ptr<TerrainFormation> formation() const;
         redshift::shared_ptr<TerrainMaterial>  material() const;
-        redshift::shared_ptr<WorldFitting> fitting() const;
+        redshift::shared_ptr<TerrainFitting> fitting() const;
 
         template<typename Arch>
         void serialize (Arch &arch);
@@ -199,7 +207,7 @@ public:
 private:
         redshift::shared_ptr<TerrainFormation> formation_;
         redshift::shared_ptr<TerrainMaterial> material_;
-        redshift::shared_ptr<WorldFitting> fitting_;
+        redshift::shared_ptr<TerrainFitting> fitting_;
 };
 
 } // namespace cosyscene
