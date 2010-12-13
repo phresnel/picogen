@@ -169,8 +169,8 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
                                         switch (mono.kind()) {
                                         case cosyscene::Color::Rgb:
                                                 redcol = redshift_file::Color(mono.rgb().r(),
-                                                                                    mono.rgb().g(),
-                                                                                    mono.rgb().b());
+                                                                              mono.rgb().g(),
+                                                                              mono.rgb().b());
                                                 break;
                                         case cosyscene::Color::Spectrum:
                                                 redcol.type = redshift_file::Color::Spectrum;

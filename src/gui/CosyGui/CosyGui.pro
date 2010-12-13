@@ -38,7 +38,8 @@ SOURCES += main.cc \
     filmsettingswindow.cc \
     twinrendersettingswindow.cc \
     rendersettingswindow.cc \
-    stylesheetliveeditor.cc
+    stylesheetliveeditor.cc \
+    terrainfitting.cc
 HEADERS += mainwindow.hh \
     cosyscene/stash.hh \
     cosyscene/terrain.hh \
@@ -75,7 +76,8 @@ HEADERS += mainwindow.hh \
     twinrendersettingswindow.hh \
     rendersettingswindow.hh \
     createredshiftsceneclosure.hh \
-    stylesheetliveeditor.hh
+    stylesheetliveeditor.hh \
+    terrainfitting.hh
 FORMS += mainwindow.ui \
     terrainwindow.ui \
     stashview.ui \
@@ -87,7 +89,8 @@ FORMS += mainwindow.ui \
     filmsettingswindow.ui \
     twinrendersettingswindow.ui \
     rendersettingswindow.ui \
-    stylesheetliveeditor.ui
+    stylesheetliveeditor.ui \
+    terrainfitting.ui
 LIBS += ../../libredshift.a ../../libxyto.a \
     -lgomp \
     -lnoise \

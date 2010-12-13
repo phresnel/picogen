@@ -98,7 +98,7 @@
    <item>
     <widget class="QStackedWidget" name="terrainTaskStackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="TerrainFormation" name="formation">
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -108,7 +108,7 @@
       </layout>
      </widget>
      <widget class="TerrainTexturing" name="texturing"/>
-     <widget class="QWidget" name="stackedWidgetPage3"/>
+     <widget class="TerrainFitting" name="fitting"/>
     </widget>
    </item>
   </layout>
@@ -124,6 +124,12 @@
    <class>TerrainTexturing</class>
    <extends>QWidget</extends>
    <header>terraintexturing.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TerrainFitting</class>
+   <extends>QWidget</extends>
+   <header>terrainfitting.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
