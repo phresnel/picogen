@@ -65,6 +65,7 @@ private:
         redshift::shared_ptr<cosyscene::TerrainFormation> formation_;
 
 private slots:
+        void on_heightmapCLB_clicked();
         void on_parametricPresetCLB_clicked();
         void on_quatschCodeEditorCLB_clicked();
 

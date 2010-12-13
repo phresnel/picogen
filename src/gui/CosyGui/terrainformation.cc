@@ -118,7 +118,23 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
         updateViews();
 }
 
-
+void TerrainFormation::on_heightmapCLB_clicked() {
+        formation_->toQuatschPreset(cosyscene::QuatschPreset(
+        "(($Width :real = {[1..9999999]} default=1000))\n"
+        "(($Height:real = {[1..9999999]} default=1000))\n"
+        "(($Depth :real = {[1..9999999]} default=1000))\n"
+        "(($Filename:filename))\n"
+        "(($Filter:enumeration={nearest, bilinear, cosine, cubic} default=3))\n"
+        "\n"
+        "([Heightmap filter{(($Filter))}\n"
+        "            width {(($Width))}\n"
+        "            depth {(($Depth))}\n"
+        "            height{(($Height))}\n"
+        "            filename{(($Filename))}\n"
+        " ] x y)"
+        ));
+        updateViews();
+}
 
 void TerrainFormation::on_quatschPresetEditor_formationChanged() {
         formation_->toQuatschPreset(ui->quatschPresetEditor->toCosy());
@@ -187,4 +203,6 @@ void TerrainFormation::on_stashResetButton_clicked() {
         t.setStash(formation_->getStash());
         setFormationByValue(t, true);
 }
+
+
 
