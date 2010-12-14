@@ -37,11 +37,13 @@ public:
         unsigned int height() const;
         unsigned int samplesPerPixel() const;
         unsigned int randomSeed() const;
+        unsigned int maxLazyQuadtreeDepth() const;
 
         void setWidth(unsigned int);
         void setHeight(unsigned int);
         void setSamplesPerPixel(unsigned int);
         void setRandomSeed(unsigned int);
+        void setMaxLazyQuadtreeDepth (unsigned int);
 
         template<typename Arch> void serialize (Arch &arch);
 
@@ -51,6 +53,8 @@ private:
         unsigned int width_, height_;
         unsigned int randomSeed_;
         unsigned int samplesPerPixel_;
+
+        unsigned int maxLazyQuadtreeDepth_;
 
         void reset();
 };

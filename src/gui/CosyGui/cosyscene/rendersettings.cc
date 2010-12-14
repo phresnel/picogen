@@ -39,6 +39,9 @@ unsigned int RenderSettings::samplesPerPixel() const {
 unsigned int RenderSettings::randomSeed() const {
         return randomSeed_;
 }
+unsigned int RenderSettings::maxLazyQuadtreeDepth() const {
+        return maxLazyQuadtreeDepth_;
+}
 
 void RenderSettings::setWidth(unsigned int val) {
         width_ = val;
@@ -52,12 +55,16 @@ void RenderSettings::setSamplesPerPixel(unsigned int val) {
 void RenderSettings::setRandomSeed(unsigned int val) {
         randomSeed_ = val;
 }
+void RenderSettings::setMaxLazyQuadtreeDepth(unsigned int val) {
+        maxLazyQuadtreeDepth_ = val;
+}
 
 void RenderSettings::reset() {
         width_ = 640;
         height_ = 480;
         samplesPerPixel_ = 1;
         randomSeed_ = 0;
+        maxLazyQuadtreeDepth_ = 0;
 }
 
 bool RenderSettings::data_equals(RenderSettings const &rhs) const {
@@ -65,6 +72,7 @@ bool RenderSettings::data_equals(RenderSettings const &rhs) const {
             && height_ == rhs.height_
             && samplesPerPixel_ == rhs.samplesPerPixel_
             && randomSeed_ == rhs.randomSeed_
+            && maxLazyQuadtreeDepth_ == rhs.maxLazyQuadtreeDepth_
         ;
 }
 

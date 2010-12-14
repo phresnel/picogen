@@ -49,6 +49,11 @@ void RenderSettingsWindow::updateViews() {
         ui->heightSpin->setValue(renderSettings_->height());
         ui->seedSpin->setValue(renderSettings_->randomSeed());
         ui->samplesPerPixelSpin->setValue(renderSettings_->samplesPerPixel());
+
+        const unsigned int maxLQTDepth = renderSettings_->maxLazyQuadtreeDepth();
+        ui->maxLazyQuadtreeDepthSpin->setValue(maxLQTDepth);
+        ui->maxLazyQuadtreeDepthSpin->setEnabled(maxLQTDepth != 0);
+        ui->enableMaxQuadtreeDepthOverride->setChecked(maxLQTDepth != 0);
 }
 
 void RenderSettingsWindow::on_widthSpin_editingFinished() {
@@ -81,4 +86,20 @@ void RenderSettingsWindow::on_heightSpin_valueChanged(int ) {
         const double mp = (ui->widthSpin->value()*ui->heightSpin->value())
                           / 1000000.;
         ui->megapixelsDisplay->setText("(" + QString::number(mp, 'f', 1) + " MPixels)");
+}
+
+void RenderSettingsWindow::on_maxLazyQuadtreeDepthSpin_editingFinished() {
+        renderSettings_->setMaxLazyQuadtreeDepth (
+                        ui->maxLazyQuadtreeDepthSpin->value());
+}
+
+void RenderSettingsWindow::on_enableMaxQuadtreeDepthOverride_toggled(bool checked) {
+        if (checked) {
+                ui->maxLazyQuadtreeDepthSpin->setEnabled(true);
+                renderSettings_->setMaxLazyQuadtreeDepth (
+                                ui->maxLazyQuadtreeDepthSpin->value());
+        } else {
+                ui->maxLazyQuadtreeDepthSpin->setEnabled(false);
+                renderSettings_->setMaxLazyQuadtreeDepth (0);
+        }
 }

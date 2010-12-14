@@ -52,6 +52,8 @@ private:
         void updateViews();
 
 private slots:
+        void on_enableMaxQuadtreeDepthOverride_toggled(bool checked);
+        void on_maxLazyQuadtreeDepthSpin_editingFinished();
         void on_widthSpin_valueChanged(int );
         void on_heightSpin_valueChanged(int );
         void on_seedSpin_editingFinished();

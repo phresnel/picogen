@@ -36,7 +36,9 @@ inline void RenderSettings::serialize (Arch &arch) {
         arch & pack("width", width_)
              & pack("height", height_)
              & pack("samples-per-pixel", samplesPerPixel_)
-             & pack("random-seed", randomSeed_);
+             & pack("random-seed", randomSeed_)
+             & pack("max-lazyquadtree-depth", maxLazyQuadtreeDepth_)
+             ;
 }
 
 template<typename Arch>

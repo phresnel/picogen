@@ -46,6 +46,10 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
         shared_ptr<redshift_file::Scene> scenePtr(new redshift_file::Scene);
         redshift_file::Scene &scene = *scenePtr;
 
+
+        TwinRenderSettings const &twinRenderSettings = *renderSettings_;
+        RenderSettings const &renderSettings = *twinRenderSettings.preview();
+
         // Camera
         const cosyscene::Navigation &nav = *navigation_;
 
@@ -133,6 +137,8 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
 
                 TerrainFormation const &formation = *terrain_->formation();
                 TerrainMaterial const &material = *terrain_->material();
+                TerrainFitting const &fitting = *terrain_->fitting();
+
                 if (TerrainFormation::None != formation.kind()) {
                         ob.type = redshift_file::Object::lazy_quadtree;
 
@@ -154,7 +160,14 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
                         }
 
                         // Fitting
-                        ob.lazyQuadtreeParams.size = 10000;
+                        ob.lazyQuadtreeParams.size = fitting.lazyQuadtreeVisibleExtent();
+                        ob.lazyQuadtreeParams.maxRecursion = fitting.lazyQuadtreeMaxRecursion();
+
+                        if (renderSettings.maxLazyQuadtreeDepth() != 0) {
+                                ob.lazyQuadtreeParams.maxRecursion =
+                                        renderSettings.maxLazyQuadtreeDepth();
+                        }
+
 
                         // Material
                         switch (material.kind()) {
