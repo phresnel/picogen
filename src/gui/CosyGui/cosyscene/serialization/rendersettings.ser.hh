@@ -24,6 +24,7 @@
 
 #include "../rendersettings.hh"
 #include "cosyscene/serialization/stash.ser.hh"
+#include "cosyscene/serialization/surfaceintegrator.ser.hh"
 
 namespace cosyscene {
 
@@ -37,7 +38,7 @@ inline void RenderSettings::serialize (Arch &arch) {
              & pack("height", height_)
              & pack("samples-per-pixel", samplesPerPixel_)
              & pack("random-seed", randomSeed_)
-             & pack("max-lazyquadtree-depth", maxLazyQuadtreeDepth_)
+             & pack("surface-integrator", surfaceIntegrator_)
              ;
 }
 

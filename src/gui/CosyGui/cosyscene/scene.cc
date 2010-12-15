@@ -41,14 +41,18 @@ Scene::Scene()
 
 
 
-redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
+redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
+        bool usePreviewSettings
+) const {
         using namespace ::redshift;
         shared_ptr<redshift_file::Scene> scenePtr(new redshift_file::Scene);
         redshift_file::Scene &scene = *scenePtr;
 
 
         TwinRenderSettings const &twinRenderSettings = *renderSettings_;
-        RenderSettings const &renderSettings = *twinRenderSettings.preview();
+        RenderSettings const &renderSettings = usePreviewSettings ?
+                                               *twinRenderSettings.preview() :
+                                               *twinRenderSettings.production();
 
         // Camera
         const cosyscene::Navigation &nav = *navigation_;
@@ -86,11 +90,13 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene() const {
 
         // Render Settings
         redshift_file::RenderSettings rs;
-        rs.width = 320;
-        rs.height = 240;
-        rs.samplesPerPixel = 1;
+        rs.width = renderSettings.width();
+        rs.height = renderSettings.height();
+        rs.samplesPerPixel = renderSettings.samplesPerPixel();
+        rs.userSeed = renderSettings.randomSeed();
 
         rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::whitted;
+        //rs.surfaceIntegrator.numAmbientSamples = renderSettings
         rs.volumeIntegrator.type = redshift_file::VolumeIntegrator::none;
 
         scene.addRenderSettings(rs);

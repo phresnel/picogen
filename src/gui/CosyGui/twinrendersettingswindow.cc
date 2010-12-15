@@ -60,3 +60,7 @@ void TwinRenderSettingsWindow::sceneInvalidated(
 void TwinRenderSettingsWindow::on_startProductionRenderProcess_clicked() {
         emit productionRenderProcessRequested();
 }
+
+void TwinRenderSettingsWindow::on_startPreviewRenderProcess_clicked() {
+        emit previewRenderProcessRequested();
+}

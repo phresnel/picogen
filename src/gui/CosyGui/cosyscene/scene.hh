@@ -42,7 +42,8 @@ class Scene
 public:
         Scene();
 
-        redshift::shared_ptr<redshift_file::Scene> toRedshiftScene()const;
+        redshift::shared_ptr<redshift_file::Scene> toRedshiftScene(
+                        bool usePreviewSettings=true) const;
 
         redshift::shared_ptr<Terrain> terrain() const {
                 return terrain_;

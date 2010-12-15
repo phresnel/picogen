@@ -24,9 +24,9 @@
 #include "stash.hh"
 #include "redshift/include/smart_ptr.hh"
 #include <actuarius/bits/enum.hh>
+#include "surfaceintegrator.hh"
 
 namespace cosyscene {
-
 
 class RenderSettings : public StashableMixin<RenderSettings>
 {
@@ -45,6 +45,9 @@ public:
         void setRandomSeed(unsigned int);
         void setMaxLazyQuadtreeDepth (unsigned int);
 
+        SurfaceIntegrator surfaceIntegrator() const;
+        void setSurfaceIntegrator(SurfaceIntegrator const &);
+
         template<typename Arch> void serialize (Arch &arch);
 
         bool data_equals(RenderSettings const &rhs) const;
@@ -55,6 +58,8 @@ private:
         unsigned int samplesPerPixel_;
 
         unsigned int maxLazyQuadtreeDepth_;
+
+        SurfaceIntegrator surfaceIntegrator_;
 
         void reset();
 };

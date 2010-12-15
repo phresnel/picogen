@@ -69,6 +69,7 @@ signals:
 
 public slots:
         void onProductionRenderProcessRequested();
+        void onPreviewRenderProcessRequested();
 
 private slots:
         void on_action_Stylesheet_triggered();
