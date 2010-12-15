@@ -66,7 +66,15 @@ public:
         ~RenderWindow();
 
         static void RenderProcess (QString pathToSource,
-                              int renderSettings, int camera);
+                              int renderSettings, int camera,
+                              QString programFlag = "picogen-production-render");
+
+        static void CosyGuiRenderProcess (QString pathToSource,
+                int renderSettings, int camera)
+        {
+                RenderProcess(pathToSource, renderSettings, camera,
+                              "--cosygui-production-render");
+        }
 
 protected:
         void resizeEvent(QResizeEvent *);

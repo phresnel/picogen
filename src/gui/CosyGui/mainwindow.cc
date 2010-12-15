@@ -24,10 +24,23 @@
 #include "cosyscene/sunsky.hh"
 #include "cosyscene/save_load.hh"
 
+#include "redshift/include/redshift_file/scene.hh"
+
 #include "renderwindow.hh"
+#include "stylesheetliveeditor.hh"
 
 #include <iostream>
 #include <QDebug>
+#include <QTemporaryFile>
+
+namespace redshift_file {
+void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_);
+void save_scene (const redshift_file::Scene &scene, std::string const &name);
+void load_scene (redshift_file::Scene &scene, std::istream &fs);
+void load_scene (Scene &scene, std::string const &name);
+}
+
+
 
 //////
 #include <QFileDialog>
@@ -145,6 +158,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->navigation->setCreateRedshiftClosure(redshiftSceneCreator);
         ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
 
+        connect (ui->renderingSetup, SIGNAL(productionRenderProcessRequested()),
+                 SLOT(onProductionRenderProcessRequested()));
+
         ui->forestCommandLink->setVisible(false);
 
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
@@ -261,13 +277,6 @@ void MainWindow::on_actionLoad_triggered() {
 
 void MainWindow::on_renderCommandLink_clicked() {
         // Et hop.
-        /*RenderWindow *r = new RenderWindow (scene->toRedshiftScene(),
-                                            0,
-                                            0,
-                                            this,
-                                            1);
-        r->show();
-        */
         ui->renderWidget->setSceneAndRender(scene->toRedshiftScene(), true);
 }
 
@@ -285,8 +294,25 @@ redshift::shared_ptr<redshift_file::Scene>
         return scene->toRedshiftScene();
 }
 
-#include "stylesheetliveeditor.hh""
 void MainWindow::on_action_Stylesheet_triggered() {
         StylesheetLiveEditor *editor = new StylesheetLiveEditor(this, this);
         editor->show();
+}
+
+void MainWindow::onProductionRenderProcessRequested() {
+        QTemporaryFile tmp ("XXXXXX.picogen");
+        tmp.setAutoRemove(false);
+
+        if (!tmp.open()) {
+                return;
+        }
+
+        // Documentation says as long as the file-object is not destroyed (i.e.
+        // goes out of scope) it safe to use the filename it generates.
+        tmp.close();
+
+        redshift::shared_ptr<redshift_file::Scene> scene =
+                                redshiftSceneCreator->createProductionScene();
+        redshift_file::save_scene(*scene, tmp.fileName().toStdString());
+        RenderWindow::CosyGuiRenderProcess(tmp.fileName(), 0, 0);
 }

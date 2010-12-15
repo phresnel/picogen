@@ -67,6 +67,9 @@ private:
 signals:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
+public slots:
+        void onProductionRenderProcessRequested();
+
 private slots:
         void on_action_Stylesheet_triggered();
         void on_renderingSetupCommandLink_clicked();

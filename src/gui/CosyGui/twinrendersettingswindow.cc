@@ -56,3 +56,7 @@ void TwinRenderSettingsWindow::sceneInvalidated(
 ) {
         setTwinRenderSettings (scene->renderSettings());
 }
+
+void TwinRenderSettingsWindow::on_startProductionRenderProcess_clicked() {
+        emit productionRenderProcessRequested();
+}

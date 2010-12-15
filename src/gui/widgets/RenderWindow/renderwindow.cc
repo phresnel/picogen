@@ -313,12 +313,13 @@ void RenderWindowImpl::saveQuit() {
 // RenderWindow
 //=============================================================================
 // TODO: this function should not be part of render-window, as it is specific to
-//       simplex-gui
+//       simplex-gui and cosy-gui
 void RenderWindow::RenderProcess (QString pathToSource,
-                                  int renderSettings, int camera
+                                  int renderSettings, int camera,
+                                  QString programFlag
 ) {
         QStringList args;
-        args << "picogen-production-render";
+        args << programFlag;
         args << pathToSource;
         args << QString::number(renderSettings);
         args << QString::number(camera);

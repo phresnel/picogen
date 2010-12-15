@@ -28,6 +28,10 @@
 #include "redshift/include/basictypes/film.hh"
 //#include "../../redshift/include/image-export.hh"
 
+// deb
+#include <QTemporaryFile>
+#include "renderwindow.hh"
+
 RenderWidget::RenderWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderWidget),
@@ -215,7 +219,7 @@ void RenderWidgetThread::renderImage (
         scene->render (
                 reporter,
                 commandProcessor,
-                16,//rs.samplesPerPixel,
+                rs.samplesPerPixel,
                 rs.min_y,
                 rs.max_y,
                 rs.userSeed

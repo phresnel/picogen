@@ -92,7 +92,7 @@ FORMS += mainwindow.ui \
     rendersettingswindow.ui \
     stylesheetliveeditor.ui \
     terrainfitting.ui
-LIBS += ../../libredshift.a ../../libxyto.a \
+LIBS += ../../.libs/libredshift.a ../../.libs/libxyto.a \
     -lgomp \
     -lnoise \
     -lSDL \
