@@ -51,6 +51,11 @@ namespace redshift_file {
                 case roll:
                         arch & pack(angle);
                         break;
+                case scale:
+                        // okay, it should be more like pack(x|y|z),
+                        // but surrounding legacy made me use right|up|forward
+                        arch & pack(right) & pack(up) & pack(forward);
+                        break;
                 };
 
                 if (Arch::deserialize) {
@@ -59,8 +64,8 @@ namespace redshift_file {
                         z = -backward + forward;
                 }
         }
-        
-        
+
+
         template<typename Arch>
         void TransformList::serialize (Arch &arch) {
                 using actuarius::pack;
