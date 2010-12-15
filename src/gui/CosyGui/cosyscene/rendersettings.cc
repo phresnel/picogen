@@ -19,9 +19,9 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "rendersettings.hh"
-#include "actuarius/bits/enum.hh"
 
 namespace cosyscene {
+
 
 RenderSettings::RenderSettings() {
         reset();
@@ -59,20 +59,12 @@ void RenderSettings::setMaxLazyQuadtreeDepth(unsigned int val) {
         maxLazyQuadtreeDepth_ = val;
 }
 
-SurfaceIntegrator RenderSettings::surfaceIntegrator() const {
-        return surfaceIntegrator_;
-}
-void RenderSettings::setSurfaceIntegrator(SurfaceIntegrator const &val) {
-        surfaceIntegrator_ = val;
-}
-
 void RenderSettings::reset() {
         width_ = 640;
         height_ = 480;
         samplesPerPixel_ = 1;
         randomSeed_ = 0;
         maxLazyQuadtreeDepth_ = 0;
-        surfaceIntegrator_ = SurfaceIntegrator();
 }
 
 bool RenderSettings::data_equals(RenderSettings const &rhs) const {
@@ -81,7 +73,6 @@ bool RenderSettings::data_equals(RenderSettings const &rhs) const {
             && samplesPerPixel_ == rhs.samplesPerPixel_
             && randomSeed_ == rhs.randomSeed_
             && maxLazyQuadtreeDepth_ == rhs.maxLazyQuadtreeDepth_
-            && surfaceIntegrator_ == rhs.surfaceIntegrator_
         ;
 }
 

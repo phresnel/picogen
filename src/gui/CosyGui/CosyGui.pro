@@ -35,7 +35,6 @@ SOURCES += main.cc \
     terraintexturing.cc \
     cosyscene/color.cc \
     cosyscene/rendersettings.cc \
-    cosyscene/surfaceintegrator.cc \
     filmsettingswindow.cc \
     twinrendersettingswindow.cc \
     rendersettingswindow.cc \
@@ -73,8 +72,6 @@ HEADERS += mainwindow.hh \
     cosyscene/serialization/color.ser.hh \
     cosyscene/rendersettings.hh \
     cosyscene/serialization/rendersettings.ser.hh \
-    cosyscene/surfaceintegrator.hh \
-    cosyscene/serialization/surfaceintegrator.ser.hh \
     filmsettingswindow.hh \
     twinrendersettingswindow.hh \
     rendersettingswindow.hh \

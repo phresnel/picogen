@@ -96,7 +96,6 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
         rs.userSeed = renderSettings.randomSeed();
 
         rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::whitted;
-        //rs.surfaceIntegrator.numAmbientSamples = renderSettings
         rs.volumeIntegrator.type = redshift_file::VolumeIntegrator::none;
 
         scene.addRenderSettings(rs);
