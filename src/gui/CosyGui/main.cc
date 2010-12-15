@@ -112,7 +112,12 @@ int production_render_main (int argc, char *argv[]) {
                 redshift_file::Scene scene;
                 redshift_file::load_scene(scene, pathToSource.toStdString());
 
+                const std::clock_t b = std::clock();
                 while (!QFile::remove(pathToSource)) {
+                        if ((std::clock() - b)>(CLOCKS_PER_SEC*10)) {
+                                // don't wait any longer
+                                break;
+                        }
                 }
 
                 redshift::shared_ptr<redshift_file::Scene> pscene =

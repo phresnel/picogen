@@ -30,6 +30,7 @@
 #include "stylesheetliveeditor.hh"
 
 #include <iostream>
+#include <ctime>
 #include <QDebug>
 #include <QTemporaryFile>
 
@@ -309,10 +310,38 @@ void MainWindow::onProductionRenderProcessRequested() {
 
         // Documentation says as long as the file-object is not destroyed (i.e.
         // goes out of scope) it safe to use the filename it generates.
+        // anways ...
         tmp.close();
 
         redshift::shared_ptr<redshift_file::Scene> scene =
                                 redshiftSceneCreator->createProductionScene();
         redshift_file::save_scene(*scene, tmp.fileName().toStdString());
         RenderWindow::CosyGuiRenderProcess(tmp.fileName(), 0, 0);
+
+        // Would yield deadlock as no other process might remove the file
+        // as long as tmp is alive.
+        /*
+        // Spinlock that waits until the sub-process killed the file.
+        std::clock_t b = std::clock();
+        while (QFile::exists(tmp.fileName())) {
+                QApplication::processEvents();
+                if ((std::clock() - b)>(CLOCKS_PER_SEC*10)) {
+                        int res = QMessageBox::warning(this, "Warning",
+                          "The freshly started render-process seems to be in "
+                          "trouble or does not live at all, as it takes very "
+                          "long to delete the file \"" +
+                          tmp.fileName() + "\", which is used to communicate "
+                          "with the render process.\n\n"
+                          "Delete now? ",
+                          QMessageBox::Yes | QMessageBox::No,
+                          QMessageBox::Yes
+                        );
+                        if (res == QMessageBox::No) {
+                                b = std::clock();
+                        } else {
+                                tmp.remove();
+                                break;
+                        }
+                }
+        }*/
 }
