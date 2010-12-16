@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "cosyscene/rendersettings.hh"
+#include "cosyscene/filmsettings.hh"
 
 #include "rendersettingswindow.hh"
 #include "ui_rendersettingswindow.h"
@@ -28,7 +29,8 @@
 
 RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::RenderSettingsWindow)
+    ui(new Ui::RenderSettingsWindow),
+    renderSettings_(new cosyscene::RenderSettings())
 {
         ui->setupUi(this);
 
@@ -56,10 +58,9 @@ void RenderSettingsWindow::setRenderSettings (
         redshift::shared_ptr<cosyscene::RenderSettings> rs,
         bool blockSignals
 ) {
-        const bool prev = this->blockSignals(blockSignals);
+        ScopedQtSignalBlock block(this, blockSignals);
         renderSettings_ = rs;
         updateViews();
-        this->blockSignals(prev);
 }
 
 void RenderSettingsWindow::updateViews() {

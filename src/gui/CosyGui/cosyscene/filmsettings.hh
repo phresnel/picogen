@@ -18,28 +18,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifndef FILMSETTINGS_HH_20101216
+#define FILMSETTINGS_HH_20101216
 
-#ifndef SCENE_INL_HH_20100902
-#define SCENE_INL_HH_20100902
-
-#include "../scene.hh"
-
-#include "cosyscene/serialization/terrain.ser.hh"
-#include "cosyscene/serialization/sunsky.ser.hh"
-#include "cosyscene/serialization/navigation.ser.hh"
-#include "cosyscene/serialization/rendersettings.ser.hh"
-#include "cosyscene/serialization/filmsettings.ser.hh"
+#include "stash.hh"
+#include "redshift/include/smart_ptr.hh"
+#include <actuarius/bits/enum.hh>
 
 namespace cosyscene {
-template<typename Arch>
-inline void Scene::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack("terrain", *terrain_);
-        arch & pack("sunsky", *sunSky_);
-        arch & pack("navigation", *navigation_);
-        arch & pack("render-settings", *renderSettings_);
-        arch & pack("film-settings", *filmSettings_);
-}
-}
 
-#endif // SCENE_INL_HH
+class FilmSettings : public StashableMixin<FilmSettings>
+{
+public:
+        FilmSettings();
+
+        double brightnessFactor() const;
+        void setBrightnessFactor(double);
+
+        template<typename Arch> void serialize (Arch &arch);
+        bool data_equals(FilmSettings const &rhs) const;
+private:
+
+        double brightnessFactor_;
+
+        void reset();
+};
+
+} // namespace cosyscene
+
+#endif // FILMSETTINGS_HH_20101216

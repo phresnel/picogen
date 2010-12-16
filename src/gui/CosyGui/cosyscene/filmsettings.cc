@@ -18,28 +18,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#ifndef SCENE_INL_HH_20100902
-#define SCENE_INL_HH_20100902
-
-#include "../scene.hh"
-
-#include "cosyscene/serialization/terrain.ser.hh"
-#include "cosyscene/serialization/sunsky.ser.hh"
-#include "cosyscene/serialization/navigation.ser.hh"
-#include "cosyscene/serialization/rendersettings.ser.hh"
-#include "cosyscene/serialization/filmsettings.ser.hh"
+#include "filmsettings.hh"
+#include "actuarius/bits/enum.hh"
 
 namespace cosyscene {
-template<typename Arch>
-inline void Scene::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack("terrain", *terrain_);
-        arch & pack("sunsky", *sunSky_);
-        arch & pack("navigation", *navigation_);
-        arch & pack("render-settings", *renderSettings_);
-        arch & pack("film-settings", *filmSettings_);
-}
+
+FilmSettings::FilmSettings() {
+        reset();
 }
 
-#endif // SCENE_INL_HH
+void FilmSettings::setBrightnessFactor(double val) {
+        brightnessFactor_ = val;
+}
+
+double FilmSettings::brightnessFactor() const {
+        return brightnessFactor_;
+}
+
+void FilmSettings::reset() {
+        setBrightnessFactor(0.000025f);
+}
+
+bool FilmSettings::data_equals(FilmSettings const &rhs) const {
+        return brightnessFactor_ == rhs.brightnessFactor();
+}
+
+}

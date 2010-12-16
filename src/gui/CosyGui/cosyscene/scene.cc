@@ -23,6 +23,7 @@
 #include "sunsky.hh"
 #include "navigation.hh"
 #include "rendersettings.hh"
+#include "filmsettings.hh"
 
 #include "redshift/include/jobfile.hh"
 #include "quatsch-preprocessor/parsing.hh"
@@ -34,6 +35,7 @@ Scene::Scene()
 , sunSky_(new SunSky())
 , navigation_(new Navigation())
 , renderSettings_(new TwinRenderSettings())
+, filmSettings_(new FilmSettings())
 {
         navigation_->toYawPitchRoll(cosyscene::YawPitchRoll());
         sunSky_->toUtahSky(cosyscene::UtahSky());
@@ -129,7 +131,7 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
 
         // Film settings.
         redshift_file::FilmSettings fs;
-        fs.colorscale = .00005;
+        fs.colorscale = filmSettings_->brightnessFactor();
         fs.convertToSrgb = false;
         scene.setFilmSettings(fs);
 

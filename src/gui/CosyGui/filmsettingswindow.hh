@@ -18,14 +18,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #ifndef FILMSETTINGSWINDOW_HH_20100902
 #define FILMSETTINGSWINDOW_HH_20100902
 
 #include <QWidget>
+#include "redshift/include/smart_ptr.hh"
 
 namespace Ui {
     class FilmSettingsWindow;
+}
+
+namespace cosyscene {
+         class FilmSettings;
+         class Scene;
 }
 
 class FilmSettingsWindow : public QWidget
@@ -33,11 +38,29 @@ class FilmSettingsWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit FilmSettingsWindow(QWidget *parent = 0);
-    ~FilmSettingsWindow();
+        explicit FilmSettingsWindow(QWidget *parent = 0);
+        ~FilmSettingsWindow();
+
+        // Support for this function will cease once tone mapping is implemented.
+        void setFilmSettings (redshift::shared_ptr<cosyscene::FilmSettings>,
+                              bool blockSignals=true);
+
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
-    Ui::FilmSettingsWindow *ui;
+        Ui::FilmSettingsWindow *ui;
+        redshift::shared_ptr<cosyscene::FilmSettings> filmSettings_;
+
+private:
+        void updateViews();
+
+private slots:
+        void on_brightness_valueChanged(double );
+
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 };
 
 #endif // FILMSETTINGSWINDOW_HH

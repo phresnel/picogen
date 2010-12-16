@@ -36,6 +36,7 @@ class SunSky;
 class Navigation;
 class RenderSettings;
 class TwinRenderSettings;
+class FilmSettings;
 
 class Scene
 {
@@ -59,6 +60,10 @@ public:
                 return renderSettings_;
         }
 
+        redshift::shared_ptr<FilmSettings> filmSettings() const {
+                return filmSettings_;
+        }
+
         template <typename Arch>
         void serialize (Arch &arch); // inl/scene.inl.hh
 
@@ -74,6 +79,7 @@ private:
         redshift::shared_ptr<Navigation> navigation_;
 
         redshift::shared_ptr<TwinRenderSettings> renderSettings_;
+        redshift::shared_ptr<FilmSettings> filmSettings_;
 };
 }
 

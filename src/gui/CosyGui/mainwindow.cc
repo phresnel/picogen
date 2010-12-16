@@ -158,6 +158,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->navigation->setNavigation(scene->navigation());
         ui->navigation->setCreateRedshiftClosure(redshiftSceneCreator);
         ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
+        ui->filmSettings->setFilmSettings (scene->filmSettings());
 
         connect (ui->renderingSetup, SIGNAL(productionRenderProcessRequested()),
                  SLOT(onProductionRenderProcessRequested()));
@@ -174,6 +175,8 @@ MainWindow::MainWindow(QWidget *parent) :
                  ui->navigation, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->renderingSetup, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
+        connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
+                 ui->filmSettings, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         redshiftSceneCreator->scene = scene;
 
         // Aesthetics.

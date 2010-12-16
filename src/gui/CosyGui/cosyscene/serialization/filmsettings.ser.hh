@@ -18,28 +18,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifndef FILMSETTINGS_SERIALIZATION_HH_20101216
+#define FILMSETTINGS_SERIALIZATION_HH_20101216
 
-#ifndef SCENE_INL_HH_20100902
-#define SCENE_INL_HH_20100902
-
-#include "../scene.hh"
-
-#include "cosyscene/serialization/terrain.ser.hh"
-#include "cosyscene/serialization/sunsky.ser.hh"
-#include "cosyscene/serialization/navigation.ser.hh"
-#include "cosyscene/serialization/rendersettings.ser.hh"
-#include "cosyscene/serialization/filmsettings.ser.hh"
+#include "../filmsettings.hh"
+#include "cosyscene/serialization/stash.ser.hh"
 
 namespace cosyscene {
+
 template<typename Arch>
-inline void Scene::serialize (Arch &arch) {
+inline void FilmSettings::serialize (Arch &arch) {
         using actuarius::pack;
-        arch & pack("terrain", *terrain_);
-        arch & pack("sunsky", *sunSky_);
-        arch & pack("navigation", *navigation_);
-        arch & pack("render-settings", *renderSettings_);
-        arch & pack("film-settings", *filmSettings_);
-}
+        if (Arch::deserialize || !stash_.empty())
+                arch & pack("stash", stash_);
+
+        arch & pack("brightness-factor", brightnessFactor_)
+             ;
 }
 
-#endif // SCENE_INL_HH
+} // namespace cosyscene
+
+#endif // FILMSETTINGS_SERIALIZATION_HH_20101216
