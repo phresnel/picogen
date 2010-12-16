@@ -62,6 +62,16 @@ int cosy_main (int argc, char *argv[]) {
         return a.exec();
 }
 
+
+void showError (QString str, QString title="Error") {
+        QMessageBox mb;
+        mb.setIcon(QMessageBox::Critical);
+        mb.setStandardButtons(QMessageBox::Ok);
+        mb.setWindowTitle("Error");
+        mb.setText(str);
+        mb.exec();
+}
+
 int production_render_main (int argc, char *argv[]) {
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
@@ -74,12 +84,11 @@ int production_render_main (int argc, char *argv[]) {
                 ? QString(argv[2])
                 : "";
         if ("" == pathToSource) {
-                QMessageBox::critical(0, "Missing argument",
-                        "No source-file has been specified.");
+                showError("No source-file has been specified.", "Missing argument");
                 return -1;
         } else if (!QFile::exists(pathToSource)) {
-                QMessageBox::critical(0, "File not found",
-                        "The source-file \"" + pathToSource + "\" has not been found.");
+                showError ("The source-file \"" + pathToSource + "\" has not been found.",
+                           "File not found");
                 return -1;
         }
 
@@ -101,12 +110,12 @@ int production_render_main (int argc, char *argv[]) {
             || cameraSetting<0 || renderSetting<0
             || !okayC || !okayR
         ) {
-                QMessageBox::critical(0, "Missing argument(s)",
-                  "Need an index [0..n] for the render setting and camera setting "
-                  "to be used."
-                );
+                showError ("Need an index [0..n] for the render setting and camera setting "
+                           "to be used.",
+                           "Missing argument(s)");
                 return -1;
         }
+
 
         try {
                 redshift_file::Scene scene;
@@ -115,9 +124,18 @@ int production_render_main (int argc, char *argv[]) {
                 const std::clock_t b = std::clock();
                 while (!QFile::remove(pathToSource)) {
                         if ((std::clock() - b)>(CLOCKS_PER_SEC*10)) {
-                                // don't wait any longer
+                                showError ("I am unable to remove the temporary file \""
+                                           + pathToSource + "\". I am still able to render "
+                                           "your terrain, but you should ensure to delete that file.");
                                 break;
                         }
+                }
+
+                if (scene.renderSettingsCount() == 0
+                    || scene.cameraCount() == 0) {
+                        showError ("Invalid scene (no camera settings, "
+                                   "no render settings.");
+                        return 0;
                 }
 
                 redshift::shared_ptr<redshift_file::Scene> pscene =
@@ -129,13 +147,19 @@ int production_render_main (int argc, char *argv[]) {
                 const int ret = a.exec();
                 return ret;
         } catch (std::exception const &e){
-                QMessageBox::critical(0,
-                      "Error upon loading",
+                showError (
                       "The selected file \"" + pathToSource + "\" could not be loaded, "
                       "are you sure this is a valid picogen file?\n\n"
                       + QString("(exception: ")+e.what()+")"
-                      );
-                return -1;
+                );
+                return 0;
+        } catch (...) {
+                showError (
+                      "The selected file \"" + pathToSource + "\" could not be loaded, "
+                      "are you sure this is a valid picogen file?\n\n"
+                      "(unknown error; possibly the file is not a valid picogen file)"
+                );
+                return 0;
         }
 }
 

@@ -366,6 +366,11 @@ void MainWindow::onPreviewRenderProcessRequested() {
 
         redshift::shared_ptr<redshift_file::Scene> scene =
                                 redshiftSceneCreator->createPreviewScene();
-        redshift_file::save_scene(*scene, tmp.fileName().toStdString());
-        RenderWindow::CosyGuiRenderProcess(tmp.fileName(), 0, 0);
+
+        tmp.open();
+        tmp.write("imanotvalid!");
+        //redshift_file::save_scene(*scene, tmp.fileName().toStdString());
+
+        RenderWindow::CosyGuiRenderProcess(QFileInfo(tmp.fileName()).canonicalFilePath(),
+                                           0, 0);
 }
