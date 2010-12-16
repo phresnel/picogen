@@ -39,6 +39,7 @@ public: template<typename Arch> void serialize (Arch &arch) {}
 
 class WhittedAmbientIntegrator {
 public:
+        explicit WhittedAmbientIntegrator(unsigned int numAmbientSamples=16);
         void setNumAmbientSamples (unsigned int);
         unsigned int numAmbientSamples() const;
         template<typename Arch> void serialize (Arch &arch);
@@ -78,12 +79,13 @@ public:
 
         Kind kind() const;
 
-        void toNoneIntegrator          (NoneIntegrator           const&);
-        void toWhittedIntegrator       (WhittedIntegrator        const&);
-        void toWhittedAmbientIntegrator(WhittedAmbientIntegrator const&);
-        void toPathIntegrator          (PathIntegrator           const&);
-        void toDebugDistanceIntegrator (DebugDistanceIntegrator  const&);
-        void toDebugNormalsIntegrator  (DebugNormalsIntegrator   const&);
+        void to (Kind);
+        void toNoneIntegrator          (NoneIntegrator           const& = NoneIntegrator());
+        void toWhittedIntegrator       (WhittedIntegrator        const& = WhittedIntegrator());
+        void toWhittedAmbientIntegrator(WhittedAmbientIntegrator const& = WhittedAmbientIntegrator());
+        void toPathIntegrator          (PathIntegrator           const& = PathIntegrator());
+        void toDebugDistanceIntegrator (DebugDistanceIntegrator  const& = DebugDistanceIntegrator());
+        void toDebugNormalsIntegrator  (DebugNormalsIntegrator   const& = DebugNormalsIntegrator());
 
         NoneIntegrator           noneIntegrator ()          const;
         WhittedIntegrator        whittedIntegrator ()       const;

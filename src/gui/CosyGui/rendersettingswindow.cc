@@ -22,12 +22,30 @@
 
 #include "rendersettingswindow.hh"
 #include "ui_rendersettingswindow.h"
+#include "scopedblocksignals.hh"
+
+#include <QMessageBox>
 
 RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderSettingsWindow)
 {
         ui->setupUi(this);
+
+        using cosyscene::SurfaceIntegrator;
+        ScopedQtSignalBlock siblocked(ui->surfaceIntegrator, true);
+        ui->surfaceIntegrator->addItem("<none> (objects will be invisible)",
+                                       QVariant(SurfaceIntegrator::none));
+        ui->surfaceIntegrator->addItem("Whitted Style",
+                                       QVariant(SurfaceIntegrator::whitted));
+        ui->surfaceIntegrator->addItem("Whitted Style + Ambient Lighting",
+                                       QVariant(SurfaceIntegrator::whitted_ambient));
+        ui->surfaceIntegrator->addItem("Path Tracing",
+                                       QVariant(SurfaceIntegrator::path));
+        ui->surfaceIntegrator->addItem("debugging: Distance",
+                                       QVariant(SurfaceIntegrator::debug_distance));
+        ui->surfaceIntegrator->addItem("debugging: Surface Normals",
+                                       QVariant(SurfaceIntegrator::debug_normals));
 }
 
 RenderSettingsWindow::~RenderSettingsWindow() {
@@ -54,6 +72,18 @@ void RenderSettingsWindow::updateViews() {
         ui->maxLazyQuadtreeDepthSpin->setValue(maxLQTDepth);
         ui->maxLazyQuadtreeDepthSpin->setEnabled(maxLQTDepth != 0);
         ui->enableMaxQuadtreeDepthOverride->setChecked(maxLQTDepth != 0);
+
+        const cosyscene::SurfaceIntegrator si = renderSettings_->surfaceIntegrator();
+        ui->surfaceIntegrator->setCurrentIndex(ui->surfaceIntegrator->
+                                               findData(QVariant(si.kind())));
+        if (si.kind() == cosyscene::SurfaceIntegrator::whitted_ambient) {
+                ui->ambientSamples->setVisible(true);
+                ui->ambientSamplesLabel->setVisible(true);
+                ui->ambientSamples->setValue(si.whittedAmbientIntegrator().numAmbientSamples());
+        } else {
+                ui->ambientSamples->setVisible(false);
+                ui->ambientSamplesLabel->setVisible(false);
+        }
 }
 
 void RenderSettingsWindow::on_widthSpin_editingFinished() {
@@ -102,4 +132,38 @@ void RenderSettingsWindow::on_enableMaxQuadtreeDepthOverride_toggled(bool checke
                 ui->maxLazyQuadtreeDepthSpin->setEnabled(false);
                 renderSettings_->setMaxLazyQuadtreeDepth (0);
         }
+}
+
+void RenderSettingsWindow::on_surfaceIntegrator_currentIndexChanged(int index) {
+        typedef cosyscene::WhittedAmbientIntegrator WAI;
+
+        cosyscene::SurfaceIntegrator si = renderSettings_->surfaceIntegrator();
+        const QVariant v = ui->surfaceIntegrator->itemData(index);
+        const cosyscene::SurfaceIntegrator::Kind kind =
+                static_cast<cosyscene::SurfaceIntegrator::Kind>(v.toInt());
+
+        if (kind == cosyscene::SurfaceIntegrator::whitted_ambient) {
+                ui->ambientSamples->setVisible(true);
+                ui->ambientSamplesLabel->setVisible(true);
+                si.toWhittedAmbientIntegrator(WAI(ui->ambientSamples->value()));
+        } else {
+                ui->ambientSamples->setVisible(false);
+                ui->ambientSamplesLabel->setVisible(false);
+                si.to(kind);
+        }
+
+        renderSettings_->setSurfaceIntegrator(si);
+}
+
+void RenderSettingsWindow::on_ambientSamples_valueChanged(int val){
+        using cosyscene::SurfaceIntegrator;
+        typedef cosyscene::WhittedAmbientIntegrator WAI;
+
+        SurfaceIntegrator si = renderSettings_->surfaceIntegrator();
+        if (si.kind() == cosyscene::SurfaceIntegrator::whitted_ambient) {
+                WAI wai = si.whittedAmbientIntegrator();
+                wai.setNumAmbientSamples(val);
+                si.toWhittedAmbientIntegrator(wai);
+        }
+        renderSettings_->setSurfaceIntegrator(si);
 }

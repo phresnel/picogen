@@ -34,6 +34,11 @@ const actuarius::Enum<SurfaceIntegrator::Kind> SurfaceIntegrator::Typenames =
 
 
 
+WhittedAmbientIntegrator::WhittedAmbientIntegrator(
+        unsigned int numAmbientSamples
+) : numAmbientSamples_()
+{
+}
 void WhittedAmbientIntegrator::setNumAmbientSamples (unsigned int val) {
         numAmbientSamples_ = val;
 }
@@ -56,6 +61,31 @@ SurfaceIntegrator::SurfaceIntegrator() {
 
 SurfaceIntegrator::Kind SurfaceIntegrator::kind() const {
         return kind_;
+}
+
+void SurfaceIntegrator::to (Kind kind) {
+        switch (kind) {
+        case SurfaceIntegrator::none:
+                toNoneIntegrator();
+                return;
+        case SurfaceIntegrator::whitted:
+                toWhittedIntegrator();
+                return;
+        case SurfaceIntegrator::whitted_ambient:
+                toWhittedAmbientIntegrator();
+                return;
+        case SurfaceIntegrator::path:
+                toPathIntegrator();
+                return;
+        case SurfaceIntegrator::debug_distance:
+                toDebugDistanceIntegrator();
+                return;
+        case SurfaceIntegrator::debug_normals:
+                toDebugNormalsIntegrator();
+                return;
+        }
+        throw std::runtime_error(
+                        "unsupported Kind in SurfaceIntegrator::to(Kind)");
 }
 
 void SurfaceIntegrator::toNoneIntegrator (NoneIntegrator const &val) {

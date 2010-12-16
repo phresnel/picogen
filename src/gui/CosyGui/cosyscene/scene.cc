@@ -96,13 +96,40 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
         rs.userSeed = renderSettings.randomSeed();
 
         rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::whitted;
+
+        switch (renderSettings.surfaceIntegrator().kind()) {
+        case SurfaceIntegrator::none:
+                rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::none;
+                break;
+        case SurfaceIntegrator::whitted:
+                rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::whitted;
+                break;
+        case SurfaceIntegrator::whitted_ambient:
+                rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::whitted_ambient;
+                rs.surfaceIntegrator.numAmbientSamples = renderSettings.
+                                                         surfaceIntegrator().
+                                                         whittedAmbientIntegrator().
+                                                         numAmbientSamples();
+                break;
+        case SurfaceIntegrator::path:
+                rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::path;
+                break;
+        case SurfaceIntegrator::debug_distance:
+                rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::debug_distance;
+                break;
+        case SurfaceIntegrator::debug_normals:
+                rs.surfaceIntegrator.type = redshift_file::SurfaceIntegrator::debug_normals;
+                break;
+        }
+
+        //rs.surfaceIntegrator.numAmbientSamples = renderSettings
         rs.volumeIntegrator.type = redshift_file::VolumeIntegrator::none;
 
         scene.addRenderSettings(rs);
 
         // Film settings.
         redshift_file::FilmSettings fs;
-        fs.colorscale = 0.00005;
+        fs.colorscale = .00005;
         fs.convertToSrgb = false;
         scene.setFilmSettings(fs);
 
