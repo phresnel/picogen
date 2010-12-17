@@ -52,6 +52,7 @@ private:
         void updateViews();
 
 private slots:
+        void on_autoResolutionButton_clicked();
         void on_ambientSamples_valueChanged(int );
         void on_surfaceIntegrator_currentIndexChanged(int index);
         void on_enableMaxQuadtreeDepthOverride_toggled(bool checked);
@@ -62,6 +63,8 @@ private slots:
         void on_samplesPerPixelSpin_editingFinished();
         void on_heightSpin_editingFinished();
         void on_widthSpin_editingFinished();
+
+        void setAutoResolutionFromAction();
 };
 
 #endif // RENDERSETTINGS_HH

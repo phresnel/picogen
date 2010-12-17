@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>364</width>
+    <width>390</width>
     <height>304</height>
    </rect>
   </property>
@@ -112,6 +112,13 @@
             <widget class="QLabel" name="megapixelsDisplay">
              <property name="text">
               <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="autoResolutionButton">
+             <property name="text">
+              <string>auto</string>
              </property>
             </widget>
            </item>

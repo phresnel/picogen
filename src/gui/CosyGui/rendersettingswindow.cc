@@ -26,6 +26,8 @@
 #include "scopedblocksignals.hh"
 
 #include <QMessageBox>
+#include <QMenu>
+#include <QDesktopWidget>
 
 RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
     QWidget(parent),
@@ -167,4 +169,89 @@ void RenderSettingsWindow::on_ambientSamples_valueChanged(int val){
                 si.toWhittedAmbientIntegrator(wai);
         }
         renderSettings_->setSurfaceIntegrator(si);
+}
+
+void RenderSettingsWindow::on_autoResolutionButton_clicked() {
+        QMenu menu;
+
+        const QDesktopWidget *desk = QApplication::desktop();
+        const QRect desktopSize = desk->screenGeometry();
+        const int deskW = desktopSize.width(),
+                  deskH = desktopSize.height();
+        const int currW = ui->widthSpin->value(),
+                  currH = ui->heightSpin->value();
+
+        const double f4_3 = 4.0 / 3.0;
+        const double f16_9 = 16.0 / 9.0;
+        menu.addAction("Desktop: "
+                       + QString::number(deskW) + "x"
+                       + QString::number(deskH),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(deskW, deskH));
+        menu.addAction("Desktop 16:9: "
+                       + QString::number(deskW) + "x"
+                       + QString::number((int)(deskW / f16_9)),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(deskW, (int)(deskW / f16_9)));
+        menu.addAction("Desktop 3:1: "
+                       + QString::number(deskW) + "x"
+                       + QString::number((int)(deskW / 3)),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(deskW, (int)(deskW / 3)));
+        menu.addAction("Desktop 4:1: "
+                       + QString::number(deskW) + "x"
+                       + QString::number((int)(deskW / 4)),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(deskW, (int)(deskW / 4)));
+
+
+        menu.addSeparator();
+        menu.addAction("4:3 (keep width): "
+                       + QString::number(currW) + "x"
+                       + QString::number((int)((double)currW / f4_3)),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(currW, (int)((double)currW / f4_3)));
+        menu.addAction("4:3 (keep height): "
+                       + QString::number((int)(currH * f4_3)) + "x"
+                       + QString::number(currH),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint((int)(currH * f4_3), currH));
+
+        menu.addAction("16:9 (keep width): "
+                       + QString::number(currW) + "x"
+                       + QString::number((int)((double)currW / f16_9)),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(currW, (int)((double)currW / f16_9)));
+
+        menu.addAction("16:9 (keep height): "
+                       + QString::number((int)(currH * f16_9)) + "x"
+                       + QString::number(currH),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint((int)(currH * f16_9), currH));
+
+        menu.addSeparator();
+        menu.addAction("Height*2, Width*2: "
+                       + QString::number(currW*2) + "x"
+                       + QString::number(currH*2),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(currW*2, currH*2));
+        menu.addAction("Height/2, Width/2: "
+                       + QString::number(currW/2) + "x"
+                       + QString::number(currH/2),
+                       this, SLOT(setAutoResolutionFromAction()))
+                ->setData(QPoint(currW/2, currH/2));
+
+        menu.exec(QCursor::pos());
+}
+
+void RenderSettingsWindow::setAutoResolutionFromAction() {
+        QAction *action = qobject_cast<QAction *>(sender());
+        if (action) {
+                const QPoint res = action->data().toPoint();
+                ui->widthSpin->setValue(res.x());
+                ui->heightSpin->setValue(res.y());
+
+                on_widthSpin_editingFinished();
+                on_heightSpin_editingFinished();
+        }
 }
