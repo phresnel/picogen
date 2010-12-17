@@ -30,9 +30,9 @@ const actuarius::Enum<TerrainFormation::Kind> TerrainFormation::Typenames =
 | actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::None, "none")
 );
 
-const actuarius::Enum<TerrainMaterial::Kind> TerrainMaterial::Typenames =
-( actuarius::Nvp<TerrainMaterial::Kind>(TerrainMaterial::None, "none")
-| actuarius::Nvp<TerrainMaterial::Kind>(TerrainMaterial::Monochrome, "monochrome")
+const actuarius::Enum<Material::Kind> Material::Typenames =
+( actuarius::Nvp<Material::Kind>(Material::None, "none")
+| actuarius::Nvp<Material::Kind>(Material::Monochrome, "monochrome")
 );
 
 
@@ -116,37 +116,37 @@ bool TerrainFormation::data_equals(TerrainFormation const &rhs) const {
 
 
 
-TerrainMaterial::TerrainMaterial() : kind_(None) {
+Material::Material() : kind_(None) {
 }
 
 
 
-TerrainMaterial::Kind TerrainMaterial::kind() const {
+Material::Kind Material::kind() const {
         return kind_;
 }
 
 
 
-Color TerrainMaterial::monochrome() const {
+Color Material::monochrome() const {
         return monochrome_;
 }
 
 
 
-void TerrainMaterial::toMonochrome(Color const &val) {
+void Material::toMonochrome(Color const &val) {
         kind_ = Monochrome;
         monochrome_ = val;
 }
 
 
 
-void TerrainMaterial::reset() {
+void Material::reset() {
         kind_ = None;
 }
 
 
 
-bool TerrainMaterial::data_equals(const TerrainMaterial &rhs) const {
+bool Material::data_equals(const Material &rhs) const {
         if (kind_ != rhs.kind_) return false;
 
         switch (kind_) {
@@ -193,14 +193,14 @@ double TerrainFitting::lazyQuadtreeVisibleExtent() const {
 // Terrain
 Terrain::Terrain()
 : formation_(new TerrainFormation())
-, material_(new TerrainMaterial())
+, material_(new Material())
 , fitting_(new TerrainFitting())
 {
 }
 redshift::shared_ptr<TerrainFormation> Terrain::formation() const {
         return formation_;
 }
-redshift::shared_ptr<TerrainMaterial> Terrain::material() const {
+redshift::shared_ptr<Material> Terrain::material() const {
         return material_;
 }
 redshift::shared_ptr<TerrainFitting> Terrain::fitting() const {

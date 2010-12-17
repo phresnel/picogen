@@ -18,42 +18,51 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
-#ifndef TERRAINTEXTURING_HH
-#define TERRAINTEXTURING_HH
+#ifndef WATERWINDOW_HH
+#define WATERWINDOW_HH
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
 
 namespace Ui {
-    class TerrainTexturing;
+        class WaterWindow;
 }
-namespace cosyscene {
-        class TerrainMaterial;
-}
-class ColorPickerColor;
 
-class TerrainTexturing : public QWidget
+namespace cosyscene {
+                class Water;
+        class Scene;
+}
+
+
+class WaterWindow : public QWidget
 {
         Q_OBJECT
 
 public:
-        explicit TerrainTexturing(QWidget *parent = 0);
-        ~TerrainTexturing();
+        explicit WaterWindow(QWidget *parent = 0);
+        ~WaterWindow();
 
-        void setMaterial (
-                redshift::shared_ptr<cosyscene::TerrainMaterial> t,
-                bool blockSignals
-        );
+        void setWater (redshift::shared_ptr<cosyscene::Water>,
+                         bool blockSignals=true);
+
+signals:
+        void waterChanged();
+
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
-        Ui::TerrainTexturing *ui;
-        redshift::shared_ptr<cosyscene::TerrainMaterial> material;
+        Ui::WaterWindow *ui;
+        redshift::shared_ptr<cosyscene::Water> water;
+
+        void updateViews ();
+
 
 private slots:
-        void on_colorPicker_colorChanged(ColorPickerColor const &);
-
+        void on_showWorldFittingTab_clicked();
+        void on_showTexturingTab_clicked();
+        void on_showFormationTab_clicked();
 };
 
-#endif // TERRAINTEXTURING_HH
+
+#endif // WATERWINDOW_HH

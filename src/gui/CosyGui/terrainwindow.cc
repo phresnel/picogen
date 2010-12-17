@@ -24,8 +24,8 @@
 
 #include "cosyscene/scene.hh"
 #include "cosyscene/terrain.hh"
-
 #include "stashview.hh"
+
 
 #include <QMessageBox>
 

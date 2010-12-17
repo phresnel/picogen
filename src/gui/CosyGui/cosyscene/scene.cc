@@ -20,6 +20,7 @@
 
 #include "scene.hh"
 #include "terrain.hh"
+#include "water.hh"
 #include "sunsky.hh"
 #include "navigation.hh"
 #include "rendersettings.hh"
@@ -32,6 +33,7 @@ namespace cosyscene {
 
 Scene::Scene()
 : terrain_(new Terrain())
+, water_(new Water())
 , sunSky_(new SunSky())
 , navigation_(new Navigation())
 , renderSettings_(new TwinRenderSettings())
@@ -170,7 +172,7 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                 redshift_file::Object ob;
 
                 TerrainFormation const &formation = *terrain_->formation();
-                TerrainMaterial const &material = *terrain_->material();
+                Material const &material = *terrain_->material();
                 TerrainFitting const &fitting = *terrain_->fitting();
 
                 if (TerrainFormation::None != formation.kind()) {
@@ -205,10 +207,10 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
 
                         // Material
                         switch (material.kind()) {
-                        case TerrainMaterial::None:
+                        case Material::None:
                                 ob.lazyQuadtreeParams.material.color = redshift_file::Color(1,1,1);
                                 break;
-                        case TerrainMaterial::Monochrome: {
+                        case Material::Monochrome: {
                                         cosyscene::Color mono = material.monochrome();
                                         redshift_file::Color redcol;
 

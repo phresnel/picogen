@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TerrainWindow</class>
- <widget class="QWidget" name="TerrainWindow">
+ <class>WaterWindow</class>
+ <widget class="QWidget" name="WaterWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>582</width>
-    <height>558</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_7">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <property name="margin">
     <number>0</number>
    </property>
@@ -96,7 +96,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QStackedWidget" name="terrainTaskStackedWidget">
+    <widget class="QStackedWidget" name="waterTaskStackedWidget">
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -108,7 +108,7 @@
       </layout>
      </widget>
      <widget class="Material" name="texturing"/>
-     <widget class="TerrainFitting" name="fitting"/>
+     <widget class="WaterFitting" name="fitting"/>
     </widget>
    </item>
   </layout>
@@ -127,9 +127,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TerrainFitting</class>
+   <class>WaterFitting</class>
    <extends>QWidget</extends>
-   <header>terrainfitting.hh</header>
+   <header>waterfitting.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

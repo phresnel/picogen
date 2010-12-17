@@ -32,16 +32,19 @@ SOURCES += main.cc \
     cosyscene/navigation.cc \
     cosyscene/point3d.cc \
     terrainformation.cc \
-    terraintexturing.cc \
+    material.cc \
     cosyscene/color.cc \
     cosyscene/rendersettings.cc \
     cosyscene/filmsettings.cc \
     cosyscene/surfaceintegrator.cc \
+    cosyscene/water.cc \
     filmsettingswindow.cc \
     twinrendersettingswindow.cc \
     rendersettingswindow.cc \
     stylesheetliveeditor.cc \
-    terrainfitting.cc
+    terrainfitting.cc \
+    waterwindow.cc \
+    waterfitting.cc
 HEADERS += mainwindow.hh \
     cosyscene/stash.hh \
     cosyscene/terrain.hh \
@@ -69,7 +72,7 @@ HEADERS += mainwindow.hh \
     cosyscene/point3d.hh \
     cosyscene/serialization/point3d.ser.hh \
     terrainformation.hh \
-    terraintexturing.hh \
+    material.hh \
     cosyscene/color.hh \
     cosyscene/serialization/color.ser.hh \
     cosyscene/rendersettings.hh \
@@ -78,13 +81,17 @@ HEADERS += mainwindow.hh \
     cosyscene/serialization/filmsettings.ser.hh \
     cosyscene/surfaceintegrator.hh \
     cosyscene/serialization/surfaceintegrator.ser.hh \
+    cosyscene/water.hh \
+    cosyscene/serialization/water.ser.hh \
     filmsettingswindow.hh \
     twinrendersettingswindow.hh \
     rendersettingswindow.hh \
     createredshiftsceneclosure.hh \
     stylesheetliveeditor.hh \
     terrainfitting.hh \
-    scopedblocksignals.hh
+    scopedblocksignals.hh \
+    waterwindow.hh \
+    waterfitting.hh
 FORMS += mainwindow.ui \
     terrainwindow.ui \
     stashview.ui \
@@ -92,12 +99,14 @@ FORMS += mainwindow.ui \
     sunskywindow.ui \
     navigationwindow.ui \
     terrainformation.ui \
-    terraintexturing.ui \
+    material.ui \
     filmsettingswindow.ui \
     twinrendersettingswindow.ui \
     rendersettingswindow.ui \
     stylesheetliveeditor.ui \
-    terrainfitting.ui
+    terrainfitting.ui \
+    waterwindow.ui \
+    waterfitting.ui
 LIBS += ../../.libs/libredshift.a ../../.libs/libxyto.a \
     -lgomp \
     -lnoise \

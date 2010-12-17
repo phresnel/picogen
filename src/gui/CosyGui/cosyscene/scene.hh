@@ -32,6 +32,7 @@ namespace redshift_file {
 namespace cosyscene {
 
 class Terrain;
+class Water;
 class SunSky;
 class Navigation;
 class RenderSettings;
@@ -48,6 +49,9 @@ public:
 
         redshift::shared_ptr<Terrain> terrain() const {
                 return terrain_;
+        }
+        redshift::shared_ptr<Water> water() const {
+                return water_;
         }
         redshift::shared_ptr<SunSky> sunSky() const {
                 return sunSky_;
@@ -75,6 +79,7 @@ public:
 
 private:
         redshift::shared_ptr<Terrain> terrain_;
+        redshift::shared_ptr<Water> water_;
         redshift::shared_ptr<SunSky> sunSky_;
         redshift::shared_ptr<Navigation> navigation_;
 

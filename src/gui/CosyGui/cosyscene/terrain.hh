@@ -131,14 +131,14 @@ private:
 
 #include "color.hh"
 namespace cosyscene {
-class TerrainMaterial : public StashableMixin<TerrainMaterial> {
+class Material : public StashableMixin<Material> {
 public:
         enum Kind {
                 None,
                 Monochrome
         };
 
-        TerrainMaterial();
+        Material();
 
         Kind kind() const;
         Color monochrome() const;
@@ -146,7 +146,7 @@ public:
 
         void toMonochrome(Color const &);
 
-        bool data_equals(TerrainMaterial const &rhs) const;
+        bool data_equals(Material const &rhs) const;
 
         template<typename Arch>
         void serialize (Arch &arch);
@@ -198,7 +198,7 @@ public:
         Terrain() ;
 
         redshift::shared_ptr<TerrainFormation> formation() const;
-        redshift::shared_ptr<TerrainMaterial>  material() const;
+        redshift::shared_ptr<Material>  material() const;
         redshift::shared_ptr<TerrainFitting> fitting() const;
 
         template<typename Arch>
@@ -206,7 +206,7 @@ public:
 
 private:
         redshift::shared_ptr<TerrainFormation> formation_;
-        redshift::shared_ptr<TerrainMaterial> material_;
+        redshift::shared_ptr<Material> material_;
         redshift::shared_ptr<TerrainFitting> fitting_;
 };
 

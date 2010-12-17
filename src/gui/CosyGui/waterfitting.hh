@@ -18,30 +18,46 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifndef WATERFITTING_HH
+#define WATERFITTING_HH
 
-#ifndef SCENE_INL_HH_20100902
-#define SCENE_INL_HH_20100902
+#include <QWidget>
+#include "redshift/include/smart_ptr.hh"
 
-#include "../scene.hh"
-
-#include "cosyscene/serialization/terrain.ser.hh"
-#include "cosyscene/serialization/water.ser.hh"
-#include "cosyscene/serialization/sunsky.ser.hh"
-#include "cosyscene/serialization/navigation.ser.hh"
-#include "cosyscene/serialization/rendersettings.ser.hh"
-#include "cosyscene/serialization/filmsettings.ser.hh"
+namespace Ui {
+        class WaterFitting;
+}
 
 namespace cosyscene {
-template<typename Arch>
-inline void Scene::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack("terrain", *terrain_);
-        arch & pack("water", *water_);
-        arch & pack("sunsky", *sunSky_);
-        arch & pack("navigation", *navigation_);
-        arch & pack("render-settings", *renderSettings_);
-        arch & pack("film-settings", *filmSettings_);
-}
+        class WaterFitting;
 }
 
-#endif // SCENE_INL_HH
+class WaterFitting : public QWidget
+{
+        Q_OBJECT
+
+public:
+        explicit WaterFitting(QWidget *parent = 0);
+        ~WaterFitting();
+
+        void setFitting (
+                redshift::shared_ptr<cosyscene::WaterFitting> t,
+                bool blockSignals
+        );
+
+signals:
+        void fittingChanged();
+
+private:
+        Ui::WaterFitting *ui;
+
+        int previousMaxRecursion;
+        redshift::shared_ptr<cosyscene::WaterFitting> fitting_;
+
+private slots:
+        void on_visibleExtent_editingFinished();
+        void on_maxRecursion_editingFinished();
+};
+
+
+#endif // WATERFITTING_HH

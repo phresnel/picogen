@@ -193,9 +193,16 @@ void MainWindow::switchOffCommandLinks () {
         ui->renderingSetupCommandLink->setChecked(false);
         ui->filmCommandLink->setChecked(false);
         ui->terrainCommandLink->setChecked(false);
+        ui->waterCommandLink->setChecked(false);
         ui->navigationCommandLink->setChecked(false);
         ui->forestCommandLink->setChecked(false);
         ui->sunskyCommandLink->setChecked(false);
+}
+
+void MainWindow::on_waterCommandLink_clicked() {
+        switchOffCommandLinks();
+        ui->waterCommandLink->setChecked(true);
+        ui->stackedWidget->setCurrentWidget(ui->water);
 }
 
 void MainWindow::on_filmCommandLink_clicked() {
@@ -373,3 +380,5 @@ void MainWindow::onPreviewRenderProcessRequested() {
         RenderWindow::CosyGuiRenderProcess(QFileInfo(tmp.fileName()).canonicalFilePath(),
                                            0, 0);
 }
+
+
