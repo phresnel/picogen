@@ -40,23 +40,12 @@ class WaterFitting
 public:
         WaterFitting();
 
-        void setSizeFactor (Vector3d);
-        Vector3d sizeFactor() const;
-
-        void setPositionOffset (Vector3d);
-        Vector3d positionOffset() const;
-
-        void setLazyQuadtreeMaxRecursion (unsigned int);
-        unsigned int lazyQuadtreeMaxRecursion() const;
-
-        void setLazyQuadtreeVisibleExtent (double);
-        double lazyQuadtreeVisibleExtent() const;
+        void setSeaLevel (double);
+        double seaLevel() const;
 
         template <typename Arch> void serialize (Arch &arch);
 private:
-        Vector3d sizeFactor_, positionOffset_;
-        unsigned int lazyQuadtreeMaxRecursion_;
-        double lazyQuadtreeVisibleExtent_;
+        double seaLevel_;
 };
 } // namespace cosyscene
 

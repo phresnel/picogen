@@ -152,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
         // Inits.
         ui->setupUi(this);
         ui->terrain->setTerrain(scene->terrain());
+        ui->water->setWater(scene->water());
 
         scene->sunSky()->toUtahSky (cosyscene::UtahSky());
         ui->sunSky->setSunSky(scene->sunSky());
@@ -169,6 +170,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->terrain, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
+        connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
+                 ui->water, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->sunSky, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),

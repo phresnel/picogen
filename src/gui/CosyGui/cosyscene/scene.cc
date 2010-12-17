@@ -46,6 +46,48 @@ Scene::Scene()
 
 
 
+
+redshift_file::Material toRedshift (cosyscene::Material const &material) {
+        redshift_file::Material ret;
+
+        switch (material.kind()) {
+        case Material::None:
+                ret.color = redshift_file::Color(1,1,1);
+                break;
+        case Material::Monochrome: {
+                        cosyscene::Color mono = material.monochrome();
+                        redshift_file::Color redcol;
+
+
+                        switch (mono.kind()) {
+                        case cosyscene::Color::Rgb:
+                                redcol = redshift_file::Color(mono.rgb().r(),
+                                                              mono.rgb().g(),
+                                                              mono.rgb().b());
+                                break;
+                        case cosyscene::Color::Spectrum:
+                                redcol.type = redshift_file::Color::Spectrum;
+                                redshift_file::Spectrum &redspec = redcol.spectrum;
+                                cosyscene::Spectrum cospec = mono.spectrum();
+
+                                for (size_t i=0; i<cospec.size(); ++i) {
+                                        redshift_file::WavelengthAmplitudePair wa;
+                                        wa.wavelength = cospec[i].wavelength();
+                                        wa.amplitude = cospec[i].amplitude();
+
+                                        redspec.samples.push_back(wa);
+                                }
+                                break;
+                        }
+
+                        ret.color = redcol;
+                } break;
+        }
+
+        return ret;
+}
+
+
 redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
         bool usePreviewSettings
 ) const {
@@ -206,40 +248,8 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         }
 
 
-                        // Material
-                        switch (material.kind()) {
-                        case Material::None:
-                                ob.lazyQuadtreeParams.material.color = redshift_file::Color(1,1,1);
-                                break;
-                        case Material::Monochrome: {
-                                        cosyscene::Color mono = material.monochrome();
-                                        redshift_file::Color redcol;
+                        ob.lazyQuadtreeParams.material = toRedshift(material);
 
-
-                                        switch (mono.kind()) {
-                                        case cosyscene::Color::Rgb:
-                                                redcol = redshift_file::Color(mono.rgb().r(),
-                                                                              mono.rgb().g(),
-                                                                              mono.rgb().b());
-                                                break;
-                                        case cosyscene::Color::Spectrum:
-                                                redcol.type = redshift_file::Color::Spectrum;
-                                                redshift_file::Spectrum &redspec = redcol.spectrum;
-                                                cosyscene::Spectrum cospec = mono.spectrum();
-
-                                                for (size_t i=0; i<cospec.size(); ++i) {
-                                                        redshift_file::WavelengthAmplitudePair wa;
-                                                        wa.wavelength = cospec[i].wavelength();
-                                                        wa.amplitude = cospec[i].amplitude();
-
-                                                        redspec.samples.push_back(wa);
-                                                }
-                                                break;
-                                        }
-
-                                        ob.lazyQuadtreeParams.material.color = redcol;
-                                } break;
-                        }
 
                         redshift_file::Object inst;
                         inst.type = redshift_file::Object::instance;
@@ -254,6 +264,46 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         scene.addObject(inst);
                 }
         }
+
+
+
+        // Water.
+        {
+                redshift_file::Object ob;
+
+                TerrainFormation const &formation = *water_->formation();
+                Material const &material = *water_->material();
+                WaterFitting const &fitting = *water_->fitting();
+
+                if (TerrainFormation::None != formation.kind()) {
+                        ob.type = redshift_file::Object::water_plane;
+
+                        // Formation
+                        switch (formation.kind()) {
+                        case TerrainFormation::QuatschSource:
+                                ob.waterPlaneParams.code = formation
+                                                             .quatschSource()
+                                                             .code();
+                                break;
+                        case TerrainFormation::None: /* never the case */
+                                break;
+                        case TerrainFormation::QuatschPreset:
+                                ob.waterPlaneParams.code =
+                                                formation
+                                                .quatschPreset()
+                                                .getPreprocessedCode();
+                                break;
+                        }
+
+                        // Fitting
+                        //ob.waterPlaneParams.size = fitting.lazyQuadtreeVisibleExtent();
+
+                        ob.waterPlaneParams.height = water_->fitting()->seaLevel();
+                        ob.waterPlaneParams.material = toRedshift(material);
+                        scene.addObject(ob);
+                }
+        }
+
 
         return scenePtr;
 }

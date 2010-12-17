@@ -31,7 +31,6 @@ WaterFitting::WaterFitting(QWidget *parent) :
     fitting_(new cosyscene::WaterFitting())
 {
         ui->setupUi(this);
-        previousMaxRecursion = ui->maxRecursion->value();
 }
 
 WaterFitting::~WaterFitting() {
@@ -47,36 +46,11 @@ void WaterFitting::setFitting(
         fitting_ = t;
         cosyscene::WaterFitting const &f = *t;
 
-        ScopedQtSignalBlock blockMaxRecursion (ui->maxRecursion, blockSignals);
-        ui->maxRecursion->setValue(f.lazyQuadtreeMaxRecursion());
-
-        ScopedQtSignalBlock blockVisibleExtent (ui->visibleExtent, blockSignals);
-        ui->visibleExtent->setValue(f.lazyQuadtreeVisibleExtent());
+        ScopedQtSignalBlock blockSeaLevel (ui->seaLevel, blockSignals);
+        ui->seaLevel->setValue(f.seaLevel());
 }
 
-void WaterFitting::on_visibleExtent_editingFinished() {
-        fitting_->setLazyQuadtreeVisibleExtent (ui->visibleExtent->value());
-        emit fittingChanged();
-}
-
-
-void WaterFitting::on_maxRecursion_editingFinished() {
-        const int val = ui->maxRecursion->value();
-
-        // Larger quadtrees can become gigabytes in size. Therefore warn users.
-        if (val >= 16 &&
-            val > previousMaxRecursion &&
-            previousMaxRecursion<16
-        ) {
-                QMessageBox::warning(this, "Warning",
-                "Note that large values might cause an out-of-memory situation."
-                "\n\n"
-                "Before rendering, make sure that you have enough free memory "
-                "and that you saved all your data, ideally closing other "
-                "applications.");
-        }
-        previousMaxRecursion = val;
-        fitting_->setLazyQuadtreeMaxRecursion (val);
-
+void WaterFitting::on_seaLevel_valueChanged(double val) {
+        fitting_->setSeaLevel(val);
         emit fittingChanged();
 }

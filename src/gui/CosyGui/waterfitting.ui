@@ -29,7 +29,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Terrain Technically</string>
+        <string/>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
@@ -38,48 +38,19 @@
            <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
           </property>
           <item row="0" column="0">
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="label">
             <property name="text">
-             <string>Maximum Recursion</string>
+             <string>Sea Level</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QSpinBox" name="maxRecursion">
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>22</number>
-            </property>
-            <property name="value">
-             <number>8</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Visible Extent</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="visibleExtent">
+           <widget class="QDoubleSpinBox" name="seaLevel">
             <property name="suffix">
              <string>m</string>
             </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>1.000000000000000</double>
-            </property>
             <property name="maximum">
              <double>999999999.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>

@@ -27,33 +27,14 @@ namespace cosyscene {
 
 
 WaterFitting::WaterFitting()
-: sizeFactor_(1,1,1), positionOffset_(0,0,0)
-, lazyQuadtreeMaxRecursion_(8), lazyQuadtreeVisibleExtent_(10000)
+: seaLevel_(0)
 {
 }
-void WaterFitting::setSizeFactor(Vector3d v) {
-        sizeFactor_ = v;
+void WaterFitting::setSeaLevel(double s) {
+        seaLevel_ = s;
 }
-Vector3d WaterFitting::sizeFactor() const {
-        return sizeFactor_;
-}
-void WaterFitting::setPositionOffset(Vector3d v) {
-        positionOffset_ = v;
-}
-Vector3d WaterFitting::positionOffset() const {
-        return positionOffset_;
-}
-void WaterFitting::setLazyQuadtreeMaxRecursion (unsigned int rec) {
-        lazyQuadtreeMaxRecursion_ = rec;
-}
-unsigned int WaterFitting::lazyQuadtreeMaxRecursion() const {
-        return lazyQuadtreeMaxRecursion_;
-}
-void WaterFitting::setLazyQuadtreeVisibleExtent (double s) {
-        lazyQuadtreeVisibleExtent_ = s;
-}
-double WaterFitting::lazyQuadtreeVisibleExtent() const {
-        return lazyQuadtreeVisibleExtent_;
+double WaterFitting::seaLevel() const {
+        return seaLevel_;
 }
 
 

@@ -34,10 +34,7 @@ namespace cosyscene {
 template<typename Arch>
 inline void WaterFitting::serialize (Arch &arch) {
         using actuarius::pack;
-        arch & pack("size-factor", sizeFactor_)
-             & pack("position-offset", positionOffset_)
-             & pack("lazy-quadtree-visible-extent", lazyQuadtreeVisibleExtent_)
-             & pack("lazy-quadtree-max-recursion", lazyQuadtreeMaxRecursion_)
+        arch & pack("sea-level", seaLevel_)
              ;
 
 }

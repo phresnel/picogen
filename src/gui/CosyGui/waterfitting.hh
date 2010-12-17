@@ -55,8 +55,7 @@ private:
         redshift::shared_ptr<cosyscene::WaterFitting> fitting_;
 
 private slots:
-        void on_visibleExtent_editingFinished();
-        void on_maxRecursion_editingFinished();
+        void on_seaLevel_valueChanged(double );
 };
 
 
