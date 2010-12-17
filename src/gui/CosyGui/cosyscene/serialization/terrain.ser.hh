@@ -23,6 +23,7 @@
 #define TERRAIN_SERIALIZATION_HH_20100902
 
 #include "../terrain.hh"
+#include "cosyscene/serialization/material.ser.hh"
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/color.ser.hh"
 #include "cosyscene/serialization/vector3d.ser.hh"
@@ -77,20 +78,6 @@ inline void TerrainFormation::serialize (Arch &arch) {
         switch (kind_) {
         case QuatschSource: arch & pack ("parameters", quatschSource_); break;
         case QuatschPreset: arch & pack ("parameters", quatschPreset_); break;
-        case None: break;
-        }
-}
-
-template<typename Arch>
-inline void Material::serialize (Arch &arch) {
-        using actuarius::pack;
-        if (Arch::deserialize || !stash_.empty())
-                arch & pack("stash", stash_);
-
-        arch & pack("type", kind_, Typenames);
-
-        switch (kind_) {
-        case Monochrome: arch & pack ("parameters", monochrome_); break;
         case None: break;
         }
 }

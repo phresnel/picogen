@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "water.hh"
+#include "material.hh"
 #include "quatsch-preprocessor/parsing.hh"
 
 namespace cosyscene {

@@ -129,34 +129,8 @@ private:
 
 
 
-#include "color.hh"
 namespace cosyscene {
-class Material : public StashableMixin<Material> {
-public:
-        enum Kind {
-                None,
-                Monochrome
-        };
-
-        Material();
-
-        Kind kind() const;
-        Color monochrome() const;
-        void reset();
-
-        void toMonochrome(Color const &);
-
-        bool data_equals(Material const &rhs) const;
-
-        template<typename Arch>
-        void serialize (Arch &arch);
-        static const actuarius::Enum<Kind> Typenames;
-
-private:
-        Kind kind_;
-        Color monochrome_;
-
-};
+        class Material;
 } // namespace cosyscene
 
 

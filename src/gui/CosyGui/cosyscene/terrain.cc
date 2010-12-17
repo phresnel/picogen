@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "terrain.hh"
+#include "material.hh"
 #include "quatsch-preprocessor/parsing.hh"
 
 namespace cosyscene {
@@ -30,10 +31,6 @@ const actuarius::Enum<TerrainFormation::Kind> TerrainFormation::Typenames =
 | actuarius::Nvp<TerrainFormation::Kind>(TerrainFormation::None, "none")
 );
 
-const actuarius::Enum<Material::Kind> Material::Typenames =
-( actuarius::Nvp<Material::Kind>(Material::None, "none")
-| actuarius::Nvp<Material::Kind>(Material::Monochrome, "monochrome")
-);
 
 
 std::string QuatschPreset::getPreprocessedCode() const {
@@ -113,49 +110,6 @@ bool TerrainFormation::data_equals(TerrainFormation const &rhs) const {
                                  "fully defined");
 }
 
-
-
-
-Material::Material() : kind_(None) {
-}
-
-
-
-Material::Kind Material::kind() const {
-        return kind_;
-}
-
-
-
-Color Material::monochrome() const {
-        return monochrome_;
-}
-
-
-
-void Material::toMonochrome(Color const &val) {
-        kind_ = Monochrome;
-        monochrome_ = val;
-}
-
-
-
-void Material::reset() {
-        kind_ = None;
-}
-
-
-
-bool Material::data_equals(const Material &rhs) const {
-        if (kind_ != rhs.kind_) return false;
-
-        switch (kind_) {
-        case None: return true;
-        case Monochrome: return monochrome_ == rhs.monochrome_;
-        }
-        throw std::runtime_error("TerrainMaterial::data_equals() not "
-                                 "fully defined");
-}
 
 
 

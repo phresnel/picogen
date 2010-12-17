@@ -25,6 +25,7 @@
 #include "navigation.hh"
 #include "rendersettings.hh"
 #include "filmsettings.hh"
+#include "material.hh"
 
 #include "redshift/include/jobfile.hh"
 #include "quatsch-preprocessor/parsing.hh"

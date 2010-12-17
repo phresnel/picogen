@@ -18,9 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "material.hh"
-#include "ui_material.h"
-#include "cosyscene/terrain.hh"
+#include "material-ui.hh"
+#include "ui_material-ui.h"
+
+#include "cosyscene/material.hh"
 
 Material::Material(QWidget *parent) :
     QWidget(parent),

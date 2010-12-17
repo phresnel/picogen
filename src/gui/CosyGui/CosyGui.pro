@@ -32,8 +32,9 @@ SOURCES += main.cc \
     cosyscene/navigation.cc \
     cosyscene/point3d.cc \
     terrainformation.cc \
-    material.cc \
+    material-ui.cc \
     cosyscene/color.cc \
+    cosyscene/material.cc \
     cosyscene/rendersettings.cc \
     cosyscene/filmsettings.cc \
     cosyscene/surfaceintegrator.cc \
@@ -72,9 +73,11 @@ HEADERS += mainwindow.hh \
     cosyscene/point3d.hh \
     cosyscene/serialization/point3d.ser.hh \
     terrainformation.hh \
-    material.hh \
+    material-ui.hh \
     cosyscene/color.hh \
     cosyscene/serialization/color.ser.hh \
+    cosyscene/material.hh \
+    cosyscene/serialization/material.ser.hh \
     cosyscene/rendersettings.hh \
     cosyscene/serialization/rendersettings.ser.hh \
     cosyscene/filmsettings.hh \
@@ -99,7 +102,7 @@ FORMS += mainwindow.ui \
     sunskywindow.ui \
     navigationwindow.ui \
     terrainformation.ui \
-    material.ui \
+    material-ui.ui \
     filmsettingswindow.ui \
     twinrendersettingswindow.ui \
     rendersettingswindow.ui \
