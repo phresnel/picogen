@@ -102,6 +102,8 @@ double Rgb::b() const {
 
 
 //------------------------------------------------------------------------------
+Color::Color () : kind_(Rgb), rgb_(1,1,1) {
+}
 Color::Kind Color::kind() const {
         return kind_;
 }

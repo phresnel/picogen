@@ -29,7 +29,13 @@ const actuarius::Enum<Material::Kind> Material::Typenames =
 
 
 
-Material::Material() : kind_(None) {
+Material::Material() {
+        // TODO: Once we use more advanced materials, "none" should be default
+        // and the material editor shall show a kind-selection
+        // (as with terrain-formation)
+        Color tmp;
+        tmp.toRgb(cosyscene::Rgb(1,1,1));
+        toMonochrome(tmp);
 }
 
 

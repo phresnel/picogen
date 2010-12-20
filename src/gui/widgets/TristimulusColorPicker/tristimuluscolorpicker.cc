@@ -32,7 +32,6 @@ TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     isUpdating(false)
 {
         ui->setupUi(this);
-        setColor(TristimulusColor::fromRgbf(0.5, 0.6, 0.4));
 }
 
 TristimulusColorPicker::~TristimulusColorPicker() {

@@ -117,6 +117,8 @@ public:
 
         static const actuarius::Enum<Kind> Typenames;
 
+        Color ();
+
         Kind kind() const;
         cosyscene::Rgb rgb() const;
         cosyscene::Spectrum spectrum() const;

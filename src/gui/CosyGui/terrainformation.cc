@@ -103,8 +103,8 @@ void TerrainFormation::on_quatschCodeEditorCLB_clicked() {
 void TerrainFormation::on_parametricPresetCLB_clicked() {
         formation_->toQuatschPreset(cosyscene::QuatschPreset(
         "(($Width :real = {[1..99999]} default=1000))\n"
-        "(($Height:real = {[1..99999]} default=1000))\n"
         "(($Depth :real = {[1..99999]} default=1000))\n"
+        "(($Height:real = {[1..99999]} default=1000))\n"
         "(($Filename:filename))\n"
         "(($Filter:enumeration={nearest, bilinear, cosine, cubic} default=3))\n"
         "\n"
@@ -121,8 +121,8 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
 void TerrainFormation::on_heightmapCLB_clicked() {
         formation_->toQuatschPreset(cosyscene::QuatschPreset(
         "(($Width :real = {[1..9999999]} default=1000))\n"
-        "(($Height:real = {[1..9999999]} default=1000))\n"
         "(($Depth :real = {[1..9999999]} default=1000))\n"
+        "(($Height:real = {[1..9999999]} default=1000))\n"
         "(($Filename:filename))\n"
         "(($Filter:enumeration={nearest, bilinear, cosine, cubic} default=3))\n"
         "\n"
