@@ -73,6 +73,7 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
         iheight = 1/height;
         idepth = 1/depth;
         filter = cubic;
+        wrapMode = zero;
         for (Map::const_iterator it=static_parameters.begin();
              it!=static_parameters.end();
              ++it
@@ -107,7 +108,20 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
                         } else if (filterType == "cubic") {
                                 filter = cubic;
                         } else {
-                                throw general_exception ("Heightmap: unknown filter type for 'filter': '" + filterType + "' (only 'bilinear','nearest','cosine' are supported)");
+                                throw general_exception ("Heightmap: unknown filter type for 'filter': '" + filterType + "' (only 'bilinear','nearest','cosine','cubic' are supported)");
+                        }
+                } else if (name == string("wrap")) {
+                        istringstream hmmm (static_parameters[name]);
+                        string wrapType;
+                        hmmm >> wrapType;
+                        if (wrapType == "zero") {
+                                wrapMode = zero;
+                        } else if (wrapType == "wrap") {
+                                wrapMode = wrap;
+                        } else if (wrapType == "clamp") {
+                                wrapMode = clamp;
+                        } else {
+                                throw general_exception ("Heightmap: unknown wrap type for 'filter': '" +  wrapType + "' (only 'zero','wrap','clamp' are supported)");
                         }
                 } else {
                         nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
@@ -116,7 +130,7 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
 
         // Any parameters set that we don't know?
         if (nonExistantParameterNames != "") {
-                throw general_exception ("the following parameters do not exist for 'LayeredNoise': "+nonExistantParameterNames);
+                throw general_exception ("the following parameters do not exist for 'Heightmap': "+nonExistantParameterNames);
         }
 
 
@@ -132,6 +146,15 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
 
         if (!heightmap.load (filename, redshift::aux::Average))
                 throw general_exception ("error while loading \"" + filename + "\" (possibly: out of memory, unsupported image format)");
+                
+        switch (wrapMode) {
+        case zero: heightmap.setWrapMode(RedshiftHeightmap::Zero);
+                   break;
+        case wrap: heightmap.setWrapMode(RedshiftHeightmap::Wrap);
+                   break;
+        case clamp: heightmap.setWrapMode(RedshiftHeightmap::Clamp);
+                   break;
+        }
 }
 
 

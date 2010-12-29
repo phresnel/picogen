@@ -69,10 +69,18 @@ namespace quatsch {  namespace configurable_functions {
                         cubic
                 };
                 filter_t filter;
+                
+                enum wrap_mode_t {
+                        zero,
+                        clamp,
+                        wrap
+                };
+                wrap_mode_t wrapMode;
 
                 scalar_t width, height, depth;
                 scalar_t iwidth, iheight, idepth;
                 redshift::aux::Heightmap<scalar_t> heightmap;
+                typedef redshift::aux::Heightmap<scalar_t> RedshiftHeightmap;
 
         public:
                 Heightmap (

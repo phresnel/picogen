@@ -105,33 +105,39 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
         "(($Width :real = {[1..99999]} default=1000))\n"
         "(($Depth :real = {[1..99999]} default=1000))\n"
         "(($Height:real = {[1..99999]} default=1000))\n"
+        "(($Repeat:real = {[0.001..99999]} default=1))\n"
         "(($Filename:filename))\n"
         "(($Filter:enumeration={nearest, bilinear, cosine, cubic} default=3))\n"
+        "(($RepeatMode:enumeration={zero,wrap,clamp} default=1))\n"
         "\n"
         "([Heightmap filter{(($Filter))}\n"
         "            width {(($Width))}\n"
         "            depth {(($Depth))}\n"
         "            height{(($Height))}\n"
         "            filename{(($Filename))}\n"
-        " ] x y)"
+        "            wrap  {(($RepeatMode))}\n"
+        " ] (* (($Repeat)) x)  (* (($Repeat)) y))"
         ));
         updateViews();
 }
 
 void TerrainFormation::on_heightmapCLB_clicked() {
         formation_->toQuatschPreset(cosyscene::QuatschPreset(
-        "(($Width :real = {[1..9999999]} default=1000))\n"
-        "(($Depth :real = {[1..9999999]} default=1000))\n"
-        "(($Height:real = {[1..9999999]} default=1000))\n"
+        "(($Width :real = {[1..99999]} default=1000))\n"
+        "(($Depth :real = {[1..99999]} default=1000))\n"
+        "(($Height:real = {[1..99999]} default=1000))\n"
+        "(($Repeat:real = {[0.001..99999]} default=1))\n"
         "(($Filename:filename))\n"
         "(($Filter:enumeration={nearest, bilinear, cosine, cubic} default=3))\n"
+        "(($RepeatMode:enumeration={zero,wrap,clamp} default=1))\n"
         "\n"
         "([Heightmap filter{(($Filter))}\n"
         "            width {(($Width))}\n"
         "            depth {(($Depth))}\n"
         "            height{(($Height))}\n"
         "            filename{(($Filename))}\n"
-        " ] x y)"
+        "            wrap  {(($RepeatMode))}\n"
+        " ] (* (($Repeat)) x)  (* (($Repeat)) y))"
         ));
         updateViews();
 }
