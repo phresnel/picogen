@@ -1,119 +1,148 @@
 COSY_MANUAL_SOURCEFILES =  \
-        gui/CosyGui/main.cc \
-        gui/CosyGui/mainwindow.cc \
-        gui/CosyGui/cosyscene/terrain.cc \
-        gui/CosyGui/terrainwindow.cc \
-        gui/CosyGui/cosyscene/scene.cc \
-        gui/CosyGui/cosyscene/save_load.cc \
-        gui/CosyGui/stashview.cc \
-        gui/CosyGui/stashframe.cc \
-        gui/CosyGui/sunskywindow.cc \
-        gui/CosyGui/cosyscene/sunsky.cc \
-        gui/CosyGui/cosyscene/geometry.cc \
-        gui/CosyGui/cosyscene/vector3d.cc \
-        gui/CosyGui/cosyscene/direction3d.cc \
-        gui/CosyGui/navigationwindow.cc \
-        gui/CosyGui/cosyscene/navigation.cc \
-        gui/CosyGui/cosyscene/point3d.cc \
-        gui/CosyGui/terrainformation.cc \
-        gui/CosyGui/terraintexturing.cc \
-        gui/CosyGui/cosyscene/color.cc \
-        gui/CosyGui/cosyscene/rendersettings.cc \
-        gui/CosyGui/filmsettingswindow.cc \
-        gui/CosyGui/twinrendersettingswindow.cc \
-        gui/CosyGui/rendersettingswindow.cc \
-        gui/widgets/QuatschSourceEditor/quatschsourceeditor.cc \
+        gui/widgets/ColorPicker/colorpickerwidget.cc \
+        gui/widgets/ColorPicker/colorpicker.cc \
+        gui/widgets/FilenameEdit/filenameedit.cc \
         gui/widgets/Picohelp/picohelpbrowser.cc \
         gui/widgets/QtSunSkyEditor/qtsunskyeditor.cc \
-        gui/widgets/RenderWindow/renderwindow.cc \
+        auxiliary/quatsch-preprocessor/ios.cc \
+        auxiliary/quatsch-preprocessor/meta.cc \
+        auxiliary/quatsch-preprocessor/parsing.cc \
+        gui/widgets/QuatschPresetEditor/quatschpreseteditor.cc \
+        gui/widgets/QuatschPreview/quatschpreview.cc \
+        gui/widgets/QuatschSourceEditor/quatschsourceeditor.cc \
         gui/widgets/RenderWidget/renderwidget.cc \
-        gui/widgets/ColorPicker/colorpicker.cc \
-        gui/widgets/ColorPicker/colorpickerwidget.cc \
-        gui/widgets/TristimulusColorPicker/tristimuluscolorpicker.cc \
-        upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/qtcolortriangle.cpp \
+        gui/widgets/RenderWindow/renderwindow.cc \
+        gui/widgets/SpectralColorPicker/importrawdatawizard.cc \
         gui/widgets/SpectralColorPicker/spectralcolorpicker.cc \
+        gui/widgets/SpectralColorPicker/spectralcurve.cc \
         gui/widgets/SpectralColorPicker/spectralslider.cc \
         gui/widgets/SpectralColorPicker/spectrumdisplay.cc \
-        gui/widgets/SpectralColorPicker/spectralcurve.cc \
-        gui/widgets/SpectralColorPicker/importrawdatawizard.cc
+        gui/widgets/TristimulusColorPicker/tristimuluscolorpicker.cc \
+        upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/qtcolortriangle.cpp \
+        gui/CosyGui/cosyscene/color.cc \
+        gui/CosyGui/cosyscene/direction3d.cc \
+        gui/CosyGui/cosyscene/filmsettings.cc \
+        gui/CosyGui/cosyscene/geometry.cc \
+        gui/CosyGui/cosyscene/material.cc \
+        gui/CosyGui/cosyscene/navigation.cc \
+        gui/CosyGui/cosyscene/point3d.cc \
+        gui/CosyGui/cosyscene/rendersettings.cc \
+        gui/CosyGui/cosyscene/save_load.cc \
+        gui/CosyGui/cosyscene/scene.cc \
+        gui/CosyGui/cosyscene/sunsky.cc \
+        gui/CosyGui/cosyscene/surfaceintegrator.cc \
+        gui/CosyGui/cosyscene/terrain.cc \
+        gui/CosyGui/cosyscene/vector3d.cc \
+        gui/CosyGui/cosyscene/water.cc \
+        gui/CosyGui/filmsettingswindow.cc \
+        gui/CosyGui/main.cc \
+        gui/CosyGui/mainwindow.cc \
+        gui/CosyGui/material-ui.cc \
+        gui/CosyGui/navigationwindow.cc \
+        gui/CosyGui/rendersettingswindow.cc \
+        gui/CosyGui/stashframe.cc \
+        gui/CosyGui/stashview.cc \
+        gui/CosyGui/stylesheetliveeditor.cc \
+        gui/CosyGui/sunskywindow.cc \
+        gui/CosyGui/terrainfitting.cc \
+        gui/CosyGui/terrainformation.cc \
+        gui/CosyGui/terrainwindow.cc \
+        gui/CosyGui/twinrendersettingswindow.cc \
+        gui/CosyGui/waterfitting.cc \
+        gui/CosyGui/waterwindow.cc
 
 COSY_UIFILES =  \
-        gui/CosyGui/ui_mainwindow.h \
-        gui/CosyGui/ui_terrainwindow.h \
-        gui/CosyGui/ui_stashview.h \
-        gui/CosyGui/ui_stashframe.h \
-        gui/CosyGui/ui_sunskywindow.h \
-        gui/CosyGui/ui_navigationwindow.h \
-        gui/CosyGui/ui_terrainformation.h \
-        gui/CosyGui/ui_terraintexturing.h \
-        gui/CosyGui/ui_filmsettingswindow.h \
-        gui/CosyGui/ui_twinrendersettingswindow.h \
-        gui/CosyGui/ui_rendersettingswindow.h \
-        gui/widgets/QuatschSourceEditor/ui_quatschsourceeditor.h \
+        gui/widgets/ColorPicker/ui_colorpickerwidget.h \
+        gui/widgets/ColorPicker/ui_colorpicker.h \
+        gui/widgets/FilenameEdit/ui_filenameedit.h \
         gui/widgets/Picohelp/ui_picohelpbrowser.h \
         gui/widgets/QtSunSkyEditor/ui_qtsunskyeditor.h \
-        gui/widgets/RenderWindow/ui_renderwindow.h \
+        gui/widgets/QuatschPresetEditor/ui_quatschpreseteditor.h \
+        gui/widgets/QuatschPreview/ui_quatschpreview.h \
+        gui/widgets/QuatschSourceEditor/ui_quatschsourceeditor.h \
         gui/widgets/RenderWidget/ui_renderwidget.h \
-        gui/widgets/ColorPicker/ui_colorpicker.h \
-        gui/widgets/ColorPicker/ui_colorpickerwidget.h \
-        gui/widgets/TristimulusColorPicker/ui_tristimuluscolorpicker.h \
+        gui/widgets/RenderWindow/ui_renderwindow.h \
+        gui/widgets/SpectralColorPicker/ui_importrawdatawizard.h \
         gui/widgets/SpectralColorPicker/ui_spectralcolorpicker.h \
+        gui/widgets/SpectralColorPicker/ui_spectralcurve.h \
         gui/widgets/SpectralColorPicker/ui_spectralslider.h \
         gui/widgets/SpectralColorPicker/ui_spectrumdisplay.h \
-        gui/widgets/SpectralColorPicker/ui_spectralcurve.h \
-        gui/widgets/SpectralColorPicker/ui_importrawdatawizard.h
+        gui/widgets/TristimulusColorPicker/ui_tristimuluscolorpicker.h \
+        gui/CosyGui/ui_filmsettingswindow.h \
+        gui/CosyGui/ui_mainwindow.h \
+        gui/CosyGui/ui_material-ui.h \
+        gui/CosyGui/ui_navigationwindow.h \
+        gui/CosyGui/ui_rendersettingswindow.h \
+        gui/CosyGui/ui_stashframe.h \
+        gui/CosyGui/ui_stashview.h \
+        gui/CosyGui/ui_stylesheetliveeditor.h \
+        gui/CosyGui/ui_sunskywindow.h \
+        gui/CosyGui/ui_terrainfitting.h \
+        gui/CosyGui/ui_terrainformation.h \
+        gui/CosyGui/ui_terrainwindow.h \
+        gui/CosyGui/ui_twinrendersettingswindow.h \
+        gui/CosyGui/ui_waterfitting.h \
+        gui/CosyGui/ui_waterwindow.h
 
 COSY_MOCFILES =  \
-        gui/CosyGui/moc_mainwindow.cpp \
-        gui/CosyGui/moc_terrainwindow.cpp \
-        gui/CosyGui/moc_stashview.cpp \
-        gui/CosyGui/moc_stashframe.cpp \
-        gui/CosyGui/moc_sunskywindow.cpp \
-        gui/CosyGui/moc_navigationwindow.cpp \
-        gui/CosyGui/moc_terrainformation.cpp \
-        gui/CosyGui/moc_terraintexturing.cpp \
-        gui/CosyGui/moc_filmsettingswindow.cpp \
-        gui/CosyGui/moc_twinrendersettingswindow.cpp \
-        gui/CosyGui/moc_rendersettingswindow.cpp \
-        gui/widgets/QuatschSourceEditor/moc_quatschsourceeditor.cpp \
+        gui/widgets/ColorPicker/moc_colorpickerwidget.cpp \
+        gui/widgets/ColorPicker/moc_colorpicker.cpp \
+        gui/widgets/FilenameEdit/moc_filenameedit.cpp \
         gui/widgets/Picohelp/moc_picohelpbrowser.cpp \
         gui/widgets/QtSunSkyEditor/moc_qtsunskyeditor.cpp \
-        gui/widgets/RenderWindow/moc_renderwindow.cpp \
+        gui/widgets/QuatschPresetEditor/moc_quatschpreseteditor.cpp \
+        gui/widgets/QuatschPreview/moc_quatschpreview.cpp \
+        gui/widgets/QuatschSourceEditor/moc_quatschsourceeditor.cpp \
         gui/widgets/RenderWidget/moc_renderwidget.cpp \
-        gui/widgets/ColorPicker/moc_colorpicker.cpp \
-        gui/widgets/ColorPicker/moc_colorpickerwidget.cpp \
-        gui/widgets/TristimulusColorPicker/moc_tristimuluscolorpicker.cpp \
+        gui/widgets/RenderWindow/moc_renderwindow.cpp \
+        gui/widgets/SpectralColorPicker/moc_importrawdatawizard.cpp \
         gui/widgets/SpectralColorPicker/moc_spectralcolorpicker.cpp \
+        gui/widgets/SpectralColorPicker/moc_spectralcurve.cpp \
         gui/widgets/SpectralColorPicker/moc_spectralslider.cpp \
         gui/widgets/SpectralColorPicker/moc_spectrumdisplay.cpp \
-        gui/widgets/SpectralColorPicker/moc_spectralcurve.cpp \
-        gui/widgets/SpectralColorPicker/moc_importrawdatawizard.cpp \
+        gui/widgets/TristimulusColorPicker/moc_tristimuluscolorpicker.cpp \
+        gui/CosyGui/moc_filmsettingswindow.cpp \
+        gui/CosyGui/moc_mainwindow.cpp \
+        gui/CosyGui/moc_material-ui.cpp \
+        gui/CosyGui/moc_navigationwindow.cpp \
+        gui/CosyGui/moc_rendersettingswindow.cpp \
+        gui/CosyGui/moc_stashframe.cpp \
+        gui/CosyGui/moc_stashview.cpp \
+        gui/CosyGui/moc_stylesheetliveeditor.cpp \
+        gui/CosyGui/moc_sunskywindow.cpp \
+        gui/CosyGui/moc_terrainfitting.cpp \
+        gui/CosyGui/moc_terrainformation.cpp \
+        gui/CosyGui/moc_terrainwindow.cpp \
+        gui/CosyGui/moc_twinrendersettingswindow.cpp \
+        gui/CosyGui/moc_waterfitting.cpp \
+        gui/CosyGui/moc_waterwindow.cpp \
         upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/moc_qtcolortriangle.cpp
 
 COSY_RESOURCEFILES =  \
         gui/CosyGui/qrc_resources.cpp
 
 COSY_INCLUDEPATH =  \
+        -Igui/CosyGui \
+        -Iauxiliary \
+        -Irenderer \
         -Iupstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt \
         -Igui/widgets \
         -Igui/widgets/QuatschSourceEditor \
-        -Igui/widgets/SimpleInputBox \
         -Igui/widgets/RenderWindow \
-        -Irenderer \
-        -Iauxiliary \
-        -Igui/widgets/QuatschSourceEditor \
+        -Igui/widgets/SimpleInputBox \
+        -I. \
+        -Igui/widgets/ColorPicker \
+        -Igui/widgets/FilenameEdit \
         -Igui/widgets/Picohelp \
         -Igui/widgets/QtSunSkyEditor \
         -Iredshift/include \
-        -Igui/widgets/RenderWindow \
+        -Igui/widgets/QuatschPresetEditor \
+        -Igui/cosygui \
+        -Igui/widgets/QuatschPreview \
         -Igui/widgets/RenderWidget \
-        -Igui/widgets/ColorPicker \
-        -Igui/widgets/TristimulusColorPicker \
-        -Iupstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src \
         -Igui/widgets/SpectralColorPicker \
-        -I. \
-        -Iredshift/include \
-        -Igui/CosyGui
+        -Igui/widgets/TristimulusColorPicker \
+        -Iupstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src
 
 COSY_BUILT_SOURCES = \
         $(COSY_UIFILES) \
