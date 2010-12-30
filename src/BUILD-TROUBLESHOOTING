@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------------
+libnoise undefinde references / buggy libtool support
+-------------------------------------------------------------------------------
+
+It seems that at least on Ubuntu, the libtool file "/usr/lib/libnoise.la" is
+buggy and incomplete. If you get undefined references involving libnoise, a
+quick and dirty solution is to remove/rename /usr/lib/libnoise.la and possibly
+/usr/lib/libnoise.a and then retry to build.
+
+
+
+-------------------------------------------------------------------------------
+/bin/sh pointing to /bin/dash on Ubuntu (and possibly others)
+-------------------------------------------------------------------------------
+
+Upon building you get messages like
+
+  eval: 1: libtool_args+=: not found
+  eval: 1: compile_command+=: not found
+  eval: 1: finalize_command+=: not found
+  eval: 1: libtool_args+=: not found
+  eval: 1: compile_command+=: not found
+  eval: 1: finalize_command+=: not found
+  eval: 1: libtool_args+=: not found
+  eval: 1: compile_command+=: not found
+  eval: 1: finalize_command+=: not found
+  eval: 1: libtool_args+=: not found
+
+or
+
+  libtool: link: gcc  XXX
+    /usr/lib/gcc/i486-linux-gnu/4.2.3/../../../../lib/crt1.o: In function
+  `_start':
+    (.text+0x18): undefined reference to `main'
+    collect2: ld returned 1 exit status
+    make[3]: *** [faked] Error 1
+
+. Then /bin/sh might be point to /bin/dash. With automake, this can cause
+some trouble. The quick and dirty fix is to re-link /bin/sh to /bin/bash,
+the quick and clean fix is to
+
+  ./config.status --recheck && make clean
+
+and then proceed with making.
