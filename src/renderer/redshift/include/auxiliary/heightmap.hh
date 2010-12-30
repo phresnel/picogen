@@ -35,33 +35,9 @@ enum PixelToHeightMode {
 };
 
 template <typename T> class Heightmap {
-        T *h;
-        unsigned int width_, height_;
-
-        static Uint32 getPixel (SDL_Surface *s, unsigned int x, unsigned int y) {
-                switch (s->format->BytesPerPixel) {
-                case 1: return ((Uint8*)s->pixels)[x + y*s->pitch];
-                case 2: return ((Uint16*)s->pixels)[x + y*(s->pitch/2)];
-                case 3: {
-                        unsigned int a = ((Uint8*)s->pixels)[3*x + y*s->pitch];
-                        unsigned int b = ((Uint8*)s->pixels)[1 + 3*x + y*s->pitch];
-                        unsigned int c = ((Uint8*)s->pixels)[2 + 3*x + y*s->pitch];
-                        return (a<<16) | (b<<8) | c;
-                        }
-                case 4: {
-                        unsigned int a = ((Uint8*)s->pixels)[    4*x + y*s->pitch];
-                        unsigned int b = ((Uint8*)s->pixels)[1 + 4*x + y*s->pitch];
-                        unsigned int c = ((Uint8*)s->pixels)[2 + 4*x + y*s->pitch];
-                        unsigned int d = ((Uint8*)s->pixels)[3 + 4*x + y*s->pitch];
-                        return (d<<24) | (a<<16) | (b<<8) | c;
-                        }
-                };
-                return 0;
-        }
-
-        Heightmap (Heightmap const &);
-        Heightmap & operator = (Heightmap const &) ;
 public:
+        enum WrapMode { Zero, Wrap, Clamp };
+
         Heightmap (const std::string &filename, PixelToHeightMode mode)
         : h(0), width_(0), height_(0)
         {
@@ -73,6 +49,14 @@ public:
 
         virtual ~Heightmap () {
                 delete [] h;
+        }
+
+        void setWrapMode (WrapMode mode) {
+                wrapMode_ = mode;
+        }
+
+        WrapMode wrapMode() const {
+                return wrapMode_;
         }
 
         bool load (const std::string &filename, PixelToHeightMode mode) {
@@ -114,7 +98,24 @@ public:
 
 
         T at (int x, int y) const {
-                if ((x<0) | (x>=(int)width_) | (y<0) | (y>=(int)height_)) return 0;
+                switch (wrapMode_) {
+                case Zero:
+                        if ((x<0) | (x>=(int)width_) | (y<0) | (y>=(int)height_))
+                                return 0;
+                        break;
+                case Wrap:
+                        while (x<0)        x+=width_;
+                        while (x>=width_)  x-=width_;
+                        while (y<0)        y+=height_;
+                        while (y>=height_) y-=height_;
+                        break;
+                case Clamp:
+                        if (x<0)        x=0;
+                        if (x>=width_)  x=width_-1;
+                        if (y<0)        y=0;
+                        if (y>=height_) y=height_-1;
+                        break;
+                }
                 return h[y*width_ + x];
         }
 
@@ -218,6 +219,35 @@ public:
         T nearest (T x, T y) const {
                 return at((int)(0.5 + x * (width_-1)), (int)(0.5 + y * (height_-1)));
         }
+
+private:
+        T *h;
+        unsigned int width_, height_;
+        WrapMode wrapMode_;
+
+        static Uint32 getPixel (SDL_Surface *s, unsigned int x, unsigned int y) {
+                switch (s->format->BytesPerPixel) {
+                case 1: return ((Uint8*)s->pixels)[x + y*s->pitch];
+                case 2: return ((Uint16*)s->pixels)[x + y*(s->pitch/2)];
+                case 3: {
+                        unsigned int a = ((Uint8*)s->pixels)[3*x + y*s->pitch];
+                        unsigned int b = ((Uint8*)s->pixels)[1 + 3*x + y*s->pitch];
+                        unsigned int c = ((Uint8*)s->pixels)[2 + 3*x + y*s->pitch];
+                        return (a<<16) | (b<<8) | c;
+                        }
+                case 4: {
+                        unsigned int a = ((Uint8*)s->pixels)[    4*x + y*s->pitch];
+                        unsigned int b = ((Uint8*)s->pixels)[1 + 4*x + y*s->pitch];
+                        unsigned int c = ((Uint8*)s->pixels)[2 + 4*x + y*s->pitch];
+                        unsigned int d = ((Uint8*)s->pixels)[3 + 4*x + y*s->pitch];
+                        return (d<<24) | (a<<16) | (b<<8) | c;
+                        }
+                };
+                return 0;
+        }
+
+        Heightmap (Heightmap const &);
+        Heightmap & operator = (Heightmap const &) ;
 };
 
 } }
