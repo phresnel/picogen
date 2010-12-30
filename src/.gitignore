@@ -105,6 +105,7 @@ BUILD/
 
 compile
 configure
+configure.lineno
 depcomp
 install-sh
 missing
