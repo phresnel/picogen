@@ -11,6 +11,7 @@ qrc_*
 *.lo
 *.la
 *.pro.user
+*-build-desktop
 renderer/redshift/bin/
 
 gui/widgets/QtQuatschEditor/build/Makefile
