@@ -8,7 +8,7 @@ FORMS   += $$PWD/quatschpreview.ui
 DEFINES += __STDC_LIMIT_MACROS
 QMAKE_CXXFLAGS += -fopenmp
 LIBS += \
-        $$PWD/../../../libredshift.a  \
+        $$PWD/../../../.libs/libredshift.a  \
         -lgomp \
         -lnoise \
         -lSDL_image -lSDL
