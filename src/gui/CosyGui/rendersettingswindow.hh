@@ -48,6 +48,9 @@ private:
         Ui::RenderSettingsWindow *ui;
         redshift::shared_ptr<cosyscene::RenderSettings> renderSettings_;
 
+        void setRenderSettingsByValue (cosyscene::RenderSettings const &,
+                                       bool blockSignals=true);
+
 private:
         void updateViews();
 
@@ -65,6 +68,10 @@ private slots:
         void on_widthSpin_editingFinished();
 
         void setAutoResolutionFromAction();
+
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 };
 
 #endif // RENDERSETTINGS_HH

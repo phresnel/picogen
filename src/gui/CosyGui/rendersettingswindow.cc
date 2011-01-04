@@ -24,6 +24,7 @@
 #include "rendersettingswindow.hh"
 #include "ui_rendersettingswindow.h"
 #include "scopedblocksignals.hh"
+#include "stashview.hh"
 
 #include <QMessageBox>
 #include <QMenu>
@@ -63,6 +64,15 @@ void RenderSettingsWindow::setRenderSettings (
         ScopedQtSignalBlock block(this, blockSignals);
         renderSettings_ = rs;
         updateViews();
+}
+
+void RenderSettingsWindow::setRenderSettingsByValue (
+        cosyscene::RenderSettings const &rs,
+        bool blockSignals)
+{
+    ScopedQtSignalBlock block(this, blockSignals);
+    *renderSettings_ = rs;
+    updateViews();
 }
 
 void RenderSettingsWindow::updateViews() {
@@ -255,3 +265,32 @@ void RenderSettingsWindow::setAutoResolutionFromAction() {
                 on_heightSpin_editingFinished();
         }
 }
+
+void RenderSettingsWindow::on_stashButton_clicked() {
+        renderSettings_->stash();
+}
+
+void RenderSettingsWindow::on_stashRestoreButton_clicked() {
+        StashView *sw = new StashView (this);
+        sw->addItems(renderSettings_->getStash());
+        if (QDialog::Accepted == sw->exec()) {
+                cosyscene::RenderSettings neo =
+                          sw->selectedData<cosyscene::RenderSettings>();
+                neo.setStash(sw->itemsToStash<cosyscene::RenderSettings>());
+                setRenderSettingsByValue(neo);
+        }
+}
+
+void RenderSettingsWindow::on_stashResetButton_clicked() {
+        if (!renderSettings_->getStash().contains_data(*renderSettings_)) {
+                switch (confirmReset (this)) {
+                case ConfirmReset_Abort: return;
+                case ConfirmReset_StashBeforeReset: renderSettings_->stash(); break;
+                case ConfirmReset_Reset: break;
+                }
+        }
+        cosyscene::RenderSettings resetted;
+        resetted.setStash(renderSettings_->getStash());
+        setRenderSettingsByValue(resetted);
+}
+
