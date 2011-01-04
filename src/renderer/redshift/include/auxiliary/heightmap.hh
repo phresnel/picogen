@@ -104,16 +104,16 @@ public:
                                 return 0;
                         break;
                 case Wrap:
-                        while (x<0)        x+=width_;
-                        while (x>=width_)  x-=width_;
-                        while (y<0)        y+=height_;
-                        while (y>=height_) y-=height_;
+                        while (x<0)             x+=width_;
+                        while (x>=(int)width_)  x-=width_;
+                        while (y<0)             y+=height_;
+                        while (y>=(int)height_) y-=height_;
                         break;
                 case Clamp:
-                        if (x<0)        x=0;
-                        if (x>=width_)  x=width_-1;
-                        if (y<0)        y=0;
-                        if (y>=height_) y=height_-1;
+                        if (x<0)             x=0;
+                        if (x>=(int)width_)  x=width_-1;
+                        if (y<0)             y=0;
+                        if (y>=(int)height_) y=height_-1;
                         break;
                 }
                 return h[y*width_ + x];

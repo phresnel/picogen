@@ -21,7 +21,7 @@
 #include "../../include/basictypes/scene.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/lazyquadtree.hh"
-#include "../../include/material/lambertian.hh"
+#include "../../include/bxdf/lambertian.hh"
 #include "../../include/random.hh"
 #include "../../include/pair.hh"
 

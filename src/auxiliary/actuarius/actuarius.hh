@@ -27,7 +27,12 @@ namespace actuarius {
                 const bool optional;
         };
         struct pop_optional_ {};
+
+#ifdef __GNUC__
+        namespace { pop_optional_  __attribute__((unused))  pop_optional; }
+#else
         namespace { pop_optional_ pop_optional; }
+#endif
 }
 
 #include "bits/enum.hh"

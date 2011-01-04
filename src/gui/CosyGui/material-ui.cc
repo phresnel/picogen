@@ -22,6 +22,7 @@
 #include "ui_material-ui.h"
 
 #include "cosyscene/material.hh"
+#include "scopedblocksignals.hh"
 
 Material::Material(QWidget *parent) :
     QWidget(parent),
@@ -69,9 +70,7 @@ void Material::setMaterial(
         redshift::shared_ptr<cosyscene::Material> m,
         bool blockSignals
 ) {
-        bool prevBlocked;
-        if (blockSignals)
-                prevBlocked = this->blockSignals(true);
+        ScopedQtSignalBlock blockMe (this, blockSignals);
         this->material = m;
         const cosyscene::Material &material = *this->material;
 
@@ -107,8 +106,5 @@ void Material::setMaterial(
                 ui->colorPicker->setColor(cpc);
                 break;
         }
-        }
-
-        if (blockSignals)
-                this->blockSignals(prevBlocked);
+        }        
 }

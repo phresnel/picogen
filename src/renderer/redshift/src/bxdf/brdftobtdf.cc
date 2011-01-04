@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/material/brdftobtdf.hh"
+#include "../../include/bxdf/brdftobtdf.hh"
 #include "../../include/random.hh"
 #include "../../include/sampling.hh"
 

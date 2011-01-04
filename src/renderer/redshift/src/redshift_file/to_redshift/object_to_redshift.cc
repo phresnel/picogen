@@ -39,7 +39,7 @@
 
 #include "redshift/include/material/matte.hh"
 #include "redshift/include/material/leaf0.hh"
-#include "redshift/include/material/brdftobtdf.hh"
+#include "redshift/include/bxdf/brdftobtdf.hh"
 #include "redshift/include/texture/constant.hh"
 #include "redshift/include/texture/image.hh"
 

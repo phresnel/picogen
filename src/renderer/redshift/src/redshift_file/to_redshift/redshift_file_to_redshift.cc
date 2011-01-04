@@ -115,8 +115,8 @@ namespace redshift{class RenderTarget;}
 #include "redshift/include/volume/list.hh"
 
 
-// material/
-#include "material/lambertian.hh"
+// bxdf/
+#include "bxdf/lambertian.hh"
 
 //}}}}}}}}}
 

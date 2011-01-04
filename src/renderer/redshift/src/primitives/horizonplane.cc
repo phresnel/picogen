@@ -20,7 +20,7 @@
 
 #include "../../include/primitives/horizonplane.hh"
 #include "../../include/basictypes/intersection.hh"
-#include "../../include/material/lambertian.hh"
+#include "../../include/bxdf/lambertian.hh"
 
 namespace redshift { namespace primitive {
 

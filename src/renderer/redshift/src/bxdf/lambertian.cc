@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "../../include/material/lambertian.hh"
+#include "../../include/bxdf/lambertian.hh"
 #include "../../include/random.hh"
 #include "../../include/sampling.hh"
 
