@@ -17,28 +17,13 @@ TARGET = CosyGui
 TEMPLATE = app
 SOURCES += main.cc \
     mainwindow.cc \
-    cosyscene/terrain.cc \
     terrainwindow.cc \
-    cosyscene/scene.cc \
-    cosyscene/save_load.cc \
     stashview.cc \
     stashframe.cc \
     sunskywindow.cc \
-    cosyscene/sunsky.cc \
-    cosyscene/geometry.cc \
-    cosyscene/vector3d.cc \
-    cosyscene/direction3d.cc \
     navigationwindow.cc \
-    cosyscene/navigation.cc \
-    cosyscene/point3d.cc \
     terrainformation.cc \
     material-ui.cc \
-    cosyscene/color.cc \
-    cosyscene/material.cc \
-    cosyscene/rendersettings.cc \
-    cosyscene/filmsettings.cc \
-    cosyscene/surfaceintegrator.cc \
-    cosyscene/water.cc \
     filmsettingswindow.cc \
     twinrendersettingswindow.cc \
     rendersettingswindow.cc \
@@ -47,45 +32,13 @@ SOURCES += main.cc \
     waterwindow.cc \
     waterfitting.cc
 HEADERS += mainwindow.hh \
-    cosyscene/stash.hh \
-    cosyscene/terrain.hh \
     terrainwindow.hh \
-    cosyscene/scene.hh \
-    cosyscene/serialization/stash.ser.hh \
-    cosyscene/serialization/scene.ser.hh \
-    cosyscene/serialization/terrain.ser.hh \
-    cosyscene/save_load.hh \
     stashview.hh \
     stashframe.hh \
     sunskywindow.hh \
-    cosyscene/sunsky.hh \
-    cosyscene/serialization/sunsky.ser.hh \
-    cosyscene/serialization/vector3d.ser.hh \
-    cosyscene/geometry.hh \
-    cosyscene/serialization/geometry.ser.hh \
-    cosyscene/serialization/vector3d.ser.hh \
-    cosyscene/serialization/direction3d.ser.hh \
-    cosyscene/vector3d.hh \
-    cosyscene/direction3d.hh \
     navigationwindow.hh \
-    cosyscene/navigation.hh \
-    cosyscene/serialization/navigation.ser.hh \
-    cosyscene/point3d.hh \
-    cosyscene/serialization/point3d.ser.hh \
     terrainformation.hh \
     material-ui.hh \
-    cosyscene/color.hh \
-    cosyscene/serialization/color.ser.hh \
-    cosyscene/material.hh \
-    cosyscene/serialization/material.ser.hh \
-    cosyscene/rendersettings.hh \
-    cosyscene/serialization/rendersettings.ser.hh \
-    cosyscene/filmsettings.hh \
-    cosyscene/serialization/filmsettings.ser.hh \
-    cosyscene/surfaceintegrator.hh \
-    cosyscene/serialization/surfaceintegrator.ser.hh \
-    cosyscene/water.hh \
-    cosyscene/serialization/water.ser.hh \
     filmsettingswindow.hh \
     twinrendersettingswindow.hh \
     rendersettingswindow.hh \
@@ -138,5 +91,6 @@ include(../widgets/ColorPicker/colorpicker.pri)
 include(../widgets/QuatschPreview/quatschpreview.pri)
 include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
 include(../widgets/FilenameEdit/filenameedit.pri)
+include(cosyscene.pri)
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release
