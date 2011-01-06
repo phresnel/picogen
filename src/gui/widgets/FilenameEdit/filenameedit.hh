@@ -37,10 +37,15 @@ public:
         QString filename() const;
         void setFilename (QString const &str);
 
+signals:
+        void textChanged();
+
+
 private:
         Ui::FilenameEdit *ui;
 
 private slots:
+        void on_lineEdit_textChanged(QString );
         void on_toolButton_clicked();
 };
 

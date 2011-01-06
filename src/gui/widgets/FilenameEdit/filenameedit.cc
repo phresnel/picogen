@@ -48,3 +48,7 @@ QString FilenameEdit::filename() const {
 void FilenameEdit::setFilename (QString const &str) {
         ui->lineEdit->setText(str);
 }
+
+void FilenameEdit::on_lineEdit_textChanged(QString ) {
+        emit textChanged();
+}

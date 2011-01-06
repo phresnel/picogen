@@ -40,11 +40,16 @@ class QuatschPresetEditor : public QWidget {
 
 public:
         explicit QuatschPresetEditor(QWidget *parent = 0);
+        explicit QuatschPresetEditor(bool showSourceEditor, QWidget *parent = 0);
         ~QuatschPresetEditor();
+
+        void showSourceEditor (bool show);
 
         void setPreset (std::string const &str);
         void setPreset (QString const &str);
         void setPreset (const char *str);
+
+        QString preset() const;
 
         std::string getPreprocessedCode() const;
         cosyscene::QuatschPreset toCosy() const;
@@ -56,7 +61,7 @@ signals:
 private:
         Ui::QuatschPresetEditor *ui;
 
-        std::string preset;
+        std::string preset_;
         quatsch_preprocessor::Declarations declarations;
 
         QWidget* createWidgetForDeclaration(
@@ -68,6 +73,8 @@ private:
         std::map<std::string, std::string> replacements() const;
 
 private slots:
+        void on_hidePreprocessedCode_clicked();
+        void on_preset_textChanged();
         void on_showPreview_clicked();
         void on_showPreprocessedCode_clicked();
         void childWidgetEditingFinished();

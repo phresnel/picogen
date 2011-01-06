@@ -13,13 +13,27 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1">
    <item>
-    <widget class="QPushButton" name="showPreprocessedCode">
-     <property name="text">
-      <string>PushButton</string>
-     </property>
-    </widget>
+    <widget class="QTextEdit" name="preset"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="hidePreprocessedCode">
+       <property name="text">
+        <string>Hide preprocessed code</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="showPreprocessedCode">
+       <property name="text">
+        <string>Show preprocessed code</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QTextEdit" name="preprocessedCode">
@@ -29,7 +43,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
@@ -49,7 +63,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>57</width>
+             <width>275</width>
              <height>57</height>
             </rect>
            </property>

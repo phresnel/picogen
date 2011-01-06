@@ -45,18 +45,24 @@ QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
 {
         ui->setupUi(this);
 
-        if (1) {
-                ui->preprocessedCode->setVisible(false);
-                ui->preprocessedCode->setEnabled(false);
-                ui->showPreprocessedCode->setVisible(false);
-                ui->showPreprocessedCode->setEnabled(false);
-        }
+        showSourceEditor(false);
 
         setPreset(
         "(($Filename:filename))\n"
         "(($Mode:enumeration={Bilinear, Cubic}))\n"
         "(frob <--(($Filename))--> [(($Mode))])"
         );
+}
+
+void QuatschPresetEditor::showSourceEditor (bool show) {
+        ui->preprocessedCode->setVisible(show);
+        ui->preprocessedCode->setEnabled(show);
+
+        ui->showPreprocessedCode->setVisible(show);
+        ui->showPreprocessedCode->setEnabled(show);
+
+        ui->preset->setVisible(show);
+        ui->preset->setEnabled(show);
 }
 
 QuatschPresetEditor::~QuatschPresetEditor() {
@@ -220,6 +226,12 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
         using quatsch_preprocessor::Declaration;
         using quatsch_preprocessor::Declarations;
 
+        if (ui->preset->isEnabled()) {
+                const bool blocked = ui->preset->blockSignals(true);
+                ui->preset->setText(QString::fromStdString(str));
+                ui->preset->blockSignals(blocked);
+        }
+
         // Creating a whole new layout. See
         // * http://bugreports.qt.nokia.com/browse/QTBUG-15990
         // * http://bugreports.qt.nokia.com/browse/QTBUG-15991
@@ -234,7 +246,7 @@ void QuatschPresetEditor::setPreset (std::string const &str) {
         }
         ui->scrollAreaWidgetContents->setLayout(newLayout);
 
-        preset = str;
+        preset_ = str;
         declarations = quatsch_preprocessor::findDeclarations(str);
         foreach (quatsch_preprocessor::Declaration decl, declarations) {
                 QWidget *widget = createWidgetForDeclaration(decl, this);
@@ -250,6 +262,10 @@ void QuatschPresetEditor::setPreset (QString const &str) {
 
 void QuatschPresetEditor::setPreset (const char *str) {
         setPreset (std::string(str));
+}
+
+QString QuatschPresetEditor::preset() const {
+        return QString::fromStdString(preset_);
 }
 
 void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
@@ -326,18 +342,19 @@ std::map<std::string, std::string> QuatschPresetEditor::replacements() const {
 }
 
 void QuatschPresetEditor::on_showPreprocessedCode_clicked() {
+        ui->preprocessedCode->setVisible(true);
         ui->preprocessedCode->setText(QString::fromStdString(
                 getPreprocessedCode()
         ));
 }
 
 std::string QuatschPresetEditor::getPreprocessedCode() const {
-        return quatsch_preprocessor::replace(preset, replacements());
+        return quatsch_preprocessor::replace(preset_, replacements());
 }
 
 cosyscene::QuatschPreset QuatschPresetEditor::toCosy() const {
         cosyscene::QuatschPreset qp;
-        qp.setPreset(this->preset);
+        qp.setPreset(this->preset_);
 
         typedef std::map<std::string, std::string>::const_iterator iter;
         const std::map<std::string, std::string> repls = replacements();
@@ -349,7 +366,7 @@ cosyscene::QuatschPreset QuatschPresetEditor::toCosy() const {
 
 void QuatschPresetEditor::on_showPreview_clicked() {
         try {
-                if (QString::fromStdString(preset).trimmed().length() == 0) {
+                if (QString::fromStdString(preset_).trimmed().length() == 0) {
                         ui->preview->setStatusText("Preset is empty.");
                         return;
                 }
@@ -359,4 +376,12 @@ void QuatschPresetEditor::on_showPreview_clicked() {
                 ui->preview->setStatusText("An error occurred: " +
                                            QString::fromAscii(ex.what()));
         }
+}
+
+void QuatschPresetEditor::on_preset_textChanged() {
+        setPreset (ui->preset->toPlainText());
+}
+
+void QuatschPresetEditor::on_hidePreprocessedCode_clicked() {
+        ui->preprocessedCode->setVisible(false);
 }
