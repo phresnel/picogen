@@ -18,40 +18,41 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESET_HH
-#define PARAMETRICPRESET_HH
+#ifndef PARAMETRICPRESETPOPUP_HH
+#define PARAMETRICPRESETPOPUP_HH
 
-#include <QString>
-#include "package.hh"
+#include <QDialog>
 
-class ParametricPreset
+namespace Ui {
+    class ParametricPresetPopup;
+}
+
+#include "parametricpreset.hh"
+
+class ParametricPresetPopup : public QDialog
 {
+        Q_OBJECT
+
 public:
-        ParametricPreset(Package package, QString path);
-        ParametricPreset() {}
+        explicit ParametricPresetPopup(QWidget *parent = 0);
+        ~ParametricPresetPopup();
 
-        Package package() const;
-        QString path() const;
+        ParametricPreset preset() const;
+        void setPreset (ParametricPreset const &);
 
-        QString name() const;
-        //void setName(QString);
-
-        QString title() const;
-        void setTitle(QString);
-
-        QString author() const;
-        void setAuthor(QString);
-
-        QString email() const;
-        void setEmail(QString);
-
-        QString preset() const;
-        void setPreset(QString);
-
-        void save() const;
 private:
-        Package package_;
-        QString path_, name_, title_, author_, email_, preset_;
+        Ui::ParametricPresetPopup *ui;
+        ParametricPreset preset_;
+
+private slots:
+        void on_email_editingFinished();
+        void on_author_editingFinished();
+        void on_title_editingFinished();
+
+        void on_buttonBox_rejected();
+        void on_buttonBox_accepted();
+
+        void on_preset_formationChanged();
 };
 
-#endif // PARAMETRICPRESET_HH
+#endif // PARAMETRICPRESETPOPUP_HH

@@ -18,40 +18,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESET_HH
-#define PARAMETRICPRESET_HH
+#ifndef DATABASE_HH
+#define DATABASE_HH
 
-#include <QString>
+#include <QVector>
+
 #include "package.hh"
+class ParametricPreset;
 
-class ParametricPreset
-{
+// A Database is the overlay of an arbitrary number of Packages, but basically
+// has the same interface as a Package.
+class Database {
 public:
-        ParametricPreset(Package package, QString path);
-        ParametricPreset() {}
+        void addPackage(Package const &);
 
-        Package package() const;
-        QString path() const;
-
-        QString name() const;
-        //void setName(QString);
-
-        QString title() const;
-        void setTitle(QString);
-
-        QString author() const;
-        void setAuthor(QString);
-
-        QString email() const;
-        void setEmail(QString);
-
-        QString preset() const;
-        void setPreset(QString);
-
-        void save() const;
+        void allParametricPresets(QVector<ParametricPreset> &ret,
+                                  bool clear=true) const;
+        QVector<ParametricPreset> allParametricPresets() const;
 private:
-        Package package_;
-        QString path_, name_, title_, author_, email_, preset_;
+        QVector<Package> packages_;
 };
 
-#endif // PARAMETRICPRESET_HH
+#endif // DATABASE_HH

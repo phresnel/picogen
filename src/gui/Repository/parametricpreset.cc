@@ -29,6 +29,12 @@ QString readAll (QString filename, quint64 maxlen=1024) {
         return QString (f.read(maxlen));
 }
 
+void writeAll (QString value, QString filename, quint64 maxlen=1024) {
+        QFile f(filename);
+        f.open (QFile::WriteOnly);
+        f.write(value.left(maxlen).toAscii());
+}
+
 
 ParametricPreset::ParametricPreset(Package package, QString path)
         : package_(package), path_(path)
@@ -36,6 +42,18 @@ ParametricPreset::ParametricPreset(Package package, QString path)
         QDir dir (path_);
         name_ = path_.split("/").last();
         title_ = readAll (dir.absolutePath() + "/title");
+        author_ = readAll (dir.absolutePath() + "/author");
+        email_ = readAll (dir.absolutePath() + "/email");
+        preset_ = readAll (dir.absolutePath() + "/preset");
+}
+
+
+void ParametricPreset::save() const {
+        QDir dir (path_);
+        writeAll (title_, dir.absolutePath() + "/title");
+        writeAll (author_, dir.absolutePath() + "/author");
+        writeAll (email_, dir.absolutePath() + "/email");
+        writeAll (preset_, dir.absolutePath() + "/preset");
 }
 
 Package ParametricPreset::package() const {
@@ -56,4 +74,32 @@ QString ParametricPreset::title() const {
 
 QString ParametricPreset::author() const {
         return author_;
+}
+
+QString ParametricPreset::email() const {
+        return email_;
+}
+
+QString ParametricPreset::preset() const {
+        return preset_;
+}
+
+/*void ParametricPreset::setName(QString s) {
+        name_ = s;
+}*/
+
+void ParametricPreset::setTitle(QString s) {
+        title_ = s;
+}
+
+void ParametricPreset::setAuthor(QString s){
+        author_ = s;
+}
+
+void ParametricPreset::setEmail(QString s) {
+        email_ = s;
+}
+
+void ParametricPreset::setPreset(QString s) {
+        preset_ = s;
 }

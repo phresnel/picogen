@@ -18,40 +18,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESET_HH
-#define PARAMETRICPRESET_HH
-
-#include <QString>
+#include "database.hh"
 #include "package.hh"
+#include "parametricpreset.hh"
 
-class ParametricPreset
-{
-public:
-        ParametricPreset(Package package, QString path);
-        ParametricPreset() {}
+void Database::addPackage(Package const &package) {
+        packages_.push_back(package);
+}
 
-        Package package() const;
-        QString path() const;
+void Database::allParametricPresets(
+        QVector<ParametricPreset> &ret,
+        bool clear
+) const {
+        if (clear) ret.clear();
+        foreach (Package pack, packages_) {
+                pack.allParametricPresets(ret, false);
+        }
+}
 
-        QString name() const;
-        //void setName(QString);
-
-        QString title() const;
-        void setTitle(QString);
-
-        QString author() const;
-        void setAuthor(QString);
-
-        QString email() const;
-        void setEmail(QString);
-
-        QString preset() const;
-        void setPreset(QString);
-
-        void save() const;
-private:
-        Package package_;
-        QString path_, name_, title_, author_, email_, preset_;
-};
-
-#endif // PARAMETRICPRESET_HH
+QVector<ParametricPreset> Database::allParametricPresets() const {
+        QVector<ParametricPreset> ret;
+        allParametricPresets(ret);
+        return ret;
+}

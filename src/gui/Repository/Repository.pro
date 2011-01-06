@@ -13,10 +13,27 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cc \
     package.cc \
-    parametricpreset.cc
+    parametricpreset.cc \
+    parametricpresetsui.cc \
+    database.cc \
+    parametricpresetui.cc \
+    parametricpresetpopup.cc
 
 HEADERS  += mainwindow.hh \
     package.hh \
-    parametricpreset.hh
+    parametricpreset.hh \
+    parametricpresetsui.hh \
+    database.hh \
+    shared_ptr.hh \
+    parametricpresetui.hh \
+    parametricpresetpopup.hh
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    parametricpresetsui.ui \
+    parametricpresetui.ui \
+    parametricpresetpopup.ui
+
+include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
+include(../widgets/QuatschPreview/quatschpreview.pri)
+include(../widgets/FilenameEdit/filenameedit.pri)
+include(../CosyGui/cosyscene.pri)

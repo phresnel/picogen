@@ -18,40 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESET_HH
-#define PARAMETRICPRESET_HH
+#ifndef SHARED_PTR_HH
+#define SHARED_PTR_HH
 
-#include <QString>
-#include "package.hh"
+#include <boost/shared_ptr.hpp>
+using boost::shared_ptr;
 
-class ParametricPreset
-{
-public:
-        ParametricPreset(Package package, QString path);
-        ParametricPreset() {}
-
-        Package package() const;
-        QString path() const;
-
-        QString name() const;
-        //void setName(QString);
-
-        QString title() const;
-        void setTitle(QString);
-
-        QString author() const;
-        void setAuthor(QString);
-
-        QString email() const;
-        void setEmail(QString);
-
-        QString preset() const;
-        void setPreset(QString);
-
-        void save() const;
-private:
-        Package package_;
-        QString path_, name_, title_, author_, email_, preset_;
-};
-
-#endif // PARAMETRICPRESET_HH
+#endif // SHARED_PTR_HH

@@ -35,11 +35,10 @@ QString Package::root() const {
         return root_;
 }
 
-//
-void Package::allParametricPresets(QVector<ParametricPreset> &ret) const {
+void Package::allParametricPresets(QVector<ParametricPreset> &ret, bool clear) const {
         QDir folder  (QDir(root_).absolutePath()+"/parametric-presets");
 
-        ret.clear();
+        if (clear) ret.clear();
         foreach (QString str,
                  folder.entryList(QDir::NoDotAndDotDot | QDir::AllDirs))
         {
@@ -48,6 +47,7 @@ void Package::allParametricPresets(QVector<ParametricPreset> &ret) const {
                                           folder.absolutePath() + "/" + str));
         }
 }
+
 QVector<ParametricPreset> Package::allParametricPresets() const {
         QVector<ParametricPreset> ret;
         allParametricPresets(ret);

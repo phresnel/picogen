@@ -18,40 +18,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESET_HH
-#define PARAMETRICPRESET_HH
+#ifndef PARAMETRICPRESETUI_HH
+#define PARAMETRICPRESETUI_HH
 
-#include <QString>
-#include "package.hh"
+#include <QWidget>
+#include "parametricpreset.hh"
 
-class ParametricPreset
+namespace Ui {
+    class ParametricPresetUi;
+}
+
+class ParametricPresetUi : public QWidget
 {
+        Q_OBJECT
+
 public:
-        ParametricPreset(Package package, QString path);
-        ParametricPreset() {}
+        explicit ParametricPresetUi(QWidget *parent = 0);
+        explicit ParametricPresetUi(ParametricPreset const &, QWidget *parent = 0);
+        ~ParametricPresetUi();
 
-        Package package() const;
-        QString path() const;
+        ParametricPreset preset() const;
+        void setPreset (ParametricPreset const &);
 
-        QString name() const;
-        //void setName(QString);
-
-        QString title() const;
-        void setTitle(QString);
-
-        QString author() const;
-        void setAuthor(QString);
-
-        QString email() const;
-        void setEmail(QString);
-
-        QString preset() const;
-        void setPreset(QString);
-
-        void save() const;
 private:
-        Package package_;
-        QString path_, name_, title_, author_, email_, preset_;
+        Ui::ParametricPresetUi *ui;
+        ParametricPreset preset_;
+
+private slots:
+        void on_toolButton_clicked();
 };
 
-#endif // PARAMETRICPRESET_HH
+#endif // PARAMETRICPRESETUI_HH

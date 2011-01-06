@@ -18,40 +18,37 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESET_HH
-#define PARAMETRICPRESET_HH
+#ifndef PARAMETRICPRESETSUI_HH
+#define PARAMETRICPRESETSUI_HH
 
-#include <QString>
-#include "package.hh"
+#include <QWidget>
+#include "database.hh"
+#include "shared_ptr.hh"
 
-class ParametricPreset
+namespace Ui {
+    class ParametricPresetsUi;
+}
+
+class ParametricPresetsUi : public QWidget
 {
+        Q_OBJECT
+
 public:
-        ParametricPreset(Package package, QString path);
-        ParametricPreset() {}
+        explicit ParametricPresetsUi(QWidget *parent = 0);
+        ~ParametricPresetsUi();
 
-        Package package() const;
-        QString path() const;
+        void setDatabase (shared_ptr<Database>);
 
-        QString name() const;
-        //void setName(QString);
-
-        QString title() const;
-        void setTitle(QString);
-
-        QString author() const;
-        void setAuthor(QString);
-
-        QString email() const;
-        void setEmail(QString);
-
-        QString preset() const;
-        void setPreset(QString);
-
-        void save() const;
 private:
-        Package package_;
-        QString path_, name_, title_, author_, email_, preset_;
+        Ui::ParametricPresetsUi *ui;
+        shared_ptr<Database> database_;
+
+private:
+        void resyncView();
+        void addPresetToView(ParametricPreset const&);
+
+private slots:
+        //void on_saveButton_clicked();
 };
 
-#endif // PARAMETRICPRESET_HH
+#endif // PARAMETRICPRESETSUI_HH

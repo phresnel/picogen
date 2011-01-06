@@ -23,6 +23,7 @@
 
 #include "package.hh"
 #include "parametricpreset.hh"
+#include "shared_ptr.hh"
 
 #include <QDir>
 #include <QMessageBox>
@@ -33,15 +34,19 @@ MainWindow::MainWindow(QWidget *parent) :
 {
         ui->setupUi(this);
 
-        Package pack ("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack");
+        shared_ptr<Database> db(new Database());
+
+        db->addPackage (Package("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack"));
         //pack.allParametricPresets();
 
-        foreach (ParametricPreset pp, pack.allParametricPresets()) {
+        ui->parametricPresets->setDatabase(db);
+
+        /*foreach (ParametricPreset pp, pack.allParametricPresets()) {
                 QMessageBox::warning(this, "",
                         "name: " + pp.name() + "\n"
                         "title: " + pp.title() + "\n"
                 );
-        }
+        }*/
 }
 
 MainWindow::~MainWindow() {

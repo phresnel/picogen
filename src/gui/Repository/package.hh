@@ -30,7 +30,8 @@ public:
         Package(QString root);
         Package() {}
 
-        void allParametricPresets(QVector<ParametricPreset> &ret) const;
+        void allParametricPresets(QVector<ParametricPreset> &ret,
+                                  bool clear=true) const;
         QVector<ParametricPreset> allParametricPresets() const;
 
         QString root() const;
