@@ -23,61 +23,109 @@
 #include <QDir>
 #include <QFile>
 
-QString readAll (QString filename, quint64 maxlen=1024) {
+Entity::Entity(Package package, QString path)
+        : package_(package), path_(path)
+{
+        reload();
+}
+
+Entity::Entity() {
+}
+
+QString Entity::readAll (QString filename, quint64 maxlen) const {
+        filename = QDir(path_).absolutePath() + "/" + filename;
+
         QFile f(filename);
         f.open(QFile::ReadOnly);
         return QString (f.read(maxlen));
 }
 
-void writeAll (QString value, QString filename, quint64 maxlen=1024) {
+void Entity::writeAll (QString value, QString filename, quint64 maxlen) const {
+        filename = QDir(path_).absolutePath() + "/" + filename;
+
         QFile f(filename);
         f.open (QFile::WriteOnly);
         f.write(value.left(maxlen).toAscii());
 }
 
-
-ParametricPreset::ParametricPreset(Package package, QString path)
-        : package_(package), path_(path)
-{
-        QDir dir (path_);
-        name_ = path_.split("/").last();
-        title_ = readAll (dir.absolutePath() + "/title");
-        author_ = readAll (dir.absolutePath() + "/author");
-        email_ = readAll (dir.absolutePath() + "/email");
-        preset_ = readAll (dir.absolutePath() + "/preset");
-}
-
-
-void ParametricPreset::save() const {
-        QDir dir (path_);
-        writeAll (title_, dir.absolutePath() + "/title");
-        writeAll (author_, dir.absolutePath() + "/author");
-        writeAll (email_, dir.absolutePath() + "/email");
-        writeAll (preset_, dir.absolutePath() + "/preset");
-}
-
-Package ParametricPreset::package() const {
-        return package_;
-}
-
-QString ParametricPreset::path() const {
-        return path_;
-}
-
-QString ParametricPreset::name() const {
-        return name_;
-}
-
-QString ParametricPreset::title() const {
+QString Entity::title() const {
         return title_;
 }
 
-QString ParametricPreset::author() const {
+QString Entity::author() const {
         return author_;
 }
 
-QString ParametricPreset::email() const {
+QString Entity::email() const {
         return email_;
+}
+
+QString Entity::homepage() const {
+        return homepage_;
+}
+
+Package Entity::package() const {
+        return package_;
+}
+
+QString Entity::path() const {
+        return path_;
+}
+
+QString Entity::name() const {
+        return name_;
+}
+
+void Entity::setTitle(QString s) {
+        title_ = s;
+}
+
+void Entity::setAuthor(QString s){
+        author_ = s;
+}
+
+void Entity::setEmail(QString s) {
+        email_ = s;
+}
+
+void Entity::setHomepage(QString s) {
+        homepage_ = s;
+}
+
+void Entity::save() const {
+        writeAll (title_, "title");
+        writeAll (author_, "author");
+        writeAll (email_, "email");
+}
+
+void Entity::reload() {
+        title_ = readAll ("title");
+        author_ = readAll ("author");
+        email_ = readAll ("email");
+}
+
+
+
+
+
+ParametricPreset::ParametricPreset(Package package, QString path)
+        : Entity (package, path)
+{
+        reload();
+}
+
+ParametricPreset::ParametricPreset() {
+}
+
+void ParametricPreset::reload() {
+        Entity::reload();
+        preset_ = readAll ("preset");
+}
+
+
+void ParametricPreset::save() const {        
+        Entity::save();
+        writeAll (preset_, "preset");
 }
 
 QString ParametricPreset::preset() const {
@@ -87,18 +135,6 @@ QString ParametricPreset::preset() const {
 /*void ParametricPreset::setName(QString s) {
         name_ = s;
 }*/
-
-void ParametricPreset::setTitle(QString s) {
-        title_ = s;
-}
-
-void ParametricPreset::setAuthor(QString s){
-        author_ = s;
-}
-
-void ParametricPreset::setEmail(QString s) {
-        email_ = s;
-}
 
 void ParametricPreset::setPreset(QString s) {
         preset_ = s;

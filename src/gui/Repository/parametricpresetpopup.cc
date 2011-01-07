@@ -41,6 +41,7 @@ ParametricPreset ParametricPresetPopup::preset() const {
 void ParametricPresetPopup::setPreset (ParametricPreset const &pp) {
         preset_ = pp;
         ui->title->setText(pp.title());
+        ui->email->setText(pp.email());
         ui->author->setText(pp.author());
         ui->preset->setPreset(pp.preset());
 }

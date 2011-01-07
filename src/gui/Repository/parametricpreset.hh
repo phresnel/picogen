@@ -24,17 +24,10 @@
 #include <QString>
 #include "package.hh"
 
-class ParametricPreset
-{
+class Entity {
 public:
-        ParametricPreset(Package package, QString path);
-        ParametricPreset() {}
-
-        Package package() const;
-        QString path() const;
-
-        QString name() const;
-        //void setName(QString);
+        Entity(Package package, QString path);
+        Entity();
 
         QString title() const;
         void setTitle(QString);
@@ -45,13 +38,43 @@ public:
         QString email() const;
         void setEmail(QString);
 
+        QString homepage() const;
+        void setHomepage(QString);
+
+        Package package() const;
+        QString path() const;
+
+        QString name() const;
+        //void setName(QString);
+
+        virtual void save() const;
+        virtual void reload();
+
+protected:
+        QString readAll (QString filename, quint64 maxlen=1024) const;
+        void writeAll (QString value, QString filename, quint64 maxlen=1024) const;
+
+private:
+        Package package_;
+        QString path_, name_;
+        QString title_, author_, email_, homepage_;
+};
+
+
+
+class ParametricPreset : public Entity
+{
+public:
+        ParametricPreset(Package package, QString path);
+        ParametricPreset();
+
         QString preset() const;
         void setPreset(QString);
 
-        void save() const;
+        virtual void save() const;
+        virtual void reload();
 private:
-        Package package_;
-        QString path_, name_, title_, author_, email_, preset_;
+        QString preset_;
 };
 
 #endif // PARAMETRICPRESET_HH
