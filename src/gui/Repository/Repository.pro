@@ -16,7 +16,8 @@ SOURCES += main.cpp\
     parametricpresetsui.cc \
     database.cc \
     parametricpresetui.cc \
-    parametricpresetpopup.cc
+    parametricpresetpopup.cc \
+    entityui.cc
 
 HEADERS  += mainwindow.hh \
     package.hh \
@@ -25,12 +26,14 @@ HEADERS  += mainwindow.hh \
     database.hh \
     shared_ptr.hh \
     parametricpresetui.hh \
-    parametricpresetpopup.hh
+    parametricpresetpopup.hh \
+    entityui.hh
 
 FORMS    += mainwindow.ui \
     parametricpresetsui.ui \
     parametricpresetui.ui \
-    parametricpresetpopup.ui
+    parametricpresetpopup.ui \
+    entityui.ui
 
 include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
 include(../widgets/QuatschPreview/quatschpreview.pri)

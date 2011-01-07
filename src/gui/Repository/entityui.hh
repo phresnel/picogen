@@ -18,41 +18,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "parametricpresetpopup.hh"
-#include "ui_parametricpresetpopup.h"
+#ifndef ENTITYUI_HH
+#define ENTITYUI_HH
 
-ParametricPresetPopup::ParametricPresetPopup(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ParametricPresetPopup)
+#include <QWidget>
+#include "parametricpreset.hh"
+
+namespace Ui {
+        class EntityUi;
+}
+
+class EntityUi : public QWidget
 {
-        ui->setupUi(this);
-        setPreset(ParametricPreset());
-        ui->preset->showSourceEditor(true);
-}
+        Q_OBJECT
 
-ParametricPresetPopup::~ParametricPresetPopup() {
-        delete ui;
-}
+public:
+        explicit EntityUi(QWidget *parent = 0);
+        ~EntityUi();
 
-ParametricPreset ParametricPresetPopup::preset() const {
-        return preset_;
-}
+        void setEntity (Entity *);
 
-void ParametricPresetPopup::setPreset (ParametricPreset const &pp) {
-        preset_ = pp;        
-        ui->entity->setEntity (&preset_);
-        ui->preset->setPreset(pp.preset());
-}
+private:
+        Ui::EntityUi *ui;
+        Entity *entity_;
 
-void ParametricPresetPopup::on_buttonBox_accepted() {
-        accept();
-        preset_.save();
-}
+private slots:
+        void on_email_editingFinished();
+        void on_author_editingFinished();
+        void on_title_editingFinished();
+        void on_homepage_editingFinished();
+};
 
-void ParametricPresetPopup::on_buttonBox_rejected() {
-        reject();
-}
-
-void ParametricPresetPopup::on_preset_formationChanged() {
-        preset_.setPreset(ui->preset->preset());
-}
+#endif // ENTITYUI_HH

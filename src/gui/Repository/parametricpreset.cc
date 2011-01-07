@@ -41,11 +41,18 @@ QString Entity::readAll (QString filename, quint64 maxlen) const {
 }
 
 void Entity::writeAll (QString value, QString filename, quint64 maxlen) const {
+
         filename = QDir(path_).absolutePath() + "/" + filename;
 
         QFile f(filename);
-        f.open (QFile::WriteOnly);
-        f.write(value.left(maxlen).toAscii());
+
+        if (value.simplified() != "") {
+                f.open (QFile::WriteOnly);
+                f.write(value.left(maxlen).toAscii());
+        } else {
+                if (f.exists())
+                        f.remove();
+        }
 }
 
 QString Entity::title() const {
@@ -96,12 +103,14 @@ void Entity::save() const {
         writeAll (title_, "title");
         writeAll (author_, "author");
         writeAll (email_, "email");
+        writeAll (homepage_, "homepage");
 }
 
 void Entity::reload() {
         title_ = readAll ("title");
         author_ = readAll ("author");
         email_ = readAll ("email");
+        homepage_ = readAll ("homepage");
 }
 
 

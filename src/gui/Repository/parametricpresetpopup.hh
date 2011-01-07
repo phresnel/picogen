@@ -45,9 +45,6 @@ private:
         ParametricPreset preset_;
 
 private slots:
-        void on_email_editingFinished();
-        void on_author_editingFinished();
-        void on_title_editingFinished();
 
         void on_buttonBox_rejected();
         void on_buttonBox_accepted();
