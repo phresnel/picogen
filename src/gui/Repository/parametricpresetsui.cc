@@ -26,6 +26,7 @@
 #include "parametricpresetsui.hh"
 #include "ui_parametricpresetsui.h"
 
+#include <QDebug>
 
 ParametricPresetsUi::ParametricPresetsUi(QWidget *parent) :
     QWidget(parent),

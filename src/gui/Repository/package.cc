@@ -21,14 +21,19 @@
 #include "package.hh"
 #include <stdexcept>
 #include <QDir>
+#include <QMessageBox>
 #include "parametricpreset.hh"
 
 
 Package::Package(QString root) : root_(root) {
-        if (!QDir(root).exists())
-                throw std::runtime_error("package root '"
-                                         + root.toStdString()
-                                         + "' does not exist");
+        if (!QDir(root).exists()) {
+                const std::string msg = "Package \""
+                        + root.toStdString()
+                        + "\" not found, "
+                        + "you won't see any items from that package.";
+                QMessageBox::critical(0, "Package not found",
+                                      QString::fromStdString(msg));
+        }
 }
 
 QString Package::root() const {

@@ -27,20 +27,20 @@
 
 #include <QDir>
 #include <QMessageBox>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
         ui->setupUi(this);
-
         shared_ptr<Database> db(new Database());
 
-        db->addPackage (Package("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack"));
+        const Package root("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack");
+
+        db->addPackage (root);
         //pack.allParametricPresets();
-
         ui->parametricPresets->setDatabase(db);
-
         /*foreach (ParametricPreset pp, pack.allParametricPresets()) {
                 QMessageBox::warning(this, "",
                         "name: " + pp.name() + "\n"

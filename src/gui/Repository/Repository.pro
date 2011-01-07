@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += core gui
-
 TARGET = Repository
 TEMPLATE = app
 
