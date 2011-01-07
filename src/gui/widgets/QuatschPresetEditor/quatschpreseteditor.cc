@@ -55,14 +55,17 @@ QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
 }
 
 void QuatschPresetEditor::showSourceEditor (bool show) {
-        ui->preprocessedCode->setVisible(show);
+        /*ui->preprocessedCode->setVisible(show);
         ui->preprocessedCode->setEnabled(show);
 
         ui->showPreprocessedCode->setVisible(show);
         ui->showPreprocessedCode->setEnabled(show);
 
         ui->preset->setVisible(show);
-        ui->preset->setEnabled(show);
+        ui->preset->setEnabled(show);*/
+
+        ui->codebox->setVisible(show);
+        ui->codebox->setEnabled(show);
 }
 
 QuatschPresetEditor::~QuatschPresetEditor() {

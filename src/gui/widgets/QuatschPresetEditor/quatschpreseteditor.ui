@@ -6,40 +6,52 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>579</width>
+    <height>349</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1">
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
-    <widget class="QTextEdit" name="preset"/>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QPushButton" name="hidePreprocessedCode">
-       <property name="text">
-        <string>Hide preprocessed code</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="showPreprocessedCode">
-       <property name="text">
-        <string>Show preprocessed code</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QTextEdit" name="preprocessedCode">
-     <property name="readOnly">
-      <bool>true</bool>
+    <widget class="QGroupBox" name="codebox">
+     <property name="title">
+      <string>Code</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTextEdit" name="preset"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="hidePreprocessedCode">
+          <property name="text">
+           <string>Hide preprocessed code</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showPreprocessedCode">
+          <property name="text">
+           <string>Show preprocessed code</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="preprocessedCode">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -63,8 +75,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>275</width>
-             <height>57</height>
+             <width>179</width>
+             <height>312</height>
             </rect>
            </property>
           </widget>
