@@ -18,25 +18,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PACKAGE_HH
-#define PACKAGE_HH
+#ifndef FRAGMENTWIDGET_HH
+#define FRAGMENTWIDGET_HH
 
-#include <QString>
-#include <QVector>
-class ParametricPreset;
-class Package
+#include <QWidget>
+#include "parametricpreset.hh"
+
+namespace Ui {
+        class FragmentWidget;
+}
+
+namespace picogen_repository {
+
+class FragmentWidget : public QWidget
 {
+        Q_OBJECT
+
 public:
-        Package(QString root);
-        Package() {}
+        explicit FragmentWidget(QWidget *parent = 0);
+        ~FragmentWidget();
 
-        void allParametricPresets(QVector<ParametricPreset> &ret,
-                                  bool clear=true) const;
-        QVector<ParametricPreset> allParametricPresets() const;
+        void setEntity (Fragment *);
 
-        QString root() const;
 private:
-        QString root_;
+        Ui::FragmentWidget *ui;
+        Fragment *entity_;
+
+private slots:
+        void on_email_editingFinished();
+        void on_author_editingFinished();
+        void on_title_editingFinished();
+        void on_homepage_editingFinished();
 };
 
-#endif // PACKAGE_HH
+} // namespace picogen_repository {
+
+#endif // FRAGMENTWIDGET_HH

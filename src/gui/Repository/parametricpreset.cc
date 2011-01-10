@@ -23,16 +23,18 @@
 #include <QDir>
 #include <QFile>
 
-Entity::Entity(Package package, QString path)
+namespace picogen_repository {
+
+Fragment::Fragment(Collection package, QString path)
         : package_(package), path_(path)
 {
         reload();
 }
 
-Entity::Entity() {
+Fragment::Fragment() {
 }
 
-QString Entity::readAll (QString filename, quint64 maxlen) const {
+QString Fragment::readAll (QString filename, quint64 maxlen) const {
         filename = QDir(path_).absolutePath() + "/" + filename;
 
         QFile f(filename);
@@ -40,7 +42,7 @@ QString Entity::readAll (QString filename, quint64 maxlen) const {
         return QString (f.read(maxlen));
 }
 
-void Entity::writeAll (QString value, QString filename, quint64 maxlen) const {
+void Fragment::writeAll (QString value, QString filename, quint64 maxlen) const {
 
         filename = QDir(path_).absolutePath() + "/" + filename;
 
@@ -55,58 +57,58 @@ void Entity::writeAll (QString value, QString filename, quint64 maxlen) const {
         }
 }
 
-QString Entity::title() const {
+QString Fragment::title() const {
         return title_;
 }
 
-QString Entity::author() const {
+QString Fragment::author() const {
         return author_;
 }
 
-QString Entity::email() const {
+QString Fragment::email() const {
         return email_;
 }
 
-QString Entity::homepage() const {
+QString Fragment::homepage() const {
         return homepage_;
 }
 
-Package Entity::package() const {
+Collection Fragment::package() const {
         return package_;
 }
 
-QString Entity::path() const {
+QString Fragment::path() const {
         return path_;
 }
 
-QString Entity::name() const {
+QString Fragment::name() const {
         return name_;
 }
 
-void Entity::setTitle(QString s) {
+void Fragment::setTitle(QString s) {
         title_ = s;
 }
 
-void Entity::setAuthor(QString s){
+void Fragment::setAuthor(QString s){
         author_ = s;
 }
 
-void Entity::setEmail(QString s) {
+void Fragment::setEmail(QString s) {
         email_ = s;
 }
 
-void Entity::setHomepage(QString s) {
+void Fragment::setHomepage(QString s) {
         homepage_ = s;
 }
 
-void Entity::save() const {
+void Fragment::save() const {
         writeAll (title_, "title");
         writeAll (author_, "author");
         writeAll (email_, "email");
         writeAll (homepage_, "homepage");
 }
 
-void Entity::reload() {
+void Fragment::reload() {
         title_ = readAll ("title");
         author_ = readAll ("author");
         email_ = readAll ("email");
@@ -117,8 +119,8 @@ void Entity::reload() {
 
 
 
-ParametricPreset::ParametricPreset(Package package, QString path)
-        : Entity (package, path)
+ParametricPreset::ParametricPreset(Collection package, QString path)
+        : Fragment (package, path)
 {
         reload();
 }
@@ -127,13 +129,13 @@ ParametricPreset::ParametricPreset() {
 }
 
 void ParametricPreset::reload() {
-        Entity::reload();
+        Fragment::reload();
         preset_ = readAll ("preset");
 }
 
 
 void ParametricPreset::save() const {        
-        Entity::save();
+        Fragment::save();
         writeAll (preset_, "preset");
 }
 
@@ -148,3 +150,5 @@ QString ParametricPreset::preset() const {
 void ParametricPreset::setPreset(QString s) {
         preset_ = s;
 }
+
+} // namespace picogen_repository {

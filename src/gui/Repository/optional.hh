@@ -18,37 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESETSUI_HH
-#define PARAMETRICPRESETSUI_HH
+#ifndef OPTIONAL_HH
+#define OPTIONAL_HH
 
-#include <QWidget>
-#include "database.hh"
-#include "shared_ptr.hh"
+#include <boost/optional.hpp>
 
-namespace Ui {
-    class ParametricPresetsUi;
-}
+namespace picogen_repository {
+        using boost::optional;
+} // namespace picogen_repository {
 
-class ParametricPresetsUi : public QWidget
-{
-        Q_OBJECT
-
-public:
-        explicit ParametricPresetsUi(QWidget *parent = 0);
-        ~ParametricPresetsUi();
-
-        void setDatabase (shared_ptr<Database>);
-
-private:
-        Ui::ParametricPresetsUi *ui;
-        shared_ptr<Database> database_;
-
-private:
-        void resyncView();
-        void addPresetToView(ParametricPreset const&);
-
-private slots:
-        //void on_saveButton_clicked();
-};
-
-#endif // PARAMETRICPRESETSUI_HH
+#endif // OPTIONAL_HH

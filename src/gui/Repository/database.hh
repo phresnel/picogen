@@ -23,20 +23,25 @@
 
 #include <QVector>
 
-#include "package.hh"
+#include "collection.hh"
+
+namespace picogen_repository {
+
 class ParametricPreset;
 
 // A Database is the overlay of an arbitrary number of Packages, but basically
 // has the same interface as a Package.
 class Database {
 public:
-        void addPackage(Package const &);
+        void addCollection(Collection const &);
 
         void allParametricPresets(QVector<ParametricPreset> &ret,
                                   bool clear=true) const;
         QVector<ParametricPreset> allParametricPresets() const;
 private:
-        QVector<Package> packages_;
+        QVector<Collection> packages_;
 };
+
+} // namespace picogen_repository {
 
 #endif // DATABASE_HH

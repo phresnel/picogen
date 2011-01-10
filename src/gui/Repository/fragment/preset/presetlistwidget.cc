@@ -21,32 +21,35 @@
 #include <QVector>
 
 #include "parametricpreset.hh"
-#include "parametricpresetui.hh"
+#include "presetlistitemwidget.hh"
 
-#include "parametricpresetsui.hh"
-#include "ui_parametricpresetsui.h"
+#include "presetlistwidget.hh"
+#include "ui_presetlistwidget.h"
 
 #include <QDebug>
 
-ParametricPresetsUi::ParametricPresetsUi(QWidget *parent) :
+namespace picogen_repository {
+
+PresetListWidget::PresetListWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ParametricPresetsUi),
-    database_(new Database())
+    ui(new Ui::PresetListWidget),
+    database_(new Database()),
+    lastSelected_(optional<ParametricPreset>())
 {
         ui->setupUi(this);
 }
 
-ParametricPresetsUi::~ParametricPresetsUi()
+PresetListWidget::~PresetListWidget()
 {
         delete ui;
 }
 
-void ParametricPresetsUi::setDatabase (shared_ptr<Database> db) {
+void PresetListWidget::setDatabase (shared_ptr<Database> db) {
         database_ = db;
         resyncView();
 }
 
-void ParametricPresetsUi::resyncView() {
+void PresetListWidget::resyncView() {
         QVector<ParametricPreset> presets;
         database_->allParametricPresets(presets);
         const int count = presets.count();
@@ -59,9 +62,9 @@ void ParametricPresetsUi::resyncView() {
         }
 }
 
-void ParametricPresetsUi::addPresetToView(const ParametricPreset &pp) {
+void PresetListWidget::addPresetToView(const ParametricPreset &pp) {
         QListWidgetItem *it = new QListWidgetItem (ui->listWidget);
-        ParametricPresetUi *ppui = new ParametricPresetUi (pp, this);
+        PresetListItemWidget *ppui = new PresetListItemWidget (pp, this);
 
         ui->listWidget->setItemWidget(it, ppui);
         it->setSizeHint(ppui->sizeHint());
@@ -69,13 +72,32 @@ void ParametricPresetsUi::addPresetToView(const ParametricPreset &pp) {
         ui->listWidget->scrollToItem(it);
 }
 
-/*void ParametricPresetsUi::on_saveButton_clicked() {
+/*void PresetListWidget::on_saveButton_clicked() {
         for (int i=0; i<ui->listWidget->count(); ++i) {
                 QListWidgetItem *it = ui->listWidget->item(i);
-                ParametricPresetUi* ppui =
-                        qobject_cast<ParametricPresetUi*>(
+                ParametricPresetItemWidget* ppui =
+                        qobject_cast<ParametricPresetItemWidget*>(
                           ui->listWidget->itemWidget(it));
                 if (0 != ppui)
                         ppui->preset().save();
         }
 }*/
+
+optional<ParametricPreset> PresetListWidget::lastSelected() const {
+        return lastSelected_;
+}
+
+void PresetListWidget::on_listWidget_itemSelectionChanged() {
+        const QList<QListWidgetItem*> items = ui->listWidget->selectedItems();
+        if (0 == items.count()) {
+                lastSelected_ = optional<ParametricPreset>();
+        } else {
+                QWidget *widget = ui->listWidget->itemWidget(items[0]);
+                PresetListItemWidget *ppui = qobject_cast<PresetListItemWidget*> (widget);
+                lastSelected_ = 0 != ppui ?
+                                ppui->preset() :
+                                optional<ParametricPreset>();
+        }
+}
+
+} // namespace picogen_repository {

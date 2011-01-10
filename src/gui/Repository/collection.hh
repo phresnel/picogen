@@ -18,41 +18,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "entityui.hh"
-#include "ui_entityui.h"
+#ifndef COLLECTION_HH
+#define COLLECTION_HH
 
-EntityUi::EntityUi(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::EntityUi)
+#include <QString>
+#include <QVector>
+
+namespace picogen_repository {
+
+class ParametricPreset;
+class Collection
 {
-        ui->setupUi(this);
-}
+public:
+        Collection(QString root);
+        Collection() {}
 
-EntityUi::~EntityUi() {
-        delete ui;
-}
+        void allParametricPresets(QVector<ParametricPreset> &ret,
+                                  bool clear=true) const;
+        QVector<ParametricPreset> allParametricPresets() const;
 
-void EntityUi::setEntity (Entity *e) {
-        entity_ = e;
+        QString root() const;
+private:
+        QString root_;
+};
 
-        ui->title->setText(e->title());
-        ui->email->setText(e->email());
-        ui->homepage->setText(e->homepage());
-        ui->author->setText(e->author());
-}
+} // namespace picogen_repository {
 
-void EntityUi::on_title_editingFinished() {
-        entity_->setTitle (ui->title->text());
-}
-
-void EntityUi::on_author_editingFinished() {
-        entity_->setAuthor (ui->author->text());
-}
-
-void EntityUi::on_email_editingFinished() {
-        entity_->setEmail(ui->email->text());
-}
-
-void EntityUi::on_homepage_editingFinished() {
-        entity_->setHomepage(ui->homepage->text());
-}
+#endif // COLLECTION_HH

@@ -18,41 +18,50 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "mainwindow.hh"
-#include "ui_mainwindow.h"
-
-#include "collection.hh"
-#include "parametricpreset.hh"
-#include "shared_ptr.hh"
-
-#include <QDir>
-#include <QMessageBox>
-#include <QDebug>
+#include "presetlistitemwidget.hh"
+#include "ui_presetlistitemwidget.h"
+#include "presetdialog.hh"
 
 namespace picogen_repository {
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+PresetListItemWidget::PresetListItemWidget(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::PresetListItemWidget)
 {
         ui->setupUi(this);
-        shared_ptr<Database> db(new Database());
-
-        const Collection root("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack");
-
-        db->addCollection (root);
-        //pack.allParametricPresets();
-        ui->parametricPresets->setDatabase(db);
-        /*foreach (ParametricPreset pp, pack.allParametricPresets()) {
-                QMessageBox::warning(this, "",
-                        "name: " + pp.name() + "\n"
-                        "title: " + pp.title() + "\n"
-                );
-        }*/
 }
 
-MainWindow::~MainWindow() {
+PresetListItemWidget::PresetListItemWidget(ParametricPreset const &pp, QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::PresetListItemWidget)
+{
+        ui->setupUi(this);
+        setPreset(pp);
+}
+
+PresetListItemWidget::~PresetListItemWidget() {
         delete ui;
+}
+
+ParametricPreset PresetListItemWidget::preset() const {
+        return preset_;
+}
+
+void PresetListItemWidget::setPreset (ParametricPreset const &pp) {
+        preset_ = pp;
+        ui->text->setText(
+            QString("\"%1\" by %2%3")
+            .arg(pp.title() == "" ? "<untitled>" : pp.title())
+            .arg(pp.author() == "" ? "<unknown>" : pp.author())
+            .arg(pp.email() == "" ? "" : (" (" + pp.email() + ")"))
+        );
+}
+
+void PresetListItemWidget::on_toolButton_clicked() {
+        PresetDialog popup (this);
+        popup.setPreset(preset_);
+        if (QDialog::Accepted == popup.exec())
+                setPreset (popup.preset());
 }
 
 } // namespace picogen_repository {

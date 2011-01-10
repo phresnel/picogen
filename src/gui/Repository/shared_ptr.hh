@@ -22,6 +22,8 @@
 #define SHARED_PTR_HH
 
 #include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
+namespace picogen_repository {
+        using boost::shared_ptr;
+} // namespace picogen_repository {
 
 #endif // SHARED_PTR_HH

@@ -27,16 +27,20 @@ namespace Ui {
     class MainWindow;
 }
 
+namespace picogen_repository {
+
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+        Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+        explicit MainWindow(QWidget *parent = 0);
+        ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+        Ui::MainWindow *ui;
 };
+
+} // namespace picogen_repository {
 
 #endif // MAINWINDOW_HH

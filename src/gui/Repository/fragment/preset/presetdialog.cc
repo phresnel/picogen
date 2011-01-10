@@ -18,46 +18,45 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "parametricpresetui.hh"
-#include "ui_parametricpresetui.h"
-#include "parametricpresetpopup.hh"
+#include "presetdialog.hh"
+#include "ui_presetdialog.h"
 
-ParametricPresetUi::ParametricPresetUi(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::ParametricPresetUi)
+namespace picogen_repository {
+
+PresetDialog::PresetDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::PresetDialog)
 {
         ui->setupUi(this);
+        setPreset(ParametricPreset());
+        ui->preset->showSourceEditor(true);
 }
 
-ParametricPresetUi::ParametricPresetUi(ParametricPreset const &pp, QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::ParametricPresetUi)
-{
-        ui->setupUi(this);
-        setPreset(pp);
-}
-
-ParametricPresetUi::~ParametricPresetUi() {
+PresetDialog::~PresetDialog() {
         delete ui;
 }
 
-ParametricPreset ParametricPresetUi::preset() const {
+ParametricPreset PresetDialog::preset() const {
         return preset_;
 }
 
-void ParametricPresetUi::setPreset (ParametricPreset const &pp) {
-        preset_ = pp;
-        ui->text->setText(
-            QString("\"%1\" by %2%3")
-            .arg(pp.title() == "" ? "<untitled>" : pp.title())
-            .arg(pp.author() == "" ? "<unknown>" : pp.author())
-            .arg(pp.email() == "" ? "" : (" (" + pp.email() + ")"))
-        );
+void PresetDialog::setPreset (ParametricPreset const &pp) {
+        preset_ = pp;        
+        ui->entity->setEntity (&preset_);
+        ui->preset->setPreset(pp.preset());
 }
 
-void ParametricPresetUi::on_toolButton_clicked() {
-        ParametricPresetPopup popup (this);
-        popup.setPreset(preset_);
-        if (QDialog::Accepted == popup.exec())
-                setPreset (popup.preset());
+void PresetDialog::on_buttonBox_accepted() {
+        accept();
+        preset_.save();
 }
+
+void PresetDialog::on_buttonBox_rejected() {
+        reject();
+}
+
+void PresetDialog::on_preset_formationChanged() {
+        preset_.setPreset(ui->preset->preset());
+}
+
+} // namespace picogen_repository {

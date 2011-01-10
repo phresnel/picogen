@@ -18,27 +18,44 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "database.hh"
 #include "collection.hh"
+#include <stdexcept>
+#include <QDir>
+#include <QMessageBox>
 #include "parametricpreset.hh"
 
 namespace picogen_repository {
 
-void Database::addCollection(Collection const &package) {
-        packages_.push_back(package);
-}
 
-void Database::allParametricPresets(
-        QVector<ParametricPreset> &ret,
-        bool clear
-) const {
-        if (clear) ret.clear();
-        foreach (Collection pack, packages_) {
-                pack.allParametricPresets(ret, false);
+Collection::Collection(QString root) : root_(root) {
+        if (!QDir(root).exists()) {
+                const std::string msg = "Collection \""
+                        + root.toStdString()
+                        + "\" not found, "
+                        + "you won't see any items from that Collection.";
+                QMessageBox::critical(0, "Collection not found",
+                                      QString::fromStdString(msg));
         }
 }
 
-QVector<ParametricPreset> Database::allParametricPresets() const {
+QString Collection::root() const {
+        return root_;
+}
+
+void Collection::allParametricPresets(QVector<ParametricPreset> &ret, bool clear) const {
+        QDir folder  (QDir(root_).absolutePath()+"/parametric-presets");
+
+        if (clear) ret.clear();
+        foreach (QString str,
+                 folder.entryList(QDir::NoDotAndDotDot | QDir::AllDirs))
+        {
+                ret.push_back(
+                        ParametricPreset (*this,
+                                          folder.absolutePath() + "/" + str));
+        }
+}
+
+QVector<ParametricPreset> Collection::allParametricPresets() const {
         QVector<ParametricPreset> ret;
         allParametricPresets(ret);
         return ret;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ParametricPresetPopup</class>
- <widget class="QDialog" name="ParametricPresetPopup">
+ <class>PresetDialog</class>
+ <widget class="QDialog" name="PresetDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -21,7 +21,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="EntityUi" name="entity" native="true"/>
+       <widget class="picogen_repository::FragmentWidget" name="entity" native="true"/>
       </item>
      </layout>
     </widget>
@@ -53,9 +53,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>EntityUi</class>
+   <class>picogen_repository::FragmentWidget</class>
    <extends>QWidget</extends>
-   <header>entityui.hh</header>
+   <header>../fragmentwidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -18,41 +18,48 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "parametricpresetpopup.hh"
-#include "ui_parametricpresetpopup.h"
+#ifndef PRESETLISTWIDGET_HH
+#define PRESETLISTWIDGET_HH
 
-ParametricPresetPopup::ParametricPresetPopup(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ParametricPresetPopup)
+#include <QWidget>
+#include "database.hh"
+#include "parametricpreset.hh"
+#include "shared_ptr.hh"
+#include "optional.hh"
+
+namespace Ui {
+    class PresetListWidget;
+}
+
+namespace picogen_repository {
+
+class PresetListWidget : public QWidget
 {
-        ui->setupUi(this);
-        setPreset(ParametricPreset());
-        ui->preset->showSourceEditor(true);
-}
+        Q_OBJECT
 
-ParametricPresetPopup::~ParametricPresetPopup() {
-        delete ui;
-}
+public:
+        explicit PresetListWidget(QWidget *parent = 0);
+        ~PresetListWidget();
 
-ParametricPreset ParametricPresetPopup::preset() const {
-        return preset_;
-}
+        void setDatabase (shared_ptr<Database>);
+        optional<ParametricPreset> lastSelected() const;
 
-void ParametricPresetPopup::setPreset (ParametricPreset const &pp) {
-        preset_ = pp;        
-        ui->entity->setEntity (&preset_);
-        ui->preset->setPreset(pp.preset());
-}
+private:
+        Ui::PresetListWidget *ui;
+        shared_ptr<Database> database_;
+        optional<ParametricPreset> lastSelected_;
 
-void ParametricPresetPopup::on_buttonBox_accepted() {
-        accept();
-        preset_.save();
-}
+private:
+        void resyncView();
+        void addPresetToView(ParametricPreset const&);
 
-void ParametricPresetPopup::on_buttonBox_rejected() {
-        reject();
-}
+private slots:
+        //void on_saveButton_clicked();
 
-void ParametricPresetPopup::on_preset_formationChanged() {
-        preset_.setPreset(ui->preset->preset());
-}
+private slots:
+    void on_listWidget_itemSelectionChanged();
+};
+
+} // namespace picogen_repository {
+
+#endif // PRESETLISTWIDGET_HH

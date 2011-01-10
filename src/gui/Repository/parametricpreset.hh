@@ -22,12 +22,14 @@
 #define PARAMETRICPRESET_HH
 
 #include <QString>
-#include "package.hh"
+#include "collection.hh"
 
-class Entity {
+namespace picogen_repository {
+
+class Fragment {
 public:
-        Entity(Package package, QString path);
-        Entity();
+        Fragment(Collection package, QString path);
+        Fragment();
 
         QString title() const;
         void setTitle(QString);
@@ -41,7 +43,7 @@ public:
         QString homepage() const;
         void setHomepage(QString);
 
-        Package package() const;
+        Collection package() const;
         QString path() const;
 
         QString name() const;
@@ -55,17 +57,17 @@ protected:
         void writeAll (QString value, QString filename, quint64 maxlen=1024) const;
 
 private:
-        Package package_;
+        Collection package_;
         QString path_, name_;
         QString title_, author_, email_, homepage_;
 };
 
 
 
-class ParametricPreset : public Entity
+class ParametricPreset : public Fragment
 {
 public:
-        ParametricPreset(Package package, QString path);
+        ParametricPreset(Collection package, QString path);
         ParametricPreset();
 
         QString preset() const;
@@ -76,5 +78,7 @@ public:
 private:
         QString preset_;
 };
+
+} // namespace picogen_repository {
 
 #endif // PARAMETRICPRESET_HH

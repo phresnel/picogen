@@ -18,34 +18,42 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESETUI_HH
-#define PARAMETRICPRESETUI_HH
+#ifndef PRESETDIALOG_HH
+#define PRESETDIALOG_HH
 
-#include <QWidget>
-#include "parametricpreset.hh"
+#include <QDialog>
 
 namespace Ui {
-    class ParametricPresetUi;
+    class PresetDialog;
 }
 
-class ParametricPresetUi : public QWidget
+#include "parametricpreset.hh"
+
+namespace picogen_repository {
+
+class PresetDialog : public QDialog
 {
         Q_OBJECT
 
 public:
-        explicit ParametricPresetUi(QWidget *parent = 0);
-        explicit ParametricPresetUi(ParametricPreset const &, QWidget *parent = 0);
-        ~ParametricPresetUi();
+        explicit PresetDialog(QWidget *parent = 0);
+        ~PresetDialog();
 
         ParametricPreset preset() const;
         void setPreset (ParametricPreset const &);
 
 private:
-        Ui::ParametricPresetUi *ui;
+        Ui::PresetDialog *ui;
         ParametricPreset preset_;
 
 private slots:
-        void on_toolButton_clicked();
+
+        void on_buttonBox_rejected();
+        void on_buttonBox_accepted();
+
+        void on_preset_formationChanged();
 };
 
-#endif // PARAMETRICPRESETUI_HH
+} // namespace picogen_repository {
+
+#endif // PRESETDIALOG_HH

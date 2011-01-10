@@ -18,41 +18,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "mainwindow.hh"
-#include "ui_mainwindow.h"
+#ifndef PRESETLISTITEMWIDGET_HH
+#define PRESETLISTITEMWIDGET_HH
 
-#include "collection.hh"
+#include <QWidget>
 #include "parametricpreset.hh"
-#include "shared_ptr.hh"
 
-#include <QDir>
-#include <QMessageBox>
-#include <QDebug>
+namespace Ui {
+    class PresetListItemWidget;
+}
 
 namespace picogen_repository {
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+class PresetListItemWidget : public QWidget
 {
-        ui->setupUi(this);
-        shared_ptr<Database> db(new Database());
+        Q_OBJECT
 
-        const Collection root("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack");
+public:
+        explicit PresetListItemWidget(QWidget *parent = 0);
+        explicit PresetListItemWidget(ParametricPreset const &, QWidget *parent = 0);
+        ~PresetListItemWidget();
 
-        db->addCollection (root);
-        //pack.allParametricPresets();
-        ui->parametricPresets->setDatabase(db);
-        /*foreach (ParametricPreset pp, pack.allParametricPresets()) {
-                QMessageBox::warning(this, "",
-                        "name: " + pp.name() + "\n"
-                        "title: " + pp.title() + "\n"
-                );
-        }*/
-}
+        ParametricPreset preset() const;
+        void setPreset (ParametricPreset const &);
 
-MainWindow::~MainWindow() {
-        delete ui;
-}
+private:
+        Ui::PresetListItemWidget *ui;
+        ParametricPreset preset_;
+
+private slots:
+        void on_toolButton_clicked();
+};
 
 } // namespace picogen_repository {
+
+#endif // PRESETLISTITEMWIDGET_HH

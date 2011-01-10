@@ -18,38 +18,45 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESETPOPUP_HH
-#define PARAMETRICPRESETPOPUP_HH
+#include "fragmentwidget.hh"
+#include "ui_fragmentwidget.h"
 
-#include <QDialog>
+namespace picogen_repository {
 
-namespace Ui {
-    class ParametricPresetPopup;
+FragmentWidget::FragmentWidget(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::FragmentWidget)
+{
+        ui->setupUi(this);
 }
 
-#include "parametricpreset.hh"
+FragmentWidget::~FragmentWidget() {
+        delete ui;
+}
 
-class ParametricPresetPopup : public QDialog
-{
-        Q_OBJECT
+void FragmentWidget::setEntity (Fragment *e) {
+        entity_ = e;
 
-public:
-        explicit ParametricPresetPopup(QWidget *parent = 0);
-        ~ParametricPresetPopup();
+        ui->title->setText(e->title());
+        ui->email->setText(e->email());
+        ui->homepage->setText(e->homepage());
+        ui->author->setText(e->author());
+}
 
-        ParametricPreset preset() const;
-        void setPreset (ParametricPreset const &);
+void FragmentWidget::on_title_editingFinished() {
+        entity_->setTitle (ui->title->text());
+}
 
-private:
-        Ui::ParametricPresetPopup *ui;
-        ParametricPreset preset_;
+void FragmentWidget::on_author_editingFinished() {
+        entity_->setAuthor (ui->author->text());
+}
 
-private slots:
+void FragmentWidget::on_email_editingFinished() {
+        entity_->setEmail(ui->email->text());
+}
 
-        void on_buttonBox_rejected();
-        void on_buttonBox_accepted();
+void FragmentWidget::on_homepage_editingFinished() {
+        entity_->setHomepage(ui->homepage->text());
+}
 
-        void on_preset_formationChanged();
-};
-
-#endif // PARAMETRICPRESETPOPUP_HH
+} // namespace picogen_repository {

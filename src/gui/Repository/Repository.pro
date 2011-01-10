@@ -9,33 +9,25 @@ TARGET = Repository
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
+SOURCES += \
+        main.cpp\
         mainwindow.cc \
-    package.cc \
-    parametricpreset.cc \
-    parametricpresetsui.cc \
-    database.cc \
-    parametricpresetui.cc \
-    parametricpresetpopup.cc \
-    entityui.cc
+        collection.cc \
+        parametricpreset.cc \
+        database.cc
 
-HEADERS  += mainwindow.hh \
-    package.hh \
-    parametricpreset.hh \
-    parametricpresetsui.hh \
-    database.hh \
-    shared_ptr.hh \
-    parametricpresetui.hh \
-    parametricpresetpopup.hh \
-    entityui.hh
+HEADERS  += \
+        mainwindow.hh \
+        collection.hh \
+        parametricpreset.hh \
+        database.hh \
+        shared_ptr.hh \
+        optional.hh
 
-FORMS    += mainwindow.ui \
-    parametricpresetsui.ui \
-    parametricpresetui.ui \
-    parametricpresetpopup.ui \
-    entityui.ui
+FORMS    += mainwindow.ui
 
 include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
 include(../widgets/QuatschPreview/quatschpreview.pri)
 include(../widgets/FilenameEdit/filenameedit.pri)
 include(../CosyGui/cosyscene.pri)
+include(fragment/fragment.pri)
