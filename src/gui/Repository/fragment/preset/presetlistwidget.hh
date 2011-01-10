@@ -54,10 +54,8 @@ private:
         void addPresetToView(ParametricPreset const&);
 
 private slots:
-        //void on_saveButton_clicked();
-
-private slots:
-    void on_listWidget_itemSelectionChanged();
+        void on_readOnly_toggled(bool checked);
+        void on_listWidget_itemSelectionChanged();
 };
 
 } // namespace picogen_repository {

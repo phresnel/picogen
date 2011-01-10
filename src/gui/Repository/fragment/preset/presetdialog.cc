@@ -36,6 +36,11 @@ PresetDialog::~PresetDialog() {
         delete ui;
 }
 
+void PresetDialog::setReadOnly(bool readOnly) {
+        ui->preset->showSourceEditor(!readOnly);
+        ui->entity->setReadOnly(readOnly);
+}
+
 ParametricPreset PresetDialog::preset() const {
         return preset_;
 }

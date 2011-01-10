@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "parametricpreset.hh"
+#include "fragment.hh"
 
 #include <QDir>
 #include <QFile>
@@ -115,40 +115,5 @@ void Fragment::reload() {
         homepage_ = readAll ("homepage");
 }
 
-
-
-
-
-ParametricPreset::ParametricPreset(Collection package, QString path)
-        : Fragment (package, path)
-{
-        reload();
-}
-
-ParametricPreset::ParametricPreset() {
-}
-
-void ParametricPreset::reload() {
-        Fragment::reload();
-        preset_ = readAll ("preset");
-}
-
-
-void ParametricPreset::save() const {        
-        Fragment::save();
-        writeAll (preset_, "preset");
-}
-
-QString ParametricPreset::preset() const {
-        return preset_;
-}
-
-/*void ParametricPreset::setName(QString s) {
-        name_ = s;
-}*/
-
-void ParametricPreset::setPreset(QString s) {
-        preset_ = s;
-}
 
 } // namespace picogen_repository {

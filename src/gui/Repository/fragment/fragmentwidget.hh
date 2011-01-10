@@ -39,6 +39,7 @@ public:
         ~FragmentWidget();
 
         void setEntity (Fragment *);
+        void setReadOnly(bool readOnly);
 
 private:
         Ui::FragmentWidget *ui;

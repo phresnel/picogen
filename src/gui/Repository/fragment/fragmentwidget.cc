@@ -43,6 +43,10 @@ void FragmentWidget::setEntity (Fragment *e) {
         ui->author->setText(e->author());
 }
 
+void FragmentWidget::setReadOnly(bool readOnly) {
+        setEnabled(!readOnly);
+}
+
 void FragmentWidget::on_title_editingFinished() {
         entity_->setTitle (ui->title->text());
 }

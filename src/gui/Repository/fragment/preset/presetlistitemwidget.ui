@@ -35,6 +35,16 @@
     </spacer>
    </item>
    <item>
+    <widget class="QLabel" name="readOnlyText">
+     <property name="styleSheet">
+      <string notr="true">color:orange;</string>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QToolButton" name="toolButton">
      <property name="text">
       <string>...</string>

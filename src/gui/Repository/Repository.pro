@@ -8,19 +8,12 @@ QT       += core gui
 TARGET = Repository
 TEMPLATE = app
 
-
 SOURCES += \
         main.cpp\
-        repositorymainwindow.cc \
-        collection.cc \
-        parametricpreset.cc \
-        database.cc
+        repositorymainwindow.cc
 
 HEADERS  += \
-        repositorymainwindow.hh \
-        collection.hh \
-        parametricpreset.hh \
-        database.hh \
+        repositorymainwindow.hh \        
         shared_ptr.hh \
         optional.hh
 
@@ -31,3 +24,4 @@ include(../widgets/QuatschPreview/quatschpreview.pri)
 include(../widgets/FilenameEdit/filenameedit.pri)
 include(../CosyGui/cosyscene.pri)
 include(fragment/fragment.pri)
+include(repository/repository.pri)

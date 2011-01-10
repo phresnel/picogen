@@ -29,6 +29,7 @@ PresetListItemWidget::PresetListItemWidget(QWidget *parent) :
     ui(new Ui::PresetListItemWidget)
 {
         ui->setupUi(this);
+        setReadOnly(true);
 }
 
 PresetListItemWidget::PresetListItemWidget(ParametricPreset const &pp, QWidget *parent) :
@@ -59,9 +60,20 @@ void PresetListItemWidget::setPreset (ParametricPreset const &pp) {
 
 void PresetListItemWidget::on_toolButton_clicked() {
         PresetDialog popup (this);
+        popup.setReadOnly(readOnly_);
         popup.setPreset(preset_);
         if (QDialog::Accepted == popup.exec())
                 setPreset (popup.preset());
+}
+
+void PresetListItemWidget::setReadOnly(bool readOnly) {
+        readOnly_ = readOnly;
+
+        if (readOnly_) {
+                ui->readOnlyText->setText("read only");
+        } else {
+                ui->readOnlyText->setText("");
+        }
 }
 
 } // namespace picogen_repository {

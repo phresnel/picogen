@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PARAMETRICPRESET_HH
-#define PARAMETRICPRESET_HH
+#ifndef FRAGMENT_HH
+#define FRAGMENT_HH
 
 #include <QString>
 #include "collection.hh"
@@ -63,22 +63,6 @@ private:
 };
 
 
-
-class ParametricPreset : public Fragment
-{
-public:
-        ParametricPreset(Collection package, QString path);
-        ParametricPreset();
-
-        QString preset() const;
-        void setPreset(QString);
-
-        virtual void save() const;
-        virtual void reload();
-private:
-        QString preset_;
-};
-
 } // namespace picogen_repository {
 
-#endif // PARAMETRICPRESET_HH
+#endif // FRAGMENT_HH

@@ -66,22 +66,12 @@ void PresetListWidget::addPresetToView(const ParametricPreset &pp) {
         QListWidgetItem *it = new QListWidgetItem (ui->listWidget);
         PresetListItemWidget *ppui = new PresetListItemWidget (pp, this);
 
+        ppui->setReadOnly(ui->readOnly->isChecked());
         ui->listWidget->setItemWidget(it, ppui);
         it->setSizeHint(ppui->sizeHint());
 
         ui->listWidget->scrollToItem(it);
 }
-
-/*void PresetListWidget::on_saveButton_clicked() {
-        for (int i=0; i<ui->listWidget->count(); ++i) {
-                QListWidgetItem *it = ui->listWidget->item(i);
-                ParametricPresetItemWidget* ppui =
-                        qobject_cast<ParametricPresetItemWidget*>(
-                          ui->listWidget->itemWidget(it));
-                if (0 != ppui)
-                        ppui->preset().save();
-        }
-}*/
 
 optional<ParametricPreset> PresetListWidget::lastSelected() const {
         return lastSelected_;
@@ -97,6 +87,16 @@ void PresetListWidget::on_listWidget_itemSelectionChanged() {
                 lastSelected_ = 0 != ppui ?
                                 ppui->preset() :
                                 optional<ParametricPreset>();
+        }
+}
+
+void PresetListWidget::on_readOnly_toggled(bool checked) {
+        const int count = ui->listWidget->count();
+        for (int row=0; row<count; ++row) {
+                QListWidgetItem *item = ui->listWidget->item(row);
+                QWidget *widget = ui->listWidget->itemWidget(item);
+                PresetListItemWidget *ppui = qobject_cast<PresetListItemWidget*> (widget);
+                ppui->setReadOnly(checked);
         }
 }
 

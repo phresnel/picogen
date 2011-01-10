@@ -18,41 +18,43 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PRESETLISTITEMWIDGET_HH
-#define PRESETLISTITEMWIDGET_HH
-
-#include <QWidget>
 #include "parametricpreset.hh"
 
-namespace Ui {
-    class PresetListItemWidget;
-}
+#include <QDir>
+#include <QFile>
 
 namespace picogen_repository {
 
-class PresetListItemWidget : public QWidget
+ParametricPreset::ParametricPreset(Collection package, QString path)
+        : Fragment (package, path)
 {
-        Q_OBJECT
+        reload();
+}
 
-public:
-        explicit PresetListItemWidget(QWidget *parent = 0);
-        explicit PresetListItemWidget(ParametricPreset const &, QWidget *parent = 0);
-        ~PresetListItemWidget();
+ParametricPreset::ParametricPreset() {
+}
 
-        ParametricPreset preset() const;
-        void setPreset (ParametricPreset const &);
+void ParametricPreset::reload() {
+        Fragment::reload();
+        preset_ = readAll ("preset");
+}
 
-        void setReadOnly (bool readOnly);
 
-private:
-        Ui::PresetListItemWidget *ui;
-        ParametricPreset preset_;
-        bool readOnly_;
+void ParametricPreset::save() const {        
+        Fragment::save();
+        writeAll (preset_, "preset");
+}
 
-private slots:
-        void on_toolButton_clicked();
-};
+QString ParametricPreset::preset() const {
+        return preset_;
+}
+
+/*void ParametricPreset::setName(QString s) {
+        name_ = s;
+}*/
+
+void ParametricPreset::setPreset(QString s) {
+        preset_ = s;
+}
 
 } // namespace picogen_repository {
-
-#endif // PRESETLISTITEMWIDGET_HH
