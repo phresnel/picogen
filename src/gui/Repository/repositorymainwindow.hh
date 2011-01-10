@@ -18,29 +18,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef MAINWINDOW_HH
-#define MAINWINDOW_HH
+#ifndef REPOSITORYMAINWINDOW_HH
+#define REPOSITORYMAINWINDOW_HH
 
 #include <QMainWindow>
 
 namespace Ui {
-    class MainWindow;
+    class RepositoryMainWindow;
 }
 
 namespace picogen_repository {
 
-class MainWindow : public QMainWindow
+class RepositoryMainWindow : public QMainWindow
 {
         Q_OBJECT
 
 public:
-        explicit MainWindow(QWidget *parent = 0);
-        ~MainWindow();
+        explicit RepositoryMainWindow(QWidget *parent = 0);
+        ~RepositoryMainWindow();
 
 private:
-        Ui::MainWindow *ui;
+        Ui::RepositoryMainWindow *ui;
 };
 
 } // namespace picogen_repository {
 
-#endif // MAINWINDOW_HH
+#endif // REPOSITORYMAINWINDOW_HH

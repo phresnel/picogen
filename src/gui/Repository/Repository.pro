@@ -11,20 +11,20 @@ TEMPLATE = app
 
 SOURCES += \
         main.cpp\
-        mainwindow.cc \
+        repositorymainwindow.cc \
         collection.cc \
         parametricpreset.cc \
         database.cc
 
 HEADERS  += \
-        mainwindow.hh \
+        repositorymainwindow.hh \
         collection.hh \
         parametricpreset.hh \
         database.hh \
         shared_ptr.hh \
         optional.hh
 
-FORMS    += mainwindow.ui
+FORMS    += repositorymainwindow.ui
 
 include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
 include(../widgets/QuatschPreview/quatschpreview.pri)

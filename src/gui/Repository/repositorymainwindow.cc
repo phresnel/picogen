@@ -18,8 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "mainwindow.hh"
-#include "ui_mainwindow.h"
+#include "repositorymainwindow.hh"
+#include "ui_repositorymainwindow.h"
 
 #include "collection.hh"
 #include "parametricpreset.hh"
@@ -31,9 +31,9 @@
 
 namespace picogen_repository {
 
-MainWindow::MainWindow(QWidget *parent) :
+RepositoryMainWindow::RepositoryMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::RepositoryMainWindow)
 {
         ui->setupUi(this);
         shared_ptr<Database> db(new Database());
@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }*/
 }
 
-MainWindow::~MainWindow() {
+RepositoryMainWindow::~RepositoryMainWindow() {
         delete ui;
 }
 
