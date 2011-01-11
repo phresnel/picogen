@@ -29,14 +29,17 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#include "../RepositorySettings/repositorysettings.hh"
+
 namespace picogen_repository {
 
 RepositoryMainWindow::RepositoryMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RepositoryMainWindow)
-{
+{        
         ui->setupUi(this);
         shared_ptr<Database> db(new Database());
+
 
         const Collection root("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack");
 
@@ -49,6 +52,8 @@ RepositoryMainWindow::RepositoryMainWindow(QWidget *parent) :
                         "title: " + pp.title() + "\n"
                 );
         }*/
+        RepositorySettings *FOO = new RepositorySettings;
+        delete FOO;
 }
 
 RepositoryMainWindow::~RepositoryMainWindow() {
