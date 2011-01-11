@@ -23,13 +23,7 @@
 
 #include <QList>
 #include <QString>
-
-class CollectionSettings {
-        QString path() const;
-        void setPath(QString);
-private:
-        QString path_;
-};
+#include "collection.hh"
 
 class RepositorySettings
 {
@@ -38,7 +32,7 @@ public:
         virtual ~RepositorySettings();
 private:
 
-        QList<CollectionSettings> collections_;
+        QList<picogen_repository::Collection> collections_;
 };
 
 #endif // REPOSITORYSETTINGS_HH
