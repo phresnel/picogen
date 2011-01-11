@@ -56,7 +56,7 @@ namespace {
                 for (QStringList::const_iterator it=args.begin(), end=args.end();
                         it != end; ++it)
                 {
-                        if (*it == "--root-collection") {
+                        if (*it == "--root-collections-directory") {
                                 ++it;
                                 if (it != end) return *it;
                                 return "";
@@ -83,13 +83,13 @@ namespace {
                         fd.setFileMode(QFileDialog::DirectoryOnly);
                         fd.setWindowTitle("Select a root collection");
                         if (QDialog::Accepted == fd.exec()) {
-                                return fd.directory().dirName();
+                                return fd.directory().absolutePath();
                         }
                 }
                 return "";
         }
 
-        QString rootCollectionDir() {
+        QString rootCollectionsDir() {
 
                 //==> CLI override.
                 QString tmp = rootCollectionsCommandLineOverride();
@@ -97,21 +97,14 @@ namespace {
                         return tmp;
 
                 //==> Application folder (TODO: disable on Linux?).
-                tmp = QApplication::applicationDirPath() + "/root-collection";
+                tmp = QApplication::applicationDirPath() + "/collections";
                 if ("" != tmp && QDir(tmp).exists())
                         return tmp;
 
                 //==> Systemwide settings.
-                QSettings userSettings (QSettings::IniFormat,
-                                        QSettings::SystemScope,
-                                        "picogen-team",
-                                        "picogen");
-                if (QFile(userSettings.fileName()).exists()) {
-                        tmp = userSettings
-                              .value("root-directory", "").toString();
-                        if ("" != tmp && QDir(tmp).exists())
-                                return tmp;
-                }
+                tmp = systemApplicationDataPath() + "/collections";
+                if ("" != tmp && QDir(tmp).exists())
+                        return tmp;
 
                 //==> Ask user.
                 tmp = rootCollectionsAskUser();
@@ -120,6 +113,40 @@ namespace {
 
                 return "";
         }
+
+
+
+        void addCollections (QString root,
+                             QList<picogen_repository::Collection> &collections_
+                             )
+        {
+                using picogen_repository::Collection;
+
+                //==> Explicitly added collections.
+                QFile acf(root + "/extern");
+                if (acf.open(QFile::Text | QFile::ReadOnly)) {
+                        QTextStream str (&acf);
+                        while (!str.atEnd()) {
+                                QString tmp = str.readLine();
+                                if (tmp.trimmed()[0] == '#') continue;
+                                tmp = QDir(tmp).absolutePath();
+                                collections_.push_back(Collection(tmp));
+                        }
+                        acf.close();
+                }
+
+                //==> Collections from collections-folder.
+                QDir directory = QDir(root + "/");
+                QStringList found;
+                found = directory.entryList(QStringList("*"),
+                                            QDir::AllDirs |
+                                            QDir::Readable |
+                                            QDir::NoDotAndDotDot);
+                foreach (QString tmp, found) {
+                        tmp = directory.absolutePath() + "/" + tmp;
+                        collections_.push_back(Collection(tmp));
+                }
+        }
 }
 //------------------------------------------------------------------------------
 
@@ -127,31 +154,13 @@ namespace {
 RepositorySettings::RepositorySettings() {
         using picogen_repository::Collection;
 
-        const QString rootCollection = rootCollectionDir();
-        if ("" != rootCollection)
-                collections_.push_back(Collection(rootCollection));
-
-        //==> Explicitly added collections.
-        QFile acf(userApplicationDataPath() + "/collections/extern");
-        if (acf.open(QFile::Text | QFile::ReadOnly)) {
-                QTextStream str (&acf);
-                while (!str.atEnd()) {
-                        QString tmp = str.readLine();
-                        collections_.push_back(Collection(tmp));
-                }
+        QString rootCollectionsDir = ::rootCollectionsDir();
+        if ("" != rootCollectionsDir) {
+                addCollections (rootCollectionsDir,
+                                collections_);
         }
-
-        //==> Collections from collections-folder.
-        QDir directory = QDir(userApplicationDataPath() + "/collections/");
-        QStringList found;
-        found = directory.entryList(QStringList("*"),
-                                    QDir::AllDirs |
-                                    QDir::Readable |
-                                    QDir::NoDotAndDotDot);
-        foreach (QString tmp, found) {
-                tmp = directory.absolutePath() + "/" + tmp;
-                collections_.push_back(Collection(tmp));
-        }
+        addCollections (userApplicationDataPath() + "/collections",
+                        collections_);
 
 
         QString info;
