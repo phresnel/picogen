@@ -91,6 +91,8 @@ include(../widgets/ColorPicker/colorpicker.pri)
 include(../widgets/QuatschPreview/quatschpreview.pri)
 include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
 include(../widgets/FilenameEdit/filenameedit.pri)
+include(../Repository/repository/repository.pri)
+include(../Repository/fragment/fragment.pri)
 include(cosyscene.pri)
 CONFIG(debug, debug|release):DESTDIR = debug
 else:DESTDIR = release

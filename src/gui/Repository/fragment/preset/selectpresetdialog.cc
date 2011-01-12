@@ -18,46 +18,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef PRESETLISTWIDGET_HH
-#define PRESETLISTWIDGET_HH
-
-#include <QWidget>
-#include "database.hh"
-#include "parametricpreset.hh"
-#include "../../shared_ptr.hh"
-#include "../../optional.hh"
-
-namespace Ui {
-    class PresetListWidget;
-}
+#include "selectpresetdialog.hh"
+#include "ui_selectpresetdialog.h"
 
 namespace picogen_repository {
 
-class PresetListWidget : public QWidget
+SelectPresetDialog::SelectPresetDialog(QWidget *parent) :
+        QDialog(parent),
+        ui(new Ui::SelectPresetDialog)
 {
-        Q_OBJECT
+        ui->setupUi(this);
+}
 
-public:
-        explicit PresetListWidget(QWidget *parent = 0);
-        ~PresetListWidget();
+SelectPresetDialog::~SelectPresetDialog() {
+        delete ui;
+}
 
-        void setDatabase (shared_ptr<Database>);
-        optional<ParametricPreset> lastSelected() const;
+void SelectPresetDialog::setDatabase (shared_ptr<Database> db) {
+        ui->list->setDatabase(db);
+}
 
-private:
-        Ui::PresetListWidget *ui;
-        shared_ptr<Database> database_;
-        optional<ParametricPreset> lastSelected_;
-
-private:
-        void resyncView();
-        void addPresetToView(ParametricPreset const&);
-
-private slots:
-        void on_readOnly_toggled(bool checked);
-        void on_listWidget_itemSelectionChanged();
-};
+optional<ParametricPreset> SelectPresetDialog::lastSelected() const {
+        if (result() == QDialog::Rejected)
+                return optional<ParametricPreset>();
+        return ui->list->lastSelected();
+}
 
 } // namespace picogen_repository {
-
-#endif // PRESETLISTWIDGET_HH

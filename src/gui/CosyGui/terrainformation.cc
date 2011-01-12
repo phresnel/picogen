@@ -24,6 +24,8 @@
 
 #include "cosyscene/terrain.hh"
 
+#include "selectpresetdialog.hh"
+
 
 TerrainFormation::TerrainFormation(QWidget *parent) :
     QWidget(parent),
@@ -36,8 +38,7 @@ TerrainFormation::TerrainFormation(QWidget *parent) :
 
 
 
-TerrainFormation::~TerrainFormation()
-{
+TerrainFormation::~TerrainFormation() {
     delete ui;
 }
 
@@ -101,7 +102,20 @@ void TerrainFormation::on_quatschCodeEditorCLB_clicked() {
 
 
 void TerrainFormation::on_parametricPresetCLB_clicked() {
-        formation_->toQuatschPreset(cosyscene::QuatschPreset(
+        picogen_repository::shared_ptr<picogen_repository::Database> db
+                        (new picogen_repository::Database());
+        db->establishStandardConnection();
+
+        picogen_repository::SelectPresetDialog p;
+        p.setDatabase(db);
+        p.exec();
+        if (p.lastSelected()) {
+                formation_->toQuatschPreset(cosyscene::QuatschPreset(
+                                p.lastSelected()->preset().toStdString()));
+        }
+
+
+        /*formation_->toQuatschPreset(cosyscene::QuatschPreset(
         "(($Width :real = {[1..99999]} default=1000))\n"
         "(($Depth :real = {[1..99999]} default=1000))\n"
         "(($Height:real = {[1..99999]} default=1000))\n"
@@ -117,7 +131,7 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
         "            filename{(($Filename))}\n"
         "            wrap  {(($RepeatMode))}\n"
         " ] (* (($Repeat)) x)  (* (($Repeat)) y))"
-        ));
+        ));*/
         updateViews();
 }
 
