@@ -33,7 +33,10 @@ class ParametricPreset;
 // has the same interface as a Package.
 class Database {
 public:
+        void establishStandardConnection();
+
         void addCollection(Collection const &);
+        void addCollections(QList<Collection> const &);
 
         void allParametricPresets(QVector<ParametricPreset> &ret,
                                   bool clear=true) const;

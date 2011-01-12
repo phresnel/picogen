@@ -10,14 +10,12 @@ TEMPLATE = app
 
 SOURCES += \
         main.cpp\
-        repositorymainwindow.cc \
-    ../RepositorySettings/repositorysettings.cc
+        repositorymainwindow.cc
 
 HEADERS  += \
         repositorymainwindow.hh \        
         shared_ptr.hh \
-        optional.hh \
-    ../RepositorySettings/repositorysettings.hh
+        optional.hh
 
 FORMS    += repositorymainwindow.ui
 

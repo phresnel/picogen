@@ -21,39 +21,24 @@
 #include "repositorymainwindow.hh"
 #include "ui_repositorymainwindow.h"
 
-#include "collection.hh"
-#include "parametricpreset.hh"
+//#include "collection.hh"
+//#include "parametricpreset.hh"
 #include "shared_ptr.hh"
 
 #include <QDir>
 #include <QMessageBox>
 #include <QDebug>
 
-#include "../RepositorySettings/repositorysettings.hh"
-
 namespace picogen_repository {
 
 RepositoryMainWindow::RepositoryMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RepositoryMainWindow)
-{        
+{
         ui->setupUi(this);
         shared_ptr<Database> db(new Database());
-
-
-        const Collection root("C:\\Dokumente und Einstellungen\\smach\\Eigene Dateien\\garbage\\cc\\picogen-picogen\\rootpack");
-
-        db->addCollection (root);
-        //pack.allParametricPresets();
+        db->establishStandardConnection();
         ui->parametricPresets->setDatabase(db);
-        /*foreach (ParametricPreset pp, pack.allParametricPresets()) {
-                QMessageBox::warning(this, "",
-                        "name: " + pp.name() + "\n"
-                        "title: " + pp.title() + "\n"
-                );
-        }*/
-        RepositorySettings *FOO = new RepositorySettings;
-        delete FOO;
 }
 
 RepositoryMainWindow::~RepositoryMainWindow() {

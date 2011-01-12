@@ -21,11 +21,21 @@
 #include "database.hh"
 #include "collection.hh"
 #include "parametricpreset.hh"
+#include "repositorysettings.hh"
 
 namespace picogen_repository {
 
+void Database::establishStandardConnection() {
+        addCollections (RepositorySettings().collections());
+}
+
 void Database::addCollection(Collection const &package) {
         packages_.push_back(package);
+}
+
+void Database::addCollections(QList<Collection> const &collections) {
+        foreach (Collection c, collections)
+                addCollection (c);
 }
 
 void Database::allParametricPresets(

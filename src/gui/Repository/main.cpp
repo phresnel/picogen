@@ -18,12 +18,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include <QDebug>
 #include <QtGui/QApplication>
 #include "repositorymainwindow.hh"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
     picogen_repository::RepositoryMainWindow w;
     w.show();
 

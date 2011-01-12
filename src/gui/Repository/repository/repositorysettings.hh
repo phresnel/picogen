@@ -25,14 +25,20 @@
 #include <QString>
 #include "collection.hh"
 
+namespace picogen_repository {
+
 class RepositorySettings
 {
 public:
         RepositorySettings();
         virtual ~RepositorySettings();
+
+        QList<picogen_repository::Collection> collections() const;
 private:
 
         QList<picogen_repository::Collection> collections_;
 };
+
+} // namespace picogen_repository {
 
 #endif // REPOSITORYSETTINGS_HH

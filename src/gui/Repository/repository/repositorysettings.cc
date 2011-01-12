@@ -29,6 +29,7 @@
 #include <QPushButton>
 #include <QDebug>
 
+namespace picogen_repository {
 
 //------------------------------------------------------------------------------
 namespace {
@@ -122,13 +123,20 @@ namespace {
         {
                 using picogen_repository::Collection;
 
+                // A collections folder looks like this:
+                // "collections"
+                // -> "extern"  : text file containing absolute paths to collections
+                //                not found in this folder
+                // -> <folder>  : each folder represents a collection
+
                 //==> Explicitly added collections.
                 QFile acf(root + "/extern");
                 if (acf.open(QFile::Text | QFile::ReadOnly)) {
                         QTextStream str (&acf);
                         while (!str.atEnd()) {
-                                QString tmp = str.readLine();
-                                if (tmp.trimmed()[0] == '#') continue;
+                                QString tmp = str.readLine().trimmed();
+                                if (tmp.length() == 0 || tmp[0] == '#')
+                                        continue;
                                 tmp = QDir(tmp).absolutePath();
                                 collections_.push_back(Collection(tmp));
                         }
@@ -154,22 +162,29 @@ namespace {
 RepositorySettings::RepositorySettings() {
         using picogen_repository::Collection;
 
-        QString rootCollectionsDir = ::rootCollectionsDir();
-        if ("" != rootCollectionsDir) {
-                addCollections (rootCollectionsDir,
+        QString rcd = rootCollectionsDir();
+        if ("" != rcd) {
+                addCollections (rcd,
                                 collections_);
         }
         addCollections (userApplicationDataPath() + "/collections",
                         collections_);
 
 
-        QString info;
+        /*QString info;
         foreach (Collection c, collections_)
                 info += c.root() + "\n";
         QMessageBox mb;
         mb.setText(info);
-        mb.exec();
+        mb.exec();*/
 }
 
 RepositorySettings::~RepositorySettings() {
 }
+
+QList<picogen_repository::Collection> RepositorySettings::collections() const {
+        return collections_;
+}
+
+
+} // namespace picogen_repository {
