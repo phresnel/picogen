@@ -23,62 +23,75 @@
 
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
+#include <QGraphicsItem>
+#include <QGraphicsObject>
+
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+
 #include <QTimeLine>
 
 #include <QDebug>
+#include <QResizeEvent>
 
-PreviewImageAnimation::PreviewImageAnimation(QWidget *parent)
-        : QGraphicsItemAnimation(parent)
+PreviewImageObject::PreviewImageObject (QGraphicsItem* parent)
+        : QGraphicsPixmapItem(parent)
+        , anim(new QParallelAnimationGroup(this))
 {
 }
+PreviewImageObject::~PreviewImageObject() {
+}
+void PreviewImageObject::fadeIn() {
+        anim->clear();
 
-PreviewImageAnimation::~PreviewImageAnimation() {
-        if (timeLine())
-                timeLine()->stop();
+        QPropertyAnimation *a0 = new QPropertyAnimation(this, "opacity");
+        a0->setDuration(1000);
+        a0->setStartValue(opacity());
+        a0->setEndValue(1);
+
+        QPropertyAnimation *a1 = new QPropertyAnimation(this, "rotation");
+        a1->setDuration(1000);
+        a1->setStartValue(rotation());
+        a1->setEndValue(0);
+
+        QPropertyAnimation *a2 = new QPropertyAnimation(this, "pos");
+        a2->setDuration(1000);
+        a2->setStartValue(pos());
+        a2->setEndValue(QPointF(0,0));
+
+
+        anim->addAnimation(a0);
+        anim->addAnimation(a1);
+        anim->addAnimation(a2);
+
+        anim->start();
 }
 
-void PreviewImageAnimation::fadeOut() {
-        fadeMode = fade_out;
+void PreviewImageObject::fadeOut() {
+        anim->clear();
 
-        if (item()) {
-                qreal t = timeLine() ? timeLine()->currentValue() : 1;
-                setPosAt(0, posAt(t));
-                setRotationAt(0, rotationAt(t));
-        }
+        QPropertyAnimation *a0 = new QPropertyAnimation(this, "opacity");
+        a0->setDuration(1000);
+        a0->setStartValue(opacity());
+        a0->setEndValue(0);
 
-        setPosAt(1, QPointF(0,300));
-        setRotationAt (1, -60 + 120 * (qrand() / (double)RAND_MAX));
+        QPropertyAnimation *a1 = new QPropertyAnimation(this, "rotation");
+        a1->setDuration(1000);
+        a1->setStartValue(rotation());
+        a1->setEndValue(-60 + 120 * (qrand() / (double)RAND_MAX));
+
+        QPropertyAnimation *a2 = new QPropertyAnimation(this, "pos");
+        a2->setDuration(1000);
+        a2->setStartValue(pos());
+        a2->setEndValue(QPointF(0.9,0));
+
+
+        anim->addAnimation(a0);
+        anim->addAnimation(a1);
+        anim->addAnimation(a2);
+
+        anim->start();
 }
-
-void PreviewImageAnimation::fadeIn(){
-        fadeMode = fade_in;
-
-        if (item()) {
-                qreal t = timeLine() ? timeLine()->currentValue() : 1;
-                setPosAt(0, posAt(t));
-                setRotationAt(0, rotationAt(t));
-        }
-
-        setPosAt(1, QPointF(0,0));
-        setRotationAt (1, -7.5 + 15 * (qrand() / (double)RAND_MAX));
-}
-
-void PreviewImageAnimation::beforeAnimationStep (qreal step) {
-        if (!item()) return;
-
-        switch(fadeMode) {
-        case fade_in:
-                item()->setOpacity(step);
-                break;
-        case fade_out: {
-                item()->setOpacity(1-step);
-                break;
-        }
-        }
-}
-
-
-
 
 
 
@@ -90,50 +103,55 @@ PreviewWidget::PreviewWidget(QWidget *parent) :
 {
         ui->setupUi(this);
         ui->graphicsView->setScene(scene);
-        ui->graphicsView->scale(0.3,0.3);
 }
 
 PreviewWidget::~PreviewWidget() {
+        foreach (PreviewImageObject *ob, images)
+                delete ob;
         delete ui;
 }
 
-void PreviewWidget::addImage (QImage const &img) {
+void PreviewWidget::addImage (QImage img) {
+        PreviewImageObject *item = new PreviewImageObject();
+        item->setPixmap(QPixmap::fromImage(img));
+        item->setScale(1.0 / item->boundingRect().width());
+        item->setOffset(-0.5*item->boundingRect().width(),
+                        -0.5*item->boundingRect().height());
 
-        QGraphicsPixmapItem *item = ui->graphicsView
-                                    ->scene()
-                                    ->addPixmap(QPixmap::fromImage(img));
-
-        PreviewImageAnimation *animation = new PreviewImageAnimation(this);
-        QTimeLine *timer = new QTimeLine(1000, this);
-
-        timer->setFrameRange(0, 1);
-        timer->setCurveShape(QTimeLine::EaseInOutCurve);
-
-        animation->setItem(item);
-        animation->setTimeLine(timer);
-
-        item->setOpacity(0);
-        animations.push_back(animation);
-
-        // so that image 0 is always shown first
-        if (animations.count() == 1) {
+        if (images.count() == 0)
                 item->setOpacity(1);
-        }
+        else
+                item->setOpacity(0);
+
+        images.push_back(item);
+        scene->addItem(item);
 }
 
 void PreviewWidget::timerEvent(QTimerEvent *) {
-        if (animations.count() <= 1)
+        if (images.count() <= 1)
                 return;
 
-        const int next = (current+1) % animations.count();
-
-        animations[current]->fadeOut();
-        animations[current]->timeLine()->stop();
-        animations[current]->timeLine()->start();
-
-        animations[next]->fadeIn();
-        animations[next]->timeLine()->stop();
-        animations[next]->timeLine()->start();
-
+        const int next = (current+1) % images.count();
+        images[current]->fadeOut();
+        images[next]->fadeIn();
         current = next;
+}
+
+void PreviewWidget::resizeEvent(QResizeEvent *) {
+        /*ui->graphicsView->fitInView(QRectF(-1,-1, 1, 1),
+                                    Qt::KeepAspectRatio);*/
+        fitView();
+}
+
+void PreviewWidget::showEvent(QShowEvent *) {
+        /*ui->graphicsView->fitInView(QRectF(-1,-1, 1, 1),
+                                    Qt::KeepAspectRatio);*/
+        fitView();
+}
+
+void PreviewWidget::fitView() {
+        ui->graphicsView->fitInView(QRectF(-1,-1, 1, 1),
+                                    Qt::KeepAspectRatio);
+        QTransform t = ui->graphicsView->transform();
+        qDebug() << t;
 }

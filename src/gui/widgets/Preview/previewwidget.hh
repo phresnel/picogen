@@ -23,12 +23,14 @@
 
 #include <QWidget>
 #include <QGraphicsItemAnimation>
+#include <QGraphicsObject>
+#include <QGraphicsPixmapItem>
 
-class QGraphicsPixmapItem;
 class QGraphicsScene;
+class QParallelAnimationGroup;
 
 
-
+/*
 class PreviewImageAnimation : public QGraphicsItemAnimation {
         Q_OBJECT
 public:
@@ -45,7 +47,24 @@ private:
         enum FadeMode { fade_in, fade_out };
         FadeMode fadeMode;
 };
+*/
 
+
+class PreviewImageObject : public QObject, public QGraphicsPixmapItem {
+        Q_OBJECT
+        Q_PROPERTY (qreal opacity READ opacity WRITE setOpacity)
+        Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+        Q_PROPERTY(qreal rotation READ rotation WRITE setRotation)
+public:
+        PreviewImageObject (QGraphicsItem* parent=0);
+        virtual ~PreviewImageObject();
+
+        void fadeIn();
+        void fadeOut();
+
+private:
+        QParallelAnimationGroup *anim;
+};
 
 
 
@@ -61,16 +80,21 @@ public:
         explicit PreviewWidget(QWidget *parent = 0);
         ~PreviewWidget();
 
-        void addImage (QImage const &);
+        void addImage (QImage);
+
+        void resizeEvent(QResizeEvent *);
+        void showEvent(QShowEvent *);
 
 private:
         Ui::PreviewWidget *ui;
-        QList<PreviewImageAnimation*> animations;
+        //QList<PreviewImageAnimation*> animations;
+        QList<PreviewImageObject*> images;
         QGraphicsScene *scene;
         int current;
 
 private:
         void timerEvent(QTimerEvent *event);
+        void fitView();
 };
 
 #endif // PREVIEWWIDGET_HH
