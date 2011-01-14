@@ -81,6 +81,10 @@ QString Fragment::path() const {
         return path_;
 }
 
+QStringList Fragment::previewFilenames() const {
+        return previewFilenames_;
+}
+
 QString Fragment::name() const {
         return name_;
 }
@@ -113,6 +117,17 @@ void Fragment::reload() {
         author_ = readAll ("author");
         email_ = readAll ("email");
         homepage_ = readAll ("homepage");
+
+        QString previewFolder = QDir(path_).absolutePath() + "/preview/";
+
+        QDir previewDir = QDir(previewFolder);
+        QStringList filenames = previewDir
+                                .entryList(QStringList()
+                                           <<"*.jpg",
+                                           QDir::Files, QDir::Name);
+        previewFilenames_.clear();
+        foreach (QString f, filenames)
+                previewFilenames_.push_back(previewDir.absoluteFilePath(f));
 }
 
 

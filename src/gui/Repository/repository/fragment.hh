@@ -21,7 +21,7 @@
 #ifndef FRAGMENT_HH
 #define FRAGMENT_HH
 
-#include <QString>
+#include <QStringList>
 #include "collection.hh"
 
 namespace picogen_repository {
@@ -49,6 +49,8 @@ public:
         QString name() const;
         //void setName(QString);
 
+        QStringList previewFilenames() const;
+
         virtual void save() const;
         virtual void reload();
 
@@ -60,6 +62,7 @@ private:
         Collection package_;
         QString path_, name_;
         QString title_, author_, email_, homepage_;
+        QStringList previewFilenames_;
 };
 
 

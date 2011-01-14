@@ -13,7 +13,7 @@ SOURCES += \
         repositorymainwindow.cc
 
 HEADERS  += \
-        repositorymainwindow.hh \        
+        repositorymainwindow.hh \
         shared_ptr.hh \
         optional.hh
 
@@ -22,6 +22,7 @@ FORMS    += repositorymainwindow.ui
 include(../widgets/QuatschPresetEditor/quatschpreseteditor.pri)
 include(../widgets/QuatschPreview/quatschpreview.pri)
 include(../widgets/FilenameEdit/filenameedit.pri)
+include(../widgets/preview/preview.pri)
 include(../CosyGui/cosyscene.pri)
 include(fragment/fragment.pri)
 include(repository/repository.pri)

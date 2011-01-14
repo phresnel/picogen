@@ -25,6 +25,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QGraphicsObject>
+#include <QImage>
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -121,12 +122,34 @@ PreviewWidget::PreviewWidget(QWidget *parent) :
 {
         ui->setupUi(this);
         ui->graphicsView->setScene(scene);
+
+        reset();
 }
 
 PreviewWidget::~PreviewWidget() {
+        reset();
+        delete ui;
+}
+
+void PreviewWidget::reset() {
         foreach (PreviewImageObject *ob, images)
                 delete ob;
-        delete ui;
+        current = 0;
+        fitView();
+}
+
+void PreviewWidget::addImages (QStringList filenames) {
+        foreach (QString filename, filenames)
+                addImage(filename);
+}
+
+void PreviewWidget::setImages (QStringList filenames) {
+        reset();
+        addImages (filenames);
+}
+
+void PreviewWidget::addImage (QString filename) {
+        addImage (QImage(filename));
 }
 
 void PreviewWidget::addImage (QImage img) {

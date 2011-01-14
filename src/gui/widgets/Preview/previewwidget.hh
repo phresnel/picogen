@@ -81,6 +81,10 @@ public:
         ~PreviewWidget();
 
         void addImage (QImage);
+        void addImage (QString filename);
+        void addImages (QStringList filenames);
+        void setImages (QStringList filenames);
+        void reset();
 
         void resizeEvent(QResizeEvent *);
         void showEvent(QShowEvent *);

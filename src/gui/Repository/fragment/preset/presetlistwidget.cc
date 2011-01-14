@@ -37,6 +37,7 @@ PresetListWidget::PresetListWidget(QWidget *parent) :
     lastSelected_(optional<ParametricPreset>())
 {
         ui->setupUi(this);
+        ui->previewWidget->startTimer(3000);
 }
 
 PresetListWidget::~PresetListWidget()
@@ -87,6 +88,15 @@ void PresetListWidget::on_listWidget_itemSelectionChanged() {
                 lastSelected_ = 0 != ppui ?
                                 ppui->preset() :
                                 optional<ParametricPreset>();
+                if (ppui) {
+                        lastSelected_ = ppui->preset();
+                        ui->previewWidget->setImages(
+                                        ppui->preset().previewFilenames());
+                        qDebug() << ppui->preset().previewFilenames();
+                } else {
+                        lastSelected_ = optional<ParametricPreset>();
+                        ui->previewWidget->reset();
+                }
         }
 }
 
