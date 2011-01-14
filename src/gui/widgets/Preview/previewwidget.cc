@@ -44,20 +44,28 @@ PreviewImageObject::~PreviewImageObject() {
 void PreviewImageObject::fadeIn() {
         anim->clear();
 
+        QEasingCurve curve;
+        switch (qrand()%2) {
+        case 0: curve = QEasingCurve::OutQuint; break;
+        case 1: curve = QEasingCurve::OutExpo; break;
+        }
+
         QPropertyAnimation *a0 = new QPropertyAnimation(this, "opacity");
-        a0->setDuration(1000);
+        a0->setDuration(2000);
         a0->setStartValue(opacity());
         a0->setEndValue(1);
 
         QPropertyAnimation *a1 = new QPropertyAnimation(this, "rotation");
-        a1->setDuration(1000);
+        a1->setDuration(2000);
         a1->setStartValue(rotation());
         a1->setEndValue(0);
+        a1->setEasingCurve(curve);
 
         QPropertyAnimation *a2 = new QPropertyAnimation(this, "pos");
-        a2->setDuration(1000);
+        a2->setDuration(2000);
         a2->setStartValue(pos());
         a2->setEndValue(QPointF(0,0));
+        a2->setEasingCurve(curve);
 
 
         anim->addAnimation(a0);
@@ -70,20 +78,30 @@ void PreviewImageObject::fadeIn() {
 void PreviewImageObject::fadeOut() {
         anim->clear();
 
+        QEasingCurve curve;
+        switch (qrand()%3) {
+        case 0: curve = QEasingCurve::InBack; break;
+        case 1: curve = QEasingCurve::InQuint; break;
+        case 2: curve = QEasingCurve::InExpo; break;
+        }
+
         QPropertyAnimation *a0 = new QPropertyAnimation(this, "opacity");
-        a0->setDuration(1000);
+        a0->setDuration(2000);
         a0->setStartValue(opacity());
         a0->setEndValue(0);
 
         QPropertyAnimation *a1 = new QPropertyAnimation(this, "rotation");
-        a1->setDuration(1000);
+        a1->setDuration(2000);
         a1->setStartValue(rotation());
         a1->setEndValue(-60 + 120 * (qrand() / (double)RAND_MAX));
+        a1->setEasingCurve(curve);
 
         QPropertyAnimation *a2 = new QPropertyAnimation(this, "pos");
-        a2->setDuration(1000);
+        a2->setDuration(2000);
         a2->setStartValue(pos());
-        a2->setEndValue(QPointF(0.9,0));
+        a2->setEndValue(QPointF(-0.5 + qrand()/(double)RAND_MAX,
+                                -0.5 + qrand()/(double)RAND_MAX));
+        a2->setEasingCurve(curve);
 
 
         anim->addAnimation(a0);
@@ -138,20 +156,16 @@ void PreviewWidget::timerEvent(QTimerEvent *) {
 }
 
 void PreviewWidget::resizeEvent(QResizeEvent *) {
-        /*ui->graphicsView->fitInView(QRectF(-1,-1, 1, 1),
-                                    Qt::KeepAspectRatio);*/
         fitView();
 }
 
 void PreviewWidget::showEvent(QShowEvent *) {
-        /*ui->graphicsView->fitInView(QRectF(-1,-1, 1, 1),
-                                    Qt::KeepAspectRatio);*/
         fitView();
 }
 
 void PreviewWidget::fitView() {
-        ui->graphicsView->fitInView(QRectF(-1,-1, 1, 1),
+        const QRectF rect = QRectF(-0.5,-0.5, 1, 1);
+        ui->graphicsView->fitInView(rect,
                                     Qt::KeepAspectRatio);
-        QTransform t = ui->graphicsView->transform();
-        qDebug() << t;
+        ui->graphicsView->setSceneRect(rect);
 }

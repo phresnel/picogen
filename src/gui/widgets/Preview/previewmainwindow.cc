@@ -32,7 +32,7 @@ PreviewMainWindow::PreviewMainWindow(QWidget *parent) :
         ui->centralWidget->addImage(QImage("C:/Dokumente und Einstellungen/All Users/Dokumente/Eigene Bilder/Beispielbilder/Sonnenuntergang.jpg"));
         ui->centralWidget->addImage(QImage("C:/Dokumente und Einstellungen/All Users/Dokumente/Eigene Bilder/Beispielbilder/Wasserlilien.jpg"));
         ui->centralWidget->addImage(QImage("C:/Dokumente und Einstellungen/All Users/Dokumente/Eigene Bilder/Beispielbilder/Winter.jpg"));
-        ui->centralWidget->startTimer(3000);
+        ui->centralWidget->startTimer(4000);
 }
 
 PreviewMainWindow::~PreviewMainWindow()
