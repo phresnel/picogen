@@ -54,13 +54,13 @@ void TerrainFitting::setFitting(
         ui->visibleExtent->setValue(f.lazyQuadtreeVisibleExtent());
 }
 
-void TerrainFitting::on_visibleExtent_editingFinished() {
+void TerrainFitting::on_visibleExtent_valueChanged(double) {
         fitting_->setLazyQuadtreeVisibleExtent (ui->visibleExtent->value());
         emit fittingChanged();
 }
 
 
-void TerrainFitting::on_maxRecursion_editingFinished() {
+void TerrainFitting::on_maxRecursion_valueChanged(int) {
         const int val = ui->maxRecursion->value();
 
         // Larger quadtrees can become gigabytes in size. Therefore warn users.

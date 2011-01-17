@@ -55,8 +55,8 @@ private:
         redshift::shared_ptr<cosyscene::TerrainFitting> fitting_;
 
 private slots:
-        void on_visibleExtent_editingFinished();
-        void on_maxRecursion_editingFinished();
+        void on_visibleExtent_valueChanged(double);
+        void on_maxRecursion_valueChanged(int);
 };
 
 #endif // TERRAINFITTING_HH

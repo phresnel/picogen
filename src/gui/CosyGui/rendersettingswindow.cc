@@ -99,19 +99,11 @@ void RenderSettingsWindow::updateViews() {
         }
 }
 
-void RenderSettingsWindow::on_widthSpin_editingFinished() {
-        renderSettings_->setWidth (ui->widthSpin->value());
-}
-
-void RenderSettingsWindow::on_heightSpin_editingFinished() {
-        renderSettings_->setHeight (ui->heightSpin->value());
-}
-
-void RenderSettingsWindow::on_samplesPerPixelSpin_editingFinished() {
+void RenderSettingsWindow::on_samplesPerPixelSpin_valueChanged(int) {
         renderSettings_->setSamplesPerPixel (ui->samplesPerPixelSpin->value());
 }
 
-void RenderSettingsWindow::on_seedSpin_editingFinished() {
+void RenderSettingsWindow::on_seedSpin_valueChanged(int) {
         renderSettings_->setRandomSeed (ui->seedSpin->value());
 }
 
@@ -123,15 +115,17 @@ void RenderSettingsWindow::on_widthSpin_valueChanged(int ) {
         const double mp = (ui->widthSpin->value()*ui->heightSpin->value())
                           / 1000000.;
         ui->megapixelsDisplay->setText("(" + QString::number(mp, 'f', 1) + " MPixels)");
+        renderSettings_->setWidth (ui->widthSpin->value());
 }
 
 void RenderSettingsWindow::on_heightSpin_valueChanged(int ) {
         const double mp = (ui->widthSpin->value()*ui->heightSpin->value())
                           / 1000000.;
         ui->megapixelsDisplay->setText("(" + QString::number(mp, 'f', 1) + " MPixels)");
+        renderSettings_->setHeight (ui->heightSpin->value());
 }
 
-void RenderSettingsWindow::on_maxLazyQuadtreeDepthSpin_editingFinished() {
+void RenderSettingsWindow::on_maxLazyQuadtreeDepthSpin_valueChanged(int) {
         renderSettings_->setMaxLazyQuadtreeDepth (
                         ui->maxLazyQuadtreeDepthSpin->value());
 }
@@ -261,8 +255,8 @@ void RenderSettingsWindow::setAutoResolutionFromAction() {
                 ui->widthSpin->setValue(res.x());
                 ui->heightSpin->setValue(res.y());
 
-                on_widthSpin_editingFinished();
-                on_heightSpin_editingFinished();
+                on_widthSpin_valueChanged(ui->widthSpin->value());
+                on_heightSpin_valueChanged(ui->heightSpin->value());
         }
 }
 

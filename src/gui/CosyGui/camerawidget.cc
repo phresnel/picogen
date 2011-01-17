@@ -124,13 +124,13 @@ void CameraWidget::showCubemapFaceParameters() {
         }
 }
 
-void CameraWidget::on_pinholeFrontPlaneDistance_editingFinished() {
+void CameraWidget::on_pinholeFrontPlaneDistance_valueChanged(double) {
         cosyscene::PinholeCamera cam = camera_->pinholeCamera();
         cam.setFrontPlaceDistance(ui->pinholeFrontPlaneDistance->value());
         camera_->toPinholeCamera(cam);
 }
 
-void CameraWidget::on_cylindricalFrontPlaneDistance_editingFinished() {
+void CameraWidget::on_cylindricalFrontPlaneDistance_valueChanged(double) {
         cosyscene::CylindricalCamera cam = camera_->cylindricalCamera();
         cam.setFrontPlaceDistance(ui->cylindricalFrontPlaneDistance->value());
         camera_->toCylindricalCamera(cam);

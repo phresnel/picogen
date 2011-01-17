@@ -29,7 +29,7 @@ namespace Ui {
 }
 
 namespace cosyscene {
-                class Water;
+        class Water;
         class Scene;
 }
 

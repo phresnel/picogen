@@ -59,8 +59,8 @@ private:
 
 private slots:
         void on_cubemapFace_currentIndexChanged(int index);
-        void on_cylindricalFrontPlaneDistance_editingFinished();
-        void on_pinholeFrontPlaneDistance_editingFinished();
+        void on_cylindricalFrontPlaneDistance_valueChanged(double);
+        void on_pinholeFrontPlaneDistance_valueChanged(double);
         void on_cameraKind_currentIndexChanged(int index);
         void on_stashButton_clicked();
         void on_stashRestoreButton_clicked();

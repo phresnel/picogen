@@ -59,13 +59,11 @@ private slots:
         void on_ambientSamples_valueChanged(int );
         void on_surfaceIntegrator_currentIndexChanged(int index);
         void on_enableMaxQuadtreeDepthOverride_toggled(bool checked);
-        void on_maxLazyQuadtreeDepthSpin_editingFinished();
+        void on_maxLazyQuadtreeDepthSpin_valueChanged(int);
         void on_widthSpin_valueChanged(int );
         void on_heightSpin_valueChanged(int );
-        void on_seedSpin_editingFinished();
-        void on_samplesPerPixelSpin_editingFinished();
-        void on_heightSpin_editingFinished();
-        void on_widthSpin_editingFinished();
+        void on_seedSpin_valueChanged(int);
+        void on_samplesPerPixelSpin_valueChanged(int);
 
         void setAutoResolutionFromAction();
 
