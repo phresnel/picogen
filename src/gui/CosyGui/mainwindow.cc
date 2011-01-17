@@ -159,7 +159,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->navigation->setNavigation(scene->navigation());
         ui->navigation->setCreateRedshiftClosure(redshiftSceneCreator);
         ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
-        ui->filmSettings->setFilmSettings (scene->filmSettings());
+        ui->filmSettingsAndCamera->setFilmSettingsAndCamera (scene->filmSettings(),
+                                                             scene->camera());
 
         connect (ui->renderingSetup, SIGNAL(productionRenderProcessRequested()),
                  SLOT(onProductionRenderProcessRequested()));
@@ -179,7 +180,7 @@ MainWindow::MainWindow(QWidget *parent) :
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->renderingSetup, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
-                 ui->filmSettings, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
+                 ui->filmSettingsAndCamera, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         redshiftSceneCreator->scene = scene;
 
         // Aesthetics.
@@ -211,7 +212,7 @@ void MainWindow::on_waterCommandLink_clicked() {
 void MainWindow::on_filmCommandLink_clicked() {
         switchOffCommandLinks();
         ui->filmCommandLink->setChecked(true);
-        ui->stackedWidget->setCurrentWidget(ui->filmSettings);
+        ui->stackedWidget->setCurrentWidget(ui->filmSettingsAndCamera);
 }
 
 void MainWindow::on_navigationCommandLink_clicked() {

@@ -38,6 +38,7 @@ class Navigation;
 class RenderSettings;
 class TwinRenderSettings;
 class FilmSettings;
+class Camera;
 
 class Scene
 {
@@ -58,6 +59,10 @@ public:
         }
         redshift::shared_ptr<Navigation> navigation() const {
                 return navigation_;
+        }
+
+        redshift::shared_ptr<Camera> camera() const {
+                return camera_;
         }
 
         redshift::shared_ptr<TwinRenderSettings> renderSettings() const {
@@ -82,6 +87,7 @@ private:
         redshift::shared_ptr<Water> water_;
         redshift::shared_ptr<SunSky> sunSky_;
         redshift::shared_ptr<Navigation> navigation_;
+        redshift::shared_ptr<Camera> camera_;
 
         redshift::shared_ptr<TwinRenderSettings> renderSettings_;
         redshift::shared_ptr<FilmSettings> filmSettings_;

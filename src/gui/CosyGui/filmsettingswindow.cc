@@ -33,6 +33,7 @@ FilmSettingsWindow::FilmSettingsWindow(QWidget *parent) :
     filmSettings_(new cosyscene::FilmSettings())
 {
         ui->setupUi(this);
+        ui->stashFrame->setTitle("Film");
 }
 
 FilmSettingsWindow::~FilmSettingsWindow() {

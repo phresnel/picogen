@@ -1,6 +1,6 @@
-INCLUDEPATH += $$PWD
+INCLUDEPATH *= $$PWD
 
-SOURCES += \
+SOURCES *= \
     $$PWD/cosyscene/terrain.cc \
     $$PWD/cosyscene/scene.cc \
     $$PWD/cosyscene/save_load.cc \
@@ -15,9 +15,10 @@ SOURCES += \
     $$PWD/cosyscene/rendersettings.cc \
     $$PWD/cosyscene/filmsettings.cc \
     $$PWD/cosyscene/surfaceintegrator.cc \
-    $$PWD/cosyscene/water.cc
+    $$PWD/cosyscene/water.cc \
+    $$PWD/cosyscene/camera.cc
 
-HEADERS += \
+HEADERS *= \
     $$PWD/cosyscene/stash.hh \
     $$PWD/cosyscene/terrain.hh \
     $$PWD/cosyscene/scene.hh \
@@ -49,4 +50,6 @@ HEADERS += \
     $$PWD/cosyscene/surfaceintegrator.hh \
     $$PWD/cosyscene/serialization/surfaceintegrator.ser.hh \
     $$PWD/cosyscene/water.hh \
-    $$PWD/cosyscene/serialization/water.ser.hh
+    $$PWD/cosyscene/serialization/water.ser.hh \
+    $$PWD/cosyscene/camera.hh \
+    $$PWD/cosyscene/serialization/camera.ser.hh

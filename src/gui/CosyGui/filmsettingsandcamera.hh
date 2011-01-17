@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2010  Sebastian Mach (*1983)
+// Copyright (C) 2011  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,32 +18,41 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifndef FILMSETTINGSANDCAMERA_HH
+#define FILMSETTINGSANDCAMERA_HH
 
-#ifndef SCENE_INL_HH_20100902
-#define SCENE_INL_HH_20100902
+#include <QWidget>
+#include "redshift/include/smart_ptr.hh"
 
-#include "../scene.hh"
-
-#include "cosyscene/serialization/terrain.ser.hh"
-#include "cosyscene/serialization/water.ser.hh"
-#include "cosyscene/serialization/sunsky.ser.hh"
-#include "cosyscene/serialization/navigation.ser.hh"
-#include "cosyscene/serialization/camera.ser.hh"
-#include "cosyscene/serialization/rendersettings.ser.hh"
-#include "cosyscene/serialization/filmsettings.ser.hh"
+namespace Ui {
+    class FilmSettingsAndCamera;
+}
 
 namespace cosyscene {
-template<typename Arch>
-inline void Scene::serialize (Arch &arch) {
-        using actuarius::pack;
-        arch & pack("terrain", *terrain_);
-        arch & pack("water", *water_);
-        arch & pack("sunsky", *sunSky_);
-        arch & pack("navigation", *navigation_);
-        arch & pack("camera", *camera_);
-        arch & pack("render-settings", *renderSettings_);
-        arch & pack("film-settings", *filmSettings_);
-}
+        class Scene;
+        class FilmSettings;
+        class Camera;
 }
 
-#endif // SCENE_INL_HH
+class FilmSettingsAndCamera : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit FilmSettingsAndCamera(QWidget *parent = 0);
+    ~FilmSettingsAndCamera();
+
+    void setFilmSettingsAndCamera(
+            redshift::shared_ptr<cosyscene::FilmSettings>,
+            redshift::shared_ptr<cosyscene::Camera>,
+            bool blockSignals = true
+    );
+
+public slots:
+    void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+
+private:
+    Ui::FilmSettingsAndCamera *ui;
+};
+
+#endif // FILMSETTINGSANDCAMERA_HH

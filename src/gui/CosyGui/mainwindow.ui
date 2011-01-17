@@ -498,7 +498,7 @@ stop: 0 #fed, stop: 1 #bbb);
           </size>
          </property>
          <property name="text">
-          <string>Film</string>
+          <string>Film &amp;&amp; Camera</string>
          </property>
          <property name="icon">
           <iconset resource="resources.qrc">
@@ -615,9 +615,9 @@ stop: 0 #fed, stop: 1 #bbb);
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>5</number>
+          <number>0</number>
          </property>
-         <widget class="FilmSettingsWindow" name="filmSettings"/>
+         <widget class="FilmSettingsAndCamera" name="filmSettingsAndCamera"/>
          <widget class="NavigationWindow" name="navigation"/>
          <widget class="TerrainWindow" name="terrain"/>
          <widget class="SunSkyWindow" name="sunSky"/>
@@ -695,12 +695,6 @@ stop: 0 #fed, stop: 1 #bbb);
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FilmSettingsWindow</class>
-   <extends>QWidget</extends>
-   <header>filmsettingswindow.hh</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>TerrainWindow</class>
    <extends>QWidget</extends>
    <header>terrainwindow.hh</header>
@@ -728,6 +722,12 @@ stop: 0 #fed, stop: 1 #bbb);
    <class>WaterWindow</class>
    <extends>QWidget</extends>
    <header>waterwindow.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FilmSettingsAndCamera</class>
+   <extends>QWidget</extends>
+   <header>filmsettingsandcamera.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

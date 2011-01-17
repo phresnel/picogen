@@ -30,7 +30,9 @@ SOURCES += main.cc \
     stylesheetliveeditor.cc \
     terrainfitting.cc \
     waterwindow.cc \
-    waterfitting.cc
+    waterfitting.cc \
+    camerawidget.cc \
+    filmsettingsandcamera.cc
 HEADERS += mainwindow.hh \
     terrainwindow.hh \
     stashview.hh \
@@ -47,7 +49,9 @@ HEADERS += mainwindow.hh \
     terrainfitting.hh \
     scopedblocksignals.hh \
     waterwindow.hh \
-    waterfitting.hh
+    waterfitting.hh \
+    camerawidget.hh \
+    filmsettingsandcamera.hh
 FORMS += mainwindow.ui \
     terrainwindow.ui \
     stashview.ui \
@@ -62,7 +66,9 @@ FORMS += mainwindow.ui \
     stylesheetliveeditor.ui \
     terrainfitting.ui \
     waterwindow.ui \
-    waterfitting.ui
+    waterfitting.ui \
+    camerawidget.ui \
+    filmsettingsandcamera.ui
 LIBS += ../../.libs/libredshift.a ../../.libs/libxyto.a \
     -lgomp \
     -lnoise \

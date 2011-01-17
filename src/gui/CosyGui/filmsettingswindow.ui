@@ -18,7 +18,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="StashFrame" name="frame_2">
+    <widget class="StashFrame" name="stashFrame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -28,7 +28,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="frame">
+    <widget class="QFrame" name="filmFrame">
      <layout class="QFormLayout" name="formLayout">
       <property name="fieldGrowthPolicy">
        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>

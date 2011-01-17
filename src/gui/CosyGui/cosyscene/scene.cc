@@ -23,6 +23,7 @@
 #include "water.hh"
 #include "sunsky.hh"
 #include "navigation.hh"
+#include "camera.hh"
 #include "rendersettings.hh"
 #include "filmsettings.hh"
 #include "material.hh"
@@ -37,6 +38,7 @@ Scene::Scene()
 , water_(new Water())
 , sunSky_(new SunSky())
 , navigation_(new Navigation())
+, camera_(new Camera())
 , renderSettings_(new TwinRenderSettings())
 , filmSettings_(new FilmSettings())
 {
@@ -97,16 +99,49 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
 
 
         TwinRenderSettings const &twinRenderSettings = *renderSettings_;
-        RenderSettings const &renderSettings = usePreviewSettings ?
+        cosyscene::RenderSettings const &renderSettings = usePreviewSettings ?
                                                *twinRenderSettings.preview() :
                                                *twinRenderSettings.production();
+        cosyscene::Camera const &camera = *camera_;
 
         // Camera
         const cosyscene::Navigation &nav = *navigation_;
 
         redshift_file::Camera cam;
-        cam.type = redshift_file::Camera::pinhole;
-        cam.pinholeParams.front = 1;
+
+        switch (camera.kind()) {
+        case cosyscene::Camera::pinhole:
+                cam.type = redshift_file::Camera::pinhole;
+                cam.pinholeParams.front = camera.pinholeCamera()
+                                          .frontPlaneDistance();
+                break;
+        case cosyscene::Camera::cylindrical:
+                cam.type = redshift_file::Camera::cylindrical;
+                cam.cylindricalParams.front = camera.cylindricalCamera()
+                                              .frontPlaneDistance();
+                break;
+        case cosyscene::Camera::cubemap_face:
+                switch (camera.cubemapFaceCamera().face()) {
+                case cosyscene::CubemapFaceCamera::front:
+                        cam.type = redshift_file::Camera::cubemap_front;
+                        break;
+                case cosyscene::CubemapFaceCamera::back:
+                        cam.type = redshift_file::Camera::cubemap_back;
+                        break;
+                case cosyscene::CubemapFaceCamera::left:
+                        cam.type = redshift_file::Camera::cubemap_left;
+                        break;
+                case cosyscene::CubemapFaceCamera::right:
+                        cam.type = redshift_file::Camera::cubemap_right;
+                        break;
+                case cosyscene::CubemapFaceCamera::bottom:
+                        cam.type = redshift_file::Camera::cubemap_bottom;
+                        break;
+                case cosyscene::CubemapFaceCamera::top:
+                        cam.type = redshift_file::Camera::cubemap_top;
+                        break;
+                }
+        }
 
         switch (nav.kind()) {
         case cosyscene::Navigation::YawPitchRoll: {

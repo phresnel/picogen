@@ -1,5 +1,5 @@
-INCLUDEPATH += $$PWD 
+INCLUDEPATH *= $$PWD
 
-HEADERS += $$PWD/renderwindow.hh
-SOURCES += $$PWD/renderwindow.cc
-FORMS += $$PWD/renderwindow.ui
+HEADERS *= $$PWD/renderwindow.hh
+SOURCES *= $$PWD/renderwindow.cc
+FORMS *= $$PWD/renderwindow.ui
