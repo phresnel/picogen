@@ -28,6 +28,7 @@
 
 #include "renderwindow.hh"
 #include "stylesheetliveeditor.hh"
+#include "textdialog.hh"
 
 #include <iostream>
 #include <ctime>
@@ -294,7 +295,13 @@ void MainWindow::on_actionLoad_triggered() {
 
 void MainWindow::on_renderCommandLink_clicked() {
         // Et hop.
-        ui->renderWidget->setSceneAndRender(scene->toRedshiftScene(), true);
+        redshift::shared_ptr<redshift_file::Scene>
+                        scene = this->scene->toRedshiftScene();
+        ui->renderWidget->setSceneAndRender(scene, true);
+
+        std::ostringstream ss;
+        redshift_file::save_scene(*scene, ss);
+        lastRedshiftJob = ss.str();
 }
 
 
@@ -333,6 +340,10 @@ void MainWindow::onProductionRenderProcessRequested() {
                                 redshiftSceneCreator->createProductionScene();
         redshift_file::save_scene(*scene, tmp.fileName().toStdString());
         RenderWindow::CosyGuiRenderProcess(tmp.fileName(), 0, 0);
+
+        std::ostringstream ss;
+        redshift_file::save_scene(*scene, ss);
+        lastRedshiftJob = ss.str();
 
         // Would yield deadlock as no other process might remove the file
         // as long as tmp is alive.
@@ -381,6 +392,10 @@ void MainWindow::onPreviewRenderProcessRequested() {
         tmp.open();
         redshift_file::save_scene(*scene, tmp.fileName().toStdString());
 
+        std::ostringstream ss;
+        redshift_file::save_scene(*scene, ss);
+        lastRedshiftJob = ss.str();
+
         RenderWindow::CosyGuiRenderProcess(QFileInfo(tmp.fileName()).canonicalFilePath(),
                                            0, 0);
 }
@@ -398,7 +413,7 @@ void MainWindow::on_actionShow_redshift_file_triggered() {
         bb.setText("Preview or Production?");
         bb.exec();
 
-        std::stringstream ss;
+        std::ostringstream ss;
         if (bb.clickedButton() == preview) {
                 save_scene(*redshiftSceneCreator->createPreviewScene(), ss);
         } else if (bb.clickedButton() == production) {
@@ -407,7 +422,13 @@ void MainWindow::on_actionShow_redshift_file_triggered() {
                 return;
         }
 
-        QMessageBox scbb;
-        scbb.setText(QString::fromStdString(ss.str()));
-        scbb.exec();
+        TextDialog d(true, this);
+        d.setText(ss.str());
+        d.exec();
+}
+
+void MainWindow::on_actionShow_redshift_file_used_for_last_rendering_triggered() {
+        TextDialog d(true, this);
+        d.setText(lastRedshiftJob);
+        d.exec();
 }

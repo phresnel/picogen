@@ -64,6 +64,8 @@ private:
         };
         RedshiftSceneCreator::Ptr redshiftSceneCreator;
 
+        std::string lastRedshiftJob; // for debugging purposes
+
 signals:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
@@ -72,6 +74,7 @@ public slots:
         void onPreviewRenderProcessRequested();
 
 private slots:
+        void on_actionShow_redshift_file_used_for_last_rendering_triggered();
         void on_actionShow_redshift_file_triggered();
         void on_waterCommandLink_clicked();
         void on_action_Stylesheet_triggered();
