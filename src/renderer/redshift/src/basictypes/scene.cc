@@ -268,8 +268,9 @@ void Scene::renderToFilm(
         const uint64_t totalNumberOfSamples = film->width()*film->height()*numAASamples;
         uint64_t sampleNumber = 0;
 
-        if (aggregate)
+        if (aggregate) {
                 aggregate->prepare(*this);
+        }
 
         // non-portable thread id visualisation
         /*const Color threadCol[] = {

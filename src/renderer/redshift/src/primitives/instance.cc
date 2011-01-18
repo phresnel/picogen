@@ -62,4 +62,9 @@ shared_ptr<Bsdf> Instance::getBsdf(const DifferentialGeometry &dg) const {
         return shared_ptr<Bsdf>();
 }
 
+
+
+void Instance::prepare (const Scene &s) {
+        primitive->prepare (s);
+}
 } }

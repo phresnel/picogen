@@ -64,30 +64,14 @@ shared_ptr<Bsdf> BoundInstance::getBsdf(const DifferentialGeometry &dg) const {
 }
 
 
-/*
-lsystem-tree {
-                        code:   d1 = 94.74\;
-                                d2 = 132.63\;
-                                a = 18.95\;
-                                lr = 1.109\;
-                                vr = 1.732\;
-                                #scale=0.01\;
-                                #diascale=1.5\;
-                                axiom: dia(1.0) f(0) rollright(45) A\;
-                                p1: A --> dia(vr) f(100)
-                                        [down(a) f(100) A] rollright(d1)
-                                        [down(a) f(100) A] rollright(d2)
-                                        [down(a) f(100) A]\;
-                                p2: f(l) --> f(l*lr)\;
-                                p3: dia(w) --> dia(w*vr)\;
-                        ;
-                        level:5;
-                        slices:5;
-                }
-*/
+
 BoundingBox BoundInstance::boundingBox() const {
         return instanceToWorld * primitive->boundingBox();
 }
 
 
+
+void BoundInstance::prepare (const Scene &s) {
+        primitive->prepare (s);
+}
 } }

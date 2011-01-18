@@ -41,9 +41,11 @@ namespace redshift { namespace primitive {
                 bool doesIntersect (Ray const &ray) const;
                 optional<Intersection> intersect(Ray const &ray) const;
 
-                shared_ptr<Bsdf> getBsdf(const DifferentialGeometry &) const;
-
                 BoundingBox boundingBox() const;
+
+                shared_ptr<Bsdf> getBsdf(const DifferentialGeometry &) const;
+                
+                void prepare (const Scene &s);
 
         private:
                 BoundInstance();

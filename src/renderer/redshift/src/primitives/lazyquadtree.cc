@@ -207,10 +207,7 @@ namespace lazyquadtree {
                         widths = new real_t[s];
                         for (unsigned int i=0; i<s; ++i, width/=2) {
                                 widths[(s-1)-i] = width;
-                        }
-                        /*for (unsigned int i=0; i<s; ++i) {
-                                std::cout << i << ":" << widths[(s-1)-i] << std::endl;
-                        }*/
+                        }                        
                 }
 
                 ~NodeStaticParameters() {
@@ -424,7 +421,6 @@ namespace lazyquadtree {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
                         }
-                        //std::cout << "[" << (int)maxRecursion << "] " << bbMinX() << ":" << bbMaxX() << std::endl;
                 }
 
                 ~Node () {
@@ -555,11 +551,12 @@ namespace lazyquadtree {
                            |((min_h > bbMaxY) & (max_h > bbMaxY)))
                                 return false;
 
-                        if (isLeaf) {
+                        if (isLeaf) {                                
                                 /*#pragma omp master
                                 if (parent) nodeIndex.load (this);*/
                                 return intersectLeaf (ray);
-                        }
+                        }                        
+                        
 
                         // Find out which ones to traverse.
                         const bool d_right = ray.direction.x >= 0;
@@ -701,7 +698,7 @@ public:
 
         void prepare (const Scene &scene) {
                 staticParameters.cameraPosition =
-                        vector_cast<PointF>(scene.getCamera()->getCommonCenter());
+                        vector_cast<PointF>(scene.getCamera()->getCommonCenter());                
                 primaryNode->prepare ();
         }
 
