@@ -38,6 +38,7 @@ inline void RenderSettings::serialize (Arch &arch) {
              & pack("height", height_)
              & pack("samples-per-pixel", samplesPerPixel_)
              & pack("random-seed", randomSeed_)
+             & pack("max-lazy-quadtree-depth-override", maxLazyQuadtreeDepth_)
              & pack("surface-integrator", surfaceIntegrator_)
              ;
 }
