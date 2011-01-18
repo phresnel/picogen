@@ -72,6 +72,7 @@ public slots:
         void onPreviewRenderProcessRequested();
 
 private slots:
+        void on_actionShow_redshift_file_triggered();
         void on_waterCommandLink_clicked();
         void on_action_Stylesheet_triggered();
         void on_renderingSetupCommandLink_clicked();

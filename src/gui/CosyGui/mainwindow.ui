@@ -636,7 +636,7 @@ stop: 0 #fed, stop: 1 #bbb);
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>18</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -651,6 +651,7 @@ stop: 0 #fed, stop: 1 #bbb);
      <string>&amp;Debug</string>
     </property>
     <addaction name="action_Stylesheet"/>
+    <addaction name="actionShow_redshift_file"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Debug"/>
@@ -683,6 +684,11 @@ stop: 0 #fed, stop: 1 #bbb);
   <action name="action_Stylesheet">
    <property name="text">
     <string>&amp;Stylesheet</string>
+   </property>
+  </action>
+  <action name="actionShow_redshift_file">
+   <property name="text">
+    <string>Show &amp;redshift file</string>
    </property>
   </action>
  </widget>

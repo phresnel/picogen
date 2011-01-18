@@ -386,3 +386,28 @@ void MainWindow::onPreviewRenderProcessRequested() {
 }
 
 
+void MainWindow::on_actionShow_redshift_file_triggered() {
+        using redshift_file::save_scene;
+
+        QMessageBox bb;
+        const QPushButton
+            *preview = bb.addButton("Preview", QMessageBox::ActionRole),
+            *production = bb.addButton("Production", QMessageBox::ActionRole);
+
+        bb.addButton(QMessageBox::Cancel);
+        bb.setText("Preview or Production?");
+        bb.exec();
+
+        std::stringstream ss;
+        if (bb.clickedButton() == preview) {
+                save_scene(*redshiftSceneCreator->createPreviewScene(), ss);
+        } else if (bb.clickedButton() == production) {
+                save_scene(*redshiftSceneCreator->createProductionScene(), ss);
+        } else {
+                return;
+        }
+
+        QMessageBox scbb;
+        scbb.setText(QString::fromStdString(ss.str()));
+        scbb.exec();
+}
