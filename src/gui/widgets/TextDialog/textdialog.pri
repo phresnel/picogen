@@ -1,11 +1,5 @@
 QT      *= core gui
 INCLUDEPATH *= $$PWD
-
-HEADERS *= \
-    ../widgets/TextDialog/textdialog.hh
-
-SOURCES *= \
-    ../widgets/TextDialog/textdialog.cc
-
-FORMS *= \
-    ../widgets/TextDialog/textdialog.ui
+HEADERS *= $$PWD/textdialog.hh
+SOURCES *= $$PWD/textdialog.cc
+FORMS *= $$PWD/textdialog.ui

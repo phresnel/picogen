@@ -62,6 +62,7 @@ COSY_MANUAL_SOURCEFILES =  \
         gui/widgets/SpectralColorPicker/spectralcurve.cc \
         gui/widgets/SpectralColorPicker/spectralslider.cc \
         gui/widgets/SpectralColorPicker/spectrumdisplay.cc \
+        gui/widgets/TextDialog/textdialog.cc \
         gui/widgets/TristimulusColorPicker/tristimuluscolorpicker.cc \
         upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/qtcolortriangle.cpp
 
@@ -104,6 +105,7 @@ COSY_UIFILES =  \
         gui/widgets/SpectralColorPicker/ui_spectralcurve.h \
         gui/widgets/SpectralColorPicker/ui_spectralslider.h \
         gui/widgets/SpectralColorPicker/ui_spectrumdisplay.h \
+        gui/widgets/TextDialog/ui_textdialog.h \
         gui/widgets/TristimulusColorPicker/ui_tristimuluscolorpicker.h
 
 COSY_MOCFILES =  \
@@ -145,6 +147,7 @@ COSY_MOCFILES =  \
         gui/widgets/SpectralColorPicker/moc_spectralcurve.cpp \
         gui/widgets/SpectralColorPicker/moc_spectralslider.cpp \
         gui/widgets/SpectralColorPicker/moc_spectrumdisplay.cpp \
+        gui/widgets/TextDialog/moc_textdialog.cpp \
         gui/widgets/TristimulusColorPicker/moc_tristimuluscolorpicker.cpp \
         upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src/moc_qtcolortriangle.cpp
 
@@ -174,6 +177,7 @@ COSY_INCLUDEPATH =  \
         -Igui/widgets/RenderWindow \
         -Igui/widgets/SimpleInputBox \
         -Igui/widgets/SpectralColorPicker \
+        -Igui/widgets/TextDialog \
         -Igui/widgets/TristimulusColorPicker \
         -Irenderer \
         -Iupstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src
