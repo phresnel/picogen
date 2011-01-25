@@ -34,6 +34,7 @@
 #include <ctime>
 #include <QDebug>
 #include <QTemporaryFile>
+#include <QTime>
 
 namespace redshift_file {
 void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_);

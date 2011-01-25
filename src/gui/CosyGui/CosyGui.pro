@@ -5,6 +5,10 @@ QT += core \
     gui
 DEFINES += __STDC_LIMIT_MACROS
 CONFIG += debug_and_release
+
+## gives you a console if necessary
+#debug:CONFIG += console
+
 QMAKE_CXXFLAGS += -fopenmp
 INCLUDEPATH += ../../upstream/qt-widgets/pictureflow-0.1.0/pictureflow-qt/ \
     ../widgets/ \
