@@ -72,7 +72,8 @@ namespace quatsch {  namespace configurable_functions {
                 enum wrap_mode_t {
                         zero,
                         clamp,
-                        wrap
+                        wrap,
+                        mirror
                 };
                 wrap_mode_t wrapMode;
 

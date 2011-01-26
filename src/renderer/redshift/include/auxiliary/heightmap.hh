@@ -36,7 +36,7 @@ enum PixelToHeightMode {
 
 template <typename T> class Heightmap {
 public:
-        enum WrapMode { Zero, Wrap, Clamp };
+        enum WrapMode { Zero, Wrap, Clamp, Mirror };
 
         Heightmap (const std::string &filename, PixelToHeightMode mode)
         : h(0), width_(0), height_(0)
@@ -104,6 +104,7 @@ public:
                                 return 0;
                         break;
                 case Wrap:
+                        //TODO: wrapping should not be done with loops
                         while (x<0)             x+=width_;
                         while (x>=(int)width_)  x-=width_;
                         while (y<0)             y+=height_;
@@ -114,6 +115,22 @@ public:
                         if (x>=(int)width_)  x=width_-1;
                         if (y<0)             y=0;
                         if (y>=(int)height_) y=height_-1;
+                        break;
+                case Mirror:
+                        {
+                        // even or odd?
+                        bool x_even = true;
+                        bool y_even = true;
+                        // now wrap
+                        //TODO: wrapping should not be done with loops
+                        while (x<0)             { x+=width_; x_even=!x_even; }
+                        while (x>=(int)width_)  { x-=width_; x_even=!x_even; }
+                        while (y<0)             {y+=height_; y_even=!y_even; }
+                        while (y>=(int)height_) {y-=height_; y_even=!y_even; }
+                        // possibly mirror
+                        x = x_even ? x : (width_-1)-x;
+                        y = y_even ? y : (height_-1)-y;
+                        }
                         break;
                 }
                 return h[y*width_ + x];

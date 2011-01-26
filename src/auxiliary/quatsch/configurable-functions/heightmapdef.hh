@@ -132,8 +132,10 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
                                 wrapMode = wrap;
                         } else if (wrapType == "clamp") {
                                 wrapMode = clamp;
+                        } else if (wrapType == "mirror") {
+                                wrapMode = mirror;
                         } else {
-                                throw general_exception ("Heightmap: unknown wrap type for 'filter': '" +  wrapType + "' (only 'zero','wrap','clamp' are supported)");
+                                throw general_exception ("Heightmap: unknown wrap type for 'filter': '" +  wrapType + "' (only 'zero','wrap','clamp','mirror' are supported)");
                         }
                 } else {
                         nonExistantParameterNames += (nonExistantParameterNames!=""?", ":"") + string("'") + it->first + string("'");
@@ -165,6 +167,8 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
         case wrap: heightmap.setWrapMode(RedshiftHeightmap::Wrap);
                    break;
         case clamp: heightmap.setWrapMode(RedshiftHeightmap::Clamp);
+                   break;
+        case mirror: heightmap.setWrapMode(RedshiftHeightmap::Mirror);
                    break;
         }
 }
