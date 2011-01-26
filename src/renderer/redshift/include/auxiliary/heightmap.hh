@@ -135,6 +135,11 @@ public:
                         +v*((1-u)*at(a,d) + u*at(c,d)) ;
         }
 
+
+        /*
+        //TODO: should be removed: at the integers, the curve becomes
+        //      parallel to the horizontal axis, making the integer
+        //      boundaries visible
         T cosine (T x, T y) const {
                 // as per http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
                 const T
@@ -151,21 +156,24 @@ public:
                         u = .5 * (1 - std::cos (3.1415927 * u_)),
                         v = .5 * (1 - std::cos (3.1415927 * v_))
                         ;
-                return (1-v)*((1-u)*at(a,b) + u*at(c,b))
-                        +v*((1-u)*at(a,d) + u*at(c,d)) ;
+                return  (1-v) * ((1-u)*at(a,b) + u*at(c,b))
+                      +  v    * ((1-u)*at(a,d) + u*at(c,d)) ;
         }
+        */
 
-        private:
-                static T cubic (T v0, T v1, T v2, T v3, T x) {
-                        const T
-                                P = (v3 - v2) - (v0 - v1),
-                                Q = (v0 - v1) - P,
-                                R = v2 - v0,
-                                S = v1
-                                ;
-                        return P*x*x*x + Q*x*x + R*x + S;
-                }
-        public:
+private:
+        // from gimp / catmull
+        static T cubic (
+                          const T  pt0,
+                          const T  pt1,
+                          const T  pt2,
+                          const T  pt3, const T dx)
+        {
+          return (T) ((( ( -pt0 + 3 * pt1 - 3 * pt2 + pt3 ) *   dx +
+                               ( 2 * pt0 - 5 * pt1 + 4 * pt2 - pt3 ) ) * dx +
+                             ( -pt0 + pt2 ) ) * dx + (pt1 + pt1) ) / 2.0;
+        }
+public:
 
         T cubic (T x, T y) const {
                 // as per http://freespace.virgin.net/hugo.elias/models/m_perlin.htm

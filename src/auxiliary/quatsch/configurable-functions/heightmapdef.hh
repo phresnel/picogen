@@ -103,12 +103,10 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
                                 filter = bilinear;
                         } else if (filterType == "nearest") {
                                 filter = nearest;
-                        } else if (filterType == "cosine") {
-                                filter = cosine;
                         } else if (filterType == "cubic") {
                                 filter = cubic;
                         } else {
-                                throw general_exception ("Heightmap: unknown filter type for 'filter': '" + filterType + "' (only 'bilinear','nearest','cosine','cubic' are supported)");
+                                throw general_exception ("Heightmap: unknown filter type for 'filter': '" + filterType + "' (only 'bilinear','nearest','cubic' are supported)");
                         }
                 } else if (name == string("wrap")) {
                         istringstream hmmm (static_parameters[name]);
@@ -146,7 +144,7 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
 
         if (!heightmap.load (filename, redshift::aux::Average))
                 throw general_exception ("error while loading \"" + filename + "\" (possibly: out of memory, unsupported image format)");
-                
+
         switch (wrapMode) {
         case zero: heightmap.setWrapMode(RedshiftHeightmap::Zero);
                    break;
@@ -176,7 +174,6 @@ Heightmap <FUNCTION, COMPILER>::operator () (
         switch (filter) {
         case nearest: return height * heightmap.nearest(u, v);
         case bilinear: return height * heightmap.lerp(u, v);
-        case cosine: return height * heightmap.cosine(u, v);
         case cubic: return height * heightmap.cubic(u, v);
         }
         return 0.0;
