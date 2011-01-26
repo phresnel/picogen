@@ -74,13 +74,27 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
         idepth = 1/depth;
         filter = cubic;
         wrapMode = zero;
+
+        redshift::aux::PixelToHeightMode p2hmode = redshift::aux::Average;
+
         for (Map::const_iterator it=static_parameters.begin();
              it!=static_parameters.end();
              ++it
         ) {
                 const string name = it->first;
                 /// \todo Add some shorter Mnenomics.
-                if (name == string("width")) {
+                if (name == string("pixel-to-height")) {
+                        istringstream hmmm (static_parameters[name]);
+                        string p2h;
+                        hmmm >> p2h;
+                        if (p2h == "average") {
+                                p2hmode = redshift::aux::Average;
+                        } else if (p2h == "luminance") {
+                                p2hmode = redshift::aux::Luminance;
+                        } else {
+                                throw general_exception ("Heightmap: unknown pixel-to-height type for 'pixel-to-height': '" + p2h + "' (only 'average','luminance' are supported)");
+                        }
+                } else if (name == string("width")) {
                         istringstream hmmm (static_parameters[name]);
                         hmmm >> width;
                         iwidth = 1 / width;
@@ -142,7 +156,7 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
                         throw general_exception ("the file \"" + filename + "\" could not be opened for reading.");
         }
 
-        if (!heightmap.load (filename, redshift::aux::Average))
+        if (!heightmap.load (filename, p2hmode))
                 throw general_exception ("error while loading \"" + filename + "\" (possibly: out of memory, unsupported image format)");
 
         switch (wrapMode) {

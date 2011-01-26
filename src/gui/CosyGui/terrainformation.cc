@@ -123,6 +123,7 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
         "(($Filename:filename))\n"
         "(($Filter:enumeration={nearest, bilinear, cubic} default=2))\n"
         "(($RepeatMode:enumeration={zero,wrap,clamp} default=1))\n"
+        "(($PixelToHeightMode:enumeration={average,luminance} default=0))\n"
         "\n"
         "([Heightmap filter{(($Filter))}\n"
         "            width {(($Width))}\n"
@@ -130,6 +131,7 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
         "            height{(($Height))}\n"
         "            filename{(($Filename))}\n"
         "            wrap  {(($RepeatMode))}\n"
+        "            pixel-to-height{(($PixelToHeightMode))}\n"
         " ] (* (($Repeat)) x)  (* (($Repeat)) y))"
         ));*/
         updateViews();
@@ -144,6 +146,7 @@ void TerrainFormation::on_heightmapCLB_clicked() {
         "(($Filename:filename))\n"
         "(($Filter:enumeration={nearest, bilinear, cubic} default=2))\n"
         "(($RepeatMode:enumeration={zero,wrap,clamp} default=1))\n"
+        "(($PixelToHeightMode:enumeration={average,luminance} default=0))\n"
         "\n"
         "([Heightmap filter{(($Filter))}\n"
         "            width {(($Width))}\n"
@@ -151,6 +154,7 @@ void TerrainFormation::on_heightmapCLB_clicked() {
         "            height{(($Height))}\n"
         "            filename{(($Filename))}\n"
         "            wrap  {(($RepeatMode))}\n"
+        "            pixel-to-height{(($PixelToHeightMode))}\n"
         " ] (* (($Repeat)) x)  (* (($Repeat)) y))"
         ));
         updateViews();

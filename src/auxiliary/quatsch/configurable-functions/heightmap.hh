@@ -65,11 +65,10 @@ namespace quatsch {  namespace configurable_functions {
                 enum filter_t {
                         nearest,
                         bilinear,
-                        cosine,
                         cubic
                 };
                 filter_t filter;
-                
+
                 enum wrap_mode_t {
                         zero,
                         clamp,
