@@ -89,11 +89,7 @@ gui/widgets/Picohelp/help-content
 gui/widgets/Picohelp/debug/
 gui/widgets/Picohelp/release/
 
-gui/CosyGui/Makefile
-gui/CosyGui/Makefile.Debug
-gui/CosyGui/Makefile.Release
-gui/CosyGui/release/
-gui/CosyGui/debug/
+gui/CosyGui-Build
 
 aux/xyto/Xytoplax/Makefile
 aux/xyto/Xytoplax/Xytoplax

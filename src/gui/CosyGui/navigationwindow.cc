@@ -106,15 +106,15 @@ void NavigationWindow::on_rollSpin_valueChanged(double value) {
         updateFromViews(true);
 }
 
-void NavigationWindow::on_xSpin_valueChanged(double value) {
+void NavigationWindow::on_xSpin_valueChanged(double) {
         updateFromViews(true);
 }
 
-void NavigationWindow::on_ySpin_valueChanged(double value) {
+void NavigationWindow::on_ySpin_valueChanged(double) {
         updateFromViews(true);
 }
 
-void NavigationWindow::on_zSpin_valueChanged(double value) {
+void NavigationWindow::on_zSpin_valueChanged(double) {
         updateFromViews(true);
 }
 

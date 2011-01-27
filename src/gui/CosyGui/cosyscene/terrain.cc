@@ -115,7 +115,8 @@ bool TerrainFormation::data_equals(TerrainFormation const &rhs) const {
 
 TerrainFitting::TerrainFitting()
 : sizeFactor_(1,1,1), positionOffset_(0,0,0)
-, lazyQuadtreeMaxRecursion_(8), lazyQuadtreeVisibleExtent_(10000)
+, lazyQuadtreeMaxRecursion_(9), lazyQuadtreeVisibleExtent_(10000)
+, detailCoefficient_(0.05)
 {
 }
 void TerrainFitting::setSizeFactor(Vector3d v) {
@@ -141,6 +142,12 @@ void TerrainFitting::setLazyQuadtreeVisibleExtent (double s) {
 }
 double TerrainFitting::lazyQuadtreeVisibleExtent() const {
         return lazyQuadtreeVisibleExtent_;
+}
+void TerrainFitting::setDetailCoefficient(double value) {
+        detailCoefficient_ = value;
+}
+double TerrainFitting::detailCoefficient() const {
+        return detailCoefficient_;
 }
 
 

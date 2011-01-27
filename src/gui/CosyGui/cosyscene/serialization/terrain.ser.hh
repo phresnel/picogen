@@ -89,6 +89,7 @@ inline void TerrainFitting::serialize (Arch &arch) {
              & pack("position-offset", positionOffset_)
              & pack("lazy-quadtree-visible-extent", lazyQuadtreeVisibleExtent_)
              & pack("lazy-quadtree-max-recursion", lazyQuadtreeMaxRecursion_)
+             & pack("detail-coefficient", detailCoefficient_)
              ;
 
 }

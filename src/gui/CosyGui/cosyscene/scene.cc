@@ -276,6 +276,7 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         // Fitting
                         ob.lazyQuadtreeParams.size = fitting.lazyQuadtreeVisibleExtent();
                         ob.lazyQuadtreeParams.maxRecursion = fitting.lazyQuadtreeMaxRecursion();
+                        ob.lazyQuadtreeParams.lodFactor = fitting.detailCoefficient();
 
                         if (renderSettings.maxLazyQuadtreeDepth() != 0) {
                                 ob.lazyQuadtreeParams.maxRecursion =
@@ -306,9 +307,9 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
         {
                 redshift_file::Object ob;
 
-                TerrainFormation const &formation = *water_->formation();
-                Material const &material = *water_->material();
-                WaterFitting const &fitting = *water_->fitting();
+                const TerrainFormation &formation = *water_->formation();
+                const Material         &material  = *water_->material();
+                const WaterFitting     &fitting   = *water_->fitting();
 
                 if (TerrainFormation::None != formation.kind()) {
                         ob.type = redshift_file::Object::water_plane;
@@ -331,9 +332,7 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         }
 
                         // Fitting
-                        //ob.waterPlaneParams.size = fitting.lazyQuadtreeVisibleExtent();
-
-                        ob.waterPlaneParams.height = water_->fitting()->seaLevel();
+                        ob.waterPlaneParams.height = fitting.seaLevel();
                         ob.waterPlaneParams.material = toRedshift(material);
                         scene.addObject(ob);
                 }

@@ -67,7 +67,7 @@ void showError (QString str, QString title="Error") {
         QMessageBox mb;
         mb.setIcon(QMessageBox::Critical);
         mb.setStandardButtons(QMessageBox::Ok);
-        mb.setWindowTitle("Error");
+        mb.setWindowTitle(title);
         mb.setText(str);
         mb.exec();
 }

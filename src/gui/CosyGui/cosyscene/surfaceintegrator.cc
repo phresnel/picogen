@@ -36,7 +36,7 @@ const actuarius::Enum<SurfaceIntegrator::Kind> SurfaceIntegrator::Typenames =
 
 WhittedAmbientIntegrator::WhittedAmbientIntegrator(
         unsigned int numAmbientSamples
-) : numAmbientSamples_()
+) : numAmbientSamples_(numAmbientSamples)
 {
 }
 void WhittedAmbientIntegrator::setNumAmbientSamples (unsigned int val) {

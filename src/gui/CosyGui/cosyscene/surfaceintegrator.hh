@@ -28,12 +28,12 @@
 namespace cosyscene {
 
 class NoneIntegrator {
-public: template<typename Arch> void serialize (Arch &arch) {}
+public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (NoneIntegrator) {return true;}
 };
 
 class WhittedIntegrator {
-public: template<typename Arch> void serialize (Arch &arch) {}
+public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (WhittedIntegrator) {return true;}
 };
 
@@ -49,17 +49,17 @@ private:
 bool operator ==(WhittedAmbientIntegrator const&, WhittedAmbientIntegrator const&);
 
 class PathIntegrator {
-public: template<typename Arch> void serialize (Arch &arch) {}
+public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (PathIntegrator) {return true;}
 };
 
 class DebugDistanceIntegrator {
-public: template<typename Arch> void serialize (Arch &arch) {}
+public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (DebugDistanceIntegrator) {return true;}
 };
 
 class DebugNormalsIntegrator {
-public: template<typename Arch> void serialize (Arch &arch) {}
+public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (DebugNormalsIntegrator) {return true;}
 };
 

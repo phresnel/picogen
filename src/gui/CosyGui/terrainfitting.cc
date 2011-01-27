@@ -52,6 +52,9 @@ void TerrainFitting::setFitting(
 
         ScopedQtSignalBlock blockVisibleExtent (ui->visibleExtent, blockSignals);
         ui->visibleExtent->setValue(f.lazyQuadtreeVisibleExtent());
+
+        ScopedQtSignalBlock blockDetailCoeff(ui->detailCoefficient, blockSignals);
+        ui->detailCoefficient->setValue(f.detailCoefficient());
 }
 
 void TerrainFitting::on_visibleExtent_valueChanged(double) {
@@ -78,5 +81,10 @@ void TerrainFitting::on_maxRecursion_valueChanged(int) {
         previousMaxRecursion = val;
         fitting_->setLazyQuadtreeMaxRecursion (val);
 
+        emit fittingChanged();
+}
+
+void TerrainFitting::on_detailCoefficient_valueChanged(double) {
+        fitting_->setDetailCoefficient (ui->detailCoefficient->value());
         emit fittingChanged();
 }

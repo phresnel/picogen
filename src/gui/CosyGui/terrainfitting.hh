@@ -55,6 +55,7 @@ private:
         redshift::shared_ptr<cosyscene::TerrainFitting> fitting_;
 
 private slots:
+        void on_detailCoefficient_valueChanged(double);
         void on_visibleExtent_valueChanged(double);
         void on_maxRecursion_valueChanged(int);
 };

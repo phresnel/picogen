@@ -84,7 +84,8 @@ private:
         std::map<std::string, std::string> replacements_;
 };
 inline bool operator == (QuatschPreset const &lhs, QuatschPreset const &rhs) {
-        return true;
+        return lhs.preset() == rhs.preset()
+            && lhs.replacements() == rhs.replacements();
 }
 
 } // namespace cosyscene
@@ -154,11 +155,15 @@ public:
         void setLazyQuadtreeVisibleExtent (double);
         double lazyQuadtreeVisibleExtent() const;
 
+        void setDetailCoefficient(double);
+        double detailCoefficient() const;
+
         template <typename Arch> void serialize (Arch &arch);
 private:
         Vector3d sizeFactor_, positionOffset_;
         unsigned int lazyQuadtreeMaxRecursion_;
         double lazyQuadtreeVisibleExtent_;
+        double detailCoefficient_;
 };
 } // namespace cosyscene
 

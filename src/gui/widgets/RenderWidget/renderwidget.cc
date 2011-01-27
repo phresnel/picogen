@@ -228,7 +228,7 @@ void RenderWidgetThread::renderImage (
 
 
 
-void RenderWidgetThread::report (int completed, int total) {
+void RenderWidgetThread::report (int /*completed*/, int /*total*/) {
         if (firstReport_ || updateWatch_() >= updateLatency_) {
                 renderWidget_->updateImage(*renderBuffer_,
                                            scenefile_->filmSettings());
