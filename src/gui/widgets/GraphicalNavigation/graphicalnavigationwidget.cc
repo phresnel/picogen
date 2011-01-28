@@ -21,6 +21,8 @@
 #include "graphicalnavigationwidget.hh"
 #include "ui_graphicalnavigationwidget.h"
 
+#include "observergraphicsitem.hh"
+
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
@@ -42,7 +44,8 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         heightmapCutout = scene->addPixmap(pixmapFromFun());
 
         // TODO: remember those
-        double cx = 20, cy=30;
+        scene->addItem(new ObserverGraphicsItem());
+        /*double cx = 20, cy=30;
         scene->addEllipse(cx-12,cy-12,
                           24,24,
                           QColor(0,0,0,128),
@@ -52,7 +55,7 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
                           3,3,
                           QColor(0,0,0,128),
                           QColor(255,200,200,128)
-                         );
+                         );*/
 }
 
 GraphicalNavigationWidget::~GraphicalNavigationWidget() {

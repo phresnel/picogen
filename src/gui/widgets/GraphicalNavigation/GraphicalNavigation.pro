@@ -12,10 +12,12 @@ TEMPLATE = app
 
 SOURCES += main.cc\
         mainwindow.cc \
-    graphicalnavigationwidget.cc
+    graphicalnavigationwidget.cc \
+    observergraphicsitem.cc
 
 HEADERS  += mainwindow.hh \
-    graphicalnavigationwidget.hh
+    graphicalnavigationwidget.hh \
+    observergraphicsitem.hh
 
 FORMS    += mainwindow.ui \
     graphicalnavigationwidget.ui
