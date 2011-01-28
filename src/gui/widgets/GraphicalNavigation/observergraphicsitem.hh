@@ -32,6 +32,13 @@ public:
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                    QWidget *widget);
 
+private:
+        bool tryRotateByMouse (QPointF local);
+
+protected:
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
+        void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+
 };
 
 #endif // OBSERVERGRAPHICSITEM_HH

@@ -19,7 +19,12 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "observergraphicsitem.hh"
+
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+
+#include <cmath>
+
 
 ObserverGraphicsItem::ObserverGraphicsItem()
 {
@@ -27,11 +32,12 @@ ObserverGraphicsItem::ObserverGraphicsItem()
 }
 
 QRectF ObserverGraphicsItem::boundingRect() const {
-        const double cx = 0, cy=0;
-        return QRectF(
-                cx+-12, cy+-12,
-                24, 24
-        );
+        QRectF ret;
+        ret.setLeft(-12);
+        ret.setRight(12);
+        ret.setBottom(24);
+        ret.setTop(-50);
+        return ret;
 }
 
 void ObserverGraphicsItem::paint(
@@ -40,13 +46,52 @@ void ObserverGraphicsItem::paint(
         Q_UNUSED(option)
         Q_UNUSED(widget)
 
-        const double cx = 0, cy=0;
-
+        // Center
         painter->setPen(QColor(0,0,0,128));
         painter->setBrush(QColor(200,255,200,128));
-        painter->drawEllipse(cx-12, cy-12, 24,24);
+        painter->drawEllipse(-12, -12, 24,24);
 
         painter->setPen(QColor(0,0,0,128));
         painter->setBrush(QColor(255,200,200,128));
-        painter->drawEllipse(cx-1.5, cy-1.5, 3,3);
+        painter->drawEllipse(-1.5, -1.5, 3,3);
+
+        // Viewing direction
+        QPen arrowPen;
+        arrowPen.setColor(QColor(255,0,0,128));
+        arrowPen.setWidthF(2);
+        const double y = -50;
+        painter->setPen(arrowPen);
+        painter->drawLine(0,0, 0,y);
+        painter->drawLine(-5,y+5, 0,y);
+        painter->drawLine(+5,y+5, 0,y);
+}
+
+
+bool ObserverGraphicsItem::tryRotateByMouse (QPointF local) {
+        const QPointF v = mapToScene(local) - scenePos();
+        const double x = v.x();
+        const double y = -v.y();
+        const double s = std::sqrt(x*x + y*y);
+        if (s>12 && std::fabs(local.x()) < 5) {
+                // rotate
+                setRotation(std::atan2(x,y) * 180 / 3.14159);
+                return true;
+        } else {
+                // move
+                return false;
+        }
+}
+
+void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
+        if (!tryRotateByMouse(p->pos())) {
+                // move
+                QGraphicsItem::mouseMoveEvent(p);
+        }
+}
+
+void ObserverGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *p) {
+        if (!tryRotateByMouse(p->pos())) {
+                // move
+                QGraphicsItem::mousePressEvent(p);
+        }
 }
