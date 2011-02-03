@@ -154,13 +154,13 @@ void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
                         break;
                 }
 
-                observer_.setPosition(x, y, z);
+                observer_.setPosition(x, y, -z);
                 emit positionChanged(observer_.position());
                 break;
         }
         case mm_change_yaw: {
                 const QVector2D v = relateMouseToOwnPos(p->pos());
-                observer_.setYaw(std::atan2(v.x(),-v.y()));
+                observer_.setYaw(180*0.0174532925 + std::atan2(-v.x(),v.y()));
                 emit yawChanged(observer_.yaw());
                 update();
                 break;
@@ -202,7 +202,7 @@ void ObserverGraphicsItem::setObserverAbsolutePosition (qreal x, qreal y, qreal 
 void ObserverGraphicsItem::setObserverAbsolutePosition (QVector3D pos) {
         observer_.setPosition(pos);
         emit positionChanged(observer_.position());
-        setPos(pos.x(), pos.z());
+        setPos(pos.x(), -pos.z());
         update();
 }
 

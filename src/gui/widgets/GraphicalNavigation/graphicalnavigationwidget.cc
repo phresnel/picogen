@@ -47,7 +47,7 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
 {
         ui->setupUi(this);
         ui->graphicsView->setScene(scene);
-        ui->graphicsView->setTransform(ui->graphicsView->transform().scale(1,-1));
+        //ui->graphicsView->setTransform(ui->graphicsView->transform().scale(1,-1));
 
         heightFunction.reset(new SinCosThingy());
 
@@ -101,15 +101,26 @@ void GraphicalNavigationWidget::showEvent(QShowEvent *) {
 }
 
 void GraphicalNavigationWidget::onObserverPositionChanged (QVector3D pos) {
+        bool b = ui->absoluteHeight->blockSignals(true);
         ui->absoluteHeight->setValue(pos.y());
+        ui->absoluteHeight->blockSignals(b);
+
+        b = ui->relativeHeight->blockSignals(true);
         ui->relativeHeight->setValue(pos.y() - heightFunction->height(pos.x(),pos.z()));
+        ui->relativeHeight->blockSignals(b);
+
+        b = ui->east->blockSignals(true);
         ui->east->setValue(pos.x());
+        ui->east->blockSignals(b);
+
+        b = ui->north->blockSignals(true);
         ui->north->setValue(pos.z());
+        ui->north->blockSignals(b);
 }
 
 void GraphicalNavigationWidget::onObserverYawChanged (qreal v) {
         const bool b = ui->yaw->blockSignals(true);
-        ui->yaw->setValue(180+v/0.0174532925);
+        ui->yaw->setValue(v/0.0174532925);
         ui->yaw->blockSignals(b);
 }
 
@@ -140,7 +151,7 @@ void GraphicalNavigationWidget::on_north_valueChanged(double v) {
 }
 
 void GraphicalNavigationWidget::on_yaw_valueChanged(double v) {
-        observerGraphicsItem->setObserverYaw((v-180)*0.0174532925);
+        observerGraphicsItem->setObserverYaw(v*0.0174532925);
         ui->yaw->setSuffix("° (" + degreeToName(v) + ")");
 }
 
