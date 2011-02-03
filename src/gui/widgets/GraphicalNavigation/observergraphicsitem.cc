@@ -80,7 +80,9 @@ void ObserverGraphicsItem::paintHorizon(QPainter *painter) const {
 
 void ObserverGraphicsItem::paintSun (QPainter *painter) const {
         const QTransform local = painter->transform();
-        QTransform localNoRot = QTransform::fromTranslate(pos().x(), pos().y());
+        QTransform localNoRot = QTransform::fromTranslate(
+                                        local.m31(), local.m32()
+                                );
         painter->setTransform (localNoRot);
 
         painter->setPen(QPen(
@@ -191,4 +193,47 @@ void ObserverGraphicsItem::setAutoHeightMode(AutoHeightMode ahm) {
 
 void ObserverGraphicsItem::setHeightFunction(HeightFunction::Ptr hf) {
         heightFunction = hf;
+}
+
+void ObserverGraphicsItem::setObserverAbsolutePosition (qreal x, qreal y, qreal z) {
+        setObserverAbsolutePosition(QVector3D(x,y,z));
+}
+
+void ObserverGraphicsItem::setObserverAbsolutePosition (QVector3D pos) {
+        observer_.setPosition(pos);
+        emit positionChanged(observer_.position());
+        setPos(pos.x(), pos.z());
+        update();
+}
+
+void ObserverGraphicsItem::setObserverAbsoluteHeight (double v) {
+        const QVector3D pos = observer_.position();
+        setObserverAbsolutePosition(pos.x(), v, pos.z());
+}
+
+void ObserverGraphicsItem::setObserverRelativeHeight (double v) {
+        const QVector3D pos = observer_.position();
+        setObserverAbsolutePosition(pos.x(),
+                                    v+heightFunction->height(pos.x(), pos.z()),
+                                    pos.z());
+}
+
+void ObserverGraphicsItem::setObserverEast (double v) {
+        const QVector3D pos = observer_.position();
+        setObserverAbsolutePosition(v,
+                                    pos.y(),
+                                    pos.z());
+}
+
+void ObserverGraphicsItem::setObserverNorth (double v) {
+        const QVector3D pos = observer_.position();
+        setObserverAbsolutePosition(pos.x(),
+                                    pos.y(),
+                                    v);
+}
+
+void ObserverGraphicsItem::setObserverYaw (double v) {
+        observer_.setYaw(v);
+        emit yawChanged(v);
+        update();
 }

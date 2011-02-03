@@ -31,7 +31,6 @@
 #include <QPen>
 #include <QBrush>
 
-
 #include <cmath>
 
 class SinCosThingy : public HeightFunction {
@@ -48,38 +47,28 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
 {
         ui->setupUi(this);
         ui->graphicsView->setScene(scene);
+        ui->graphicsView->setTransform(ui->graphicsView->transform().scale(1,-1));
 
         heightFunction.reset(new SinCosThingy());
 
         heightmapCutout = scene->addPixmap(pixmapFromFun());
 
-        // TODO: remember those
-        ObserverGraphicsItem *obs = new ObserverGraphicsItem();
-        connect (obs, SIGNAL(positionChanged(QVector3D)),
-                 SLOT(onObserverPositionChanged(QVector3D)));
-        connect (obs, SIGNAL(yawChanged(qreal)),
-                 SLOT(onObserverYawChanged(qreal)));
+        observerGraphicsItem = new ObserverGraphicsItem();
+        connect (observerGraphicsItem, SIGNAL(positionChanged(QVector3D)),
+                                       SLOT(onObserverPositionChanged(QVector3D)));
+        connect (observerGraphicsItem, SIGNAL(yawChanged(qreal)),
+                                       SLOT(onObserverYawChanged(qreal)));
 
-        obs->setHeightFunction(heightFunction);
-        scene->addItem(obs);
+        observerGraphicsItem->setHeightFunction(heightFunction);
 
-        /*SunGraphicsItem *sun = new SunGraphicsItem();
-        sun->setObserverGraphicsItem(obs);
-        sun->setSunDirection(1,1,1);
-        scene->addItem(sun);*/
+        observerGraphicsItem->setObserverAbsoluteHeight(5);
+        observerGraphicsItem->setObserverEast(0);
+        observerGraphicsItem->setObserverNorth(0);
+        observerGraphicsItem->setObserverYaw(0);
 
+        scene->addItem(observerGraphicsItem);
 
-        /*double cx = 20, cy=30;
-        scene->addEllipse(cx-12,cy-12,
-                          24,24,
-                          QColor(0,0,0,128),
-                          QColor(200,255,200,128)
-                         );
-        scene->addEllipse(cx-1.5,cy-1.5,
-                          3,3,
-                          QColor(0,0,0,128),
-                          QColor(255,200,200,128)
-                         );*/
+        ui->keepAbsolute->setChecked(true);
 }
 
 GraphicalNavigationWidget::~GraphicalNavigationWidget() {
@@ -113,7 +102,56 @@ void GraphicalNavigationWidget::showEvent(QShowEvent *) {
 
 void GraphicalNavigationWidget::onObserverPositionChanged (QVector3D pos) {
         ui->absoluteHeight->setValue(pos.y());
+        ui->relativeHeight->setValue(pos.y() - heightFunction->height(pos.x(),pos.z()));
+        ui->east->setValue(pos.x());
+        ui->north->setValue(pos.z());
 }
 
-void GraphicalNavigationWidget::onObserverYawChanged (qreal) {
+void GraphicalNavigationWidget::onObserverYawChanged (qreal v) {
+        const bool b = ui->yaw->blockSignals(true);
+        ui->yaw->setValue(180+v/0.0174532925);
+        ui->yaw->blockSignals(b);
+}
+
+void GraphicalNavigationWidget::on_keepAbsolute_toggled(bool checked) {
+        if (checked)
+                observerGraphicsItem->setAutoHeightMode(KeepAbsoluteHeight);
+}
+
+void GraphicalNavigationWidget::on_keepRelative_toggled(bool checked) {
+        if (checked)
+                observerGraphicsItem->setAutoHeightMode(KeepRelativeHeight);
+}
+
+void GraphicalNavigationWidget::on_absoluteHeight_valueChanged(double v) {
+        observerGraphicsItem->setObserverAbsoluteHeight(v);
+}
+
+void GraphicalNavigationWidget::on_relativeHeight_valueChanged(double v) {
+        observerGraphicsItem->setObserverRelativeHeight(v);
+}
+
+void GraphicalNavigationWidget::on_east_valueChanged(double v) {
+        observerGraphicsItem->setObserverEast(v);
+}
+
+void GraphicalNavigationWidget::on_north_valueChanged(double v) {
+        observerGraphicsItem->setObserverNorth(v);
+}
+
+void GraphicalNavigationWidget::on_yaw_valueChanged(double v) {
+        observerGraphicsItem->setObserverYaw((v-180)*0.0174532925);
+        ui->yaw->setSuffix("° (" + degreeToName(v) + ")");
+}
+
+QString GraphicalNavigationWidget::degreeToName(qreal degree) {
+        if (degree < 22.5)          return "N";
+        else if (degree < 45+22.5)  return "NE";
+        else if (degree < 90+22.5)  return "E";
+        else if (degree < 135+22.5) return "SE";
+        else if (degree < 180+22.5) return "S";
+        else if (degree < 225+22.5) return "SW";
+        else if (degree < 270+22.5) return "W";
+        else if (degree < 315+22.5) return "NW";
+        else                        return "N";
 }

@@ -24,6 +24,7 @@
 #include <QWidget>
 #include <QVector3D>
 #include "heightfunction.hh"
+#include "observergraphicsitem.hh"
 
 class QGraphicsScene;
 class QGraphicsPixmapItem;
@@ -51,10 +52,19 @@ private:
         QGraphicsScene *scene;
         QGraphicsPixmapItem *heightmapCutout;
         HeightFunction::Ptr heightFunction;
+        ObserverGraphicsItem *observerGraphicsItem;
 
         QPixmap pixmapFromFun() const;
+        static QString degreeToName(qreal degree);
 
 private slots:
+        void on_yaw_valueChanged(double );
+        void on_north_valueChanged(double );
+        void on_east_valueChanged(double );
+        void on_relativeHeight_valueChanged(double );
+        void on_absoluteHeight_valueChanged(double );
+        void on_keepRelative_toggled(bool checked);
+        void on_keepAbsolute_toggled(bool checked);
         void onObserverPositionChanged (QVector3D);
         void onObserverYawChanged (qreal);
 };

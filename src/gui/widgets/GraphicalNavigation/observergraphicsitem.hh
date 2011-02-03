@@ -44,6 +44,12 @@ public:
         void setAutoHeightMode (AutoHeightMode);
         void setHeightFunction (HeightFunction::Ptr);
 
+        void setObserverAbsoluteHeight (double);
+        void setObserverRelativeHeight (double);
+        void setObserverEast (double);
+        void setObserverNorth (double);
+        void setObserverYaw (double);
+
 signals:
         void positionChanged (QVector3D newPosition);
         void yawChanged (qreal newYaw);
@@ -55,6 +61,9 @@ private:
         void paintHorizon(QPainter *painter) const;
         void paintSun(QPainter *painter) const;
         void paintCenterMarker (QPainter *painter) const;
+
+        void setObserverAbsolutePosition (QVector3D pos);
+        void setObserverAbsolutePosition (qreal, qreal, qreal);
 
 private:
         Observer observer_;
