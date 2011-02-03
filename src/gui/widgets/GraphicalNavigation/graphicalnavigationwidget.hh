@@ -22,6 +22,8 @@
 #define GRAPHICALNAVIGATIONWIDGET_HH
 
 #include <QWidget>
+#include <QVector3D>
+#include "heightfunction.hh"
 
 class QGraphicsScene;
 class QGraphicsPixmapItem;
@@ -40,7 +42,7 @@ public:
 
         void setSunDirection (double x, double y, double z);
 
-private slots:
+private:
         void resizeEvent(QResizeEvent *);
         void showEvent(QShowEvent *);
 
@@ -48,9 +50,13 @@ private:
         Ui::GraphicalNavigationWidget *ui;
         QGraphicsScene *scene;
         QGraphicsPixmapItem *heightmapCutout;
+        HeightFunction::Ptr heightFunction;
 
-        double fun(double u, double v) const;
         QPixmap pixmapFromFun() const;
+
+private slots:
+        void onObserverPositionChanged (QVector3D);
+        void onObserverYawChanged (qreal);
 };
 
 #endif // GRAPHICALNAVIGATIONWIDGET_HH

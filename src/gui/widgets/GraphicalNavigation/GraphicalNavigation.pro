@@ -18,7 +18,8 @@ SOURCES += main.cc\
 HEADERS  += mainwindow.hh \
     graphicalnavigationwidget.hh \
     observergraphicsitem.hh \
-    observer.hh
+    observer.hh \
+    heightfunction.hh
 
 FORMS    += mainwindow.ui \
     graphicalnavigationwidget.ui

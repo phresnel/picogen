@@ -27,7 +27,10 @@
 
 
 ObserverGraphicsItem::ObserverGraphicsItem() :
-        mouseMoveEffect(mm_do_nothing)
+        QGraphicsObject(),
+        mouseMoveEffect(mm_do_nothing),
+        autoHeightMode(KeepRelativeHeight),
+        heightFunction(new ZeroHeightFunction)
 {
         this->setFlags(QGraphicsItem::ItemIsMovable);
 }
@@ -137,12 +140,26 @@ void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
         case mm_change_position: {
                 QGraphicsItem::mouseMoveEvent(p);
                 const QPointF sp = scenePos();
-                observer_.setPosition(sp.x(), 0, sp.y());
+
+                const double x=sp.x(), z=sp.y();
+                double y;
+                switch (autoHeightMode) {
+                case KeepRelativeHeight:
+                        y = heightFunction->height(x,z) + heightAboveGroundAtStartMove;
+                        break;
+                case KeepAbsoluteHeight:
+                        y = observer_.position().y();
+                        break;
+                }
+
+                observer_.setPosition(x, y, z);
+                emit positionChanged(observer_.position());
                 break;
         }
         case mm_change_yaw: {
                 const QVector2D v = relateMouseToOwnPos(p->pos());
                 observer_.setYaw(std::atan2(v.x(),-v.y()));
+                emit yawChanged(observer_.yaw());
                 update();
                 break;
         }
@@ -155,6 +172,10 @@ void ObserverGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *p) {
                 mouseMoveEffect = mm_change_yaw;
         } else {
                 mouseMoveEffect = mm_change_position;
+                heightAboveGroundAtStartMove =
+                        observer_.position().y() -
+                        heightFunction->height(observer_.position().x(),
+                                               observer_.position().z());
         }
         QGraphicsItem::mousePressEvent(p);
 }
@@ -162,4 +183,12 @@ void ObserverGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *p) {
 void ObserverGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
         mouseMoveEffect = mm_do_nothing;
         QGraphicsItem::mouseReleaseEvent(event);
+}
+
+void ObserverGraphicsItem::setAutoHeightMode(AutoHeightMode ahm) {
+        autoHeightMode = ahm;
+}
+
+void ObserverGraphicsItem::setHeightFunction(HeightFunction::Ptr hf) {
+        heightFunction = hf;
 }

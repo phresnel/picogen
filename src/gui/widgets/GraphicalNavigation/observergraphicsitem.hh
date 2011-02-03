@@ -21,18 +21,32 @@
 #ifndef OBSERVERGRAPHICSITEM_HH
 #define OBSERVERGRAPHICSITEM_HH
 
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QVector2D>
+#include "heightfunction.hh"
 #include "observer.hh"
 
-class ObserverGraphicsItem : public QGraphicsItem
+enum AutoHeightMode {
+        KeepAbsoluteHeight,
+        KeepRelativeHeight
+};
+
+class ObserverGraphicsItem : public QGraphicsObject
 {
+        Q_OBJECT
 public:
         ObserverGraphicsItem();
 
         QRectF boundingRect() const;
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                    QWidget *widget);
+
+        void setAutoHeightMode (AutoHeightMode);
+        void setHeightFunction (HeightFunction::Ptr);
+
+signals:
+        void positionChanged (QVector3D newPosition);
+        void yawChanged (qreal newYaw);
 
 private:
         QVector2D relateMouseToOwnPos (QPointF mouse);
@@ -52,6 +66,10 @@ protected:
                 mm_change_yaw
         };
         MouseMoveEffect mouseMoveEffect;
+        AutoHeightMode autoHeightMode;
+        HeightFunction::Ptr heightFunction;
+
+        double heightAboveGroundAtStartMove;
 
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

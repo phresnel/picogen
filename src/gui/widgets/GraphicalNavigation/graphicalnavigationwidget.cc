@@ -22,7 +22,6 @@
 #include "ui_graphicalnavigationwidget.h"
 
 #include "observergraphicsitem.hh"
-#include "sungraphicsitem.hh"
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -32,7 +31,15 @@
 #include <QPen>
 #include <QBrush>
 
+
 #include <cmath>
+
+class SinCosThingy : public HeightFunction {
+public:
+        virtual double height(double x, double y) const {
+                return 0.5 + 0.5 * std::sin(x/50) * std::cos(y/50);
+        }
+};
 
 GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         QWidget(parent),
@@ -42,10 +49,18 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         ui->setupUi(this);
         ui->graphicsView->setScene(scene);
 
+        heightFunction.reset(new SinCosThingy());
+
         heightmapCutout = scene->addPixmap(pixmapFromFun());
 
         // TODO: remember those
         ObserverGraphicsItem *obs = new ObserverGraphicsItem();
+        connect (obs, SIGNAL(positionChanged(QVector3D)),
+                 SLOT(onObserverPositionChanged(QVector3D)));
+        connect (obs, SIGNAL(yawChanged(qreal)),
+                 SLOT(onObserverYawChanged(qreal)));
+
+        obs->setHeightFunction(heightFunction);
         scene->addItem(obs);
 
         /*SunGraphicsItem *sun = new SunGraphicsItem();
@@ -71,10 +86,6 @@ GraphicalNavigationWidget::~GraphicalNavigationWidget() {
         delete ui;
 }
 
-double GraphicalNavigationWidget::fun(double u, double v) const {
-        return 0.5 + 0.5 * std::sin(u) * std::cos(v);
-}
-
 QPixmap GraphicalNavigationWidget::pixmapFromFun() const {
         QImage ret(ui->graphicsView->width(),
                    ui->graphicsView->height(),
@@ -83,7 +94,7 @@ QPixmap GraphicalNavigationWidget::pixmapFromFun() const {
         for (int v=0; v<ret.height(); ++v) {
                 QRgb *sl = (QRgb*)ret.scanLine(v);
                 for (int u=0; u<ret.width(); ++u) {
-                        const double h = fun(u/5.0, v/5.0);
+                        const double h = heightFunction->height(u, v);
                         const int hi_ = 255*h,
                                   hi = hi_<0?0:hi_>255?255:hi_;
                         sl[u] = QColor(hi,hi,hi).rgb();
@@ -100,3 +111,9 @@ void GraphicalNavigationWidget::showEvent(QShowEvent *) {
         heightmapCutout->setPixmap(pixmapFromFun());
 }
 
+void GraphicalNavigationWidget::onObserverPositionChanged (QVector3D pos) {
+        ui->absoluteHeight->setValue(pos.y());
+}
+
+void GraphicalNavigationWidget::onObserverYawChanged (qreal) {
+}
