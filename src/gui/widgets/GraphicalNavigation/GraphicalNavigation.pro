@@ -9,15 +9,16 @@ QT       += core gui
 TARGET = GraphicalNavigation
 TEMPLATE = app
 
-
 SOURCES += main.cc\
         mainwindow.cc \
     graphicalnavigationwidget.cc \
-    observergraphicsitem.cc
+    observergraphicsitem.cc \
+    observer.cc
 
 HEADERS  += mainwindow.hh \
     graphicalnavigationwidget.hh \
-    observergraphicsitem.hh
+    observergraphicsitem.hh \
+    observer.hh
 
 FORMS    += mainwindow.ui \
     graphicalnavigationwidget.ui

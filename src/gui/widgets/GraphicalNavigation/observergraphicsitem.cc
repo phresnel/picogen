@@ -26,36 +26,29 @@
 #include <cmath>
 
 
-ObserverGraphicsItem::ObserverGraphicsItem()
+ObserverGraphicsItem::ObserverGraphicsItem() :
+        mouseMoveEffect(mm_do_nothing)
 {
         this->setFlags(QGraphicsItem::ItemIsMovable);
 }
 
 QRectF ObserverGraphicsItem::boundingRect() const {
         QRectF ret;
-        ret.setLeft(-12);
-        ret.setRight(12);
-        ret.setBottom(24);
-        ret.setTop(-50);
+        ret.setLeft(-64);
+        ret.setRight(64);
+        ret.setBottom(64);
+        ret.setTop(-64);
         return ret;
 }
 
-void ObserverGraphicsItem::paint(
-    QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget
-) {
-        Q_UNUSED(option)
-        Q_UNUSED(widget)
 
-        // Center
-        painter->setPen(QColor(0,0,0,128));
-        painter->setBrush(QColor(200,255,200,128));
-        painter->drawEllipse(-12, -12, 24,24);
+void ObserverGraphicsItem::paintViewingDirection(QPainter *painter) const {
+        const QTransform prev = painter->transform();
+        QTransform rot = prev;
+        rot = rot.rotateRadians(observer_.yaw());
 
-        painter->setPen(QColor(0,0,0,128));
-        painter->setBrush(QColor(255,200,200,128));
-        painter->drawEllipse(-1.5, -1.5, 3,3);
+        painter->setTransform(rot);
 
-        // Viewing direction
         QPen arrowPen;
         arrowPen.setColor(QColor(255,0,0,128));
         arrowPen.setWidthF(2);
@@ -64,34 +57,109 @@ void ObserverGraphicsItem::paint(
         painter->drawLine(0,0, 0,y);
         painter->drawLine(-5,y+5, 0,y);
         painter->drawLine(+5,y+5, 0,y);
+
+        painter->setBrush(QColor(200,255,200,128));
+        painter->drawPie(QRect(-64,-64,128,128), 83*16,14*16);
+
+        painter->setTransform(prev);
 }
 
+void ObserverGraphicsItem::paintHorizon(QPainter *painter) const {
+        painter->setPen(QColor(200,200,255,200));
 
-bool ObserverGraphicsItem::tryRotateByMouse (QPointF local) {
-        const QPointF v = mapToScene(local) - scenePos();
-        const double x = v.x();
-        const double y = -v.y();
-        const double s = std::sqrt(x*x + y*y);
-        if (s>12 && std::fabs(local.x()) < 5) {
-                // rotate
-                setRotation(std::atan2(x,y) * 180 / 3.14159);
-                return true;
-        } else {
-                // move
-                return false;
-        }
+        QRadialGradient rad (QPointF(0,0), 64, QPointF(0,0));
+        rad.setColorAt(0, QColor(200,200,255,130));
+        rad.setColorAt(0.6, QColor(255,200,155,130));
+        rad.setColorAt(1, QColor(255,200,155,0));
+        painter->setBrush(rad);
+        painter->drawEllipse(-64, -64, 128,128);
+}
+
+void ObserverGraphicsItem::paintSun (QPainter *painter) const {
+        const QTransform local = painter->transform();
+        QTransform localNoRot = QTransform::fromTranslate(pos().x(), pos().y());
+        painter->setTransform (localNoRot);
+
+        painter->setPen(QPen(
+                QColor(255,128,64,255),
+                1,
+                Qt::DotLine
+        ));
+
+        const QLineF sunLine (0,0, 40,40);
+        painter->drawLine(sunLine);
+
+        painter->setPen(QPen(
+                QColor(255,255,100,255),
+                1,
+                Qt::SolidLine
+        ));
+        painter->setBrush(QBrush(
+                QColor(255,255,100,32),
+                Qt::SolidPattern
+        ));
+        painter->drawEllipse(sunLine.p2(),10,10);
+
+        painter->setTransform (local);
+}
+
+void ObserverGraphicsItem::paintCenterMarker (QPainter *painter) const {
+        painter->setPen(QColor(0,0,0,128));
+        painter->setBrush(QColor(200,255,200,128));
+        painter->drawEllipse(-12, -12, 24,24);
+
+        painter->setPen(QColor(0,0,0,128));
+        painter->setBrush(QColor(255,200,200,128));
+        painter->drawEllipse(-1.5, -1.5, 3,3);
+}
+
+void ObserverGraphicsItem::paint(
+    QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget
+) {
+        Q_UNUSED(option)
+        Q_UNUSED(widget)
+
+        paintHorizon(painter);
+        paintViewingDirection(painter);
+        paintSun(painter);
+        paintCenterMarker(painter);
+}
+
+QVector2D ObserverGraphicsItem::relateMouseToOwnPos (QPointF mouse) {
+        return QVector2D(mapToScene(mouse) - scenePos());
 }
 
 void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
-        if (!tryRotateByMouse(p->pos())) {
-                // move
+        switch (mouseMoveEffect) {
+        case mm_do_nothing:
                 QGraphicsItem::mouseMoveEvent(p);
+                break;
+        case mm_change_position: {
+                QGraphicsItem::mouseMoveEvent(p);
+                const QPointF sp = scenePos();
+                observer_.setPosition(sp.x(), 0, sp.y());
+                break;
+        }
+        case mm_change_yaw: {
+                const QVector2D v = relateMouseToOwnPos(p->pos());
+                observer_.setYaw(std::atan2(v.x(),-v.y()));
+                update();
+                break;
+        }
         }
 }
 
 void ObserverGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *p) {
-        if (!tryRotateByMouse(p->pos())) {
-                // move
-                QGraphicsItem::mousePressEvent(p);
+        const QVector2D v = relateMouseToOwnPos(p->pos());
+        if (v.length()>12) {
+                mouseMoveEffect = mm_change_yaw;
+        } else {
+                mouseMoveEffect = mm_change_position;
         }
+        QGraphicsItem::mousePressEvent(p);
+}
+
+void ObserverGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+        mouseMoveEffect = mm_do_nothing;
+        QGraphicsItem::mouseReleaseEvent(event);
 }

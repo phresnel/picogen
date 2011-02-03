@@ -38,6 +38,8 @@ public:
         explicit GraphicalNavigationWidget(QWidget *parent = 0);
         ~GraphicalNavigationWidget();
 
+        void setSunDirection (double x, double y, double z);
+
 private slots:
         void resizeEvent(QResizeEvent *);
         void showEvent(QShowEvent *);

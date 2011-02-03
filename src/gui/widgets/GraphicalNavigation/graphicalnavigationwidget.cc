@@ -22,6 +22,7 @@
 #include "ui_graphicalnavigationwidget.h"
 
 #include "observergraphicsitem.hh"
+#include "sungraphicsitem.hh"
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -44,7 +45,15 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         heightmapCutout = scene->addPixmap(pixmapFromFun());
 
         // TODO: remember those
-        scene->addItem(new ObserverGraphicsItem());
+        ObserverGraphicsItem *obs = new ObserverGraphicsItem();
+        scene->addItem(obs);
+
+        /*SunGraphicsItem *sun = new SunGraphicsItem();
+        sun->setObserverGraphicsItem(obs);
+        sun->setSunDirection(1,1,1);
+        scene->addItem(sun);*/
+
+
         /*double cx = 20, cy=30;
         scene->addEllipse(cx-12,cy-12,
                           24,24,

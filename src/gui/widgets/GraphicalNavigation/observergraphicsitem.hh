@@ -22,6 +22,8 @@
 #define OBSERVERGRAPHICSITEM_HH
 
 #include <QGraphicsItem>
+#include <QVector2D>
+#include "observer.hh"
 
 class ObserverGraphicsItem : public QGraphicsItem
 {
@@ -33,12 +35,27 @@ public:
                    QWidget *widget);
 
 private:
-        bool tryRotateByMouse (QPointF local);
+        QVector2D relateMouseToOwnPos (QPointF mouse);
+
+        void paintViewingDirection(QPainter *painter) const;
+        void paintHorizon(QPainter *painter) const;
+        void paintSun(QPainter *painter) const;
+        void paintCenterMarker (QPainter *painter) const;
+
+private:
+        Observer observer_;
 
 protected:
+        enum MouseMoveEffect {
+                mm_do_nothing = 0,
+                mm_change_position,
+                mm_change_yaw
+        };
+        MouseMoveEffect mouseMoveEffect;
+
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-
+        void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // OBSERVERGRAPHICSITEM_HH
