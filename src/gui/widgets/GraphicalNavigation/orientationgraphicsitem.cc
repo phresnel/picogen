@@ -117,23 +117,23 @@ void OrientationGraphicsItem::paint(
         Q_UNUSED(widget)
 
         const QPointF
-              pitchCenter = QPointF(-64,0),
-              rollCenter = QPointF(32,0);
+              pitchCenter = QPointF(32,0),
+              rollCenter = QPointF(-64,0);
 
-        drawArtificialHorizon(pitchCenter, pitch, painter);
+        drawArtificialHorizon(rollCenter, roll_, painter);
 }
 
 
 void OrientationGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         const QPointF
-              pitchCenter = QPointF(-64,0),
-              rollCenter = QPointF(32,0);
+                        pitchCenter = QPointF(32,0),
+                        rollCenter = QPointF(-64,0);
         const QVector2D
               pitchDiff(mapToScene(event->scenePos() - pitchCenter)),
               rollDiff(mapToScene(event->scenePos() - rollCenter));
 
-        if (pitchDiff.length() < 64) {
-                updateIndicator = update_pitch;
+        if (rollDiff.length() < 64) {
+                updateIndicator = update_roll;
         } else {
                 updateIndicator = update_none;
         }
@@ -161,17 +161,18 @@ void OrientationGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void OrientationGraphicsItem::updateIndicators(QGraphicsSceneMouseEvent *event) {
         const QPointF
-              pitchCenter = QPointF(-64,0),
-              rollCenter = QPointF(64,0);
+              pitchCenter = QPointF(32,0),
+              rollCenter = QPointF(-64,0);
         const QVector2D
               pitchDiff(mapToScene(event->scenePos() - pitchCenter)),
               rollDiff(mapToScene(event->scenePos() - rollCenter));
 
         switch (updateIndicator) {
         case update_none: break;
-        case update_roll: break;
+        case update_roll:
+                roll_ = std::atan2(-rollDiff.x(),-rollDiff.y());
+                break;
         case update_pitch:
-                pitch = std::atan2(-pitchDiff.x(),-pitchDiff.y());
                 break;
         }
 

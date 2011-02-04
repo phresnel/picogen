@@ -45,7 +45,7 @@ private:
         } updateIndicator;
 
 private:
-        qreal pitch;
+        qreal roll_;
 };
 
 #endif // ORIENTATIONGRAPHICSITEM_HH
