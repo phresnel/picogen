@@ -25,6 +25,7 @@
 #include <QVector3D>
 #include "heightfunction.hh"
 #include "observergraphicsitem.hh"
+#include "orientationgraphicsitem.hh"
 
 class QGraphicsScene;
 class QGraphicsPixmapItem;
@@ -63,6 +64,7 @@ private:
         QGraphicsPixmapItem *heightmapCutout;
         HeightFunction::Ptr heightFunction;
         ObserverGraphicsItem *observerGraphicsItem;
+        OrientationGraphicsItem *orientationGraphicsItem;
 
         void updateOwnPosition (QVector3D pos);
         void updateOwnYaw (qreal yaw);

@@ -163,6 +163,7 @@ void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
                 observer_.setYaw(180*0.0174532925 + std::atan2(-v.x(),v.y()));
                 emit yawChanged(observer_.yaw());
                 update();
+                p->accept();
                 break;
         }
         }

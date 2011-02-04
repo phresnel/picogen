@@ -58,15 +58,18 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
                                        SLOT(onObserverPositionChanged(QVector3D)));
         connect (observerGraphicsItem, SIGNAL(yawChanged(qreal)),
                                        SLOT(onObserverYawChanged(qreal)));
-
         observerGraphicsItem->setHeightFunction(heightFunction);
 
         observerGraphicsItem->setObserverAbsoluteHeight(5);
         observerGraphicsItem->setObserverEast(0);
         observerGraphicsItem->setObserverNorth(0);
         observerGraphicsItem->setObserverYaw(0);
-
         scene->addItem(observerGraphicsItem);
+
+
+        ui->orientationGraphicsView->setScene(new QGraphicsScene());
+        orientationGraphicsItem = new OrientationGraphicsItem();
+        ui->orientationGraphicsView->scene()->addItem(orientationGraphicsItem);
 
         ui->keepAbsolute->setChecked(true);
 }
