@@ -43,6 +43,16 @@ public:
 
         void setSunDirection (double x, double y, double z);
 
+        void setPosition (QVector3D position);
+        void setPosition (qreal x, qreal y, qreal z);
+        void setYaw (qreal yaw);
+
+        QVector3D position() const;
+        qreal yaw() const;
+signals:
+        void positionChanged (QVector3D newPosition);
+        void yawChanged (qreal newYaw);
+
 private:
         void resizeEvent(QResizeEvent *);
         void showEvent(QShowEvent *);
@@ -53,6 +63,9 @@ private:
         QGraphicsPixmapItem *heightmapCutout;
         HeightFunction::Ptr heightFunction;
         ObserverGraphicsItem *observerGraphicsItem;
+
+        void updateOwnPosition (QVector3D pos);
+        void updateOwnYaw (qreal yaw);
 
         QPixmap pixmapFromFun() const;
         static QString degreeToName(qreal degree);

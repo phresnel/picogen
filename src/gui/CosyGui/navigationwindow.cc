@@ -65,6 +65,7 @@ void NavigationWindow::on_showRenderTab_clicked() {
         ui->stackedWidget->setCurrentIndex(2);
 }
 
+/*
 void NavigationWindow::on_yawDial_sliderMoved(int value) {
         const bool was = ui->yawSpin->blockSignals(true);
         ui->yawSpin->setValue(value);
@@ -118,7 +119,7 @@ void NavigationWindow::on_zSpin_valueChanged(double) {
         updateFromViews(true);
 }
 
-
+*/
 
 void NavigationWindow::setCreateRedshiftClosure (
         CreateRedshiftSceneClosure::Ptr val
@@ -162,12 +163,16 @@ void NavigationWindow::updateViews() {
         switch (navigation_->kind()) {
         case cosyscene::Navigation::YawPitchRoll: {
                 const cosyscene::YawPitchRoll&ypr = navigation_->yawPitchRoll();
-                ui->yawSpin->setValue(ypr.yaw);
+                /*ui->yawSpin->setValue(ypr.yaw);
                 ui->pitchSpin->setValue(ypr.pitch);
                 ui->rollSpin->setValue(ypr.roll);
                 ui->xSpin->setValue(ypr.position.x());
                 ui->ySpin->setValue(ypr.position.y());
-                ui->zSpin->setValue(ypr.position.z());
+                ui->zSpin->setValue(ypr.position.z());*/
+                ui->graphicalNavigation->setYaw(ypr.yaw);
+                ui->graphicalNavigation->setPosition(ypr.position.x(),
+                                                     ypr.position.y(),
+                                                     ypr.position.z());
         } break;
         case cosyscene::Navigation::None:
                 throw std::runtime_error ("Navigation::updateViews() called"
@@ -179,6 +184,15 @@ void NavigationWindow::updateViews() {
 
 void NavigationWindow::updateFromViews(bool refreshIfAutoRefreshEnabled) {
         cosyscene::YawPitchRoll ypr;
+        ypr.yaw = ui->graphicalNavigation->yaw();
+        ypr.position = cosyscene::Point3d(
+                          ui->graphicalNavigation->position().x(),
+                          ui->graphicalNavigation->position().y(),
+                          ui->graphicalNavigation->position().z()
+                       );
+        navigation_->toYawPitchRoll(ypr);
+
+        /* old
         ypr.yaw = ui->yawSpin->value();
         ypr.pitch = ui->pitchSpin->value();
         ypr.roll = ui->rollSpin->value();
@@ -189,6 +203,7 @@ void NavigationWindow::updateFromViews(bool refreshIfAutoRefreshEnabled) {
                 ui->zSpin->value()
         );
         navigation_->toYawPitchRoll(ypr);
+        */
 
         if (refreshIfAutoRefreshEnabled
             && ui->autoRefreshCheckBox->checkState() == Qt::Checked
@@ -254,4 +269,15 @@ void NavigationWindow::refreshPreview() {
         redshift::shared_ptr<redshift_file::Scene> tmp =
                         createRedshiftScene->createPreviewScene();
         ui->redshiftWidget->setSceneAndRender(tmp);
+}
+
+
+
+
+void NavigationWindow::on_graphicalNavigation_positionChanged (QVector3D) {
+        updateFromViews();
+}
+
+void NavigationWindow::on_graphicalNavigation_yawChanged (qreal) {
+        updateFromViews();
 }

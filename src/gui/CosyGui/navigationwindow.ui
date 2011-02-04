@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>830</width>
-    <height>568</height>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -120,380 +120,37 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <widget class="QWidget" name="precision">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>241</width>
-            <height>241</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Yaw</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <layout class="QGridLayout" name="gridLayout" rowstretch="0,2,0,0" columnstretch="0,2,0">
-             <item row="1" column="1">
-              <widget class="QDial" name="yawDial">
-               <property name="minimum">
-                <number>-180</number>
-               </property>
-               <property name="maximum">
-                <number>180</number>
-               </property>
-               <property name="wrapping">
-                <bool>true</bool>
-               </property>
-               <property name="notchTarget">
-                <double>22.500000000000000</double>
-               </property>
-               <property name="notchesVisible">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>North</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>East</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>South</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>West</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QDoubleSpinBox" name="yawSpin">
-               <property name="wrapping">
-                <bool>true</bool>
-               </property>
-               <property name="suffix">
-                <string>°</string>
-               </property>
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>-180.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>180.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>10</y>
-            <width>111</width>
-            <height>241</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Pitch</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0" columnstretch="0">
+         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
+          <item>
+           <widget class="GraphicalNavigationWidget" name="graphicalNavigation" native="true"/>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="previewGroupBox">
+            <property name="title">
+             <string>Preview</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_4">
              <item row="0" column="0">
-              <widget class="QLabel" name="label_5">
+              <widget class="QPushButton" name="refreshButton">
                <property name="text">
-                <string>Up</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
+                <string>Refresh</string>
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>Down</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QDoubleSpinBox" name="pitchSpin">
-               <property name="suffix">
-                <string>°</string>
-               </property>
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>-90.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>90.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QSlider" name="pitchSlider">
-               <property name="minimum">
-                <number>-90</number>
-               </property>
-               <property name="maximum">
-                <number>90</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="tickPosition">
-                <enum>QSlider::TicksBothSides</enum>
-               </property>
-               <property name="tickInterval">
-                <number>45</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QGroupBox" name="groupBox_3">
-          <property name="geometry">
-           <rect>
-            <x>380</x>
-            <y>10</y>
-            <width>241</width>
-            <height>241</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Roll</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,2,0" columnstretch="0,2,0">
-             <item row="1" column="1">
-              <widget class="QDial" name="rollDial">
-               <property name="minimum">
-                <number>-180</number>
-               </property>
-               <property name="maximum">
-                <number>180</number>
-               </property>
-               <property name="wrapping">
-                <bool>true</bool>
-               </property>
-               <property name="notchTarget">
-                <double>22.500000000000000</double>
-               </property>
-               <property name="notchesVisible">
-                <bool>true</bool>
-               </property>
-              </widget>
+             <item row="1" column="0" colspan="2">
+              <widget class="RenderWidget" name="redshiftWidget" native="true"/>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="label_6">
+              <widget class="QCheckBox" name="autoRefreshCheckBox">
                <property name="text">
-                <string>Up</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>Right</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>Left</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QDoubleSpinBox" name="rollSpin">
-               <property name="wrapping">
-                <bool>true</bool>
-               </property>
-               <property name="suffix">
-                <string>°</string>
-               </property>
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>-180.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>180.000000000000000</double>
+                <string>Auto-Refresh</string>
                </property>
               </widget>
              </item>
             </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QGroupBox" name="previewGroupBox">
-          <property name="geometry">
-           <rect>
-            <x>350</x>
-            <y>270</y>
-            <width>261</width>
-            <height>181</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Preview</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="refreshButton">
-             <property name="text">
-              <string>Refresh</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="RenderWidget" name="redshiftWidget" native="true"/>
-           </item>
-           <item row="0" column="1">
-            <widget class="QCheckBox" name="autoRefreshCheckBox">
-             <property name="text">
-              <string>Auto-Refresh</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QGroupBox" name="groupBox_4">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>270</y>
-            <width>281</width>
-            <height>96</height>
-           </rect>
-          </property>
-          <property name="title">
-           <string>Position</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0" colspan="2">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>west:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="xSpin">
-             <property name="suffix">
-              <string>m</string>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>-999999999.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>999999999.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_11">
-             <property name="text">
-              <string>north:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QDoubleSpinBox" name="zSpin">
-             <property name="suffix">
-              <string>m</string>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>-999999999.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>999999999.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_12">
-             <property name="text">
-              <string>up:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="ySpin">
-             <property name="suffix">
-              <string>m</string>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>-999999999.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>999999999.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+           </widget>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="page_2"/>
        </widget>
@@ -514,6 +171,12 @@
    <class>RenderWidget</class>
    <extends>QWidget</extends>
    <header>renderwidget.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GraphicalNavigationWidget</class>
+   <extends>QWidget</extends>
+   <header>graphicalnavigationwidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

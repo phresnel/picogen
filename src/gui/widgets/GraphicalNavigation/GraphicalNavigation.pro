@@ -10,16 +10,11 @@ TARGET = GraphicalNavigation
 TEMPLATE = app
 
 SOURCES += main.cc\
-        mainwindow.cc \
-    graphicalnavigationwidget.cc \
-    observergraphicsitem.cc \
-    observer.cc
+        mainwindow.cc
+HEADERS  += mainwindow.hh
+FORMS    += mainwindow.ui
 
-HEADERS  += mainwindow.hh \
-    graphicalnavigationwidget.hh \
-    observergraphicsitem.hh \
-    observer.hh \
-    heightfunction.hh
+OTHER_FILES += \
+    graphicalnavigationwidget.pri
 
-FORMS    += mainwindow.ui \
-    graphicalnavigationwidget.ui
+include(graphicalnavigationwidget.pri)

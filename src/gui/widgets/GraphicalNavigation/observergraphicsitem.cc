@@ -237,3 +237,11 @@ void ObserverGraphicsItem::setObserverYaw (double v) {
         emit yawChanged(v);
         update();
 }
+
+QVector3D ObserverGraphicsItem::observerPosition() const {
+        return observer_.position();
+}
+
+qreal ObserverGraphicsItem::observerYaw() const {
+        return observer_.yaw();
+}

@@ -100,7 +100,7 @@ void GraphicalNavigationWidget::showEvent(QShowEvent *) {
         heightmapCutout->setPixmap(pixmapFromFun());
 }
 
-void GraphicalNavigationWidget::onObserverPositionChanged (QVector3D pos) {
+void GraphicalNavigationWidget::updateOwnPosition (QVector3D pos) {
         bool b = ui->absoluteHeight->blockSignals(true);
         ui->absoluteHeight->setValue(pos.y());
         ui->absoluteHeight->blockSignals(b);
@@ -118,10 +118,20 @@ void GraphicalNavigationWidget::onObserverPositionChanged (QVector3D pos) {
         ui->north->blockSignals(b);
 }
 
-void GraphicalNavigationWidget::onObserverYawChanged (qreal v) {
+void GraphicalNavigationWidget::updateOwnYaw(qreal yaw) {
         const bool b = ui->yaw->blockSignals(true);
-        ui->yaw->setValue(v/0.0174532925);
+        ui->yaw->setValue(yaw/0.0174532925);
         ui->yaw->blockSignals(b);
+}
+
+void GraphicalNavigationWidget::onObserverPositionChanged (QVector3D pos) {
+        updateOwnPosition (pos);
+        emit positionChanged(pos);
+}
+
+void GraphicalNavigationWidget::onObserverYawChanged (qreal v) {
+        updateOwnYaw(v);
+        emit yawChanged(v);
 }
 
 void GraphicalNavigationWidget::on_keepAbsolute_toggled(bool checked) {
@@ -165,4 +175,26 @@ QString GraphicalNavigationWidget::degreeToName(qreal degree) {
         else if (degree < 270+22.5) return "W";
         else if (degree < 315+22.5) return "NW";
         else                        return "N";
+}
+
+void GraphicalNavigationWidget::setPosition (QVector3D pos) {
+        updateOwnPosition(pos);
+        observerGraphicsItem->setObserverAbsolutePosition(pos);
+}
+
+void GraphicalNavigationWidget::setPosition (qreal x, qreal y, qreal z) {
+        setPosition (QVector3D (x, y, z));
+}
+
+void GraphicalNavigationWidget::setYaw (qreal yaw) {
+        updateOwnYaw(yaw);
+        observerGraphicsItem->setObserverYaw(yaw);
+}
+
+QVector3D GraphicalNavigationWidget::position() const {
+        return observerGraphicsItem->observerPosition();
+}
+
+qreal GraphicalNavigationWidget::yaw() const {
+        return observerGraphicsItem->observerYaw();
 }

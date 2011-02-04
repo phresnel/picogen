@@ -22,6 +22,7 @@
 #define NAVIGATIONWINDOW_HH
 
 #include <QWidget>
+#include <QVector3D>
 #include "redshift/include/smart_ptr.hh"
 #include "createredshiftsceneclosure.hh"
 
@@ -51,6 +52,7 @@ signals:
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
+
 private:
         Ui::NavigationWindow *ui;
         redshift::shared_ptr<cosyscene::Navigation> navigation_;
@@ -65,19 +67,23 @@ private:
         void refreshPreview();
 
 private slots:
-        void on_zSpin_valueChanged(double );
-        void on_ySpin_valueChanged(double );
-        void on_xSpin_valueChanged(double );
+        void on_graphicalNavigation_positionChanged (QVector3D);
+        void on_graphicalNavigation_yawChanged (qreal);
+
         void on_refreshButton_clicked();
 
-        void on_rollSpin_valueChanged(double);
-        void on_rollDial_valueChanged(int);
+        //void on_zSpin_valueChanged(double );
+        //void on_ySpin_valueChanged(double );
+        //void on_xSpin_valueChanged(double );
 
-        void on_pitchSpin_valueChanged(double );
-        void on_pitchSlider_valueChanged(int);
+        //void on_rollSpin_valueChanged(double);
+        //void on_rollDial_valueChanged(int);
 
-        void on_yawSpin_valueChanged(double);
-        void on_yawDial_sliderMoved(int);
+        //void on_pitchSpin_valueChanged(double );
+        //void on_pitchSlider_valueChanged(int);
+
+        //void on_yawSpin_valueChanged(double);
+        //void on_yawDial_sliderMoved(int);
 
         void on_showRenderTab_clicked();
         void on_showRealTimeTab_clicked();
