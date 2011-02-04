@@ -24,7 +24,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>251</width>
+        <width>274</width>
         <height>403</height>
        </rect>
       </property>
@@ -205,26 +205,31 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QGraphicsView" name="orientationGraphicsView">
-          <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="horizontalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOff</enum>
-          </property>
-          <property name="renderHints">
-           <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
-          </property>
-         </widget>
-        </item>
        </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="ArtificialHorizon1DWidget" name="widget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>64</height>
+        </size>
+       </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ArtificialHorizon1DWidget</class>
+   <extends>QWidget</extends>
+   <header>artificialhorizon1dwidget.hh</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

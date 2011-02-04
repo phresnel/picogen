@@ -67,9 +67,9 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         scene->addItem(observerGraphicsItem);
 
 
-        ui->orientationGraphicsView->setScene(new QGraphicsScene());
-        orientationGraphicsItem = new OrientationGraphicsItem();
-        ui->orientationGraphicsView->scene()->addItem(orientationGraphicsItem);
+        /*ui->orientationGraphicsView->setScene(new QGraphicsScene());
+        rollGraphicsItem = new ArtificalHorizon1DGraphicsItem();
+        ui->orientationGraphicsView->scene()->addItem(rollGraphicsItem);*/
 
         ui->keepAbsolute->setChecked(true);
 }
@@ -97,10 +97,16 @@ QPixmap GraphicalNavigationWidget::pixmapFromFun() const {
 
 void GraphicalNavigationWidget::resizeEvent(QResizeEvent *) {
         heightmapCutout->setPixmap(pixmapFromFun());
+        /*ui->orientationGraphicsView->fitInView(
+                        ui->orientationGraphicsView->scene()->sceneRect(),
+                        Qt::KeepAspectRatio);*/
 }
 
 void GraphicalNavigationWidget::showEvent(QShowEvent *) {
         heightmapCutout->setPixmap(pixmapFromFun());
+        /*ui->orientationGraphicsView->fitInView(
+                        ui->orientationGraphicsView->scene()->sceneRect(),
+                        Qt::KeepAspectRatio);*/
 }
 
 void GraphicalNavigationWidget::updateOwnPosition (QVector3D pos) {
