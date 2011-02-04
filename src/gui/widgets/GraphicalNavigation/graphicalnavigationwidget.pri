@@ -3,12 +3,14 @@ SOURCES *= \
         $$PWD/graphicalnavigationwidget.cc \
         $$PWD/observergraphicsitem.cc \
         $$PWD/observer.cc \
-        $$PWD/artificialhorizon1dwidget.cc
+        $$PWD/rollwidget.cc \
+        $$PWD/pitchwidget.cc
 HEADERS *= \
         $$PWD/graphicalnavigationwidget.hh \
         $$PWD/observergraphicsitem.hh \
         $$PWD/observer.hh \
         $$PWD/heightfunction.hh \
-        $$PWD/artificialhorizon1dwidget.hh
+        $$PWD/rollwidget.hh \
+        $$PWD/pitchwidget.hh
 FORMS *= \
         $$PWD/graphicalnavigationwidget.ui

@@ -209,7 +209,17 @@
       </widget>
      </item>
      <item>
-      <widget class="ArtificialHorizon1DWidget" name="widget" native="true">
+      <widget class="PitchWidget" name="widget_2" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>64</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="RollWidget" name="widget" native="true">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -224,9 +234,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ArtificialHorizon1DWidget</class>
+   <class>RollWidget</class>
    <extends>QWidget</extends>
-   <header>artificialhorizon1dwidget.hh</header>
+   <header>rollwidget.hh</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PitchWidget</class>
+   <extends>QWidget</extends>
+   <header>pitchwidget.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
