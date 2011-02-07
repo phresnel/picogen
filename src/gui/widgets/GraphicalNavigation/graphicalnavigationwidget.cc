@@ -32,6 +32,7 @@
 #include <QBrush>
 
 #include <cmath>
+#include <limits>
 
 class SinCosThingy : public HeightFunction {
 public:
@@ -49,16 +50,13 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         ui->graphicsView->setScene(scene);
         //ui->graphicsView->setTransform(ui->graphicsView->transform().scale(1,-1));
 
-        heightFunction.reset(new SinCosThingy());
-
-        heightmapCutout = scene->addPixmap(pixmapFromFun());
-
         observerGraphicsItem = new ObserverGraphicsItem();
+        setHeightFunction(HeightFunction::Ptr(new SinCosThingy()));
         connect (observerGraphicsItem, SIGNAL(positionChanged(QVector3D)),
                                        SLOT(onObserverPositionChanged(QVector3D)));
         connect (observerGraphicsItem, SIGNAL(orientationChanged(qreal,qreal,qreal)),
                                        SLOT(onObserverOrientationChanged(qreal,qreal,qreal)));
-        observerGraphicsItem->setHeightFunction(heightFunction);
+
 
         observerGraphicsItem->setObserverAbsoluteHeight(5);
         observerGraphicsItem->setObserverEast(0);
@@ -83,10 +81,20 @@ QPixmap GraphicalNavigationWidget::pixmapFromFun() const {
                    ui->graphicsView->height(),
                    QImage::Format_RGB32);
 
+        double min = std::numeric_limits<float>::infinity(),
+              max = -std::numeric_limits<float>::infinity();
+        for (int v=0; v<ret.height(); ++v) {
+                for (int u=0; u<ret.width(); ++u) {
+                        const double h = heightFunction->height(u, v);
+                        if (h<min) min = h;
+                        if (h>max) max = h;
+                }
+        }
+        const double range = 1 / (max - min);
         for (int v=0; v<ret.height(); ++v) {
                 QRgb *sl = (QRgb*)ret.scanLine(v);
                 for (int u=0; u<ret.width(); ++u) {
-                        const double h = heightFunction->height(u, v);
+                        const double h = (heightFunction->height(u, v)-min)*range;
                         const int hi_ = 255*h,
                                   hi = hi_<0?0:hi_>255?255:hi_;
                         sl[u] = QColor(hi,hi,hi).rgb();
@@ -237,7 +245,6 @@ void GraphicalNavigationWidget::setRoll (qreal v) {
         ui->rollWidget->setRoll(v);
 }
 
-#include <QDebug>
 void GraphicalNavigationWidget::on_rollWidget_rollEdited (qreal v) {
         updateOwnRoll(v);
         observerGraphicsItem->setObserverRoll(v);
@@ -263,4 +270,24 @@ qreal GraphicalNavigationWidget::pitch() const {
 
 qreal GraphicalNavigationWidget::roll() const {
         return observerGraphicsItem->observerRoll();
+}
+
+void GraphicalNavigationWidget::setHeightFunction (HeightFunction::Ptr f) {
+        heightFunction = f;
+
+        scene->removeItem(heightmapCutout);
+        heightmapCutout = scene->addPixmap(pixmapFromFun());
+        heightmapCutout->setZValue(-1);
+        observerGraphicsItem->setHeightFunction(heightFunction);
+
+        // update relative height spinbox
+        const QVector3D pos = observerGraphicsItem->observerPosition();
+        const bool b = ui->relativeHeight->blockSignals(true);
+        ui->relativeHeight->setValue(pos.y() - heightFunction->height(pos.x(),pos.z()));
+        ui->relativeHeight->blockSignals(b);
+
+        repaint();
+}
+
+void GraphicalNavigationWidget::setWaterLevel (qreal) {
 }

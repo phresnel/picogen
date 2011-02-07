@@ -19,6 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "cosyscene/navigation.hh"
+#include "cosyscene/terrain.hh"
 #include "cosyscene/scene.hh"
 
 #include "navigationwindow.hh"
@@ -30,6 +31,33 @@
 #include <QDebug>
 #include "scopedblocksignals.hh"
 
+
+#include "redshift/include/basictypes/quatsch-height-function.hh"
+#include "heightfunction.hh"
+namespace {
+        class QuatschHeightFunction : public HeightFunction {
+        public:
+                QuatschHeightFunction (const std::string &code) {
+                        try {
+                                std::stringstream errors;
+                                hh.reset(new redshift::QuatschHeightFunction(code, errors));
+                                valid_ = true;
+                        } catch (...) {
+                                valid_ = false;
+                        }
+                }
+                bool valid() const { return valid_; }
+
+                virtual double height (double x, double z) const {
+                        return (*hh)(x,z);
+                }
+
+        private:
+                bool valid_;
+                redshift::shared_ptr<redshift::QuatschHeightFunction> hh;
+        };
+
+}
 
 NavigationWindow::NavigationWindow(QWidget *parent) :
     QWidget(parent),
@@ -129,7 +157,7 @@ void NavigationWindow::setCreateRedshiftClosure (
 
 
 
-void NavigationWindow::setNavigation (
+/*void NavigationWindow::setNavigation (
         redshift::shared_ptr<cosyscene::Navigation> nav,
         bool blockSignals
 ) {
@@ -137,8 +165,18 @@ void NavigationWindow::setNavigation (
         navigation_ = nav;
         updateViews();
         this->blockSignals(prevBlocked);
-}
+}*/
 
+void NavigationWindow::setScene (
+        redshift::shared_ptr<cosyscene::Scene> scene,
+        bool blockSignals
+) {
+        const bool prevBlocked = this->blockSignals(blockSignals);
+        scene_ = scene;
+        navigation_ = scene->navigation();
+        updateViews();
+        this->blockSignals(prevBlocked);
+}
 
 
 void NavigationWindow::setNavigationByValue (
@@ -180,6 +218,15 @@ void NavigationWindow::updateViews() {
                 throw std::runtime_error ("Navigation::updateViews() called"
                                           " for kind 'None'");
         }
+
+
+        //const cosyscene::Terrain & t = *terrain_;
+        if (scene_->terrain()) {
+                ui->graphicalNavigation->setHeightFunction (
+                       HeightFunction::Ptr(
+                         new QuatschHeightFunction(scene_->finalTerrainCode()))
+                );
+        }
 }
 
 
@@ -207,7 +254,8 @@ void NavigationWindow::updateFromViews(bool refreshIfAutoRefreshEnabled) {
 void NavigationWindow::sceneInvalidated(
         redshift::shared_ptr<cosyscene::Scene> scene
 ) {
-        setNavigation (scene->navigation());
+        //setNavigation (scene->navigation());
+        setScene (scene);
 }
 
 

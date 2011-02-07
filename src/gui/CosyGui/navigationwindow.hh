@@ -33,6 +33,7 @@ namespace Ui {
 namespace cosyscene {
         class Navigation;
         class Scene;
+        class Terrain;
 }
 
 class NavigationWindow : public QWidget {
@@ -42,8 +43,12 @@ public:
         explicit NavigationWindow(QWidget *parent = 0);
         ~NavigationWindow();
 
-        void setNavigation (redshift::shared_ptr<cosyscene::Navigation>,
+        /*void setNavigation (redshift::shared_ptr<cosyscene::Navigation>,
                             bool blockSignals=true);
+        void setTerrain (redshift::shared_ptr<cosyscene::Terrain>,
+                         bool blockSignals=true);*/
+        void setScene (redshift::shared_ptr<cosyscene::Scene> scene,
+                       bool blockSignals=true);
         void setCreateRedshiftClosure (CreateRedshiftSceneClosure::Ptr);
 
 signals:
@@ -56,6 +61,7 @@ public slots:
 private:
         Ui::NavigationWindow *ui;
         redshift::shared_ptr<cosyscene::Navigation> navigation_;
+        redshift::shared_ptr<cosyscene::Scene> scene_;
         CreateRedshiftSceneClosure::Ptr createRedshiftScene;
 
         void updateViews ();

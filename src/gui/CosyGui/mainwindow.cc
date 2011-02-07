@@ -158,7 +158,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
         scene->sunSky()->toUtahSky (cosyscene::UtahSky());
         ui->sunSky->setSunSky(scene->sunSky());
-        ui->navigation->setNavigation(scene->navigation());
+        //ui->navigation->setNavigation(scene->navigation());
+        ui->navigation->setScene (scene);
         ui->navigation->setCreateRedshiftClosure(redshiftSceneCreator);
         ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
         ui->filmSettingsAndCamera->setFilmSettingsAndCamera (scene->filmSettings(),

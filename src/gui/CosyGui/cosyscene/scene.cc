@@ -90,6 +90,30 @@ redshift_file::Material toRedshift (cosyscene::Material const &material) {
 }
 
 
+
+std::string Scene::finalTerrainCode() const {
+        const TerrainFormation &formation = *terrain_->formation();
+
+        switch (formation.kind()) {
+        case TerrainFormation::QuatschSource:
+                return formation
+                       .quatschSource()
+                       .code();
+                break;
+        case TerrainFormation::None: /* never the case */
+                break;
+        case TerrainFormation::QuatschPreset:
+                return formation
+                       .quatschPreset()
+                       .getPreprocessedCode();
+                break;
+        }
+
+        return "0";
+}
+
+
+
 redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
         bool usePreviewSettings
 ) const {
@@ -260,21 +284,7 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         ob.type = redshift_file::Object::lazy_quadtree;
 
                         // Formation
-                        switch (formation.kind()) {
-                        case TerrainFormation::QuatschSource:
-                                ob.lazyQuadtreeParams.code = formation
-                                                             .quatschSource()
-                                                             .code();
-                                break;
-                        case TerrainFormation::None: /* never the case */
-                                break;
-                        case TerrainFormation::QuatschPreset:
-                                ob.lazyQuadtreeParams.code =
-                                                formation
-                                                .quatschPreset()
-                                                .getPreprocessedCode();
-                                break;
-                        }
+                        ob.lazyQuadtreeParams.code = finalTerrainCode();
 
                         // Fitting
                         ob.lazyQuadtreeParams.size = fitting.lazyQuadtreeVisibleExtent();

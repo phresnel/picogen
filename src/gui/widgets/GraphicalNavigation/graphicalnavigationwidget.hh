@@ -53,6 +53,9 @@ public:
         qreal yaw() const;
         qreal pitch() const;
         qreal roll() const;
+
+        void setHeightFunction (HeightFunction::Ptr);
+        void setWaterLevel (qreal h);
 signals:
         void positionChanged (QVector3D newPosition);
         void orientationChanged (qreal newYaw, qreal newPitch, qreal newRoll);

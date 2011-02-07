@@ -47,6 +47,7 @@ public:
 
         redshift::shared_ptr<redshift_file::Scene> toRedshiftScene(
                         bool usePreviewSettings=true) const;
+        std::string finalTerrainCode() const;
 
         redshift::shared_ptr<Terrain> terrain() const {
                 return terrain_;
