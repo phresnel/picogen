@@ -68,7 +68,7 @@ private:
 
 private slots:
         void on_graphicalNavigation_positionChanged (QVector3D);
-        void on_graphicalNavigation_yawChanged (qreal);
+        void on_graphicalNavigation_orientationChanged (qreal,qreal,qreal);
 
         void on_refreshButton_clicked();
 

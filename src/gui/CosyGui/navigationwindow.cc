@@ -170,6 +170,8 @@ void NavigationWindow::updateViews() {
                 ui->ySpin->setValue(ypr.position.y());
                 ui->zSpin->setValue(ypr.position.z());*/
                 ui->graphicalNavigation->setYaw(ypr.yaw);
+                ui->graphicalNavigation->setPitch(ypr.pitch);
+                ui->graphicalNavigation->setRoll(ypr.roll);
                 ui->graphicalNavigation->setPosition(ypr.position.x(),
                                                      ypr.position.y(),
                                                      ypr.position.z());
@@ -181,29 +183,17 @@ void NavigationWindow::updateViews() {
 }
 
 
-
 void NavigationWindow::updateFromViews(bool refreshIfAutoRefreshEnabled) {
         cosyscene::YawPitchRoll ypr;
         ypr.yaw = ui->graphicalNavigation->yaw();
+        ypr.pitch = ui->graphicalNavigation->pitch();
+        ypr.roll = ui->graphicalNavigation->roll();
         ypr.position = cosyscene::Point3d(
                           ui->graphicalNavigation->position().x(),
                           ui->graphicalNavigation->position().y(),
                           ui->graphicalNavigation->position().z()
                        );
         navigation_->toYawPitchRoll(ypr);
-
-        /* old
-        ypr.yaw = ui->yawSpin->value();
-        ypr.pitch = ui->pitchSpin->value();
-        ypr.roll = ui->rollSpin->value();
-
-        ypr.position = cosyscene::Point3d(
-                ui->xSpin->value(),
-                ui->ySpin->value(),
-                ui->zSpin->value()
-        );
-        navigation_->toYawPitchRoll(ypr);
-        */
 
         if (refreshIfAutoRefreshEnabled
             && ui->autoRefreshCheckBox->checkState() == Qt::Checked
@@ -276,8 +266,10 @@ void NavigationWindow::refreshPreview() {
 
 void NavigationWindow::on_graphicalNavigation_positionChanged (QVector3D) {
         updateFromViews();
+        qDebug() << "pos changed in gn";
 }
 
-void NavigationWindow::on_graphicalNavigation_yawChanged (qreal) {
+void NavigationWindow::on_graphicalNavigation_orientationChanged (qreal, qreal, qreal) {
         updateFromViews();
+        qDebug() << "orientation changed in gn";
 }

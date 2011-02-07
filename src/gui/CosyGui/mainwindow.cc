@@ -275,7 +275,7 @@ void MainWindow::on_actionSave_triggered() {
                 return;
         cosyscene::save_scene(*this->scene, str.toStdString());
 }
-#include "cosyscene/navigation.hh"
+
 void MainWindow::on_actionLoad_triggered() {
         const QString str = askForOpenFilename(this);
         if (str == "")
@@ -292,7 +292,6 @@ void MainWindow::on_actionLoad_triggered() {
                 std::cerr << "unknown exception" << std::endl;
         }
 }
-
 
 void MainWindow::on_renderCommandLink_clicked() {
         // Et hop.

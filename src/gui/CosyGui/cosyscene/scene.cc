@@ -154,15 +154,18 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         cam.transforms.push_back(t);
 
                         t.type = redshift_file::Transform::yaw;
-                        t.angle = ypr.yaw;
+                        t.angle = ypr.yaw * (180/redshift::constants::pi);
+
                         cam.transforms.push_back(t);
 
+                        // the negation has historical reasons within redshift
                         t.type = redshift_file::Transform::pitch;
-                        t.angle = ypr.pitch;
+                        t.angle = -ypr.pitch * (180/redshift::constants::pi);
                         cam.transforms.push_back(t);
 
+                        // the negation has historical reasons within redshift
                         t.type = redshift_file::Transform::roll;
-                        t.angle = ypr.roll;
+                        t.angle = -ypr.roll * (180/redshift::constants::pi);
                         cam.transforms.push_back(t);
                 } break;
         case cosyscene::Navigation::None:
