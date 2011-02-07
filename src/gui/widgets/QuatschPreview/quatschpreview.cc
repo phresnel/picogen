@@ -70,7 +70,7 @@ void QuatschPreview::compileAndRun() {
                                 values[x+y*width] = h;
                         }
                 }
-                const float range = 1 / (max - min);
+                const float range = (max==min) ? 0 : 1 / (max - min);
                 for (unsigned int y=0; y<height; ++y) {
                         for (unsigned int x=0; x<width; ++x) {
                                 const float h = (values[x+y*width]-min) * range;
