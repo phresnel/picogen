@@ -33,9 +33,15 @@ public:
 
         qreal yaw() const;
         void setYaw(qreal);
+
+        qreal pitch() const;
+        void setPitch(qreal);
+
+        qreal roll() const;
+        void setRoll(qreal);
 private:
         QVector3D position_;
-        qreal yaw_;
+        qreal yaw_, pitch_, roll_;
 };
 
 #endif // OBSERVER_HH

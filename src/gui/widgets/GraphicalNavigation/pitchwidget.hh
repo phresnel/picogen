@@ -29,6 +29,11 @@ class PitchWidget : public QWidget
 public:
         PitchWidget(QWidget *parent = 0);
 
+        qreal pitch() const;
+        void setPitch(qreal);
+signals:
+        void pitchEdited (qreal newPitch) const;
+
 protected:
         void mousePressEvent(QMouseEvent *);
         void mouseMoveEvent(QMouseEvent *);

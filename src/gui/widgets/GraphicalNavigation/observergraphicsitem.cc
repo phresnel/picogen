@@ -161,7 +161,9 @@ void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
         case mm_change_yaw: {
                 const QVector2D v = relateMouseToOwnPos(p->pos());
                 observer_.setYaw(180*0.0174532925 + std::atan2(-v.x(),v.y()));
-                emit yawChanged(observer_.yaw());
+                emit orientationChanged(observer_.yaw(),
+                                        observer_.pitch(),
+                                        observer_.roll());
                 update();
                 p->accept();
                 break;
@@ -235,7 +237,25 @@ void ObserverGraphicsItem::setObserverNorth (double v) {
 
 void ObserverGraphicsItem::setObserverYaw (double v) {
         observer_.setYaw(v);
-        emit yawChanged(v);
+        emit orientationChanged(observer_.yaw(),
+                                observer_.pitch(),
+                                observer_.roll());
+        update();
+}
+
+void ObserverGraphicsItem::setObserverPitch (double v) {
+        observer_.setPitch(v);
+        emit orientationChanged(observer_.yaw(),
+                                observer_.pitch(),
+                                observer_.roll());
+        update();
+}
+
+void ObserverGraphicsItem::setObserverRoll (double v) {
+        observer_.setRoll(v);
+        emit orientationChanged(observer_.yaw(),
+                                observer_.pitch(),
+                                observer_.roll());
         update();
 }
 
@@ -245,4 +265,12 @@ QVector3D ObserverGraphicsItem::observerPosition() const {
 
 qreal ObserverGraphicsItem::observerYaw() const {
         return observer_.yaw();
+}
+
+qreal ObserverGraphicsItem::observerPitch() const {
+        return observer_.pitch();
+}
+
+qreal ObserverGraphicsItem::observerRoll() const {
+        return observer_.roll();
 }

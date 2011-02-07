@@ -52,13 +52,17 @@ public:
         void setObserverNorth (double);
 
         void setObserverYaw (double);
+        void setObserverPitch (double);
+        void setObserverRoll (double);
 
         QVector3D observerPosition() const;
         qreal observerYaw() const;
+        qreal observerPitch() const;
+        qreal observerRoll() const;
 
 signals:
         void positionChanged (QVector3D newPosition);
-        void yawChanged (qreal newYaw);
+        void orientationChanged (qreal newYaw, qreal newPitch, qreal newRoll);
 
 private:
         QVector2D relateMouseToOwnPos (QPointF mouse);

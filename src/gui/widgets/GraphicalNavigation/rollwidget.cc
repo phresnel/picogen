@@ -33,7 +33,16 @@
 
 RollWidget::RollWidget(QWidget *parent)
         : QWidget(parent)
+        , roll_(0)
 {
+}
+
+qreal RollWidget::roll() const {
+        return roll_;
+}
+void RollWidget::setRoll(qreal a) {
+        roll_ = a;
+        repaint();
 }
 
 int RollWidget::radius() const {
@@ -66,18 +75,18 @@ void RollWidget::drawArtificialHorizon(QPainter *painter) {
                           radius*2,radius*2,
                           rollQtAngle + 180*16, 180*16);
 
-        // draw up-indicator
-        const QPointF up = QPointF(-std::sin(roll_),
-                                   -std::cos(roll_));
+        // draw roll-indicator (tilted by 90 degrees, so 'up' is displayed,
+        // and not 'forward')
+        const qreal roll90 = roll_ + 0.5*3.14159;
+        const QPointF up = QPointF( std::cos(roll90),
+                                   -std::sin(roll90)); //<-- because +y points down
         painter->setPen(QPen (QColor(0,0,0,255), 1, Qt::DashLine));
         painter->drawLine (center,
                            center+radius*up);
 
         const QPointF tpos = center + (radius+20)*up;
         painter->drawText(QRectF(tpos.x()-20, tpos.y()-20, 40, 40),
-                          QString::number(-rollDegree<0 ?
-                                          360-rollDegree :
-                                          -rollDegree,
+                          QString::number(-rollDegree,
                                           'f', 1) + "°",
                           QTextOption(Qt::AlignCenter));
 
@@ -141,13 +150,18 @@ void RollWidget::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void RollWidget::updateIndicators(QMouseEvent *event) {
-        const QVector2D diff (event->pos()-center());
+        // Get diff and make +y point up.
+        const QVector2D diff_ (event->pos()-center()),
+                        diff (diff_.x(), -diff_.y());
+
         switch (updateIndicator) {
         case update_none: break;
         case update_roll:
-                roll_ = std::atan2(-diff.x(),-diff.y());
+                // do atan2(y,x), but tilt 90° because users should edit by
+                // clicking the up-direction, and not the 'forward'-direction.
+                roll_ = std::atan2(-diff.x(),diff.y());
+                emit rollEdited(roll_);
                 break;
         }
-        //update();
         repaint();
 }

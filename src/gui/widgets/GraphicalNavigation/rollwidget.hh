@@ -29,6 +29,12 @@ class RollWidget : public QWidget
 public:
         RollWidget(QWidget *parent = 0);
 
+        qreal roll() const;
+        void setRoll(qreal a);
+
+signals:
+        void rollEdited (qreal newRoll) const;
+
 protected:
         void mousePressEvent(QMouseEvent *);
         void mouseMoveEvent(QMouseEvent *);

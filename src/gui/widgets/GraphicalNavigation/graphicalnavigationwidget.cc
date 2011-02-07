@@ -56,8 +56,8 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         observerGraphicsItem = new ObserverGraphicsItem();
         connect (observerGraphicsItem, SIGNAL(positionChanged(QVector3D)),
                                        SLOT(onObserverPositionChanged(QVector3D)));
-        connect (observerGraphicsItem, SIGNAL(yawChanged(qreal)),
-                                       SLOT(onObserverYawChanged(qreal)));
+        connect (observerGraphicsItem, SIGNAL(orientationChanged(qreal,qreal,qreal)),
+                                       SLOT(onObserverOrientationChanged(qreal,qreal,qreal)));
         observerGraphicsItem->setHeightFunction(heightFunction);
 
         observerGraphicsItem->setObserverAbsoluteHeight(5);
@@ -133,14 +133,31 @@ void GraphicalNavigationWidget::updateOwnYaw(qreal yaw) {
         ui->yaw->blockSignals(b);
 }
 
+void GraphicalNavigationWidget::updateOwnPitch(qreal v) {
+        const bool b = ui->pitch->blockSignals(true);
+        ui->pitch->setValue(v/0.0174532925);
+        ui->pitch->blockSignals(b);
+}
+
+void GraphicalNavigationWidget::updateOwnRoll(qreal v) {
+        const bool b = ui->roll->blockSignals(true);
+        ui->roll->setValue(-v/0.0174532925);
+        ui->roll->blockSignals(b);
+}
+
 void GraphicalNavigationWidget::onObserverPositionChanged (QVector3D pos) {
         updateOwnPosition (pos);
         emit positionChanged(pos);
 }
 
-void GraphicalNavigationWidget::onObserverYawChanged (qreal v) {
-        updateOwnYaw(v);
-        emit yawChanged(v);
+void GraphicalNavigationWidget::onObserverOrientationChanged (qreal yaw,
+                                                              qreal pitch,
+                                                              qreal roll)
+{
+        updateOwnYaw(yaw);
+        updateOwnPitch(pitch);
+        updateOwnRoll(roll);
+        emit orientationChanged(yaw,pitch,roll);
 }
 
 void GraphicalNavigationWidget::on_keepAbsolute_toggled(bool checked) {
@@ -171,7 +188,15 @@ void GraphicalNavigationWidget::on_north_valueChanged(double v) {
 
 void GraphicalNavigationWidget::on_yaw_valueChanged(double v) {
         observerGraphicsItem->setObserverYaw(v*0.0174532925);
-        ui->yaw->setSuffix("° (" + degreeToName(v) + ")");
+}
+void GraphicalNavigationWidget::on_pitch_valueChanged(double v) {
+        observerGraphicsItem->setObserverPitch(v*0.0174532925);
+        ui->pitchWidget->setPitch(v*0.0174532925);
+}
+void GraphicalNavigationWidget::on_roll_valueChanged(double v) {
+        // We negated roll for users sake.
+        observerGraphicsItem->setObserverRoll(-v*0.0174532925);
+        ui->rollWidget->setRoll(-v*0.0174532925);
 }
 
 QString GraphicalNavigationWidget::degreeToName(qreal degree) {
@@ -195,10 +220,34 @@ void GraphicalNavigationWidget::setPosition (qreal x, qreal y, qreal z) {
         setPosition (QVector3D (x, y, z));
 }
 
-void GraphicalNavigationWidget::setYaw (qreal yaw) {
-        updateOwnYaw(yaw);
-        observerGraphicsItem->setObserverYaw(yaw);
+void GraphicalNavigationWidget::setYaw (qreal v) {
+        updateOwnYaw(v);
+        observerGraphicsItem->setObserverYaw(v);
 }
+
+void GraphicalNavigationWidget::setPitch (qreal v) {
+        updateOwnPitch(v);
+        observerGraphicsItem->setObserverPitch(v);
+        ui->pitchWidget->setPitch(v);
+}
+
+void GraphicalNavigationWidget::setRoll (qreal v) {
+        updateOwnRoll(v);
+        observerGraphicsItem->setObserverRoll(v);
+        ui->rollWidget->setRoll(v);
+}
+
+#include <QDebug>
+void GraphicalNavigationWidget::on_rollWidget_rollEdited (qreal v) {
+        updateOwnRoll(v);
+        observerGraphicsItem->setObserverRoll(v);
+}
+
+void GraphicalNavigationWidget::on_pitchWidget_pitchEdited (qreal v) {
+        updateOwnPitch(v);
+        observerGraphicsItem->setObserverPitch(v);
+}
+
 
 QVector3D GraphicalNavigationWidget::position() const {
         return observerGraphicsItem->observerPosition();
@@ -206,4 +255,12 @@ QVector3D GraphicalNavigationWidget::position() const {
 
 qreal GraphicalNavigationWidget::yaw() const {
         return observerGraphicsItem->observerYaw();
+}
+
+qreal GraphicalNavigationWidget::pitch() const {
+        return observerGraphicsItem->observerPitch();
+}
+
+qreal GraphicalNavigationWidget::roll() const {
+        return observerGraphicsItem->observerRoll();
 }

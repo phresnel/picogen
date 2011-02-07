@@ -42,3 +42,19 @@ qreal Observer::yaw() const {
 void Observer::setYaw(qreal value) {
         yaw_ = value;
 }
+
+qreal Observer::pitch() const {
+        return pitch_;
+}
+
+void Observer::setPitch(qreal value) {
+        pitch_ = value;
+}
+
+qreal Observer::roll() const {
+        return roll_;
+}
+
+void Observer::setRoll(qreal value) {
+        roll_ = value;
+}

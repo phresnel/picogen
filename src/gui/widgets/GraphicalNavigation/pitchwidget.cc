@@ -36,6 +36,14 @@ PitchWidget::PitchWidget(QWidget *parent)
 {
 }
 
+qreal PitchWidget::pitch() const {
+        return pitch_;
+}
+void PitchWidget::setPitch(qreal a) {
+        pitch_ = a;
+        repaint();
+}
+
 QRect PitchWidget::actionRect() const {
         QRect ret = rect();
         ret.adjust(2,2,-2,-2);
@@ -90,13 +98,13 @@ void PitchWidget::drawArtificialHorizon(QPainter *painter) {
         painter->drawLine(half_left, horizon_s90, half_right, horizon_s90);
 
         painter->drawText(QRect(half_left-20, horizon_a45-8, 20, 16),
-                          "45°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
-        painter->drawText(QRect(half_left-20, horizon_s45-8, 20, 16),
                           "-45°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+        painter->drawText(QRect(half_left-20, horizon_s45-8, 20, 16),
+                          "45°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
         painter->drawText(QRect(half_left-20, horizon_a90-8, 20, 16),
-                          "90°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
-        painter->drawText(QRect(half_left-20, horizon_s90-8, 20, 16),
                           "-90°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+        painter->drawText(QRect(half_left-20, horizon_s90-8, 20, 16),
+                          "90°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
 
         // Draw observer horizon.
         painter->setPen(QPen (QColor(0,0,0,255), 1, Qt::DashLine));
@@ -150,8 +158,10 @@ void PitchWidget::updateIndicators(QMouseEvent *event) {
                 if (pitch_<-0.5) pitch_ = -0.5;
                 if (pitch_>0.5) pitch_ = 0.5;
                 pitch_ *= 3.14159;
+                emit pitchEdited(pitch_);
                 break;
         }
         }
+
         repaint();
 }

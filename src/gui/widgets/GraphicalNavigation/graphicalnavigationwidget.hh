@@ -46,12 +46,16 @@ public:
         void setPosition (QVector3D position);
         void setPosition (qreal x, qreal y, qreal z);
         void setYaw (qreal yaw);
+        void setPitch (qreal pitch);
+        void setRoll (qreal roll);
 
         QVector3D position() const;
         qreal yaw() const;
+        qreal pitch() const;
+        qreal roll() const;
 signals:
         void positionChanged (QVector3D newPosition);
-        void yawChanged (qreal newYaw);
+        void orientationChanged (qreal newYaw, qreal newPitch, qreal newRoll);
 
 private:
         void resizeEvent(QResizeEvent *);
@@ -66,12 +70,18 @@ private:
 
         void updateOwnPosition (QVector3D pos);
         void updateOwnYaw (qreal yaw);
+        void updateOwnPitch (qreal yaw);
+        void updateOwnRoll (qreal yaw);
 
         QPixmap pixmapFromFun() const;
         static QString degreeToName(qreal degree);
 
 private slots:
+        void on_rollWidget_rollEdited (qreal);
+        void on_pitchWidget_pitchEdited (qreal);
         void on_yaw_valueChanged(double );
+        void on_pitch_valueChanged(double );
+        void on_roll_valueChanged(double );
         void on_north_valueChanged(double );
         void on_east_valueChanged(double );
         void on_relativeHeight_valueChanged(double );
@@ -79,7 +89,7 @@ private slots:
         void on_keepRelative_toggled(bool checked);
         void on_keepAbsolute_toggled(bool checked);
         void onObserverPositionChanged (QVector3D);
-        void onObserverYawChanged (qreal);
+        void onObserverOrientationChanged (qreal,qreal,qreal);
 };
 
 #endif // GRAPHICALNAVIGATIONWIDGET_HH
