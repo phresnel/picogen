@@ -83,18 +83,22 @@ QPixmap GraphicalNavigationWidget::pixmapFromFun() const {
 
         double min = std::numeric_limits<float>::infinity(),
               max = -std::numeric_limits<float>::infinity();
-        for (int v=0; v<ret.height(); ++v) {
-                for (int u=0; u<ret.width(); ++u) {
-                        const double h = heightFunction->height(u, v);
+
+        const unsigned int h2 = ret.height()/2, w2=ret.width()/2;
+
+        for (int v=0, mv=h2-1; v<ret.height(); ++v, --mv) {
+                for (int u=0, mu=-w2; u<ret.width(); ++u, ++mu) {
+                        const double h = heightFunction->height(mu, mv);
                         if (h<min) min = h;
                         if (h>max) max = h;
                 }
         }
         const double range = 1 / (max - min);
-        for (int v=0; v<ret.height(); ++v) {
+        for (int v=0, mv=h2-1; v<ret.height(); ++v, --mv) {
                 QRgb *sl = (QRgb*)ret.scanLine(v);
-                for (int u=0; u<ret.width(); ++u) {
-                        const double h = (heightFunction->height(u, v)-min)*range;
+                for (int u=0, mu=-w2; u<ret.width(); ++u, ++mu) {
+                        const double h_ = heightFunction->height(mu,mv);
+                        const double h = (h_-min)*range;
                         const int hi_ = 255*h,
                                   hi = hi_<0?0:hi_>255?255:hi_;
                         sl[u] = QColor(hi,hi,hi).rgb();
@@ -104,14 +108,14 @@ QPixmap GraphicalNavigationWidget::pixmapFromFun() const {
 }
 
 void GraphicalNavigationWidget::resizeEvent(QResizeEvent *) {
-        heightmapCutout->setPixmap(pixmapFromFun());
+        updateHeightmap();
         /*ui->orientationGraphicsView->fitInView(
                         ui->orientationGraphicsView->scene()->sceneRect(),
                         Qt::KeepAspectRatio);*/
 }
 
 void GraphicalNavigationWidget::showEvent(QShowEvent *) {
-        heightmapCutout->setPixmap(pixmapFromFun());
+        updateHeightmap();
         /*ui->orientationGraphicsView->fitInView(
                         ui->orientationGraphicsView->scene()->sceneRect(),
                         Qt::KeepAspectRatio);*/
@@ -275,9 +279,7 @@ qreal GraphicalNavigationWidget::roll() const {
 void GraphicalNavigationWidget::setHeightFunction (HeightFunction::Ptr f) {
         heightFunction = f;
 
-        scene->removeItem(heightmapCutout);
-        heightmapCutout = scene->addPixmap(pixmapFromFun());
-        heightmapCutout->setZValue(-1);
+        updateHeightmap();
         observerGraphicsItem->setHeightFunction(heightFunction);
 
         // update relative height spinbox
@@ -290,4 +292,12 @@ void GraphicalNavigationWidget::setHeightFunction (HeightFunction::Ptr f) {
 }
 
 void GraphicalNavigationWidget::setWaterLevel (qreal) {
+}
+
+void GraphicalNavigationWidget::updateHeightmap() {
+        scene->removeItem(heightmapCutout);
+        heightmapCutout = scene->addPixmap(pixmapFromFun());
+        heightmapCutout->setZValue(-1);
+        heightmapCutout->setPos(-heightmapCutout->boundingRect().width()/2.0,
+                                -heightmapCutout->boundingRect().height()/2.0);
 }

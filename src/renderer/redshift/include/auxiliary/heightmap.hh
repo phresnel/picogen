@@ -66,7 +66,7 @@ public:
                         width_ = image->w;
                         height_ = image->h;
 
-                        for (unsigned int y=0; y<height_; ++y)
+                        for (unsigned int y=0, my=height_-1; y<height_; ++y, --my) {
                         for (unsigned int x=0; x<width_; ++x) {
                                 const Uint32 col = getPixel (image, x, y);
                                 Uint8 r,g,b;
@@ -74,12 +74,13 @@ public:
 
                                 switch (mode) {
                                 case Luminance:
-                                        h[y*width_+x] = (0.299*r + 0.567*g + 0.114*b)/255; // this maybe for colorful images
+                                        h[my*width_+x] = (0.299*r + 0.567*g + 0.114*b)/255; // this maybe for colorful images
                                         break;
                                 case Average:
-                                        h[y*width_+x] = (r+g+b)/T(3*255);
+                                        h[my*width_+x] = (r+g+b)/T(3*255);
                                         break;
                                 };
+                        }
                         }
                         SDL_FreeSurface(image);
                         return true;

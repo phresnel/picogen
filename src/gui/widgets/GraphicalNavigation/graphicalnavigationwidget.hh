@@ -76,6 +76,7 @@ private:
         void updateOwnPitch (qreal yaw);
         void updateOwnRoll (qreal yaw);
 
+        void updateHeightmap();
         QPixmap pixmapFromFun() const;
         static QString degreeToName(qreal degree);
 

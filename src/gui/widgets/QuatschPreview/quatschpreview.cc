@@ -60,14 +60,14 @@ void QuatschPreview::compileAndRun() {
                 for (unsigned int y=0; y<height; ++y) {
                         const float v_ = (y/(float)height)-0.5f,
                                     v = (v_*edgeSize) + centerY;
-
+                        const unsigned int my = (height-1)-y;
                         for (unsigned int x=0; x<width; ++x) {
                                 const float u_ = (x/(float)width)-0.5f,
                                             u = (u_*edgeSize) + centerX;
                                 const float h = q(u,v);
                                 if (h<min) min=h;
                                 if (h>max) max=h;
-                                values[x+y*width] = h;
+                                values[x+my*width] = h;
                         }
                 }
                 const float range = (max==min) ? 0 : 1 / (max - min);

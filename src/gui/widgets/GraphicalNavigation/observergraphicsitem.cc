@@ -141,9 +141,8 @@ void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
                 break;
         case mm_change_position: {
                 QGraphicsItem::mouseMoveEvent(p);
-                const QPointF sp = scenePos();
-
-                const double x=sp.x(), z=sp.y();
+                const double x=p->scenePos().x(),
+                             z=-p->scenePos().y();
                 double y;
                 switch (autoHeightMode) {
                 case KeepRelativeHeight:
@@ -154,7 +153,7 @@ void ObserverGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *p) {
                         break;
                 }
 
-                observer_.setPosition(x, y, -z);
+                observer_.setPosition(x, y, z);
                 emit positionChanged(observer_.position());
                 break;
         }
