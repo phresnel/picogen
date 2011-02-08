@@ -67,7 +67,6 @@ private:
 private:
         Ui::GraphicalNavigationWidget *ui;
         QGraphicsScene *scene;
-        QGraphicsPixmapItem *heightmapCutout;
         HeightFunction::Ptr heightFunction;
         ObserverGraphicsItem *observerGraphicsItem;
 
@@ -76,11 +75,12 @@ private:
         void updateOwnPitch (qreal yaw);
         void updateOwnRoll (qreal yaw);
 
-        void updateHeightmap();
-        QPixmap pixmapFromFun() const;
+        //void updateHeightmap();
         static QString degreeToName(qreal degree);
 
 private slots:
+        void on_zoomOut_clicked();
+        void on_zoomIn_clicked();
         void on_rollWidget_rollEdited (qreal);
         void on_pitchWidget_pitchEdited (qreal);
         void on_yaw_valueChanged(double );

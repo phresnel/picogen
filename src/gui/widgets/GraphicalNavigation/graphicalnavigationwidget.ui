@@ -30,7 +30,21 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QGraphicsView" name="graphicsView">
+        <widget class="QPushButton" name="zoomIn">
+         <property name="text">
+          <string>++</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="zoomOut">
+         <property name="text">
+          <string>--</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="NavigationGraphicsView" name="graphicsView">
          <property name="verticalScrollBarPolicy">
           <enum>Qt::ScrollBarAlwaysOff</enum>
          </property>
@@ -296,6 +310,11 @@
    <extends>QWidget</extends>
    <header>pitchwidget.hh</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NavigationGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>navigationgraphicsview.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>

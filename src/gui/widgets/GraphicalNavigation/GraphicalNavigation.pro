@@ -9,7 +9,7 @@ QT       += core gui
 TARGET = GraphicalNavigation
 TEMPLATE = app
 
-SOURCES += main.cc\
+SOURCES += main.cc \
         mainwindow.cc
 HEADERS  += mainwindow.hh
 FORMS    += mainwindow.ui
