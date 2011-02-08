@@ -29,8 +29,9 @@
 template <typename T>
 template <typename Arch>
 inline void StashObject<T>::serialize (Arch &arch) {
-        using actuarius::pack_inline;
-        arch & pack_inline(value_);
+        using actuarius::pack;
+        arch & pack("value", value_);
+        arch & pack("description", description_);
 }
 
 template <typename T>

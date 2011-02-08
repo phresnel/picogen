@@ -26,6 +26,7 @@
 #include <vector>
 #include <algorithm>
 #include <cstdlib>
+#include <string>
 // Yes. This was inspired by git stash.
 
 namespace actuarius {
@@ -38,6 +39,10 @@ public:
         : time_(std::time(0)), value_(value)
         {}
 
+        StashObject(T const &value, std::string const &description)
+        : time_(std::time(0)), value_(value), description_(description)
+        {}
+
         StashObject(std::time_t time, T const &value)
         : time_(time), value_(value)
         {}
@@ -47,12 +52,16 @@ public:
 
         std::time_t time() const { return time_; }
 
+        std::string description() const { return description_; }
+        void setDescription (const std::string &d) { description_ = d; }
+
         // Serialization.
         template<typename Arch>
         void serialize (Arch &arch);  // stash.def.hh
 private:
         std::time_t time_;
         T value_;
+        std::string description_;
 
         template <typename T_> friend class Stash;
 
@@ -68,11 +77,13 @@ public:
         typedef typename std::vector<StashObject<T> >::const_iterator
                          const_iterator;
 
-        void stash (T const &value) {
-                objects.push_back(StashObject<T>(value));
+        void stash (T const &value,
+                    const std::string &description=std::string()
+        ) {
+                push_back(StashObject<T>(value,description));
         }
 
-        void push_back (StashObject<T> so) {
+        void push_back (const StashObject<T> &so) {
                 objects.push_back (so);
         }
 
@@ -140,10 +151,10 @@ public:
                 stash_ = stash;
         }
 
-        void stash() {
+        void stash(const std::string &description=std::string()) {
                 DERIVED tmp = *static_cast<DERIVED*>(this);
                 tmp.clearStash();
-                stash_.stash(tmp);
+                stash_.stash(tmp, description);
         }
 
         void clearStash() {

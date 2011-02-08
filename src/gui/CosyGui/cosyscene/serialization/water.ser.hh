@@ -34,8 +34,9 @@ namespace cosyscene {
 template<typename Arch>
 inline void WaterFitting::serialize (Arch &arch) {
         using actuarius::pack;
-        arch & pack("sea-level", seaLevel_)
-             ;
+        if (Arch::deserialize || !stash_.empty())
+                arch & pack("stash", stash_);
+        arch & pack("sea-level", seaLevel_);
 
 }
 

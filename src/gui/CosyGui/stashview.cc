@@ -55,7 +55,14 @@ void StashView::addItem (const StashViewItem &item) {
                 const QString dateString = datetime.toString(dateFmt);
 
 
-                QListWidgetItem *lwi = new QListWidgetItem(dateString);
+                QString text = dateString;
+
+                const QString description =
+                                QString::fromStdString(item.description)
+                                .simplified();
+                if (description != "")
+                        text += ": " + description;
+                QListWidgetItem *lwi = new QListWidgetItem(text);
                 ui->listWidget->addItem(lwi);
         }
 }

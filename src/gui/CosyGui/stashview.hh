@@ -23,6 +23,7 @@
 
 #include <QDialog>
 #include <QVector>
+#include <QInputDialog>
 #include <ctime>
 #include "redshift/include/smart_ptr.hh"
 #include "cosyscene/stash.hh"
@@ -40,6 +41,7 @@ public:
         template <typename T> StashViewItem (StashObject<T> const &stashObject)
                 : time(stashObject.time())
                 , data(new T (stashObject.value()))
+                , description(stashObject.description())
         {}
 
         StashViewItem () {}
@@ -48,6 +50,7 @@ private:
         friend class StashView;
         std::time_t time;
         redshift::shared_ptr<void> data;
+        std::string description;
 };
 
 class StashView : public QDialog
@@ -91,7 +94,13 @@ public:
                                 break;
                         }
                 }
-                value->stash();
+                QInputDialog dlg(self);
+                dlg.setLabelText("Optionally provide a descriptive title");
+                dlg.setInputMode(QInputDialog::TextInput);
+                if (dlg.exec() == QInputDialog::Accepted)
+                        value->stash(dlg.textValue().toStdString());
+                else
+                        value->stash();
                 return true;
         }
 
@@ -122,7 +131,8 @@ public:
                         case ConfirmReset_Abort:
                                 return false;
                         case ConfirmReset_StashBeforeReset:
-                                value->stash();
+                                //value->stash();
+                                StashDialog (self, value);
                                 break;
                         case ConfirmReset_Reset:
                                 break;
