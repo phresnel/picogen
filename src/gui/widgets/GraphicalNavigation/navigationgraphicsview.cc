@@ -44,9 +44,9 @@ namespace {
 }
 
 NavigationGraphicsView::NavigationGraphicsView(QWidget *parent) :
-    QGraphicsView(parent),
-    waterLevel(-1000000),
-    pixelSize_(1)
+        QGraphicsView(parent),
+        waterLevel(-1000000),
+        pixelSize_(1)
 {
         setCacheMode(QGraphicsView::CacheNone);
         setDragMode(QGraphicsView::ScrollHandDrag);
@@ -58,17 +58,17 @@ NavigationGraphicsView::NavigationGraphicsView(QWidget *parent) :
 
 void NavigationGraphicsView::setHeightFunction (HeightFunction::Ptr f) {
         heightFunction = f;
-        guessMaxima();
+        needsMaximaUpdate_ = true;
 }
 
 void NavigationGraphicsView::guessMaxima() {
-        int i=0;
         hmin = std::numeric_limits<float>::infinity();
         hmax = -std::numeric_limits<float>::infinity();
 
         qsrand(0);
         const qreal r = 100000, r05 = r / 2;
-        while (++i<32768) {
+        int i=0;
+        while (++i<32768/4) {
                 const qreal u = (qrand() / (qreal)RAND_MAX) * r - r05,
                             v = (qrand() / (qreal)RAND_MAX) * r - r05,
                             h = heightFunction->height(u,v);
@@ -79,6 +79,8 @@ void NavigationGraphicsView::guessMaxima() {
                 hirange = 1 / (hmax - hmin);
         else
                 hirange = 0;
+
+        needsMaximaUpdate_ = false;
 }
 
 void NavigationGraphicsView::setWaterLevel(qreal wl) {
@@ -86,6 +88,9 @@ void NavigationGraphicsView::setWaterLevel(qreal wl) {
 }
 
 void NavigationGraphicsView::drawBackground(QPainter *painter, const QRectF &rect) {
+        if (needsMaximaUpdate_) {
+                guessMaxima();
+        }
         const QRectF r = painter->worldTransform().mapRect(rect);
         QImage img(r.width()/pixelSize_,
                    r.height()/pixelSize_,

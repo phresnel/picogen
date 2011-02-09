@@ -47,6 +47,8 @@ private:
         qreal hmin, hmax, hirange;
         qreal waterLevel;
 
+        bool needsMaximaUpdate_;
+
         QPointF dragBeginPos;
         int pixelSize_;
 
