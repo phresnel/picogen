@@ -50,6 +50,7 @@ namespace {
                 bool valid() const { return valid_; }
 
                 virtual double height (double x, double z) const {
+                        if (!valid_) return 0;
                         return (*hh)(x,z);
                 }
 

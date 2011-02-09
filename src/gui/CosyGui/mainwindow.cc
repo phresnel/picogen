@@ -249,6 +249,7 @@ void MainWindow::on_renderingSetupCommandLink_clicked() {
 }
 
 void MainWindow::on_terrain_terrainChanged() {
+        ui->navigation->setScene(scene);
         indicateUnsaved();
 }
 

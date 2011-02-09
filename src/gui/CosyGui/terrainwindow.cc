@@ -96,3 +96,8 @@ void TerrainWindow::on_showWorldFittingTab_clicked() {
         ui->showWorldFittingTab->setChecked(true);
         ui->terrainTaskStackedWidget->setCurrentIndex(2);
 }
+
+
+void TerrainWindow::on_formation_formationChanged() {
+        emit terrainChanged();
+}
