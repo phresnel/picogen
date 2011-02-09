@@ -258,10 +258,10 @@ void NavigationWindow::refreshPreview() {
 
 void NavigationWindow::on_graphicalNavigation_positionChanged (QVector3D) {
         updateFromViews();
-        emit navigationChanged();
+        qDebug() << "pos changed in gn";
 }
 
 void NavigationWindow::on_graphicalNavigation_orientationChanged (qreal, qreal, qreal) {
         updateFromViews();
-        emit navigationChanged();
+        qDebug() << "orientation changed in gn";
 }
