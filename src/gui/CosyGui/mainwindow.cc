@@ -267,13 +267,11 @@ void MainWindow::on_water_waterChanged() {
 }
 
 void MainWindow::indicateSaved() {
-        //ui->stashFrame->setStyleSheet("QFrame{background-color:#222;}");
-        //ui->statusLabel->setText("");
+        setWindowTitle("");
 }
 
 void MainWindow::indicateUnsaved(){
-        //ui->stashFrame->setStyleSheet("QFrame{background-color:#a66;}");
-        //ui->statusLabel->setText("unsaved changes present");
+        setWindowTitle(windowTitle()+"*");
 }
 
 void MainWindow::on_actionSave_triggered() {

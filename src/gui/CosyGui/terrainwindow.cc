@@ -101,3 +101,9 @@ void TerrainWindow::on_showWorldFittingTab_clicked() {
 void TerrainWindow::on_formation_formationChanged() {
         emit terrainChanged();
 }
+void TerrainWindow::on_fitting_fittingChanged() {
+        emit terrainChanged();
+}
+void TerrainWindow::on_texturing_materialChanged() {
+        emit terrainChanged();
+}

@@ -45,6 +45,9 @@ public:
                 bool blockSignals
         );
 
+signals:
+        void materialChanged();
+
 private:
         Ui::Material *ui;
         redshift::shared_ptr<cosyscene::Material> material;

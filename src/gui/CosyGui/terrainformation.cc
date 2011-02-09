@@ -91,12 +91,13 @@ void TerrainFormation::on_quatschCodeEditorCLB_clicked() {
                 "/* Press F1 for help :) */\n"
                 "/* ... or move the caret over some entity and try out\n"
                 "   the contextual help via F1 */\n"
-                "([LibnoiseVoronoi \n"
-                "   enable-distance{1}\n"
-                "   displacement{0.1}\n"
-                " ] x y)\n"
+                "(* 100 ([LibnoiseRidgedMulti \n"
+                "         frequency{0.001}\n"
+                "         octave-count{16}\n"
+                "        ] x y)\n"
         ));
         updateViews();
+        emit formationChanged();
 }
 
 
@@ -135,6 +136,7 @@ void TerrainFormation::on_parametricPresetCLB_clicked() {
         " ] (* (($Repeat)) x)  (* (($Repeat)) y))"
         ));*/
         updateViews();
+        emit formationChanged();
 }
 
 void TerrainFormation::on_heightmapCLB_clicked() {
@@ -158,6 +160,7 @@ void TerrainFormation::on_heightmapCLB_clicked() {
         " ] (* (($Repeat)) x)  (* (($Repeat)) y))"
         ));
         updateViews();
+        emit formationChanged();
 }
 
 void TerrainFormation::on_quatschPresetEditor_formationChanged() {
@@ -178,19 +181,23 @@ void TerrainFormation::on_quatschCodeEditor_codeChanged() {
 
 void TerrainFormation::updateViews() {
         switch (formation_->kind()) {
-        case cosyscene::TerrainFormation::QuatschSource:
+        case cosyscene::TerrainFormation::QuatschSource: {
+                const bool blocked = ui->quatschCodeEditor->blockSignals(true);
                 ui->quatschCodeEditor->setCode(
                                 QString::fromStdString(
                                 formation_->quatschSource().code()));
                 showQuatschEditor();
+                ui->quatschCodeEditor->blockSignals(blocked);
                 break;
+        }
         case cosyscene::TerrainFormation::QuatschPreset: {
                 const bool blocked = ui->quatschPresetEditor->blockSignals(true);
                 cosyscene::QuatschPreset qp = formation_->quatschPreset();
                 ui->quatschPresetEditor->fromCosy(qp);
                 showQuatschPresetEditor();
                 ui->quatschPresetEditor->blockSignals(blocked);
-        } break;
+                break;
+        }
         case cosyscene::TerrainFormation::None:
                 showTerrainKindSelection();
                 break;

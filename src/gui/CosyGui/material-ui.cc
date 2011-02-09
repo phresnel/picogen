@@ -63,6 +63,8 @@ void Material::on_colorPicker_colorChanged(ColorPickerColor const &cpc){
                 break;
         }
         mat.toMonochrome(mono);
+
+        emit materialChanged();
 }
 
 
@@ -106,5 +108,5 @@ void Material::setMaterial(
                 ui->colorPicker->setColor(cpc);
                 break;
         }
-        }        
+        }
 }
