@@ -94,3 +94,9 @@ void WaterWindow::on_showWorldFittingTab_clicked() {
 void WaterWindow::on_fitting_fittingChanged() {
         emit waterChanged();
 }
+void WaterWindow::on_formation_formationChanged() {
+        emit waterChanged();
+}
+void WaterWindow::on_texturing_materialChanged() {
+        emit waterChanged();
+}

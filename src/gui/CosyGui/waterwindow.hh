@@ -63,7 +63,9 @@ private slots:
         void on_showTexturingTab_clicked();
         void on_showFormationTab_clicked();
 
+        void on_formation_formationChanged();
         void on_fitting_fittingChanged();
+        void on_texturing_materialChanged();
 };
 
 
