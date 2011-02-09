@@ -45,7 +45,8 @@ namespace {
 
 NavigationGraphicsView::NavigationGraphicsView(QWidget *parent) :
     QGraphicsView(parent),
-    waterLevel(-1000000)
+    waterLevel(-1000000),
+    pixelSize_(1)
 {
         setCacheMode(QGraphicsView::CacheNone);
         setDragMode(QGraphicsView::ScrollHandDrag);
@@ -88,8 +89,8 @@ void NavigationGraphicsView::setWaterLevel(qreal wl) {
 
 void NavigationGraphicsView::drawBackground(QPainter *painter, const QRectF &rect) {
         const QRectF r = painter->worldTransform().mapRect(rect);
-        QImage img(r.width()/1,
-                   r.height()/1,
+        QImage img(r.width()/pixelSize_,
+                   r.height()/pixelSize_,
                    QImage::Format_RGB32);
         const int height=img.height(), width=img.width();
 
@@ -178,3 +179,7 @@ void NavigationGraphicsView::scrollContentsBy(int dx, int dy) {
         viewport()->update();
 }
 
+void NavigationGraphicsView::setPixelSize (int s) {
+        pixelSize_ = s;
+        viewport()->update();
+}

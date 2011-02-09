@@ -32,7 +32,8 @@ ObserverGraphicsItem::ObserverGraphicsItem() :
         autoHeightMode(KeepRelativeHeight),
         heightFunction(new ZeroHeightFunction)
 {
-        this->setFlags(QGraphicsItem::ItemIsMovable);
+        this->setFlags(QGraphicsItem::ItemIsMovable |
+                       QGraphicsItem::ItemIgnoresTransformations);
 }
 
 QRectF ObserverGraphicsItem::boundingRect() const {

@@ -288,3 +288,7 @@ void GraphicalNavigationWidget::on_resetZoom_clicked() {
 void GraphicalNavigationWidget::on_findMe_clicked() {
         ui->graphicsView->centerOn(observerGraphicsItem);
 }
+
+void GraphicalNavigationWidget::on_pixelSize_valueChanged(int value) {
+        ui->graphicsView->setPixelSize(value);
+}

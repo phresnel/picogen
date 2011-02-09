@@ -78,6 +78,7 @@ private:
         static QString degreeToName(qreal degree);
 
 private slots:
+        void on_pixelSize_valueChanged(int );
         void on_findMe_clicked();
         void on_resetZoom_clicked();
         void on_zoomOut_clicked();

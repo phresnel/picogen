@@ -32,6 +32,8 @@ public:
         void setHeightFunction (HeightFunction::Ptr);
         void setWaterLevel (qreal wl);
 
+        void setPixelSize (int);
+
 protected:
         void drawBackground(QPainter *painter, const QRectF &rect);
         void drawForeground(QPainter *painter, const QRectF &rect);
@@ -46,6 +48,7 @@ private:
         qreal waterLevel;
 
         QPointF dragBeginPos;
+        int pixelSize_;
 
         void guessMaxima();
         void drawRaster(QPainter *painter, const QRectF &rectf, qreal boxSize);
