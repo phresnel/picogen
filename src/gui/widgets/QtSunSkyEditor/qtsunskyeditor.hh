@@ -114,9 +114,9 @@ private:
         redshift::shared_ptr<redshift::backgrounds::PssAdapter> preetham;
 
 private slots:
-        void on_directionXSpinBox_editingFinished();
-        void on_directionYSpinBox_editingFinished();
-        void on_directionZSpinBox_editingFinished();
+        void on_directionXSpinBox_valueChanged(double);
+        void on_directionYSpinBox_valueChanged(double);
+        void on_directionZSpinBox_valueChanged(double);
 
         void on_overcastSpinBox_valueChanged(double );
         void on_enableAtmosphericEffects_stateChanged(int );

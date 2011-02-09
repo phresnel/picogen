@@ -247,13 +247,13 @@ void QtSunSkyEditor::on_overcastSpinBox_valueChanged(double value) {
 
 
 
-void QtSunSkyEditor::on_directionXSpinBox_editingFinished() {
+void QtSunSkyEditor::on_directionXSpinBox_valueChanged(double) {
         updateSunDirectionFromSpinBoxes();
 }
-void QtSunSkyEditor::on_directionYSpinBox_editingFinished() {
+void QtSunSkyEditor::on_directionYSpinBox_valueChanged(double) {
         updateSunDirectionFromSpinBoxes();
 }
-void QtSunSkyEditor::on_directionZSpinBox_editingFinished() {
+void QtSunSkyEditor::on_directionZSpinBox_valueChanged(double) {
         updateSunDirectionFromSpinBoxes();
 }
 void QtSunSkyEditor::updateSunDirectionFromSpinBoxes() {
