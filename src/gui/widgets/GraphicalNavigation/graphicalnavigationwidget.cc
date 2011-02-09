@@ -41,6 +41,14 @@ public:
         }
 };
 
+class CrossThingy : public HeightFunction {
+public:
+        virtual double height(double x, double y) const {
+                if (x>0 && y>0) return 0.7;
+                return ((x>-5 && x<5) || (y>-5 && y<5))*0.5+0.5;
+        }
+};
+
 GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::GraphicalNavigationWidget),
@@ -48,10 +56,18 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
 {
         ui->setupUi(this);
         ui->graphicsView->setScene(scene);
-        //ui->graphicsView->setTransform(ui->graphicsView->transform().scale(1,-1));
+
+        // Add huge rect so that translation will actually work.
+        // Otherwise, alignment won't allow us to.
+        // See also http://bugreports.qt.nokia.com/browse/QTBUG-7328 .
+        // -> Essentially, non-functioning translation is a result of
+        //    GraphicsView's alignment efforts.
+        scene->addRect(-10000000,-10000000,
+                        20000000, 20000000,
+                        QPen(),QBrush(QColor(255,122,64,0)))->setZValue(-2);
 
         observerGraphicsItem = new ObserverGraphicsItem();
-        setHeightFunction(HeightFunction::Ptr(new SinCosThingy()));
+        setHeightFunction(HeightFunction::Ptr(new CrossThingy()));
         connect (observerGraphicsItem, SIGNAL(positionChanged(QVector3D)),
                                        SLOT(onObserverPositionChanged(QVector3D)));
         connect (observerGraphicsItem, SIGNAL(orientationChanged(qreal,qreal,qreal)),
@@ -63,11 +79,6 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         observerGraphicsItem->setObserverNorth(0);
         observerGraphicsItem->setObserverYaw(0);
         scene->addItem(observerGraphicsItem);
-
-
-        /*ui->orientationGraphicsView->setScene(new QGraphicsScene());
-        rollGraphicsItem = new ArtificalHorizon1DGraphicsItem();
-        ui->orientationGraphicsView->scene()->addItem(rollGraphicsItem);*/
 
         ui->keepAbsolute->setChecked(true);
 }
@@ -240,7 +251,6 @@ qreal GraphicalNavigationWidget::roll() const {
 void GraphicalNavigationWidget::setHeightFunction (HeightFunction::Ptr f) {
         heightFunction = f;
 
-        //updateHeightmap();
         observerGraphicsItem->setHeightFunction(heightFunction);
         ui->graphicsView->setHeightFunction(heightFunction);
 
@@ -253,16 +263,9 @@ void GraphicalNavigationWidget::setHeightFunction (HeightFunction::Ptr f) {
         repaint();
 }
 
-void GraphicalNavigationWidget::setWaterLevel (qreal) {
+void GraphicalNavigationWidget::setWaterLevel (qreal w) {
+        ui->graphicsView->setWaterLevel(w);
 }
-
-/*void GraphicalNavigationWidget::updateHeightmap() {
-        scene->removeItem(heightmapCutout);
-        heightmapCutout = scene->addPixmap(pixmapFromFun());
-        heightmapCutout->setZValue(-1);
-        heightmapCutout->setPos(-heightmapCutout->boundingRect().width()/2.0,
-                                -heightmapCutout->boundingRect().height()/2.0);
-}*/
 
 void GraphicalNavigationWidget::on_zoomIn_clicked() {
         ui->graphicsView->scale(1.5, 1.5);
@@ -270,4 +273,12 @@ void GraphicalNavigationWidget::on_zoomIn_clicked() {
 
 void GraphicalNavigationWidget::on_zoomOut_clicked() {
         ui->graphicsView->scale(0.75, 0.75);
+}
+
+void GraphicalNavigationWidget::on_resetZoom_clicked() {
+        ui->graphicsView->resetTransform();
+}
+
+void GraphicalNavigationWidget::on_findMe_clicked() {
+        ui->graphicsView->centerOn(observerGraphicsItem);
 }

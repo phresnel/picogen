@@ -79,6 +79,7 @@ void ObserverGraphicsItem::paintHorizon(QPainter *painter) const {
 }
 
 void ObserverGraphicsItem::paintSun (QPainter *painter) const {
+        return;
         const QTransform local = painter->transform();
         QTransform localNoRot = QTransform::fromTranslate(
                                         local.m31(), local.m32()

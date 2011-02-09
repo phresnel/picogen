@@ -21,6 +21,7 @@
 #include "cosyscene/navigation.hh"
 #include "cosyscene/terrain.hh"
 #include "cosyscene/scene.hh"
+#include "cosyscene/water.hh"
 
 #include "navigationwindow.hh"
 #include "ui_navigationwindow.h"
@@ -93,79 +94,12 @@ void NavigationWindow::on_showRenderTab_clicked() {
         ui->stackedWidget->setCurrentIndex(2);
 }
 
-/*
-void NavigationWindow::on_yawDial_sliderMoved(int value) {
-        const bool was = ui->yawSpin->blockSignals(true);
-        ui->yawSpin->setValue(value);
-        ui->yawSpin->blockSignals(was);
-        updateFromViews(true);
-}
-void NavigationWindow::on_yawSpin_valueChanged(double value) {
-        const bool was = ui->yawDial->blockSignals(true);
-        ui->yawDial->setValue(value);
-        ui->yawDial->blockSignals(was);
-        updateFromViews(true);
-}
-
-void NavigationWindow::on_pitchSlider_valueChanged(int position) {
-        const bool was = ui->pitchSpin->blockSignals(true);
-        ui->pitchSpin->setValue(-position);
-        ui->pitchSpin->blockSignals(was);
-        updateFromViews(true);
-}
-
-void NavigationWindow::on_pitchSpin_valueChanged(double value) {
-        const bool was = ui->pitchSlider->blockSignals(true);
-        ui->pitchSlider->setValue(-value);
-        ui->pitchSlider->blockSignals(was);
-        updateFromViews(true);
-}
-
-void NavigationWindow::on_rollDial_valueChanged(int position) {
-        const bool was = ui->rollSpin->blockSignals(true);
-        ui->rollSpin->setValue(-position);
-        ui->rollSpin->blockSignals(was);
-        updateFromViews(true);
-}
-
-void NavigationWindow::on_rollSpin_valueChanged(double value) {
-        const bool was = ui     ->rollDial->blockSignals(true);
-        ui->rollDial->setValue(-value);
-        ui->rollDial->blockSignals(was);
-        updateFromViews(true);
-}
-
-void NavigationWindow::on_xSpin_valueChanged(double) {
-        updateFromViews(true);
-}
-
-void NavigationWindow::on_ySpin_valueChanged(double) {
-        updateFromViews(true);
-}
-
-void NavigationWindow::on_zSpin_valueChanged(double) {
-        updateFromViews(true);
-}
-
-*/
-
 void NavigationWindow::setCreateRedshiftClosure (
         CreateRedshiftSceneClosure::Ptr val
 ) {
         createRedshiftScene = val;
 }
 
-
-
-/*void NavigationWindow::setNavigation (
-        redshift::shared_ptr<cosyscene::Navigation> nav,
-        bool blockSignals
-) {
-        const bool prevBlocked = this->blockSignals(blockSignals);
-        navigation_ = nav;
-        updateViews();
-        this->blockSignals(prevBlocked);
-}*/
 
 void NavigationWindow::setScene (
         redshift::shared_ptr<cosyscene::Scene> scene,
@@ -188,7 +122,7 @@ void NavigationWindow::setNavigationByValue (
         updateViews();
 }
 
-#include <QDebug>
+
 void NavigationWindow::updateViews() {
         /*ScopedQtSignalBlock
                 yawBlocked (ui->yawSpin, true),
@@ -221,11 +155,20 @@ void NavigationWindow::updateViews() {
 
 
         //const cosyscene::Terrain & t = *terrain_;
+
         if (scene_->terrain()) {
                 ui->graphicalNavigation->setHeightFunction (
                        HeightFunction::Ptr(
                          new QuatschHeightFunction(scene_->finalTerrainCode()))
                 );
+        } else {
+                ui->graphicalNavigation->setHeightFunction (
+                       HeightFunction::Ptr(new QuatschHeightFunction("0")));
+        }
+        if (scene_->water()) {
+                ui->graphicalNavigation->setWaterLevel(scene_->water()->fitting()->seaLevel());
+        } else {
+                ui->graphicalNavigation->setWaterLevel(-999999);
         }
 }
 

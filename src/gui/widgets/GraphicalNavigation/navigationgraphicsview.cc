@@ -20,40 +20,75 @@
 
 #include "navigationgraphicsview.hh"
 #include <limits>
+#include <QMouseEvent>
 
 NavigationGraphicsView::NavigationGraphicsView(QWidget *parent) :
-    QGraphicsView(parent)
+    QGraphicsView(parent),
+    waterLevel(-1000000)
 {
+        setCacheMode(QGraphicsView::CacheBackground);
+        setDragMode(QGraphicsView::ScrollHandDrag);
+
+        heightFunction.reset(new ZeroHeightFunction);
+        guessMaxima();
 }
 
 void NavigationGraphicsView::setHeightFunction (HeightFunction::Ptr f) {
         heightFunction = f;
+        guessMaxima();
+        repaint();
+}
+
+void NavigationGraphicsView::guessMaxima() {
+        int i=0;
+        hmin = std::numeric_limits<float>::infinity();
+        hmax = -std::numeric_limits<float>::infinity();
+
+        qsrand(0);
+        const qreal r = 100000, r05 = r / 2;
+        while (++i<32768) {
+                const qreal u = (qrand() / (qreal)RAND_MAX) * r - r05,
+                            v = (qrand() / (qreal)RAND_MAX) * r - r05,
+                            h = heightFunction->height(u,v);
+                if (h<hmin) hmin = h;
+                if (h>hmax) hmax = h;
+        }
+        if (hmax > hmin)
+                hirange = 1 / (hmax - hmin);
+        else
+                hirange = 0;
+}
+
+void NavigationGraphicsView::setWaterLevel(qreal wl) {
+        waterLevel = wl;
         repaint();
 }
 
 void NavigationGraphicsView::drawBackground(QPainter *painter, const QRectF &rect) {
-
         const QRectF r = painter->worldTransform().mapRect(rect);
         QImage img(r.width(),
                    r.height(),
                    QImage::Format_RGB32);
         const int height=img.height(), width=img.width();
 
-        double min = std::numeric_limits<float>::infinity(),
-               max = -std::numeric_limits<float>::infinity();
-
-        for (int y=0; y<img.height(); ++y) {
-                const double v_ = ((height-1)-y) / (double)height,
-                             v = v_*rect.height() + rect.top();
+        for (int y=0; y<height; ++y) {
+                const double v_ = y / (double)height,
+                             v = v_ * rect.height() + rect.top();
                 QRgb *sl = (QRgb*)img.scanLine(y);
-                for (int x=0; x<img.width(); ++x) {
+                for (int x=0; x<width; ++x) {
                         const double u_ = x / (double)width,
                                      u = u_*rect.width() + rect.left();
 
-                        const double h_ = heightFunction->height(u,v),
-                                     h = h_ * 255;
+                        const double h_ = heightFunction->height(u,-v),
+                                     hn_ = (h_-hmin) * hirange,
+                                     h = hn_ * 255;
                         const int hi = h < 0 ? 0 : h > 255 ? 255 : h;
-                        sl[x] = QColor(hi,hi,hi).rgb();
+
+                        // Blue is the water.
+                        if (h_ < waterLevel)
+                                sl[x] = QColor(122,122,255).rgb();
+                        else
+                                sl[x] = QColor(hi,hi,hi).rgb();
                 }
         }
         painter->drawImage(rect, img);

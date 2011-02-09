@@ -30,16 +30,19 @@ class NavigationGraphicsView : public QGraphicsView
 public:
         explicit NavigationGraphicsView(QWidget *parent = 0);
         void setHeightFunction (HeightFunction::Ptr);
+        void setWaterLevel (qreal wl);
+
 protected:
         void drawBackground(QPainter *painter, const QRectF &rect);
 
-signals:
-
-public slots:
-
 private:
         HeightFunction::Ptr heightFunction;
+        qreal hmin, hmax, hirange;
+        qreal waterLevel;
 
+        QPointF dragBeginPos;
+
+        void guessMaxima();
 };
 
 #endif // NAVIGATIONGRAPHICSVIEW_HH
