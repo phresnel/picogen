@@ -76,20 +76,25 @@ public slots:
 private slots:
         void on_actionShow_redshift_file_used_for_last_rendering_triggered();
         void on_actionShow_redshift_file_triggered();
-        void on_waterCommandLink_clicked();
         void on_action_Stylesheet_triggered();
+
+        void on_waterCommandLink_clicked();
         void on_renderingSetupCommandLink_clicked();
         void on_renderCommandLink_clicked();
         void on_sunskyCommandLink_clicked();
-        void on_actionLoad_triggered();
-        void on_actionSave_triggered();
-        void on_terrain_terrainChanged();
-        void on_sunSky_skyChanged();
-        void on_navigation_navigationChanged();
         void on_forestCommandLink_clicked();
         void on_terrainCommandLink_clicked();
         void on_navigationCommandLink_clicked();
         void on_filmCommandLink_clicked();
+
+        void on_actionLoad_triggered();
+        void on_actionSave_triggered();
+
+        void on_terrain_terrainChanged();
+        void on_sunSky_skyChanged();
+        void on_navigation_navigationChanged();
+        void on_water_waterChanged();
+
 };
 
 #endif // MAINWINDOW_HH_20100902

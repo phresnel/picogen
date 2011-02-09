@@ -90,3 +90,7 @@ void WaterWindow::on_showWorldFittingTab_clicked() {
         ui->showWorldFittingTab->setChecked(true);
         ui->waterTaskStackedWidget->setCurrentIndex(2);
 }
+
+void WaterWindow::on_fitting_fittingChanged() {
+        emit waterChanged();
+}

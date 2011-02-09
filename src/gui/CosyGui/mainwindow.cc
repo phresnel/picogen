@@ -261,6 +261,11 @@ void MainWindow::on_navigation_navigationChanged() {
         indicateUnsaved();
 }
 
+void MainWindow::on_water_waterChanged() {
+        ui->navigation->setScene(scene);
+        indicateUnsaved();
+}
+
 void MainWindow::indicateSaved() {
         //ui->stashFrame->setStyleSheet("QFrame{background-color:#222;}");
         //ui->statusLabel->setText("");

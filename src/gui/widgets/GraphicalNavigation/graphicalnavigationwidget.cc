@@ -265,8 +265,6 @@ void GraphicalNavigationWidget::setHeightFunction (HeightFunction::Ptr f) {
         const bool b = ui->relativeHeight->blockSignals(true);
         ui->relativeHeight->setValue(pos.y() - heightFunction->height(pos.x(),pos.z()));
         ui->relativeHeight->blockSignals(b);
-
-        repaint();
 }
 
 void GraphicalNavigationWidget::setWaterLevel (qreal w) {

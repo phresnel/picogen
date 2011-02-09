@@ -59,7 +59,6 @@ NavigationGraphicsView::NavigationGraphicsView(QWidget *parent) :
 void NavigationGraphicsView::setHeightFunction (HeightFunction::Ptr f) {
         heightFunction = f;
         guessMaxima();
-        repaint();
 }
 
 void NavigationGraphicsView::guessMaxima() {
@@ -84,7 +83,6 @@ void NavigationGraphicsView::guessMaxima() {
 
 void NavigationGraphicsView::setWaterLevel(qreal wl) {
         waterLevel = wl;
-        repaint();
 }
 
 void NavigationGraphicsView::drawBackground(QPainter *painter, const QRectF &rect) {
