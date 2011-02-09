@@ -20,14 +20,36 @@
 
 #include "navigationgraphicsview.hh"
 #include <limits>
+#include <cmath>
 #include <QMouseEvent>
+#include <QRect>
+
+namespace {
+        QRect alignRect (QRectF rectf, int step) {
+                QRect rect = rectf.toAlignedRect();
+                rect.setLeft  ((rect.left()   / step) * step - step);
+                rect.setRight ((rect.right()  / step) * step + step);
+                rect.setTop   ((rect.top()    / step) * step - step);
+                rect.setBottom((rect.bottom() / step) * step + step);
+                return rect;
+        }
+        // Crappy name ...
+        QString suffixedLength (qreal meters, qreal boxSize) {
+                if (boxSize<10)
+                        return QString::number(meters, 'f', 2) + "m";
+                if (boxSize<1000)
+                        return QString::number(meters, 'f', 0) + "m";
+                return QString::number(meters/1000, 'f', 0) + "km";
+        }
+}
 
 NavigationGraphicsView::NavigationGraphicsView(QWidget *parent) :
     QGraphicsView(parent),
     waterLevel(-1000000)
 {
-        setCacheMode(QGraphicsView::CacheBackground);
+        setCacheMode(QGraphicsView::CacheNone);
         setDragMode(QGraphicsView::ScrollHandDrag);
+        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
         heightFunction.reset(new ZeroHeightFunction);
         guessMaxima();
@@ -66,8 +88,8 @@ void NavigationGraphicsView::setWaterLevel(qreal wl) {
 
 void NavigationGraphicsView::drawBackground(QPainter *painter, const QRectF &rect) {
         const QRectF r = painter->worldTransform().mapRect(rect);
-        QImage img(r.width(),
-                   r.height(),
+        QImage img(r.width()/1,
+                   r.height()/1,
                    QImage::Format_RGB32);
         const int height=img.height(), width=img.width();
 
@@ -75,13 +97,14 @@ void NavigationGraphicsView::drawBackground(QPainter *painter, const QRectF &rec
                 const double v_ = y / (double)height,
                              v = v_ * rect.height() + rect.top();
                 QRgb *sl = (QRgb*)img.scanLine(y);
+
                 for (int x=0; x<width; ++x) {
                         const double u_ = x / (double)width,
                                      u = u_*rect.width() + rect.left();
 
                         const double h_ = heightFunction->height(u,-v),
                                      hn_ = (h_-hmin) * hirange,
-                                     h = hn_ * 255;
+                                     h = hn_ * 192;
                         const int hi = h < 0 ? 0 : h > 255 ? 255 : h;
 
                         // Blue is the water.
@@ -92,5 +115,66 @@ void NavigationGraphicsView::drawBackground(QPainter *painter, const QRectF &rec
                 }
         }
         painter->drawImage(rect, img);
+}
+
+void NavigationGraphicsView::drawRaster(
+        QPainter *painter, const QRectF &rectf, qreal step
+) {
+        const QRect rect = alignRect (rectf, step);
+
+        const QTransform t = painter->transform();
+        painter->setTransform(QTransform());
+
+        const int fontSize = QFontMetrics(painter->font()).height();
+
+        for (int x=rect.left(); x<rect.right(); x+=step) {
+                painter->drawLine (t.map(QLineF(
+                                x, rectf.top(), x, rectf.bottom())));
+                painter->drawText (t.map(QPointF(x, rectf.top()))+QPointF(0,fontSize),
+                                   suffixedLength(x, step));
+        }
+
+        for (int y=rect.top(); y<rect.bottom(); y+=step) {
+                painter->drawLine (t.map(QLineF(
+                                rectf.left(), y, rectf.right(), y)));
+
+                painter->drawText (t.map(QPointF(rectf.left(), y)),
+                                   suffixedLength(-y, step));
+        }
+        painter->setTransform(t);
+}
+//#include <QDebug>
+void NavigationGraphicsView::drawForeground(QPainter *painter, const QRectF &rectf) {
+        QPen pen(QColor(255,255,255,255), 0.5);
+        pen.setCosmetic(true);
+        painter->setPen(pen);
+
+        const qreal s = std::min(rectf.width(), rectf.height());
+
+        // Okay, below thing is of course bogus ... get over it.
+        int box = 1;
+        if (s<100) box = 10;
+        else if (s<500) box = 50;
+
+        else if (s<1000) box = 100;
+        else if (s<5000) box = 500;
+
+        else if (s<10000) box = 1000;
+        else if (s<50000) box = 5000;
+
+        else if (s<100000) box = 10000;
+        else if (s<500000) box = 50000;
+
+        else if (s<1000000) box = 100000;
+        else if (s<5000000) box = 500000;
+
+        else box = 1000000;
+        //qDebug() << box;
+        drawRaster (painter, rectf, box);
+}
+
+void NavigationGraphicsView::scrollContentsBy(int dx, int dy) {
+        QGraphicsView::scrollContentsBy(dx, dy);
+        viewport()->update();
 }
 

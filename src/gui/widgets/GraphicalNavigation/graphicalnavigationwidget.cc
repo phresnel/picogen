@@ -66,8 +66,14 @@ GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
                         20000000, 20000000,
                         QPen(),QBrush(QColor(255,122,64,0)))->setZValue(-2);
 
+        /*const int width = 100000, width05 = width/2;
+        for (int y=-1000000; y<1000000; y+=1000) {
+                scene->addLine(-width05, y, width05, y, QPen(QColor(128,32,32,255)));
+                scene->addLine(y, -width05, y, width05, QPen(QColor(128,32,32,255)));
+        }*/
+
         observerGraphicsItem = new ObserverGraphicsItem();
-        setHeightFunction(HeightFunction::Ptr(new CrossThingy()));
+        setHeightFunction(HeightFunction::Ptr(new SinCosThingy()));
         connect (observerGraphicsItem, SIGNAL(positionChanged(QVector3D)),
                                        SLOT(onObserverPositionChanged(QVector3D)));
         connect (observerGraphicsItem, SIGNAL(orientationChanged(qreal,qreal,qreal)),

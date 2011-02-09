@@ -75,7 +75,6 @@ private:
         void updateOwnPitch (qreal yaw);
         void updateOwnRoll (qreal yaw);
 
-        //void updateHeightmap();
         static QString degreeToName(qreal degree);
 
 private slots:

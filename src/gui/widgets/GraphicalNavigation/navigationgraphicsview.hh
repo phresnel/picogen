@@ -34,6 +34,11 @@ public:
 
 protected:
         void drawBackground(QPainter *painter, const QRectF &rect);
+        void drawForeground(QPainter *painter, const QRectF &rect);
+        //void paintEvent(QPaintEvent *event);
+
+        //void dragMoveEvent(QDragMoveEvent *event);
+        void scrollContentsBy(int dx, int dy);
 
 private:
         HeightFunction::Ptr heightFunction;
@@ -43,6 +48,7 @@ private:
         QPointF dragBeginPos;
 
         void guessMaxima();
+        void drawRaster(QPainter *painter, const QRectF &rectf, qreal boxSize);
 };
 
 #endif // NAVIGATIONGRAPHICSVIEW_HH
