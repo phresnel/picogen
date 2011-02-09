@@ -94,7 +94,8 @@ private slots:
         void on_sunSky_skyChanged();
         void on_navigation_navigationChanged();
         void on_water_waterChanged();
-
+        void on_filmSettingsAndCamera_filmSettingsChanged();
+        void on_filmSettingsAndCamera_cameraChanged();
 };
 
 #endif // MAINWINDOW_HH_20100902

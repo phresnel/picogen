@@ -44,6 +44,9 @@ public:
         void setCamera (redshift::shared_ptr<cosyscene::Camera>,
                         bool blockSignals=true);
 
+signals:
+        void cameraChanged();
+
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 

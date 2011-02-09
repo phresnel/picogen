@@ -86,6 +86,7 @@ void CameraWidget::on_cameraKind_currentIndexChanged(int index) {
                 showCubemapFaceParameters();
                 break;
         }
+        emit cameraChanged();
 }
 
 void CameraWidget::showPinholeParameters() {
@@ -128,12 +129,14 @@ void CameraWidget::on_pinholeFrontPlaneDistance_valueChanged(double) {
         cosyscene::PinholeCamera cam = camera_->pinholeCamera();
         cam.setFrontPlaceDistance(ui->pinholeFrontPlaneDistance->value());
         camera_->toPinholeCamera(cam);
+        emit cameraChanged();
 }
 
 void CameraWidget::on_cylindricalFrontPlaneDistance_valueChanged(double) {
         cosyscene::CylindricalCamera cam = camera_->cylindricalCamera();
         cam.setFrontPlaceDistance(ui->cylindricalFrontPlaneDistance->value());
         camera_->toCylindricalCamera(cam);
+        emit cameraChanged();
 }
 
 void CameraWidget::on_cubemapFace_currentIndexChanged(int index) {
@@ -148,6 +151,7 @@ void CameraWidget::on_cubemapFace_currentIndexChanged(int index) {
         case 5: cam.setFace(CFC::top); break;
         }
         camera_->toCubemapFaceCamera(cam);
+        emit cameraChanged();
 }
 
 

@@ -55,6 +55,7 @@ void FilmSettingsWindow::updateViews() {
 
 void FilmSettingsWindow::on_brightness_valueChanged(double value) {
         filmSettings_->setBrightnessFactor(value);
+        emit filmSettingsChanged();
 }
 
 void FilmSettingsWindow::sceneInvalidated(

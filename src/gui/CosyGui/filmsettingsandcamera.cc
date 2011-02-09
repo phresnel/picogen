@@ -52,3 +52,11 @@ void FilmSettingsAndCamera::sceneInvalidated(
         setFilmSettingsAndCamera(scene->filmSettings(),
                                  scene->camera());
 }
+
+void FilmSettingsAndCamera::on_filmSettings_filmSettingsChanged() {
+        emit filmSettingsChanged();
+}
+
+void FilmSettingsAndCamera::on_camera_cameraChanged() {
+        emit cameraChanged();
+}

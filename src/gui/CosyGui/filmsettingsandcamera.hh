@@ -48,11 +48,19 @@ public:
             bool blockSignals = true
     );
 
+signals:
+    void filmSettingsChanged();
+    void cameraChanged();
+
 public slots:
     void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 private:
     Ui::FilmSettingsAndCamera *ui;
+
+private slots:
+    void on_filmSettings_filmSettingsChanged();
+    void on_camera_cameraChanged();
 };
 
 #endif // FILMSETTINGSANDCAMERA_HH

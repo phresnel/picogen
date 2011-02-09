@@ -45,6 +45,9 @@ public:
         void setFilmSettings (redshift::shared_ptr<cosyscene::FilmSettings>,
                               bool blockSignals=true);
 
+signals:
+        void filmSettingsChanged();
+
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 

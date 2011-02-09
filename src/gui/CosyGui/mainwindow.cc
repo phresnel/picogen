@@ -266,6 +266,14 @@ void MainWindow::on_water_waterChanged() {
         indicateUnsaved();
 }
 
+void MainWindow::on_filmSettingsAndCamera_filmSettingsChanged() {
+        indicateUnsaved();
+}
+
+void MainWindow::on_filmSettingsAndCamera_cameraChanged() {
+        indicateUnsaved();
+}
+
 void MainWindow::indicateSaved() {
         setWindowTitle("");
 }

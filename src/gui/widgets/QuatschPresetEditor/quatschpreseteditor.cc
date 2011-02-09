@@ -383,6 +383,7 @@ void QuatschPresetEditor::on_showPreview_clicked() {
 
 void QuatschPresetEditor::on_preset_textChanged() {
         setPreset (ui->preset->toPlainText());
+        emit formationChanged();
 }
 
 void QuatschPresetEditor::on_hidePreprocessedCode_clicked() {
