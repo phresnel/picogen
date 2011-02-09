@@ -46,6 +46,7 @@ public:
 signals:
         void productionRenderProcessRequested();
         void previewRenderProcessRequested();
+        void renderSettingsChanged();
 
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
@@ -57,6 +58,8 @@ private:
 private slots:
         void on_startPreviewRenderProcess_clicked();
         void on_startProductionRenderProcess_clicked();
+        void on_previewRenderSettingsWindow_renderSettingsChanged();
+        void on_renderSettingsWindow_renderSettingsChanged();
 };
 
 #endif // TWINRENDERSETTINGS_HH

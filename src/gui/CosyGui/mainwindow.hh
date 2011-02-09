@@ -96,6 +96,7 @@ private slots:
         void on_water_waterChanged();
         void on_filmSettingsAndCamera_filmSettingsChanged();
         void on_filmSettingsAndCamera_cameraChanged();
+        void on_renderingSetup_renderSettingsChanged();
 };
 
 #endif // MAINWINDOW_HH_20100902

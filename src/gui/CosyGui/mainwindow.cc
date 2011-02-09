@@ -274,6 +274,10 @@ void MainWindow::on_filmSettingsAndCamera_cameraChanged() {
         indicateUnsaved();
 }
 
+void MainWindow::on_renderingSetup_renderSettingsChanged() {
+        indicateUnsaved();
+}
+
 void MainWindow::indicateSaved() {
         setWindowTitle("");
 }

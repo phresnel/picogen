@@ -44,6 +44,8 @@ public:
         void setRenderSettings (redshift::shared_ptr<cosyscene::RenderSettings>,
                                 bool blockSignals=true);
 
+signals:
+        void renderSettingsChanged();
 private:
         Ui::RenderSettingsWindow *ui;
         redshift::shared_ptr<cosyscene::RenderSettings> renderSettings_;

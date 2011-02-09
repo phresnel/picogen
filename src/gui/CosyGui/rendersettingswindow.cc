@@ -101,10 +101,12 @@ void RenderSettingsWindow::updateViews() {
 
 void RenderSettingsWindow::on_samplesPerPixelSpin_valueChanged(int) {
         renderSettings_->setSamplesPerPixel (ui->samplesPerPixelSpin->value());
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::on_seedSpin_valueChanged(int) {
         renderSettings_->setRandomSeed (ui->seedSpin->value());
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::setTitle (QString title) {
@@ -116,6 +118,7 @@ void RenderSettingsWindow::on_widthSpin_valueChanged(int ) {
                           / 1000000.;
         ui->megapixelsDisplay->setText("(" + QString::number(mp, 'f', 1) + " MPixels)");
         renderSettings_->setWidth (ui->widthSpin->value());
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::on_heightSpin_valueChanged(int ) {
@@ -123,11 +126,13 @@ void RenderSettingsWindow::on_heightSpin_valueChanged(int ) {
                           / 1000000.;
         ui->megapixelsDisplay->setText("(" + QString::number(mp, 'f', 1) + " MPixels)");
         renderSettings_->setHeight (ui->heightSpin->value());
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::on_maxLazyQuadtreeDepthSpin_valueChanged(int) {
         renderSettings_->setMaxLazyQuadtreeDepth (
                         ui->maxLazyQuadtreeDepthSpin->value());
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::on_enableMaxQuadtreeDepthOverride_toggled(bool checked) {
@@ -139,6 +144,7 @@ void RenderSettingsWindow::on_enableMaxQuadtreeDepthOverride_toggled(bool checke
                 ui->maxLazyQuadtreeDepthSpin->setEnabled(false);
                 renderSettings_->setMaxLazyQuadtreeDepth (0);
         }
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::on_surfaceIntegrator_currentIndexChanged(int index) {
@@ -160,6 +166,7 @@ void RenderSettingsWindow::on_surfaceIntegrator_currentIndexChanged(int index) {
         }
 
         renderSettings_->setSurfaceIntegrator(si);
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::on_ambientSamples_valueChanged(int val){
@@ -173,6 +180,7 @@ void RenderSettingsWindow::on_ambientSamples_valueChanged(int val){
                 si.toWhittedAmbientIntegrator(wai);
         }
         renderSettings_->setSurfaceIntegrator(si);
+        emit renderSettingsChanged();
 }
 
 void RenderSettingsWindow::on_autoResolutionButton_clicked() {
@@ -252,11 +260,15 @@ void RenderSettingsWindow::setAutoResolutionFromAction() {
         QAction *action = qobject_cast<QAction *>(sender());
         if (action) {
                 const QPoint res = action->data().toPoint();
+
+                const bool block = blockSignals (true);
                 ui->widthSpin->setValue(res.x());
                 ui->heightSpin->setValue(res.y());
 
                 on_widthSpin_valueChanged(ui->widthSpin->value());
                 on_heightSpin_valueChanged(ui->heightSpin->value());
+                blockSignals (block);
+                emit renderSettingsChanged();
         }
 }
 

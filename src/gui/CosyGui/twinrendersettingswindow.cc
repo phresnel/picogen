@@ -64,3 +64,11 @@ void TwinRenderSettingsWindow::on_startProductionRenderProcess_clicked() {
 void TwinRenderSettingsWindow::on_startPreviewRenderProcess_clicked() {
         emit previewRenderProcessRequested();
 }
+
+void TwinRenderSettingsWindow::on_previewRenderSettingsWindow_renderSettingsChanged() {
+        emit renderSettingsChanged();
+}
+
+void TwinRenderSettingsWindow::on_renderSettingsWindow_renderSettingsChanged() {
+        emit renderSettingsChanged();
+}
