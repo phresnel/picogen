@@ -49,8 +49,8 @@ void CameraWidget::setCamera (
         updateViews();
 }
 
-void CameraWidget::updateViews() {
-        ScopedQtSignalBlock blockKind(ui->cameraKind, true);
+void CameraWidget::updateViews(bool block) {
+        ScopedQtSignalBlock blockKind(ui->cameraKind, block);
 
         switch (camera_->kind()) {
         case cosyscene::Camera::pinhole:
@@ -90,18 +90,21 @@ void CameraWidget::on_cameraKind_currentIndexChanged(int index) {
 }
 
 void CameraWidget::showPinholeParameters() {
+        ScopedQtSignalBlock b(ui->pinholeFrontPlaneDistance, signalsBlocked());
         ui->stackedWidget->setCurrentWidget(ui->pinholeWidget);
         ui->pinholeFrontPlaneDistance->setValue(camera_->pinholeCamera()
                                                 .frontPlaneDistance());
 }
 
 void CameraWidget::showCylindricalParameters() {
+        ScopedQtSignalBlock b(ui->cylindricalFrontPlaneDistance, signalsBlocked());
         ui->stackedWidget->setCurrentWidget(ui->cylindricalWidget);
         ui->cylindricalFrontPlaneDistance->setValue(camera_->cylindricalCamera()
                                                     .frontPlaneDistance());
 }
 
 void CameraWidget::showCubemapFaceParameters() {
+        ScopedQtSignalBlock b(ui->cubemapFace, signalsBlocked());
         ui->stackedWidget->setCurrentWidget(ui->cubemapFaceWidget);
         switch (camera_->cubemapFaceCamera().face()) {
         case cosyscene::CubemapFaceCamera::front:
@@ -157,36 +160,19 @@ void CameraWidget::on_cubemapFace_currentIndexChanged(int index) {
 
 
 void CameraWidget::on_stashButton_clicked() {
-        camera_->stash();
+        if (StashView::StashDialog (this, camera_)) {
+                emit cameraChanged();
+        }
 }
 void CameraWidget::on_stashRestoreButton_clicked() {
-        StashView *sw = new StashView (this);
-        sw->addItems(camera_->getStash());
-        if (QDialog::Accepted == sw->exec()) {
-                redshift::shared_ptr<cosyscene::Camera> newCamera (
-                  new cosyscene::Camera(
-                    sw->selectedData<cosyscene::Camera>())
-                );
-                newCamera->setStash(
-                  sw->itemsToStash<cosyscene::Camera>());
-
-                ScopedQtSignalBlock block (this, true);
-                *camera_ = *newCamera;
+        if (StashView::RestoreDialog (this, camera_)) {
                 updateViews();
+                emit cameraChanged();
         }
 }
 void CameraWidget::on_stashResetButton_clicked() {
-        if (!camera_->getStash().contains_data(*camera_)) {
-                switch (confirmReset (this)) {
-                case ConfirmReset_Abort: return;
-                case ConfirmReset_StashBeforeReset: camera_->stash(); break;
-                case ConfirmReset_Reset: break;
-                }
+        if (StashView::ResetDialog(this, camera_)) {
+                updateViews();
+                emit cameraChanged();
         }
-        cosyscene::Camera t;
-        t.setStash(camera_->getStash());
-
-        ScopedQtSignalBlock block (this, true);
-        *camera_ = t;
-        updateViews();
 }

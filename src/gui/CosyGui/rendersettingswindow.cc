@@ -272,31 +272,22 @@ void RenderSettingsWindow::setAutoResolutionFromAction() {
         }
 }
 
+
+
 void RenderSettingsWindow::on_stashButton_clicked() {
-        renderSettings_->stash();
+        if (StashView::StashDialog (this, renderSettings_)) {
+                emit renderSettingsChanged();
+        }
 }
-
 void RenderSettingsWindow::on_stashRestoreButton_clicked() {
-        StashView *sw = new StashView (this);
-        sw->addItems(renderSettings_->getStash());
-        if (QDialog::Accepted == sw->exec()) {
-                cosyscene::RenderSettings neo =
-                          sw->selectedData<cosyscene::RenderSettings>();
-                neo.setStash(sw->itemsToStash<cosyscene::RenderSettings>());
-                setRenderSettingsByValue(neo);
+        if (StashView::RestoreDialog (this, renderSettings_)) {
+                setRenderSettingsByValue(*renderSettings_);
+                emit renderSettingsChanged();
         }
 }
-
 void RenderSettingsWindow::on_stashResetButton_clicked() {
-        if (!renderSettings_->getStash().contains_data(*renderSettings_)) {
-                switch (confirmReset (this)) {
-                case ConfirmReset_Abort: return;
-                case ConfirmReset_StashBeforeReset: renderSettings_->stash(); break;
-                case ConfirmReset_Reset: break;
-                }
+        if (StashView::ResetDialog(this, renderSettings_)) {
+                setRenderSettingsByValue(*renderSettings_);
+                emit renderSettingsChanged();
         }
-        cosyscene::RenderSettings resetted;
-        resetted.setStash(renderSettings_->getStash());
-        setRenderSettingsByValue(resetted);
 }
-

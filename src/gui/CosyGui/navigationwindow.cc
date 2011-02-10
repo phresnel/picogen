@@ -205,36 +205,21 @@ void NavigationWindow::sceneInvalidated(
 
 
 void NavigationWindow::on_stashButton_clicked() {
-        navigation_->stash();
+        if (StashView::StashDialog (this, navigation_)) {
+                emit navigationChanged();
+        }
 }
-
-
-
 void NavigationWindow::on_stashRestoreButton_clicked() {
-        StashView *sw = new StashView (this);
-        sw->addItems(navigation_->getStash());
-        if (QDialog::Accepted == sw->exec()) {
-                cosyscene::Navigation newNav =
-                          sw->selectedData<cosyscene::Navigation>();
-                newNav.setStash(sw->itemsToStash<cosyscene::Navigation>());
-                setNavigationByValue(newNav);
+        if (StashView::RestoreDialog (this, navigation_)) {
+                setNavigationByValue(*navigation_);
+                emit navigationChanged();
         }
 }
-
-
-
 void NavigationWindow::on_stashResetButton_clicked() {
-        if (!navigation_->getStash().contains_data(*navigation_)) {
-                switch (confirmReset (this)) {
-                case ConfirmReset_Abort: return;
-                case ConfirmReset_StashBeforeReset: navigation_->stash(); break;
-                case ConfirmReset_Reset: break;
-                }
+        if (StashView::ResetDialog(this, navigation_)) {
+                setNavigationByValue(*navigation_);
+                emit navigationChanged();
         }
-        cosyscene::Navigation t;
-        t.toYawPitchRoll(cosyscene::YawPitchRoll());
-        t.setStash(navigation_->getStash());
-        setNavigationByValue(t);
 }
 
 

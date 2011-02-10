@@ -31,6 +31,7 @@ const actuarius::Enum<SunSky::Kind> SunSky::Typenames =
 
 
 SunSky::SunSky() : kind_(None) {
+        toUtahSky(cosyscene::UtahSky());
 }
 
 

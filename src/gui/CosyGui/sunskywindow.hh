@@ -58,7 +58,7 @@ private:
         Ui::SunSkyWindow *ui;
         redshift::shared_ptr<cosyscene::SunSky> sunSky;
 
-        void setSunSkyByValue (cosyscene::SunSky const &, bool blockSignals);
+        void setSunSkyByValue (cosyscene::SunSky const &, bool blockSignals=true);
         void updateViews ();
 
         void updateFromUtahSunSkyEditor();

@@ -169,37 +169,19 @@ void SunSkyWindow::updateToUtahSunSkyEditor() {
 
 
 void SunSkyWindow::on_stashButton_clicked() {
-        sunSky->stash();
+        if (StashView::StashDialog (this, sunSky)) {
+                emit skyChanged();
+        }
 }
-
-
-
 void SunSkyWindow::on_stashRestoreButton_clicked() {
-        StashView *sw = new StashView (this);
-        sw->addItems(sunSky->getStash());
-        if (QDialog::Accepted == sw->exec()) {
-                redshift::shared_ptr<cosyscene::SunSky> newSunSky (
-                        new cosyscene::SunSky(
-                          sw->selectedData<cosyscene::SunSky>())
-                );
-                newSunSky->setStash(sw->itemsToStash<cosyscene::SunSky>());
-                setSunSkyByValue(*newSunSky, true);
+        if (StashView::RestoreDialog (this, sunSky)) {
+                setSunSkyByValue(*sunSky);
+                emit skyChanged();
         }
 }
-
-
-
 void SunSkyWindow::on_stashResetButton_clicked() {
-        if (!sunSky->getStash().contains_data(*sunSky)) {
-                switch (confirmReset (this)) {
-                case ConfirmReset_Abort: return;
-                case ConfirmReset_StashBeforeReset: sunSky->stash(); break;
-                case ConfirmReset_Reset: break;
-                }
+        if (StashView::ResetDialog(this, sunSky)) {
+                setSunSkyByValue(*sunSky);
+                emit skyChanged();
         }
-        cosyscene::SunSky t;
-        t.toUtahSky(cosyscene::UtahSky());
-        t.setStash(sunSky->getStash());
-        setSunSkyByValue(t, true);
 }
-

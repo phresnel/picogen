@@ -67,36 +67,19 @@ void FilmSettingsWindow::sceneInvalidated(
 
 
 void FilmSettingsWindow::on_stashButton_clicked() {
-        filmSettings_->stash();
+        if (StashView::StashDialog (this, filmSettings_)) {
+                emit filmSettingsChanged();
+        }
 }
 void FilmSettingsWindow::on_stashRestoreButton_clicked() {
-        StashView *sw = new StashView (this);
-        sw->addItems(filmSettings_->getStash());
-        if (QDialog::Accepted == sw->exec()) {
-                redshift::shared_ptr<cosyscene::FilmSettings> newFilmSettings (
-                  new cosyscene::FilmSettings(
-                    sw->selectedData<cosyscene::FilmSettings>())
-                );
-                newFilmSettings->setStash(
-                  sw->itemsToStash<cosyscene::FilmSettings>());
-
-                ScopedQtSignalBlock block (this, true);
-                *filmSettings_ = *newFilmSettings;
+        if (StashView::RestoreDialog (this, filmSettings_)) {
                 updateViews();
+                emit filmSettingsChanged();
         }
 }
 void FilmSettingsWindow::on_stashResetButton_clicked() {
-        if (!filmSettings_->getStash().contains_data(*filmSettings_)) {
-                switch (confirmReset (this)) {
-                case ConfirmReset_Abort: return;
-                case ConfirmReset_StashBeforeReset: filmSettings_->stash(); break;
-                case ConfirmReset_Reset: break;
-                }
+        if (StashView::ResetDialog(this, filmSettings_)) {
+                updateViews();
+                emit filmSettingsChanged();
         }
-        cosyscene::FilmSettings t;
-        t.setStash(filmSettings_->getStash());
-
-        ScopedQtSignalBlock block (this, true);
-        *filmSettings_ = t;
-        updateViews();
 }

@@ -31,6 +31,7 @@ const actuarius::Enum<Navigation::Kind> Navigation::Typenames =
 
 
 Navigation::Navigation() : kind_(None) {
+        toYawPitchRoll(cosyscene::YawPitchRoll());
 }
 
 

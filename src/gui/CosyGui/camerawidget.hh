@@ -55,7 +55,7 @@ private:
         redshift::shared_ptr<cosyscene::Camera> camera_;
 
 private:
-        void updateViews();
+        void updateViews(bool blockSignals=true);
         void showPinholeParameters();
         void showCylindricalParameters();
         void showCubemapFaceParameters();
