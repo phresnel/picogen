@@ -102,8 +102,8 @@ public:
 
         // -- Algo -------------------------------------------------------------
         bool contains_data (T const &value) const {
-                return end() != std::find_if(begin(), end(),
-                                             EqualityPredicate(value));
+                EqualityPredicate ep(value);
+                return end() != std::find_if(begin(), end(), ep);
         }
 
         void kill_all (T const &value) {
@@ -127,10 +127,12 @@ private:
                 EqualityPredicate (T const &stashObject)
                         : stashObject(stashObject) {}
                 bool operator () (StashObject<T> const &rhs) const {
+                        if (rhs.description() != "")
+                                return false;
                         return stashObject.value().data_equals (rhs.value());
                 }
         private:
-                StashObject<T> const &stashObject;
+                StashObject<T> stashObject;
         };
 };
 

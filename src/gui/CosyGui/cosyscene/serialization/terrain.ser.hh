@@ -85,6 +85,9 @@ inline void TerrainFormation::serialize (Arch &arch) {
 template<typename Arch>
 inline void TerrainFitting::serialize (Arch &arch) {
         using actuarius::pack;
+        if (Arch::deserialize || !stash_.empty())
+                arch & pack("stash", stash_);
+
         arch & pack("size-factor", sizeFactor_)
              & pack("position-offset", positionOffset_)
              & pack("lazy-quadtree-visible-extent", lazyQuadtreeVisibleExtent_)

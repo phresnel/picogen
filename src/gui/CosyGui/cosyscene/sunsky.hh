@@ -97,7 +97,6 @@ public:
         void serialize (Arch &arch);
         static const actuarius::Enum<Kind> Typenames;
 private:
-        Stash<SunSky> stash_;
         Kind kind_;
 
         cosyscene::UtahSky utahSky_;

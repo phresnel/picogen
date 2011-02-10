@@ -108,8 +108,6 @@ private:
         CylindricalCamera cylindricalCamera_;
         CubemapFaceCamera cubemapFaceCamera_;
         Kind kind_;
-
-        Stash<Camera> stash_;
 };
 
 } // namespace cosyscene

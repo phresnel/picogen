@@ -80,7 +80,10 @@ int StashView::selectedIndex() const {
 }
 
 void StashView::on_okayButton_clicked() {
-        accept();
+        if (hasSelectedData())
+                accept();
+        else
+                reject();
 }
 
 void StashView::on_cancelButton_clicked() {

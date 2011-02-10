@@ -25,6 +25,7 @@
 #include <QVector>
 #include <QInputDialog>
 #include <ctime>
+#include <QMessageBox>
 #include "redshift/include/smart_ptr.hh"
 #include "cosyscene/stash.hh"
 #include "stashframe.hh"
@@ -82,7 +83,6 @@ public:
         template <typename T>
         static bool StashDialog (QWidget *self, boost::shared_ptr<T> value)
         {
-                Q_UNUSED(self)
                 if (value->getStash().contains_data(*value)) {
                         switch (confirmRestash (self)) {
                         case ConfirmRestash_Abort:
