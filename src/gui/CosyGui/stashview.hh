@@ -26,6 +26,7 @@
 #include <ctime>
 #include "redshift/include/smart_ptr.hh"
 #include "cosyscene/stash.hh"
+#include "stashframe.hh"
 
 class QListWidgetItem;
 namespace Ui {
@@ -73,6 +74,63 @@ public:
         int selectedIndex() const;
 
         template <typename T> Stash<T> itemsToStash () const;
+
+
+        template <typename T>
+        static bool StashDialog (QWidget *self, boost::shared_ptr<T> value)
+        {
+                Q_UNUSED(self)
+                if (value->getStash().contains_data(*value)) {
+                        switch (confirmRestash (self)) {
+                        case ConfirmRestash_Abort:
+                                return false;
+                        case ConfirmRestash_RestashAndKeepOld:
+                                break;
+                        case ConfirmRestash_RestashAndKillOld:
+                                value->getStash().kill_all(*value);
+                                break;
+                        }
+                }
+                value->stash();
+                return true;
+        }
+
+        template <typename T>
+        static bool RestoreDialog (
+                QWidget *self, boost::shared_ptr<T> value
+        ) {
+                StashView *sw = new StashView (self);
+                sw->addItems(value->getStash());
+                if (QDialog::Accepted != sw->exec())
+                        return false;
+
+                T ret = T(sw->selectedData<T>());
+                ret.setStash (sw->itemsToStash<T>());
+
+                *value = ret;
+                return true;
+        }
+
+        template <typename T>
+        static bool ResetDialog(QWidget *self, boost::shared_ptr<T> value)
+        {
+                if (!value->getStash().contains_data(*value)) {
+                        switch (confirmReset (self)) {
+                        case ConfirmReset_Abort:
+                                return false;
+                        case ConfirmReset_StashBeforeReset:
+                                value->stash();
+                                break;
+                        case ConfirmReset_Reset:
+                                break;
+                        }
+                }
+                T t;
+                t.setStash(value->getStash());
+                *value = t;
+                return true;
+        }
+
 private slots:
         void on_cancelButton_clicked();
         void on_okayButton_clicked();

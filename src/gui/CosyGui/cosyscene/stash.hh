@@ -24,6 +24,7 @@
 
 #include <ctime>
 #include <vector>
+#include <algorithm>
 #include <cstdlib>
 // Yes. This was inspired by git stash.
 
@@ -75,14 +76,6 @@ public:
                 objects.push_back (so);
         }
 
-        bool contains_data (T const &value) const {
-                for (const_iterator it = begin(); it != end(); ++it) {
-                        if (value.data_equals((*it).value()))
-                                return true;
-                }
-                return false;
-        }
-
         void clear() { objects.clear(); }
 
         bool empty() const { return objects.empty(); }
@@ -95,12 +88,39 @@ public:
         const T & back() const { return objects.back().value(); }
         // ---------------------------------------------------------------------
 
+
+        // -- Algo -------------------------------------------------------------
+        bool contains_data (T const &value) const {
+                return end() != std::find_if(begin(), end(),
+                                             EqualityPredicate(value));
+        }
+
+        void kill_all (T const &value) {
+                objects.erase (std::remove_if (begin(), end(),
+                                               EqualityPredicate(value)),
+                               end());
+        }
+        // ---------------------------------------------------------------------
+
+
         // -- Serialization ----------------------------------------------------
         template<typename Arch> void serialize (Arch &arch); // stash.def.hh
         // ---------------------------------------------------------------------
 
 private:
         std::vector<StashObject<T> > objects;
+
+        struct EqualityPredicate {
+                EqualityPredicate (StashObject<T> const &stashObject)
+                        : stashObject(stashObject) {}
+                EqualityPredicate (T const &stashObject)
+                        : stashObject(stashObject) {}
+                bool operator () (StashObject<T> const &rhs) const {
+                        return stashObject.value().data_equals (rhs.value());
+                }
+        private:
+                StashObject<T> const &stashObject;
+        };
 };
 
 

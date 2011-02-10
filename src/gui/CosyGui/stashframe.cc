@@ -25,6 +25,24 @@
 #include <QPixmap>
 
 
+ConfirmRestash confirmRestash (QWidget *parent) {
+        redshift::shared_ptr<QMessageBox> msgBox (new QMessageBox (parent));
+        QPushButton *restashKill = msgBox->addButton("Remove identical", QMessageBox::ActionRole);
+        QPushButton *restashKeep = msgBox->addButton("Keep all", QMessageBox::ActionRole);
+        QPushButton *abortButton = msgBox->addButton(QMessageBox::Abort);
+
+        msgBox->setDefaultButton(abortButton);
+        msgBox->setIcon(QMessageBox::Warning);
+        msgBox->setText("There is already an identical item in the stash.");
+        msgBox->exec();
+        if (msgBox->clickedButton() == (QAbstractButton*)restashKill) {
+                return ConfirmRestash_RestashAndKillOld;
+        } else if (msgBox->clickedButton() == (QAbstractButton*)restashKeep) {
+                return ConfirmRestash_RestashAndKeepOld;
+        }
+        return ConfirmRestash_Abort;
+}
+
 ConfirmReset confirmReset (QWidget *parent) {
         redshift::shared_ptr<QMessageBox> msgBox (new QMessageBox (parent));
         QPushButton *resetButton = msgBox->addButton("Reset now!", QMessageBox::ActionRole);

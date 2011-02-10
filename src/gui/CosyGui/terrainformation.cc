@@ -204,35 +204,22 @@ void TerrainFormation::updateViews() {
         }
 }
 
-
-
 void TerrainFormation::on_stashButton_clicked() {
-        formation_->stash();
+        if (StashView::StashDialog (this, formation_)) {
+                emit formationChanged();
+        }
 }
 void TerrainFormation::on_stashRestoreButton_clicked() {
-        StashView *sw = new StashView (this);
-        sw->addItems(formation_->getStash());
-        if (QDialog::Accepted == sw->exec()) {
-                redshift::shared_ptr<cosyscene::TerrainFormation> newFormation (
-                  new cosyscene::TerrainFormation(
-                    sw->selectedData<cosyscene::TerrainFormation>())
-                );
-                newFormation->setStash(
-                  sw->itemsToStash<cosyscene::TerrainFormation>());
-                setFormationByValue(*newFormation, true);
+        if (StashView::RestoreDialog (this, formation_)) {
+                setFormationByValue (*formation_, true);
+                emit formationChanged();
         }
 }
 void TerrainFormation::on_stashResetButton_clicked() {
-        if (!formation_->getStash().contains_data(*formation_)) {
-                switch (confirmReset (this)) {
-                case ConfirmReset_Abort: return;
-                case ConfirmReset_StashBeforeReset: formation_->stash(); break;
-                case ConfirmReset_Reset: break;
-                }
+        if (StashView::ResetDialog(this, formation_)) {
+                setFormationByValue(*formation_, true);
+                emit formationChanged();
         }
-        cosyscene::TerrainFormation t;
-        t.setStash(formation_->getStash());
-        setFormationByValue(t, true);
 }
 
 
