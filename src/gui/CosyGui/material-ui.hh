@@ -55,6 +55,9 @@ private:
 private slots:
         void on_colorPicker_colorChanged(ColorPickerColor const &);
 
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 };
 
 #endif // MATERIAL_HH

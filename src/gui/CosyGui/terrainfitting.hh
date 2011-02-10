@@ -58,6 +58,10 @@ private slots:
         void on_detailCoefficient_valueChanged(double);
         void on_visibleExtent_valueChanged(double);
         void on_maxRecursion_valueChanged(int);
+
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 };
 
 #endif // TERRAINFITTING_HH

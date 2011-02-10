@@ -22,6 +22,7 @@
 #include "ui_waterfitting.h"
 #include "cosyscene/water.hh"
 #include "scopedblocksignals.hh"
+#include "stashview.hh"
 
 #include <QMessageBox>
 
@@ -53,4 +54,23 @@ void WaterFitting::setFitting(
 void WaterFitting::on_seaLevel_valueChanged(double val) {
         fitting_->setSeaLevel(val);
         emit fittingChanged();
+}
+
+
+void WaterFitting::on_stashButton_clicked() {
+        if (StashView::StashDialog (this, fitting_)) {
+                emit fittingChanged();
+        }
+}
+void WaterFitting::on_stashRestoreButton_clicked() {
+        if (StashView::RestoreDialog (this, fitting_)) {
+                setFitting(fitting_, true);
+                emit fittingChanged();
+        }
+}
+void WaterFitting::on_stashResetButton_clicked() {
+        if (StashView::ResetDialog(this, fitting_)) {
+                setFitting(fitting_, true);
+                emit fittingChanged();
+        }
 }

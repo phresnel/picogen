@@ -56,6 +56,10 @@ private:
 
 private slots:
         void on_seaLevel_valueChanged(double );
+
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 };
 
 

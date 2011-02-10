@@ -100,3 +100,4 @@ void WaterWindow::on_formation_formationChanged() {
 void WaterWindow::on_texturing_materialChanged() {
         emit waterChanged();
 }
+

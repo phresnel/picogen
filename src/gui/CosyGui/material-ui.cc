@@ -20,6 +20,7 @@
 
 #include "material-ui.hh"
 #include "ui_material-ui.h"
+#include "stashview.hh"
 
 #include "cosyscene/material.hh"
 #include "scopedblocksignals.hh"
@@ -108,5 +109,24 @@ void Material::setMaterial(
                 ui->colorPicker->setColor(cpc);
                 break;
         }
+        }
+}
+
+
+void Material::on_stashButton_clicked() {
+        if (StashView::StashDialog (this, material)) {
+                emit materialChanged();
+        }
+}
+void Material::on_stashRestoreButton_clicked() {
+        if (StashView::RestoreDialog (this, material)) {
+                setMaterial(material, true);
+                emit materialChanged();
+        }
+}
+void Material::on_stashResetButton_clicked() {
+        if (StashView::ResetDialog(this, material)) {
+                setMaterial(material, true);
+                emit materialChanged();
         }
 }

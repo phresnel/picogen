@@ -221,6 +221,3 @@ void TerrainFormation::on_stashResetButton_clicked() {
                 emit formationChanged();
         }
 }
-
-
-

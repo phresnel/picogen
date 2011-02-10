@@ -35,13 +35,15 @@ class QuatschSource;
 
 #include "vector3d.hh"
 namespace cosyscene {
-class WaterFitting
+class WaterFitting : public StashableMixin<WaterFitting>
 {
 public:
         WaterFitting();
 
         void setSeaLevel (double);
         double seaLevel() const;
+
+        bool data_equals(WaterFitting const &rhs) const ;
 
         template <typename Arch> void serialize (Arch &arch);
 private:

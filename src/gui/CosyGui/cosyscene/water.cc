@@ -36,6 +36,9 @@ void WaterFitting::setSeaLevel(double s) {
 double WaterFitting::seaLevel() const {
         return seaLevel_;
 }
+bool WaterFitting::data_equals(WaterFitting const &rhs) const {
+        return seaLevel_ == rhs.seaLevel_;
+}
 
 
 // Water

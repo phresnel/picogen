@@ -138,7 +138,7 @@ namespace cosyscene {
 
 #include "vector3d.hh"
 namespace cosyscene {
-class TerrainFitting
+class TerrainFitting : public StashableMixin<TerrainFitting>
 {
 public:
         TerrainFitting();
@@ -157,6 +157,8 @@ public:
 
         void setDetailCoefficient(double);
         double detailCoefficient() const;
+
+        bool data_equals(TerrainFitting const &rhs) const;
 
         template <typename Arch> void serialize (Arch &arch);
 private:

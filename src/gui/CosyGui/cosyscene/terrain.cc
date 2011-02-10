@@ -149,6 +149,14 @@ void TerrainFitting::setDetailCoefficient(double value) {
 double TerrainFitting::detailCoefficient() const {
         return detailCoefficient_;
 }
+bool TerrainFitting::data_equals(TerrainFitting const &rhs) const {
+        return sizeFactor_ == rhs.sizeFactor_
+                && positionOffset_ == rhs.positionOffset_
+                && lazyQuadtreeMaxRecursion_ == rhs.lazyQuadtreeMaxRecursion_
+                && lazyQuadtreeVisibleExtent_ == rhs.lazyQuadtreeVisibleExtent_
+                && detailCoefficient_ == rhs.detailCoefficient_
+        ;
+}
 
 
 // Terrain

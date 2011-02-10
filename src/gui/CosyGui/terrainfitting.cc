@@ -22,6 +22,7 @@
 #include "ui_terrainfitting.h"
 #include "cosyscene/terrain.hh"
 #include "scopedblocksignals.hh"
+#include "stashview.hh"
 
 #include <QMessageBox>
 
@@ -87,4 +88,23 @@ void TerrainFitting::on_maxRecursion_valueChanged(int) {
 void TerrainFitting::on_detailCoefficient_valueChanged(double) {
         fitting_->setDetailCoefficient (ui->detailCoefficient->value());
         emit fittingChanged();
+}
+
+
+void TerrainFitting::on_stashButton_clicked() {
+        if (StashView::StashDialog (this, fitting_)) {
+                emit fittingChanged();
+        }
+}
+void TerrainFitting::on_stashRestoreButton_clicked() {
+        if (StashView::RestoreDialog (this, fitting_)) {
+                setFitting(fitting_, true);
+                emit fittingChanged();
+        }
+}
+void TerrainFitting::on_stashResetButton_clicked() {
+        if (StashView::ResetDialog(this, fitting_)) {
+                setFitting(fitting_, true);
+                emit fittingChanged();
+        }
 }
