@@ -50,7 +50,9 @@ void FilmSettingsWindow::setFilmSettings (
 }
 
 void FilmSettingsWindow::updateViews() {
+        const bool blocked = ui->brightness->blockSignals(signalsBlocked());
         ui->brightness->setValue(filmSettings_->brightnessFactor());
+        ui->brightness->blockSignals(blocked);
 }
 
 void FilmSettingsWindow::on_brightness_valueChanged(double value) {

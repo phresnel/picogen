@@ -32,7 +32,7 @@
    <item>
     <widget class="QPushButton" name="stashResetButton">
      <property name="text">
-      <string>reset</string>
+      <string>default</string>
      </property>
     </widget>
    </item>

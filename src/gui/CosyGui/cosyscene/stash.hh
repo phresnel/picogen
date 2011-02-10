@@ -150,6 +150,12 @@ public:
                 stash_.clear();
         }
 
+        virtual bool data_equals(DERIVED const &rhs) const = 0;
+
+        bool is_default () const {
+                return data_equals(DERIVED());
+        }
+
         // The following should be implemented by derivers
         // (used by some widgets)
         //  bool data_equals(DERIVED const &rhs) const;

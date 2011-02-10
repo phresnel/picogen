@@ -114,6 +114,9 @@ public:
         template <typename T>
         static bool ResetDialog(QWidget *self, boost::shared_ptr<T> value)
         {
+                if (value->is_default())
+                        return false;
+
                 if (!value->getStash().contains_data(*value)) {
                         switch (confirmReset (self)) {
                         case ConfirmReset_Abort:

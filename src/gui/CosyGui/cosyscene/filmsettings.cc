@@ -40,7 +40,7 @@ void FilmSettings::reset() {
 }
 
 bool FilmSettings::data_equals(FilmSettings const &rhs) const {
-        return brightnessFactor_ == rhs.brightnessFactor();
+        return brightnessFactor_ == rhs.brightnessFactor_;
 }
 
 }
