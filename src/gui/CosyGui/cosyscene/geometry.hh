@@ -21,9 +21,11 @@
 #ifndef GEOMETRY_HH_20100910
 #define GEOMETRY_HH_20100910
 
+#include "cosyfloat.hh"
+
 namespace cosyscene {
 
-double length (double, double, double);
+CosyFloat length (CosyFloat, CosyFloat, CosyFloat);
 
 } // namespace cosyscene
 

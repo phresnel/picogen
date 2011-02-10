@@ -18,33 +18,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef FILMSETTINGS_HH_20101216
-#define FILMSETTINGS_HH_20101216
 
-#include "stash.hh"
-#include "redshift/include/smart_ptr.hh"
-#include <actuarius/bits/enum.hh>
-#include "cosyfloat.hh"
+#ifndef COSYFLOAT_SERIALIZATION_HH_20110210
+#define COSYFLOAT_SERIALIZATION_HH_20110210
+
+#include "../cosyfloat.hh"
 
 namespace cosyscene {
 
-class FilmSettings : public StashableMixin<FilmSettings>
-{
-public:
-        FilmSettings();
-
-        CosyFloat brightnessFactor() const;
-        void setBrightnessFactor(CosyFloat);
-
-        template<typename Arch> void serialize (Arch &arch);
-        bool data_equals(FilmSettings const &rhs) const;
-private:
-
-        CosyFloat brightnessFactor_;
-
-        void reset();
-};
+template<typename Arch>
+void CosyFloat::serialize (Arch &arch) {
+        using actuarius::pack_inline;
+        using actuarius::pack;
+        arch & pack(value_);
+}
 
 } // namespace cosyscene
 
-#endif // FILMSETTINGS_HH_20101216
+#endif // COSYFLOAT_SERIALIZATION_HH_20110210

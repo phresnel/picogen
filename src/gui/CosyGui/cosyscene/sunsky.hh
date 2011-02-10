@@ -52,15 +52,15 @@ public:
 
         Direction3d sunDirection;
 
-        double turbidity;
+        CosyFloat turbidity;
 
-        double sunSizeFactor;
-        double sunBrightnessFactor;
+        CosyFloat sunSizeFactor;
+        CosyFloat sunBrightnessFactor;
 
-        double atmosphereBrightnessFactor;
-        double atmosphericFxFactor;
+        CosyFloat atmosphereBrightnessFactor;
+        CosyFloat atmosphericFxFactor;
 
-        double overcast;
+        CosyFloat overcast;
         bool   atmosphericEffects;
 
 };

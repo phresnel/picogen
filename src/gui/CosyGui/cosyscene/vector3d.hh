@@ -21,30 +21,32 @@
 #ifndef VECTOR3D_HH_20100910
 #define VECTOR3D_HH_20100910
 
+#include "cosyfloat.hh"
+
 namespace cosyscene {
 
 
 class Vector3d {
 public:
         Vector3d () ;
-        Vector3d (double x, double y, double z);
+        Vector3d (CosyFloat x, CosyFloat y, CosyFloat z);
 
-        double x() const;
-        double y() const;
-        double z() const;
+        CosyFloat x() const;
+        CosyFloat y() const;
+        CosyFloat z() const;
 
         template<typename Arch>
         inline void serialize (Arch &arch);
 
 private:
-        double x_, y_, z_;
+        CosyFloat x_, y_, z_;
 };
 inline bool operator == (Vector3d const & lhs, Vector3d const & rhs) {
         return lhs.x() == rhs.x()
             && lhs.y() == rhs.y()
             && lhs.z() == rhs.z();
 }
-double length (Vector3d);
+CosyFloat length (Vector3d);
 
 
 } // namespace cosyscene

@@ -63,9 +63,9 @@ redshift_file::Material toRedshift (cosyscene::Material const &material) {
 
                         switch (mono.kind()) {
                         case cosyscene::Color::Rgb:
-                                redcol = redshift_file::Color(mono.rgb().r(),
-                                                              mono.rgb().g(),
-                                                              mono.rgb().b());
+                                redcol = redshift_file::Color(mono.rgb().r().toDouble(),
+                                                              mono.rgb().g().toDouble(),
+                                                              mono.rgb().b().toDouble());
                                 break;
                         case cosyscene::Color::Spectrum:
                                 redcol.type = redshift_file::Color::Spectrum;
@@ -74,8 +74,8 @@ redshift_file::Material toRedshift (cosyscene::Material const &material) {
 
                                 for (size_t i=0; i<cospec.size(); ++i) {
                                         redshift_file::WavelengthAmplitudePair wa;
-                                        wa.wavelength = cospec[i].wavelength();
-                                        wa.amplitude = cospec[i].amplitude();
+                                        wa.wavelength = cospec[i].wavelength().toDouble();
+                                        wa.amplitude = cospec[i].amplitude().toDouble();
 
                                         redspec.samples.push_back(wa);
                                 }
@@ -137,12 +137,12 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
         case cosyscene::Camera::pinhole:
                 cam.type = redshift_file::Camera::pinhole;
                 cam.pinholeParams.front = camera.pinholeCamera()
-                                          .frontPlaneDistance();
+                                          .frontPlaneDistance().toDouble();
                 break;
         case cosyscene::Camera::cylindrical:
                 cam.type = redshift_file::Camera::cylindrical;
                 cam.cylindricalParams.front = camera.cylindricalCamera()
-                                              .frontPlaneDistance();
+                                              .frontPlaneDistance().toDouble();
                 break;
         case cosyscene::Camera::cubemap_face:
                 switch (camera.cubemapFaceCamera().face()) {
@@ -172,24 +172,24 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         cosyscene::YawPitchRoll ypr = nav.yawPitchRoll();
                         redshift_file::Transform t;
                         t.type = redshift_file::Transform::move;
-                        t.x = ypr.position.x();
-                        t.y = ypr.position.y();
-                        t.z = ypr.position.z();
+                        t.x = ypr.position.x().toDouble();
+                        t.y = ypr.position.y().toDouble();
+                        t.z = ypr.position.z().toDouble();
                         cam.transforms.push_back(t);
 
                         t.type = redshift_file::Transform::yaw;
-                        t.angle = ypr.yaw * (180/redshift::constants::pi);
+                        t.angle = ypr.yaw.toDouble() * (180/redshift::constants::pi);
 
                         cam.transforms.push_back(t);
 
                         // the negation has historical reasons within redshift
                         t.type = redshift_file::Transform::pitch;
-                        t.angle = -ypr.pitch * (180/redshift::constants::pi);
+                        t.angle = -ypr.pitch.toDouble() * (180/redshift::constants::pi);
                         cam.transforms.push_back(t);
 
                         // the negation has historical reasons within redshift
                         t.type = redshift_file::Transform::roll;
-                        t.angle = -ypr.roll * (180/redshift::constants::pi);
+                        t.angle = -ypr.roll.toDouble() * (180/redshift::constants::pi);
                         cam.transforms.push_back(t);
                 } break;
         case cosyscene::Navigation::None:
@@ -238,7 +238,7 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
 
         // Film settings.
         redshift_file::FilmSettings fs;
-        fs.colorscale = filmSettings_->brightnessFactor();
+        fs.colorscale = filmSettings_->brightnessFactor().toDouble();
         fs.convertToSrgb = false;
         scene.setFilmSettings(fs);
 
@@ -251,17 +251,17 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                 case SunSky::UtahSky: {
                         bg.type = redshift_file::Background::pss_sunsky;
                         const UtahSky us = ss.utahSky();
-                        bg.atmosphereBrightnessFactor = us.atmosphereBrightnessFactor;
+                        bg.atmosphereBrightnessFactor = us.atmosphereBrightnessFactor.toDouble();
                         bg.atmosphericEffects = us.atmosphericEffects;
-                        bg.atmosphericFxFactor = us.atmosphericFxFactor;
-                        bg.overcast = us.overcast;
-                        bg.sunBrightnessFactor = us.sunBrightnessFactor;
+                        bg.atmosphericFxFactor = us.atmosphericFxFactor.toDouble();
+                        bg.overcast = us.overcast.toDouble();
+                        bg.sunBrightnessFactor = us.sunBrightnessFactor.toDouble();
                         bg.sunDirection = redshift_file::Normal(
-                                                            us.sunDirection.x(),
-                                                            us.sunDirection.y(),
-                                                            us.sunDirection.z());
-                        bg.sunSizeFactor = us.sunSizeFactor;
-                        bg.turbidity = us.turbidity;
+                                                            us.sunDirection.x().toDouble(),
+                                                            us.sunDirection.y().toDouble(),
+                                                            us.sunDirection.z().toDouble());
+                        bg.sunSizeFactor = us.sunSizeFactor.toDouble();
+                        bg.turbidity = us.turbidity.toDouble();
                         break;
                 }
                 case SunSky::None:
@@ -287,9 +287,9 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         ob.lazyQuadtreeParams.code = finalTerrainCode();
 
                         // Fitting
-                        ob.lazyQuadtreeParams.size = fitting.lazyQuadtreeVisibleExtent();
+                        ob.lazyQuadtreeParams.size = fitting.lazyQuadtreeVisibleExtent().toDouble();
                         ob.lazyQuadtreeParams.maxRecursion = fitting.lazyQuadtreeMaxRecursion();
-                        ob.lazyQuadtreeParams.lodFactor = fitting.detailCoefficient();
+                        ob.lazyQuadtreeParams.lodFactor = fitting.detailCoefficient().toDouble();
 
                         if (renderSettings.maxLazyQuadtreeDepth() != 0) {
                                 ob.lazyQuadtreeParams.maxRecursion =
@@ -345,7 +345,7 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
                         }
 
                         // Fitting
-                        ob.waterPlaneParams.height = fitting.seaLevel();
+                        ob.waterPlaneParams.height = fitting.seaLevel().toDouble();
                         ob.waterPlaneParams.material = toRedshift(material);
                         scene.addObject(ob);
                 }

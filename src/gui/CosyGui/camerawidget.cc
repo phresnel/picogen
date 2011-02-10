@@ -93,14 +93,14 @@ void CameraWidget::showPinholeParameters() {
         ScopedQtSignalBlock b(ui->pinholeFrontPlaneDistance, signalsBlocked());
         ui->stackedWidget->setCurrentWidget(ui->pinholeWidget);
         ui->pinholeFrontPlaneDistance->setValue(camera_->pinholeCamera()
-                                                .frontPlaneDistance());
+                                                .frontPlaneDistance().toDouble());
 }
 
 void CameraWidget::showCylindricalParameters() {
         ScopedQtSignalBlock b(ui->cylindricalFrontPlaneDistance, signalsBlocked());
         ui->stackedWidget->setCurrentWidget(ui->cylindricalWidget);
         ui->cylindricalFrontPlaneDistance->setValue(camera_->cylindricalCamera()
-                                                    .frontPlaneDistance());
+                                                    .frontPlaneDistance().toDouble());
 }
 
 void CameraWidget::showCubemapFaceParameters() {

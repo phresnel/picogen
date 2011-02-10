@@ -24,6 +24,7 @@
 #include "stash.hh"
 #include "redshift/include/smart_ptr.hh"
 #include <actuarius/bits/enum.hh>
+#include "cosyfloat.hh"
 
 namespace cosyscene {
 
@@ -31,12 +32,12 @@ class PinholeCamera {
 public:
         PinholeCamera();
 
-        double frontPlaneDistance() const;
-        void setFrontPlaceDistance(double);
+        CosyFloat frontPlaneDistance() const;
+        void setFrontPlaceDistance(CosyFloat);
 
         template<typename Arch> void serialize (Arch &arch);
 private:
-        double frontPlaneDistance_;
+        CosyFloat frontPlaneDistance_;
 };
 bool operator ==(PinholeCamera const&, PinholeCamera const&);
 
@@ -44,12 +45,12 @@ class CylindricalCamera {
 public:
         CylindricalCamera();
 
-        double frontPlaneDistance() const;
-        void setFrontPlaceDistance(double);
+        CosyFloat frontPlaneDistance() const;
+        void setFrontPlaceDistance(CosyFloat);
 
         template<typename Arch> void serialize (Arch &arch);
 private:
-        double frontPlaneDistance_;
+        CosyFloat frontPlaneDistance_;
 };
 bool operator ==(CylindricalCamera const&, CylindricalCamera const&);
 

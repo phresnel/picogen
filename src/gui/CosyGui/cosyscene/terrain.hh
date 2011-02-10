@@ -152,11 +152,11 @@ public:
         void setLazyQuadtreeMaxRecursion (unsigned int);
         unsigned int lazyQuadtreeMaxRecursion() const;
 
-        void setLazyQuadtreeVisibleExtent (double);
-        double lazyQuadtreeVisibleExtent() const;
+        void setLazyQuadtreeVisibleExtent (CosyFloat);
+        CosyFloat lazyQuadtreeVisibleExtent() const;
 
-        void setDetailCoefficient(double);
-        double detailCoefficient() const;
+        void setDetailCoefficient(CosyFloat);
+        CosyFloat detailCoefficient() const;
 
         bool data_equals(TerrainFitting const &rhs) const;
 
@@ -164,8 +164,8 @@ public:
 private:
         Vector3d sizeFactor_, positionOffset_;
         unsigned int lazyQuadtreeMaxRecursion_;
-        double lazyQuadtreeVisibleExtent_;
-        double detailCoefficient_;
+        CosyFloat lazyQuadtreeVisibleExtent_;
+        CosyFloat detailCoefficient_;
 };
 } // namespace cosyscene
 

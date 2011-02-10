@@ -23,6 +23,7 @@
 #define COLOR_SERIALIZATION_HH_20101012
 
 #include "../color.hh"
+#include "cosyfloat.ser.hh"
 
 namespace cosyscene {
 

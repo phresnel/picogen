@@ -27,6 +27,7 @@
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/color.ser.hh"
 #include "cosyscene/serialization/vector3d.ser.hh"
+#include "cosyscene/serialization/cosyfloat.ser.hh"
 
 namespace cosyscene {
 

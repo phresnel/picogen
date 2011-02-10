@@ -90,9 +90,9 @@ void Material::setMaterial(
                 case cosyscene::Color::Rgb:
                         cpc.mode = ColorPickerColor::Tristimulus;
                         cpc.tristimulus = TristimulusColor::fromRgbf(
-                                mono.rgb().r(),
-                                mono.rgb().g(),
-                                mono.rgb().b()
+                                mono.rgb().r().toDouble(),
+                                mono.rgb().g().toDouble(),
+                                mono.rgb().b().toDouble()
                         );
                         break;
                 case cosyscene::Color::Spectrum:
@@ -101,8 +101,8 @@ void Material::setMaterial(
                                 samples = mono.spectrum().samples();
                         for (size_t i=0; i<samples.size(); ++i) {
                                 cpc.spectral.push_back(SpectralSample(
-                                                samples[i].wavelength(),
-                                                samples[i].amplitude()));
+                                                samples[i].wavelength().toDouble(),
+                                                samples[i].amplitude().toDouble()));
                         }
                         break;
                 }

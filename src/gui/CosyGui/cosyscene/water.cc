@@ -21,6 +21,7 @@
 #include "water.hh"
 #include "material.hh"
 #include "quatsch-preprocessor/parsing.hh"
+#include "cosyfloat.hh"
 
 namespace cosyscene {
 
@@ -30,10 +31,10 @@ WaterFitting::WaterFitting()
 : seaLevel_(0)
 {
 }
-void WaterFitting::setSeaLevel(double s) {
+void WaterFitting::setSeaLevel(CosyFloat s) {
         seaLevel_ = s;
 }
-double WaterFitting::seaLevel() const {
+CosyFloat WaterFitting::seaLevel() const {
         return seaLevel_;
 }
 bool WaterFitting::data_equals(WaterFitting const &rhs) const {

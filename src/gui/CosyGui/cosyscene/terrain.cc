@@ -137,16 +137,16 @@ void TerrainFitting::setLazyQuadtreeMaxRecursion (unsigned int rec) {
 unsigned int TerrainFitting::lazyQuadtreeMaxRecursion() const {
         return lazyQuadtreeMaxRecursion_;
 }
-void TerrainFitting::setLazyQuadtreeVisibleExtent (double s) {
+void TerrainFitting::setLazyQuadtreeVisibleExtent (CosyFloat s) {
         lazyQuadtreeVisibleExtent_ = s;
 }
-double TerrainFitting::lazyQuadtreeVisibleExtent() const {
+CosyFloat TerrainFitting::lazyQuadtreeVisibleExtent() const {
         return lazyQuadtreeVisibleExtent_;
 }
-void TerrainFitting::setDetailCoefficient(double value) {
+void TerrainFitting::setDetailCoefficient(CosyFloat value) {
         detailCoefficient_ = value;
 }
-double TerrainFitting::detailCoefficient() const {
+CosyFloat TerrainFitting::detailCoefficient() const {
         return detailCoefficient_;
 }
 bool TerrainFitting::data_equals(TerrainFitting const &rhs) const {

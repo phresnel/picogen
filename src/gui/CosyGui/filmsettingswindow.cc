@@ -51,7 +51,7 @@ void FilmSettingsWindow::setFilmSettings (
 
 void FilmSettingsWindow::updateViews() {
         const bool blocked = ui->brightness->blockSignals(signalsBlocked());
-        ui->brightness->setValue(filmSettings_->brightnessFactor());
+        ui->brightness->setValue(filmSettings_->brightnessFactor().toDouble());
         ui->brightness->blockSignals(blocked);
 }
 
@@ -80,8 +80,6 @@ void FilmSettingsWindow::on_stashRestoreButton_clicked() {
         }
 }
 void FilmSettingsWindow::on_stashResetButton_clicked() {
-        QMessageBox::information(this, "", QString::number(filmSettings_->brightnessFactor())
-                                 + (filmSettings_->is_default()?" def":" not-def") );
         if (StashView::ResetDialog(this, filmSettings_)) {
                 updateViews();
                 emit filmSettingsChanged();

@@ -37,17 +37,17 @@ WavelengthAmplitudePair::WavelengthAmplitudePair()
 {
 }
 
-WavelengthAmplitudePair::WavelengthAmplitudePair(double w, double a)
+WavelengthAmplitudePair::WavelengthAmplitudePair(CosyFloat w, CosyFloat a)
 : wavelength_(w)
 , amplitude_(a)
 {
 }
 
-double WavelengthAmplitudePair::amplitude() const {
+CosyFloat WavelengthAmplitudePair::amplitude() const {
         return amplitude_;
 }
 
-double WavelengthAmplitudePair::wavelength() const {
+CosyFloat WavelengthAmplitudePair::wavelength() const {
         return wavelength_;
 }
 
@@ -84,18 +84,18 @@ WavelengthAmplitudePair Spectrum::operator [] (size_t i) const {
 Rgb::Rgb() : r_(1), g_(1), b_(1) {
 }
 
-Rgb::Rgb (double r, double g, double b) : r_(r), g_(g), b_(b) {
+Rgb::Rgb (CosyFloat r, CosyFloat g, CosyFloat b) : r_(r), g_(g), b_(b) {
 }
 
-double Rgb::r() const {
+CosyFloat Rgb::r() const {
         return r_;
 }
 
-double Rgb::g() const {
+CosyFloat Rgb::g() const {
         return g_;
 }
 
-double Rgb::b() const {
+CosyFloat Rgb::b() const {
         return b_;
 }
 

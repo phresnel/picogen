@@ -27,11 +27,11 @@ FilmSettings::FilmSettings() {
         reset();
 }
 
-void FilmSettings::setBrightnessFactor(double val) {
+void FilmSettings::setBrightnessFactor(CosyFloat val) {
         brightnessFactor_ = val;
 }
 
-double FilmSettings::brightnessFactor() const {
+CosyFloat FilmSettings::brightnessFactor() const {
         return brightnessFactor_;
 }
 

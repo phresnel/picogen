@@ -31,8 +31,8 @@ Direction3d::Direction3d() : x_(0), y_(0), z_(0) {
 
 
 
-Direction3d::Direction3d(double x, double y, double z) {
-        const double l = 1 / length(x,y,z);
+Direction3d::Direction3d(CosyFloat x, CosyFloat y, CosyFloat z) {
+        const CosyFloat l = CosyFloat(1) / length(x,y,z);
         x_ = x * l;
         y_ = y * l;
         z_ = z * l;
@@ -40,19 +40,19 @@ Direction3d::Direction3d(double x, double y, double z) {
 
 
 
-double Direction3d::x() const {
+CosyFloat Direction3d::x() const {
         return x_;
 }
 
 
 
-double Direction3d::y() const {
+CosyFloat Direction3d::y() const {
         return y_;
 }
 
 
 
-double Direction3d::z() const {
+CosyFloat Direction3d::z() const {
         return z_;
 }
 

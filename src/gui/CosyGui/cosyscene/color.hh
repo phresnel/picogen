@@ -23,6 +23,7 @@
 
 #include <vector>
 #include "actuarius/bits/enum.hh"
+#include "cosyfloat.hh"
 
 namespace cosyscene {
 
@@ -30,18 +31,18 @@ namespace cosyscene {
 class WavelengthAmplitudePair {
 public:
 
-        WavelengthAmplitudePair (double wavelength, double amplitude);
+        WavelengthAmplitudePair (CosyFloat wavelength, CosyFloat amplitude);
         WavelengthAmplitudePair ();
 
-        double wavelength() const;
-        double amplitude() const;
+        CosyFloat wavelength() const;
+        CosyFloat amplitude() const;
 
         // Serialization.
         template<typename Arch>
         void serialize (Arch &arch) ;
 private:
-        double wavelength_;
-        double amplitude_;
+        CosyFloat wavelength_;
+        CosyFloat amplitude_;
 };
 inline bool operator == (WavelengthAmplitudePair const & lhs,
                          WavelengthAmplitudePair const & rhs) {
@@ -88,16 +89,16 @@ inline bool operator == (Spectrum const & lhs, Spectrum const & rhs) {
 class Rgb {
 public:
         Rgb();
-        Rgb (double r, double g, double b);
-        double r() const;
-        double g() const;
-        double b() const;
+        Rgb (CosyFloat r, CosyFloat g, CosyFloat b);
+        CosyFloat r() const;
+        CosyFloat g() const;
+        CosyFloat b() const;
 
         // Serialization.
         template<typename Arch>
         void serialize (Arch &arch);
 private:
-        double r_, g_, b_;
+        CosyFloat r_, g_, b_;
 };
 inline bool operator == (Rgb const &lhs, Rgb const &rhs) {
         return lhs.r() == rhs.r()

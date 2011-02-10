@@ -32,24 +32,24 @@ Point3d::Point3d() : x_(0), y_(0), z_(0) {
 
 
 
-Point3d::Point3d(double x, double y, double z) : x_(x), y_(y), z_(z) {
+Point3d::Point3d(CosyFloat x, CosyFloat y, CosyFloat z) : x_(x), y_(y), z_(z) {
 }
 
 
 
-double Point3d::x() const {
+CosyFloat Point3d::x() const {
         return x_;
 }
 
 
 
-double Point3d::y() const {
+CosyFloat Point3d::y() const {
         return y_;
 }
 
 
 
-double Point3d::z() const {
+CosyFloat Point3d::z() const {
         return z_;
 }
 

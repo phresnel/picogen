@@ -40,14 +40,14 @@ class WaterFitting : public StashableMixin<WaterFitting>
 public:
         WaterFitting();
 
-        void setSeaLevel (double);
-        double seaLevel() const;
+        void setSeaLevel (CosyFloat);
+        CosyFloat seaLevel() const;
 
         bool data_equals(WaterFitting const &rhs) const ;
 
         template <typename Arch> void serialize (Arch &arch);
 private:
-        double seaLevel_;
+        CosyFloat seaLevel_;
 };
 } // namespace cosyscene
 

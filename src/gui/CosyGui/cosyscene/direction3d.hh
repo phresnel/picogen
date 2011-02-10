@@ -21,22 +21,24 @@
 #ifndef DIRECTION3D_HH_20100910
 #define DIRECTION3D_HH_20100910
 
+#include "cosyfloat.hh"
+
 namespace cosyscene {
 
 class Direction3d {
 public:
         Direction3d () ;
-        Direction3d (double x, double y, double z);
+        Direction3d (CosyFloat x, CosyFloat y, CosyFloat z);
 
-        double x() const;
-        double y() const;
-        double z() const;
+        CosyFloat x() const;
+        CosyFloat y() const;
+        CosyFloat z() const;
 
         template<typename Arch>
         inline void serialize (Arch &arch);
 
 private:
-        double x_, y_, z_;
+        CosyFloat x_, y_, z_;
 };
 inline bool operator == (Direction3d const & lhs, Direction3d const & rhs) {
         return lhs.x() == rhs.x()

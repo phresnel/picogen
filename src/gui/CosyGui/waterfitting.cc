@@ -48,7 +48,7 @@ void WaterFitting::setFitting(
         cosyscene::WaterFitting const &f = *t;
 
         ScopedQtSignalBlock blockSeaLevel (ui->seaLevel, blockSignals);
-        ui->seaLevel->setValue(f.seaLevel());
+        ui->seaLevel->setValue(f.seaLevel().toDouble());
 }
 
 void WaterFitting::on_seaLevel_valueChanged(double val) {

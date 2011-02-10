@@ -23,8 +23,8 @@
 
 namespace cosyscene {
 
-double length (double x, double y, double z) {
-        return std::sqrt(x*x + y*y + z*z);
+CosyFloat length (CosyFloat x, CosyFloat y, CosyFloat z) {
+        return sqrt(x*x + y*y + z*z);
 }
 
 }

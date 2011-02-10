@@ -142,12 +142,12 @@ void NavigationWindow::updateViews() {
                 ui->xSpin->setValue(ypr.position.x());
                 ui->ySpin->setValue(ypr.position.y());
                 ui->zSpin->setValue(ypr.position.z());*/
-                ui->graphicalNavigation->setYaw(ypr.yaw);
-                ui->graphicalNavigation->setPitch(ypr.pitch);
-                ui->graphicalNavigation->setRoll(ypr.roll);
-                ui->graphicalNavigation->setPosition(ypr.position.x(),
-                                                     ypr.position.y(),
-                                                     ypr.position.z());
+                ui->graphicalNavigation->setYaw(ypr.yaw.toDouble());
+                ui->graphicalNavigation->setPitch(ypr.pitch.toDouble());
+                ui->graphicalNavigation->setRoll(ypr.roll.toDouble());
+                ui->graphicalNavigation->setPosition(ypr.position.x().toDouble(),
+                                                     ypr.position.y().toDouble(),
+                                                     ypr.position.z().toDouble());
         } break;
         case cosyscene::Navigation::None:
                 throw std::runtime_error ("Navigation::updateViews() called"
@@ -167,7 +167,9 @@ void NavigationWindow::updateViews() {
                        HeightFunction::Ptr(new QuatschHeightFunction("0")));
         }
         if (scene_->water()) {
-                ui->graphicalNavigation->setWaterLevel(scene_->water()->fitting()->seaLevel());
+                ui->graphicalNavigation->setWaterLevel(scene_->
+                                                       water()->fitting()->
+                                                       seaLevel().toDouble());
         } else {
                 ui->graphicalNavigation->setWaterLevel(-999999);
         }

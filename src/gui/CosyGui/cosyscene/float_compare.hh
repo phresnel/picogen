@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2010  Sebastian Mach (*1983)
+// Copyright (C) 2011  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,33 +18,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef FILMSETTINGS_HH_20101216
-#define FILMSETTINGS_HH_20101216
+#ifndef FLOAT_COMPARE_HH
+#define FLOAT_COMPARE_HH
 
-#include "stash.hh"
-#include "redshift/include/smart_ptr.hh"
-#include <actuarius/bits/enum.hh>
-#include "cosyfloat.hh"
+#include <cmath>
 
-namespace cosyscene {
+namespace cosyscene { namespace detail {
 
-class FilmSettings : public StashableMixin<FilmSettings>
-{
-public:
-        FilmSettings();
+// Checks whether a and b are almost equal, using quick and dirty
+// absolute error epsilon.
+inline bool almost_eqal_abserr (float a, float b, float maxAbsoluteError) {
+        return std::fabs(a-b) < maxAbsoluteError;
+}
 
-        CosyFloat brightnessFactor() const;
-        void setBrightnessFactor(CosyFloat);
+} }
 
-        template<typename Arch> void serialize (Arch &arch);
-        bool data_equals(FilmSettings const &rhs) const;
-private:
-
-        CosyFloat brightnessFactor_;
-
-        void reset();
-};
-
-} // namespace cosyscene
-
-#endif // FILMSETTINGS_HH_20101216
+#endif // FLOAT_COMPARE_HH

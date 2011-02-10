@@ -32,31 +32,31 @@ Vector3d::Vector3d() : x_(0), y_(0), z_(0) {
 
 
 
-Vector3d::Vector3d(double x, double y, double z) : x_(x), y_(y), z_(z) {
+Vector3d::Vector3d(CosyFloat x, CosyFloat y, CosyFloat z) : x_(x), y_(y), z_(z) {
 }
 
 
 
-double Vector3d::x() const {
+CosyFloat Vector3d::x() const {
         return x_;
 }
 
 
 
-double Vector3d::y() const {
+CosyFloat Vector3d::y() const {
         return y_;
 }
 
 
 
-double Vector3d::z() const {
+CosyFloat Vector3d::z() const {
         return z_;
 }
 
 
 
-double length (Vector3d d) {
-        return length(d.x(), d.y(), d.z());
+CosyFloat length (Vector3d d) {
+        return length (d.x(), d.y(), d.z());
 }
 
 }

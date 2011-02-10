@@ -23,6 +23,7 @@
 
 #include "../filmsettings.hh"
 #include "cosyscene/serialization/stash.ser.hh"
+#include "cosyfloat.ser.hh"
 
 namespace cosyscene {
 

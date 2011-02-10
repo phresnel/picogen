@@ -25,6 +25,7 @@
 #include "point3d.hh"
 #include <string>
 #include <actuarius/bits/enum.hh>
+#include "cosyfloat.hh"
 
 namespace cosyscene {
 
@@ -32,7 +33,7 @@ class YawPitchRoll {
 public:
         YawPitchRoll() : yaw(0), pitch(0), roll(0) {}
 
-        double yaw, pitch, roll;
+        CosyFloat yaw, pitch, roll;
         Point3d position;
 
         template<typename Arch>

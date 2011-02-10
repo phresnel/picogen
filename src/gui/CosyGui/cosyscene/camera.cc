@@ -40,10 +40,10 @@ const actuarius::Enum<CubemapFaceCamera::Face> CubemapFaceCamera::Typenames =
 
 PinholeCamera::PinholeCamera() : frontPlaneDistance_ (1) {
 }
-double PinholeCamera::frontPlaneDistance() const {
+CosyFloat PinholeCamera::frontPlaneDistance() const {
         return frontPlaneDistance_;
 }
-void PinholeCamera::setFrontPlaceDistance(double value) {
+void PinholeCamera::setFrontPlaceDistance(CosyFloat value) {
         frontPlaneDistance_ = value;
 }
 bool operator ==(PinholeCamera const&lhs, PinholeCamera const&rhs) {
@@ -53,10 +53,10 @@ bool operator ==(PinholeCamera const&lhs, PinholeCamera const&rhs) {
 
 CylindricalCamera::CylindricalCamera() : frontPlaneDistance_ (1) {
 }
-double CylindricalCamera::frontPlaneDistance() const {
+CosyFloat CylindricalCamera::frontPlaneDistance() const {
         return frontPlaneDistance_;
 }
-void CylindricalCamera::setFrontPlaceDistance(double value) {
+void CylindricalCamera::setFrontPlaceDistance(CosyFloat value) {
         frontPlaneDistance_ = value;
 }
 bool operator ==(CylindricalCamera const&lhs, CylindricalCamera const&rhs) {

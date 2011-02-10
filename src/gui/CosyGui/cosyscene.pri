@@ -16,7 +16,8 @@ SOURCES *= \
     $$PWD/cosyscene/filmsettings.cc \
     $$PWD/cosyscene/surfaceintegrator.cc \
     $$PWD/cosyscene/water.cc \
-    $$PWD/cosyscene/camera.cc
+    $$PWD/cosyscene/camera.cc \
+    $$PWD/cosyscene/cosyfloat.cc
 
 HEADERS *= \
     $$PWD/cosyscene/stash.hh \
@@ -52,4 +53,7 @@ HEADERS *= \
     $$PWD/cosyscene/water.hh \
     $$PWD/cosyscene/serialization/water.ser.hh \
     $$PWD/cosyscene/camera.hh \
-    $$PWD/cosyscene/serialization/camera.ser.hh
+    $$PWD/cosyscene/serialization/camera.ser.hh \
+    $$PWD/cosyscene/float_compare.hh \
+    $$PWD/cosyscene/cosyfloat.hh \
+    $$PWD/cosyscene/serialization/cosyfloat.ser.hh

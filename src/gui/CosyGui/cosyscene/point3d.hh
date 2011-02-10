@@ -21,23 +21,25 @@
 #ifndef POINT3D_HH_20100915
 #define POINT3D_HH_20100915
 
+#include "cosyfloat.hh"
+
 namespace cosyscene {
 
 
 class Point3d {
 public:
         Point3d () ;
-        Point3d (double x, double y, double z);
+        Point3d (CosyFloat x, CosyFloat y, CosyFloat z);
 
-        double x() const;
-        double y() const;
-        double z() const;
+        CosyFloat x() const;
+        CosyFloat y() const;
+        CosyFloat z() const;
 
         template<typename Arch>
         inline void serialize (Arch &arch);
 
 private:
-        double x_, y_, z_;
+        CosyFloat x_, y_, z_;
 };
 inline bool operator == (Point3d const & lhs, Point3d const & rhs) {
         return lhs.x() == rhs.x()

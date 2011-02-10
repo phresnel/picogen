@@ -150,18 +150,18 @@ void SunSkyWindow::updateToUtahSunSkyEditor() {
 
         const cosyscene::UtahSky utah = sunSky->utahSky();
 
-        u.setAtmosphereIntensity(utah.atmosphereBrightnessFactor);
+        u.setAtmosphereIntensity(utah.atmosphereBrightnessFactor.toDouble());
         u.setAtmosphericEffectsEnabled(utah.atmosphericEffects);
-        u.setAtmosphericEffectsFactor(utah.atmosphericFxFactor);
-        u.setOvercast(utah.overcast);
-        u.setSunIntensity(utah.sunBrightnessFactor);
+        u.setAtmosphericEffectsFactor(utah.atmosphericFxFactor.toDouble());
+        u.setOvercast(utah.overcast.toDouble());
+        u.setSunIntensity(utah.sunBrightnessFactor.toDouble());
 
-        u.setSunDirection(redshift::Vector(utah.sunDirection.x(),
-                                           utah.sunDirection.y(),
-                                           utah.sunDirection.z()));
+        u.setSunDirection(redshift::Vector(utah.sunDirection.x().toDouble(),
+                                           utah.sunDirection.y().toDouble(),
+                                           utah.sunDirection.z().toDouble()));
 
-        u.setDiskSize(utah.sunSizeFactor);
-        u.setTurbidity(utah.turbidity);
+        u.setDiskSize(utah.sunSizeFactor.toDouble());
+        u.setTurbidity(utah.turbidity.toDouble());
 
         u.blockSignals(blocked);
 }
