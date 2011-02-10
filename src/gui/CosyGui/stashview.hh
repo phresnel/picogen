@@ -81,8 +81,7 @@ public:
 
 
         template <typename T>
-        static bool StashDialog (QWidget *self, boost::shared_ptr<T> value)
-        {
+        static bool StashDialog (QWidget *self, boost::shared_ptr<T> value) {
                 if (value->getStash().contains_data(*value)) {
                         switch (confirmRestash (self)) {
                         case ConfirmRestash_Abort:
@@ -94,13 +93,7 @@ public:
                                 break;
                         }
                 }
-                QInputDialog dlg(self);
-                dlg.setLabelText("Optionally provide a descriptive title");
-                dlg.setInputMode(QInputDialog::TextInput);
-                if (dlg.exec() == QInputDialog::Accepted)
-                        value->stash(dlg.textValue().toStdString());
-                else
-                        value->stash();
+                value->stash(DescriptionDialog(self));
                 return true;
         }
 
@@ -113,8 +106,24 @@ public:
                 if (QDialog::Accepted != sw->exec())
                         return false;
 
-                T ret = T(sw->selectedData<T>());
+                T ret (sw->selectedData<T>());
                 ret.setStash (sw->itemsToStash<T>());
+
+                if (!value->is_default() &&
+                    !ret.getStash().contains_data(*value)
+                ) {
+                        switch (confirmRestore (self)) {
+                        case ConfirmRestore_Abort:
+                                return false;
+                        case ConfirmRestore_StashBeforeRestore:
+                                ret.getStash().stash (*value,
+                                                      DescriptionDialog(self));
+                                break;
+                        case ConfirmRestore_Restore:
+                                break;
+                        }
+                }
+
 
                 *value = ret;
                 return true;
@@ -131,7 +140,6 @@ public:
                         case ConfirmReset_Abort:
                                 return false;
                         case ConfirmReset_StashBeforeReset:
-                                //value->stash();
                                 StashDialog (self, value);
                                 break;
                         case ConfirmReset_Reset:
@@ -142,6 +150,16 @@ public:
                 t.setStash(value->getStash());
                 *value = t;
                 return true;
+        }
+private:
+        static std::string DescriptionDialog(QWidget *self) {
+                QInputDialog dlg(self);
+                dlg.setLabelText("Optionally provide a descriptive title");
+                dlg.setInputMode(QInputDialog::TextInput);
+                if (dlg.exec() == QInputDialog::Accepted)
+                        return dlg.textValue().toStdString();
+                else
+                        return "";
         }
 
 private slots:
@@ -180,7 +198,8 @@ Stash<T> StashView::itemsToStash () const {
         for (int i=0; i<items.size(); ++i) {
                 ret.push_back (StashObject<T>(
                         items[i].time,
-                        *((T*)items[i].data.get())
+                        *((T*)items[i].data.get()),
+                        items[i].description
                 ));
         }
         return ret;

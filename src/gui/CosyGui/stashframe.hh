@@ -59,4 +59,11 @@ enum ConfirmRestash {
 };
 ConfirmRestash confirmRestash (QWidget *parent);
 
+enum ConfirmRestore {
+        ConfirmRestore_Abort,
+        ConfirmRestore_StashBeforeRestore,
+        ConfirmRestore_Restore
+};
+ConfirmRestore confirmRestore (QWidget *parent);
+
 #endif // STASHFRAME_HH

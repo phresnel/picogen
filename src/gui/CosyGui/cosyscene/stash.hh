@@ -43,8 +43,8 @@ public:
         : time_(std::time(0)), value_(value), description_(description)
         {}
 
-        StashObject(std::time_t time, T const &value)
-        : time_(time), value_(value)
+        StashObject(std::time_t time, T const &value, std::string const &description)
+        : time_(time), value_(value), description_(description)
         {}
 
         const T &value() const { return value_; }
@@ -102,13 +102,13 @@ public:
 
         // -- Algo -------------------------------------------------------------
         bool contains_data (T const &value) const {
-                EqualityPredicate ep(value);
+                EqualityPredicate ep(value, false);
                 return end() != std::find_if(begin(), end(), ep);
         }
 
         void kill_all (T const &value) {
                 objects.erase (std::remove_if (begin(), end(),
-                                               EqualityPredicate(value)),
+                                               EqualityPredicate(value, true)),
                                end());
         }
         // ---------------------------------------------------------------------
@@ -122,17 +122,27 @@ private:
         std::vector<StashObject<T> > objects;
 
         struct EqualityPredicate {
-                EqualityPredicate (StashObject<T> const &stashObject)
-                        : stashObject(stashObject) {}
-                EqualityPredicate (T const &stashObject)
-                        : stashObject(stashObject) {}
+                EqualityPredicate (StashObject<T> const &stashObject,
+                                   bool isFalseForItemsWithDescription)
+                : stashObject(stashObject)
+                , isFalseForItemsWithDescription(isFalseForItemsWithDescription)
+                {}
+
+                EqualityPredicate (T const &stashObject,
+                                   bool isFalseForItemsWithDescription)
+                : stashObject(stashObject)
+                , isFalseForItemsWithDescription(isFalseForItemsWithDescription)
+                {}
                 bool operator () (StashObject<T> const &rhs) const {
-                        if (rhs.description() != "")
-                                return false;
+                        if (isFalseForItemsWithDescription) {
+                                if (rhs.description() != "")
+                                        return false;
+                        }
                         return stashObject.value().data_equals (rhs.value());
                 }
         private:
                 StashObject<T> stashObject;
+                bool isFalseForItemsWithDescription;
         };
 };
 

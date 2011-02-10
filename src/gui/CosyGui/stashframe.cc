@@ -31,6 +31,7 @@ ConfirmRestash confirmRestash (QWidget *parent) {
         QPushButton *restashKeep = msgBox->addButton("Keep all", QMessageBox::ActionRole);
         QPushButton *abortButton = msgBox->addButton(QMessageBox::Abort);
 
+
         msgBox->setDefaultButton(abortButton);
         msgBox->setIcon(QMessageBox::Warning);
         msgBox->setText("There is already an identical item in the stash.");
@@ -45,13 +46,13 @@ ConfirmRestash confirmRestash (QWidget *parent) {
 
 ConfirmReset confirmReset (QWidget *parent) {
         redshift::shared_ptr<QMessageBox> msgBox (new QMessageBox (parent));
-        QPushButton *resetButton = msgBox->addButton("Reset now!", QMessageBox::ActionRole);
-        QPushButton *stashButton = msgBox->addButton("Stash, then reset", QMessageBox::ActionRole);
+        QPushButton *resetButton = msgBox->addButton("Don't backup", QMessageBox::ActionRole);
+        QPushButton *stashButton = msgBox->addButton("Backup", QMessageBox::ActionRole);
         QPushButton *abortButton = msgBox->addButton(QMessageBox::Abort);
 
         msgBox->setDefaultButton(abortButton);
         msgBox->setIcon(QMessageBox::Warning);
-        msgBox->setText("This deletes your settings.");
+        msgBox->setText("This form is unsaved and will be overwritten.");
         msgBox->exec();
         if (msgBox->clickedButton() == (QAbstractButton*)stashButton) {
                 return ConfirmReset_StashBeforeReset;
@@ -59,6 +60,24 @@ ConfirmReset confirmReset (QWidget *parent) {
                 return ConfirmReset_Reset;
         }
         return ConfirmReset_Abort;
+}
+
+ConfirmRestore confirmRestore (QWidget *parent) {
+        redshift::shared_ptr<QMessageBox> msgBox (new QMessageBox (parent));
+        QPushButton *restoreButton = msgBox->addButton("Don't backup", QMessageBox::ActionRole);
+        QPushButton *stashButton = msgBox->addButton("Backup", QMessageBox::ActionRole);
+        QPushButton *abortButton = msgBox->addButton(QMessageBox::Abort);
+
+        msgBox->setDefaultButton(abortButton);
+        msgBox->setIcon(QMessageBox::Warning);
+        msgBox->setText("This form is unsaved and will be overwritten.");
+        msgBox->exec();
+        if (msgBox->clickedButton() == (QAbstractButton*)stashButton) {
+                return ConfirmRestore_StashBeforeRestore;
+        } else if (msgBox->clickedButton() == (QAbstractButton*)restoreButton) {
+                return ConfirmRestore_Restore;
+        }
+        return ConfirmRestore_Abort;
 }
 
 

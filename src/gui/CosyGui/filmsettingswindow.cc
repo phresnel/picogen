@@ -80,6 +80,8 @@ void FilmSettingsWindow::on_stashRestoreButton_clicked() {
         }
 }
 void FilmSettingsWindow::on_stashResetButton_clicked() {
+        QMessageBox::information(this, "", QString::number(filmSettings_->brightnessFactor())
+                                 + (filmSettings_->is_default()?" def":" not-def") );
         if (StashView::ResetDialog(this, filmSettings_)) {
                 updateViews();
                 emit filmSettingsChanged();
