@@ -147,15 +147,14 @@ void SunSkyWindow::updateFromUtahSunSkyEditor() {
 void SunSkyWindow::updateToUtahSunSkyEditor() {
         QtSunSkyEditor &u = *ui->utahSkyEditor;
         const bool blocked = u.blockSignals(true);
+        QSharedPointer<SunSkyEditorUpdateLock> masslock = u.massUpdate();
 
         const cosyscene::UtahSky utah = sunSky->utahSky();
-
         u.setAtmosphereIntensity(utah.atmosphereBrightnessFactor.toDouble());
         u.setAtmosphericEffectsEnabled(utah.atmosphericEffects);
         u.setAtmosphericEffectsFactor(utah.atmosphericFxFactor.toDouble());
         u.setOvercast(utah.overcast.toDouble());
         u.setSunIntensity(utah.sunBrightnessFactor.toDouble());
-
         u.setSunDirection(redshift::Vector(utah.sunDirection.x().toDouble(),
                                            utah.sunDirection.y().toDouble(),
                                            utah.sunDirection.z().toDouble()));

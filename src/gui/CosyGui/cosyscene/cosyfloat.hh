@@ -21,6 +21,8 @@
 #ifndef COSYFLOAT_HH_20110210
 #define COSYFLOAT_HH_20110210
 
+#include <iosfwd>
+
 namespace cosyscene {
 
 
@@ -31,9 +33,6 @@ public:
                                 // to double is enough, I think.
 
         double toDouble() const;
-
-        template<typename Arch>
-        void serialize (Arch &arch);
 
         bool operator == (CosyFloat const &rhs) const;
         bool operator != (CosyFloat const &rhs) const;
@@ -50,12 +49,18 @@ public:
         friend CosyFloat fabs (CosyFloat const &);
         friend CosyFloat sqrt (CosyFloat const &);
         friend CosyFloat pow (CosyFloat const &, CosyFloat const &);
+
+        friend std::ostream& operator<< (std::ostream&, CosyFloat const&);
+        friend std::istream& operator>> (std::istream&, CosyFloat &);
 private:
         double value_;
 };
 CosyFloat fabs (CosyFloat const &);
 CosyFloat sqrt (CosyFloat const &);
 CosyFloat pow (CosyFloat const &, CosyFloat const &);
+
+std::ostream& operator<< (std::ostream&, CosyFloat const&);
+std::istream& operator>> (std::istream&, CosyFloat &);
 
 
 } // namespace cosyscene

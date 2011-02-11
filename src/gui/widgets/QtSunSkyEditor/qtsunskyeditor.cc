@@ -27,6 +27,7 @@
 QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
 : QWidget(parent)
 , ui(new Ui::qtsunskyeditor)
+, enableUpdate(true)
 {
         ui->setupUi(this);
         ui->previewScreen->setScaledContents(true);
@@ -191,42 +192,42 @@ void QtSunSkyEditor::on_previewResolution_valueChanged(int res) {
 
 void QtSunSkyEditor::on_turbiditySpinBox_valueChanged(double value) {
         redraw(true);
-        emit turbidityChanged(value);
+        if (!signalsBlocked()) emit turbidityChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_previewMultiplier_valueChanged(double value) {
         redraw(false);
-        emit previewMultiplierChanged(value);
+        if (!signalsBlocked()) emit previewMultiplierChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_sunIntensitySpinBox_valueChanged(double value) {
         redraw(true);
-        emit sunIntensityChanged(value);
+        if (!signalsBlocked()) emit sunIntensityChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_atmosphereIntensitySpinBox_valueChanged(double value) {
         redraw(true);
-        emit atmosphereIntensityChanged(value);
+        if (!signalsBlocked()) emit atmosphereIntensityChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_diskSizeSpinBox_valueChanged(double value) {
         redraw(true);
-        emit diskSizeChanged(value);
+        if (!signalsBlocked()) emit diskSizeChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_enableAtmosphericEffects_stateChanged(int state) {
         redraw(true);
-        emit atmosphericEffectsEnabledChanged(state != 0);
+        if (!signalsBlocked()) emit atmosphericEffectsEnabledChanged(state != 0);
 }
 
 
@@ -235,14 +236,14 @@ void QtSunSkyEditor::on_atmosphericEffectsFactorSpinBox_valueChanged(
         double value
 ) {
         redraw(true);
-        emit atmosphericEffectsFactorChanged(value);
+        if (!signalsBlocked()) emit atmosphericEffectsFactorChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_overcastSpinBox_valueChanged(double value) {
         redraw(true);
-        emit overcastChanged(value);
+        if (!signalsBlocked()) emit overcastChanged(value);
 }
 
 
@@ -261,7 +262,7 @@ void QtSunSkyEditor::updateSunDirectionFromSpinBoxes() {
         this->direction = normalize(Vector(ui->directionXSpinBox->value(),
                                            ui->directionYSpinBox->value(),
                                            ui->directionZSpinBox->value()));
-        emit sunDirectionChanged(this->direction);
+        if (!signalsBlocked()) emit sunDirectionChanged(this->direction);
         updatePreethamSettingsAndRedraw();
 }
 
@@ -319,55 +320,91 @@ redshift::Vector QtSunSkyEditor::sunDirection() const {
 
 
 void QtSunSkyEditor::setOvercast(double value) {
+        const bool blocked = ui->overcastSpinBox->blockSignals(true);
         ui->overcastSpinBox->setValue(value);
+        ui->overcastSpinBox->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setAtmosphericEffectsEnabled(bool value) {
+        const bool blocked = ui->enableAtmosphericEffects->blockSignals(true);
         ui->enableAtmosphericEffects->setChecked(value?Qt::Checked:Qt::Unchecked);
+        ui->enableAtmosphericEffects->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setAtmosphericEffectsFactor(double value) {
+        const bool blocked = ui->atmosphericEffectsFactorSpinBox->blockSignals(true);
         ui->atmosphericEffectsFactorSpinBox->setValue(value);
+        ui->atmosphericEffectsFactorSpinBox->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setPreviewResolution(int value) {
+        const bool blocked = ui->previewResolution->blockSignals(true);
         ui->previewResolution->setValue(value);
+        ui->previewResolution->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setDiskSize(double value) {
+        const bool blocked = ui->diskSizeSpinBox->blockSignals(true);
         ui->diskSizeSpinBox->setValue(value);
+        ui->diskSizeSpinBox->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setTurbidity(double value) {
+        const bool blocked = ui->turbiditySpinBox->blockSignals(true);
         ui->turbiditySpinBox->setValue(value);
+        ui->turbiditySpinBox->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setPreviewMultiplier(double value) {
+        const bool blocked = ui->previewMultiplier->blockSignals(true);
         ui->previewMultiplier->setValue(value);
+        ui->previewMultiplier->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setSunIntensity(double value) {
+        const bool blocked = ui->sunIntensitySpinBox->blockSignals(true);
         ui->sunIntensitySpinBox->setValue(value);
+        ui->sunIntensitySpinBox->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setAtmosphereIntensity(double value) {
+        const bool blocked = ui->atmosphereIntensitySpinBox->blockSignals(true);
         ui->atmosphereIntensitySpinBox->setValue(value);
+        ui->atmosphereIntensitySpinBox->blockSignals(blocked);
         updatePreethamSettingsAndRedraw();
 }
 void QtSunSkyEditor::setSunDirection (redshift::Vector value) {
         direction = value;
-        const bool blocked = blockSignals(true);
+        const bool blocked = blockSignals(true),
+                bx = ui->directionXSpinBox->blockSignals(true),
+                by = ui->directionYSpinBox->blockSignals(true),
+                bz = ui->directionZSpinBox->blockSignals(true);
+
         ui->directionXSpinBox->setValue(value.x);
         ui->directionYSpinBox->setValue(value.y);
         ui->directionZSpinBox->setValue(value.z);
+
         updatePreethamSettingsAndRedraw();
+
+        ui->directionZSpinBox->blockSignals(bz);
+        ui->directionYSpinBox->blockSignals(by);
+        ui->directionXSpinBox->blockSignals(bx);
+
         blockSignals(blocked);
-        emit sunDirectionChanged(this->direction);
+        if (!blocked) emit sunDirectionChanged(this->direction);
 }
 
 
 
 void QtSunSkyEditor::updatePreethamSettingsAndRedraw() {
+        if (!enableUpdate) return;
         updatePreethamSettings();
         redraw(true);
+}
+
+
+
+QSharedPointer<SunSkyEditorUpdateLock> QtSunSkyEditor::massUpdate() {
+        return QSharedPointer<SunSkyEditorUpdateLock>(
+                        new SunSkyEditorUpdateLock (this));
 }

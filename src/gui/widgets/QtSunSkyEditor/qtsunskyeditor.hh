@@ -28,6 +28,7 @@
 #include <QWidget>
 #include <QImage>
 #include <QMouseEvent>
+#include <QSharedPointer>
 #include "ui_qtsunskyeditor.h"
 
 
@@ -41,9 +42,12 @@ namespace redshift {
 }
 
 
+class SunSkyEditorUpdateLock;
 
 class QtSunSkyEditor : public QWidget {
         Q_OBJECT
+
+        friend class SunSkyEditorUpdateLock;
 public:
         QtSunSkyEditor(QWidget *parent = 0);
         ~QtSunSkyEditor();
@@ -70,6 +74,8 @@ public:
         void setAtmosphereIntensity(double );
         void setSunDirection (redshift::Vector);
 
+        QSharedPointer<SunSkyEditorUpdateLock> massUpdate();
+
 signals:
         void overcastChanged(double );
         void atmosphericEffectsEnabledChanged(bool);
@@ -90,10 +96,14 @@ protected:
 
 
 private:
+        Ui::qtsunskyeditor *ui;
+
+
         void redraw(bool recalc, bool drawCross=false, float crossU=0, float crossV=0);
         void updatePreethamSettings();
         void updatePreethamSettingsAndRedraw();
         void updateSunDirectionFromSpinBoxes();
+        bool enableUpdate;
 
         redshift::Vector direction;
 
@@ -109,8 +119,6 @@ private:
                 screenToHemisphere (float u, float v) const;
         redshift::Vector screenToHemisphereSat (float u, float v) const;
 
-
-        Ui::qtsunskyeditor *ui;
         redshift::shared_ptr<redshift::backgrounds::PssAdapter> preetham;
 
 private slots:
@@ -127,6 +135,19 @@ private slots:
         void on_previewMultiplier_valueChanged(double );
         void on_sunIntensitySpinBox_valueChanged(double );
         void on_atmosphereIntensitySpinBox_valueChanged(double );
+};
+
+class SunSkyEditorUpdateLock {
+        SunSkyEditorUpdateLock (QtSunSkyEditor *editor) : editor(editor) {
+                editor->enableUpdate = false;
+        }
+        QtSunSkyEditor *editor;
+        friend class QtSunSkyEditor;
+public:
+        ~SunSkyEditorUpdateLock() {
+                editor->enableUpdate = true;
+                editor->updatePreethamSettingsAndRedraw();
+        }
 };
 
 #endif // QTSUNSKYEDITOR_HH

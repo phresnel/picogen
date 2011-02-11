@@ -1,8 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-08-27T13:22:12
 # -------------------------------------------------
-QT += core \
-    gui
+QT += core gui testlib
 DEFINES += __STDC_LIMIT_MACROS
 CONFIG += debug_and_release
 

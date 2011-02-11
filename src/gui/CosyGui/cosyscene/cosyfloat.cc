@@ -22,6 +22,8 @@
 #include "cosyfloat.hh"
 
 #include <cmath>
+#include <istream>
+#include <ostream>
 
 namespace cosyscene {
 
@@ -87,6 +89,14 @@ CosyFloat sqrt (CosyFloat const &p) {
 }
 CosyFloat pow (CosyFloat const &l, CosyFloat const &r) {
         return CosyFloat (std::pow(l.value_, r.value_));
+}
+
+
+std::ostream& operator<< (std::ostream& ss, CosyFloat const& f) {
+        return ss << f.value_;
+}
+std::istream& operator>> (std::istream& ss, CosyFloat &f) {
+        return ss >> f.value_;
 }
 
 
