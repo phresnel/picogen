@@ -23,20 +23,18 @@
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
     class FilmSettingsWindow;
 }
 
-namespace cosyscene {
-         class FilmSettings;
-         class Scene;
-}
+
 
 class FilmSettingsWindow : public QWidget
 {
     Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit FilmSettingsWindow(QWidget *parent = 0);
         ~FilmSettingsWindow();
@@ -51,10 +49,7 @@ signals:
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
-private:
-        Ui::FilmSettingsWindow *ui;
-        redshift::shared_ptr<cosyscene::FilmSettings> filmSettings_;
-
+// ================== Private ==================================================
 private:
         void updateViews();
 
@@ -64,6 +59,10 @@ private slots:
         void on_stashButton_clicked();
         void on_stashRestoreButton_clicked();
         void on_stashResetButton_clicked();
+
+private:
+        Ui::FilmSettingsWindow *ui;
+        redshift::shared_ptr<cosyscene::FilmSettings> filmSettings_;
 };
 
 #endif // FILMSETTINGSWINDOW_HH

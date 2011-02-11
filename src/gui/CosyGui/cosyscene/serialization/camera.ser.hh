@@ -22,7 +22,7 @@
 #define CAMERA_SERIALIZATION_HH_20110117
 
 #include "../camera.hh"
-#include "cosyfloat.ser.hh"
+
 
 namespace cosyscene {
 

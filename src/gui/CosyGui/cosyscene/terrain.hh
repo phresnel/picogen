@@ -22,13 +22,16 @@
 #ifndef TERRAIN_HH_20100902
 #define TERRAIN_HH_20100902
 
-#include "stash.hh"
 #include <string>
 #include <actuarius/bits/enum.hh>
+#include "redshift/include/smart_ptr.hh"
+
+#include "stash.hh"
+#include "cosyfwd.hh"
+#include "vector3d.hh"
+
 
 namespace cosyscene {
-class QuatschSource;
-class TerrainFormation;
 
 class QuatschSource {
 public:
@@ -131,13 +134,6 @@ private:
 
 
 namespace cosyscene {
-        class Material;
-} // namespace cosyscene
-
-
-
-#include "vector3d.hh"
-namespace cosyscene {
 class TerrainFitting : public StashableMixin<TerrainFitting>
 {
 public:
@@ -170,7 +166,6 @@ private:
 } // namespace cosyscene
 
 
-#include "redshift/include/smart_ptr.hh"
 namespace cosyscene {
 
 class Terrain

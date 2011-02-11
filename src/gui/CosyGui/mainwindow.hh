@@ -18,53 +18,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #ifndef MAINWINDOW_HH_20100902
 #define MAINWINDOW_HH_20100902
 
 #include <QMainWindow>
 #include "redshift/include/smart_ptr.hh"
 #include "createredshiftsceneclosure.hh"
-
-namespace cosyscene {
-        class Scene;
-}
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
         class MainWindow;
 }
-class FilmSettings;
+
+namespace detail {
+        class RedshiftSceneCreator;
+}
+
+
 
 class MainWindow : public QMainWindow
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit MainWindow(QWidget *parent = 0);
         ~MainWindow();
-
-private:
-        Ui::MainWindow *ui;
-        redshift::shared_ptr<cosyscene::Scene> scene;
-
-        void switchOffCommandLinks ();
-
-        void indicateSaved();
-        void indicateUnsaved();
-
-        struct RedshiftSceneCreator : CreateRedshiftSceneClosure {
-                redshift::shared_ptr<redshift_file::Scene>
-                                createPreviewScene() const;
-                redshift::shared_ptr<redshift_file::Scene>
-                                createProductionScene() const;
-
-                redshift::shared_ptr<cosyscene::Scene> scene;
-
-                typedef redshift::shared_ptr<RedshiftSceneCreator> Ptr;
-        };
-        RedshiftSceneCreator::Ptr redshiftSceneCreator;
-
-        std::string lastRedshiftJob; // for debugging purposes
 
 signals:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
@@ -73,11 +51,21 @@ public slots:
         void onProductionRenderProcessRequested();
         void onPreviewRenderProcessRequested();
 
+
+
+// ================== Private ==================================================
+private:
+        void switchOffCommandLinks ();
+        void indicateSaved();
+        void indicateUnsaved();
+
 private slots:
+        // Debug ...............................................................
         void on_actionShow_redshift_file_used_for_last_rendering_triggered();
         void on_actionShow_redshift_file_triggered();
         void on_action_Stylesheet_triggered();
 
+        // Tab Selection .......................................................
         void on_waterCommandLink_clicked();
         void on_renderingSetupCommandLink_clicked();
         void on_renderCommandLink_clicked();
@@ -87,9 +75,11 @@ private slots:
         void on_navigationCommandLink_clicked();
         void on_filmCommandLink_clicked();
 
+        // Saving/Loading ......................................................
         void on_actionLoad_triggered();
         void on_actionSave_triggered();
 
+        // Scene changes .......................................................
         void on_terrain_terrainChanged();
         void on_sunSky_skyChanged();
         void on_navigation_navigationChanged();
@@ -97,6 +87,15 @@ private slots:
         void on_filmSettingsAndCamera_filmSettingsChanged();
         void on_filmSettingsAndCamera_cameraChanged();
         void on_renderingSetup_renderSettingsChanged();
+
+
+private:
+        Ui::MainWindow *ui;
+        redshift::shared_ptr<cosyscene::Scene> scene;
+
+        redshift::shared_ptr<detail::RedshiftSceneCreator> redshiftSceneCreator;
+
+        std::string lastRedshiftJob; // for debugging purposes
 };
 
 #endif // MAINWINDOW_HH_20100902

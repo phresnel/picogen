@@ -23,14 +23,12 @@
 
 #include <QWidget>
 #include "rendersettingswindow.hh"
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
     class TwinRenderSettingsWindow;
 }
-namespace cosyscene {
-        class Scene;
-        class TwinRenderSettings;
-}
+
 
 class TwinRenderSettingsWindow : public QWidget
 {

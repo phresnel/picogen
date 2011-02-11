@@ -48,8 +48,6 @@ void load_scene (Scene &scene, std::string const &name);
 
 
 
-
-
 int cosy_main (int argc, char *argv[]) {
         redshift::static_init();
 

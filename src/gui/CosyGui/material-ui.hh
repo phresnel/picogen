@@ -23,12 +23,10 @@
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
     class Material;
-}
-namespace cosyscene {
-        class Material;
 }
 class ColorPickerColor;
 

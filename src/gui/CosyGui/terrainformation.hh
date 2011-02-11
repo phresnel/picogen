@@ -18,17 +18,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #ifndef TERRAINFORMATION_HH
 #define TERRAINFORMATION_HH
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
-
-namespace cosyscene {
-        class TerrainFormation;
-}
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
     class TerrainFormation;

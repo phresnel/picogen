@@ -192,42 +192,42 @@ void QtSunSkyEditor::on_previewResolution_valueChanged(int res) {
 
 void QtSunSkyEditor::on_turbiditySpinBox_valueChanged(double value) {
         redraw(true);
-        if (!signalsBlocked()) emit turbidityChanged(value);
+        emit turbidityChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_previewMultiplier_valueChanged(double value) {
         redraw(false);
-        if (!signalsBlocked()) emit previewMultiplierChanged(value);
+        emit previewMultiplierChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_sunIntensitySpinBox_valueChanged(double value) {
         redraw(true);
-        if (!signalsBlocked()) emit sunIntensityChanged(value);
+        emit sunIntensityChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_atmosphereIntensitySpinBox_valueChanged(double value) {
         redraw(true);
-        if (!signalsBlocked()) emit atmosphereIntensityChanged(value);
+        emit atmosphereIntensityChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_diskSizeSpinBox_valueChanged(double value) {
         redraw(true);
-        if (!signalsBlocked()) emit diskSizeChanged(value);
+        emit diskSizeChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_enableAtmosphericEffects_stateChanged(int state) {
         redraw(true);
-        if (!signalsBlocked()) emit atmosphericEffectsEnabledChanged(state != 0);
+        emit atmosphericEffectsEnabledChanged(state != 0);
 }
 
 
@@ -236,14 +236,14 @@ void QtSunSkyEditor::on_atmosphericEffectsFactorSpinBox_valueChanged(
         double value
 ) {
         redraw(true);
-        if (!signalsBlocked()) emit atmosphericEffectsFactorChanged(value);
+        emit atmosphericEffectsFactorChanged(value);
 }
 
 
 
 void QtSunSkyEditor::on_overcastSpinBox_valueChanged(double value) {
         redraw(true);
-        if (!signalsBlocked()) emit overcastChanged(value);
+        emit overcastChanged(value);
 }
 
 
@@ -262,7 +262,7 @@ void QtSunSkyEditor::updateSunDirectionFromSpinBoxes() {
         this->direction = normalize(Vector(ui->directionXSpinBox->value(),
                                            ui->directionYSpinBox->value(),
                                            ui->directionZSpinBox->value()));
-        if (!signalsBlocked()) emit sunDirectionChanged(this->direction);
+        emit sunDirectionChanged(this->direction);
         updatePreethamSettingsAndRedraw();
 }
 

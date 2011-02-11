@@ -18,28 +18,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #ifndef SUNSKYWINDOW_HH
 #define SUNSKYWINDOW_HH
 
 #include <QWidget>
+
 #include "redshift/include/smart_ptr.hh"
 #include "redshift/include/geometry.hh"
+#include "cosyscene/cosyfwd.hh"
 
-namespace cosyscene {
-        class SunSky;
-        class Scene;
-}
+
 
 namespace Ui {
         class SunSkyWindow;
 }
 
+
+
 class SunSkyWindow : public QWidget
 {
         Q_OBJECT
 
+// ================== Public ===================================================
 public:
         explicit SunSkyWindow(QWidget *parent = 0);
         ~SunSkyWindow();
@@ -47,38 +47,43 @@ public:
         void setSunSky (redshift::shared_ptr<cosyscene::SunSky>,
                         bool blockSignals=true);
 
-
 signals:
         void skyChanged ();
 
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
-private:
-        Ui::SunSkyWindow *ui;
-        redshift::shared_ptr<cosyscene::SunSky> sunSky;
 
+// ================== Private ==================================================
+private:
         void setSunSkyByValue (cosyscene::SunSky const &, bool blockSignals=true);
         void updateViews ();
 
         void updateFromUtahSunSkyEditor();
         void updateToUtahSunSkyEditor();
 
-private slots:
-        void on_stashButton_clicked();
-        void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
 
-        void on_utahSkyEditor_overcastChanged(double );
+private slots:
+        // Stash ...............................................................
+        void on_stashButton_clicked       ();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked  ();
+
+        // Utah sky editor .....................................................
+        void on_utahSkyEditor_overcastChanged                 (double);
         void on_utahSkyEditor_atmosphericEffectsEnabledChanged(bool);
-        void on_utahSkyEditor_atmosphericEffectsFactorChanged(double );
-        void on_utahSkyEditor_previewResolutionChanged(int );
-        void on_utahSkyEditor_diskSizeChanged(double );
-        void on_utahSkyEditor_turbidityChanged(double );
-        void on_utahSkyEditor_previewMultiplierChanged(double );
-        void on_utahSkyEditor_sunIntensityChanged(double );
-        void on_utahSkyEditor_atmosphereIntensityChanged(double );
-        void on_utahSkyEditor_sunDirectionChanged(redshift::Vector );
+        void on_utahSkyEditor_atmosphericEffectsFactorChanged (double);
+        void on_utahSkyEditor_previewResolutionChanged        (int);
+        void on_utahSkyEditor_diskSizeChanged                 (double);
+        void on_utahSkyEditor_turbidityChanged                (double);
+        void on_utahSkyEditor_previewMultiplierChanged        (double);
+        void on_utahSkyEditor_sunIntensityChanged             (double);
+        void on_utahSkyEditor_atmosphereIntensityChanged      (double);
+        void on_utahSkyEditor_sunDirectionChanged             (redshift::Vector);
+
+private:
+        Ui::SunSkyWindow *ui;
+        redshift::shared_ptr<cosyscene::SunSky> sunSky;
 };
 
 #endif // SUNSKYWINDOW_HH

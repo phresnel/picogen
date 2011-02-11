@@ -23,7 +23,7 @@
 #define POINT3D_SERIALIZATION_HH_20100915
 
 #include "../point3d.hh"
-#include "cosyfloat.ser.hh"
+ 
 
 namespace cosyscene {
 

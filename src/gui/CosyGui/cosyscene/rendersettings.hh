@@ -21,12 +21,17 @@
 #ifndef RENDERSETTINGS_HH_20101019
 #define RENDERSETTINGS_HH_20101019
 
-#include "stash.hh"
 #include "redshift/include/smart_ptr.hh"
 #include <actuarius/bits/enum.hh>
+
+#include "stash.hh"
 #include "surfaceintegrator.hh"
 
+
+
 namespace cosyscene {
+
+
 
 class RenderSettings : public StashableMixin<RenderSettings>
 {
@@ -63,6 +68,7 @@ private:
 
         void reset();
 };
+
 
 
 class TwinRenderSettings {

@@ -23,14 +23,10 @@
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
         class WaterWindow;
-}
-
-namespace cosyscene {
-        class Water;
-        class Scene;
 }
 
 

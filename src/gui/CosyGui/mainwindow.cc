@@ -45,6 +45,31 @@ void load_scene (Scene &scene, std::string const &name);
 
 
 
+namespace detail {
+        class RedshiftSceneCreator : public CreateRedshiftSceneClosure {
+        public:
+                redshift::shared_ptr<redshift_file::Scene>
+                 createPreviewScene() const
+                {
+                        return scene->toRedshiftScene(true);
+                }
+                redshift::shared_ptr<redshift_file::Scene>
+                  createProductionScene() const
+                {
+                        return scene->toRedshiftScene(false);
+                }
+
+                void setScene (redshift::shared_ptr<cosyscene::Scene> scene) {
+                        this->scene = scene;
+                }
+
+        private:
+                redshift::shared_ptr<cosyscene::Scene> scene;
+        };
+}
+
+
+
 //////
 #include <QFileDialog>
 #include <QDesktopServices>
@@ -146,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
         scene(new cosyscene::Scene()),
-        redshiftSceneCreator(new RedshiftSceneCreator())
+        redshiftSceneCreator(new detail::RedshiftSceneCreator())
 {
         using redshift::shared_ptr;
         using cosyscene::Scene;
@@ -184,7 +209,7 @@ MainWindow::MainWindow(QWidget *parent) :
                  ui->renderingSetup, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->filmSettingsAndCamera, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
-        redshiftSceneCreator->scene = scene;
+        redshiftSceneCreator->setScene (scene);
 
         // Aesthetics.
         on_filmCommandLink_clicked();
@@ -194,7 +219,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow() {
         delete ui;
 }
-
 
 void MainWindow::switchOffCommandLinks () {
         ui->renderingSetupCommandLink->setChecked(false);
@@ -319,20 +343,6 @@ void MainWindow::on_renderCommandLink_clicked() {
         std::ostringstream ss;
         redshift_file::save_scene(*scene, ss);
         lastRedshiftJob = ss.str();
-}
-
-
-
-redshift::shared_ptr<redshift_file::Scene>
-  MainWindow::RedshiftSceneCreator::createPreviewScene() const
-{
-        return scene->toRedshiftScene(true);
-}
-
-redshift::shared_ptr<redshift_file::Scene>
-  MainWindow::RedshiftSceneCreator::createProductionScene() const
-{
-        return scene->toRedshiftScene(false);
 }
 
 void MainWindow::on_action_Stylesheet_triggered() {

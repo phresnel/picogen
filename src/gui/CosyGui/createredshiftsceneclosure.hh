@@ -26,7 +26,8 @@ namespace redshift_file {
         class Scene;
 }
 
-struct CreateRedshiftSceneClosure {
+class CreateRedshiftSceneClosure {
+public:
         typedef redshift::shared_ptr<CreateRedshiftSceneClosure> Ptr;
 
         virtual redshift::shared_ptr<redshift_file::Scene>

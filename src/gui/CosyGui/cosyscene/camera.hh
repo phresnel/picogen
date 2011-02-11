@@ -24,9 +24,12 @@
 #include "stash.hh"
 #include "redshift/include/smart_ptr.hh"
 #include <actuarius/bits/enum.hh>
+
+#include "cosyfwd.hh"
 #include "cosyfloat.hh"
 
 namespace cosyscene {
+
 
 class PinholeCamera {
 public:
@@ -41,6 +44,9 @@ private:
 };
 bool operator ==(PinholeCamera const&, PinholeCamera const&);
 
+
+
+
 class CylindricalCamera {
 public:
         CylindricalCamera();
@@ -53,6 +59,8 @@ private:
         CosyFloat frontPlaneDistance_;
 };
 bool operator ==(CylindricalCamera const&, CylindricalCamera const&);
+
+
 
 class CubemapFaceCamera {
 public:

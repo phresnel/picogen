@@ -23,44 +23,42 @@
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
     class FilmSettingsAndCamera;
 }
 
-namespace cosyscene {
-        class Scene;
-        class FilmSettings;
-        class Camera;
-}
+
 
 class FilmSettingsAndCamera : public QWidget
 {
-    Q_OBJECT
-
+        Q_OBJECT
+// ================== Public ===================================================
 public:
-    explicit FilmSettingsAndCamera(QWidget *parent = 0);
-    ~FilmSettingsAndCamera();
+        explicit FilmSettingsAndCamera(QWidget *parent = 0);
+        ~FilmSettingsAndCamera();
 
-    void setFilmSettingsAndCamera(
+        void setFilmSettingsAndCamera(
             redshift::shared_ptr<cosyscene::FilmSettings>,
             redshift::shared_ptr<cosyscene::Camera>,
             bool blockSignals = true
-    );
+        );
 
 signals:
-    void filmSettingsChanged();
-    void cameraChanged();
+        void filmSettingsChanged();
+        void cameraChanged();
 
 public slots:
-    void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+
+// ================== Private ==================================================
+private slots:
+        void on_filmSettings_filmSettingsChanged();
+        void on_camera_cameraChanged();
 
 private:
-    Ui::FilmSettingsAndCamera *ui;
-
-private slots:
-    void on_filmSettings_filmSettingsChanged();
-    void on_camera_cameraChanged();
+        Ui::FilmSettingsAndCamera *ui;
 };
 
 #endif // FILMSETTINGSANDCAMERA_HH

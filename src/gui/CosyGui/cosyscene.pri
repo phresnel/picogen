@@ -55,4 +55,5 @@ HEADERS *= \
     $$PWD/cosyscene/camera.hh \
     $$PWD/cosyscene/serialization/camera.ser.hh \
     $$PWD/cosyscene/float_compare.hh \
-    $$PWD/cosyscene/cosyfloat.hh
+    $$PWD/cosyscene/cosyfloat.hh \
+    cosyscene/cosyfwd.hh

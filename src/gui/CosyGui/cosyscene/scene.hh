@@ -18,27 +18,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #ifndef COSYSCENE_HH_20100902
 #define COSYSCENE_HH_20100902
 
+
 #include "redshift/include/smart_ptr.hh"
 #include "stash.hh"
+#include "cosyfwd.hh"
+
+
 
 namespace redshift_file {
          class Scene;
 }
 
+
+
 namespace cosyscene {
 
-class Terrain;
-class Water;
-class SunSky;
-class Navigation;
-class RenderSettings;
-class TwinRenderSettings;
-class FilmSettings;
-class Camera;
 
 class Scene
 {

@@ -23,13 +23,12 @@
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
         class RenderSettingsWindow;
 }
-namespace cosyscene {
-        class RenderSettings;
-}
+
 
 class RenderSettingsWindow : public QWidget
 {

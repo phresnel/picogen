@@ -1,10 +1,12 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-08-27T13:22:12
 # -------------------------------------------------
-QT += core gui testlib
+QT += core gui
 DEFINES += __STDC_LIMIT_MACROS
 CONFIG += debug_and_release
 
+CONFIG += console
+#CONFIG += qtestlib
 ## gives you a console if necessary
 #debug:CONFIG += console
 

@@ -18,17 +18,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #ifndef TERRAINWINDOW_HH_20100902
 #define TERRAINWINDOW_HH_20100902
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
-
-namespace cosyscene {
-        class Terrain;
-        class Scene;
-}
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
         class TerrainWindow;

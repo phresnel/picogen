@@ -23,14 +23,13 @@
 
 #include <QWidget>
 #include "redshift/include/smart_ptr.hh"
+#include "cosyscene/cosyfwd.hh"
+
 
 namespace Ui {
         class TerrainFitting;
 }
 
-namespace cosyscene {
-        class TerrainFitting;
-}
 
 class TerrainFitting : public QWidget
 {

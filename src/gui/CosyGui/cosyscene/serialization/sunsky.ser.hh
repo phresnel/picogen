@@ -25,7 +25,7 @@
 #include "../sunsky.hh"
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/direction3d.ser.hh"
-#include "cosyscene/serialization/cosyfloat.ser.hh"
+ 
 
 namespace cosyscene {
 

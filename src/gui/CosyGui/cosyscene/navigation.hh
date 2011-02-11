@@ -21,13 +21,17 @@
 #ifndef NAVIGATION_HH_20100915
 #define NAVIGATION_HH_20100915
 
-#include "stash.hh"
-#include "point3d.hh"
 #include <string>
 #include <actuarius/bits/enum.hh>
 #include "cosyfloat.hh"
+#include "stash.hh"
+#include "point3d.hh"
+
+
 
 namespace cosyscene {
+
+
 
 class YawPitchRoll {
 public:

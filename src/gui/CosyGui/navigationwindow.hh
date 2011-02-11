@@ -25,15 +25,10 @@
 #include <QVector3D>
 #include "redshift/include/smart_ptr.hh"
 #include "createredshiftsceneclosure.hh"
+#include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
         class NavigationWindow;
-}
-
-namespace cosyscene {
-        class Navigation;
-        class Scene;
-        class Terrain;
 }
 
 class NavigationWindow : public QWidget {

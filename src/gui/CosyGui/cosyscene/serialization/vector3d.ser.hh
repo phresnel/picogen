@@ -23,7 +23,7 @@
 #define VECTOR3D_SERIALIZATION_HH_20100910
 
 #include "../vector3d.hh"
-#include "cosyfloat.ser.hh"
+ 
 
 namespace cosyscene {
 

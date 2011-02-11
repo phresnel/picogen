@@ -22,17 +22,16 @@
 #ifndef SUNSKY_HH_20100910
 #define SUNSKY_HH_20100910
 
-#include "stash.hh"
 #include <string>
-#include <actuarius/bits/enum.hh>
-
 #include <boost/noncopyable.hpp>
 
+#include <actuarius/bits/enum.hh>
+#include "stash.hh"
 #include "direction3d.hh"
+#include "cosyfwd.hh"
 
 namespace cosyscene {
-class UtahSky;
-class SunSky;
+
 
 class UtahSky {
 public:

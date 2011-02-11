@@ -21,13 +21,15 @@
 #ifndef MATERIAL_HH_20101217
 #define MATERIAL_HH_20101217
 
-#include "stash.hh"
 #include <string>
 #include <actuarius/bits/enum.hh>
 
-
+#include "stash.hh"
 #include "color.hh"
+
+
 namespace cosyscene {
+
 class Material : public StashableMixin<Material> {
 public:
         enum Kind {

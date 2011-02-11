@@ -18,22 +18,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #ifndef WATER_HH_20101217
 #define WATER_HH_20101217
 
-#include "stash.hh"
-#include "terrain.hh"
+
+
 #include <string>
 #include <actuarius/bits/enum.hh>
+#include "redshift/include/smart_ptr.hh"
 
-namespace cosyscene {
-class QuatschSource;
-} // namespace cosyscene
-
-
-
+#include "cosyfloat.hh"
 #include "vector3d.hh"
+#include "stash.hh"
+#include "terrain.hh"
+
+
+
 namespace cosyscene {
 class WaterFitting : public StashableMixin<WaterFitting>
 {
@@ -52,9 +52,8 @@ private:
 } // namespace cosyscene
 
 
-#include "redshift/include/smart_ptr.hh"
-namespace cosyscene {
 
+namespace cosyscene {
 class Water
 {
 public:
@@ -72,7 +71,8 @@ private:
         redshift::shared_ptr<Material> material_;
         redshift::shared_ptr<WaterFitting> fitting_;
 };
-
 } // namespace cosyscene
+
+
 
 #endif // WATER_HH_20101217

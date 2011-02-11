@@ -23,7 +23,7 @@
 #define DIRECTION3d_SERIALIZATION_HH_20100910
 
 #include "../direction3d.hh"
-#include "cosyfloat.ser.hh"
+ 
 
 namespace cosyscene {
 

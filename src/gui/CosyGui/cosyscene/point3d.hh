@@ -23,7 +23,10 @@
 
 #include "cosyfloat.hh"
 
+
+
 namespace cosyscene {
+
 
 
 class Point3d {
@@ -46,6 +49,7 @@ inline bool operator == (Point3d const & lhs, Point3d const & rhs) {
             && lhs.y() == rhs.y()
             && lhs.z() == rhs.z();
 }
+
 
 
 } // namespace cosyscene

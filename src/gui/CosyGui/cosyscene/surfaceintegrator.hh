@@ -21,21 +21,29 @@
 #ifndef SURFACEINTEGRATOR_HH_20101215
 #define SURFACEINTEGRATOR_HH_20101215
 
-#include "stash.hh"
-#include "redshift/include/smart_ptr.hh"
+
 #include <actuarius/bits/enum.hh>
+#include "redshift/include/smart_ptr.hh"
+#include "stash.hh"
+
 
 namespace cosyscene {
+
+
 
 class NoneIntegrator {
 public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (NoneIntegrator) {return true;}
 };
 
+
+
 class WhittedIntegrator {
 public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (WhittedIntegrator) {return true;}
 };
+
+
 
 class WhittedAmbientIntegrator {
 public:
@@ -48,20 +56,28 @@ private:
 };
 bool operator ==(WhittedAmbientIntegrator const&, WhittedAmbientIntegrator const&);
 
+
+
 class PathIntegrator {
 public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (PathIntegrator) {return true;}
 };
+
+
 
 class DebugDistanceIntegrator {
 public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (DebugDistanceIntegrator) {return true;}
 };
 
+
+
 class DebugNormalsIntegrator {
 public: template<typename Arch> void serialize (Arch &) {}
         bool operator == (DebugNormalsIntegrator) {return true;}
 };
+
+
 
 class SurfaceIntegrator {
 public:
@@ -107,6 +123,8 @@ private:
         Kind kind_;
 };
 bool operator == (SurfaceIntegrator const &lhs, SurfaceIntegrator const &rhs);
+
+
 
 } // namespace cosyscene
 
