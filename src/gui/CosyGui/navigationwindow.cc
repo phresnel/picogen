@@ -157,22 +157,8 @@ void NavigationWindow::updateViews() {
 
         //const cosyscene::Terrain & t = *terrain_;
 
-        if (scene_->terrain()) {
-                ui->graphicalNavigation->setHeightFunction (
-                       HeightFunction::Ptr(
-                         new QuatschHeightFunction(scene_->finalTerrainCode()))
-                );
-        } else {
-                ui->graphicalNavigation->setHeightFunction (
-                       HeightFunction::Ptr(new QuatschHeightFunction("0")));
-        }
-        if (scene_->water()) {
-                ui->graphicalNavigation->setWaterLevel(scene_->
-                                                       water()->fitting()->
-                                                       seaLevel().toDouble());
-        } else {
-                ui->graphicalNavigation->setWaterLevel(-999999);
-        }
+        updateTerrain();
+        updateWater();
 }
 
 
@@ -202,6 +188,32 @@ void NavigationWindow::sceneInvalidated(
 ) {
         //setNavigation (scene->navigation());
         setScene (scene);
+}
+
+
+
+void NavigationWindow::updateTerrain() {
+        if (scene_->terrain()) {
+                ui->graphicalNavigation->setHeightFunction (
+                       HeightFunction::Ptr(
+                         new QuatschHeightFunction(scene_->finalTerrainCode()))
+                );
+        } else {
+                ui->graphicalNavigation->setHeightFunction (
+                       HeightFunction::Ptr(new QuatschHeightFunction("0")));
+        }
+}
+
+
+
+void NavigationWindow::updateWater() {
+        if (scene_->water()) {
+                ui->graphicalNavigation->setWaterLevel(scene_->
+                                                       water()->fitting()->
+                                                       seaLevel().toDouble());
+        } else {
+                ui->graphicalNavigation->setWaterLevel(-999999);
+        }
 }
 
 

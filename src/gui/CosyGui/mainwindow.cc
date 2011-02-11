@@ -191,9 +191,9 @@ MainWindow::MainWindow(QWidget *parent) :
                                                              scene->camera());
 
         connect (ui->renderingSetup, SIGNAL(productionRenderProcessRequested()),
-                 SLOT(onProductionRenderProcessRequested()));
+                 SLOT(startProductionRenderProcess()));
         connect (ui->renderingSetup, SIGNAL(previewRenderProcessRequested()),
-                 SLOT(onPreviewRenderProcessRequested()));
+                 SLOT(startPreviewRenderProcess()));
 
         ui->forestCommandLink->setVisible(false);
 
@@ -209,6 +209,11 @@ MainWindow::MainWindow(QWidget *parent) :
                  ui->renderingSetup, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
         connect (this, SIGNAL(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)),
                  ui->filmSettingsAndCamera, SLOT(sceneInvalidated(redshift::shared_ptr<cosyscene::Scene>)));
+
+        connect (ui->terrain, SIGNAL(terrainChanged()),
+                 ui->navigation, SLOT(updateTerrain()));
+        connect (ui->water, SIGNAL(waterChanged()),
+                 ui->navigation, SLOT(updateWater()));
         redshiftSceneCreator->setScene (scene);
 
         // Aesthetics.
@@ -273,7 +278,6 @@ void MainWindow::on_renderingSetupCommandLink_clicked() {
 }
 
 void MainWindow::on_terrain_terrainChanged() {
-        ui->navigation->setScene(scene);
         indicateUnsaved();
 }
 
@@ -286,7 +290,6 @@ void MainWindow::on_navigation_navigationChanged() {
 }
 
 void MainWindow::on_water_waterChanged() {
-        ui->navigation->setScene(scene);
         indicateUnsaved();
 }
 
@@ -350,7 +353,7 @@ void MainWindow::on_action_Stylesheet_triggered() {
         editor->show();
 }
 
-void MainWindow::onProductionRenderProcessRequested() {
+void MainWindow::startProductionRenderProcess() {
         QTemporaryFile tmp ("XXXXXX.picogen");
         tmp.setAutoRemove(false);
 
@@ -400,7 +403,7 @@ void MainWindow::onProductionRenderProcessRequested() {
         }*/
 }
 
-void MainWindow::onPreviewRenderProcessRequested() {
+void MainWindow::startPreviewRenderProcess() {
         QTemporaryFile tmp ("XXXXXX.picogen");
         tmp.setAutoRemove(false);
 

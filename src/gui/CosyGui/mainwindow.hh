@@ -48,8 +48,8 @@ signals:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 public slots:
-        void onProductionRenderProcessRequested();
-        void onPreviewRenderProcessRequested();
+        void startProductionRenderProcess();
+        void startPreviewRenderProcess();
 
 
 

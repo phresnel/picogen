@@ -38,10 +38,6 @@ public:
         explicit NavigationWindow(QWidget *parent = 0);
         ~NavigationWindow();
 
-        /*void setNavigation (redshift::shared_ptr<cosyscene::Navigation>,
-                            bool blockSignals=true);
-        void setTerrain (redshift::shared_ptr<cosyscene::Terrain>,
-                         bool blockSignals=true);*/
         void setScene (redshift::shared_ptr<cosyscene::Scene> scene,
                        bool blockSignals=true);
         void setCreateRedshiftClosure (CreateRedshiftSceneClosure::Ptr);
@@ -51,6 +47,8 @@ signals:
 
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+        void updateTerrain();
+        void updateWater();
 
 
 private:
