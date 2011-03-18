@@ -24,26 +24,26 @@
 #include <QDialog>
 
 class QAbstractButton;
-
 namespace Ui {
         class StylesheetLiveEditor;
 }
 
+
+
 class StylesheetLiveEditor : public QDialog
 {
         Q_OBJECT
-
 public:
         explicit StylesheetLiveEditor(QWidget *applyTo, QWidget *parent = 0);
-        ~StylesheetLiveEditor();
-
-private:
-        Ui::StylesheetLiveEditor *ui;
-        QWidget *applyTo;
+        virtual ~StylesheetLiveEditor();
 
 private slots:
         void on_actionApply_triggered();
         void on_buttonBox_clicked(QAbstractButton* button);
+
+private:
+        Ui::StylesheetLiveEditor *ui;
+        QWidget *applyTo;
 };
 
 #endif // STYLESHEETLIVEEDITOR_HH

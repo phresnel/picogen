@@ -42,14 +42,15 @@ class MainWindow : public QMainWindow
 // ================== Public ===================================================
 public:
         explicit MainWindow(QWidget *parent = 0);
-        ~MainWindow();
-
-signals:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+        virtual ~MainWindow();
 
 public slots:
         void startProductionRenderProcess();
         void startPreviewRenderProcess();
+
+
+signals:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 
 

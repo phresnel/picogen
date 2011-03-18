@@ -30,34 +30,38 @@ namespace Ui {
 }
 
 
+
 class TwinRenderSettingsWindow : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit TwinRenderSettingsWindow(QWidget *parent = 0);
-        ~TwinRenderSettingsWindow();
+        virtual ~TwinRenderSettingsWindow();
 
         void setTwinRenderSettings (redshift::shared_ptr<cosyscene::TwinRenderSettings>,
                                     bool blockSignals=true);
+
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 signals:
         void productionRenderProcessRequested();
         void previewRenderProcessRequested();
         void renderSettingsChanged();
 
-public slots:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
-private:
-        Ui::TwinRenderSettingsWindow *ui;
-        redshift::shared_ptr<cosyscene::TwinRenderSettings> twinRenderSettings_;
-
+// ================== Private ==================================================
 private slots:
         void on_startPreviewRenderProcess_clicked();
         void on_startProductionRenderProcess_clicked();
         void on_previewRenderSettingsWindow_renderSettingsChanged();
         void on_renderSettingsWindow_renderSettingsChanged();
+
+private:
+        Ui::TwinRenderSettingsWindow *ui;
+        redshift::shared_ptr<cosyscene::TwinRenderSettings> twinRenderSettings_;
+
 };
 
 #endif // TWINRENDERSETTINGS_HH

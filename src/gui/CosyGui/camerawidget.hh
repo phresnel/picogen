@@ -37,16 +37,15 @@ class CameraWidget : public QWidget
 // ================== Public ===================================================
 public:
         explicit CameraWidget(QWidget *parent = 0);
-        ~CameraWidget();
+        virtual ~CameraWidget();
 
         void setCamera (redshift::shared_ptr<cosyscene::Camera>,
                         bool blockSignals=true);
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 signals:
         void cameraChanged();
-
-public slots:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 
 // ================== Private ==================================================

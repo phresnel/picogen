@@ -25,42 +25,42 @@
 #include "redshift/include/smart_ptr.hh"
 #include "cosyscene/cosyfwd.hh"
 
-
 namespace Ui {
         class TerrainFitting;
 }
 
 
+
 class TerrainFitting : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit TerrainFitting(QWidget *parent = 0);
-        ~TerrainFitting();
+        virtual ~TerrainFitting();
 
-        void setFitting (
-                redshift::shared_ptr<cosyscene::TerrainFitting> t,
-                bool blockSignals
-        );
+        void setFitting (redshift::shared_ptr<cosyscene::TerrainFitting>,
+                         bool blockSignals);
 
 signals:
         void fittingChanged();
+
+
+// ================== Private ==================================================
+private slots:
+        void on_detailCoefficient_valueChanged(double);
+        void on_visibleExtent_valueChanged    (double);
+        void on_maxRecursion_valueChanged     (int);
+
+        void on_stashButton_clicked       ();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked  ();
 
 private:
         Ui::TerrainFitting *ui;
 
         int previousMaxRecursion;
         redshift::shared_ptr<cosyscene::TerrainFitting> fitting_;
-
-private slots:
-        void on_detailCoefficient_valueChanged(double);
-        void on_visibleExtent_valueChanged(double);
-        void on_maxRecursion_valueChanged(int);
-
-        void on_stashButton_clicked();
-        void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
 };
 
 #endif // TERRAINFITTING_HH

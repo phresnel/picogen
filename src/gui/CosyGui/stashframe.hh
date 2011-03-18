@@ -18,22 +18,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #ifndef STASHFRAME_HH
 #define STASHFRAME_HH
 
 #include <QFrame>
+#include "redshift/include/sealed.hh"
 class QPixmap;
-
 namespace Ui {
-    class StashFrame;
+        class StashFrame;
 }
 
-class StashFrame : public QFrame
-{
-    Q_OBJECT
 
+SEALED(StashFrame);
+class StashFrame : public QFrame, MAKE_SEALED(StashFrame)
+{
+        Q_OBJECT
 public:
         explicit StashFrame(QWidget *parent = 0);
         ~StashFrame();
@@ -45,25 +44,28 @@ private:
         Ui::StashFrame *ui;
 };
 
+
+
+// Standard confirmation dialogs. TODO: stuff together with with StashView-
+//                                      standard dialogs.
 enum ConfirmReset {
         ConfirmReset_Abort,
         ConfirmReset_StashBeforeReset,
         ConfirmReset_Reset
 };
-ConfirmReset confirmReset (QWidget *parent);
-
 enum ConfirmRestash {
         ConfirmRestash_Abort,
         ConfirmRestash_RestashAndKillOld,
         ConfirmRestash_RestashAndKeepOld
 };
-ConfirmRestash confirmRestash (QWidget *parent);
-
 enum ConfirmRestore {
         ConfirmRestore_Abort,
         ConfirmRestore_StashBeforeRestore,
         ConfirmRestore_Restore
 };
+
+ConfirmReset   confirmReset   (QWidget *parent);
+ConfirmRestash confirmRestash (QWidget *parent);
 ConfirmRestore confirmRestore (QWidget *parent);
 
 #endif // STASHFRAME_HH

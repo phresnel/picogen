@@ -30,32 +30,34 @@ namespace Ui {
 }
 class ColorPickerColor;
 
+
+
 class Material : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit Material(QWidget *parent = 0);
-        ~Material();
+        virtual ~Material();
 
-        void setMaterial (
-                redshift::shared_ptr<cosyscene::Material>,
-                bool blockSignals
-        );
+        void setMaterial (redshift::shared_ptr<cosyscene::Material>,
+                          bool blockSignals);
 
 signals:
         void materialChanged();
 
-private:
-        Ui::Material *ui;
-        redshift::shared_ptr<cosyscene::Material> material;
 
+// ================== Private ==================================================
 private slots:
         void on_colorPicker_colorChanged(ColorPickerColor const &);
 
-        void on_stashButton_clicked();
+        void on_stashButton_clicked       ();
         void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
+        void on_stashResetButton_clicked  ();
+
+private:
+        Ui::Material *ui;
+        redshift::shared_ptr<cosyscene::Material> material;
 };
 
 #endif // MATERIAL_HH

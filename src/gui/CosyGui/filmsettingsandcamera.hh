@@ -37,7 +37,7 @@ class FilmSettingsAndCamera : public QWidget
 // ================== Public ===================================================
 public:
         explicit FilmSettingsAndCamera(QWidget *parent = 0);
-        ~FilmSettingsAndCamera();
+        virtual ~FilmSettingsAndCamera();
 
         void setFilmSettingsAndCamera(
             redshift::shared_ptr<cosyscene::FilmSettings>,
@@ -45,12 +45,12 @@ public:
             bool blockSignals = true
         );
 
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+
 signals:
         void filmSettingsChanged();
         void cameraChanged();
-
-public slots:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 // ================== Private ==================================================
 private slots:

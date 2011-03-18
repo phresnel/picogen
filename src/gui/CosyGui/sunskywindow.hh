@@ -27,8 +27,6 @@
 #include "redshift/include/geometry.hh"
 #include "cosyscene/cosyfwd.hh"
 
-
-
 namespace Ui {
         class SunSkyWindow;
 }
@@ -42,16 +40,16 @@ class SunSkyWindow : public QWidget
 // ================== Public ===================================================
 public:
         explicit SunSkyWindow(QWidget *parent = 0);
-        ~SunSkyWindow();
+        virtual ~SunSkyWindow();
 
         void setSunSky (redshift::shared_ptr<cosyscene::SunSky>,
                         bool blockSignals=true);
 
-signals:
-        void skyChanged ();
-
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+
+signals:
+        void skyChanged ();
 
 
 // ================== Private ==================================================

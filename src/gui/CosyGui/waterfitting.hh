@@ -27,39 +27,39 @@
 namespace Ui {
         class WaterFitting;
 }
-
 namespace cosyscene {
         class WaterFitting;
 }
 
+
+
 class WaterFitting : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit WaterFitting(QWidget *parent = 0);
-        ~WaterFitting();
+        virtual ~WaterFitting();
 
-        void setFitting (
-                redshift::shared_ptr<cosyscene::WaterFitting> t,
-                bool blockSignals
-        );
+        void setFitting (redshift::shared_ptr<cosyscene::WaterFitting> t,
+                         bool blockSignals);
 
 signals:
         void fittingChanged();
+
+// ================== Private ==================================================
+private slots:
+        void on_seaLevel_valueChanged(double);
+
+        void on_stashButton_clicked();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked();
 
 private:
         Ui::WaterFitting *ui;
 
         int previousMaxRecursion;
         redshift::shared_ptr<cosyscene::WaterFitting> fitting_;
-
-private slots:
-        void on_seaLevel_valueChanged(double );
-
-        void on_stashButton_clicked();
-        void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
 };
 
 

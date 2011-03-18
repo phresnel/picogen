@@ -37,17 +37,16 @@ class FilmSettingsWindow : public QWidget
 // ================== Public ===================================================
 public:
         explicit FilmSettingsWindow(QWidget *parent = 0);
-        ~FilmSettingsWindow();
+        virtual ~FilmSettingsWindow();
 
         // Support for this function will cease once tone mapping is implemented.
         void setFilmSettings (redshift::shared_ptr<cosyscene::FilmSettings>,
                               bool blockSignals=true);
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 signals:
         void filmSettingsChanged();
-
-public slots:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
 // ================== Private ==================================================
 private:

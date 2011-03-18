@@ -29,38 +29,42 @@ namespace Ui {
         class TerrainWindow;
 }
 
+
+
 class TerrainWindow : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit TerrainWindow(QWidget *parent = 0);
-        ~TerrainWindow();
+        virtual ~TerrainWindow();
 
         void setTerrain (redshift::shared_ptr<cosyscene::Terrain>,
                          bool blockSignals=true);
 
+public slots:
+        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+
 signals:
         void terrainChanged();
 
-public slots:
-        void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
+
+// ================== Private ==================================================
+private:
+        void updateViews ();
+
+private slots:
+        void on_showWorldFittingTab_clicked();
+        void on_showTexturingTab_clicked   ();
+        void on_showFormationTab_clicked   ();
+
+        void on_formation_formationChanged ();
+        void on_fitting_fittingChanged     ();
+        void on_texturing_materialChanged  ();
 
 private:
         Ui::TerrainWindow *ui;
         redshift::shared_ptr<cosyscene::Terrain> terrain;
-
-        void updateViews ();
-
-
-private slots:
-        void on_showWorldFittingTab_clicked();
-        void on_showTexturingTab_clicked();
-        void on_showFormationTab_clicked();
-
-        void on_formation_formationChanged();
-        void on_fitting_fittingChanged();
-        void on_texturing_materialChanged();
 };
 
 #endif // TERRAINWINDOW_HH

@@ -26,16 +26,17 @@ namespace redshift_file {
         class Scene;
 }
 
+
+
 class CreateRedshiftSceneClosure {
 public:
         typedef redshift::shared_ptr<CreateRedshiftSceneClosure> Ptr;
 
+public:
         virtual redshift::shared_ptr<redshift_file::Scene>
-                createPreviewScene() const
-                = 0;
+                        createPreviewScene   () const = 0;
         virtual redshift::shared_ptr<redshift_file::Scene>
-                createProductionScene() const
-                = 0;
+                        createProductionScene() const = 0;
 };
 
 #endif // CREATEREDSHIFTSCENECLOSURE_HH

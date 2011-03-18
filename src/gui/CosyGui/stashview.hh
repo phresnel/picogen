@@ -21,11 +21,13 @@
 #ifndef STASHVIEW_HH
 #define STASHVIEW_HH
 
+#include <ctime>
+
 #include <QDialog>
 #include <QVector>
 #include <QInputDialog>
-#include <ctime>
 #include <QMessageBox>
+
 #include "redshift/include/smart_ptr.hh"
 #include "cosyscene/stash.hh"
 #include "stashframe.hh"
@@ -35,8 +37,12 @@ namespace Ui {
         class StashView;
 }
 
-class StashView;
 
+
+
+
+
+class StashView;
 class StashViewItem {
 public:
         template <typename T> StashViewItem (StashObject<T> const &stashObject)
@@ -54,32 +60,34 @@ private:
         std::string description;
 };
 
+
+
+
+
+
 class StashView : public QDialog
 {
         Q_OBJECT
 
+// ================== Public ===================================================
 public:
         explicit StashView(QWidget *parent = 0);
-        ~StashView();
+        virtual ~StashView();
 
-        template <typename T>
-        void addItems (Stash<T> const &stash);
-
-        template <typename T>
-        void addItem (StashObject<T> const &stashObject);
+        template <typename T> void addItems (Stash<T> const &stash);
+        template <typename T> void addItem  (StashObject<T> const &stashObject);
 
         void addItem (const StashViewItem &item);
 
-        template <typename T>
-        T selectedData () const;
+        template <typename T> T selectedData () const;
 
         bool hasSelectedData() const;
-
-        int selectedIndex() const;
+        int selectedIndex   () const;
 
         template <typename T> Stash<T> itemsToStash () const;
 
-
+// ================== Standard dialogs for Stashing ============================
+public:
         template <typename T>
         static bool StashDialog (QWidget *self, boost::shared_ptr<T> value) {
                 if (value->getStash().contains_data(*value)) {
@@ -98,9 +106,7 @@ public:
         }
 
         template <typename T>
-        static bool RestoreDialog (
-                QWidget *self, boost::shared_ptr<T> value
-        ) {
+        static bool RestoreDialog (QWidget *self, boost::shared_ptr<T> value) {
                 StashView *sw = new StashView (self);
                 sw->addItems(value->getStash());
                 if (QDialog::Accepted != sw->exec())
@@ -151,6 +157,10 @@ public:
                 *value = t;
                 return true;
         }
+
+
+
+// ================== Private ==================================================
 private:
         static std::string DescriptionDialog(QWidget *self) {
                 QInputDialog dlg(self);
@@ -171,6 +181,11 @@ private:
         Ui::StashView *ui;
         QVector<StashViewItem> items;
 };
+
+
+
+
+
 
 template <typename T>
 void StashView::addItem (StashObject<T> const &stashObject) {

@@ -31,12 +31,14 @@ namespace Ui {
         class NavigationWindow;
 }
 
+
+
 class NavigationWindow : public QWidget {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit NavigationWindow(QWidget *parent = 0);
-        ~NavigationWindow();
+        virtual ~NavigationWindow();
 
         void setScene (redshift::shared_ptr<cosyscene::Scene> scene,
                        bool blockSignals=true);
@@ -51,12 +53,8 @@ public slots:
         void updateWater();
 
 
+// ================== Private ==================================================
 private:
-        Ui::NavigationWindow *ui;
-        redshift::shared_ptr<cosyscene::Navigation> navigation_;
-        redshift::shared_ptr<cosyscene::Scene> scene_;
-        CreateRedshiftSceneClosure::Ptr createRedshiftScene;
-
         void updateViews ();
         void updateFromViews(bool refreshIfAutoRefreshEnabled = false);
 
@@ -71,26 +69,21 @@ private slots:
 
         void on_refreshButton_clicked();
 
-        //void on_zSpin_valueChanged(double );
-        //void on_ySpin_valueChanged(double );
-        //void on_xSpin_valueChanged(double );
-
-        //void on_rollSpin_valueChanged(double);
-        //void on_rollDial_valueChanged(int);
-
-        //void on_pitchSpin_valueChanged(double );
-        //void on_pitchSlider_valueChanged(int);
-
-        //void on_yawSpin_valueChanged(double);
-        //void on_yawDial_sliderMoved(int);
-
+        // Tabs.
         void on_showRenderTab_clicked();
         void on_showRealTimeTab_clicked();
         void on_showPrecisionTab_clicked();
 
-        void on_stashButton_clicked();
+        // Stashing.
+        void on_stashButton_clicked       ();
         void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
+        void on_stashResetButton_clicked  ();
+
+private:
+        Ui::NavigationWindow *ui;
+        redshift::shared_ptr<cosyscene::Navigation> navigation_;
+        redshift::shared_ptr<cosyscene::Scene> scene_;
+        CreateRedshiftSceneClosure::Ptr createRedshiftScene;
 };
 
 #endif // NAVIGATIONWINDOW_HH

@@ -30,29 +30,26 @@ namespace Ui {
 }
 
 
+
 class RenderSettingsWindow : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit RenderSettingsWindow(QWidget *parent = 0);
-        ~RenderSettingsWindow();
+        virtual ~RenderSettingsWindow();
 
         void setTitle (QString string);
-
         void setRenderSettings (redshift::shared_ptr<cosyscene::RenderSettings>,
                                 bool blockSignals=true);
-
 signals:
         void renderSettingsChanged();
-private:
-        Ui::RenderSettingsWindow *ui;
-        redshift::shared_ptr<cosyscene::RenderSettings> renderSettings_;
 
+
+// ================== Private ==================================================
+private:
         void setRenderSettingsByValue (cosyscene::RenderSettings const &,
                                        bool blockSignals=true);
-
-private:
         void updateViews();
 
 private slots:
@@ -68,9 +65,14 @@ private slots:
 
         void setAutoResolutionFromAction();
 
-        void on_stashButton_clicked();
+        // Stashing.
+        void on_stashButton_clicked       ();
         void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
+        void on_stashResetButton_clicked  ();
+
+private:
+        Ui::RenderSettingsWindow *ui;
+        redshift::shared_ptr<cosyscene::RenderSettings> renderSettings_;
 };
 
 #endif // RENDERSETTINGS_HH

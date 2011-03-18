@@ -30,29 +30,27 @@ namespace Ui {
 }
 
 
+
 class WaterWindow : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit WaterWindow(QWidget *parent = 0);
-        ~WaterWindow();
+        virtual ~WaterWindow();
 
         void setWater (redshift::shared_ptr<cosyscene::Water>,
-                         bool blockSignals=true);
-
-signals:
-        void waterChanged();
+                       bool blockSignals=true);
 
 public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
 
+signals:
+        void waterChanged();
+
+// ================== Private ==================================================
 private:
-        Ui::WaterWindow *ui;
-        redshift::shared_ptr<cosyscene::Water> water;
-
         void updateViews ();
-
 
 private slots:
         void on_showWorldFittingTab_clicked();
@@ -62,6 +60,10 @@ private slots:
         void on_formation_formationChanged();
         void on_fitting_fittingChanged();
         void on_texturing_materialChanged();
+
+private:
+        Ui::WaterWindow *ui;
+        redshift::shared_ptr<cosyscene::Water> water;
 };
 
 

@@ -26,16 +26,18 @@
 #include "cosyscene/cosyfwd.hh"
 
 namespace Ui {
-    class TerrainFormation;
+        class TerrainFormation;
 }
+
+
 
 class TerrainFormation : public QWidget
 {
         Q_OBJECT
-
+// ================== Public ===================================================
 public:
         explicit TerrainFormation(QWidget *parent = 0);
-        ~TerrainFormation();
+        virtual ~TerrainFormation();
 
         void setFormation (
                 redshift::shared_ptr<cosyscene::TerrainFormation> t,
@@ -45,30 +47,35 @@ public:
 signals:
         void formationChanged();
 
+
+// ================== Private ==================================================
 private:
         void showTerrainKindSelection();
-        void showQuatschEditor();
-        void showQuatschPresetEditor();
+        void showQuatschEditor       ();
+        void showQuatschPresetEditor ();
 
         void setFormationByValue (cosyscene::TerrainFormation const &,
                                   bool blockSignals);
         void updateViews();
 
+private slots:
+        // Tabs.
+        void on_heightmapCLB_clicked        ();
+        void on_parametricPresetCLB_clicked ();
+        void on_quatschCodeEditorCLB_clicked();
+
+        // Quatsch editor.
+        void on_quatschCodeEditor_codeChanged       ();
+        void on_quatschPresetEditor_formationChanged();
+
+        // Stashing.
+        void on_stashButton_clicked       ();
+        void on_stashRestoreButton_clicked();
+        void on_stashResetButton_clicked  ();
+
 private:
         Ui::TerrainFormation *ui;
         redshift::shared_ptr<cosyscene::TerrainFormation> formation_;
-
-private slots:
-        void on_heightmapCLB_clicked();
-        void on_parametricPresetCLB_clicked();
-        void on_quatschCodeEditorCLB_clicked();
-
-        void on_quatschCodeEditor_codeChanged();
-        void on_quatschPresetEditor_formationChanged();
-
-        void on_stashButton_clicked();
-        void on_stashRestoreButton_clicked();
-        void on_stashResetButton_clicked();
 };
 
 #endif // TERRAINFORMATION_HH
