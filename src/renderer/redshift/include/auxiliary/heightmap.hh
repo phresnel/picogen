@@ -45,7 +45,9 @@ public:
                         throw std::runtime_error("error while loading " + filename);
         }
 
-        Heightmap () {}
+        Heightmap ()
+        : h(0), width_(0), height_(0)
+        {}
 
         virtual ~Heightmap () {
                 delete [] h;
