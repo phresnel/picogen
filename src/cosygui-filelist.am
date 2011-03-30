@@ -5,6 +5,7 @@ COSY_MANUAL_SOURCEFILES =  \
         gui/CosyGui/camerawidget.cc \
         gui/CosyGui/cosyscene/camera.cc \
         gui/CosyGui/cosyscene/color.cc \
+        gui/CosyGui/cosyscene/cosyfloat.cc \
         gui/CosyGui/cosyscene/direction3d.cc \
         gui/CosyGui/cosyscene/filmsettings.cc \
         gui/CosyGui/cosyscene/geometry.cc \
@@ -49,6 +50,12 @@ COSY_MANUAL_SOURCEFILES =  \
         gui/widgets/ColorPicker/colorpicker.cc \
         gui/widgets/ColorPicker/colorpickerwidget.cc \
         gui/widgets/FilenameEdit/filenameedit.cc \
+        gui/widgets/GraphicalNavigation/graphicalnavigationwidget.cc \
+        gui/widgets/GraphicalNavigation/observergraphicsitem.cc \
+        gui/widgets/GraphicalNavigation/observer.cc \
+        gui/widgets/GraphicalNavigation/rollwidget.cc \
+        gui/widgets/GraphicalNavigation/pitchwidget.cc \
+        gui/widgets/GraphicalNavigation/navigationgraphicsview.cc \
         gui/widgets/Picohelp/picohelpbrowser.cc \
         gui/widgets/Preview/previewwidget.cc \
         gui/widgets/QtSunSkyEditor/qtsunskyeditor.cc \
@@ -92,6 +99,7 @@ COSY_UIFILES =  \
         gui/widgets/ColorPicker/ui_colorpicker.h \
         gui/widgets/ColorPicker/ui_colorpickerwidget.h \
         gui/widgets/FilenameEdit/ui_filenameedit.h \
+        gui/widgets/GraphicalNavigation/ui_graphicalnavigationwidget.h \
         gui/widgets/Picohelp/ui_picohelpbrowser.h \
         gui/widgets/Preview/ui_previewwidget.h \
         gui/widgets/QtSunSkyEditor/ui_qtsunskyeditor.h \
@@ -134,6 +142,11 @@ COSY_MOCFILES =  \
         gui/widgets/ColorPicker/moc_colorpicker.cpp \
         gui/widgets/ColorPicker/moc_colorpickerwidget.cpp \
         gui/widgets/FilenameEdit/moc_filenameedit.cpp \
+        gui/widgets/GraphicalNavigation/moc_graphicalnavigationwidget.cpp \
+        gui/widgets/GraphicalNavigation/moc_navigationgraphicsview.cpp \
+        gui/widgets/GraphicalNavigation/moc_observergraphicsitem.cpp \
+        gui/widgets/GraphicalNavigation/moc_pitchwidget.cpp \
+        gui/widgets/GraphicalNavigation/moc_rollwidget.cpp \
         gui/widgets/Picohelp/moc_picohelpbrowser.cpp \
         gui/widgets/Preview/moc_previewwidget.cpp \
         gui/widgets/QtSunSkyEditor/moc_qtsunskyeditor.cpp \
@@ -167,6 +180,7 @@ COSY_INCLUDEPATH =  \
         -Igui/widgets \
         -Igui/widgets/ColorPicker \
         -Igui/widgets/FilenameEdit \
+        -Igui/widgets/GraphicalNavigation \
         -Igui/widgets/Picohelp \
         -Igui/widgets/Preview \
         -Igui/widgets/QtSunSkyEditor \
