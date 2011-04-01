@@ -90,6 +90,8 @@ gui/widgets/Picohelp/debug/
 gui/widgets/Picohelp/release/
 
 gui/CosyGui-Build
+gui/CosyGui/CosyGui.pro.user.2.1pre1
+gui/widgets/GraphicalNavigation/GraphicalNavigation.pro.user.2.1pre1
 
 aux/xyto/Xytoplax/Makefile
 aux/xyto/Xytoplax/Xytoplax
