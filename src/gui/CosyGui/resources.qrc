@@ -21,4 +21,10 @@
         <file alias="radio-yes">resources/developpers_freecommercial_radio-yes.png</file>
         <file alias="radio-no">resources/developpers_freecommercial_radio-no.png</file>
     </qresource>
+    <qresource prefix="/navigation">
+        <file alias="zoom-in">resources/humility_gpl_zoom-in.png</file>
+        <file alias="zoom-out">resources/humility_gpl_zoom-out.png</file>
+        <file alias="reset">resources/crystalproject_lgpl_reset.png</file>
+        <file alias="find">resources/ultimategnome_gpl_find.png</file>
+    </qresource>
 </RCC>
