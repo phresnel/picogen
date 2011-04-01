@@ -29,8 +29,8 @@ TwinRenderSettingsWindow::TwinRenderSettingsWindow(QWidget *parent) :
     ui(new Ui::TwinRenderSettingsWindow)
 {
         ui->setupUi(this);
-        ui->previewRenderSettingsWindow->setTitle("Preview");
-        ui->renderSettingsWindow->setTitle("Production");
+        ui->previewRenderSettingsWindow->setIsPreviewSettings(true);
+        ui->renderSettingsWindow->setIsPreviewSettings(false);
 }
 
 TwinRenderSettingsWindow::~TwinRenderSettingsWindow()
@@ -40,13 +40,19 @@ TwinRenderSettingsWindow::~TwinRenderSettingsWindow()
 
 void TwinRenderSettingsWindow::setTwinRenderSettings (
         redshift::shared_ptr<cosyscene::TwinRenderSettings> tw,
+        bool reAdjustDefaultValues,
         bool blockSignals
 ) {
         const bool wasBlocked = this->blockSignals(blockSignals);
 
         twinRenderSettings_ = tw;
-        ui->renderSettingsWindow->setRenderSettings(tw->production());
+        ui->renderSettingsWindow->setRenderSettings(tw->production());        
         ui->previewRenderSettingsWindow->setRenderSettings(tw->preview());
+
+        if (reAdjustDefaultValues) {
+                ui->renderSettingsWindow->setIsPreviewSettings(false);
+                ui->previewRenderSettingsWindow->setIsPreviewSettings(true);
+        }
 
         this->blockSignals (wasBlocked);
 }

@@ -186,7 +186,7 @@ MainWindow::MainWindow(QWidget *parent) :
         //ui->navigation->setNavigation(scene->navigation());
         ui->navigation->setScene (scene);
         ui->navigation->setCreateRedshiftClosure(redshiftSceneCreator);
-        ui->renderingSetup->setTwinRenderSettings(scene->renderSettings());
+        ui->renderingSetup->setTwinRenderSettings(scene->renderSettings(), true);
         ui->filmSettingsAndCamera->setFilmSettingsAndCamera (scene->filmSettings(),
                                                              scene->camera());
 

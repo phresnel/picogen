@@ -33,7 +33,8 @@
 RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderSettingsWindow),
-    renderSettings_(new cosyscene::RenderSettings())
+    renderSettings_(new cosyscene::RenderSettings()),
+    isPreviewSettings(true)
 {
         ui->setupUi(this);
 
@@ -57,6 +58,14 @@ RenderSettingsWindow::~RenderSettingsWindow() {
         delete ui;
 }
 
+void RenderSettingsWindow::setIsPreviewSettings(bool isPreviewSettings) {
+        this->isPreviewSettings = isPreviewSettings;
+        adjustDefaultValues(*renderSettings_);
+        setRenderSettingsByValue(*renderSettings_);
+
+        setTitle(isPreviewSettings ? "Preview" : "Production");
+}
+
 void RenderSettingsWindow::setRenderSettings (
         redshift::shared_ptr<cosyscene::RenderSettings> rs,
         bool blockSignals
@@ -70,9 +79,9 @@ void RenderSettingsWindow::setRenderSettingsByValue (
         cosyscene::RenderSettings const &rs,
         bool blockSignals)
 {
-    ScopedQtSignalBlock block(this, blockSignals);
-    *renderSettings_ = rs;
-    updateViews();
+        ScopedQtSignalBlock block(this, blockSignals);
+        *renderSettings_ = rs;
+        updateViews();
 }
 
 void RenderSettingsWindow::updateViews() {
@@ -287,7 +296,24 @@ void RenderSettingsWindow::on_stashRestoreButton_clicked() {
 }
 void RenderSettingsWindow::on_stashResetButton_clicked() {
         if (StashView::ResetDialog(this, renderSettings_)) {
+                adjustDefaultValues(*renderSettings_);
                 setRenderSettingsByValue(*renderSettings_);
                 emit renderSettingsChanged();
+        }
+}
+
+
+
+void RenderSettingsWindow::adjustDefaultValues(cosyscene::RenderSettings &rs) {
+        if (isPreviewSettings) {
+                rs.setSamplesPerPixel(5);
+                cosyscene::SurfaceIntegrator si;
+                si.toWhittedAmbientIntegrator();
+                rs.setSurfaceIntegrator(si);
+        } else {
+                rs.setSamplesPerPixel(50);
+                cosyscene::SurfaceIntegrator si;
+                si.toPathIntegrator();
+                rs.setSurfaceIntegrator(si);
         }
 }

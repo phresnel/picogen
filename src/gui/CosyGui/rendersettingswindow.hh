@@ -39,6 +39,8 @@ public:
         explicit RenderSettingsWindow(QWidget *parent = 0);
         virtual ~RenderSettingsWindow();
 
+        void setIsPreviewSettings(bool isPreviewSettings);
+
         void setTitle (QString string);
         void setRenderSettings (redshift::shared_ptr<cosyscene::RenderSettings>,
                                 bool blockSignals=true);
@@ -73,6 +75,9 @@ private slots:
 private:
         Ui::RenderSettingsWindow *ui;
         redshift::shared_ptr<cosyscene::RenderSettings> renderSettings_;
+        bool isPreviewSettings;
+
+        void adjustDefaultValues(cosyscene::RenderSettings &rs);
 };
 
 #endif // RENDERSETTINGS_HH

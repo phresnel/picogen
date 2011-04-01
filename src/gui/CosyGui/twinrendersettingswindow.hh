@@ -40,6 +40,7 @@ public:
         virtual ~TwinRenderSettingsWindow();
 
         void setTwinRenderSettings (redshift::shared_ptr<cosyscene::TwinRenderSettings>,
+                                    bool reAdjustDefaultValues = false,
                                     bool blockSignals=true);
 
 public slots:
