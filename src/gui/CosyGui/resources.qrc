@@ -27,4 +27,8 @@
         <file alias="reset">resources/crystalproject_lgpl_reset.png</file>
         <file alias="find">resources/ultimategnome_gpl_find.png</file>
     </qresource>
+    <qresource prefix="/previews">
+        <file>resources/brightness.png</file>
+        <file alias="brightness">resources/brightness-fanzy.png</file>
+    </qresource>
 </RCC>
