@@ -20,6 +20,7 @@
 
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
+#include "startpopup.hh"
 #include "cosyscene/scene.hh"
 #include "cosyscene/sunsky.hh"
 #include "cosyscene/save_load.hh"
@@ -217,8 +218,17 @@ MainWindow::MainWindow(QWidget *parent) :
         redshiftSceneCreator->setScene (scene);
 
         // Aesthetics.
-        on_filmCommandLink_clicked();
+        on_terrainCommandLink_clicked();
         indicateSaved();
+
+        StartPopup popup (this);
+        popup.setDisclaimer("IMPORTANT: This is a nightly build of picogen; it might "
+                            "contain bugs, glitches, incomplete features "
+                            "and features that are not present in regular releases.\n\n"
+                            "Scenes created with this version of picogen may be "
+                            "incompatible with future versions of picogen!\n\n"
+                            "Apart from that: Welcome and thank you for your interest in picogen :)");
+        popup.exec();
 }
 
 MainWindow::~MainWindow() {

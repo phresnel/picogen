@@ -31,4 +31,7 @@
         <file>resources/brightness.png</file>
         <file alias="brightness">resources/brightness-fanzy.png</file>
     </qresource>
+    <qresource prefix="/meta">
+        <file alias="picogen-logo">resources/picogen-logo.png</file>
+    </qresource>
 </RCC>

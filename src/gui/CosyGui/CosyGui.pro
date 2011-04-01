@@ -37,7 +37,8 @@ SOURCES += main.cc \
     waterwindow.cc \
     waterfitting.cc \
     camerawidget.cc \
-    filmsettingsandcamera.cc
+    filmsettingsandcamera.cc \
+    startpopup.cc
 HEADERS += mainwindow.hh \
     terrainwindow.hh \
     stashview.hh \
@@ -56,7 +57,8 @@ HEADERS += mainwindow.hh \
     waterwindow.hh \
     waterfitting.hh \
     camerawidget.hh \
-    filmsettingsandcamera.hh
+    filmsettingsandcamera.hh \
+    startpopup.hh
 FORMS += mainwindow.ui \
     terrainwindow.ui \
     stashview.ui \
@@ -73,7 +75,8 @@ FORMS += mainwindow.ui \
     waterwindow.ui \
     waterfitting.ui \
     camerawidget.ui \
-    filmsettingsandcamera.ui
+    filmsettingsandcamera.ui \
+    startpopup.ui
 LIBS += ../../.libs/libredshift.a ../../.libs/libxyto.a \
     -lgomp \
     -lnoise \
