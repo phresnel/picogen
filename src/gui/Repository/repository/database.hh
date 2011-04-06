@@ -38,9 +38,9 @@ public:
         void addCollection(Collection const &);
         void addCollections(QList<Collection> const &);
 
-        void allParametricPresets(QVector<ParametricPreset> &ret,
+        void terrainFormationPresets(QVector<ParametricPreset> &ret,
                                   bool clear=true) const;
-        QVector<ParametricPreset> allParametricPresets() const;
+        QVector<ParametricPreset> terrainFormationPresets() const;
 private:
         QVector<Collection> packages_;
 };

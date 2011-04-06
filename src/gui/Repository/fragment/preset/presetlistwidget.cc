@@ -52,7 +52,7 @@ void PresetListWidget::setDatabase (shared_ptr<Database> db) {
 
 void PresetListWidget::resyncView() {
         QVector<ParametricPreset> presets;
-        database_->allParametricPresets(presets);
+        database_->terrainFormationPresets(presets);
         const int count = presets.count();
 
         ui->listWidget->clear();

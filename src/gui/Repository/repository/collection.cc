@@ -42,8 +42,8 @@ QString Collection::root() const {
         return root_;
 }
 
-void Collection::allParametricPresets(QVector<ParametricPreset> &ret, bool clear) const {
-        QDir folder  (QDir(root_).absolutePath()+"/parametric-presets");
+void Collection::terrainFormationPresets(QVector<ParametricPreset> &ret, bool clear) const {
+        QDir folder  (QDir(root_).absolutePath()+"/terrain-formation-presets");
 
         if (clear) ret.clear();
         foreach (QString str,
@@ -55,9 +55,9 @@ void Collection::allParametricPresets(QVector<ParametricPreset> &ret, bool clear
         }
 }
 
-QVector<ParametricPreset> Collection::allParametricPresets() const {
+QVector<ParametricPreset> Collection::terrainFormationPresets() const {
         QVector<ParametricPreset> ret;
-        allParametricPresets(ret);
+        terrainFormationPresets(ret);
         return ret;
 }
 

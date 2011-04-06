@@ -33,9 +33,9 @@ public:
         Collection(QString root);
         Collection() {}
 
-        void allParametricPresets(QVector<ParametricPreset> &ret,
+        void terrainFormationPresets(QVector<ParametricPreset> &ret,
                                   bool clear=true) const;
-        QVector<ParametricPreset> allParametricPresets() const;
+        QVector<ParametricPreset> terrainFormationPresets() const;
 
         QString root() const;
 private:

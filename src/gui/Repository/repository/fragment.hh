@@ -55,8 +55,8 @@ public:
         virtual void reload();
 
 protected:
-        QString readAll (QString filename, quint64 maxlen=1024) const;
-        void writeAll (QString value, QString filename, quint64 maxlen=1024) const;
+        QString read (QString filename, quint64 maxlen=1024) const;
+        void write (QString value, QString filename, quint64 maxlen=1024) const;
 
 private:
         Collection package_;

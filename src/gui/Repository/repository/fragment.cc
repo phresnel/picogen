@@ -34,7 +34,7 @@ Fragment::Fragment(Collection package, QString path)
 Fragment::Fragment() {
 }
 
-QString Fragment::readAll (QString filename, quint64 maxlen) const {
+QString Fragment::read (QString filename, quint64 maxlen) const {
         filename = QDir(path_).absolutePath() + "/" + filename;
 
         QFile f(filename);
@@ -42,7 +42,7 @@ QString Fragment::readAll (QString filename, quint64 maxlen) const {
         return QString (f.read(maxlen));
 }
 
-void Fragment::writeAll (QString value, QString filename, quint64 maxlen) const {
+void Fragment::write (QString value, QString filename, quint64 maxlen) const {
 
         filename = QDir(path_).absolutePath() + "/" + filename;
 
@@ -106,24 +106,25 @@ void Fragment::setHomepage(QString s) {
 }
 
 void Fragment::save() const {
-        writeAll (title_, "title");
-        writeAll (author_, "author");
-        writeAll (email_, "email");
-        writeAll (homepage_, "homepage");
+        write (title_, "title");
+        write (author_, "author");
+        write (email_, "email");
+        write (homepage_, "homepage");
 }
 
 void Fragment::reload() {
-        title_ = readAll ("title");
-        author_ = readAll ("author");
-        email_ = readAll ("email");
-        homepage_ = readAll ("homepage");
+        title_ = read ("title");
+        author_ = read ("author");
+        email_ = read ("email");
+        homepage_ = read ("homepage");
 
         QString previewFolder = QDir(path_).absolutePath() + "/preview/";
 
         QDir previewDir = QDir(previewFolder);
         QStringList filenames = previewDir
                                 .entryList(QStringList()
-                                           <<"*.jpg",
+                                           <<"*.jpg"
+                                           <<"*.png",
                                            QDir::Files, QDir::Name);
         previewFilenames_.clear();
         foreach (QString f, filenames)

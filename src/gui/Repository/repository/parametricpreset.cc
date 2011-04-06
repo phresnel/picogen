@@ -36,13 +36,13 @@ ParametricPreset::ParametricPreset() {
 
 void ParametricPreset::reload() {
         Fragment::reload();
-        preset_ = readAll ("preset");
+        preset_ = read ("preset");
 }
 
 
 void ParametricPreset::save() const {        
         Fragment::save();
-        writeAll (preset_, "preset");
+        write (preset_, "preset");
 }
 
 QString ParametricPreset::preset() const {

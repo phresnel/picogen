@@ -38,19 +38,19 @@ void Database::addCollections(QList<Collection> const &collections) {
                 addCollection (c);
 }
 
-void Database::allParametricPresets(
+void Database::terrainFormationPresets(
         QVector<ParametricPreset> &ret,
         bool clear
 ) const {
         if (clear) ret.clear();
         foreach (Collection pack, packages_) {
-                pack.allParametricPresets(ret, false);
+                pack.terrainFormationPresets(ret, false);
         }
 }
 
-QVector<ParametricPreset> Database::allParametricPresets() const {
+QVector<ParametricPreset> Database::terrainFormationPresets() const {
         QVector<ParametricPreset> ret;
-        allParametricPresets(ret);
+        terrainFormationPresets(ret);
         return ret;
 }
 
