@@ -134,6 +134,7 @@ PreviewWidget::~PreviewWidget() {
 void PreviewWidget::reset() {
         foreach (PreviewImageObject *ob, images)
                 delete ob;
+        images.clear();
         current = 0;
         fitView();
 }
