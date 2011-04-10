@@ -150,7 +150,7 @@ void PssSunSky::InitRest (bool initAtmEffects) {
 
         toSun = Vector(cos(phiS)*sin(thetaS), cos(thetaS), sin(phiS)*sin(thetaS));
 
-        sunSpectralRad =  (1-overcast)*ComputeAttenuatedSunlight(thetaS, turbidity);
+        sunSpectralRad =  ComputeAttenuatedSunlight(thetaS, turbidity);
 
         sunSolidAngle =  0.25*constants::pi*1.39*1.39/(150*150);  // = 6.7443e-05
 
@@ -503,8 +503,9 @@ nervous:
         }*/
         if (h0+s*cos(thetav) <= 0) {
                 attenuation = Spectrum(Spectrum::real_t(1));
-                inscatter = Spectrum(Spectrum::real_t(0));
-                /*#pragma omp critical
+                inscatter = Spectrum(Spectrum::real_t(0));                
+                /*
+                #pragma omp critical
                 {
                 std::cerr << "Warning: Ray going below earth's surface\n";
                 std::cerr << std::fixed;
@@ -512,8 +513,9 @@ nervous:
                 std::cerr << "source_ = {" << source_.x << ", " << source_.y << ", " << source_.z << "}\n";
                 std::cerr << "viewer_ = {" << viewer_.x << ", " << viewer_.y << ", " << viewer_.z <<  "}\n";
                 }*/
-                //return;
         } else {
+                attenuation = AttenuationFactor(h0, thetav, s);
+                inscatter   = InscatteredRadiance(h0, thetav, phiv, s);
                 /*#pragma omp critical
                 {
                 std::cerr << "Lucky:\n";
@@ -522,10 +524,7 @@ nervous:
                 std::cerr << "source_ = {" << source_.x << ", " << source_.y << ", " << source_.z << "}\n";
                 std::cerr << "viewer_ = {" << viewer_.x << ", " << viewer_.y << ", " << viewer_.z <<  "}\n";
                 }*/
-        }
-
-        attenuation = AttenuationFactor(h0, thetav, s);
-        inscatter   = InscatteredRadiance(h0, thetav, phiv, s);
+        }        
 }
 
 
