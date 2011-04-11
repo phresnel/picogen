@@ -20,6 +20,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QDebug>
 
 #include "metadata.hh"
 

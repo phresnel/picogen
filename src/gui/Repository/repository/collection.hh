@@ -24,14 +24,16 @@
 #include <QString>
 #include <QVector>
 
+#include "metadata.hh"
+
 namespace picogen_repository {
 
 class ParametricPreset;
-class Collection
+class Collection : public Meta
 {
 public:
         Collection(QString root);
-        Collection() {}
+        Collection() : Meta() {}
 
         void terrainFormationPresets(QVector<ParametricPreset> &ret,
                                   bool clear=true) const;

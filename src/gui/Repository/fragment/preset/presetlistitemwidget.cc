@@ -51,12 +51,16 @@ ParametricPreset PresetListItemWidget::preset() const {
 void PresetListItemWidget::setPreset (ParametricPreset const &pp) {
         preset_ = pp;
         ui->text->setText(
-            QString("<b>%1</b> <small>from %2</small><br>"
-                    "<i>by %3%4</i>")
+            QString("<big><b>%1</b></big><br>"
+                    "<i>by %5%6</i><br>"
+                    "<small><small>from collection <b>%2</b> by <i>%3%4</i></small></small><br>")
             .arg(pp.title() == "" ? "<untitled>" : pp.title())
-            .arg(pp.package().root() == "" ? "<unknown>" : pp.package().root())
+            .arg(pp.package().title() == "" ? "<unknown>" : pp.package().title())
+            .arg(pp.package().author() == "" ? "<unknown>" : pp.package().author())
+            .arg(pp.package().homepage() == "" ? "" : (" (" + pp.package().homepage() + ")"))
+
             .arg(pp.author() == "" ? "<unknown>" : pp.author())
-            .arg(pp.email() == "" ? "" : (" (" + pp.email() + ")"))
+            .arg(pp.homepage() == "" ? "" : (" (" + pp.homepage() + ")"))
         );
 }
 
