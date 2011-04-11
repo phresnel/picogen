@@ -51,8 +51,10 @@ ParametricPreset PresetListItemWidget::preset() const {
 void PresetListItemWidget::setPreset (ParametricPreset const &pp) {
         preset_ = pp;
         ui->text->setText(
-            QString("\"%1\" by %2%3")
+            QString("<b>%1</b> <small>from %2</small><br>"
+                    "<i>by %3%4</i>")
             .arg(pp.title() == "" ? "<untitled>" : pp.title())
+            .arg(pp.package().root() == "" ? "<unknown>" : pp.package().root())
             .arg(pp.author() == "" ? "<unknown>" : pp.author())
             .arg(pp.email() == "" ? "" : (" (" + pp.email() + ")"))
         );

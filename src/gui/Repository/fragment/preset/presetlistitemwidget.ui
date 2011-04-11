@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
+    <width>241</width>
     <height>42</height>
    </rect>
   </property>
@@ -36,6 +36,11 @@
    </item>
    <item>
     <widget class="QLabel" name="readOnlyText">
+     <property name="font">
+      <font>
+       <pointsize>7</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true">color:orange;</string>
      </property>
