@@ -36,7 +36,7 @@ namespace {
         QString userApplicationDataPath() {
                 QSettings userSettings (QSettings::IniFormat,
                                         QSettings::UserScope,
-                                        "picogen-team",
+                                        "picogen",
                                         "picogen");
                 return QFileInfo(userSettings.fileName()).absolutePath();
         }
@@ -44,7 +44,7 @@ namespace {
         QString systemApplicationDataPath() {
                 QSettings userSettings (QSettings::IniFormat,
                                         QSettings::SystemScope,
-                                        "picogen-team",
+                                        "picogen",
                                         "picogen");
                 return QFileInfo(userSettings.fileName()).absolutePath();
         }
@@ -94,24 +94,32 @@ namespace {
 
                 //==> CLI override.
                 QString tmp = rootCollectionsCommandLineOverride();
+                qDebug() << "checking for collections in cli override:" << tmp;
                 if ("" != tmp && QDir(tmp).exists())
                         return tmp;
 
                 //==> Application folder (TODO: disable on Linux?).
                 tmp = QApplication::applicationDirPath() + "/collections";
+                qDebug() << "checking for collections in application directory:" << tmp;
                 if ("" != tmp && QDir(tmp).exists())
                         return tmp;
 
                 //==> Systemwide settings.
                 tmp = systemApplicationDataPath() + "/collections";
+                qDebug() << "checking for collections in system-wide application data-path:" << tmp;
                 if ("" != tmp && QDir(tmp).exists())
                         return tmp;
 
-                //==> Ask user.
-                tmp = rootCollectionsAskUser();
+                return "";
+        }
+
+
+        QString userCollectionsDir() {
+                //==> Userwide settings.
+                QString tmp = userApplicationDataPath() + "/collections";
+                qDebug() << "checking for collections in user-wide application data-path:" << tmp;
                 if ("" != tmp && QDir(tmp).exists())
                         return tmp;
-
                 return "";
         }
 
@@ -162,21 +170,29 @@ namespace {
 RepositorySettings::RepositorySettings() {
         using picogen_repository::Collection;
 
-        QString rcd = rootCollectionsDir();
+        // Try to add standard collections (system-wide, user-wide).
+        const QString rcd = rootCollectionsDir();
         if ("" != rcd) {
-                addCollections (rcd,
-                                collections_);
+                addCollections (rcd, collections_);
         }
-        addCollections (userApplicationDataPath() + "/collections",
-                        collections_);
 
+        const QString ucd = userCollectionsDir();
+        if ("" != ucd) {
+                addCollections (ucd, collections_);
+        }
 
-        /*QString info;
-        foreach (Collection c, collections_)
-                info += c.root() + "\n";
-        QMessageBox mb;
-        mb.setText(info);
-        mb.exec();*/
+        // If neither a root-collection nor a user-collection was found,
+        // ask user directly.
+        if ("" == rcd && "" == ucd) {
+                //==> Ask user.
+                QString tmp = rootCollectionsAskUser();
+                qDebug() << "checking for collections in user-provided path:" << tmp;
+                if ("" != tmp && QDir(tmp).exists()) {
+                        addCollections (tmp,
+                                        collections_);
+                }
+
+        }
 }
 
 RepositorySettings::~RepositorySettings() {
