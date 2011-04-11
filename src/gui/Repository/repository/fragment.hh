@@ -21,45 +21,10 @@
 #ifndef FRAGMENT_HH
 #define FRAGMENT_HH
 
-#include <QStringList>
 #include "collection.hh"
+#include "metadata.hh"
 
 namespace picogen_repository {
-
-class Meta {
-public:
-        Meta (QString path);
-        Meta();
-
-        QString title() const;
-        void setTitle(QString);
-
-        QString author() const;
-        void setAuthor(QString);
-
-        QString email() const;
-        void setEmail(QString);
-
-        QString homepage() const;
-        void setHomepage(QString);
-
-        QString path() const;
-
-        QStringList previewFilenames() const;
-
-        virtual void save() const;
-        virtual void reload();
-
-protected:
-        QString read (QString filename, quint64 maxlen=1024) const;
-        void write (QString value, QString filename, quint64 maxlen=1024) const;
-
-private:
-        QString path_;
-        QString title_, author_, email_, homepage_;
-        QStringList previewFilenames_;
-};
-
 
 class Fragment : public Meta {
 public:

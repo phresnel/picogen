@@ -18,20 +18,47 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "fragment.hh"
+#ifndef META_HH
+#define META_HH
+
+#include <QStringList>
 
 namespace picogen_repository {
 
-Fragment::Fragment(Collection package, QString path)
-        : Meta(path), package_(package)
-{
-}
+class Meta {
+public:
+        Meta (QString path);
+        Meta();
 
-Fragment::Fragment() : Meta() {
-}
+        QString title() const;
+        void setTitle(QString);
 
-Collection Fragment::package() const {
-        return package_;
-}
+        QString author() const;
+        void setAuthor(QString);
+
+        QString email() const;
+        void setEmail(QString);
+
+        QString homepage() const;
+        void setHomepage(QString);
+
+        QString path() const;
+
+        QStringList previewFilenames() const;
+
+        virtual void save() const;
+        virtual void reload();
+
+protected:
+        QString read (QString filename, quint64 maxlen=1024) const;
+        void write (QString value, QString filename, quint64 maxlen=1024) const;
+
+private:
+        QString path_;
+        QString title_, author_, email_, homepage_;
+        QStringList previewFilenames_;
+};
 
 } // namespace picogen_repository {
+
+#endif // META_HH
