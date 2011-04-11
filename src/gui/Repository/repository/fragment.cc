@@ -25,16 +25,16 @@
 
 namespace picogen_repository {
 
-Fragment::Fragment(Collection package, QString path)
-        : package_(package), path_(path)
+Meta::Meta(QString path)
+        : path_(path)
 {
         reload();
 }
 
-Fragment::Fragment() {
+Meta::Meta() {
 }
 
-QString Fragment::read (QString filename, quint64 maxlen) const {
+QString Meta::read (QString filename, quint64 maxlen) const {
         filename = QDir(path_).absolutePath() + "/" + filename;
 
         QFile f(filename);
@@ -42,7 +42,7 @@ QString Fragment::read (QString filename, quint64 maxlen) const {
         return QString (f.read(maxlen));
 }
 
-void Fragment::write (QString value, QString filename, quint64 maxlen) const {
+void Meta::write (QString value, QString filename, quint64 maxlen) const {
 
         filename = QDir(path_).absolutePath() + "/" + filename;
 
@@ -57,62 +57,54 @@ void Fragment::write (QString value, QString filename, quint64 maxlen) const {
         }
 }
 
-QString Fragment::title() const {
+QString Meta::title() const {
         return title_;
 }
 
-QString Fragment::author() const {
+QString Meta::author() const {
         return author_;
 }
 
-QString Fragment::email() const {
+QString Meta::email() const {
         return email_;
 }
 
-QString Fragment::homepage() const {
+QString Meta::homepage() const {
         return homepage_;
 }
 
-Collection Fragment::package() const {
-        return package_;
-}
-
-QString Fragment::path() const {
+QString Meta::path() const {
         return path_;
 }
 
-QStringList Fragment::previewFilenames() const {
+QStringList Meta::previewFilenames() const {
         return previewFilenames_;
 }
 
-QString Fragment::name() const {
-        return name_;
-}
-
-void Fragment::setTitle(QString s) {
+void Meta::setTitle(QString s) {
         title_ = s;
 }
 
-void Fragment::setAuthor(QString s){
+void Meta::setAuthor(QString s){
         author_ = s;
 }
 
-void Fragment::setEmail(QString s) {
+void Meta::setEmail(QString s) {
         email_ = s;
 }
 
-void Fragment::setHomepage(QString s) {
+void Meta::setHomepage(QString s) {
         homepage_ = s;
 }
 
-void Fragment::save() const {
+void Meta::save() const {
         write (title_, "title");
         write (author_, "author");
         write (email_, "email");
         write (homepage_, "homepage");
 }
 
-void Fragment::reload() {
+void Meta::reload() {
         title_ = read ("title");
         author_ = read ("author");
         email_ = read ("email");
@@ -129,6 +121,22 @@ void Fragment::reload() {
         previewFilenames_.clear();
         foreach (QString f, filenames)
                 previewFilenames_.push_back(previewDir.absoluteFilePath(f));
+}
+
+
+
+
+
+Fragment::Fragment(Collection package, QString path)
+        : Meta(path), package_(package)
+{
+}
+
+Fragment::Fragment() : Meta() {
+}
+
+Collection Fragment::package() const {
+        return package_;
 }
 
 

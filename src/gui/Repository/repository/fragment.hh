@@ -26,10 +26,10 @@
 
 namespace picogen_repository {
 
-class Fragment {
+class Meta {
 public:
-        Fragment(Collection package, QString path);
-        Fragment();
+        Meta (QString path);
+        Meta();
 
         QString title() const;
         void setTitle(QString);
@@ -43,11 +43,7 @@ public:
         QString homepage() const;
         void setHomepage(QString);
 
-        Collection package() const;
         QString path() const;
-
-        QString name() const;
-        //void setName(QString);
 
         QStringList previewFilenames() const;
 
@@ -59,12 +55,21 @@ protected:
         void write (QString value, QString filename, quint64 maxlen=1024) const;
 
 private:
-        Collection package_;
-        QString path_, name_;
+        QString path_;
         QString title_, author_, email_, homepage_;
         QStringList previewFilenames_;
 };
 
+
+class Fragment : public Meta {
+public:
+        Fragment(Collection package, QString path);
+        Fragment();
+
+        Collection package() const;
+private:
+        Collection package_;
+};
 
 } // namespace picogen_repository {
 
