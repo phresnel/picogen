@@ -207,7 +207,7 @@ namespace lazyquadtree {
                         widths = new real_t[s];
                         for (unsigned int i=0; i<s; ++i, width/=2) {
                                 widths[(s-1)-i] = width;
-                        }                        
+                        }
                 }
 
                 ~NodeStaticParameters() {
@@ -488,7 +488,7 @@ namespace lazyquadtree {
 
                         isLeaf = (maxRecursion==0) || isALeaf (diagonal, c_x, c_z);
 
-                        // remove diagonal entirely from class-def?
+                        // Get neighbour leaf-statuses.
                         const int a = !isALeaf (diagonal, c_x,         c_z+bbDepth);
                         const int b = !isALeaf (diagonal, c_x+bbWidth, c_z        );
                         const int c = !isALeaf (diagonal, c_x,         c_z-bbDepth);
@@ -551,12 +551,12 @@ namespace lazyquadtree {
                            |((min_h > bbMaxY) & (max_h > bbMaxY)))
                                 return false;
 
-                        if (isLeaf) {                                
+                        if (isLeaf) {
                                 /*#pragma omp master
                                 if (parent) nodeIndex.load (this);*/
                                 return intersectLeaf (ray);
-                        }                        
-                        
+                        }
+
 
                         // Find out which ones to traverse.
                         const bool d_right = ray.direction.x >= 0;
@@ -667,24 +667,12 @@ public:
                 Color color
         )
         : fun(fun)
-        , primaryBB(initBB (
-                size,
-                static_cast<unsigned int>(
-                        max(real_t(1000),min(real_t(250000), (size*size*size)/1000.f))
-                )))
-        , primaryFixpBB(
-                vector_cast<Point>(primaryBB.getMinimum()),
-                vector_cast<Point>(primaryBB.getMaximum()))
+        , size(size)
+        , maxRecursion(maxRecursion)
+        , primaryBB()
+        , primaryFixpBB()
         , staticParameters(*fun.get(), lodFactor, pools, mutexes, size, maxRecursion)
-        , primaryNode(new lazyquadtree::Node(
-                primaryBB,
-                maxRecursion,
-                0,
-                staticParameters))
-                                // for benchmarking, depth was 4, AAx4, no diffuse queries, 512x512
-                                // //"(+ -150 (* 500 (^ (- 1 (abs ([LayeredNoise2d filter{cosine} seed{13} frequency{0.001} layercount{8} persistence{0.45} levelEvaluationFunction{(abs h)}] x y))) 2 )))"
-                                // horizonPlane y 25
-                                // shared_ptr<Camera> camera (new Pinhole(renderBuffer, vector_cast<Point>(Vector(390,70,-230))));
+        , primaryNode(0)
         , color(color)
         {
         }
@@ -698,7 +686,25 @@ public:
 
         void prepare (const Scene &scene) {
                 staticParameters.cameraPosition =
-                        vector_cast<PointF>(scene.getCamera()->getCommonCenter());                
+                        vector_cast<PointF>(scene.getCamera()->getCommonCenter());
+
+                primaryBB = initBB (size,
+                                    static_cast<unsigned int>(
+                                            max(real_t(1000),min(real_t(250000), (size*size*size)/1000.f))
+                                    ));
+                primaryBB.translate (staticParameters.cameraPosition.x,
+                                     0,
+                                     staticParameters.cameraPosition.z);
+
+                primaryFixpBB = BoundingBox(
+                        vector_cast<Point>(primaryBB.getMinimum()),
+                        vector_cast<Point>(primaryBB.getMaximum()));
+                primaryNode = new lazyquadtree::Node(
+                                primaryBB,
+                                maxRecursion,
+                                0,
+                                staticParameters);
+
                 primaryNode->prepare ();
         }
 
@@ -771,6 +777,10 @@ public:
 private:
 
         shared_ptr<HeightFunction const> fun;
+
+        real_t size;
+        unsigned int maxRecursion;
+
         BoundingBoxF primaryBB;
         BoundingBox primaryFixpBB;
 

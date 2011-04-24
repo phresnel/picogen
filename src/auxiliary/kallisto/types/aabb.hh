@@ -129,6 +129,15 @@ namespace kallisto {
                         *this = BoundingBox();
                 }
 
+                void translate (scalar_t x, scalar_t y, scalar_t z) {
+                        minimum_.x += x;
+                        minimum_.y += y;
+                        minimum_.z += z;
+                        maximum_.x += x;
+                        maximum_.y += y;
+                        maximum_.z += z;
+                }
+
         private:
                 point_t minimum_, maximum_;
 

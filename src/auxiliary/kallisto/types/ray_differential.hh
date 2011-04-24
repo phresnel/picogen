@@ -22,7 +22,7 @@
 #define RAYDIFFERENTIAL_H_INCLUDED_20090311
 
 namespace kallisto {
-        template <typename point_t, typename direction_t> 
+        template <typename point_t, typename direction_t>
         struct ray_differential_t {
                 ray_t<point_t, direction_t> ray;
                 bool hasDifferentials;
@@ -37,7 +37,7 @@ namespace kallisto {
         class RayDifferential
         : public Ray<point_t, direction_t> {
         public:
-                
+
                 bool hasDifferentials;
                 Ray<point_t, direction_t> rx, ry;
 
@@ -46,7 +46,7 @@ namespace kallisto {
                 , hasDifferentials(false)
                 , rx(), ry()
                 {}
-                
+
                 RayDifferential (point_t const &pos, direction_t const &dir)
                 : Ray<point_t, direction_t> (pos, dir)
                 , hasDifferentials(false)
@@ -58,7 +58,7 @@ namespace kallisto {
                 , hasDifferentials(false)
                 , rx(), ry()
                 {}
-                
+
                 RayDifferential (RayDifferential const & rhs)
                 : Ray<point_t, direction_t> (rhs)
                 , hasDifferentials(rhs.hasDifferentials)
@@ -66,13 +66,21 @@ namespace kallisto {
                 , ry(rhs.ry)
                 {
                 }
-                
+
                 RayDifferential & operator = (RayDifferential const & rhs) {
                         Ray<point_t, direction_t>::operator = (rhs);
                         hasDifferentials = rhs.hasDifferentials;
                         rx = rhs.rx;
                         ry = rhs.ry;
                         return *this;
+                }
+
+                RayDifferential getOffset (direction_t const &ofs) const {
+                        RayDifferential ret = *this;
+                        ret.position += ofs;
+                        ret.rx.position += ofs;
+                        ret.ry.position += ofs;
+                        return ret;
                 }
         };
 }
