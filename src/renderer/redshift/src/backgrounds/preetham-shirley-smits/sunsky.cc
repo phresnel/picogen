@@ -346,7 +346,6 @@ PssSunSky::GetSkySpectralRadiance(
         PssSunSky::real_t theta,
         PssSunSky::real_t phi) const
 {
-        static int i = 0;
         if (overcast >= 0.9999) {
                 return overcastSkySpectralRadiance(theta, phi);
         } else if (overcast <= 0.0001) {
@@ -466,8 +465,8 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &sourc
         Vector source = source_;
         Vector viewer = viewer_;
 
-        int hack = 0;
-nervous:
+        //int hack = 0;
+//nervous:
         const Vector diff = source - viewer;
         const Vector direction = normalize (diff);
 
@@ -503,7 +502,7 @@ nervous:
         }*/
         if (h0+s*cos(thetav) <= 0) {
                 attenuation = Spectrum(Spectrum::real_t(1));
-                inscatter = Spectrum(Spectrum::real_t(0));                
+                inscatter = Spectrum(Spectrum::real_t(0));
                 /*
                 #pragma omp critical
                 {
@@ -524,7 +523,7 @@ nervous:
                 std::cerr << "source_ = {" << source_.x << ", " << source_.y << ", " << source_.z << "}\n";
                 std::cerr << "viewer_ = {" << viewer_.x << ", " << viewer_.y << ", " << viewer_.z <<  "}\n";
                 }*/
-        }        
+        }
 }
 
 

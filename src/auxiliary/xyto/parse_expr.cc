@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
 #include "parse_expr.hh"
 #include <stdexcept>
 #include "xyto_ios.hh"

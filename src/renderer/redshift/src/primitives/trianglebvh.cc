@@ -18,6 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
+
 #include "../../include/constants.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/tuple.hh"
@@ -38,73 +40,6 @@ namespace {
         using redshift::vector_cast;
 
         static const real_t tri_eps = 0.00000001;
-        static int
-        raytri_intersect (
-            const Ray &ray,
-            const Point &a, const Point &b, const Point &c,
-            real_t &t, real_t &u, real_t &v,
-            Normal &normal_
-        ) {
-            Vector vect0, vect1, nvect, normal;
-            real_t det, inv_det;
-
-            vect0 = b - a;
-            vect1 = c - a;
-
-            normal = cross (vect0, vect1);
-            det = -(ray.direction * normal);
-
-            //---------
-
-            /* if determinant is near zero, ray is parallel to the plane of triangle */
-            if (det > -tri_eps && det < tri_eps) return 0;
-
-            /* calculate vector from ray origin to a */
-            //SUB(vect0,a,orig);
-            vect0 = a - ray.position;
-
-            /* normal vector used to calculate u and v parameters */
-            //CROSS(nvect,dir,vect0);
-            nvect = cross (ray.direction, vect0);
-
-            inv_det = 1.0 / det;
-            /* calculate vector from ray origin to b*/
-            //SUB(vect1,b,orig);
-            vect1 = b - ray.position;
-
-            /* calculate v parameter and test bounds */
-            //*v = - DOT(vect1,nvect) * inv_det;
-            v = - (vect1*nvect*inv_det);
-
-            if (v < 0.0 || v > 1.0) return 0;
-
-            /* calculate vector from ray origin to c*/
-            //SUB(vect1,c,orig);
-            vect1 = c - ray.position;
-
-            /* calculate v parameter and test bounds */
-            //*u = DOT(vect1,nvect) * inv_det;
-            u = vect1*nvect*inv_det;
-
-            if (u < 0.0 || u + v > 1.0) return 0;
-
-            /* calculate t, ray intersects triangle */
-            //*t = - DOT(vect0,normal) * inv_det;
-            t = - (vect0* normal * inv_det);
-
-            //---------
-            // pretty crappy but sometimes useful wireframe mode
-            //if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
-
-            if (t < 0)
-                return 0;
-            normal_ = vector_cast<Normal>(normalize (normal));
-            if (ray.direction * normal > 0.0)
-                return -1;
-            return 1;
-        }
-
-
         static int
         raytri_intersect (
             const Ray &ray,

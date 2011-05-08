@@ -22,6 +22,7 @@
 #include <set>
 #include <iostream>
 
+#include "ignore_strict_aliasing" // because of boost::optional
 #include <boost/optional.hpp>
 
 #include "production.hh"
@@ -386,7 +387,7 @@ bool parse_header_patterns (
 
 boost::optional<ProductionHeader> parse_production_header (
         TokenIterator it, TokenIterator end, TokenIterator &behind,
-        const std::map<std::string, Constant> &consttab
+        const std::map<std::string, Constant> &/*consttab*/
 ) {
         TokenIterator prev = it;
 

@@ -163,8 +163,15 @@ message (STATUS "foo: " ${NOISE_INCLUDE_DIR})
 
 add_definitions (-O3
                  -ffast-math -msse -mfpmath=sse
+
+                #-Wpadded # when GCC puts pad-variables into structures. reordering fields might then be beneficial
+                -Wdisabled-optimization # when GCC was inable
+                #-Wsuggest-attribute=pure
+                #-Wsuggest-attribute=const
+                #-Wsuggest-attribute=noreturn
+
                  ${OpenMP_CXX_FLAGS}
-                 -Wall -Wextra
+                 -Wall -Wextra -Winit-self
                  -D__STDC_LIMIT_MACROS
                 )
 include_directories (

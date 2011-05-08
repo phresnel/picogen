@@ -18,6 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
+
 #include <stack>
 #include <stdexcept>
 #include <boost/optional.hpp>
@@ -371,7 +373,7 @@ optional<Intersection> LSystemTree::intersect(Ray const &ray) const {
 
 
 shared_ptr<Bsdf> LSystemTree::getBsdf(
-        const DifferentialGeometry & dgGeom
+        const DifferentialGeometry & /*dgGeom*/
 ) const {
         throw std::runtime_error("LSystemTree::getBsdf() called directly.");
 }

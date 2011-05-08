@@ -245,12 +245,13 @@ void Scene::render (
 
 
 void Scene::renderToRenderTarget(
-        interaction::ProgressReporter::Ptr reporter,
-        interaction::UserCommandProcessor::Ptr ucp,
-        unsigned int numAASamples_,
-        unsigned int minY, unsigned int maxY,
-        unsigned int userSalt
+        interaction::ProgressReporter::Ptr,
+        interaction::UserCommandProcessor::Ptr,
+        unsigned int ,
+        unsigned int , unsigned int ,
+        unsigned int
 ) const {
+        // TODO: remove this function completely
         throw std::runtime_error("Scene::renderToRenderTarget(.) is no longer supported.");
 }
 

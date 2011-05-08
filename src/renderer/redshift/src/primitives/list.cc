@@ -18,6 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
+
 #include "../../include/primitives/list.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/constants.hh"
@@ -52,16 +54,19 @@ bool List::doesIntersect (Ray const &ray) const {
 
 
 optional<Intersection> List::intersect(Ray const &ray) const {
-        real_t nearest = constants::real_max, tmp;
-        optional<Intersection> nearestI, tmpI;
+        real_t nearest = constants::real_max;
+        optional<Intersection> nearestI;
+
         for (Primitives::const_iterator it=primitives.begin();
                 it!=primitives.end(); ++it
         ) {
-                if ((tmpI=(*it)->intersect (ray))
-                    && (tmp=length(ray.position-tmpI->getCenter())) < nearest
-                ) {
-                        nearest = tmp;
-                        nearestI = tmpI;
+                const optional<Intersection> tmpI = (*it)->intersect (ray);
+                if (tmpI) {
+                        const real_t tmp = length(ray.position-tmpI->getCenter());
+                        if (tmp < nearest) {
+                                nearest = tmp;
+                                nearestI = tmpI;
+                        }
                 }
         }
         return nearestI;

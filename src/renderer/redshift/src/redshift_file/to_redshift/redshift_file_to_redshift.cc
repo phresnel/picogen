@@ -21,6 +21,7 @@
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // TODO: check if boost reports on cerr or cout
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#include "ignore_strict_aliasing" // because of boost::optional
 
 #include "redshift/include/auxiliary/currentdate.hh"
 #include "redshift/include/auxiliary/remove_filename_extension.hh"
@@ -153,7 +154,7 @@ redshift::shared_ptr<redshift::Scene>
         redshift::shared_ptr<redshift::Film> film,
         int renderSettingsIndex, int cameraIndex
 ) {
-        return redshift_file::toRedshift (scene, film, 
+        return redshift_file::toRedshift (scene, film,
                                           renderSettingsIndex, cameraIndex);
 }
 
@@ -289,7 +290,7 @@ redshift::shared_ptr<redshift::Sky> toRedshift (Background const &bg) {
 
 
 redshift::shared_ptr<redshift::Camera> toRedshift (Camera const & camera,
-                                                   unsigned int width, 
+                                                   unsigned int width,
                                                    unsigned int height)
 {
         switch (camera.type) {
@@ -302,7 +303,7 @@ redshift::shared_ptr<redshift::Camera> toRedshift (Camera const & camera,
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::Cylindrical(
                         width, height, camera.cylindricalParams.front,
                         toRedshift(camera.transforms)));
-                        
+
         case Camera::cubemap_left:
                 return redshift::shared_ptr<redshift::Camera> (new redshift::camera::CubeMapFace(
                         width, height, redshift::camera::CubeMapFace::left,
@@ -416,15 +417,15 @@ redshift::Transform toRedshift (Transform const &transform)  {
         case Transform::yaw:   return RedT::rotationY(transform.angle*to_radians);
         case Transform::pitch: return RedT::rotationX(transform.angle*to_radians);
         case Transform::roll:  return RedT::rotationZ(transform.angle*to_radians);
-        
+
         case Transform::scale:  return RedT::scaling(transform.x, transform.y, transform.z);
         };
         return RedT();
 }
 redshift::Transform toRedshift (TransformList const &transformList) {
         redshift::Transform ret;
-        for (TransformList::const_iterator it = transformList.begin(); 
-             it!=transformList.end(); 
+        for (TransformList::const_iterator it = transformList.begin();
+             it!=transformList.end();
              ++it
         ) {
                 ret = ret * toRedshift(*it);

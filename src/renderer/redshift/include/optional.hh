@@ -24,7 +24,7 @@
 #include <boost/optional.hpp>
 
 namespace redshift {
-        using boost::optional;        
+        using boost::optional;
 }
 
 #endif // OPTIONAL_HH_INCLUDED_20090402

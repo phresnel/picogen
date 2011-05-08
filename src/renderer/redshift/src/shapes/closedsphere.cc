@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+#include "ignore_strict_aliasing" // because of boost::optional
 #include "../../include/shapes/closedsphere.hh"
 #include "../../include/tuple.hh"
 #include "../../include/algorithm.hh"
@@ -70,7 +70,7 @@ optional<DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const {
         const Point  poi = ray (*d);
         const Normal normal =
                      normalize (vector_cast<Normal> (poi - sphereData.center));
-        #warning I guess this could be faster
+
         const tuple<Vector,Vector,Vector> cs = coordinateSystem (normal);
 
         return DifferentialGeometry (

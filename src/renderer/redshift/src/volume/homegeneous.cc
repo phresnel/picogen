@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
 #include "../../include/volume/homogeneous.hh"
 #include "../../include/interval.hh"
 
@@ -40,37 +41,37 @@ Homogeneous::Homogeneous (
 
 
 
-Interval Homogeneous::cull (const Ray &ray) const {
+Interval Homogeneous::cull (const Ray &/*ray*/) const {
         return Interval(constants::infinity, -constants::infinity);
 }
 
 
 
 // absorption
-Color Homogeneous::sigma_a (const Point &p, const Vector &w, Random& rand) const {
+Color Homogeneous::sigma_a (const Point &/*p*/, const Vector &/*w*/, Random& /*rand*/) const {
         return sigma_a_;
 }
 
 
 
 // out scattering probability
-Color Homogeneous::sigma_s (const Point &p, const Vector &w, Random& rand) const {
+Color Homogeneous::sigma_s (const Point &/*p*/, const Vector &/*w*/, Random& /*rand*/) const {
         return sigma_s_;
 }
 
 
 
 // emission
-Color Homogeneous::Lve (const Point &p,const Vector &w, Random& rand) const {
+Color Homogeneous::Lve (const Point &/*p*/,const Vector &/*w*/, Random& /*rand*/) const {
         return Lve_;
 }
 
 
 
 real_t Homogeneous::p (
-        const Point &p,
+        const Point &/*p*/,
         const Vector &w_in,
-        const Vector &w_out, Random& rand
+        const Vector &w_out, Random& /*rand*/
 ) const {
         return phaseHG (w_in, w_out, henyeyGreensteinParameter);
 }
@@ -87,7 +88,7 @@ Color Homogeneous::sigma_t (const Point &p, const Vector &w, Random& rand) const
 
 Color Homogeneous::tau (
         const Ray &r, const Interval &i,
-        real_t step, real_t offset, Random& rand
+        real_t /*step*/, real_t /*offset*/, Random& rand
 ) const {
         const real_t min = i.min();
         real_t max = i.max();

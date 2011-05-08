@@ -39,9 +39,9 @@ namespace redshift { namespace primitive {
 // Bvh
 //-----------------------------------------------------------------------------
 Forest::Forest(
-        shared_ptr<HeightFunction const> heightFunction,
-        shared_ptr<DistributionFunction const> distFun,
-        unsigned int totalTargettedCount
+        shared_ptr<HeightFunction const> /*heightFunction*/,
+        shared_ptr<DistributionFunction const> /*distFun*/,
+        unsigned int /*totalTargettedCount*/
 )
 {
         BvhBuilder builder;

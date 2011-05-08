@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
 #include "../../include/constants.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/bvh.hh"
@@ -128,17 +129,18 @@ struct BvhNode {
                 using redshift::get;
 
                 real_t nearest = constants::infinity;
-                real_t tmp;
-                optional<Intersection> nearestI, tmpI;
+                optional<Intersection> nearestI;
 
                 for (CIt it=primitives.begin();
                         it!=primitives.end(); ++it
                 ) {
-                        if ((tmpI=(*it)->intersect (ray))
-                           && (tmp=length(ray.position-tmpI->getCenter())) < nearest
-                        ) {
-                                nearest = tmp;
-                                nearestI = tmpI;
+                        const optional<Intersection> tmpI = (*it)->intersect (ray);
+                        if (tmpI) {
+                                const real_t tmp = length(ray.position-tmpI->getCenter());
+                                if (tmp < nearest) {
+                                        nearest = tmp;
+                                        nearestI = tmpI;
+                                }
                         }
                 }
 
@@ -154,20 +156,26 @@ struct BvhNode {
                         const int near = min_t[0] < min_t[1] ? 0 : 1;
                         const int far = 1 - near;
 
-                        if (min_t[near] < nearest)
-                        if ((tmpI = children[near]->intersect(ray))
-                         && (tmp=length(ray.position-tmpI->getCenter())) < nearest
-                        ) {
-                                nearest = tmp;
-                                nearestI = tmpI;
+                        if (min_t[near] < nearest) {
+                                const optional<Intersection> tmpI = children[near]->intersect(ray);
+                                if (tmpI) {
+                                        const real_t tmp=length(ray.position-tmpI->getCenter());
+                                        if (tmp < nearest) {
+                                                nearest = tmp;
+                                                nearestI = tmpI;
+                                        }
+                                }
                         }
 
-                        if (min_t[far] < nearest)
-                        if ((tmpI = children[far]->intersect(ray))
-                         && (tmp=length(ray.position-tmpI->getCenter())) < nearest
-                        ) {
-                                nearest = tmp;
-                                nearestI = tmpI;
+                        if (min_t[far] < nearest) {
+                                const optional<Intersection> tmpI = children[far]->intersect(ray);
+                                if (tmpI) {
+                                        const real_t tmp = length(ray.position-tmpI->getCenter());
+                                        if (tmp < nearest) {
+                                                nearest = tmp;
+                                                nearestI = tmpI;
+                                        }
+                                }
                         }
                 }
 

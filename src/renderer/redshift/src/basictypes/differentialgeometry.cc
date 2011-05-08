@@ -41,7 +41,7 @@ DifferentialGeometry::DifferentialGeometry (
 , geometricNormal(geometricNormal_)
 , shadingNormal(vector_cast<Normal>(normalize (cross (dpdu_, dpdv_))))
 , dpdu(dpdu_), dpdv(dpdv_)
-, dndu(dpdu_), dndv(dpdv_)
+, dndu(dndu_), dndv(dndv_)
 , u_(0), v_(0), textureId_(0)
 {
 }
@@ -60,7 +60,7 @@ DifferentialGeometry::DifferentialGeometry (
 , geometricNormal(geometricNormal_)
 , shadingNormal(vector_cast<Normal>(normalize (cross (dpdu_, dpdv_))))
 , dpdu(dpdu_), dpdv(dpdv_)
-, dndu(dpdu_), dndv(dpdv_)
+, dndu(dndu_), dndv(dndv_)
 , u_(u), v_(v), textureId_(texId)
 {
 }

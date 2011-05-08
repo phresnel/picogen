@@ -48,7 +48,7 @@ BsdfSample Lambertian::sample_f (
 
 
 
-Color Lambertian::f (const Vector &out, const Vector &in, Random &) const {
+Color Lambertian::f (const Vector &/*out*/, const Vector &/*in*/, Random &) const {
         return color;
 }
 

@@ -42,7 +42,7 @@ namespace redshift { namespace primitive {
                 struct TextureCoordinates {
                         real_t s, t;
 
-                        TextureCoordinates() {}
+                        TextureCoordinates() : s(0), t(0) {}
                         TextureCoordinates(real_t s, real_t t) : s(s), t(t) {}
                 };
 

@@ -412,7 +412,6 @@ namespace {
                                 }
                                 std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
 
-                                int bestMatch = 0;
                                 while (index<0) {
                                         std::string str;
                                         std::getline (std::cin,str);
@@ -502,7 +501,6 @@ namespace {
                                 }
                                 std::cout << "\nWhich one do you want to use (number or [partial] name)? "<< std::endl;
 
-                                int bestMatch = 0;
                                 while (index<0) {
                                         std::string str;
                                         std::getline (std::cin,str);

@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
 #include "../../include/primitives/instance.hh"
 #include "../../include/basictypes/intersection.hh"
 
@@ -58,8 +59,8 @@ optional<Intersection>
 
 
 
-shared_ptr<Bsdf> Instance::getBsdf(const DifferentialGeometry &dg) const {
-        return shared_ptr<Bsdf>();
+shared_ptr<Bsdf> Instance::getBsdf(const DifferentialGeometry &/*dg*/) const {
+        throw std::runtime_error ("Instance::getBsdf() called directly");
 }
 
 

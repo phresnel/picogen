@@ -160,7 +160,7 @@ tuple<real_t,Color> SingleScattering::Li (
 
 tuple<real_t,Color> SingleScattering::Transmittance(
         const Scene &scene,
-        const Ray &ray, const Sample &sample,
+        const Ray &ray, const Sample &/*sample*/,
         const Interval &interval, Random& rand
 ) const {
 	if (!scene.getVolumeRegion())

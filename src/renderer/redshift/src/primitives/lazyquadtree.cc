@@ -18,6 +18,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
+
 #include "../../include/basictypes/scene.hh"
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/lazyquadtree.hh"
@@ -267,8 +269,9 @@ namespace lazyquadtree {
                 ) const {
                         real_t t=-1, u, v;
                         Normal normal;
-                        const bool does_intersect =
-                                0 != raytri_intersect (
+                        /*const bool does_intersect =
+                                0 != */
+                                raytri_intersect (
                                         ray,
                                         a, b, c,
                                         t, u, v,
@@ -413,10 +416,13 @@ namespace lazyquadtree {
                 , bbMinY(box.getMinimumY()), bbMaxY(box.getMaximumY())
                 , bbMinZ_(box.getMinimumZ())//, bbMaxZ_(box.getMaximumZ())
                 , vertices(0)
+
+                , staticParameters(staticParameters)
+
+                , isLeaf(false)
                 , hasExactBoundingBox(false)
                 , maxRecursion(maxRecursion_)
                 , vertexCount(0)
-                , staticParameters(staticParameters)
                 {
                         for (int i=0; i<4; ++i) {
                                 children[i] = 0;
@@ -447,7 +453,7 @@ namespace lazyquadtree {
                         }
                 }
 
-                void prune (unsigned int currentScanline, const unsigned int depth=0) {
+                void prune (unsigned int /*currentScanline*/, const unsigned int /*depth*/=0) {
                 }
 
                 bool isALeaf (real_t diagonal, real_t cx, real_t cz) {
@@ -473,7 +479,7 @@ namespace lazyquadtree {
                 }
                 void prepare () {
 
-                        const PointF &cameraPosition = staticParameters.cameraPosition;
+                        //const PointF &cameraPosition = staticParameters.cameraPosition;
                         // If we once re-use an existing quadtree, we should
                         // also save the original bounding box, as LOD's must be
                         // recalculated

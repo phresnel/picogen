@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include "ignore_strict_aliasing" // because of boost::optional
 #include "../../include/volume/exponential.hh"
 #include "../../include/interval.hh"
 #include <cmath>
@@ -103,7 +104,7 @@ real_t Exponential::density (real_t h) const {
 
 
 
-real_t Exponential::density(const Point &p, Random& rand) const {
+real_t Exponential::density(const Point &p, Random& /*rand*/) const {
         const real_t h = dot (vector_cast<Vector>(p-min), up);
         return density (h);
 }

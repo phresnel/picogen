@@ -39,7 +39,7 @@ Emission::Emission (real_t stepSize_, real_t cutoffDistance_)
 tuple<real_t,Color> Emission::Li (
         const Scene &scene,
         const RayDifferential &raydiff,
-        const Sample &sample,
+        const Sample &/*sample*/,
         const Interval &interval,
         Random &rand
 ) const {
@@ -118,7 +118,7 @@ tuple<real_t,Color> Emission::Li (
 
 tuple<real_t,Color> Emission::Transmittance(
         const Scene &scene,
-        const Ray &ray, const Sample &sample,
+        const Ray &ray, const Sample &/*sample*/,
         const Interval &interval,
         Random &rand
 ) const {

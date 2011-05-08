@@ -44,13 +44,13 @@ BsdfSample Mirror::sample_f (
 
 
 
-Color Mirror::f (const Vector &out, const Vector &in, Random&) const {
+Color Mirror::f (const Vector &/*out*/, const Vector &/*in*/, Random&) const {
         return Color(0);
 }
 
 
 
-real_t Mirror::pdf (const Vector &out, const Vector &in) const {
+real_t Mirror::pdf (const Vector &/*out*/, const Vector &/*in*/) const {
         return 0;
 }
 
