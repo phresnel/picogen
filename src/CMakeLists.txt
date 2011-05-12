@@ -4,28 +4,6 @@ project (picogen)
 
 
 ###############################################################################
-# Xyto files.
-###############################################################################
-set (auxBaseDir auxiliary)
-set (xytoLibFiles
-        ${auxBaseDir}/xyto/compiler.cc
-        ${auxBaseDir}/xyto/interpreter.cc
-        ${auxBaseDir}/xyto/lsystem.cc
-        ${auxBaseDir}/xyto/parameter.cc
-        ${auxBaseDir}/xyto/parameterlist.cc
-        ${auxBaseDir}/xyto/parse_expr.cc
-        ${auxBaseDir}/xyto/pattern.cc
-        ${auxBaseDir}/xyto/production.cc
-        ${auxBaseDir}/xyto/production_body.cc
-        ${auxBaseDir}/xyto/production_header.cc
-        ${auxBaseDir}/xyto/segment.cc
-        ${auxBaseDir}/xyto/token.cc
-        ${auxBaseDir}/xyto/tokenize.cc
-        ${auxBaseDir}/xyto/xyto_ios.cc
-)
-
-
-###############################################################################
 # Redshift files.
 ###############################################################################
 set (redshiftBaseDir renderer/redshift)
@@ -99,8 +77,6 @@ set (redshiftLibFiles
         ${redshiftBaseDir}/src/volume/exponential.cc
         ${redshiftBaseDir}/src/volume/homegeneous.cc
         ${redshiftBaseDir}/src/volume/list.cc
-
-        ${xytoLibFiles}
 )
 set (redshift
         ${redshiftLibFiles}
@@ -159,7 +135,8 @@ link_libraries(${NOISE_LIBRARY})   # TODO: is there a portable one?
 ###############################################################################
 # Build settings.
 ###############################################################################
-message (STATUS "foo: " ${NOISE_INCLUDE_DIR})
+#message (STATUS "foo: " ${NOISE_INCLUDE_DIR})
+message (STATUS "xyto files: " ${xytoFiles})
 
 add_definitions (-O3
                  -ffast-math -msse -mfpmath=sse
@@ -182,4 +159,8 @@ include_directories (
         ${OPENEXR_INCLUDE_PATHS}
         ${NOISE_INCLUDE_DIR}
 )
+
+add_subdirectory (auxiliary/xyto/)
+link_libraries(libxyto)
+
 add_executable (redshift  ${redshift})
