@@ -6,7 +6,7 @@ project (picogen)
 ###############################################################################
 # Redshift files.
 ###############################################################################
-set (redshiftBaseDir renderer/redshift)
+set (redshiftBaseDir ../renderer/redshift)
 set (redshiftLibFiles
         ${redshiftBaseDir}/src/constants.cc
         ${redshiftBaseDir}/src/jobfile.cc
@@ -136,7 +136,7 @@ link_libraries(${NOISE_LIBRARY})   # TODO: is there a portable one?
 # Build settings.
 ###############################################################################
 #message (STATUS "foo: " ${NOISE_INCLUDE_DIR})
-message (STATUS "xyto files: " ${xytoFiles})
+#message (STATUS "xyto files: " ${xytoFiles})
 
 add_definitions (-O3
                  -ffast-math -msse -mfpmath=sse
@@ -153,14 +153,14 @@ add_definitions (-O3
                 )
 include_directories (
         ${redshiftBaseDir}/include/  # TODO: get rid of this line
-        renderer/                    # TODO: get rid of this line
-        /usr/include/SDL/            # TODO: get rid of this line
-        auxiliary/
+        ../renderer/                    # TODO: get rid of this line
+        ../auxiliary/
+        ${SDL_INCLUDE_DIR}
         ${OPENEXR_INCLUDE_PATHS}
         ${NOISE_INCLUDE_DIR}
 )
 
-add_subdirectory (auxiliary/xyto/)
+add_subdirectory (../auxiliary/xyto/ "${CMAKE_CURRENT_BINARY_DIR}/xyto")
 link_libraries(libxyto)
 
 add_executable (redshift  ${redshift})
