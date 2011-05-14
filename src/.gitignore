@@ -101,23 +101,23 @@ upstream/qt-widgets
 
 BUILD/
 
-compile
-configure
-configure.lineno
-depcomp
-install-sh
-missing
-Makefile.in
-aclocal.m4
-autom4te.cache
-.deps/
-.dirstamp
-config.log
-config.status
-Makefile
-libtool
-picogen-pure
-cosygui
+./compile
+./configure
+./configure.lineno
+./depcomp
+./install-sh
+./missing
+./Makefile.in
+./aclocal.m4
+./autom4te.cache
+./.deps/
+./.dirstamp
+./config.log
+./config.status
+./Makefile
+./libtool
+./picogen-pure
+./cosygui
 
 m4/config.guess
 m4/config.sub
@@ -128,5 +128,12 @@ m4/ltsugar.m4
 m4/ltversion.m4
 m4/lt~obsolete.m4
 
-.deps
-.libs
+./.deps
+./.libs
+
+
+build/CMakeCache.txt
+build/CMakeFiles/
+build/cmake_install.cmake
+build/xyto
+build/Makefile
