@@ -20,7 +20,7 @@
 
 #include <iostream>
 //#include "redshift/include/redshift.hh"
-#include "quatschsourceeditor.hh"
+#include "quatschsourceeditor.h"
 #include <QCloseEvent>
 #include <QMessageBox>
 
@@ -492,3 +492,6 @@ void QuatschSourceEditor::on_help_clicked() {
 void QuatschSourceEditor::on_interestingPrograms_clicked() {
         helpBrowser->gotoQuatsch(PicohelpBrowser::QuatschInterestingPrograms);
 }
+
+
+#include "quatschsourceeditor.moc"

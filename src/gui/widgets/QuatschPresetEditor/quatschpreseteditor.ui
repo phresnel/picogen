@@ -107,7 +107,7 @@
   <customwidget>
    <class>QuatschPreview</class>
    <extends>QWidget</extends>
-   <header>quatschpreview.hh</header>
+   <header>quatschpreview.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

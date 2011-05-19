@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "navigationgraphicsview.hh"
+#include "navigationgraphicsview.h"
 #include <limits>
 #include <cmath>
 #include <QMouseEvent>
@@ -186,3 +186,6 @@ void NavigationGraphicsView::setPixelSize (int s) {
         pixelSize_ = s;
         viewport()->update();
 }
+
+#include "navigationgraphicsview.moc"
+

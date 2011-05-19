@@ -21,10 +21,10 @@
 #include "cosyscene/rendersettings.hh"
 #include "cosyscene/filmsettings.hh"
 
-#include "rendersettingswindow.hh"
+#include "rendersettingswindow.h"
 #include "ui_rendersettingswindow.h"
-#include "scopedblocksignals.hh"
-#include "stashview.hh"
+#include "scopedblocksignals.h"
+#include "stashview.h"
 
 #include <QMessageBox>
 #include <QMenu>
@@ -317,3 +317,5 @@ void RenderSettingsWindow::adjustDefaultValues(cosyscene::RenderSettings &rs) {
                 rs.setSurfaceIntegrator(si);
         }
 }
+
+#include "rendersettingswindow.moc"

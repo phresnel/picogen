@@ -18,14 +18,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "quatschpreseteditor.hh"
+#include "quatschpreseteditor.h"
 #include "ui_quatschpreseteditor.h"
 #include "quatsch-preprocessor/parsing.hh"
 #include "cosyscene/terrain.hh"
 
 #include <cmath>
 
-#include "filenameedit.hh"
+#include "filenameedit.h"
 
 #include <QTextEdit>
 #include <QLineEdit>
@@ -389,3 +389,5 @@ void QuatschPresetEditor::on_preset_textChanged() {
 void QuatschPresetEditor::on_hidePreprocessedCode_clicked() {
         ui->preprocessedCode->setVisible(false);
 }
+
+#include "quatschpreseteditor.moc"

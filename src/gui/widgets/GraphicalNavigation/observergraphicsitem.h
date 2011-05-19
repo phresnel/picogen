@@ -23,8 +23,8 @@
 
 #include <QGraphicsObject>
 #include <QVector2D>
-#include "heightfunction.hh"
-#include "observer.hh"
+#include "heightfunction.h"
+#include "observer.h"
 
 enum AutoHeightMode {
         KeepAbsoluteHeight,

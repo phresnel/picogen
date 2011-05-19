@@ -45,7 +45,7 @@
   <customwidget>
    <class>QuatschPresetEditor</class>
    <extends>QWidget</extends>
-   <header location="global">quatschpreseteditor.hh</header>
+   <header location="global">quatschpreseteditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

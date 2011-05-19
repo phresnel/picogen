@@ -20,7 +20,7 @@
 
 #include <QtGui/QApplication>
 #include <QDebug>
-#include "mainwindow.hh"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {

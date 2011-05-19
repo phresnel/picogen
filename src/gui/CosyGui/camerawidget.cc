@@ -18,11 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "camerawidget.hh"
+#include "camerawidget.h"
 #include "ui_camerawidget.h"
 
-#include "stashview.hh"
-#include "scopedblocksignals.hh"
+#include "stashview.h"
+#include "scopedblocksignals.h"
 
 #include "cosyscene/camera.hh"
 #include "cosyscene/scene.hh"
@@ -176,3 +176,5 @@ void CameraWidget::on_stashResetButton_clicked() {
                 emit cameraChanged();
         }
 }
+
+#include "camerawidget.moc"

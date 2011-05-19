@@ -18,11 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "sunskywindow.hh"
+#include "sunskywindow.h"
 #include "ui_sunskywindow.h"
 #include "cosyscene/sunsky.hh"
 #include "cosyscene/scene.hh"
-#include "stashview.hh"
+#include "stashview.h"
 #include "redshift/include/smart_ptr.hh"
 
 #include <QMessageBox>
@@ -184,3 +184,5 @@ void SunSkyWindow::on_stashResetButton_clicked() {
                 emit skyChanged();
         }
 }
+
+#include "sunskywindow.moc"

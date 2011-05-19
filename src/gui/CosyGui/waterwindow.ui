@@ -117,19 +117,19 @@
   <customwidget>
    <class>TerrainFormation</class>
    <extends>QWidget</extends>
-   <header>terrainformation.hh</header>
+   <header>terrainformation.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Material</class>
    <extends>QWidget</extends>
-   <header>material-ui.hh</header>
+   <header>material-ui.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>WaterFitting</class>
    <extends>QWidget</extends>
-   <header>waterfitting.hh</header>
+   <header>waterfitting.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

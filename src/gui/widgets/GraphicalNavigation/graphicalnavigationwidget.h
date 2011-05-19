@@ -23,8 +23,8 @@
 
 #include <QWidget>
 #include <QVector3D>
-#include "heightfunction.hh"
-#include "observergraphicsitem.hh"
+#include "heightfunction.h"
+#include "observergraphicsitem.h"
 
 class QGraphicsScene;
 class QGraphicsPixmapItem;

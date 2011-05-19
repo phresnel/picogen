@@ -30,7 +30,7 @@
 #include <QMessageBox>
 #include <QTime>
 
-#include "renderwindow.hh"
+#include "renderwindow.h"
 #include "ui_renderwindow.h"
 #include "redshift/include/jobfile.hh"
 #include "redshift/include/image-export.hh"
@@ -550,3 +550,5 @@ void RenderWindow::resizeEvent (QResizeEvent *) {
 void RenderWindow::on_pauseButton_clicked(bool checked) {
         impl->setUserWantsToPause (checked);
 }
+
+#include "renderwindow.moc"

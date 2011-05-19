@@ -222,19 +222,19 @@
   <customwidget>
    <class>StashFrame</class>
    <extends>QFrame</extends>
-   <header>stashframe.hh</header>
+   <header>stashframe.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QuatschSourceEditor</class>
    <extends>QWidget</extends>
-   <header>quatschsourceeditor.hh</header>
+   <header>quatschsourceeditor.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QuatschPresetEditor</class>
    <extends>QWidget</extends>
-   <header>quatschpreseteditor.hh</header>
+   <header>quatschpreseteditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

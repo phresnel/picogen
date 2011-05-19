@@ -28,5 +28,5 @@ include_directories (
         ../../renderer/redshift/include/   # redshift
 )
 
-add_executable (xyto  EXCLUDE_FROM_ALL  ${xytoFiles} main.cpp)
+add_executable (xyto  EXCLUDE_FROM_ALL  ${xytoFiles} ../main.cpp)
 add_library (libxyto  ${xytoFiles})

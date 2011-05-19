@@ -22,7 +22,7 @@
 #define TWINRENDERSETTINGS_HH
 
 #include <QWidget>
-#include "rendersettingswindow.hh"
+#include "rendersettingswindow.h"
 #include "cosyscene/cosyfwd.hh"
 
 namespace Ui {

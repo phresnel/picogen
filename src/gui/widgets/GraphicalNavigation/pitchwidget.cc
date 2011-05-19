@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "pitchwidget.hh"
+#include "pitchwidget.h"
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
@@ -165,3 +165,5 @@ void PitchWidget::updateIndicators(QMouseEvent *event) {
 
         repaint();
 }
+
+#include "pitchwidget.moc"

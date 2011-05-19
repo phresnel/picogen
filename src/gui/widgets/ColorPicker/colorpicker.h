@@ -30,7 +30,7 @@
 #include <stdexcept>
 #include <fstream>
 
-#include "colorpickercolor.hh"
+#include "colorpickercolor.h"
 
 namespace Ui {
         class ColorPicker;

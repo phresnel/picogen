@@ -60,13 +60,13 @@
   <customwidget>
    <class>StashFrame</class>
    <extends>QFrame</extends>
-   <header>stashframe.hh</header>
+   <header>stashframe.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QtSunSkyEditor</class>
    <extends>QWidget</extends>
-   <header>qtsunskyeditor.hh</header>
+   <header>qtsunskyeditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

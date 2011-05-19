@@ -31,7 +31,7 @@
 #include <QHash>
 #include <QTextCharFormat>
 
-#include "../Picohelp/picohelpbrowser.hh"
+#include "../Picohelp/picohelpbrowser.h"
 
 
 

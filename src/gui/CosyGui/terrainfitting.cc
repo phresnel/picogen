@@ -18,11 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "terrainfitting.hh"
+#include "terrainfitting.h"
 #include "ui_terrainfitting.h"
 #include "cosyscene/terrain.hh"
-#include "scopedblocksignals.hh"
-#include "stashview.hh"
+#include "scopedblocksignals.h"
+#include "stashview.h"
 
 #include <QMessageBox>
 
@@ -108,3 +108,5 @@ void TerrainFitting::on_stashResetButton_clicked() {
                 emit fittingChanged();
         }
 }
+
+#include "terrainfitting.moc"

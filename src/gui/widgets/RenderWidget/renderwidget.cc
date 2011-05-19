@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "renderwidget.hh"
+#include "renderwidget.h"
 #include "ui_renderwidget.h"
 
 #include <QImage>
@@ -30,7 +30,7 @@
 
 // deb
 #include <QTemporaryFile>
-#include "renderwindow.hh"
+#include "renderwindow.h"
 
 RenderWidget::RenderWidget(QWidget *parent) :
     QWidget(parent),
@@ -236,3 +236,5 @@ void RenderWidgetThread::report (int /*completed*/, int /*total*/) {
                 firstReport_ = false;
         }
 }
+
+#include "renderwidget.moc"

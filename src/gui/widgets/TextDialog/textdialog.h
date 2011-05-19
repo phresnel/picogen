@@ -18,40 +18,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef COLORPICKERWIDGET_HH
-#define COLORPICKERWIDGET_HH
 
-#include <QWidget>
 
-#include "colorpickercolor.hh"
+#ifndef TEXTDIALOG_HH
+#define TEXTDIALOG_HH
+
+#include <QDialog>
 
 namespace Ui {
-    class ColorPickerWidget;
+    class TextDialog;
 }
 
-class ColorPickerWidget : public QWidget
+class TextDialog : public QDialog
 {
-        Q_OBJECT
+    Q_OBJECT
 
 public:
-        explicit ColorPickerWidget(QWidget *parent = 0);
-        ~ColorPickerWidget();
+    explicit TextDialog(bool readOnly = true, QWidget *parent = 0);
+    ~TextDialog();
 
-        void setColor (ColorPickerColor const &color);
-        ColorPickerColor color () const;
-
-signals:
-        void colorChanged (ColorPickerColor const &);
+    void setText(QString text);
+    void setText(std::string const & text);
+    QString toPlainText() const;
 
 private:
-        Ui::ColorPickerWidget *ui;
-        ColorPickerColor color_;
-
-private slots:
-        void on_spectralRadioButton_toggled(bool checked);
-        void on_tristimulusRadioButton_toggled(bool checked);
-        void tristimulusColorChanged (TristimulusColor);
-        void spectralColorChanged (QVector<SpectralSample> const & c);
+    Ui::TextDialog *ui;
 };
 
-#endif // COLORPICKERWIDGET_HH
+#endif // TEXTDIALOG_HH

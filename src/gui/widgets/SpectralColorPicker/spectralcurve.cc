@@ -21,9 +21,9 @@
 #include <QPainter>
 #include <QPaintEvent>
 
-#include "spectralcurve.hh"
+#include "spectralcurve.h"
 #include "ui_spectralcurve.h"
-#include "createspectralimage.hh"
+#include "createspectralimage.h"
 
 SpectralCurve::SpectralCurve(QWidget *parent) :
     QWidget(parent),
@@ -126,3 +126,5 @@ void SpectralCurve::paintEvent (QPaintEvent *e) {
 void SpectralCurve::setSpectrum (SpectralColorPicker::Spectrum  const &spectrum) {
         this->spectrum = spectrum;
 }
+
+#include "spectralcurve.moc"

@@ -20,7 +20,7 @@
 
 
 
-#include "mainwindow.hh"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -46,3 +46,5 @@ void MainWindow::changeEvent(QEvent *e)
         break;
     }
 }
+
+#include "mainwindow.moc"

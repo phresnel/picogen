@@ -21,7 +21,7 @@
 #include "redshift/include/basictypes/spectrum.hh"
 
 #include <iostream>
-#include "tristimuluscolorpicker.hh"
+#include "tristimuluscolorpicker.h"
 #include "ui_tristimuluscolorpicker.h"
 
 #include "redshift/include/setup.hh"
@@ -316,3 +316,5 @@ void TristimulusColorPicker::on_spinMin_valueChanged(double ) {
 void TristimulusColorPicker::on_spinMax_valueChanged(double ) {
         on_spinMin_valueChanged(double());
 }
+
+#include "tristimuluscolorpicker.moc"

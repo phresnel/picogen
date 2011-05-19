@@ -30,7 +30,7 @@
 
 #include "redshift/include/smart_ptr.hh"
 #include "cosyscene/stash.hh"
-#include "stashframe.hh"
+#include "stashframe.h"
 
 class QListWidgetItem;
 namespace Ui {

@@ -1,0 +1,129 @@
+cmake_minimum_required (VERSION 2.6)
+project (CosyGui)
+
+if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        add_definitions (-Wall -Wextra -D__STDC_LIMIT_MACROS)
+endif()
+
+
+
+
+
+
+include_directories (../../../renderer/redshift/include)
+include_directories (../../../renderer/)
+include_directories (../../../auxiliary/)
+
+
+
+
+# -- openmp package -----------------------------------------------------------
+find_package (OpenMP REQUIRED)
+link_libraries(gomp)
+add_definitions (${OpenMP_CXX_FLAGS})
+
+
+
+
+# -- qt package ---------------------------------------------------------------
+find_package(Qt4 REQUIRED)
+
+# Include dirs.
+include_directories (
+        ./                   # for generated stuff
+        ../                  # project source folder
+        ${QT_INCLUDE_DIR}    # self-explaining
+)
+
+# Used Qt Modules.
+set(QT_USE_QTWEBKIT TRUE)
+
+include(${QT_USE_FILE})
+
+
+
+
+
+# -- subs ---------------------------------------------------------------------
+set (widgets_dir ../../widgets)
+
+MACRO(priinclude subdir)
+        set (pwd "${subdir}")
+        include("${subdir}/include.cmake")
+ENDMACRO(priinclude)
+
+
+priinclude("${widgets_dir}/TextDialog")
+priinclude("${widgets_dir}/SpectralColorPicker")
+priinclude("${widgets_dir}/TristimulusColorPicker")
+priinclude("${widgets_dir}/ColorPicker")
+priinclude("${widgets_dir}/RenderWidget")
+priinclude("${widgets_dir}/RenderWindow")
+priinclude("${widgets_dir}/GraphicalNavigation")
+priinclude("${widgets_dir}/QtSunSkyEditor")
+priinclude("${widgets_dir}/QuatschPresetEditor")
+priinclude("${widgets_dir}/QuatschPreview")
+priinclude("${widgets_dir}/QuatschSourceEditor")
+priinclude("${widgets_dir}/Picohelp")
+
+include_directories(../../../upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src)
+
+
+
+# -- sources ------------------------------------------------------------------
+set (cosygui_src_dir ..)
+set (sources ${sources}
+        ${cosygui_src_dir}/camerawidget.cc
+        ${cosygui_src_dir}/filmsettingsandcamera.cc
+        ${cosygui_src_dir}/filmsettingswindow.cc
+        ${cosygui_src_dir}/main.cc
+        ${cosygui_src_dir}/mainwindow.cc
+        ${cosygui_src_dir}/material-ui.cc
+        ${cosygui_src_dir}/navigationwindow.cc
+        ${cosygui_src_dir}/rendersettingswindow.cc
+        ${cosygui_src_dir}/startpopup.cc
+        ${cosygui_src_dir}/stashframe.cc
+        ${cosygui_src_dir}/stashview.cc
+        ${cosygui_src_dir}/stylesheetliveeditor.cc
+        ${cosygui_src_dir}/sunskywindow.cc
+        ${cosygui_src_dir}/terrainfitting.cc
+        ${cosygui_src_dir}/terrainformation.cc
+        ${cosygui_src_dir}/terrainwindow.cc
+        ${cosygui_src_dir}/twinrendersettingswindow.cc
+        ${cosygui_src_dir}/waterfitting.cc
+        ${cosygui_src_dir}/waterwindow.cc
+)
+
+
+
+# -- ui -----------------------------------------------------------------------
+set(forms ${forms}
+        ${cosygui_src_dir}/camerawidget.ui
+        ${cosygui_src_dir}/filmsettingsandcamera.ui
+        ${cosygui_src_dir}/filmsettingswindow.ui
+        ${cosygui_src_dir}/mainwindow.ui
+        ${cosygui_src_dir}/material-ui.ui
+        ${cosygui_src_dir}/navigationwindow.ui
+        ${cosygui_src_dir}/rendersettingswindow.ui
+        ${cosygui_src_dir}/startpopup.ui
+        ${cosygui_src_dir}/stashframe.ui
+        ${cosygui_src_dir}/stashview.ui
+        ${cosygui_src_dir}/stylesheetliveeditor.ui
+        ${cosygui_src_dir}/sunskywindow.ui
+        ${cosygui_src_dir}/terrainfitting.ui
+        ${cosygui_src_dir}/terrainformation.ui
+        ${cosygui_src_dir}/terrainwindow.ui
+        ${cosygui_src_dir}/twinrendersettingswindow.ui
+        ${cosygui_src_dir}/waterfitting.ui
+        ${cosygui_src_dir}/waterwindow.ui
+)
+
+qt4_automoc (${sources})
+qt4_wrap_ui (forms_h ${forms})
+
+
+
+
+
+# -- targets ------------------------------------------------------------------
+add_executable (CosyGui  ${sources} ${forms_h})

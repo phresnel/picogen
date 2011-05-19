@@ -417,19 +417,19 @@
   <customwidget>
    <class>RollWidget</class>
    <extends>QWidget</extends>
-   <header>rollwidget.hh</header>
+   <header>rollwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PitchWidget</class>
    <extends>QWidget</extends>
-   <header>pitchwidget.hh</header>
+   <header>pitchwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>NavigationGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>navigationgraphicsview.hh</header>
+   <header>navigationgraphicsview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

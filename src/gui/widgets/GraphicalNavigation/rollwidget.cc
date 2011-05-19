@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "rollwidget.hh"
+#include "rollwidget.h"
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
@@ -165,3 +165,5 @@ void RollWidget::updateIndicators(QMouseEvent *event) {
         }
         repaint();
 }
+
+#include "rollwidget.moc"

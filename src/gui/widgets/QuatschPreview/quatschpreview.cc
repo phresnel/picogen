@@ -20,7 +20,7 @@
 
 #include <limits>
 #include "redshift/include/basictypes/quatsch-height-function.hh"
-#include "quatschpreview.hh"
+#include "quatschpreview.h"
 #include "ui_quatschpreview.h"
 
 #include <QMouseEvent>
@@ -155,3 +155,5 @@ bool QuatschPreview::eventFilter(QObject *ob, QEvent *e) {
 void QuatschPreview::setStatusText (QString const &str) {
         ui->status->setText(str);
 }
+
+#include "quatschpreview.moc"

@@ -22,11 +22,11 @@
 #include <fstream>
 #include <QMessageBox>
 
-#include "spectralcolorpicker.hh"
-#include "spectralslider.hh"
+#include "spectralcolorpicker.h"
+#include "spectralslider.h"
 #include "ui_spectralcolorpicker.h"
 
-#include "importrawdatawizard.hh"
+#include "importrawdatawizard.h"
 
 
 SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
@@ -284,3 +284,5 @@ void SpectralColorPicker::setSamples (QVector<SpectralSample>  const & samples) 
 /*void SpectralColorPicker::setColor (redshift::Spectrum const &) {
 
 }*/
+
+#include "spectralcolorpicker.moc"

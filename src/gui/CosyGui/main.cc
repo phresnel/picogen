@@ -24,7 +24,7 @@
 #include <QMessageBox>
 #include <QFile>
 
-#include "mainwindow.hh"
+#include "mainwindow.h"
 
 #include <fstream>
 
@@ -34,7 +34,7 @@
 
 #include "redshift/include/static_init.hh"
 #include "redshift/include/redshift_file/scene.hh"
-#include "renderwindow.hh"
+#include "renderwindow.h"
 
 #undef main
 

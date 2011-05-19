@@ -18,9 +18,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "filmsettingsandcamera.hh"
+#include "filmsettingsandcamera.h"
 #include "ui_filmsettingsandcamera.h"
-#include "scopedblocksignals.hh"
+#include "scopedblocksignals.h"
 
 #include "cosyscene/scene.hh"
 
@@ -60,3 +60,5 @@ void FilmSettingsAndCamera::on_filmSettings_filmSettingsChanged() {
 void FilmSettingsAndCamera::on_camera_cameraChanged() {
         emit cameraChanged();
 }
+
+#include "filmsettingsandcamera.moc"

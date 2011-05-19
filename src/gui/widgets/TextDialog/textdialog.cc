@@ -18,8 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-#include "textdialog.hh"
+#include "textdialog.h"
 #include "ui_textdialog.h"
 
 TextDialog::TextDialog(bool readOnly, QWidget *parent) :
@@ -46,3 +45,5 @@ void TextDialog::setText(std::string const & text) {
 QString TextDialog::toPlainText() const {
     return ui->textEdit->toPlainText();
 }
+
+#include "textdialog.moc"

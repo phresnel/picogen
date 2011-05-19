@@ -21,8 +21,8 @@
 #ifndef COLORPICKERCOLOR_HH
 #define COLORPICKERCOLOR_HH
 
-#include <spectralcolorpicker.hh>
-#include <tristimuluscolorpicker.hh>
+#include <spectralcolorpicker.h>
+#include <tristimuluscolorpicker.h>
 
 struct ColorPickerColor {
         enum Mode { Spectral, Tristimulus } mode;

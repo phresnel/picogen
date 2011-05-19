@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "startpopup.hh"
+#include "startpopup.h"
 #include "ui_startpopup.h"
 
 StartPopup::StartPopup(QWidget *parent) :
@@ -39,3 +39,5 @@ void StartPopup::setDisclaimer(const QString &disclaimer) {
 void StartPopup::on_pushButton_clicked() {
         accept();
 }
+
+#include "startpopup.moc"

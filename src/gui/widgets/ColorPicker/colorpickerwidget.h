@@ -18,38 +18,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SPECTRALCURVE_HH
-#define SPECTRALCURVE_HH
+#ifndef COLORPICKERWIDGET_HH
+#define COLORPICKERWIDGET_HH
 
 #include <QWidget>
 
+#include "colorpickercolor.h"
+
 namespace Ui {
-    class SpectralCurve;
+    class ColorPickerWidget;
 }
 
-#include "spectrumdisplay.hh"
-#include "spectralcolorpicker.hh"
+class ColorPickerWidget : public QWidget
+{
+        Q_OBJECT
 
-class SpectralCurve : public QWidget {
-    Q_OBJECT
 public:
-    SpectralCurve(QWidget *parent = 0);
-    ~SpectralCurve();
+        explicit ColorPickerWidget(QWidget *parent = 0);
+        ~ColorPickerWidget();
 
-    void setSpectrum (SpectralColorPicker::Spectrum const &spectrum);
-    void setEnergyRange (double min, double max);
-    void setMinEnergy (double e);
-    void setMaxEnergy (double e);
+        void setColor (ColorPickerColor const &color);
+        ColorPickerColor color () const;
 
-protected:
-    void changeEvent(QEvent *e);
-    void paintEvent (QPaintEvent *);
+signals:
+        void colorChanged (ColorPickerColor const &);
 
 private:
-    Ui::SpectralCurve *ui;
-    QImage spectralImage;
-    SpectralColorPicker::Spectrum spectrum;
-    double energyMin, energyMax;
+        Ui::ColorPickerWidget *ui;
+        ColorPickerColor color_;
+
+private slots:
+        void on_spectralRadioButton_toggled(bool checked);
+        void on_tristimulusRadioButton_toggled(bool checked);
+        void tristimulusColorChanged (TristimulusColor);
+        void spectralColorChanged (QVector<SpectralSample> const & c);
 };
 
-#endif // SPECTRALCURVE_HH
+#endif // COLORPICKERWIDGET_HH

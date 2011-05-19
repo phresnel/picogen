@@ -18,12 +18,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "material-ui.hh"
+#include "material-ui.h"
 #include "ui_material-ui.h"
-#include "stashview.hh"
+#include "stashview.h"
 
 #include "cosyscene/material.hh"
-#include "scopedblocksignals.hh"
+#include "scopedblocksignals.h"
 
 Material::Material(QWidget *parent) :
     QWidget(parent),
@@ -130,3 +130,4 @@ void Material::on_stashResetButton_clicked() {
                 emit materialChanged();
         }
 }
+#include "material-ui.moc"

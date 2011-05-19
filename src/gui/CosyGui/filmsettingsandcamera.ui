@@ -32,13 +32,13 @@
   <customwidget>
    <class>FilmSettingsWindow</class>
    <extends>QWidget</extends>
-   <header>filmsettingswindow.hh</header>
+   <header>filmsettingswindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CameraWidget</class>
    <extends>QWidget</extends>
-   <header>camerawidget.hh</header>
+   <header>camerawidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

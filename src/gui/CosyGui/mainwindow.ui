@@ -14,7 +14,7 @@
    <string>picogen:CosyGui</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#centralWidget { 
+   <string notr="true">#centralWidget {
 background: qlineargradient(x1: 0, y1: 0, x2:0, y2: 1,
 stop: 0 #b6b6b6, stop: 0.08 #8f8f8f,
 stop: 0.4 #727272,
@@ -92,7 +92,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
 QPushButton:checked:hover {
 background: qradialgradient(cx: 0.3, cy: -0.4,
 fx: 0.3, fy: 0.4,
-radius: 1.35, 
+radius: 1.35,
 stop: 0 #eee, stop: 1 #bbb);
 }
 
@@ -186,7 +186,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
 StashFrame QPushButton:checked:hover {
 background: qradialgradient(cx: 0.3, cy: -0.4,
 fx: 0.3, fy: 0.4,
-radius: 1.35, 
+radius: 1.35,
 stop: 0 #fed, stop: 1 #bbb);
 }
 
@@ -218,7 +218,7 @@ border-radius: 11px;
 padding: 5px;
 background: qradialgradient(cx: 0.3, cy: -0.4,
 fx: 0.3, fy: 0.4,
-radius: 1.35, 
+radius: 1.35,
 stop: 0 #efd, stop: 1 #888);
 min-width: 80px;
 }
@@ -235,7 +235,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
 #navigationFrame QPushButton:checked:hover {
 background: qradialgradient(cx: 0.3, cy: -0.4,
 fx: 0.3, fy: 0.4,
-radius: 1.35, 
+radius: 1.35,
 stop: 0 #efd, stop: 1 #bbb);
 }
 
@@ -246,11 +246,11 @@ stop: 0 #efd, stop: 1 #bbb);
 #subNavigationFrame {
 border: none;
 background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-stop: 0 #a6a6a6, 
+stop: 0 #a6a6a6,
 stop: 0.08 #7f7f7f,
-stop: 0.39999 #717171, 
+stop: 0.39999 #717171,
 stop: 0.4 #626262,
-stop: 0.9 #4c4c4c, 
+stop: 0.9 #4c4c4c,
 stop: 1 #333333);
 }
 #subNavigationFrame QPushButton {
@@ -270,7 +270,7 @@ border-radius: 11px;
 padding: 5px;
 background: qradialgradient(cx: 0.3, cy: -0.4,
 fx: 0.3, fy: 0.4,
-radius: 1.35, 
+radius: 1.35,
 stop: 0 #fed, stop: 1 #888);
 min-width: 80px;
 }
@@ -287,7 +287,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
 #subNavigationFrame QPushButton:checked:hover {
 background: qradialgradient(cx: 0.3, cy: -0.4,
 fx: 0.3, fy: 0.4,
-radius: 1.35, 
+radius: 1.35,
 stop: 0 #fed, stop: 1 #bbb);
 }</string>
   </property>
@@ -703,43 +703,43 @@ stop: 0 #fed, stop: 1 #bbb);
   <customwidget>
    <class>RenderWidget</class>
    <extends>QWidget</extends>
-   <header>renderwidget.hh</header>
+   <header>renderwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TerrainWindow</class>
    <extends>QWidget</extends>
-   <header>terrainwindow.hh</header>
+   <header>terrainwindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SunSkyWindow</class>
    <extends>QWidget</extends>
-   <header>sunskywindow.hh</header>
+   <header>sunskywindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>NavigationWindow</class>
    <extends>QWidget</extends>
-   <header>navigationwindow.hh</header>
+   <header>navigationwindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TwinRenderSettingsWindow</class>
    <extends>QWidget</extends>
-   <header>twinrendersettingswindow.hh</header>
+   <header>twinrendersettingswindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>WaterWindow</class>
    <extends>QWidget</extends>
-   <header>waterwindow.hh</header>
+   <header>waterwindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FilmSettingsAndCamera</class>
    <extends>QWidget</extends>
-   <header>filmsettingsandcamera.hh</header>
+   <header>filmsettingsandcamera.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

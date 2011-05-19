@@ -21,8 +21,8 @@
 
 
 #include <QtGui/QApplication>
-#include "mainwindow.hh"
-#include "colorpicker.hh"
+#include "mainwindow.h"
+#include "colorpicker.h"
 
 int main(int argc, char *argv[])
 {

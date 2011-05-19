@@ -18,11 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "waterwindow.hh"
+#include "waterwindow.h"
 #include "ui_waterwindow.h"
 #include "cosyscene/scene.hh"
 #include "cosyscene/water.hh"
-#include "stashview.hh"
+#include "stashview.h"
 #include <QMessageBox>
 
 WaterWindow::WaterWindow(QWidget *parent) :
@@ -101,3 +101,4 @@ void WaterWindow::on_texturing_materialChanged() {
         emit waterChanged();
 }
 
+#include "waterwindow.moc"

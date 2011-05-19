@@ -18,11 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "filmsettingswindow.hh"
+#include "filmsettingswindow.h"
 #include "ui_filmsettingswindow.h"
-#include "stashview.hh"
+#include "stashview.h"
 
-#include "scopedblocksignals.hh"
+#include "scopedblocksignals.h"
 
 #include "cosyscene/filmsettings.hh"
 #include "cosyscene/scene.hh"
@@ -85,3 +85,5 @@ void FilmSettingsWindow::on_stashResetButton_clicked() {
                 emit filmSettingsChanged();
         }
 }
+
+#include "filmsettingswindow.moc"

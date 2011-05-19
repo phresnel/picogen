@@ -15,7 +15,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">* {
-	background: #555; 
+	background: #555;
 	color: white;
 }
 
@@ -44,18 +44,18 @@ QScrollBar::add-page, QScrollBar::sub-page{
 	color:transparent;
 }
 
-QGraphicsView, QMdiArea, 
+QGraphicsView, QMdiArea,
 QTextEdit, QSpinBox, QDoubleSpinBox, QComboBox,
 QTreeView, QFrame#helpFrame {
 	color:white;
 	border:2px solid #ccc;
-	border-radius:10px; 
+	border-radius:10px;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #717171, stop: 0.5 #505050,
                                        stop: 0.6 #434343, stop:1 #757575);
 	alternate-background-color:#556;
 }
-QLineEdit:focus, QSpinBox:focus, 
+QLineEdit:focus, QSpinBox:focus,
 QDoubleSpinBox:focus, QComboBox:focus {
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #719171, stop: 0.5 #506050,
@@ -135,7 +135,7 @@ QGroupBox {
 	border-radius: 6px;
 	margin-top: 1ex; /* leave space at the top for the title */
 } QGroupBox::title {
-	color: orange;	
+	color: orange;
 	subcontrol-origin: margin;
 	subcontrol-position: top center; /* position at the top center */
 	padding: 0 3px;
@@ -156,7 +156,7 @@ QSplitter::handle:vertical{
 	border: 1px solid transparent;
 	border-radius:4px;
 	height:5px;
-	background-color: 
+	background-color:
 		qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #91b191, stop: 0.5 #607050,
                                        stop: 0.6 #536343, stop:1 #91b191);
@@ -165,7 +165,7 @@ QSplitter::handle:horizontal{
 	border: 1px solid transparent;
 	border-radius:4px;
 	width:5px;
-	background-color: 
+	background-color:
 		qlineargradient(x1:0, y1:0, x2:1, y2:0,
                                        stop:0 #91b191, stop: 0.5 #607050,
                                        stop: 0.6 #536343, stop:1 #91b191);
@@ -208,7 +208,7 @@ QTabWidget::pane { /* The tab widget frame */
         padding: 2px;
         color:#ccc;
 } QTabBar::tab:selected, QTabBar::tab:hover {
-        background-color: 
+        background-color:
 			qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                        stop:0 #9191b1, stop: 0.5 #607050,
                                        stop: 0.55 #334323, stop:1 #9191b1);
@@ -222,7 +222,7 @@ QTabWidget::pane { /* The tab widget frame */
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
-    <string notr="true">* { 
+    <string notr="true">* {
 background: #555;
 color: white;
 }
@@ -467,13 +467,13 @@ margin-top: 2px; /* make non-selected tabs look smaller */
   <customwidget>
    <class>PicohelpBrowser</class>
    <extends>QWidget</extends>
-   <header location="global">picohelpbrowser.hh</header>
+   <header location="global">picohelpbrowser.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QuatschSourceEditor</class>
    <extends>QWidget</extends>
-   <header>quatschsourceeditor.hh</header>
+   <header>quatschsourceeditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

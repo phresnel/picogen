@@ -20,7 +20,7 @@
 
 
 
-#include "colorpickerwidget.hh"
+#include "colorpickerwidget.h"
 #include "ui_colorpickerwidget.h"
 
 ColorPickerWidget::ColorPickerWidget(QWidget *parent) :
@@ -106,3 +106,5 @@ void ColorPickerWidget::on_spectralRadioButton_toggled(bool checked) {
                 emit colorChanged (color_);
         }
 }
+
+#include "colorpickerwidget.moc"

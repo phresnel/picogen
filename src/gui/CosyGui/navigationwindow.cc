@@ -23,18 +23,18 @@
 #include "cosyscene/scene.hh"
 #include "cosyscene/water.hh"
 
-#include "navigationwindow.hh"
+#include "navigationwindow.h"
 #include "ui_navigationwindow.h"
 
-#include "stashview.hh"
+#include "stashview.h"
 
 #include <stdexcept>
 #include <QDebug>
-#include "scopedblocksignals.hh"
+#include "scopedblocksignals.h"
 
 
 #include "redshift/include/basictypes/quatsch-height-function.hh"
-#include "heightfunction.hh"
+#include "heightfunction.h"
 namespace {
         class QuatschHeightFunction : public HeightFunction {
         public:
@@ -238,7 +238,7 @@ void NavigationWindow::on_stashResetButton_clicked() {
 
 
 
-#include "renderwindow.hh"
+#include "renderwindow.h"
 #include "cosyscene/scene.hh"
 void NavigationWindow::on_refreshButton_clicked() {
         refreshPreview();
@@ -264,3 +264,5 @@ void NavigationWindow::on_graphicalNavigation_orientationChanged (qreal, qreal, 
         updateFromViews();
         emit navigationChanged();
 }
+
+#include "navigationwindow.moc"

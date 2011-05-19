@@ -22,7 +22,7 @@
 #define NAVIGATIONGRAPHICSVIEW_HH
 
 #include <QGraphicsView>
-#include "heightfunction.hh"
+#include "heightfunction.h"
 
 class NavigationGraphicsView : public QGraphicsView
 {

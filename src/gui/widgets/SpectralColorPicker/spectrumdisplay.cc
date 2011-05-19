@@ -21,9 +21,9 @@
 #include <QPainter>
 #include <QPaintEvent>
 
-#include "spectrumdisplay.hh"
+#include "spectrumdisplay.h"
 #include "ui_spectrumdisplay.h"
-#include "createspectralimage.hh"
+#include "createspectralimage.h"
 
 SpectrumDisplay::SpectrumDisplay(QWidget *parent) :
     QWidget(parent),
@@ -66,3 +66,5 @@ void SpectrumDisplay::changeEvent(QEvent *e) {
                 break;
         }
 }
+
+#include "spectrumdisplay.moc"

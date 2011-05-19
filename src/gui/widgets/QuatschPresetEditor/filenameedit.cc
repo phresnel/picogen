@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "filenameedit.hh"
+#include "filenameedit.h"
 #include "ui_filenameedit.h"
 #include <QFileDialog>
 
@@ -46,3 +46,5 @@ QString FilenameEdit::filename() const {
 void FilenameEdit::setFilename (QString const &str) {
         ui->lineEdit->setText(str);
 }
+
+#include "filenameedit.moc"

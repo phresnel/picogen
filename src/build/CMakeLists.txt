@@ -122,7 +122,7 @@ link_libraries (${OPENEXR_LIBRARIES})
 
 ### OpenMP ###
 find_package (OpenMP REQUIRED)
-link_libraries(-lgomp)   # TODO: is there a portable one?
+link_libraries(gomp)   # TODO: is there a portable one?
 
 
 ### LibNoise ###
@@ -138,19 +138,24 @@ link_libraries(${NOISE_LIBRARY})   # TODO: is there a portable one?
 #message (STATUS "foo: " ${NOISE_INCLUDE_DIR})
 #message (STATUS "xyto files: " ${xytoFiles})
 
-add_definitions (-O3
-                 -ffast-math -msse -mfpmath=sse
+if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        add_definitions (-O3
+                         -ffast-math -msse -mfpmath=sse
 
-                #-Wpadded # when GCC puts pad-variables into structures. reordering fields might then be beneficial
-                -Wdisabled-optimization # when GCC was inable
-                #-Wsuggest-attribute=pure
-                #-Wsuggest-attribute=const
-                #-Wsuggest-attribute=noreturn
+                        #-Wpadded # when GCC puts pad-variables into structures. reordering fields might then be beneficial
+                        -Wdisabled-optimization # when GCC was inable
+                        #-Wsuggest-attribute=pure
+                        #-Wsuggest-attribute=const
+                        #-Wsuggest-attribute=noreturn
 
-                 ${OpenMP_CXX_FLAGS}
-                 -Wall -Wextra -Winit-self
-                 -D__STDC_LIMIT_MACROS
-                )
+                         ${OpenMP_CXX_FLAGS}
+                         -Wall -Wextra -Winit-self
+                         -D__STDC_LIMIT_MACROS
+                        )
+else()
+        message (STATUS "no special flags set for compiler")
+endif()
+
 include_directories (
         ${redshiftBaseDir}/include/  # TODO: get rid of this line
         ../renderer/                    # TODO: get rid of this line
@@ -160,7 +165,8 @@ include_directories (
         ${NOISE_INCLUDE_DIR}
 )
 
-add_subdirectory (../auxiliary/xyto/ "${CMAKE_CURRENT_BINARY_DIR}/xyto")
+add_subdirectory (../auxiliary/xyto/build "${CMAKE_CURRENT_BINARY_DIR}/xyto")
 link_libraries(libxyto)
 
 add_executable (redshift  ${redshift})
+add_library (libredshift ${redshiftLibFiles})

@@ -19,12 +19,12 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "terrainwindow.hh"
+#include "terrainwindow.h"
 #include "ui_terrainwindow.h"
 
 #include "cosyscene/scene.hh"
 #include "cosyscene/terrain.hh"
-#include "stashview.hh"
+#include "stashview.h"
 
 
 #include <QMessageBox>
@@ -107,3 +107,5 @@ void TerrainWindow::on_fitting_fittingChanged() {
 void TerrainWindow::on_texturing_materialChanged() {
         emit terrainChanged();
 }
+
+#include "terrainwindow.moc"

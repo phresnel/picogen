@@ -18,18 +18,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "mainwindow.hh"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "startpopup.hh"
+#include "startpopup.h"
 #include "cosyscene/scene.hh"
 #include "cosyscene/sunsky.hh"
 #include "cosyscene/save_load.hh"
 
 #include "redshift/include/redshift_file/scene.hh"
 
-#include "renderwindow.hh"
-#include "stylesheetliveeditor.hh"
-#include "textdialog.hh"
+#include "renderwindow.h"
+#include "stylesheetliveeditor.h"
+#include "textdialog.h"
 
 #include <iostream>
 #include <ctime>
@@ -472,3 +472,5 @@ void MainWindow::on_actionShow_redshift_file_used_for_last_rendering_triggered()
         d.setText(lastRedshiftJob);
         d.exec();
 }
+
+#include "mainwindow.moc"

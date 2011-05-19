@@ -49,3 +49,5 @@ void MainWindow::changeEvent(QEvent *e)
         break;
     }
 }
+
+#include "mainwindow.moc"

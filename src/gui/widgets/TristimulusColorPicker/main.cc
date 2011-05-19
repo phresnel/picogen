@@ -1,5 +1,5 @@
 #include <QtGui/QApplication>
-#include "mainwindow.hh"
+#include "mainwindow.h"
 #include "redshift/include/static_init.hh"
 
 int main(int argc, char *argv[])

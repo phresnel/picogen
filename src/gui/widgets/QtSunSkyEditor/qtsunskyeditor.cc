@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "qtsunskyeditor.hh"
+#include "qtsunskyeditor.h"
 #include "redshift/include/backgrounds/pss-adapter.hh"
 #include "redshift/include/backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <QPainter>
@@ -408,3 +408,5 @@ QSharedPointer<SunSkyEditorUpdateLock> QtSunSkyEditor::massUpdate() {
         return QSharedPointer<SunSkyEditorUpdateLock>(
                         new SunSkyEditorUpdateLock (this));
 }
+
+#include "qtsunskyeditor.moc"

@@ -24,7 +24,7 @@
 #include <QWidget>
 #include <QVector3D>
 #include "redshift/include/smart_ptr.hh"
-#include "createredshiftsceneclosure.hh"
+#include "createredshiftsceneclosure.h"
 #include "cosyscene/cosyfwd.hh"
 
 namespace Ui {

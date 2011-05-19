@@ -19,10 +19,10 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "mainwindow.hh"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "spectralcolorpicker.hh"
+#include "spectralcolorpicker.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -48,3 +48,5 @@ void MainWindow::changeEvent(QEvent *e)
         break;
     }
 }
+
+#include "mainwindow.moc"

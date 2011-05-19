@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-#include "spectralslider.hh"
+#include "spectralslider.h"
 #include "ui_spectralslider.h"
 
 SpectralSlider::SpectralSlider(double wavelength, QWidget *parent) :
@@ -95,3 +95,5 @@ void SpectralSlider::maximumChanged (double val) {
         ui->amplitude->setMaximum(val);
         ui->verticalSlider->setMaximum(val * 100000.);
 }
+
+#include "spectralslider.moc"

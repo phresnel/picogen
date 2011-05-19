@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "stylesheetliveeditor.hh"
+#include "stylesheetliveeditor.h"
 #include "ui_stylesheetliveeditor.h"
 
 StylesheetLiveEditor::StylesheetLiveEditor(QWidget *applyTo, QWidget *parent) :
@@ -53,3 +53,5 @@ void StylesheetLiveEditor::on_actionApply_triggered()
 {
         applyTo->setStyleSheet(ui->plainTextEdit->toPlainText());
 }
+
+#include "stylesheetliveeditor.moc"

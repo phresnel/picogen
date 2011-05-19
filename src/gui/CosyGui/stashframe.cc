@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "stashframe.hh"
+#include "stashframe.h"
 #include "ui_stashframe.h"
 #include "redshift/include/smart_ptr.hh"
 #include <QMessageBox>
@@ -104,3 +104,5 @@ void StashFrame::setPixmap (QString name)
                 QPixmap(name).scaledToHeight(ui->title->height(),
                                              Qt::SmoothTransformation));
 }
+
+#include "stashframe.moc"

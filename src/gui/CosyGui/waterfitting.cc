@@ -18,11 +18,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "waterfitting.hh"
+#include "waterfitting.h"
 #include "ui_waterfitting.h"
 #include "cosyscene/water.hh"
-#include "scopedblocksignals.hh"
-#include "stashview.hh"
+#include "scopedblocksignals.h"
+#include "stashview.h"
 
 #include <QMessageBox>
 
@@ -74,3 +74,6 @@ void WaterFitting::on_stashResetButton_clicked() {
                 emit fittingChanged();
         }
 }
+
+
+#include "waterwindow.moc"

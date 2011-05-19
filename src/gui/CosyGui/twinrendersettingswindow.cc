@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "twinrendersettingswindow.hh"
+#include "twinrendersettingswindow.h"
 #include "ui_twinrendersettingswindow.h"
 
 #include "cosyscene/scene.hh"
@@ -46,7 +46,7 @@ void TwinRenderSettingsWindow::setTwinRenderSettings (
         const bool wasBlocked = this->blockSignals(blockSignals);
 
         twinRenderSettings_ = tw;
-        ui->renderSettingsWindow->setRenderSettings(tw->production());        
+        ui->renderSettingsWindow->setRenderSettings(tw->production());
         ui->previewRenderSettingsWindow->setRenderSettings(tw->preview());
 
         if (reAdjustDefaultValues) {
@@ -78,3 +78,5 @@ void TwinRenderSettingsWindow::on_previewRenderSettingsWindow_renderSettingsChan
 void TwinRenderSettingsWindow::on_renderSettingsWindow_renderSettingsChanged() {
         emit renderSettingsChanged();
 }
+
+#include "twinrendersettingswindow.moc"

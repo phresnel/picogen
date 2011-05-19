@@ -20,13 +20,13 @@
 
 
 #include <QtGui/QApplication>
-#include "mainwindow.hh"
+#include "mainwindow.h"
 #include "redshift/include/static_init.hh"
 
 #include <fstream>
 
 int main(int argc, char *argv[]) {
-        try {                
+        try {
                 redshift::static_init();
                 QApplication a(argc, argv);
                 MainWindow w;

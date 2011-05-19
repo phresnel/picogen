@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "observergraphicsitem.hh"
+#include "observergraphicsitem.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
@@ -275,3 +275,5 @@ qreal ObserverGraphicsItem::observerPitch() const {
 qreal ObserverGraphicsItem::observerRoll() const {
         return observer_.roll();
 }
+
+#include "observergraphicsitem.moc"

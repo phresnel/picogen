@@ -199,13 +199,13 @@ Amplitude</string>
   <customwidget>
    <class>SpectrumDisplay</class>
    <extends>QWidget</extends>
-   <header>spectrumdisplay.hh</header>
+   <header>spectrumdisplay.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SpectralCurve</class>
    <extends>QWidget</extends>
-   <header>spectralcurve.hh</header>
+   <header>spectralcurve.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

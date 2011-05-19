@@ -20,7 +20,7 @@
   <customwidget>
    <class>GraphicalNavigationWidget</class>
    <extends>QWidget</extends>
-   <header>graphicalnavigationwidget.hh</header>
+   <header>graphicalnavigationwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

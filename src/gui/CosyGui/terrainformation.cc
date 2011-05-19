@@ -18,13 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "stashview.hh"
-#include "terrainformation.hh"
+#include "stashview.h"
+#include "terrainformation.h"
 #include "ui_terrainformation.h"
 
 #include "cosyscene/terrain.hh"
 
-#include "selectpresetdialog.hh"
+#include "selectpresetdialog.h"
 
 
 TerrainFormation::TerrainFormation(QWidget *parent) :
@@ -221,3 +221,5 @@ void TerrainFormation::on_stashResetButton_clicked() {
                 emit formationChanged();
         }
 }
+
+#include "terrainformation.moc"

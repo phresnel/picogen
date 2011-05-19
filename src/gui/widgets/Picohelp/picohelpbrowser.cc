@@ -29,7 +29,7 @@
 #include <QUrl>
 #include <QMessageBox>
 
-#include "picohelpbrowser.hh"
+#include "picohelpbrowser.h"
 #include "ui_picohelpbrowser.h"
 
 #include <cmath>
@@ -480,3 +480,5 @@ void PicohelpBrowser::recalcScrollbars() {
                 horizontalBar.setMaximum(docWidth - pageHorizontalStep);
         }
 }
+
+#include "picohelpbrowser.moc"

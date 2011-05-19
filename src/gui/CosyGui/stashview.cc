@@ -20,7 +20,7 @@
 
 // TODO: implement deletion
 
-#include "stashview.hh"
+#include "stashview.h"
 #include "ui_stashview.h"
 
 #include <QDateTime>
@@ -89,3 +89,5 @@ void StashView::on_okayButton_clicked() {
 void StashView::on_cancelButton_clicked() {
         reject();
 }
+
+#include "stashview.moc"

@@ -18,10 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "graphicalnavigationwidget.hh"
+#include "graphicalnavigationwidget.h"
 #include "ui_graphicalnavigationwidget.h"
 
-#include "observergraphicsitem.hh"
+#include "observergraphicsitem.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -290,3 +290,5 @@ void GraphicalNavigationWidget::on_findMe_clicked() {
 void GraphicalNavigationWidget::on_pixelSize_valueChanged(int value) {
         ui->graphicsView->setPixelSize(value);
 }
+
+#include "graphicalnavigationwidget.moc"
