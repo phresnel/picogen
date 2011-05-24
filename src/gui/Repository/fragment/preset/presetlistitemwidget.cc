@@ -18,9 +18,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "presetlistitemwidget.hh"
+#include "presetlistitemwidget.h"
 #include "ui_presetlistitemwidget.h"
-#include "presetdialog.hh"
+#include "presetdialog.h"
 
 namespace picogen_repository {
 
@@ -83,3 +83,6 @@ void PresetListItemWidget::setReadOnly(bool readOnly) {
 }
 
 } // namespace picogen_repository {
+
+#include "presetlistitemwidget.moc"
+

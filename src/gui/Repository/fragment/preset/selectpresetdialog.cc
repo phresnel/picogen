@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "selectpresetdialog.hh"
+#include "selectpresetdialog.h"
 #include "ui_selectpresetdialog.h"
 
 namespace picogen_repository {
@@ -45,3 +45,5 @@ optional<ParametricPreset> SelectPresetDialog::lastSelected() const {
 }
 
 } // namespace picogen_repository {
+
+//#include "selectpresetdialog.moc"

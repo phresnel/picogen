@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "previewwidget.hh"
+#include "previewwidget.h"
 #include "ui_previewwidget.h"
 
 #include <QGraphicsPixmapItem>
@@ -193,3 +193,5 @@ void PreviewWidget::fitView() {
                                     Qt::KeepAspectRatio);
         ui->graphicsView->setSceneRect(rect);
 }
+
+//#include "previewwidget.moc"

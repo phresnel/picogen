@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "presetdialog.hh"
+#include "presetdialog.h"
 #include "ui_presetdialog.h"
 
 namespace picogen_repository {
@@ -46,7 +46,7 @@ ParametricPreset PresetDialog::preset() const {
 }
 
 void PresetDialog::setPreset (ParametricPreset const &pp) {
-        preset_ = pp;        
+        preset_ = pp;
         ui->entity->setEntity (&preset_);
         ui->preset->setPreset(pp.preset());
 }
@@ -65,3 +65,5 @@ void PresetDialog::on_preset_formationChanged() {
 }
 
 } // namespace picogen_repository {
+
+#include "presetdialog.moc"

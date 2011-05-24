@@ -21,9 +21,9 @@
 #include <QVector>
 
 #include "parametricpreset.hh"
-#include "presetlistitemwidget.hh"
+#include "presetlistitemwidget.h"
 
-#include "presetlistwidget.hh"
+#include "presetlistwidget.h"
 #include "ui_presetlistwidget.h"
 
 #include <QDebug>
@@ -111,3 +111,6 @@ void PresetListWidget::on_readOnly_toggled(bool checked) {
 }
 
 } // namespace picogen_repository {
+
+#include "presetlistwidget.moc"
+

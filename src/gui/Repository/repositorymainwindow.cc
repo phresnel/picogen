@@ -18,12 +18,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "repositorymainwindow.hh"
+#include "repositorymainwindow.h"
 #include "ui_repositorymainwindow.h"
 
 //#include "collection.hh"
 //#include "parametricpreset.hh"
-#include "shared_ptr.hh"
+#include "shared_ptr.h"
 
 #include <QDir>
 #include <QMessageBox>
@@ -46,3 +46,5 @@ RepositoryMainWindow::~RepositoryMainWindow() {
 }
 
 } // namespace picogen_repository {
+
+#include "repositorymainwindow.moc"

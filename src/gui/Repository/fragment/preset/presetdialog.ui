@@ -49,13 +49,13 @@
   <customwidget>
    <class>QuatschPresetEditor</class>
    <extends>QWidget</extends>
-   <header>quatschpreseteditor.hh</header>
+   <header>quatschpreseteditor.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>picogen_repository::FragmentWidget</class>
    <extends>QWidget</extends>
-   <header>../fragmentwidget.hh</header>
+   <header>../fragmentwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

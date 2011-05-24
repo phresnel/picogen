@@ -56,3 +56,4 @@ private slots:
 } // namespace picogen_repository {
 
 #endif // PRESETLISTITEMWIDGET_HH
+

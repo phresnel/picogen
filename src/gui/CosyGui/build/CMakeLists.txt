@@ -43,16 +43,20 @@ include(${QT_USE_FILE})
 
 
 
-
 # -- subs ---------------------------------------------------------------------
 set (widgets_dir ../../widgets)
 
 MACRO(priinclude subdir)
+        set (old_pwd ${pwd})
         set (pwd "${subdir}")
         include("${subdir}/include.cmake")
+        set (pwd ${old_pwd})
 ENDMACRO(priinclude)
 
+message (status "building upstream packages")
+priinclude("../../../upstream/QtSolutions")
 
+message (status "building widgets")
 priinclude("${widgets_dir}/TextDialog")
 priinclude("${widgets_dir}/SpectralColorPicker")
 priinclude("${widgets_dir}/TristimulusColorPicker")
@@ -65,10 +69,15 @@ priinclude("${widgets_dir}/QuatschPresetEditor")
 priinclude("${widgets_dir}/QuatschPreview")
 priinclude("${widgets_dir}/QuatschSourceEditor")
 priinclude("${widgets_dir}/Picohelp")
+priinclude("${widgets_dir}/Preview")
 
-include_directories(../../../upstream/QtSolutions/qtcolortriangle-2.6_1-opensource/src)
+message (status "building repository")
+priinclude("../../Repository/")
+priinclude("../../Repository/repository/")
+priinclude("../../Repository/fragment/")
+priinclude("../../Repository/fragment/preset/")
 
-
+message (status "building cosygui")
 
 # -- sources ------------------------------------------------------------------
 set (cosygui_src_dir ..)
@@ -120,7 +129,7 @@ set(forms ${forms}
 
 qt4_automoc (${sources})
 qt4_wrap_ui (forms_h ${forms})
-
+link_libraries (${QT_LIBRARIES})
 
 
 

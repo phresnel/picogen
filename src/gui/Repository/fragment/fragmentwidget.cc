@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "fragmentwidget.hh"
+#include "fragmentwidget.h"
 #include "ui_fragmentwidget.h"
 
 namespace picogen_repository {
@@ -64,3 +64,5 @@ void FragmentWidget::on_homepage_editingFinished() {
 }
 
 } // namespace picogen_repository {
+
+#include "fragmentwidget.moc"

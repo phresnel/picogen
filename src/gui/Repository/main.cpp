@@ -20,7 +20,7 @@
 
 #include <QDebug>
 #include <QtGui/QApplication>
-#include "repositorymainwindow.hh"
+#include "repositorymainwindow.h"
 
 int main(int argc, char *argv[])
 {

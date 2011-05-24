@@ -18,36 +18,47 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SELECTPRESETDIALOG_HH
-#define SELECTPRESETDIALOG_HH
+#ifndef PRESETLISTWIDGET_HH
+#define PRESETLISTWIDGET_HH
 
-#include <QDialog>
+#include <QWidget>
 #include "database.hh"
 #include "parametricpreset.hh"
-#include "../../shared_ptr.hh"
-#include "../../optional.hh"
+#include "../../shared_ptr.h"
+#include "../../optional.h"
 
 namespace Ui {
-    class SelectPresetDialog;
+    class PresetListWidget;
 }
 
 namespace picogen_repository {
 
-class SelectPresetDialog : public QDialog
+class PresetListWidget : public QWidget
 {
         Q_OBJECT
 
 public:
-        explicit SelectPresetDialog(QWidget *parent = 0);
-        ~SelectPresetDialog();
+        explicit PresetListWidget(QWidget *parent = 0);
+        ~PresetListWidget();
 
         void setDatabase (shared_ptr<Database>);
         optional<ParametricPreset> lastSelected() const;
 
 private:
-    Ui::SelectPresetDialog *ui;
+        Ui::PresetListWidget *ui;
+        shared_ptr<Database> database_;
+        optional<ParametricPreset> lastSelected_;
+
+private:
+        void resyncView();
+        void addPresetToView(ParametricPreset const&);
+
+private slots:
+        void on_readOnly_toggled(bool checked);
+        void on_listWidget_itemSelectionChanged();
 };
 
 } // namespace picogen_repository {
 
-#endif // SELECTPRESETDIALOG_HH
+#endif // PRESETLISTWIDGET_HH
+
