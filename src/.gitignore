@@ -6,6 +6,7 @@
 # *~
 a.out
 moc_*
+*.moc
 ui_*
 qrc_*
 *.lo
