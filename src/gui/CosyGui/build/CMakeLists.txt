@@ -25,7 +25,10 @@ add_definitions (${OpenMP_CXX_FLAGS})
 
 
 
-# -- qt package ---------------------------------------------------------------
+# -- packages ---------------------------------------------------------------
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+
+### QT ###
 find_package(Qt4 REQUIRED)
 
 # Include dirs.
@@ -42,6 +45,32 @@ include(${QT_USE_FILE})
 
 
 
+### BOOST ###
+find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
+link_libraries(
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_SYSTEM_LIBRARY}
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+)
+
+
+### OpenEXR ###
+find_package (OpenEXR REQUIRED )
+link_libraries (${OPENEXR_LIBRARIES})
+include_directories (${OPENEXR_INCLUDE_PATHS})
+
+### OpenMP ###
+find_package (OpenMP REQUIRED)
+link_libraries(gomp)   # TODO: is there a portable one?
+
+
+### LibNoise ###
+find_package (Noise REQUIRED)
+link_libraries(${NOISE_LIBRARY})
+include_directories(${NOISE_INCLUDE_DIR})
+
+
+
 
 # -- subs ---------------------------------------------------------------------
 set (widgets_dir ../../widgets)
@@ -53,10 +82,10 @@ MACRO(priinclude subdir)
         set (pwd ${old_pwd})
 ENDMACRO(priinclude)
 
-message (status "building upstream packages")
+message (STATUS "building upstream packages")
 priinclude("../../../upstream/QtSolutions")
 
-message (status "building widgets")
+message (STATUS "building widgets")
 priinclude("${widgets_dir}/TextDialog")
 priinclude("${widgets_dir}/SpectralColorPicker")
 priinclude("${widgets_dir}/TristimulusColorPicker")
@@ -71,13 +100,15 @@ priinclude("${widgets_dir}/QuatschSourceEditor")
 priinclude("${widgets_dir}/Picohelp")
 priinclude("${widgets_dir}/Preview")
 
-message (status "building repository")
-priinclude("../../Repository/")
-priinclude("../../Repository/repository/")
-priinclude("../../Repository/fragment/")
-priinclude("../../Repository/fragment/preset/")
+message (STATUS "building repository")
+priinclude("../../Repository")
+priinclude("../../Repository/repository")
+priinclude("../../Repository/fragment")
+priinclude("../../Repository/fragment/preset")
 
-message (status "building cosygui")
+priinclude("../cosyscene")
+
+message (STATUS "building cosygui")
 
 # -- sources ------------------------------------------------------------------
 set (cosygui_src_dir ..)
@@ -130,6 +161,7 @@ set(forms ${forms}
 qt4_automoc (${sources})
 qt4_wrap_ui (forms_h ${forms})
 link_libraries (${QT_LIBRARIES})
+
 
 
 
