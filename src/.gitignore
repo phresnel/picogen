@@ -20,6 +20,7 @@ CMakeFiles/
 cmake_install.cmake
 gui/CosyGui/build/redshift/
 gui/CosyGui/build/Makefile
+gui/CosyGui/build/CosyGui
 
 gui/widgets/QtQuatschEditor/build/Makefile
 gui/widgets/QtQuatschEditor/build/QtQuatschEditor
