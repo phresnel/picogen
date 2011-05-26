@@ -171,6 +171,9 @@ set(forms ${forms}
         ${cosygui_src_dir}/waterwindow.ui
 )
 
+qt4_add_resources(resources "${cosygui_src_dir}/resources.qrc")
+set (sources ${sources} ${resources})
+
 qt4_automoc (${sources})
 qt4_wrap_ui (forms_h ${forms})
 link_libraries (${QT_LIBRARIES})
