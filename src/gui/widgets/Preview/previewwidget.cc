@@ -194,4 +194,4 @@ void PreviewWidget::fitView() {
         ui->graphicsView->setSceneRect(rect);
 }
 
-//#include "previewwidget.moc"
+#include "previewwidget.moc"

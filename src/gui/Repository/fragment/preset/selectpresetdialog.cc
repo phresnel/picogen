@@ -46,4 +46,4 @@ optional<ParametricPreset> SelectPresetDialog::lastSelected() const {
 
 } // namespace picogen_repository {
 
-//#include "selectpresetdialog.moc"
+#include "selectpresetdialog.moc"

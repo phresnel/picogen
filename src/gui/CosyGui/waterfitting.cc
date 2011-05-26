@@ -76,4 +76,4 @@ void WaterFitting::on_stashResetButton_clicked() {
 }
 
 
-#include "waterwindow.moc"
+#include "waterfitting.moc"

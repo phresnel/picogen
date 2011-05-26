@@ -69,6 +69,19 @@ find_package (Noise REQUIRED)
 link_libraries(${NOISE_LIBRARY})
 include_directories(${NOISE_INCLUDE_DIR})
 
+### SDL ###
+find_package (SDL REQUIRED )
+find_package (SDL_image REQUIRED )
+if (NOT SDL_FOUND )
+   message ( FATAL_ERROR "SDL not found!" )
+endif (NOT SDL_FOUND )
+
+link_libraries (
+   ${SDL_LIBRARY}
+   ${SDLIMAGE_LIBRARY} # if using SDL_image, obviously
+   SDLmain # Sadly not included in SDL_LIBRARY variable
+)
+include_directories(${SDL_INCLUDE_DIR})
 
 
 
@@ -82,10 +95,8 @@ MACRO(priinclude subdir)
         set (pwd ${old_pwd})
 ENDMACRO(priinclude)
 
-message (STATUS "building upstream packages")
 priinclude("../../../upstream/QtSolutions")
 
-message (STATUS "building widgets")
 priinclude("${widgets_dir}/TextDialog")
 priinclude("${widgets_dir}/SpectralColorPicker")
 priinclude("${widgets_dir}/TristimulusColorPicker")
@@ -100,15 +111,17 @@ priinclude("${widgets_dir}/QuatschSourceEditor")
 priinclude("${widgets_dir}/Picohelp")
 priinclude("${widgets_dir}/Preview")
 
-message (STATUS "building repository")
 priinclude("../../Repository")
 priinclude("../../Repository/repository")
 priinclude("../../Repository/fragment")
 priinclude("../../Repository/fragment/preset")
 
 priinclude("../cosyscene")
+priinclude("../../../renderer/redshift/")
+priinclude("../../../auxiliary/xyto/")
+priinclude("../../../auxiliary/quatsch-preprocessor/")
 
-message (STATUS "building cosygui")
+
 
 # -- sources ------------------------------------------------------------------
 set (cosygui_src_dir ..)
