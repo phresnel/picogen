@@ -9,7 +9,7 @@ MACRO(priinclude subdir)
         set (pwd ${old_pwd})
 ENDMACRO(priinclude)
 
-
+set(sources)
 priinclude(../)
 
 
