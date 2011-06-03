@@ -68,6 +68,7 @@ NavigationWindow::NavigationWindow(QWidget *parent) :
         ui->setupUi(this);
         ui->stashFrame->setTitle("Navigation");
         ui->subNavigationFrame->setVisible(false);
+        enablePreview(false);
 }
 
 NavigationWindow::~NavigationWindow() {
@@ -252,6 +253,11 @@ void NavigationWindow::refreshPreview() {
         ui->redshiftWidget->setSceneAndRender(tmp);
 }
 
+
+
+void NavigationWindow::enablePreview(bool enable) {
+        ui->previewGroupBox->setVisible(enable);
+}
 
 
 

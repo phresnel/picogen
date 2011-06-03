@@ -51,7 +51,7 @@ public slots:
         void sceneInvalidated(redshift::shared_ptr<cosyscene::Scene> scene);
         void updateTerrain();
         void updateWater();
-
+        void enablePreview (bool);
 
 // ================== Private ==================================================
 private:
