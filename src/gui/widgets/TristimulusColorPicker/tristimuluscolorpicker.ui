@@ -139,12 +139,46 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QCheckBox" name="showRGB">
+            <property name="text">
+             <string>RGB</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showHSV">
+            <property name="text">
+             <string>HSV</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showCMYK">
+            <property name="text">
+             <string>CMYK</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <layout class="QGridLayout" name="gridLayout">
           <property name="spacing">
            <number>2</number>
           </property>
           <item row="1" column="1">
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="gLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -195,7 +229,7 @@
            </widget>
           </item>
           <item row="0" column="0">
-           <widget class="QLabel" name="label_4">
+           <widget class="QLabel" name="rgbLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -211,8 +245,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_5">
+          <item row="3" column="0">
+           <widget class="QLabel" name="hsvLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -228,8 +262,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QLabel" name="hueLabel">
+          <item row="3" column="1">
+           <widget class="QLabel" name="hLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -249,7 +283,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="4" column="2">
+          <item row="3" column="2">
            <widget class="QDoubleSpinBox" name="spinH">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -282,7 +316,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
+          <item row="4" column="2">
            <widget class="QDoubleSpinBox" name="spinS">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -312,8 +346,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QLabel" name="label_12">
+          <item row="4" column="1">
+           <widget class="QLabel" name="sLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -333,8 +367,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
-           <widget class="QLabel" name="label_13">
+          <item row="5" column="1">
+           <widget class="QLabel" name="vLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -354,7 +388,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="6" column="2">
+          <item row="5" column="2">
            <widget class="QDoubleSpinBox" name="spinV">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -384,8 +418,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="9" column="1">
-           <widget class="QLabel" name="label_22">
+          <item row="7" column="1">
+           <widget class="QLabel" name="mLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -405,7 +439,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="9" column="2">
+          <item row="7" column="2">
            <widget class="QDoubleSpinBox" name="spinM">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -435,8 +469,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="10" column="1">
-           <widget class="QLabel" name="label_23">
+          <item row="8" column="1">
+           <widget class="QLabel" name="yLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -456,7 +490,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="10" column="2">
+          <item row="8" column="2">
            <widget class="QDoubleSpinBox" name="spinY">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -486,7 +520,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="12" column="1">
+          <item row="10" column="1">
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -499,22 +533,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </spacer>
           </item>
-          <item row="3" column="0" colspan="3">
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0" colspan="3">
-           <widget class="Line" name="line_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QLabel" name="label_14">
+          <item row="6" column="1">
+           <widget class="QLabel" name="cLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -534,7 +554,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="8" column="2">
+          <item row="6" column="2">
            <widget class="QDoubleSpinBox" name="spinC">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -564,8 +584,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="8" column="0">
-           <widget class="QLabel" name="label_6">
+          <item row="6" column="0">
+           <widget class="QLabel" name="cmykLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -582,7 +602,7 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="rLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -663,7 +683,7 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="label_3">
+           <widget class="QLabel" name="bLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -683,8 +703,8 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="11" column="1">
-           <widget class="QLabel" name="blackLabel">
+          <item row="9" column="1">
+           <widget class="QLabel" name="kLabel">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -704,7 +724,7 @@ p, li { white-space: pre-wrap; }
             </property>
            </widget>
           </item>
-          <item row="11" column="2">
+          <item row="9" column="2">
            <widget class="QDoubleSpinBox" name="spinK">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
