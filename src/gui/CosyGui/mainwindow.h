@@ -90,6 +90,8 @@ private slots:
         void on_renderingSetup_renderSettingsChanged();
 
 
+        void on_actionCompact_left_pane_triggered(bool checked);
+
 private:
         Ui::MainWindow *ui;
         redshift::shared_ptr<cosyscene::Scene> scene;

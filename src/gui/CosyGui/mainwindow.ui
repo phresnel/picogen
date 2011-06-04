@@ -654,8 +654,15 @@ stop: 0 #fed, stop: 1 #bbb);
     <addaction name="actionShow_redshift_file"/>
     <addaction name="actionShow_redshift_file_used_for_last_rendering"/>
    </widget>
+   <widget class="QMenu" name="menu_Window">
+    <property name="title">
+     <string>&amp;Window</string>
+    </property>
+    <addaction name="actionCompact_left_pane"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Debug"/>
+   <addaction name="menu_Window"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -695,6 +702,17 @@ stop: 0 #fed, stop: 1 #bbb);
   <action name="actionShow_redshift_file_used_for_last_rendering">
    <property name="text">
     <string>Show redshift file used for last rendering</string>
+   </property>
+  </action>
+  <action name="actionCompact_left_pane">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Compact left pane</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
    </property>
   </action>
  </widget>

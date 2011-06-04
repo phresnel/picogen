@@ -473,4 +473,14 @@ void MainWindow::on_actionShow_redshift_file_used_for_last_rendering_triggered()
         d.exec();
 }
 
+void MainWindow::on_actionCompact_left_pane_triggered(bool checked) {
+        if (checked) {
+                ui->terrainCommandLink->setIconSize(ui->terrainCommandLink->iconSize()/2);
+                ui->terrainCommandLink->setDescription("");
+        } else {
+                ui->terrainCommandLink->setIconSize(ui->terrainCommandLink->iconSize()*2);
+        }
+}
+
+
 #include "mainwindow.moc"

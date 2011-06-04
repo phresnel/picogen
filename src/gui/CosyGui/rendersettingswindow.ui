@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
-    <height>304</height>
+    <width>388</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,7 +59,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Samples per pixel</string>
@@ -69,7 +69,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="3" column="0">
           <widget class="QLabel" name="label_5">
            <property name="text">
             <string>Random seed</string>
@@ -117,7 +117,7 @@
            </item>
           </layout>
          </item>
-         <item row="3" column="1">
+         <item row="2" column="1">
           <widget class="QSpinBox" name="samplesPerPixelSpin">
            <property name="minimum">
             <number>1</number>
@@ -127,14 +127,14 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="3" column="1">
           <widget class="QSpinBox" name="seedSpin">
            <property name="maximum">
             <number>999999999</number>
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
+         <item row="8" column="1">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -147,7 +147,7 @@
            </property>
           </spacer>
          </item>
-         <item row="8" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Surface integrator</string>
@@ -157,14 +157,14 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
+         <item row="6" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
             <widget class="QComboBox" name="surfaceIntegrator"/>
            </item>
           </layout>
          </item>
-         <item row="9" column="1">
+         <item row="7" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
             <widget class="QLabel" name="ambientSamplesLabel">
@@ -212,14 +212,14 @@
            </item>
           </layout>
          </item>
-         <item row="5" column="1">
+         <item row="4" column="1">
           <widget class="QCheckBox" name="enableMaxQuadtreeDepthOverride">
            <property name="text">
             <string>Override</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="5" column="1">
           <widget class="QSpinBox" name="maxLazyQuadtreeDepthSpin">
            <property name="minimum">
             <number>1</number>
@@ -232,7 +232,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>Max. Quadtree Depth</string>
