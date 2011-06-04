@@ -32,6 +32,10 @@ TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     isUpdating(false)
 {
         ui->setupUi(this);
+
+        ui->showRGB->setChecked(true);
+        ui->showHSV->setChecked(false);
+        ui->showCMYK->setChecked(false);
 }
 
 TristimulusColorPicker::~TristimulusColorPicker() {
@@ -316,5 +320,38 @@ void TristimulusColorPicker::on_spinMin_valueChanged(double ) {
 void TristimulusColorPicker::on_spinMax_valueChanged(double ) {
         on_spinMin_valueChanged(double());
 }
+
+void TristimulusColorPicker::on_showRGB_toggled(bool checked) {
+    ui->spinR->setVisible(checked);
+    ui->rLabel->setVisible(checked);
+    ui->spinG->setVisible(checked);
+    ui->gLabel->setVisible(checked);
+    ui->spinB->setVisible(checked);
+    ui->bLabel->setVisible(checked);
+    ui->rgbLabel->setVisible(checked);
+}
+
+void TristimulusColorPicker::on_showHSV_toggled(bool checked) {
+    ui->spinH->setVisible(checked);
+    ui->hLabel->setVisible(checked);
+    ui->spinS->setVisible(checked);
+    ui->sLabel->setVisible(checked);
+    ui->spinV->setVisible(checked);
+    ui->vLabel->setVisible(checked);
+    ui->hsvLabel->setVisible(checked);
+}
+
+void TristimulusColorPicker::on_showCMYK_toggled(bool checked) {
+    ui->spinC->setVisible(checked);
+    ui->cLabel->setVisible(checked);
+    ui->spinM->setVisible(checked);
+    ui->mLabel->setVisible(checked);
+    ui->spinY->setVisible(checked);
+    ui->yLabel->setVisible(checked);
+    ui->spinK->setVisible(checked);
+    ui->kLabel->setVisible(checked);
+    ui->cmykLabel->setVisible(checked);
+}
+
 
 #include "tristimuluscolorpicker.moc"

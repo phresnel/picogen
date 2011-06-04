@@ -177,6 +177,10 @@ private slots:
         void on_spinM_valueChanged(double);
         void on_spinY_valueChanged(double);
         void on_spinK_valueChanged(double);
+
+        void on_showRGB_toggled(bool checked);
+        void on_showHSV_toggled(bool checked);
+        void on_showCMYK_toggled(bool checked);
 };
 
 
