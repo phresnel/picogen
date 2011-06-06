@@ -27,7 +27,7 @@
 namespace picogen_repository {
 
 
-Collection::Collection(QString root) : root_(root), Meta(root) {
+Collection::Collection(QString root) : Meta(root), root_(root) {
         if (!QDir(root).exists()) {
                 const std::string msg = "Collection \""
                         + root.toStdString()

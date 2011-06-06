@@ -473,13 +473,30 @@ void MainWindow::on_actionShow_redshift_file_used_for_last_rendering_triggered()
         d.exec();
 }
 
+
+void compactCommandLink (QCommandLinkButton *clb) {
+        clb->setIconSize(clb->iconSize()/2);
+        clb->setStyleSheet("font-size:7pt;");
+}
+void uncompactCommandLink (QCommandLinkButton *clb) {
+        clb->setIconSize(clb->iconSize()*2);
+        clb->setStyleSheet("");
+}
+void compactCommandLink(QCommandLinkButton *clb, bool compact) {
+        if (compact) compactCommandLink(clb);
+        else uncompactCommandLink(clb);
+}
+
 void MainWindow::on_actionCompact_left_pane_triggered(bool checked) {
-        if (checked) {
-                ui->terrainCommandLink->setIconSize(ui->terrainCommandLink->iconSize()/2);
-                ui->terrainCommandLink->setDescription("");
-        } else {
-                ui->terrainCommandLink->setIconSize(ui->terrainCommandLink->iconSize()*2);
-        }
+        compactCommandLink(ui->terrainCommandLink, checked);
+        compactCommandLink(ui->renderCommandLink, checked);
+        compactCommandLink(ui->terrainCommandLink, checked);
+        compactCommandLink(ui->waterCommandLink, checked);
+        compactCommandLink(ui->navigationCommandLink, checked);
+        compactCommandLink(ui->forestCommandLink, checked);
+        compactCommandLink(ui->sunskyCommandLink, checked);
+        compactCommandLink(ui->filmCommandLink, checked);
+        compactCommandLink(ui->renderingSetupCommandLink, checked);
 }
 
 
