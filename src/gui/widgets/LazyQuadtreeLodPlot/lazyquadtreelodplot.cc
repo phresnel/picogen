@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#include "lazyquadtreelodplot.hh"
+#include "lazyquadtreelodplot.h"
 #include "ui_lazyquadtreelodplot.h"
 
 #include <QPainter>
@@ -123,7 +123,7 @@ void LazyQuadtreeLodPlot::on_maxRecursion_valueChanged(int ) {
         ui->plotFrame->repaint();
 }
 
-void LazyQuadtreeLodPlot::on_lodFactor_valueChanged(double v) {
+void LazyQuadtreeLodPlot::on_lodFactor_valueChanged(double) {
         if (ui->lodFactor->value()<=0)
                 ui->lodFactor->setSingleStep(0.001);
         else
@@ -131,3 +131,5 @@ void LazyQuadtreeLodPlot::on_lodFactor_valueChanged(double v) {
 
         ui->plotFrame->repaint();
 }
+
+#include "lazyquadtreelodplot.moc"
