@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AppNavigation</class>
+ <widget class="QFrame" name="AppNavigation">
+  <property name="windowTitle">
+   <string>Frame</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QFrame {
+color: white;
+font-weight:bold;
+border: 0px solid #555;
+padding: 5px;
+background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(122,122,122, 255), stop:1 rgba(180,180,180, 255));
+}
+QToolButton {
+font: 75 8pt;
+font-weight:bold;
+color:white;
+border: 0px;
+background:rgba(180,180,180, 0);
+}
+QToolButton:hover {
+background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(152,152,152, 255), stop:1 rgba(220,220,220, 255));
+border: 0px solid rgba(170,170,170,255);
+}
+QToolButton:pressed {
+background: qradialgradient(cx: 0.4, cy: -0.1,
+fx: 0.4, fy: -0.1,
+radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
+}
+QToolButton:checked:hover {
+background: qradialgradient(cx: 0.3, cy: -0.4,
+fx: 0.3, fy: 0.4,
+radius: 1.35,
+stop: 0 #eee, stop: 1 #bbb);
+}
+</string>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QToolButton" name="toolButton_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Foobar</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../../CosyGui/resources.qrc">
+       <normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</iconset>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../CosyGui/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
