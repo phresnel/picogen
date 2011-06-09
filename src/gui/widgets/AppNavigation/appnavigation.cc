@@ -55,4 +55,4 @@ void AppNavigation::addToolButton (AppNavigationButton *button) {
         layout()->addItem(spacer);
 }
 
-//#include "appnavigation.moc"
+#include "appnavigation.moc"
