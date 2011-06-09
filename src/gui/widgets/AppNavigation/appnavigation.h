@@ -46,7 +46,6 @@ signals:
         void activated(AppNavigationButton *emitter);
 private slots:
         void activate() {
-                qDebug() << "activate ...";
                 emit activated(this);
         }
 };

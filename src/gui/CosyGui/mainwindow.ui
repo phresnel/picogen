@@ -601,6 +601,16 @@ stop: 0 #fed, stop: 1 #bbb);
      </widget>
     </item>
     <item>
+     <widget class="AppNavigation" name="appNavigation">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QFrame" name="mainFrame">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -636,7 +646,7 @@ stop: 0 #fed, stop: 1 #bbb);
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -758,6 +768,12 @@ stop: 0 #fed, stop: 1 #bbb);
    <class>FilmSettingsAndCamera</class>
    <extends>QWidget</extends>
    <header>filmsettingsandcamera.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AppNavigation</class>
+   <extends>QFrame</extends>
+   <header>appnavigation.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

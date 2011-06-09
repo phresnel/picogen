@@ -31,6 +31,8 @@
 #include "stylesheetliveeditor.h"
 #include "textdialog.h"
 
+#include "appnavigation.h"
+
 #include <iostream>
 #include <ctime>
 #include <QDebug>
@@ -217,6 +219,32 @@ MainWindow::MainWindow(QWidget *parent) :
                  ui->navigation, SLOT(updateWater()));
         redshiftSceneCreator->setScene (scene);
 
+        connect (ui->appNavigation->addButton ("Terrain", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_terrainCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Water", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_waterCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Forest && Groundcover", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_forestCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Sky && Atmosphere", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_sunskyCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Navigation", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_navigationCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Film && Camera", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_filmCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Rendering Setup", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_renderingSetupCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Quick Render (F5)", QIcon()),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_renderCommandLink_clicked()));
+
+        //ui->app
         // Aesthetics.
         on_terrainCommandLink_clicked();
         indicateSaved();
