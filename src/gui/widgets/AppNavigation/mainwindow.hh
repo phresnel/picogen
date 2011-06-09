@@ -23,6 +23,8 @@
 
 #include <QMainWindow>
 
+class AppNavigationButton;
+
 namespace Ui {
         class MainWindow;
 }
@@ -35,6 +37,8 @@ public:
         explicit MainWindow(QWidget *parent = 0);
         ~MainWindow();
 
+private slots:
+        void appNavigationButtonActivated (AppNavigationButton *);
 private:
         Ui::MainWindow *ui;
 };

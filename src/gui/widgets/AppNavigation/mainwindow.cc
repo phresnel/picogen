@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#include <QMessageBox>
 #include "mainwindow.hh"
 #include "ui_mainwindow.h"
 
@@ -26,12 +27,30 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
         ui->setupUi(this);
-        ui->frame->addButton ("Foo", QIcon(":/toplevel-navigation/skyatmosphere"));
-        ui->frame->addButton ("Bar", QIcon(":/toplevel-navigation/skyatmosphere"));
-        ui->frame->addButton ("Frob", QIcon(":/toplevel-navigation/skyatmosphere"));
-        ui->frame->addButton ("Foo", QIcon(":/toplevel-navigation/skyatmosphere"));
+        AppNavigationButton *tmp;
+
+        tmp = ui->frame->addButton ("Foo", QIcon(":/toplevel-navigation/skyatmosphere"));
+        connect(tmp, SIGNAL(activated(AppNavigationButton*)),
+                this, SLOT(appNavigationButtonActivated(AppNavigationButton*)));
+
+        tmp = ui->frame->addButton ("Bar", QIcon(":/toplevel-navigation/skyatmosphere"));
+        connect(tmp, SIGNAL(activated(AppNavigationButton*)),
+                this, SLOT(appNavigationButtonActivated(AppNavigationButton*)));
+
+        tmp = ui->frame->addButton ("Frob", QIcon(":/toplevel-navigation/skyatmosphere"));
+        connect(tmp, SIGNAL(activated(AppNavigationButton*)),
+                this, SLOT(appNavigationButtonActivated(AppNavigationButton*)));
+
+        tmp = ui->frame->addButton ("Foo", QIcon(":/toplevel-navigation/skyatmosphere"));
+        connect(tmp, SIGNAL(activated(AppNavigationButton*)),
+                this, SLOT(appNavigationButtonActivated(AppNavigationButton*)));
 }
 
 MainWindow::~MainWindow() {
         delete ui;
+}
+
+void MainWindow::appNavigationButtonActivated (AppNavigationButton *button) {
+        QMessageBox::information(this, "appNavigationButtonActivated()",
+                                 button->text());
 }

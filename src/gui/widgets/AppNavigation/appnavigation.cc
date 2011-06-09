@@ -35,21 +35,24 @@ AppNavigation::~AppNavigation()
         delete ui;
 }
 
-void AppNavigation::addButton (const QString &title, const QIcon &icon) {
-        QToolButton *button = new QToolButton ();
+AppNavigationButton* AppNavigation::addButton (const QString &title, const QIcon &icon) {
+        AppNavigationButton *button = new AppNavigationButton ();
         button->setIcon(icon);
         button->setText(title);
         addToolButton (button);
+        return button;
 }
 
-void AppNavigation::addToolButton (QToolButton *button) {
+void AppNavigation::addToolButton (AppNavigationButton *button) {
         button->setIconSize(QSize(32,32));
         button->setParent(this);
         button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
         button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
 
-        // Take spacer
+        // Take spacer, insert widget, re-insert spacer
         QLayoutItem *spacer = layout()->takeAt(layout()->count()-1);
         layout()->addWidget(button);
         layout()->addItem(spacer);
 }
+
+//#include "appnavigation.moc"
