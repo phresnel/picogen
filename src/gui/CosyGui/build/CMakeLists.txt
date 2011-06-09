@@ -97,6 +97,7 @@ ENDMACRO(priinclude)
 
 priinclude("../../../upstream/QtSolutions")
 
+priinclude("${widgets_dir}/AppNavigation")
 priinclude("${widgets_dir}/TextDialog")
 priinclude("${widgets_dir}/LazyQuadtreeLodPlot")
 priinclude("${widgets_dir}/SpectralColorPicker")
