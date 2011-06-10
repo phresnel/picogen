@@ -48,11 +48,26 @@ void AppNavigation::addToolButton (AppNavigationButton *button) {
         button->setParent(this);
         button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-
+        connect(button, SIGNAL(activated(AppNavigationButton*)),
+                this,   SLOT(activateButton(AppNavigationButton*)));
         // Take spacer, insert widget, re-insert spacer
         QLayoutItem *spacer = layout()->takeAt(layout()->count()-1);
         layout()->addWidget(button);
         layout()->addItem(spacer);
+
+        buttons.push_back(button);
 }
 
-#include "appnavigation.moc"
+void AppNavigation::activateButton(AppNavigationButton *button) {
+        // This might be slightly wasteful, but saves us from
+        // having to keep a prev pointer that someday might go
+        // invalid.
+        foreach (AppNavigationButton *b, buttons)
+                if (b != button) b->setStyleSheet("");
+        button->setStyleSheet ("background-color:"
+                               " qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, "
+                               "stop:1 rgba(230,255,230, 255), stop:0 rgba(180,180,180, 0));");
+
+}
+
+//#include "appnavigation.moc"

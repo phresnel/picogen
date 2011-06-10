@@ -50,7 +50,5 @@ MainWindow::~MainWindow() {
         delete ui;
 }
 
-void MainWindow::appNavigationButtonActivated (AppNavigationButton *button) {
-        QMessageBox::information(this, "appNavigationButtonActivated()",
-                                 button->text());
+void MainWindow::appNavigationButtonActivated (AppNavigationButton *) {
 }

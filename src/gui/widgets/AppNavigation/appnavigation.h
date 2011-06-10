@@ -42,10 +42,12 @@ public:
                         SLOT(activate()));
         }
         virtual ~AppNavigationButton() {}
+
 signals:
         void activated(AppNavigationButton *emitter);
 private slots:
         void activate() {
+
                 emit activated(this);
         }
 };
@@ -60,10 +62,13 @@ public:
 
     AppNavigationButton* addButton (const QString &title, const QIcon &icon);
 
+private slots:
+    void activateButton (AppNavigationButton*);
 private:
     void addToolButton (AppNavigationButton*);
 private:
     Ui::AppNavigation *ui;
+    QVector<AppNavigationButton*> buttons;
 };
 
 #endif // APPNAVIGATION_H

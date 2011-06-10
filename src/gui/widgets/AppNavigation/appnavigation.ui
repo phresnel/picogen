@@ -28,6 +28,7 @@ color:white;
 border: 0px;
 background:rgba(180,180,180, 0);
 }
+
 QToolButton:hover {
 background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(152,152,152, 255), stop:1 rgba(220,220,220, 255));
 border: 0px solid rgba(170,170,170,255);
