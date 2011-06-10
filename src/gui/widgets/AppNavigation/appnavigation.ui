@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>AppNavigation</class>
  <widget class="QFrame" name="AppNavigation">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>55</width>
+    <height>86</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Frame</string>
   </property>
@@ -51,32 +59,6 @@ stop: 0 #eee, stop: 1 #bbb);
     <number>0</number>
    </property>
    <item>
-    <widget class="QToolButton" name="toolButton_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Foobar</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../../CosyGui/resources.qrc">
-       <normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</iconset>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -91,8 +73,6 @@ stop: 0 #eee, stop: 1 #bbb);
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../CosyGui/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

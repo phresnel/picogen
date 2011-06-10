@@ -46,7 +46,7 @@ AppNavigationButton* AppNavigation::addButton (const QString &title, const QIcon
 void AppNavigation::addToolButton (AppNavigationButton *button) {
         button->setIconSize(QSize(32,32));
         button->setParent(this);
-        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
 
         // Take spacer, insert widget, re-insert spacer
