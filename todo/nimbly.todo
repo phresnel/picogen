@@ -1,0 +1,332 @@
+nimbly-done{
+    categories{
+        0.4{
+            {
+                title:alternative atmospheric perspective "picogen 0.3-style fog";
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:unsaved changes et al;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:more updates per time in render process;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:exr support for heightmaps (verify image format support in general);
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:there's a crash when changing spectral/rgb, and then pressing F5 without touching the color;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:check whether lazy-quadtree originates around camera position;
+                description:update: does not. fix this!;
+                done:0;
+                priority:0;
+            }
+            {
+                title:lazy-quadtree recursion colouring, e.g. depth 0==green, depth 8=orange, max-depth = red, or so -> use this in world-fitting pane;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:as with vbox-entpack, maybe picogen-entpack, so users could upload their packages;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:add choice-box for importing heightmaps ...;
+                description:... 0) keep path relative
+1) make path absolute
+2) copy heightmap to scene's folder;
+                done:0;
+                priority:0;
+            }
+            {
+                title:there's a crash in picogen repository when not all fields of a fragment are present;
+                description:testcase: a terrain-formation-preset where the preset is missing
+
+resolved: crash was because PreviewWidget did clean up images, but not images-array;
+                done:1;
+                priority:0;
+            }
+            {
+                title:maybe use Qt-Signals-Slots/Hierarchical hybrid;
+                description:then we'd automatically have sender();
+                done:0;
+                priority:0;
+            }
+            {
+                title:automatic quality checker;
+                description:it should ask: preview or production? 
+and then warn if e.g. the quadtree has very low resoltion;
+                done:0;
+                priority:0;
+            }
+            {
+                title:have an "auto-keep" for height above ground;
+                description:;
+                done:1;
+                priority:0;
+            }
+            {
+                title:divide picogen package into core-picogen and picogen-extra;
+                description:so that we could distribute e.g. high quality textures;
+                done:0;
+                priority:0;
+            }
+            {
+                title:BUG: in CosyGui, when save-filename contains non-english character, there's a crash, though the file is being saved;
+                description:;
+                done:0;
+                priority:0;
+            }
+        }
+        0.5{
+            {
+                title: let user optionally display icons in camera-placement widget;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title: try out a gray/red-style in picogen;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:editor for preetham coefficients;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:grouping-attributes for presets;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:preset lsystems;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:stash/reset/documentation -> rename stashbar in toolbar or so;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:have a rand() / noise() instruction;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:setting render settings default values should be rethought;
+                description:e.g. cosy gives a warning in render settings when resetting what is already apparently default,
+because default in gui != default in cosyscene;
+                done:0;
+                priority:0;
+            }
+            {
+                title:seperate clear sky from overcast sky code;
+                description:i.e. extract two new classes from existing one, add a third one which combines those two;
+                done:0;
+                priority:0;
+            }
+            {
+                title:in case of shutdown, save?;
+                description:QCloseEvent -> spontaneous?;
+                done:0;
+                priority:0;
+            }
+            {
+                title:HFoV should always be the same, only VFoV should auto-fit;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:make users aware about clickable graphics (like e.g. the sunsky graphics panel);
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:basic volume UI;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:ctrl+tab to navigate between panels;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:test-scenes;
+                description:there should be some test-scenes for surface-integrator validation (and for validation of renderer in general);
+                done:0;
+                priority:0;
+            }
+            {
+                title:integrate Quadtree-LoD widget;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:write static function for quadtree LoD calculation;
+                description:... which could then be used by GUI components (also debate whether that static function should be externalized to some lib or header as a free function);
+                done:0;
+                priority:0;
+            }
+            {
+                title:grouping support in AppNavigation;
+                description:so that e.g. Terrain gets grouped with Water, Film with Render, etc.;
+                done:0;
+                priority:0;
+            }
+        }
+        future{
+            {
+                title:Water Drops on Surfaces;
+                description:"Water Drops on Surfaces", by Wang, Mucha, Turk;
+                done:0;
+                priority:0;
+            }
+            {
+                title:subclass Qt's spin boxes for more dynamic range and single-step settings;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:polling users for next feature (?);
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:base64 blobs in cosy-format;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:screensaver-/idle-renderer;
+                description:integrate in planned batch processor;
+                done:0;
+                priority:0;
+            }
+            {
+                title:simpler renderer configuration;
+                description:e.g. instead of 16spp -> low, high, very high;
+                done:0;
+                priority:0;
+            }
+            {
+                title:export formats e.g. for lux render;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:quadtree LoD widget should feature 2d preview ...;
+                description:... together with some distance indicators (North/East coords? circles?);
+                done:0;
+                priority:0;
+            }
+            {
+                title:LSystems: optional spline interpolation between turtle points;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:moon/planet textures projected onto a distant sphere?;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:LSystems: leaf parameters: age, diameter, radiance?;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:rainbows;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:bees et al.;
+                description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:"Hike & Render" mode;
+                description:as a kind of game;
+                done:0;
+                priority:0;
+            }
+            {
+                title:LSystems: have an age for each segment that users can visualize;
+                description:... this could help users to debug LSystems;
+                done:0;
+                priority:0;
+            }
+            {
+                title:show picogen's future in cosygui;
+                description:with screenshots of w.i.p. stuff;
+                done:0;
+                priority:0;
+            }
+            {
+                title:Picogen DVD;
+                description:with GiBs of extra content and of course all version of picogen (including a virtualbox image, perhaps);
+                done:0;
+                priority:0;
+            }
+            {
+                title:tiny Picogen-Linux appliance for user's evaluation purposes;
+                description:;
+                done:0;
+                priority:0;
+            }
+        }
+        website{
+            {
+                title:make a subpage "how realistic is picogen";
+                description:;
+                done:0;
+                priority:0;
+            }
+        }
+    }
+    uncategorized{
+    }
+}
