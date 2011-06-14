@@ -80,6 +80,12 @@ resolved: crash was because PreviewWidget did clean up images, but not images-ar
         }
         0.5{
             {
+                title:texmaker's top-bar looks cool;
+                description:could be cool for selection of current render settings, quadtree depth, etc.;
+                done:0;
+                priority:0;
+            }
+            {
                 title:exr support for heightmaps;
                 description:also, verify image format support in general;
                 done:0;
