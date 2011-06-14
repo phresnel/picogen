@@ -20,12 +20,6 @@ nimbly-done{
                 priority:0;
             }
             {
-                title:exr support for heightmaps (verify image format support in general);
-                description:;
-                done:0;
-                priority:0;
-            }
-            {
                 title:there's a crash when changing spectral/rgb, and then pressing F5 without touching the color;
                 description:;
                 done:0;
@@ -38,14 +32,8 @@ nimbly-done{
                 priority:0;
             }
             {
-                title:lazy-quadtree recursion colouring, e.g. depth 0==green, depth 8=orange, max-depth = red, or so -> use this in world-fitting pane;
-                description:;
-                done:0;
-                priority:0;
-            }
-            {
-                title:as with vbox-entpack, maybe picogen-entpack, so users could upload their packages;
-                description:;
+                title:lazy-quadtree recursion colouring;
+                description:e.g. depth 0==green, depth 8=orange, max-depth = red, or so -> use this in world-fitting pane;
                 done:0;
                 priority:0;
             }
@@ -72,13 +60,6 @@ resolved: crash was because PreviewWidget did clean up images, but not images-ar
                 priority:0;
             }
             {
-                title:automatic quality checker;
-                description:it should ask: preview or production? 
-and then warn if e.g. the quadtree has very low resoltion;
-                done:0;
-                priority:0;
-            }
-            {
                 title:have an "auto-keep" for height above ground;
                 description:;
                 done:1;
@@ -91,13 +72,19 @@ and then warn if e.g. the quadtree has very low resoltion;
                 priority:0;
             }
             {
-                title:BUG: in CosyGui, when save-filename contains non-english character, there's a crash, though the file is being saved;
-                description:;
+                title:BUG: in CosyGui, when save-filename contains non-english character, there's a crash;
+                description:though the file is being saved;
                 done:0;
                 priority:0;
             }
         }
         0.5{
+            {
+                title:exr support for heightmaps;
+                description:also, verify image format support in general;
+                done:0;
+                priority:0;
+            }
             {
                 title: let user optionally display icons in camera-placement widget;
                 description:;
@@ -209,6 +196,19 @@ because default in gui != default in cosyscene;
             }
         }
         future{
+            {
+                title:as with vbox-entpack, maybe picogen-entpack;
+                description:so users could upload their packages;
+                done:0;
+                priority:0;
+            }
+            {
+                title:automatic quality checker;
+                description:it should ask: preview or production? 
+and then warn if e.g. the quadtree has very low resoltion;
+                done:0;
+                priority:0;
+            }
             {
                 title:Water Drops on Surfaces;
                 description:"Water Drops on Surfaces", by Wang, Mucha, Turk;
