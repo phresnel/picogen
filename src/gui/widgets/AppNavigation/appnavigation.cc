@@ -35,21 +35,39 @@ AppNavigation::~AppNavigation()
         delete ui;
 }
 
-void AppNavigation::addButton (const QString &title, const QIcon &icon) {
-        QToolButton *button = new QToolButton ();
+AppNavigationButton* AppNavigation::addButton (const QString &title, const QIcon &icon) {
+        AppNavigationButton *button = new AppNavigationButton ();
         button->setIcon(icon);
         button->setText(title);
         addToolButton (button);
+        return button;
 }
 
-void AppNavigation::addToolButton (QToolButton *button) {
+void AppNavigation::addToolButton (AppNavigationButton *button) {
         button->setIconSize(QSize(32,32));
         button->setParent(this);
-        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-
-        // Take spacer
+        connect(button, SIGNAL(activated(AppNavigationButton*)),
+                this,   SLOT(activateButton(AppNavigationButton*)));
+        // Take spacer, insert widget, re-insert spacer
         QLayoutItem *spacer = layout()->takeAt(layout()->count()-1);
         layout()->addWidget(button);
         layout()->addItem(spacer);
+
+        buttons.push_back(button);
 }
+
+void AppNavigation::activateButton(AppNavigationButton *button) {
+        // This might be slightly wasteful, but saves us from
+        // having to keep a prev pointer that someday might go
+        // invalid.
+        foreach (AppNavigationButton *b, buttons)
+                if (b != button) b->setStyleSheet("");
+        button->setStyleSheet ("background-color:"
+                               " qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, "
+                               "stop:1 rgba(230,255,230, 255), stop:0 rgba(180,180,180, 0));");
+
+}
+
+//#include "appnavigation.moc"

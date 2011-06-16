@@ -31,6 +31,8 @@
 #include "stylesheetliveeditor.h"
 #include "textdialog.h"
 
+#include "appnavigation.h"
+
 #include <iostream>
 #include <ctime>
 #include <QDebug>
@@ -217,6 +219,42 @@ MainWindow::MainWindow(QWidget *parent) :
                  ui->navigation, SLOT(updateWater()));
         redshiftSceneCreator->setScene (scene);
 
+        connect (ui->appNavigation->addButton ("Terrain",
+                                               QIcon(":/toplevel-navigation/terrain")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_terrainCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Water",
+                                               QIcon(":/toplevel-navigation/water")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_waterCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Forest && Groundcover",
+                                               QIcon(":/toplevel-navigation/forest")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_forestCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Sky && Atmosphere",
+                                               QIcon(":/toplevel-navigation/skyatmosphere")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_sunskyCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Navigation",
+                                               QIcon(":/toplevel-navigation/navigation")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_navigationCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Film && Camera",
+                                               QIcon(":/toplevel-navigation/film")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_filmCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Rendering Setup",
+                                               QIcon(":/toplevel-navigation/rendering-setup")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_renderingSetupCommandLink_clicked()));
+        connect (ui->appNavigation->addButton ("Quick Render (F5)",
+                                               QIcon(":/toplevel-navigation/quick-render")),
+                 SIGNAL(activated(AppNavigationButton*)),
+                 SLOT(on_renderCommandLink_clicked()));
+
+        on_actionCompact_left_pane_triggered(true);
+
+        //ui->app
         // Aesthetics.
         on_terrainCommandLink_clicked();
         indicateSaved();
@@ -488,6 +526,7 @@ void compactCommandLink(QCommandLinkButton *clb, bool compact) {
 }
 
 void MainWindow::on_actionCompact_left_pane_triggered(bool checked) {
+        /*
         compactCommandLink(ui->terrainCommandLink, checked);
         compactCommandLink(ui->renderCommandLink, checked);
         compactCommandLink(ui->terrainCommandLink, checked);
@@ -497,6 +536,17 @@ void MainWindow::on_actionCompact_left_pane_triggered(bool checked) {
         compactCommandLink(ui->sunskyCommandLink, checked);
         compactCommandLink(ui->filmCommandLink, checked);
         compactCommandLink(ui->renderingSetupCommandLink, checked);
+        */
+
+        // let us first make the non-desired pane invisible so that
+        // we don't invoke bad resize actions by the window manager.
+        if (checked) {
+                ui->navigationFrame->setVisible(false);
+                ui->appNavigation->setVisible(true);
+        } else {
+                ui->appNavigation->setVisible(false);
+                ui->navigationFrame->setVisible(true);
+        }
 }
 
 

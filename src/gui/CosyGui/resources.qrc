@@ -1,19 +1,19 @@
 <RCC>
     <qresource prefix="/toplevel-navigation">
-        <file>resources/oldschool_freefornoncommercial_navigation.png</file>
-        <file>resources/mobileicons_freeforcommercial_film.png</file>
-        <file>resources/dellipack_freeforcommercial_landscape.png</file>
-        <file>resources/sleekxp_cc-noncommercial_render.png</file>
+        <file alias="navigation">resources/oldschool_freefornoncommercial_navigation.png</file>
+        <file alias="rendering-setup">resources/mobileicons_freeforcommercial_film.png</file>
+        <file alias="terrain">resources/dellipack_freeforcommercial_landscape.png</file>
+        <file alias="quick-render">resources/sleekxp_cc-noncommercial_render.png</file>
         <file>resources/oxygen_gpl_quatschsourceeditor.png</file>
         <file>resources/bagsandboxes_freeforcommercial_preset.png</file>
         <file>resources/crystalclear_lgpl_folder.png</file>
-        <file>resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</file>
+        <file alias="forest">resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</file>
         <file alias="skyatmosphere">resources/humano2_freeforcommercial_weather-few-clouds.png</file>
         <file>resources/oxygen_gpl_ruler.png</file>
         <file>resources/oxygen_gpl_texturing.png</file>
         <file>resources/sketchy_cc-attribution-noncommercial_mountain-sketch.png</file>
         <file>resources/oxygen_gpl_screen.png</file>
-        <file>resources/darkglass_gpl_film.png</file>
+        <file alias="film">resources/darkglass_gpl_film.png</file>
     </qresource>
     <qresource prefix="/style">
         <file alias="checkbox-yes">resources/woothemes_gpl_checkbox-yes.png</file>

@@ -22,6 +22,8 @@
 #define APPNAVIGATION_H
 
 #include <QFrame>
+#include <QToolButton>
+#include <QDebug>
 
 namespace Ui {
     class AppNavigation;
@@ -30,7 +32,25 @@ namespace Ui {
 
 class QString;
 class QIcon;
-class QToolButton;
+
+class AppNavigationButton : public QToolButton {
+        Q_OBJECT
+public:
+        AppNavigationButton () : QToolButton()
+        {
+                connect(this, SIGNAL(clicked()),
+                        SLOT(activate()));
+        }
+        virtual ~AppNavigationButton() {}
+
+signals:
+        void activated(AppNavigationButton *emitter);
+private slots:
+        void activate() {
+
+                emit activated(this);
+        }
+};
 
 class AppNavigation : public QFrame
 {
@@ -40,12 +60,15 @@ public:
     explicit AppNavigation(QWidget *parent = 0);
     ~AppNavigation();
 
-    void addButton (const QString &title, const QIcon &icon);
+    AppNavigationButton* addButton (const QString &title, const QIcon &icon);
 
+private slots:
+    void activateButton (AppNavigationButton*);
 private:
-    void addToolButton (QToolButton*);
+    void addToolButton (AppNavigationButton*);
 private:
     Ui::AppNavigation *ui;
+    QVector<AppNavigationButton*> buttons;
 };
 
 #endif // APPNAVIGATION_H
