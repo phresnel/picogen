@@ -77,6 +77,12 @@ resolved: crash was because PreviewWidget did clean up images, but not images-ar
                 done:0;
                 priority:0;
             }
+            {
+                title:Unify old-style app-menu and new-style app-menu;
+                description:and have css-selectable properties indicating whether mode is compact or not;
+                done:0;
+                priority:0; 
+            }
         }
         0.5{
             {
