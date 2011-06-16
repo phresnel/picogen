@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>55</width>
-    <height>86</height>
+    <width>144</width>
+    <height>139</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,20 +18,34 @@
 color: white;
 font-weight:bold;
 border: 0px solid #555;
-padding: 5px;
-background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(122,122,122, 255), stop:1 rgba(180,180,180, 255));
+background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(84,84,84, 255), stop:1 rgba(120,120,120, 255));
 }
-QToolButton {
+QToolButton[active=&quot;false&quot;] {
 font: 75 8pt;
 font-weight:bold;
 color:white;
-border: 0px;
-background:rgba(180,180,180, 0);
+border: 2px solid ;
+border-radius: 6px;
+border-top-right-radius:0px;
+border-bottom-right-radius:0px;
+background-color: rgba(120,120,120,0);
+border-color:rgba(60,60,60,0);
+}
+QToolButton[active=&quot;true&quot;] {
+font: 75 8pt;
+font-weight:bold;
+color:white;
+border: 2px solid ;
+border-radius: 6px;
+border-top-right-radius:0px;
+border-bottom-right-radius:0px;
+background-color: rgba(150,150,150,255);
+border-color:rgb(60,60,60);
+border-right-color:rgba(0,0,0,0);
 }
 
 QToolButton:hover {
 background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(152,152,152, 255), stop:1 rgba(220,220,220, 255));
-border: 0px solid rgba(170,170,170,255);
 }
 QToolButton:pressed {
 background: qradialgradient(cx: 0.4, cy: -0.1,
@@ -45,12 +59,6 @@ radius: 1.35,
 stop: 0 #eee, stop: 1 #bbb);
 }
 </string>
-  </property>
-  <property name="frameShape">
-   <enum>QFrame::StyledPanel</enum>
-  </property>
-  <property name="frameShadow">
-   <enum>QFrame::Raised</enum>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">

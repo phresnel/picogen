@@ -32,7 +32,7 @@ namespace Ui {
 
 class QString;
 class QIcon;
-
+class AppNavigation;
 class AppNavigationButton : public QToolButton {
         Q_OBJECT
 public:
@@ -43,13 +43,24 @@ public:
         }
         virtual ~AppNavigationButton() {}
 
+        Q_PROPERTY(bool active READ active WRITE setActive)
+
 signals:
         void activated(AppNavigationButton *emitter);
 private slots:
         void activate() {
-
+                setActive(true);
                 emit activated(this);
         }
+private:
+        bool active_;
+
+        bool active () { return active_; }
+        void setActive (bool active) {
+                active_ = active;
+                setStyle(style());
+        }
+        friend class AppNavigation;
 };
 
 class AppNavigation : public QFrame
