@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (CosyGui)
 
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-        add_definitions (-Wall -Wextra -D__STDC_LIMIT_MACROS)
+        add_definitions (-O3 -Wall -Wextra -D__STDC_LIMIT_MACROS)
 endif()
 
 
