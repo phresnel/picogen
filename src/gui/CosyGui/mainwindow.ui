@@ -332,7 +332,7 @@ stop: 0 #fed, stop: 1 #bbb);
           <string>Terrain</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset>
            <normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</normaloff>:/toplevel-navigation/resources/dellipack_freeforcommercial_landscape.png</iconset>
          </property>
          <property name="iconSize">
@@ -395,7 +395,7 @@ stop: 0 #fed, stop: 1 #bbb);
           <string>Forest &amp;&amp; Groundcover</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset>
            <normaloff>:/toplevel-navigation/resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</normaloff>:/toplevel-navigation/resources/greenpack_cc-attribution-noncommercial-sharealike_flora.png</iconset>
          </property>
          <property name="iconSize">
@@ -453,7 +453,7 @@ stop: 0 #fed, stop: 1 #bbb);
           <string>Navigation</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset>
            <normaloff>:/toplevel-navigation/resources/oldschool_freefornoncommercial_navigation.png</normaloff>:/toplevel-navigation/resources/oldschool_freefornoncommercial_navigation.png</iconset>
          </property>
          <property name="iconSize">
@@ -501,7 +501,7 @@ stop: 0 #fed, stop: 1 #bbb);
           <string>Film &amp;&amp; Camera</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset>
            <normaloff>:/toplevel-navigation/resources/darkglass_gpl_film.png</normaloff>:/toplevel-navigation/resources/darkglass_gpl_film.png</iconset>
          </property>
          <property name="iconSize">
@@ -565,7 +565,7 @@ stop: 0 #fed, stop: 1 #bbb);
           <string>Preview (F5)</string>
          </property>
          <property name="icon">
-          <iconset resource="resources.qrc">
+          <iconset>
            <normaloff>:/toplevel-navigation/resources/sleekxp_cc-noncommercial_render.png</normaloff>:/toplevel-navigation/resources/sleekxp_cc-noncommercial_render.png</iconset>
          </property>
          <property name="iconSize">
@@ -625,7 +625,7 @@ stop: 0 #fed, stop: 1 #bbb);
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="FilmSettingsAndCamera" name="filmSettingsAndCamera"/>
          <widget class="NavigationWindow" name="navigation"/>
