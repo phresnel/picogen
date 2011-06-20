@@ -117,7 +117,7 @@ priinclude("../../Repository/repository")
 priinclude("../../Repository/fragment")
 priinclude("../../Repository/fragment/preset")
 
-priinclude("../cosyscene")
+priinclude("../../../cosyscene")
 priinclude("../../../redshift/")
 priinclude("../../../auxiliary/xyto/")
 priinclude("../../../auxiliary/quatsch-preprocessor/")
