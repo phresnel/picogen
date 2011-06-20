@@ -301,7 +301,7 @@ and then warn if e.g. the quadtree has very low resoltion;
             }
             {
                 title:"Hike & Render" mode;
-                description:as a kind of game;
+                description:as a kind of game, including nature sounds;
                 done:0;
                 priority:0;
             }
@@ -326,6 +326,12 @@ and then warn if e.g. the quadtree has very low resoltion;
             {
                 title:tiny Picogen-Linux appliance for user's evaluation purposes;
                 description:;
+                done:0;
+                priority:0;
+            }
+            {
+                title:export to pioneer spacesim;
+                description:according to idea of a nice guy at deviant art;
                 done:0;
                 priority:0;
             }
