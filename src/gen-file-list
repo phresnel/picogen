@@ -1,7 +1,0 @@
-#/c/qt-phresnels-qt/bin/qmake.exe
-#qmake \
-/home/programmer/Desktop/phresnels-qt/bin/qmake \
-        -special -filelist \
-        -relateto "$(pwd)" \
-        -prefix COSY \
-        gui/CosyGui/CosyGui.pro
