@@ -9,9 +9,8 @@ endif()
 
 
 
-
-include_directories (../../../renderer/redshift/include)
-include_directories (../../../renderer/)
+include_directories (../../../)
+include_directories (../../../redshift/include)
 include_directories (../../../auxiliary/)
 
 
@@ -119,7 +118,7 @@ priinclude("../../Repository/fragment")
 priinclude("../../Repository/fragment/preset")
 
 priinclude("../cosyscene")
-priinclude("../../../renderer/redshift/")
+priinclude("../../../redshift/")
 priinclude("../../../auxiliary/xyto/")
 priinclude("../../../auxiliary/quatsch-preprocessor/")
 
