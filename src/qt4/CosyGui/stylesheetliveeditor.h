@@ -28,7 +28,7 @@ namespace Ui {
         class StylesheetLiveEditor;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class StylesheetLiveEditor : public QDialog
 {
@@ -45,5 +45,7 @@ private:
         Ui::StylesheetLiveEditor *ui;
         QWidget *applyTo;
 };
+
+} }
 
 #endif // STYLESHEETLIVEEDITOR_HH

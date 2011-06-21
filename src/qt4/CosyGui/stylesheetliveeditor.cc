@@ -21,6 +21,8 @@
 #include "stylesheetliveeditor.h"
 #include "ui_stylesheetliveeditor.h"
 
+namespace picogen { namespace qt4 {
+
 StylesheetLiveEditor::StylesheetLiveEditor(QWidget *applyTo, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StylesheetLiveEditor),
@@ -53,5 +55,7 @@ void StylesheetLiveEditor::on_actionApply_triggered()
 {
         applyTo->setStyleSheet(ui->plainTextEdit->toPlainText());
 }
+
+} }
 
 #include "stylesheetliveeditor.moc"
