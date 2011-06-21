@@ -29,7 +29,7 @@ namespace Ui {
         class TerrainFitting;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class TerrainFitting : public QWidget
 {
@@ -62,5 +62,7 @@ private:
         int previousMaxRecursion;
         redshift::shared_ptr<cosyscene::TerrainFitting> fitting_;
 };
+
+} }
 
 #endif // TERRAINFITTING_HH

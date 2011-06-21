@@ -26,8 +26,7 @@
 
 #include <QMessageBox>
 
-/* REMOVE FOLLOWING LINE ASAP */
-using namespace picogen::qt4;
+namespace picogen { namespace qt4 {
 
 TerrainFitting::TerrainFitting(QWidget *parent) :
     QWidget(parent),
@@ -111,5 +110,7 @@ void TerrainFitting::on_stashResetButton_clicked() {
                 emit fittingChanged();
         }
 }
+
+} }
 
 #include "terrainfitting.moc"

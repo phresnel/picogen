@@ -98,7 +98,7 @@
    <item>
     <widget class="QStackedWidget" name="terrainTaskStackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="TerrainFormation" name="formation">
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -108,7 +108,7 @@
       </layout>
      </widget>
      <widget class="picogen::qt4::Material" name="texturing"/>
-     <widget class="TerrainFitting" name="fitting"/>
+     <widget class="picogen::qt4::TerrainFitting" name="fitting"/>
     </widget>
    </item>
   </layout>
@@ -127,7 +127,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TerrainFitting</class>
+   <class>picogen::qt4::TerrainFitting</class>
    <extends>QWidget</extends>
    <header>terrainfitting.h</header>
    <container>1</container>
