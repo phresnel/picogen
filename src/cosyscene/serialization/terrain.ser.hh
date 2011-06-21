@@ -28,7 +28,7 @@
 #include "cosyscene/serialization/color.ser.hh"
 #include "cosyscene/serialization/vector3d.ser.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void QuatschSource::serialize (Arch &arch) {
@@ -109,6 +109,6 @@ inline void Terrain::serialize (Arch &arch) {
         arch & pack("world-fitting", *fitting_);
 }
 
-} // namespace cosyscene
+} }
 
 #endif // TERRAIN_SERIALIZATION_HH

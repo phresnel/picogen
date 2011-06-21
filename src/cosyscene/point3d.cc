@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -54,4 +54,4 @@ CosyFloat Point3d::z() const {
 }
 
 
-}
+} }

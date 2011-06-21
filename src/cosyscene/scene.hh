@@ -34,7 +34,7 @@ namespace redshift_file {
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 class Scene
@@ -90,6 +90,6 @@ private:
         redshift::shared_ptr<TwinRenderSettings> renderSettings_;
         redshift::shared_ptr<FilmSettings> filmSettings_;
 };
-}
+} }
 
 #endif // COSYSCENE_HH_20100902

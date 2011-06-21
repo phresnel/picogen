@@ -23,9 +23,9 @@
 #define POINT3D_SERIALIZATION_HH_20100915
 
 #include "../point3d.hh"
- 
 
-namespace cosyscene {
+
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void Point3d::serialize (Arch &arch) {
@@ -33,6 +33,6 @@ inline void Point3d::serialize (Arch &arch) {
         arch & pack(x_) & pack(y_) & pack(z_);
 }
 
-} // namespace cosyscene
+} }
 
 #endif // POINT3D_SERIALIZATION_HH_20100915

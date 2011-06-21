@@ -23,7 +23,7 @@
 
 #include "cosyfloat.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 class Vector3d {
@@ -49,6 +49,6 @@ inline bool operator == (Vector3d const & lhs, Vector3d const & rhs) {
 CosyFloat length (Vector3d);
 
 
-} // namespace cosyscene
+} }
 
 #endif // VECTOR3D_HH_20100910

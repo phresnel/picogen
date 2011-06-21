@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-namespace cosyscene { namespace detail {
+namespace picogen { namespace cosyscene { namespace detail {
 
 // Checks whether a and b are almost equal, using quick and dirty
 // absolute error epsilon.
@@ -31,6 +31,6 @@ inline bool almost_eqal_abserr (float a, float b, float maxAbsoluteError) {
         return std::fabs(a-b) < maxAbsoluteError;
 }
 
-} }
+} } }
 
 #endif // FLOAT_COMPARE_HH

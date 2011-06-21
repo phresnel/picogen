@@ -29,7 +29,7 @@
 #include "cosyscene/serialization/vector3d.ser.hh"
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 template<typename Arch>
@@ -53,6 +53,6 @@ inline void Water::serialize (Arch &arch) {
         arch & pack("world-fitting", *fitting_);
 }
 
-} // namespace cosyscene
+} }
 
 #endif // WATER_SERIALIZATION_HH_20101217

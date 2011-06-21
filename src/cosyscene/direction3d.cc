@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 Direction3d::Direction3d() : x_(0), y_(0), z_(0) {
@@ -57,4 +57,4 @@ CosyFloat Direction3d::z() const {
 }
 
 
-}
+} }

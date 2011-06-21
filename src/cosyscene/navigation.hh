@@ -29,7 +29,7 @@
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -78,6 +78,6 @@ private:
         cosyscene::YawPitchRoll yawPitchRoll_;
 };
 
-} // namespace cosyscene
+} }
 
 #endif // NAVIGATION_HH_20100915

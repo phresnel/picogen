@@ -23,9 +23,9 @@
 #define DIRECTION3d_SERIALIZATION_HH_20100910
 
 #include "../direction3d.hh"
- 
 
-namespace cosyscene {
+
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void Direction3d::serialize (Arch &arch) {
@@ -33,6 +33,6 @@ inline void Direction3d::serialize (Arch &arch) {
         arch & pack(x_) & pack(y_) & pack(z_);
 }
 
-} // namespace cosyscene
+} }
 
 #endif // DIRECTION3D_SERIALIZATION_HH_20100910

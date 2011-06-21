@@ -21,7 +21,7 @@
 #include "rendersettings.hh"
 #include "actuarius/bits/enum.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 RenderSettings::RenderSettings() {
         reset();
@@ -100,4 +100,4 @@ redshift::shared_ptr<RenderSettings> TwinRenderSettings::preview() const {
         return preview_;
 }
 
-}
+} }

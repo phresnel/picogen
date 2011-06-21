@@ -25,7 +25,7 @@
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -52,6 +52,6 @@ inline bool operator == (Point3d const & lhs, Point3d const & rhs) {
 
 
 
-} // namespace cosyscene
+} }
 
 #endif // POINT3D_HH_20100915

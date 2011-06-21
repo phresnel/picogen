@@ -24,8 +24,8 @@
 
 #include "../geometry.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
-} // namespace cosyscene
+} }
 
 #endif // GEOMETRY_SERIALIZATION_HH_20100910

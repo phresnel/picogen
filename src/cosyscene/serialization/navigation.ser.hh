@@ -25,9 +25,9 @@
 #include "../navigation.hh"
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/point3d.ser.hh"
- 
 
-namespace cosyscene {
+
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void YawPitchRoll::serialize (Arch &arch) {
@@ -52,6 +52,6 @@ inline void Navigation::serialize (Arch &arch) {
         }
 }
 
-} // namespace cosyscene
+} }
 
 #endif // NAVIGATION_SERIALIZATION_HH_20101015

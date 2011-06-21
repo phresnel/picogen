@@ -21,7 +21,7 @@
 #include "filmsettings.hh"
 #include "actuarius/bits/enum.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 FilmSettings::FilmSettings() {
         reset();
@@ -43,4 +43,4 @@ bool FilmSettings::data_equals(FilmSettings const &rhs) const {
         return brightnessFactor_ == rhs.brightnessFactor_;
 }
 
-}
+} }

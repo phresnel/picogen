@@ -29,7 +29,7 @@
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -85,6 +85,6 @@ private:
         redshift::shared_ptr<RenderSettings> production_;
 };
 
-} // namespace cosyscene
+} }
 
 #endif // RENDERSETTINGS_HH_20101019

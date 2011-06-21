@@ -23,7 +23,7 @@
 
 #include <iosfwd>
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 class CosyFloat {
@@ -63,6 +63,6 @@ std::ostream& operator<< (std::ostream&, CosyFloat const&);
 std::istream& operator>> (std::istream&, CosyFloat &);
 
 
-} // namespace cosyscene
+} }
 
 #endif // COSYFLOAT_HH_20110210

@@ -25,7 +25,7 @@
 #include "actuarius/bits/enum.hh"
 #include "cosyfloat.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 //------------------------------------------------------------------------------
 class WavelengthAmplitudePair {
@@ -150,6 +150,6 @@ inline bool operator == (Color const &lhs, Color const &rhs) {
                 "unhandled switch-value");
 }
 
-} // namespace cosyscene
+} }
 
 #endif // COLOR_HH_20101012

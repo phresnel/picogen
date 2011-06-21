@@ -24,7 +24,7 @@
 #include "../camera.hh"
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void PinholeCamera::serialize (Arch &arch) {
@@ -64,6 +64,6 @@ inline void Camera::serialize (Arch &arch) {
 }
 
 
-} // namespace cosyscene
+} }
 
 #endif // CAMERA_SERIALIZATION_HH_20110117

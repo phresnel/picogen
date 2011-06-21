@@ -25,7 +25,7 @@
 #include "../color.hh"
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 //------------------------------------------------------------------------------
 template<typename Arch>
@@ -62,6 +62,6 @@ inline void Color::serialize (Arch &arch) {
 }
 
 
-} // namespace cosyscene
+} }
 
 #endif // COLOR_SERIALIZATION_HH_20101012

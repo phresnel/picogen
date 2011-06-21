@@ -26,7 +26,7 @@
 #include <actuarius/bits/enum.hh>
 #include "cosyfloat.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 class FilmSettings : public StashableMixin<FilmSettings>
 {
@@ -45,6 +45,6 @@ private:
         void reset();
 };
 
-} // namespace cosyscene
+} }
 
 #endif // FILMSETTINGS_HH_20101216

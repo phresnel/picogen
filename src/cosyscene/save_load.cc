@@ -25,7 +25,7 @@
 #include "actuarius/actuarius.hh"
 #include "cosyscene/serialization/scene.ser.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 void save_scene (const cosyscene::Scene &scene_, std::ostream &fs_) {
         actuarius::OArchive(fs_) & actuarius::pack("cosy", scene_);
@@ -54,4 +54,4 @@ void load_scene (Scene &scene, std::string const &name) {
         load_scene (scene, fs);
 }
 
-}
+} }

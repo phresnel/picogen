@@ -27,7 +27,7 @@
 #include "stash.hh"
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -126,6 +126,6 @@ bool operator == (SurfaceIntegrator const &lhs, SurfaceIntegrator const &rhs);
 
 
 
-} // namespace cosyscene
+} }
 
 #endif // SURFACEINTEGRATOR_HH_20101215

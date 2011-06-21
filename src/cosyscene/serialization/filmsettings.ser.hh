@@ -23,9 +23,9 @@
 
 #include "../filmsettings.hh"
 #include "cosyscene/serialization/stash.ser.hh"
- 
 
-namespace cosyscene {
+
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void FilmSettings::serialize (Arch &arch) {
@@ -37,6 +37,6 @@ inline void FilmSettings::serialize (Arch &arch) {
              ;
 }
 
-} // namespace cosyscene
+} }
 
 #endif // FILMSETTINGS_SERIALIZATION_HH_20101216

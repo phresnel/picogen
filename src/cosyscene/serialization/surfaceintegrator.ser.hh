@@ -23,7 +23,7 @@
 
 #include "../surfaceintegrator.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void WhittedAmbientIntegrator::serialize (Arch &arch) {
@@ -60,6 +60,6 @@ inline void SurfaceIntegrator::serialize (Arch &arch) {
 }
 
 
-} // namespace cosyscene
+} }
 
 #endif // SURFACEINTEGRATOR_SERIALIZATION_HH_20101215

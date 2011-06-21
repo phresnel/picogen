@@ -21,10 +21,10 @@
 #include "geometry.hh"
 #include <cmath>
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 CosyFloat length (CosyFloat x, CosyFloat y, CosyFloat z) {
         return sqrt(x*x + y*y + z*z);
 }
 
-}
+} }

@@ -31,7 +31,7 @@
 #include "redshift/include/jobfile.hh"
 #include "quatsch-preprocessor/parsing.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 Scene::Scene()
 : terrain_(new Terrain())
@@ -356,4 +356,4 @@ redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
 }
 
 
-} // namespace
+} }

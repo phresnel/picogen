@@ -21,7 +21,7 @@
 #include "surfaceintegrator.hh"
 #include "actuarius/bits/enum.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 const actuarius::Enum<SurfaceIntegrator::Kind> SurfaceIntegrator::Typenames =
 ( actuarius::Nvp<SurfaceIntegrator::Kind>(SurfaceIntegrator::none, "none")
@@ -158,4 +158,4 @@ bool operator == (SurfaceIntegrator const &lhs, SurfaceIntegrator const &rhs) {
 }
 
 
-} // namespace cosyscene
+} }

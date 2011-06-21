@@ -271,8 +271,9 @@ QString QuatschPresetEditor::preset() const {
         return QString::fromStdString(preset_);
 }
 
-void QuatschPresetEditor::fromCosy (cosyscene::QuatschPreset const &qp) {
+void QuatschPresetEditor::fromCosy (picogen::cosyscene::QuatschPreset const &qp) {
         using std::map; using std::string;
+        namespace cosyscene = picogen::cosyscene;
 
         setPreset (qp.preset());
 
@@ -355,8 +356,8 @@ std::string QuatschPresetEditor::getPreprocessedCode() const {
         return quatsch_preprocessor::replace(preset_, replacements());
 }
 
-cosyscene::QuatschPreset QuatschPresetEditor::toCosy() const {
-        cosyscene::QuatschPreset qp;
+picogen::cosyscene::QuatschPreset QuatschPresetEditor::toCosy() const {
+        picogen::cosyscene::QuatschPreset qp;
         qp.setPreset(this->preset_);
 
         typedef std::map<std::string, std::string>::const_iterator iter;

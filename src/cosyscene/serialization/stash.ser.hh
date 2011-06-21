@@ -26,6 +26,7 @@
 #include <vector>
 #include "../stash.hh"
 
+namespace picogen { namespace cosyscene {
 template <typename T>
 template <typename Arch>
 inline void StashObject<T>::serialize (Arch &arch) {
@@ -41,5 +42,6 @@ inline void Stash<T>::serialize (Arch &arch) {
         arch & pack (&StashObject<T>::time_, objects);
 }
 
+} }
 
 #endif // STASH_DEF_HH

@@ -26,7 +26,7 @@
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/color.ser.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 template<typename Arch>
@@ -43,6 +43,6 @@ inline void Material::serialize (Arch &arch) {
         }
 }
 
-} // namespace cosyscene
+} }
 
 #endif // MATERIAL_SERIALIZATION_HH_20101217

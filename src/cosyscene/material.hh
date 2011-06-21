@@ -28,7 +28,7 @@
 #include "color.hh"
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 class Material : public StashableMixin<Material> {
 public:
@@ -56,7 +56,7 @@ private:
         Color monochrome_;
 
 };
-} // namespace cosyscene
+} }
 
 
 

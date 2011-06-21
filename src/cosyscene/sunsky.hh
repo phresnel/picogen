@@ -30,7 +30,7 @@
 #include "direction3d.hh"
 #include "cosyfwd.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 class UtahSky {
@@ -101,6 +101,6 @@ private:
         cosyscene::UtahSky utahSky_;
 };
 
-} // namespace cosyscene
+} }
 
 #endif // SUNSKY_HH_20100910

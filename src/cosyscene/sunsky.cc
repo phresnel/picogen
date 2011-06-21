@@ -20,7 +20,7 @@
 
 #include "sunsky.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 const actuarius::Enum<SunSky::Kind> SunSky::Typenames =
@@ -71,4 +71,4 @@ bool SunSky::data_equals(SunSky const &rhs) const {
 }
 
 
-}
+} }

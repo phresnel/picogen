@@ -23,7 +23,7 @@
 #include "quatsch-preprocessor/parsing.hh"
 #include "cosyfloat.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -60,4 +60,4 @@ redshift::shared_ptr<WaterFitting> Water::fitting() const {
 }
 
 
-}
+} }

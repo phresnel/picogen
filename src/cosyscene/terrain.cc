@@ -22,7 +22,7 @@
 #include "material.hh"
 #include "quatsch-preprocessor/parsing.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 const actuarius::Enum<TerrainFormation::Kind> TerrainFormation::Typenames =
@@ -177,4 +177,4 @@ redshift::shared_ptr<TerrainFitting> Terrain::fitting() const {
 }
 
 
-}
+} }

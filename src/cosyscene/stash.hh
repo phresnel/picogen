@@ -33,6 +33,8 @@ namespace actuarius {
         class IArchive;
 }
 
+namespace picogen { namespace cosyscene {
+
 template <typename T> class StashObject {
 public:
         StashObject(T const &value)
@@ -183,8 +185,10 @@ public:
         // (used by some widgets)
         //  bool data_equals(DERIVED const &rhs) const;
 protected:
-        Stash<DERIVED> stash_;
+        cosyscene::Stash<DERIVED> stash_;
 };
+
+} }
 
 
 #endif // STASH_HH_20100902

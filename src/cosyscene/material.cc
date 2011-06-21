@@ -20,7 +20,7 @@
 
 #include "material.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 const actuarius::Enum<Material::Kind> Material::Typenames =
 ( actuarius::Nvp<Material::Kind>(Material::None, "none")
@@ -76,4 +76,4 @@ bool Material::data_equals(const Material &rhs) const {
                                  "fully defined");
 }
 
-}
+} }

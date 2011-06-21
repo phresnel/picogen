@@ -25,7 +25,7 @@
 #include <istream>
 #include <ostream>
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -100,4 +100,4 @@ std::istream& operator>> (std::istream& ss, CosyFloat &f) {
 }
 
 
-}
+} }

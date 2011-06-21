@@ -23,10 +23,10 @@
 
 #include "cosyfloat.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 CosyFloat length (CosyFloat, CosyFloat, CosyFloat);
 
-} // namespace cosyscene
+} }
 
 #endif // GEOMETRY_HH_20100910

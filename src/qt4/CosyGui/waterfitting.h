@@ -27,9 +27,9 @@
 namespace Ui {
         class WaterFitting;
 }
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
         class WaterFitting;
-}
+} }
 
 namespace picogen { namespace qt4 {
 

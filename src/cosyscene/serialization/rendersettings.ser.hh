@@ -26,7 +26,7 @@
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/surfaceintegrator.ser.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void RenderSettings::serialize (Arch &arch) {
@@ -51,6 +51,6 @@ inline void TwinRenderSettings::serialize (Arch &arch) {
 }
 
 
-} // namespace cosyscene
+} }
 
 #endif // RENDERSETTINGS_SERIALIZATION_HH_20101019

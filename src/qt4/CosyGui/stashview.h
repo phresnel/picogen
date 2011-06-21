@@ -45,7 +45,8 @@ namespace picogen { namespace qt4 {
 class StashView;
 class StashViewItem {
 public:
-        template <typename T> StashViewItem (StashObject<T> const &stashObject)
+        template <typename T> StashViewItem (
+                picogen::cosyscene::StashObject<T> const &stashObject)
                 : time(stashObject.time())
                 , data(new T (stashObject.value()))
                 , description(stashObject.description())
@@ -74,8 +75,8 @@ public:
         explicit StashView(QWidget *parent = 0);
         virtual ~StashView();
 
-        template <typename T> void addItems (Stash<T> const &stash);
-        template <typename T> void addItem  (StashObject<T> const &stashObject);
+        template <typename T> void addItems (cosyscene::Stash<T> const &stash);
+        template <typename T> void addItem  (cosyscene::StashObject<T> const &stashObject);
 
         void addItem (const StashViewItem &item);
 
@@ -84,7 +85,7 @@ public:
         bool hasSelectedData() const;
         int selectedIndex   () const;
 
-        template <typename T> Stash<T> itemsToStash () const;
+        template <typename T> cosyscene::Stash<T> itemsToStash () const;
 
 // ================== Standard dialogs for Stashing ============================
 public:
@@ -188,13 +189,13 @@ private:
 
 
 template <typename T>
-void StashView::addItem (StashObject<T> const &stashObject) {
+void StashView::addItem (cosyscene::StashObject<T> const &stashObject) {
         addItem(StashViewItem(stashObject));
 }
 
 template <typename T>
-void StashView::addItems (Stash<T> const &stash) {
-        typedef typename Stash<T>::const_iterator const_iterator;
+void StashView::addItems (cosyscene::Stash<T> const &stash) {
+        typedef typename cosyscene::Stash<T>::const_iterator const_iterator;
 
         for (const_iterator it=stash.begin(); it!=stash.end(); ++it) {
                 addItem(*it);
@@ -208,10 +209,10 @@ T StashView::selectedData () const {
 }
 
 template <typename T>
-Stash<T> StashView::itemsToStash () const {
-        Stash<T> ret;
+cosyscene::Stash<T> StashView::itemsToStash () const {
+        cosyscene::Stash<T> ret;
         for (int i=0; i<items.size(); ++i) {
-                ret.push_back (StashObject<T>(
+                ret.push_back (cosyscene::StashObject<T>(
                         items[i].time,
                         *((T*)items[i].data.get()),
                         items[i].description

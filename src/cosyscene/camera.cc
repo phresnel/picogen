@@ -21,7 +21,7 @@
 #include "camera.hh"
 #include "actuarius/bits/enum.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 const actuarius::Enum<Camera::Kind> Camera::Typenames =
 ( actuarius::Nvp<Camera::Kind>(Camera::pinhole,      "pinhole")
@@ -145,4 +145,4 @@ bool operator == (Camera const &lhs, Camera const &rhs) {
 }
 
 
-} // namespace cosyscene
+} }

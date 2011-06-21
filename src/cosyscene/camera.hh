@@ -28,7 +28,7 @@
 #include "cosyfwd.hh"
 #include "cosyfloat.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 class PinholeCamera {
@@ -119,6 +119,6 @@ private:
         Kind kind_;
 };
 
-} // namespace cosyscene
+} }
 
 #endif // CAMERA_HH_20110117

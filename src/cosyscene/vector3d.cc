@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 
@@ -59,4 +59,4 @@ CosyFloat length (Vector3d d) {
         return length (d.x(), d.y(), d.z());
 }
 
-}
+} }

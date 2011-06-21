@@ -25,9 +25,9 @@
 #include "../sunsky.hh"
 #include "cosyscene/serialization/stash.ser.hh"
 #include "cosyscene/serialization/direction3d.ser.hh"
- 
 
-namespace cosyscene {
+
+namespace picogen { namespace cosyscene {
 
 template<typename Arch>
 inline void UtahSky::serialize (Arch &arch) {
@@ -58,6 +58,6 @@ inline void SunSky::serialize (Arch &arch) {
         }
 }
 
-} // namespace cosyscene
+} }
 
 #endif // SUNSKY_SERIALIZATION_HH_20100910

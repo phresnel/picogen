@@ -21,7 +21,7 @@
 #ifndef COSYFWD_HH
 #define COSYFWD_HH
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
         class Camera;
         class PinholeCamera;
         class CylindricalCamera;
@@ -69,6 +69,6 @@ namespace cosyscene {
 
         class YawPitchRoll;
         class Navigation;
-}
+} }
 
 #endif // COSYFWD_HH

@@ -23,7 +23,7 @@
 
 #include "cosyfloat.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 class Direction3d {
 public:
@@ -47,6 +47,6 @@ inline bool operator == (Direction3d const & lhs, Direction3d const & rhs) {
 }
 
 
-} // namespace cosyscene
+} }
 
 #endif // DIRECTION3D_HH_20100910

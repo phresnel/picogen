@@ -22,7 +22,7 @@
 
 #include <cmath>
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 const actuarius::Enum<Color::Kind> Color::Typenames =
 ( actuarius::Nvp<Color::Kind>(Color::Rgb, "rgb")
@@ -124,4 +124,4 @@ void Color::toSpectrum(cosyscene::Spectrum const &val) {
 
 
 
-}
+} }

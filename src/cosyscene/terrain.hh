@@ -31,7 +31,7 @@
 #include "vector3d.hh"
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 class QuatschSource {
 public:
@@ -50,11 +50,11 @@ inline bool operator == (QuatschSource const &lhs, QuatschSource const &rhs) {
         return lhs.code() == rhs.code();
 }
 
-} // namespace cosyscene
+} }
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 struct StringKeyValue {
         std::string key, value;
 
@@ -91,11 +91,11 @@ inline bool operator == (QuatschPreset const &lhs, QuatschPreset const &rhs) {
             && lhs.replacements() == rhs.replacements();
 }
 
-} // namespace cosyscene
+} }
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 class TerrainFormation : public StashableMixin<TerrainFormation>
 {
 public:
@@ -129,11 +129,11 @@ private:
         cosyscene::QuatschPreset quatschPreset_;
 };
 
-} // namespace cosyscene
+} }
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 class TerrainFitting : public StashableMixin<TerrainFitting>
 {
 public:
@@ -163,10 +163,10 @@ private:
         CosyFloat lazyQuadtreeVisibleExtent_;
         CosyFloat detailCoefficient_;
 };
-} // namespace cosyscene
+} }
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 class Terrain
 {
@@ -186,6 +186,6 @@ private:
         redshift::shared_ptr<TerrainFitting> fitting_;
 };
 
-} // namespace cosyscene
+} }
 
 #endif // TERRAIN_HH_20100902

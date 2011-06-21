@@ -32,7 +32,7 @@
 #include "cosyscene/serialization/rendersettings.ser.hh"
 #include "cosyscene/serialization/filmsettings.ser.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 template<typename Arch>
 inline void Scene::serialize (Arch &arch) {
         using actuarius::pack;
@@ -44,6 +44,6 @@ inline void Scene::serialize (Arch &arch) {
         arch & pack("render-settings", *renderSettings_);
         arch & pack("film-settings", *filmSettings_);
 }
-}
+} }
 
 #endif // SCENE_INL_HH

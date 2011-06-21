@@ -31,9 +31,9 @@ namespace Ui {
         class QuatschPresetEditor;
 }
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
         class QuatschPreset;
-}
+} }
 
 class QuatschPresetEditor : public QWidget {
         Q_OBJECT
@@ -52,8 +52,8 @@ public:
         QString preset() const;
 
         std::string getPreprocessedCode() const;
-        cosyscene::QuatschPreset toCosy() const;
-        void fromCosy (cosyscene::QuatschPreset const &);
+        picogen::cosyscene::QuatschPreset toCosy() const;
+        void fromCosy (picogen::cosyscene::QuatschPreset const &);
 
 signals:
         void formationChanged();

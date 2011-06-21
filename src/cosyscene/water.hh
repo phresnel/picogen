@@ -34,7 +34,7 @@
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 class WaterFitting : public StashableMixin<WaterFitting>
 {
 public:
@@ -49,11 +49,11 @@ public:
 private:
         CosyFloat seaLevel_;
 };
-} // namespace cosyscene
+} }
 
 
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 class Water
 {
 public:
@@ -71,7 +71,7 @@ private:
         redshift::shared_ptr<Material> material_;
         redshift::shared_ptr<WaterFitting> fitting_;
 };
-} // namespace cosyscene
+} }
 
 
 

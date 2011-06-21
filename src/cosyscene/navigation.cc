@@ -20,7 +20,7 @@
 
 #include "navigation.hh"
 
-namespace cosyscene {
+namespace picogen { namespace cosyscene {
 
 
 const actuarius::Enum<Navigation::Kind> Navigation::Typenames =
@@ -72,4 +72,4 @@ bool Navigation::data_equals(Navigation const &rhs) const {
 }
 
 
-}
+} }
