@@ -632,7 +632,7 @@ stop: 0 #fed, stop: 1 #bbb);
          <widget class="picogen::qt4::TerrainWindow" name="terrain"/>
          <widget class="picogen::qt4::SunSkyWindow" name="sunSky"/>
          <widget class="picogen::qt4::TwinRenderSettingsWindow" name="renderingSetup"/>
-         <widget class="WaterWindow" name="water"/>
+         <widget class="picogen::qt4::WaterWindow" name="water"/>
         </widget>
        </item>
       </layout>
@@ -683,6 +683,17 @@ stop: 0 #fed, stop: 1 #bbb);
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
   <action name="actionSave">
    <property name="text">
     <string>&amp;Save</string>
@@ -759,7 +770,7 @@ stop: 0 #fed, stop: 1 #bbb);
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>WaterWindow</class>
+   <class>picogen::qt4::WaterWindow</class>
    <extends>QWidget</extends>
    <header>waterwindow.h</header>
    <container>1</container>

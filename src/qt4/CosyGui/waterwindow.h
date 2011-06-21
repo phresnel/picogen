@@ -29,7 +29,7 @@ namespace Ui {
         class WaterWindow;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class WaterWindow : public QWidget
 {
@@ -66,5 +66,6 @@ private:
         redshift::shared_ptr<cosyscene::Water> water;
 };
 
+} }
 
 #endif // WATERWINDOW_HH

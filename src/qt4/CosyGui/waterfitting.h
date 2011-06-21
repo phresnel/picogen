@@ -31,7 +31,7 @@ namespace cosyscene {
         class WaterFitting;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class WaterFitting : public QWidget
 {
@@ -62,5 +62,6 @@ private:
         redshift::shared_ptr<cosyscene::WaterFitting> fitting_;
 };
 
+} }
 
 #endif // WATERFITTING_HH

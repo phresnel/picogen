@@ -25,6 +25,8 @@
 #include "stashview.h"
 #include <QMessageBox>
 
+namespace picogen { namespace qt4 {
+
 WaterWindow::WaterWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::WaterWindow),
@@ -100,5 +102,7 @@ void WaterWindow::on_formation_formationChanged() {
 void WaterWindow::on_texturing_materialChanged() {
         emit waterChanged();
 }
+
+} }
 
 #include "waterwindow.moc"

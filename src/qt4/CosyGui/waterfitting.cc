@@ -26,8 +26,7 @@
 
 #include <QMessageBox>
 
-/* REMOVE FOLLOWING LINE ASAP */
-using namespace picogen::qt4;
+namespace picogen { namespace qt4 {
 
 WaterFitting::WaterFitting(QWidget *parent) :
     QWidget(parent),
@@ -78,5 +77,6 @@ void WaterFitting::on_stashResetButton_clicked() {
         }
 }
 
+} }
 
 #include "waterfitting.moc"

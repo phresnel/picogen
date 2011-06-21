@@ -98,7 +98,7 @@
    <item>
     <widget class="QStackedWidget" name="waterTaskStackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="picogen::qt4::TerrainFormation" name="formation">
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -108,7 +108,7 @@
       </layout>
      </widget>
      <widget class="picogen::qt4::Material" name="texturing"/>
-     <widget class="WaterFitting" name="fitting"/>
+     <widget class="picogen::qt4::WaterFitting" name="fitting"/>
     </widget>
    </item>
   </layout>
@@ -127,7 +127,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>WaterFitting</class>
+   <class>picogen::qt4::WaterFitting</class>
    <extends>QWidget</extends>
    <header>waterfitting.h</header>
    <container>1</container>
