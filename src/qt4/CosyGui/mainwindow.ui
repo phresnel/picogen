@@ -625,9 +625,9 @@ stop: 0 #fed, stop: 1 #bbb);
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
-         <widget class="FilmSettingsAndCamera" name="filmSettingsAndCamera"/>
+         <widget class="picogen::qt4::FilmSettingsAndCamera" name="filmSettingsAndCamera"/>
          <widget class="NavigationWindow" name="navigation"/>
          <widget class="TerrainWindow" name="terrain"/>
          <widget class="SunSkyWindow" name="sunSky"/>
@@ -765,7 +765,7 @@ stop: 0 #fed, stop: 1 #bbb);
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FilmSettingsAndCamera</class>
+   <class>picogen::qt4::FilmSettingsAndCamera</class>
    <extends>QWidget</extends>
    <header>filmsettingsandcamera.h</header>
    <container>1</container>

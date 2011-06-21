@@ -29,7 +29,7 @@ namespace Ui {
     class FilmSettingsAndCamera;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class FilmSettingsAndCamera : public QWidget
 {
@@ -60,5 +60,7 @@ private slots:
 private:
         Ui::FilmSettingsAndCamera *ui;
 };
+
+} }
 
 #endif // FILMSETTINGSANDCAMERA_HH

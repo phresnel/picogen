@@ -24,6 +24,8 @@
 
 #include "cosyscene/scene.hh"
 
+namespace picogen { namespace qt4 {
+
 FilmSettingsAndCamera::FilmSettingsAndCamera(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FilmSettingsAndCamera)
@@ -60,5 +62,7 @@ void FilmSettingsAndCamera::on_filmSettings_filmSettingsChanged() {
 void FilmSettingsAndCamera::on_camera_cameraChanged() {
         emit cameraChanged();
 }
+
+} }
 
 #include "filmsettingsandcamera.moc"
