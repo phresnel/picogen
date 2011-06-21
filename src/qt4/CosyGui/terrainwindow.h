@@ -29,7 +29,7 @@ namespace Ui {
         class TerrainWindow;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class TerrainWindow : public QWidget
 {
@@ -66,5 +66,7 @@ private:
         Ui::TerrainWindow *ui;
         redshift::shared_ptr<cosyscene::Terrain> terrain;
 };
+
+} }
 
 #endif // TERRAINWINDOW_HH

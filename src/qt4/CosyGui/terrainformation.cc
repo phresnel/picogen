@@ -26,8 +26,7 @@
 
 #include "selectpresetdialog.h"
 
-/* REMOVE FOLLOWING LINE ASAP */
-using namespace picogen::qt4;
+namespace picogen { namespace qt4 {
 
 TerrainFormation::TerrainFormation(QWidget *parent) :
     QWidget(parent),
@@ -223,5 +222,7 @@ void TerrainFormation::on_stashResetButton_clicked() {
                 emit formationChanged();
         }
 }
+
+} }
 
 #include "terrainformation.moc"

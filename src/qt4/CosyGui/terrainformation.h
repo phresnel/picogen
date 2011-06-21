@@ -29,7 +29,7 @@ namespace Ui {
         class TerrainFormation;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class TerrainFormation : public QWidget
 {
@@ -77,5 +77,7 @@ private:
         Ui::TerrainFormation *ui;
         redshift::shared_ptr<cosyscene::TerrainFormation> formation_;
 };
+
+} }
 
 #endif // TERRAINFORMATION_HH

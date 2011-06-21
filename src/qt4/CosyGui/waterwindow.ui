@@ -98,9 +98,9 @@
    <item>
     <widget class="QStackedWidget" name="waterTaskStackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
-     <widget class="TerrainFormation" name="formation">
+     <widget class="picogen::qt4::TerrainFormation" name="formation">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="margin">
         <number>0</number>
@@ -115,7 +115,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TerrainFormation</class>
+   <class>picogen::qt4::TerrainFormation</class>
    <extends>QWidget</extends>
    <header>terrainformation.h</header>
    <container>1</container>

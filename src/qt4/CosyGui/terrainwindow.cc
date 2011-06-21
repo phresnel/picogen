@@ -29,6 +29,8 @@
 
 #include <QMessageBox>
 
+namespace picogen { namespace qt4 {
+
 TerrainWindow::TerrainWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TerrainWindow),
@@ -107,5 +109,7 @@ void TerrainWindow::on_fitting_fittingChanged() {
 void TerrainWindow::on_texturing_materialChanged() {
         emit terrainChanged();
 }
+
+} }
 
 #include "terrainwindow.moc"
