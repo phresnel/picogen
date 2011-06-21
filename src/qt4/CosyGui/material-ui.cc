@@ -25,6 +25,8 @@
 #include "cosyscene/material.hh"
 #include "scopedblocksignals.h"
 
+namespace picogen { namespace qt4 {
+
 Material::Material(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Material),
@@ -130,4 +132,7 @@ void Material::on_stashResetButton_clicked() {
                 emit materialChanged();
         }
 }
+
+} }
+
 #include "material-ui.moc"

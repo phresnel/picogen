@@ -30,7 +30,7 @@ namespace Ui {
 }
 class ColorPickerColor;
 
-
+namespace picogen { namespace qt4 {
 
 class Material : public QWidget
 {
@@ -59,5 +59,7 @@ private:
         Ui::Material *ui;
         redshift::shared_ptr<cosyscene::Material> material;
 };
+
+} }
 
 #endif // MATERIAL_HH

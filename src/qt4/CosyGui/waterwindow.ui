@@ -107,7 +107,7 @@
        </property>
       </layout>
      </widget>
-     <widget class="Material" name="texturing"/>
+     <widget class="picogen::qt4::Material" name="texturing"/>
      <widget class="WaterFitting" name="fitting"/>
     </widget>
    </item>
@@ -121,7 +121,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Material</class>
+   <class>picogen::qt4::Material</class>
    <extends>QWidget</extends>
    <header>material-ui.h</header>
    <container>1</container>
