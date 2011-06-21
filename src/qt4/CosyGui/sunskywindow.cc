@@ -27,8 +27,7 @@
 
 #include <QMessageBox>
 
-/* REMOVE FOLLOWING LINE ASAP */
-using namespace picogen::qt4;
+namespace picogen { namespace qt4 {
 
 SunSkyWindow::SunSkyWindow(QWidget *parent) :
     QWidget(parent),
@@ -185,5 +184,7 @@ void SunSkyWindow::on_stashResetButton_clicked() {
                 emit skyChanged();
         }
 }
+
+} }
 
 #include "sunskywindow.moc"

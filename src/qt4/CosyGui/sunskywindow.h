@@ -31,7 +31,7 @@ namespace Ui {
         class SunSkyWindow;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class SunSkyWindow : public QWidget
 {
@@ -83,5 +83,7 @@ private:
         Ui::SunSkyWindow *ui;
         redshift::shared_ptr<cosyscene::SunSky> sunSky;
 };
+
+} }
 
 #endif // SUNSKYWINDOW_HH
