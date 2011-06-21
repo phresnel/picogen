@@ -625,13 +625,13 @@ stop: 0 #fed, stop: 1 #bbb);
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>4</number>
          </property>
          <widget class="picogen::qt4::FilmSettingsAndCamera" name="filmSettingsAndCamera"/>
          <widget class="picogen::qt4::NavigationWindow" name="navigation"/>
          <widget class="picogen::qt4::TerrainWindow" name="terrain"/>
          <widget class="picogen::qt4::SunSkyWindow" name="sunSky"/>
-         <widget class="TwinRenderSettingsWindow" name="renderingSetup"/>
+         <widget class="picogen::qt4::TwinRenderSettingsWindow" name="renderingSetup"/>
          <widget class="WaterWindow" name="water"/>
         </widget>
        </item>
@@ -753,7 +753,7 @@ stop: 0 #fed, stop: 1 #bbb);
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TwinRenderSettingsWindow</class>
+   <class>picogen::qt4::TwinRenderSettingsWindow</class>
    <extends>QWidget</extends>
    <header>twinrendersettingswindow.h</header>
    <container>1</container>

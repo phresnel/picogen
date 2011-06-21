@@ -29,7 +29,7 @@ namespace Ui {
     class TwinRenderSettingsWindow;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class TwinRenderSettingsWindow : public QWidget
 {
@@ -64,5 +64,7 @@ private:
         redshift::shared_ptr<cosyscene::TwinRenderSettings> twinRenderSettings_;
 
 };
+
+} }
 
 #endif // TWINRENDERSETTINGS_HH
