@@ -30,6 +30,8 @@
 #include <QMenu>
 #include <QDesktopWidget>
 
+namespace picogen { namespace qt4 {
+
 RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderSettingsWindow),
@@ -317,5 +319,7 @@ void RenderSettingsWindow::adjustDefaultValues(cosyscene::RenderSettings &rs) {
                 rs.setSurfaceIntegrator(si);
         }
 }
+
+} }
 
 #include "rendersettingswindow.moc"

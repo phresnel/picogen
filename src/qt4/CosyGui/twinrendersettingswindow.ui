@@ -47,7 +47,7 @@
        <item>
         <layout class="QVBoxLayout" name="previewRenderSettings" stretch="1,0,0">
          <item>
-          <widget class="RenderSettingsWindow" name="previewRenderSettingsWindow" native="true"/>
+          <widget class="picogen::qt4::RenderSettingsWindow" name="previewRenderSettingsWindow" native="true"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -104,7 +104,7 @@
        <item>
         <layout class="QVBoxLayout" name="productionRenderSettings" stretch="1,0,0">
          <item>
-          <widget class="RenderSettingsWindow" name="renderSettingsWindow" native="true"/>
+          <widget class="picogen::qt4::RenderSettingsWindow" name="renderSettingsWindow" native="true"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -166,7 +166,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>RenderSettingsWindow</class>
+   <class>picogen::qt4::RenderSettingsWindow</class>
    <extends>QWidget</extends>
    <header>rendersettingswindow.h</header>
    <container>1</container>

@@ -29,7 +29,7 @@ namespace Ui {
         class RenderSettingsWindow;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class RenderSettingsWindow : public QWidget
 {
@@ -79,5 +79,7 @@ private:
 
         void adjustDefaultValues(cosyscene::RenderSettings &rs);
 };
+
+} }
 
 #endif // RENDERSETTINGS_HH
