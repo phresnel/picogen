@@ -30,11 +30,12 @@ namespace Ui {
         class MainWindow;
 }
 
-namespace detail {
+namespace picogen { namespace qt4 { namespace detail {
         class RedshiftSceneCreator;
-}
+} } }
 
 
+namespace picogen { namespace qt4 {
 
 class MainWindow : public QMainWindow
 {
@@ -100,5 +101,7 @@ private:
 
         std::string lastRedshiftJob; // for debugging purposes
 };
+
+} }
 
 #endif // MAINWINDOW_HH_20100902

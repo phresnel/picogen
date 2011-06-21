@@ -55,7 +55,7 @@ int cosy_main (int argc, char *argv[]) {
         QApplication::setStyle(style);
 
         QApplication a(argc, argv);
-        MainWindow w;
+        picogen::qt4::MainWindow w;
         w.show();
         return a.exec();
 }

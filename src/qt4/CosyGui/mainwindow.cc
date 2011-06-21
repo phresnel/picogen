@@ -47,8 +47,7 @@ void load_scene (Scene &scene, std::string const &name);
 }
 
 
-
-namespace detail {
+namespace picogen { namespace qt4 { namespace detail {
         class RedshiftSceneCreator : public CreateRedshiftSceneClosure {
         public:
                 redshift::shared_ptr<redshift_file::Scene>
@@ -69,7 +68,7 @@ namespace detail {
         private:
                 redshift::shared_ptr<cosyscene::Scene> scene;
         };
-}
+} } }
 
 
 
@@ -78,97 +77,103 @@ namespace detail {
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMessageBox>
-QString askForNewSaveFilename (QWidget *parent) {
-        again:
-        QFileDialog dialog(parent);
-        dialog.setFileMode(QFileDialog::AnyFile);
-        dialog.setWindowTitle("Set a filename for saving the scene");
 
-        QStringList nameFilters;
-        nameFilters << "Picogen scene (*.picogen)"
-                    << "Everything (*)"
-                    ;
-        dialog.setNameFilters(nameFilters);
+namespace {
+        QString askForNewSaveFilename (QWidget *parent) {
+                again:
+                QFileDialog dialog(parent);
+                dialog.setFileMode(QFileDialog::AnyFile);
+                dialog.setWindowTitle("Set a filename for saving the scene");
 
-        QList<QUrl> urls = dialog.sidebarUrls();
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
-        dialog.setSidebarUrls(urls);
+                QStringList nameFilters;
+                nameFilters << "Picogen scene (*.picogen)"
+                            << "Everything (*)"
+                            ;
+                dialog.setNameFilters(nameFilters);
 
-        if (dialog.exec()) {
-                QString name = dialog.selectedFiles()[0];
+                QList<QUrl> urls = dialog.sidebarUrls();
+                urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+                urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+                urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+                dialog.setSidebarUrls(urls);
 
-                // Check extension.
-                if (name.endsWith(".picogen", Qt::CaseInsensitive)) {}
-                else if (name.lastIndexOf('.')>=0){
-                        QMessageBox::information(parent,
-                           "Unsupported filename extension",
-                           "Please choose a filename with one of the following extensions:\n"
-                           " * .picogen\n"
-                        );
-                        goto again;
-                } else {
-                        name += ".picogen";
+                if (dialog.exec()) {
+                        QString name = dialog.selectedFiles()[0];
+
+                        // Check extension.
+                        if (name.endsWith(".picogen", Qt::CaseInsensitive)) {}
+                        else if (name.lastIndexOf('.')>=0){
+                                QMessageBox::information(parent,
+                                   "Unsupported filename extension",
+                                   "Please choose a filename with one of the following extensions:\n"
+                                   " * .picogen\n"
+                                );
+                                goto again;
+                        } else {
+                                name += ".picogen";
+                        }
+
+                        // Check if overwrites.
+                        if (QFile::exists(name) &&
+                            QMessageBox::question(parent, "Overwrite file?",
+                                                  QString()+
+                                                  "Do you really want to overwrite the file "
+                                                  + "\"" + name + "\"?",
+                                                  QMessageBox::Yes | QMessageBox::No,
+                                                  QMessageBox::No
+                                                  ) == QMessageBox::No
+                        ) {
+                                goto again;
+                        }
+
+                /*QString name = QFileDialog::getSaveFileName(this, "Select a file to save to");
+                if (name != "") {*/
+
+                        // Check if we can write.
+                        QFile file (name);
+                        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                                QMessageBox::warning(parent, "Failed to save",
+                                     "The file \"" + file.fileName() + "\" could not be"
+                                     +" opened for writing. Please select another file "
+                                     +" or one that does not exist yet.");
+                                goto again;
+                        }
+
+                        return name;
                 }
-
-                // Check if overwrites.
-                if (QFile::exists(name) &&
-                    QMessageBox::question(parent, "Overwrite file?",
-                                          QString()+
-                                          "Do you really want to overwrite the file "
-                                          + "\"" + name + "\"?",
-                                          QMessageBox::Yes | QMessageBox::No,
-                                          QMessageBox::No
-                                          ) == QMessageBox::No
-                ) {
-                        goto again;
-                }
-
-        /*QString name = QFileDialog::getSaveFileName(this, "Select a file to save to");
-        if (name != "") {*/
-
-                // Check if we can write.
-                QFile file (name);
-                if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                        QMessageBox::warning(parent, "Failed to save",
-                             "The file \"" + file.fileName() + "\" could not be"
-                             +" opened for writing. Please select another file "
-                             +" or one that does not exist yet.");
-                        goto again;
-                }
-
-                return name;
-        }
-        return "";
-}
-
-QString askForOpenFilename(QWidget *parent) {
-        // I find the OS' own file dialog to be somewhat disturbing
-        QFileDialog dialog(parent);
-        dialog.setFileMode(QFileDialog::AnyFile);
-        dialog.setWindowTitle("Select a file to load");
-
-        QStringList nameFilters;
-        nameFilters << "Picogen scene (*.picogen)"
-                    << "Everything (*)"
-                    ;
-        dialog.setNameFilters(nameFilters);
-
-        QList<QUrl> urls = dialog.sidebarUrls();
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
-        urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
-        dialog.setSidebarUrls(urls);
-
-        if (!dialog.exec()) {
                 return "";
         }
 
-        return dialog.selectedFiles()[0];
+        QString askForOpenFilename(QWidget *parent) {
+                // I find the OS' own file dialog to be somewhat disturbing
+                QFileDialog dialog(parent);
+                dialog.setFileMode(QFileDialog::AnyFile);
+                dialog.setWindowTitle("Select a file to load");
+
+                QStringList nameFilters;
+                nameFilters << "Picogen scene (*.picogen)"
+                            << "Everything (*)"
+                            ;
+                dialog.setNameFilters(nameFilters);
+
+                QList<QUrl> urls = dialog.sidebarUrls();
+                urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
+                urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
+                urls << QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+                dialog.setSidebarUrls(urls);
+
+                if (!dialog.exec()) {
+                        return "";
+                }
+
+                return dialog.selectedFiles()[0];
+        }
+
 }
 
 //////
+
+namespace picogen { namespace qt4 {
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -549,5 +554,6 @@ void MainWindow::on_actionCompact_left_pane_triggered(bool checked) {
         }
 }
 
+} }
 
 #include "mainwindow.moc"
