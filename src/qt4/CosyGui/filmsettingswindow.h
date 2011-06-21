@@ -29,7 +29,7 @@ namespace Ui {
     class FilmSettingsWindow;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class FilmSettingsWindow : public QWidget
 {
@@ -63,5 +63,7 @@ private:
         Ui::FilmSettingsWindow *ui;
         redshift::shared_ptr<cosyscene::FilmSettings> filmSettings_;
 };
+
+} }
 
 #endif // FILMSETTINGSWINDOW_HH

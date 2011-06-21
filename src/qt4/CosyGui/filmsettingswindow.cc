@@ -27,6 +27,8 @@
 #include "cosyscene/filmsettings.hh"
 #include "cosyscene/scene.hh"
 
+namespace picogen { namespace qt4 {
+
 FilmSettingsWindow::FilmSettingsWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FilmSettingsWindow),
@@ -85,5 +87,7 @@ void FilmSettingsWindow::on_stashResetButton_clicked() {
                 emit filmSettingsChanged();
         }
 }
+
+} }
 
 #include "filmsettingswindow.moc"

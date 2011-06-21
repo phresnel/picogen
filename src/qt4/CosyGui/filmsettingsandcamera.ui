@@ -21,7 +21,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="FilmSettingsWindow" name="filmSettings" native="true"/>
+    <widget class="picogen::qt4::FilmSettingsWindow" name="filmSettings" native="true"/>
    </item>
    <item>
     <widget class="picogen::qt4::CameraWidget" name="camera" native="true"/>
@@ -30,15 +30,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>picogen::qt4::CameraWidget</class>
+   <class>picogen::qt4::FilmSettingsWindow</class>
    <extends>QWidget</extends>
-   <header>camerawidget.h</header>
+   <header>filmsettingswindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FilmSettingsWindow</class>
+   <class>picogen::qt4::CameraWidget</class>
    <extends>QWidget</extends>
-   <header>filmsettingswindow.h</header>
+   <header>camerawidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
