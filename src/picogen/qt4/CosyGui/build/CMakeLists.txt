@@ -6,12 +6,12 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 
-
+set(aux_dir ../../../../auxiliary)
 
 
 include_directories (../../../)
 include_directories (../../../redshift/include)
-include_directories (../../../auxiliary/)
+include_directories (${aux_dir})
 
 
 
@@ -94,7 +94,7 @@ MACRO(priinclude subdir)
         set (pwd ${old_pwd})
 ENDMACRO(priinclude)
 
-priinclude("../../../upstream/QtSolutions")
+priinclude("../../../../upstream/QtSolutions")
 
 priinclude("${widgets_dir}/AppNavigation")
 priinclude("${widgets_dir}/TextDialog")
@@ -119,8 +119,8 @@ priinclude("../../Repository/fragment/preset")
 
 priinclude("../../../cosyscene")
 priinclude("../../../redshift/")
-priinclude("../../../auxiliary/xyto/")
-priinclude("../../../auxiliary/quatsch-preprocessor/")
+priinclude("${aux_dir}/xyto/")
+priinclude("${aux_dir}/quatsch-preprocessor/")
 
 
 
