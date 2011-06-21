@@ -33,6 +33,10 @@ namespace Ui {
 
 
 
+namespace picogen { namespace qt4 {
+
+
+
 class NavigationWindow : public QWidget {
         Q_OBJECT
 // ================== Public ===================================================
@@ -85,5 +89,7 @@ private:
         redshift::shared_ptr<cosyscene::Scene> scene_;
         CreateRedshiftSceneClosure::Ptr createRedshiftScene;
 };
+
+} }
 
 #endif // NAVIGATIONWINDOW_HH

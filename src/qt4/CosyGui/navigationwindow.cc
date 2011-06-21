@@ -35,6 +35,11 @@
 
 #include "redshift/include/basictypes/quatsch-height-function.hh"
 #include "heightfunction.h"
+
+#include "renderwindow.h"
+
+namespace picogen { namespace qt4 {
+
 namespace {
         class QuatschHeightFunction : public HeightFunction {
         public:
@@ -239,8 +244,6 @@ void NavigationWindow::on_stashResetButton_clicked() {
 
 
 
-#include "renderwindow.h"
-#include "cosyscene/scene.hh"
 void NavigationWindow::on_refreshButton_clicked() {
         refreshPreview();
 }
@@ -270,5 +273,7 @@ void NavigationWindow::on_graphicalNavigation_orientationChanged (qreal, qreal, 
         updateFromViews();
         emit navigationChanged();
 }
+
+} }
 
 #include "navigationwindow.moc"
