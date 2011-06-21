@@ -24,21 +24,21 @@
     <widget class="FilmSettingsWindow" name="filmSettings" native="true"/>
    </item>
    <item>
-    <widget class="CameraWidget" name="camera" native="true"/>
+    <widget class="picogen::qt4::CameraWidget" name="camera" native="true"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FilmSettingsWindow</class>
+   <class>picogen::qt4::CameraWidget</class>
    <extends>QWidget</extends>
-   <header>filmsettingswindow.h</header>
+   <header>camerawidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CameraWidget</class>
+   <class>FilmSettingsWindow</class>
    <extends>QWidget</extends>
-   <header>camerawidget.h</header>
+   <header>filmsettingswindow.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

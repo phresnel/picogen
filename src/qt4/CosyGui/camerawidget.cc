@@ -27,6 +27,8 @@
 #include "cosyscene/camera.hh"
 #include "cosyscene/scene.hh"
 
+namespace picogen { namespace qt4 {
+
 CameraWidget::CameraWidget(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::CameraWidget),
@@ -176,5 +178,7 @@ void CameraWidget::on_stashResetButton_clicked() {
                 emit cameraChanged();
         }
 }
+
+} }
 
 #include "camerawidget.moc"

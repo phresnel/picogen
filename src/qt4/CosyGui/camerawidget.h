@@ -29,7 +29,7 @@ namespace Ui {
         class CameraWidget;
 }
 
-
+namespace picogen { namespace qt4 {
 
 class CameraWidget : public QWidget
 {
@@ -71,5 +71,7 @@ private:
         Ui::CameraWidget *ui;
         redshift::shared_ptr<cosyscene::Camera> camera_;
 };
+
+} }
 
 #endif // CAMERAWIDGET_HH
