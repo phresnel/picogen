@@ -21,6 +21,8 @@
 #include "startpopup.h"
 #include "ui_startpopup.h"
 
+namespace picogen { namespace qt4 {
+
 StartPopup::StartPopup(QWidget *parent) :
         QDialog(parent),
         ui(new Ui::StartPopup)
@@ -39,5 +41,7 @@ void StartPopup::setDisclaimer(const QString &disclaimer) {
 void StartPopup::on_pushButton_clicked() {
         accept();
 }
+
+} }
 
 #include "startpopup.moc"

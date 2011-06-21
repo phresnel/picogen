@@ -27,6 +27,8 @@ namespace Ui {
         class StartPopup;
 }
 
+namespace picogen { namespace qt4 {
+
 class StartPopup : public QDialog
 {
         Q_OBJECT
@@ -43,5 +45,7 @@ private slots:
 private:
         Ui::StartPopup *ui;
 };
+
+} }
 
 #endif // STARTPOPUP_HH
