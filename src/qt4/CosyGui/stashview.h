@@ -39,7 +39,7 @@ namespace Ui {
 
 
 
-
+namespace picogen { namespace qt4 {
 
 
 class StashView;
@@ -219,5 +219,7 @@ Stash<T> StashView::itemsToStash () const {
         }
         return ret;
 }
+
+} }
 
 #endif // STASHVIEW_HH

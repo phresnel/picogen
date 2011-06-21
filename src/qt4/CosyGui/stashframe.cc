@@ -24,6 +24,7 @@
 #include <QMessageBox>
 #include <QPixmap>
 
+namespace picogen { namespace qt4 {
 
 ConfirmRestash confirmRestash (QWidget *parent) {
         redshift::shared_ptr<QMessageBox> msgBox (new QMessageBox (parent));
@@ -104,5 +105,7 @@ void StashFrame::setPixmap (QString name)
                 QPixmap(name).scaledToHeight(ui->title->height(),
                                              Qt::SmoothTransformation));
 }
+
+} }
 
 #include "stashframe.moc"

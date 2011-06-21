@@ -26,6 +26,8 @@
 
 #include "selectpresetdialog.h"
 
+/* REMOVE FOLLOWING LINE ASAP */
+using namespace picogen::qt4;
 
 TerrainFormation::TerrainFormation(QWidget *parent) :
     QWidget(parent),

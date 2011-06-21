@@ -27,7 +27,8 @@
 
 #include <QMessageBox>
 
-
+/* REMOVE FOLLOWING LINE ASAP */
+using namespace picogen::qt4;
 
 SunSkyWindow::SunSkyWindow(QWidget *parent) :
     QWidget(parent),

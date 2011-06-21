@@ -26,6 +26,9 @@
 
 #include <QMessageBox>
 
+/* REMOVE FOLLOWING LINE ASAP */
+using namespace picogen::qt4;
+
 WaterFitting::WaterFitting(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::WaterFitting),

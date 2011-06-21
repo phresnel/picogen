@@ -25,6 +25,8 @@
 
 #include <QDateTime>
 
+namespace picogen { namespace qt4 {
+
 StashView::StashView(QWidget *parent) :
         QDialog(parent),
         ui(new Ui::StashView)
@@ -89,5 +91,7 @@ void StashView::on_okayButton_clicked() {
 void StashView::on_cancelButton_clicked() {
         reject();
 }
+
+} }
 
 #include "stashview.moc"

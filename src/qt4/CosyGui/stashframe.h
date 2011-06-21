@@ -28,6 +28,7 @@ namespace Ui {
         class StashFrame;
 }
 
+namespace picogen { namespace qt4 {
 
 SEALED(StashFrame);
 class StashFrame : public QFrame, MAKE_SEALED(StashFrame)
@@ -67,5 +68,7 @@ enum ConfirmRestore {
 ConfirmReset   confirmReset   (QWidget *parent);
 ConfirmRestash confirmRestash (QWidget *parent);
 ConfirmRestore confirmRestore (QWidget *parent);
+
+} }
 
 #endif // STASHFRAME_HH
