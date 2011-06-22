@@ -130,7 +130,7 @@
        </layout>
       </item>
       <item>
-       <widget class="NavigationGraphicsView" name="graphicsView">
+       <widget class="picogen::qt4::NavigationGraphicsView" name="graphicsView">
         <property name="verticalScrollBarPolicy">
          <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
@@ -373,7 +373,7 @@
         <item row="1" column="0" colspan="2">
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <widget class="PitchWidget" name="pitchWidget" native="true">
+           <widget class="picogen::qt4::PitchWidget" name="pitchWidget" native="true">
             <property name="minimumSize">
              <size>
               <width>128</width>
@@ -424,7 +424,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="RollWidget" name="rollWidget" native="true">
+           <widget class="picogen::qt4::RollWidget" name="rollWidget" native="true">
             <property name="minimumSize">
              <size>
               <width>128</width>
@@ -499,19 +499,19 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>RollWidget</class>
+   <class>picogen::qt4::RollWidget</class>
    <extends>QWidget</extends>
    <header>rollwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>PitchWidget</class>
+   <class>picogen::qt4::PitchWidget</class>
    <extends>QWidget</extends>
    <header>pitchwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>NavigationGraphicsView</class>
+   <class>picogen::qt4::NavigationGraphicsView</class>
    <extends>QGraphicsView</extends>
    <header>navigationgraphicsview.h</header>
   </customwidget>

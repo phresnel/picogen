@@ -23,6 +23,8 @@
 
 #include <QVector3D>
 
+namespace picogen { namespace qt4 {
+
 class Observer
 {
 public:
@@ -43,5 +45,7 @@ private:
         QVector3D position_;
         qreal yaw_, pitch_, roll_;
 };
+
+} }
 
 #endif // OBSERVER_HH

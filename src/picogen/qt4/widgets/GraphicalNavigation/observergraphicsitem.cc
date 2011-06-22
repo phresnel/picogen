@@ -25,6 +25,7 @@
 
 #include <cmath>
 
+namespace picogen { namespace qt4 {
 
 ObserverGraphicsItem::ObserverGraphicsItem() :
         QGraphicsObject(),
@@ -275,5 +276,7 @@ qreal ObserverGraphicsItem::observerPitch() const {
 qreal ObserverGraphicsItem::observerRoll() const {
         return observer_.roll();
 }
+
+} }
 
 #include "observergraphicsitem.moc"

@@ -24,6 +24,8 @@
 #include <QGraphicsView>
 #include "heightfunction.h"
 
+namespace picogen { namespace qt4 {
+
 class NavigationGraphicsView : public QGraphicsView
 {
         Q_OBJECT
@@ -55,5 +57,7 @@ private:
         void guessMaxima();
         void drawRaster(QPainter *painter, const QRectF &rectf, qreal boxSize);
 };
+
+} }
 
 #endif // NAVIGATIONGRAPHICSVIEW_HH

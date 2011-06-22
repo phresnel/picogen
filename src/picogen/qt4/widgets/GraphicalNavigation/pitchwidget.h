@@ -23,6 +23,8 @@
 
 #include <QWidget>
 
+namespace picogen { namespace qt4 {
+
 class PitchWidget : public QWidget
 {
         Q_OBJECT
@@ -52,5 +54,7 @@ private:
 private:
         qreal pitch_;
 };
+
+} }
 
 #endif // PITCHWIDGET_HH

@@ -33,6 +33,8 @@ namespace Ui {
         class GraphicalNavigationWidget;
 }
 
+namespace picogen { namespace qt4 {
+
 class GraphicalNavigationWidget : public QWidget
 {
         Q_OBJECT
@@ -97,5 +99,7 @@ private slots:
         void onObserverPositionChanged (QVector3D);
         void onObserverOrientationChanged (qreal,qreal,qreal);
 };
+
+} }
 
 #endif // GRAPHICALNAVIGATIONWIDGET_HH

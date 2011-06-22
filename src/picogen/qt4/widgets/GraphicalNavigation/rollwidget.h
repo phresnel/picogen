@@ -23,6 +23,8 @@
 
 #include <QWidget>
 
+namespace picogen { namespace qt4 {
+
 class RollWidget : public QWidget
 {
         Q_OBJECT
@@ -54,5 +56,7 @@ private:
 private:
         qreal roll_;
 };
+
+} }
 
 #endif // ROLLWIDGET_HH

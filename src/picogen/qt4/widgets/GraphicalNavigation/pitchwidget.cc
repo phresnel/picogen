@@ -31,6 +31,8 @@
 
 #include <cmath>
 
+namespace picogen { namespace qt4 {
+
 PitchWidget::PitchWidget(QWidget *parent)
         : QWidget(parent)
 {
@@ -165,5 +167,7 @@ void PitchWidget::updateIndicators(QMouseEvent *event) {
 
         repaint();
 }
+
+} }
 
 #include "pitchwidget.moc"

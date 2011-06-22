@@ -26,6 +26,8 @@
 #include "heightfunction.h"
 #include "observer.h"
 
+namespace picogen { namespace qt4 {
+
 enum AutoHeightMode {
         KeepAbsoluteHeight,
         KeepRelativeHeight
@@ -91,5 +93,7 @@ protected:
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
         void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
+
+} }
 
 #endif // OBSERVERGRAPHICSITEM_HH

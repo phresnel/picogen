@@ -34,20 +34,24 @@
 #include <cmath>
 #include <limits>
 
-class SinCosThingy : public HeightFunction {
-public:
-        virtual double height(double x, double y) const {
-                return 0.5 + 0.5 * std::sin(x/50) * std::cos(y/50);
-        }
-};
+namespace picogen { namespace qt4 {
 
-class CrossThingy : public HeightFunction {
-public:
-        virtual double height(double x, double y) const {
-                if (x>0 && y>0) return 0.7;
-                return ((x>-5 && x<5) || (y>-5 && y<5))*0.5+0.5;
-        }
-};
+namespace {
+        class SinCosThingy : public HeightFunction {
+        public:
+                virtual double height(double x, double y) const {
+                        return 0.5 + 0.5 * std::sin(x/50) * std::cos(y/50);
+                }
+        };
+
+        class CrossThingy : public HeightFunction {
+        public:
+                virtual double height(double x, double y) const {
+                        if (x>0 && y>0) return 0.7;
+                        return ((x>-5 && x<5) || (y>-5 && y<5))*0.5+0.5;
+                }
+        };
+}
 
 GraphicalNavigationWidget::GraphicalNavigationWidget(QWidget *parent) :
         QWidget(parent),
@@ -290,5 +294,7 @@ void GraphicalNavigationWidget::on_findMe_clicked() {
 void GraphicalNavigationWidget::on_pixelSize_valueChanged(int value) {
         ui->graphicsView->setPixelSize(value);
 }
+
+} }
 
 #include "graphicalnavigationwidget.moc"

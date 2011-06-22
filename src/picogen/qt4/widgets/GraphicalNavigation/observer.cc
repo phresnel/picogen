@@ -20,6 +20,8 @@
 
 #include "observer.h"
 
+namespace picogen { namespace qt4 {
+
 Observer::Observer() {
 }
 
@@ -58,3 +60,5 @@ qreal Observer::roll() const {
 void Observer::setRoll(qreal value) {
         roll_ = value;
 }
+
+} }

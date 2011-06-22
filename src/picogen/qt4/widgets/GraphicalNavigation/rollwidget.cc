@@ -31,6 +31,8 @@
 
 #include <cmath>
 
+namespace picogen { namespace qt4 {
+
 RollWidget::RollWidget(QWidget *parent)
         : QWidget(parent)
         , roll_(0)
@@ -165,5 +167,7 @@ void RollWidget::updateIndicators(QMouseEvent *event) {
         }
         repaint();
 }
+
+} }
 
 #include "rollwidget.moc"

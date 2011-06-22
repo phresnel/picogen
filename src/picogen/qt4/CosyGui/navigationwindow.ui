@@ -122,7 +122,7 @@
         <widget class="QWidget" name="precision">
          <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
           <item>
-           <widget class="GraphicalNavigationWidget" name="graphicalNavigation" native="true"/>
+           <widget class="picogen::qt4::GraphicalNavigationWidget" name="graphicalNavigation" native="true"/>
           </item>
           <item>
            <widget class="QGroupBox" name="previewGroupBox">
@@ -162,19 +162,19 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>picogen::qt4::StashFrame</class>
-   <extends>QFrame</extends>
-   <header>stashframe.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>RenderWidget</class>
    <extends>QWidget</extends>
    <header>renderwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>GraphicalNavigationWidget</class>
+   <class>picogen::qt4::StashFrame</class>
+   <extends>QFrame</extends>
+   <header>stashframe.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>picogen::qt4::GraphicalNavigationWidget</class>
    <extends>QWidget</extends>
    <header>graphicalnavigationwidget.h</header>
    <container>1</container>

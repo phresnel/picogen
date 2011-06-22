@@ -24,6 +24,8 @@
 #include <QMouseEvent>
 #include <QRect>
 
+namespace picogen { namespace qt4 {
+
 namespace {
         QRect alignRect (QRectF rectf, int step) {
                 QRect rect = rectf.toAlignedRect();
@@ -186,6 +188,8 @@ void NavigationGraphicsView::setPixelSize (int s) {
         pixelSize_ = s;
         viewport()->update();
 }
+
+} }
 
 #include "navigationgraphicsview.moc"
 
