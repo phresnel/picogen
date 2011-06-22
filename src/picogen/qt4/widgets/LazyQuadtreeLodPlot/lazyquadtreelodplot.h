@@ -29,6 +29,7 @@ namespace Ui {
 class QPainter;
 class QRectF;
 
+namespace picogen { namespace qt4 {
 
 class LazyQuadtreeLodPlot : public QWidget {
         Q_OBJECT
@@ -46,5 +47,7 @@ private slots:
 private:
         Ui::LazyQuadtreeLodPlot *ui;
 };
+
+} }
 
 #endif // LAZYQUADTREELODPLOT_HH

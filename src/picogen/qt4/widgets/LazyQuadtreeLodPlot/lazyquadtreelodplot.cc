@@ -25,6 +25,8 @@
 #include <QRectF>
 #include <cmath>
 
+namespace picogen { namespace qt4 {
+
 namespace {
         class LazyQuadtreeParams {
         public:
@@ -131,5 +133,7 @@ void LazyQuadtreeLodPlot::on_lodFactor_valueChanged(double) {
 
         ui->plotFrame->repaint();
 }
+
+} }
 
 #include "lazyquadtreelodplot.moc"
