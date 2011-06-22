@@ -37,7 +37,7 @@
       </layout>
      </item>
      <item>
-      <widget class="PreviewWidget" name="previewWidget" native="true">
+      <widget class="picogen::qt4::PreviewWidget" name="previewWidget" native="true">
        <property name="maximumSize">
         <size>
          <width>320</width>
@@ -52,7 +52,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PreviewWidget</class>
+   <class>picogen::qt4::PreviewWidget</class>
    <extends>QWidget</extends>
    <header>previewwidget.h</header>
    <container>1</container>

@@ -35,6 +35,8 @@
 #include <QDebug>
 #include <QResizeEvent>
 
+namespace picogen { namespace qt4 {
+
 PreviewImageObject::PreviewImageObject (QGraphicsItem* parent)
         : QGraphicsPixmapItem(parent)
         , anim(new QParallelAnimationGroup(this))
@@ -193,5 +195,7 @@ void PreviewWidget::fitView() {
                                     Qt::KeepAspectRatio);
         ui->graphicsView->setSceneRect(rect);
 }
+
+} }
 
 #include "previewwidget.moc"

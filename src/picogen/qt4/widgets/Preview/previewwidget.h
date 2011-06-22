@@ -48,7 +48,7 @@ private:
         FadeMode fadeMode;
 };
 */
-
+namespace picogen { namespace qt4 {
 
 class PreviewImageObject : public QObject, public QGraphicsPixmapItem {
         Q_OBJECT
@@ -66,12 +66,14 @@ private:
         QParallelAnimationGroup *anim;
 };
 
+} }
 
 
 namespace Ui {
         class PreviewWidget;
 }
 
+namespace picogen { namespace qt4 {
 class PreviewWidget : public QWidget
 {
         Q_OBJECT
@@ -100,5 +102,7 @@ private:
         void timerEvent(QTimerEvent *event);
         void fitView();
 };
+
+} }
 
 #endif // PREVIEWWIDGET_HH
