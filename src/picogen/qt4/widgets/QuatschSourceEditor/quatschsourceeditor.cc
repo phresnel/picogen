@@ -84,7 +84,7 @@ QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
 
 
 
-void QuatschSourceEditor::setPicohelpBrowser(PicohelpBrowser *browser) {
+void QuatschSourceEditor::setPicohelpBrowser(picogen::qt4::PicohelpBrowser *browser) {
         this->helpBrowser = browser;
 }
 
@@ -143,7 +143,7 @@ void QuatschSourceEditor::contextHelpTriggered() {
                 }
 
         } else {
-                helpBrowser->gotoQuatsch(PicohelpBrowser::QuatschReferencesOverview);
+                helpBrowser->gotoQuatsch(picogen::qt4::PicohelpBrowser::QuatschReferencesOverview);
                 emit helpBrowserVisibilityRequested();
         }
 }
@@ -490,7 +490,7 @@ void QuatschSourceEditor::on_help_clicked() {
 }
 
 void QuatschSourceEditor::on_interestingPrograms_clicked() {
-        helpBrowser->gotoQuatsch(PicohelpBrowser::QuatschInterestingPrograms);
+        helpBrowser->gotoQuatsch(picogen::qt4::PicohelpBrowser::QuatschInterestingPrograms);
 }
 
 

@@ -30,6 +30,8 @@ namespace Ui {
 }
 class QUrl;
 
+namespace picogen { namespace qt4 {
+
 class PicohelpBrowser : public QWidget {
         Q_OBJECT
 public:
@@ -82,5 +84,7 @@ private slots:
         void on_gotoTutorialsButton_clicked();
         void on_gotoMainPageButton_clicked();
 };
+
+} }
 
 #endif // PICOHELPBROWSER_HH

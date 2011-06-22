@@ -34,6 +34,8 @@
 
 #include <cmath>
 
+namespace picogen { namespace qt4 {
+
 namespace {
         struct Index {
                 QStringList searchTerms;
@@ -480,5 +482,7 @@ void PicohelpBrowser::recalcScrollbars() {
                 horizontalBar.setMaximum(docWidth - pageHorizontalStep);
         }
 }
+
+} }
 
 #include "picohelpbrowser.moc"

@@ -103,7 +103,7 @@ public:
         void setCode (QString code);
         QString code () const;
 
-        void setPicohelpBrowser (PicohelpBrowser *browser);
+        void setPicohelpBrowser (picogen::qt4::PicohelpBrowser *browser);
 
 signals:
         void codeChanged () ;
@@ -130,7 +130,7 @@ private:
         QuatschHighlighter *highlighter;
         bool softLock;
 
-        PicohelpBrowser *helpBrowser;
+        picogen::qt4::PicohelpBrowser *helpBrowser;
 };
 
 
