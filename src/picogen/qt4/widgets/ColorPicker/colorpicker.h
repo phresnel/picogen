@@ -36,6 +36,8 @@ namespace Ui {
         class ColorPicker;
 }
 
+namespace picogen { namespace qt4 {
+
 class ColorPicker : public QDialog {
         Q_OBJECT
 public:
@@ -57,5 +59,7 @@ private slots:
 private slots:
         void on_cancelButton_clicked();
 };
+
+} }
 
 #endif // COLORPICKER_HH

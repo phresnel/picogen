@@ -23,6 +23,8 @@
 #include "colorpicker.h"
 #include "ui_colorpicker.h"
 
+namespace picogen { namespace qt4 {
+
 ColorPicker::ColorPicker(QWidget *parent) :
         QDialog(parent),
         ui(new Ui::ColorPicker)
@@ -60,5 +62,7 @@ void ColorPicker::setColor (ColorPickerColor const &color) {
 ColorPickerColor ColorPicker::color () const {
         return ui->pickerWidget->color();
 }
+
+} }
 
 #include "colorpicker.moc"

@@ -37,7 +37,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="ColorPickerWidget" name="colorPicker" native="true"/>
+       <widget class="picogen::qt4::ColorPickerWidget" name="colorPicker" native="true"/>
       </item>
      </layout>
     </widget>
@@ -52,7 +52,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ColorPickerWidget</class>
+   <class>picogen::qt4::ColorPickerWidget</class>
    <extends>QWidget</extends>
    <header location="global">colorpickerwidget.h</header>
    <container>1</container>

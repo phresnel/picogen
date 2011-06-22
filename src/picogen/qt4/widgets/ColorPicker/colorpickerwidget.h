@@ -29,6 +29,8 @@ namespace Ui {
     class ColorPickerWidget;
 }
 
+namespace picogen { namespace qt4 {
+
 class ColorPickerWidget : public QWidget
 {
         Q_OBJECT
@@ -53,5 +55,7 @@ private slots:
         void tristimulusColorChanged (TristimulusColor);
         void spectralColorChanged (QVector<SpectralSample> const & c);
 };
+
+} }
 
 #endif // COLORPICKERWIDGET_HH

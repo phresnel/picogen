@@ -18,10 +18,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #include "colorpickerwidget.h"
 #include "ui_colorpickerwidget.h"
+
+namespace picogen { namespace qt4 {
 
 ColorPickerWidget::ColorPickerWidget(QWidget *parent) :
     QWidget(parent),
@@ -106,5 +106,7 @@ void ColorPickerWidget::on_spectralRadioButton_toggled(bool checked) {
                 emit colorChanged (color_);
         }
 }
+
+} }
 
 #include "colorpickerwidget.moc"
