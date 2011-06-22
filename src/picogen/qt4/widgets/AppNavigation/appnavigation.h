@@ -33,6 +33,9 @@ namespace Ui {
 class QString;
 class QIcon;
 class AppNavigation;
+
+namespace picogen { namespace qt4 {
+
 class AppNavigationButton : public QToolButton {
         Q_OBJECT
 public:
@@ -81,5 +84,7 @@ private:
     Ui::AppNavigation *ui;
     QVector<AppNavigationButton*> buttons;
 };
+
+} }
 
 #endif // APPNAVIGATION_H

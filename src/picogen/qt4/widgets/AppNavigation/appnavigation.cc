@@ -23,6 +23,8 @@
 #include "appnavigation.h"
 #include "ui_appnavigation.h"
 
+namespace picogen { namespace qt4 {
+
 AppNavigation::AppNavigation(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::AppNavigation)
@@ -70,5 +72,7 @@ void AppNavigation::activateButton(AppNavigationButton *button) {
         }
         button->setActive(true);
 }
+
+} }
 
 #include "appnavigation.moc"
