@@ -27,6 +27,8 @@ namespace Ui {
         class FilenameEdit;
 }
 
+namespace picogen { namespace qt4 {
+
 class FilenameEdit : public QWidget {
         Q_OBJECT
 
@@ -44,7 +46,9 @@ private:
         Ui::FilenameEdit *ui;
 
 private slots:
-        void on_toolButton_clicked();        
+        void on_toolButton_clicked();
 };
+
+} }
 
 #endif // FILENAMEEDIT_HH

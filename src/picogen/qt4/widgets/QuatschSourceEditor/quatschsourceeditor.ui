@@ -94,7 +94,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QuatschPreview" name="quatschPreview" native="true"/>
+      <widget class="picogen::qt4::QuatschPreview" name="quatschPreview" native="true"/>
      </item>
     </layout>
    </item>
@@ -102,7 +102,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QuatschPreview</class>
+   <class>picogen::qt4::QuatschPreview</class>
    <extends>QWidget</extends>
    <header>quatschpreview.h</header>
    <container>1</container>

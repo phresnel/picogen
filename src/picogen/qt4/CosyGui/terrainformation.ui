@@ -207,7 +207,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QuatschPresetEditor" name="quatschPresetEditor" native="true"/>
+           <widget class="picogen::qt4::QuatschPresetEditor" name="quatschPresetEditor" native="true"/>
           </item>
          </layout>
         </widget>
@@ -226,15 +226,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QuatschSourceEditor</class>
+   <class>picogen::qt4::QuatschPresetEditor</class>
    <extends>QWidget</extends>
-   <header>quatschsourceeditor.h</header>
+   <header>quatschpreseteditor.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QuatschPresetEditor</class>
+   <class>QuatschSourceEditor</class>
    <extends>QWidget</extends>
-   <header>quatschpreseteditor.h</header>
+   <header>quatschsourceeditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

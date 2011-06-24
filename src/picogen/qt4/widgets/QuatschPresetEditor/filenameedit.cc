@@ -22,6 +22,8 @@
 #include "ui_filenameedit.h"
 #include <QFileDialog>
 
+namespace picogen { namespace qt4 {
+
 FilenameEdit::FilenameEdit(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FilenameEdit)
@@ -46,5 +48,7 @@ QString FilenameEdit::filename() const {
 void FilenameEdit::setFilename (QString const &str) {
         ui->lineEdit->setText(str);
 }
+
+} }
 
 #include "filenameedit.moc"

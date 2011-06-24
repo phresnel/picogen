@@ -38,6 +38,7 @@
 
 #include <QFormLayout>
 
+namespace picogen { namespace qt4 {
 
 QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     QWidget(parent),
@@ -390,5 +391,7 @@ void QuatschPresetEditor::on_preset_textChanged() {
 void QuatschPresetEditor::on_hidePreprocessedCode_clicked() {
         ui->preprocessedCode->setVisible(false);
 }
+
+} }
 
 #include "quatschpreseteditor.moc"

@@ -41,6 +41,7 @@ namespace redshift {
         }
 }
 
+namespace picogen { namespace qt4 {
 
 class SunSkyEditorUpdateLock;
 
@@ -149,5 +150,7 @@ public:
                 editor->updatePreethamSettingsAndRedraw();
         }
 };
+
+} }
 
 #endif // QTSUNSKYEDITOR_HH

@@ -24,6 +24,8 @@
 #include "redshift/include/backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <QPainter>
 
+namespace picogen { namespace qt4 {
+
 QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
 : QWidget(parent)
 , ui(new Ui::qtsunskyeditor)
@@ -408,5 +410,7 @@ QSharedPointer<SunSkyEditorUpdateLock> QtSunSkyEditor::massUpdate() {
         return QSharedPointer<SunSkyEditorUpdateLock>(
                         new SunSkyEditorUpdateLock (this));
 }
+
+} }
 
 #include "qtsunskyeditor.moc"

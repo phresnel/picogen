@@ -35,6 +35,8 @@ namespace picogen { namespace cosyscene {
         class QuatschPreset;
 } }
 
+namespace picogen { namespace qt4 {
+
 class QuatschPresetEditor : public QWidget {
         Q_OBJECT
 
@@ -80,5 +82,7 @@ private slots:
         void childWidgetEditingFinished();
 
 };
+
+} }
 
 #endif // QUATSCHPRESETEDITOR_HH

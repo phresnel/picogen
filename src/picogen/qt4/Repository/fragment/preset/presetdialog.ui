@@ -27,7 +27,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QuatschPresetEditor" name="preset" native="true">
+    <widget class="picogen::qt4::QuatschPresetEditor" name="preset" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -47,7 +47,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QuatschPresetEditor</class>
+   <class>picogen::qt4::QuatschPresetEditor</class>
    <extends>QWidget</extends>
    <header>quatschpreseteditor.h</header>
    <container>1</container>

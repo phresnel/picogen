@@ -49,7 +49,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QtSunSkyEditor" name="utahSkyEditor" native="true"/>
+       <widget class="picogen::qt4::QtSunSkyEditor" name="utahSkyEditor" native="true"/>
       </item>
      </layout>
     </widget>
@@ -64,7 +64,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QtSunSkyEditor</class>
+   <class>picogen::qt4::QtSunSkyEditor</class>
    <extends>QWidget</extends>
    <header>qtsunskyeditor.h</header>
    <container>1</container>

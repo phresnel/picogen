@@ -31,6 +31,8 @@ namespace Ui {
         class QuatschPreview;
 }
 
+namespace picogen { namespace qt4 {
+
 class QuatschPreview : public QWidget
 {
         Q_OBJECT
@@ -56,5 +58,7 @@ private:
 
 private slots:
 };
+
+} }
 
 #endif // QUATSCHPREVIEW_HH

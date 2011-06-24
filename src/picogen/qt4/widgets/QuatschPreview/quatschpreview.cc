@@ -26,6 +26,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 
+namespace picogen { namespace qt4 {
+
 QuatschPreview::QuatschPreview(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::QuatschPreview)
@@ -155,5 +157,7 @@ bool QuatschPreview::eventFilter(QObject *ob, QEvent *e) {
 void QuatschPreview::setStatusText (QString const &str) {
         ui->status->setText(str);
 }
+
+} }
 
 #include "quatschpreview.moc"
