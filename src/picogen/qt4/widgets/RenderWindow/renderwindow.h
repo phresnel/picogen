@@ -37,11 +37,6 @@ namespace Ui {
     class RenderWindow;
 }
 
-
-class RenderWindow;
-class RenderWindowImpl;
-
-
 namespace redshift {
         //class QImageRenderTarget;
         class RenderTargetLock;
@@ -55,7 +50,10 @@ namespace redshift_file {
         class FilmSettings;
 }
 
+namespace picogen { namespace qt4 {
 
+class RenderWindow;
+class RenderWindowImpl;
 
 class RenderWindow : public QDialog {
         Q_OBJECT
@@ -173,5 +171,7 @@ private:
         double updateLatency;
         bool firstReport;
 };
+
+} }
 
 #endif // RENDERWINDOW_HH

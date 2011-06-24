@@ -39,7 +39,7 @@
 #include "redshift/include/rendertargets/rendertargetlock.hh"
 #include "redshift/include/basictypes/film.hh"
 
-
+namespace picogen { namespace qt4 {
 
 QString getImageSavePath (QWidget *parent) {
         QFileDialog dialog(parent);
@@ -550,5 +550,7 @@ void RenderWindow::resizeEvent (QResizeEvent *) {
 void RenderWindow::on_pauseButton_clicked(bool checked) {
         impl->setUserWantsToPause (checked);
 }
+
+} }
 
 #include "renderwindow.moc"
