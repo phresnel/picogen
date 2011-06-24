@@ -29,7 +29,7 @@ namespace Ui {
 
 #include "parametricpreset.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class PresetDialog : public QDialog
 {
@@ -56,6 +56,6 @@ private slots:
         void on_preset_formationChanged();
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // PRESETDIALOG_HH

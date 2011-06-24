@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="picogen_repository::PresetListWidget" name="list" native="true"/>
+    <widget class="picogen::qt4::PresetListWidget" name="list" native="true"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -31,7 +31,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>picogen_repository::PresetListWidget</class>
+   <class>picogen::qt4::PresetListWidget</class>
    <extends>QWidget</extends>
    <header>presetlistwidget.h</header>
    <container>1</container>

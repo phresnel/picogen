@@ -29,7 +29,7 @@
 #include <QPushButton>
 #include <QDebug>
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 //------------------------------------------------------------------------------
 namespace {
@@ -126,11 +126,9 @@ namespace {
 
 
         void addCollections (QString root,
-                             QList<picogen_repository::Collection> &collections_
+                             QList<Collection> &collections_
                              )
         {
-                using picogen_repository::Collection;
-
                 // A collections folder looks like this:
                 // "collections"
                 // -> "extern"  : text file containing absolute paths to collections
@@ -168,8 +166,6 @@ namespace {
 
 
 RepositorySettings::RepositorySettings() {
-        using picogen_repository::Collection;
-
         // Try to add standard collections (system-wide, user-wide).
         const QString rcd = rootCollectionsDir();
         if ("" != rcd) {
@@ -198,9 +194,9 @@ RepositorySettings::RepositorySettings() {
 RepositorySettings::~RepositorySettings() {
 }
 
-QList<picogen_repository::Collection> RepositorySettings::collections() const {
+QList<Collection> RepositorySettings::collections() const {
         return collections_;
 }
 
 
-} // namespace picogen_repository {
+} }

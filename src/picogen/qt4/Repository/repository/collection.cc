@@ -24,7 +24,7 @@
 #include <QMessageBox>
 #include "parametricpreset.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 
 Collection::Collection(QString root) : Meta(root), root_(root) {
@@ -61,4 +61,4 @@ QVector<ParametricPreset> Collection::terrainFormationPresets() const {
         return ret;
 }
 
-} // namespace picogen_repository {
+} }

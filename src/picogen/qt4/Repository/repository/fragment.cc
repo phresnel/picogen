@@ -20,7 +20,7 @@
 
 #include "fragment.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 Fragment::Fragment(Collection package, QString path)
         : Meta(path), package_(package)
@@ -34,4 +34,4 @@ Collection Fragment::package() const {
         return package_;
 }
 
-} // namespace picogen_repository {
+} }

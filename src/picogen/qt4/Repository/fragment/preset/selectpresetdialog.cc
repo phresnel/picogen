@@ -21,7 +21,7 @@
 #include "selectpresetdialog.h"
 #include "ui_selectpresetdialog.h"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 SelectPresetDialog::SelectPresetDialog(QWidget *parent) :
         QDialog(parent),
@@ -44,6 +44,6 @@ optional<ParametricPreset> SelectPresetDialog::lastSelected() const {
         return ui->list->lastSelected();
 }
 
-} // namespace picogen_repository {
+} }
 
 #include "selectpresetdialog.moc"

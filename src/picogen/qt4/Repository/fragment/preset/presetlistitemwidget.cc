@@ -22,7 +22,7 @@
 #include "ui_presetlistitemwidget.h"
 #include "presetdialog.h"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 PresetListItemWidget::PresetListItemWidget(QWidget *parent) :
     QWidget(parent),
@@ -82,7 +82,7 @@ void PresetListItemWidget::setReadOnly(bool readOnly) {
         }
 }
 
-} // namespace picogen_repository {
+} }
 
 #include "presetlistitemwidget.moc"
 

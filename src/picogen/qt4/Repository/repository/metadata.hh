@@ -23,7 +23,7 @@
 
 #include <QStringList>
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class Meta {
 public:
@@ -59,6 +59,6 @@ private:
         QStringList previewFilenames_;
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // META_HH

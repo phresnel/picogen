@@ -25,7 +25,7 @@
 
 #include "collection.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class ParametricPreset;
 
@@ -45,6 +45,6 @@ private:
         QVector<Collection> packages_;
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // DATABASE_HH

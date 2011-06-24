@@ -26,7 +26,7 @@
 
 #include "metadata.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class ParametricPreset;
 class Collection : public Meta
@@ -44,6 +44,6 @@ private:
         QString root_;
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // COLLECTION_HH

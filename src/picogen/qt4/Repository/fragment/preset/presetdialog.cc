@@ -21,7 +21,7 @@
 #include "presetdialog.h"
 #include "ui_presetdialog.h"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 PresetDialog::PresetDialog(QWidget *parent) :
     QDialog(parent),
@@ -64,6 +64,6 @@ void PresetDialog::on_preset_formationChanged() {
         preset_.setPreset(ui->preset->preset());
 }
 
-} // namespace picogen_repository {
+} }
 
 #include "presetdialog.moc"

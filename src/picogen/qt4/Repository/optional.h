@@ -23,7 +23,7 @@
 
 #include <boost/optional.hpp>
 
-namespace picogen_repository {
+namespace picogen {
         using boost::optional;
 } // namespace picogen_repository {
 

@@ -104,11 +104,11 @@ void TerrainFormation::on_quatschCodeEditorCLB_clicked() {
 
 
 void TerrainFormation::on_parametricPresetCLB_clicked() {
-        picogen_repository::shared_ptr<picogen_repository::Database> db
-                        (new picogen_repository::Database());
+        picogen::shared_ptr<Database> db
+                        (new Database());
         db->establishStandardConnection();
 
-        picogen_repository::SelectPresetDialog p;
+        SelectPresetDialog p;
         p.setDatabase(db);
         p.exec();
         if (p.lastSelected()) {

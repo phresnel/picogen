@@ -28,7 +28,7 @@ namespace Ui {
         class FragmentWidget;
 }
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class FragmentWidget : public QWidget
 {
@@ -52,6 +52,6 @@ private slots:
         void on_homepage_editingFinished();
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // FRAGMENTWIDGET_HH

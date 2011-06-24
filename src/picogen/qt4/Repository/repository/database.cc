@@ -23,7 +23,7 @@
 #include "parametricpreset.hh"
 #include "repositorysettings.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 void Database::establishStandardConnection() {
         addCollections (RepositorySettings().collections());
@@ -54,4 +54,4 @@ QVector<ParametricPreset> Database::terrainFormationPresets() const {
         return ret;
 }
 
-} // namespace picogen_repository {
+} }

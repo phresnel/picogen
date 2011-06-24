@@ -25,7 +25,7 @@
 #include <QString>
 #include "collection.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class RepositorySettings
 {
@@ -33,12 +33,12 @@ public:
         RepositorySettings();
         virtual ~RepositorySettings();
 
-        QList<picogen_repository::Collection> collections() const;
+        QList<Collection> collections() const;
 private:
 
-        QList<picogen_repository::Collection> collections_;
+        QList<Collection> collections_;
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // REPOSITORYSETTINGS_HH

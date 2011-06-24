@@ -21,7 +21,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="picogen_repository::FragmentWidget" name="entity" native="true"/>
+       <widget class="picogen::qt4::FragmentWidget" name="entity" native="true"/>
       </item>
      </layout>
     </widget>
@@ -53,7 +53,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>picogen_repository::FragmentWidget</class>
+   <class>picogen::qt4::FragmentWidget</class>
    <extends>QWidget</extends>
    <header>../fragmentwidget.h</header>
    <container>1</container>

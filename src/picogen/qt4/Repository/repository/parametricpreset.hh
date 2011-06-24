@@ -25,7 +25,7 @@
 #include "collection.hh"
 #include "fragment.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class ParametricPreset : public Fragment
 {
@@ -42,6 +42,6 @@ private:
         QString preset_;
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // PARAMETRICPRESET_HH

@@ -21,7 +21,7 @@
 #include "fragmentwidget.h"
 #include "ui_fragmentwidget.h"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 FragmentWidget::FragmentWidget(QWidget *parent) :
     QWidget(parent),
@@ -63,6 +63,6 @@ void FragmentWidget::on_homepage_editingFinished() {
         entity_->setHomepage(ui->homepage->text());
 }
 
-} // namespace picogen_repository {
+} }
 
 #include "fragmentwidget.moc"

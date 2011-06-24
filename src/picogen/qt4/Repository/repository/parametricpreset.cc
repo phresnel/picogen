@@ -23,7 +23,7 @@
 #include <QDir>
 #include <QFile>
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 ParametricPreset::ParametricPreset(Collection package, QString path)
         : Fragment (package, path)
@@ -40,7 +40,7 @@ void ParametricPreset::reload() {
 }
 
 
-void ParametricPreset::save() const {        
+void ParametricPreset::save() const {
         Fragment::save();
         write (preset_, "preset");
 }
@@ -57,4 +57,4 @@ void ParametricPreset::setPreset(QString s) {
         preset_ = s;
 }
 
-} // namespace picogen_repository {
+} }

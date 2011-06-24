@@ -28,7 +28,7 @@
 
 #include <QDebug>
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 PresetListWidget::PresetListWidget(QWidget *parent) :
     QWidget(parent),
@@ -110,7 +110,7 @@ void PresetListWidget::on_readOnly_toggled(bool checked) {
         }
 }
 
-} // namespace picogen_repository {
+} }
 
 #include "presetlistwidget.moc"
 

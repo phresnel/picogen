@@ -31,7 +31,7 @@ namespace Ui {
     class PresetListWidget;
 }
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class PresetListWidget : public QWidget
 {
@@ -58,7 +58,7 @@ private slots:
         void on_listWidget_itemSelectionChanged();
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // PRESETLISTWIDGET_HH
 

@@ -31,7 +31,7 @@ namespace Ui {
     class SelectPresetDialog;
 }
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 class SelectPresetDialog : public QDialog
 {
@@ -48,6 +48,6 @@ private:
     Ui::SelectPresetDialog *ui;
 };
 
-} // namespace picogen_repository {
+} }
 
 #endif // SELECTPRESETDIALOG_HH

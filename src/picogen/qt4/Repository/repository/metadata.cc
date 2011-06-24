@@ -24,7 +24,7 @@
 
 #include "metadata.hh"
 
-namespace picogen_repository {
+namespace picogen { namespace qt4 {
 
 Meta::Meta(QString path)
         : path_(path)
@@ -124,4 +124,4 @@ void Meta::reload() {
                 previewFilenames_.push_back(previewDir.absoluteFilePath(f));
 }
 
-} // namespace picogen_repository {
+} }
