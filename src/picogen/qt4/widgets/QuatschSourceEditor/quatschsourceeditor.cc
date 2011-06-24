@@ -23,31 +23,206 @@
 #include "quatschsourceeditor.h"
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QtGui>
 
 #include "redshift/include/basictypes/quatsch-height-function.hh"
 
-TextBlockData::TextBlockData()
-{
-    // Nothing to do
+namespace picogen { namespace qt4 {
+
+namespace quatschsourceeditor_detail {
+        TextBlockData::TextBlockData()
+        {
+            // Nothing to do
+        }
+
+        QVector<ParenthesisInfo *> TextBlockData::parentheses()
+        {
+            return m_parentheses;
+        }
+
+        void TextBlockData::insert(ParenthesisInfo *info)
+        {
+            int i = 0;
+            while (i < m_parentheses.size() &&
+                info->position > m_parentheses.at(i)->position)
+                ++i;
+
+            m_parentheses.insert(i, info);
+        }
+
+
+        QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
+        : QSyntaxHighlighter(parent)
+        {
+                HighlightingRule rule;
+
+
+                functionFormat.setFontItalic(true);
+                functionFormat.setForeground(QBrush(QColor(200,255,200)));
+
+                keywordFormat.setForeground(QBrush(QColor(200,200,255)));
+                //keywordFormat.setFontWeight(QFont::Bold);
+                keywordFormat.setFontItalic(true);
+                QStringList keywordPatterns;
+
+                keywordPatterns
+                        << QRegExp::escape("+")
+                        << QRegExp::escape("-")
+                        << QRegExp::escape("*")
+                        << QRegExp::escape("/")
+                        << QRegExp::escape("^")
+                        << QRegExp::escape("<")
+                        << QRegExp::escape(">")
+                        << QRegExp::escape("<=")
+                        << QRegExp::escape(">=")
+                        << QRegExp::escape("<>")
+                        << QRegExp::escape("=")
+                        << QRegExp::escape("!=")
+                        << QRegExp::escape("[]")
+                        << QRegExp::escape("[[")
+                        << QRegExp::escape("]]")
+                        << QRegExp::escape("][")
+                        << "\\bmin\\b"
+                        << "\\bmax\\b"
+                        << "\\band\\b"
+                        << "\\bor\\b"
+                        << "\\blerp\\b"
+
+                        << "\\bsin\\b"
+                        << "\\bcos\\b"
+                        << "\\bfloor\\b"
+                        << "\\babs\\b"
+                        << "\\btrunc\\b"
+                        << "\\bfrac\\b"
+                        << "\\bneg\\b"
+                        << "\\bnot\\b"
+                        << "\\bsqrt\\b"
+                        << "\\blog\\b"
+                        << "\\blog10\\b"
+                        << "\\bexp\\b"
+
+                        << "\\bdelta\\b"
+                        << "\\bxor\\b"
+
+                        << "\\bif\\b"
+
+                        << "\\bdefun\\b"
+                        ;
+
+                foreach (QString pattern, keywordPatterns) {
+                        rule.pattern = QRegExp(pattern);
+                        rule.format = keywordFormat;
+                        highlightingRules.append(rule);
+                }
+
+                singleLineCommentFormat.setForeground(QBrush(QColor(255,200,200)));
+                rule.pattern = QRegExp("//[^\n]*");
+                rule.format = singleLineCommentFormat;
+                highlightingRules.append(rule);
+
+
+                /*
+                parametersFormat.setForeground(Qt::darkGreen);
+                parametersFormat.setFontWeight(QFont::Bold);
+                parametersFormat.setFontItalic(true);
+                rule.pattern = QRegExp("\\b[xy]\\b");
+                rule.format = parametersFormat;
+                highlightingRules.append(rule);*/
+
+                numberFormat.setForeground(Qt::magenta);
+                rule.pattern = QRegExp("\\b[0-9]+(\\.[0-9]+)?\\b");
+                rule.format = numberFormat;
+                highlightingRules.append(rule);
+
+                multiLineCommentFormat.setForeground(QBrush(QColor(255,200,200)));
+
+                commentStartExpression = QRegExp("/\\*");
+                commentEndExpression = QRegExp("\\*/");
+        }
+
+
+
+        void QuatschHighlighter::setFunctionNames (QStringList names) {
+                callHighlightingRules.clear();
+
+                HighlightingRule rule;
+                foreach (QString name, names) {
+                        rule.pattern = QRegExp("\\b" + name + "\\b");
+                        rule.format = functionFormat;
+                        callHighlightingRules.append(rule);
+                }
+
+                rehighlight(); // should only happen when functions really changed
+        }
+
+
+
+        void QuatschHighlighter::highlightBlock(const QString &text) {
+                // ++ Qt Quarterly 31
+                TextBlockData *data = new TextBlockData;
+                int leftPos = text.indexOf('(');
+                while (leftPos != -1) {
+                        ParenthesisInfo *info = new ParenthesisInfo;
+                        info->character = '(';
+                        info->position = leftPos;
+
+                        data->insert(info);
+                        leftPos = text.indexOf('(', leftPos + 1);
+                }
+                int rightPos = text.indexOf(')');
+                while (rightPos != -1) {
+                        ParenthesisInfo *info = new ParenthesisInfo;
+                        info->character = ')';
+                        info->position = rightPos;
+
+                        data->insert(info);
+
+                        rightPos = text.indexOf(')', rightPos +1);
+                }
+                setCurrentBlockUserData(data);
+                // -- Qt Quarterly 31
+
+
+                foreach (HighlightingRule rule, highlightingRules) {
+                        QRegExp expression(rule.pattern);
+                        int index = text.indexOf(expression);
+                        while (index >= 0) {
+                                int length = expression.matchedLength();
+                                setFormat(index, length, rule.format);
+                                index = text.indexOf(expression, index + length);
+                        }
+                }
+                foreach (HighlightingRule rule, callHighlightingRules) {
+                        QRegExp expression(rule.pattern);
+                        int index = text.indexOf(expression);
+                        while (index >= 0) {
+                                int length = expression.matchedLength();
+                                setFormat(index, length, rule.format);
+                                index = text.indexOf(expression, index + length);
+                        }
+                }
+                setCurrentBlockState(0);
+
+                int startIndex = 0;
+                if (previousBlockState() != 1)
+                        startIndex = text.indexOf(commentStartExpression);
+
+                while (startIndex >= 0) {
+                        int endIndex = text.indexOf(commentEndExpression, startIndex);
+                        int commentLength;
+                        if (endIndex == -1) {
+                                setCurrentBlockState(1);
+                                commentLength = text.length() - startIndex;
+                        } else {
+                                commentLength = endIndex - startIndex
+                                     + commentEndExpression.matchedLength();
+                        }
+                        setFormat(startIndex, commentLength, multiLineCommentFormat);
+                        startIndex = text.indexOf(commentStartExpression,
+                                                         startIndex + commentLength);
+                }
+        }
 }
-
-QVector<ParenthesisInfo *> TextBlockData::parentheses()
-{
-    return m_parentheses;
-}
-
-void TextBlockData::insert(ParenthesisInfo *info)
-{
-    int i = 0;
-    while (i < m_parentheses.size() &&
-        info->position > m_parentheses.at(i)->position)
-        ++i;
-
-    m_parentheses.insert(i, info);
-}
-
-
-
 
 
 
@@ -65,7 +240,8 @@ QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
         font.setPointSize(9);
         ui->edit->setFont (font);
 
-        highlighter = new QuatschHighlighter (ui->edit->document());
+        highlighter = new quatschsourceeditor_detail::QuatschHighlighter (
+                                ui->edit->document());
         ui->edit->setText (
                 "// Example code:\n"
                 "(defun main (u v) (if (< u v) (sin u) (cos v)))\n"
@@ -191,6 +367,8 @@ void QuatschSourceEditor::closeEvent(QCloseEvent *event) {
 
 void QuatschSourceEditor::on_edit_cursorPositionChanged()
 {
+        using namespace quatschsourceeditor_detail;
+
         const int col = 1 + ui->edit->textCursor().columnNumber();
         const int line = 1 + ui->edit->textCursor().blockNumber();
         ui->position->setText(
@@ -201,8 +379,8 @@ void QuatschSourceEditor::on_edit_cursorPositionChanged()
     QList<QTextEdit::ExtraSelection> selections;
     ui->edit->setExtraSelections(selections);
 
-    TextBlockData *data = static_cast<TextBlockData *>(
-                    ui->edit->textCursor().block().userData());
+    TextBlockData *data =
+        static_cast<TextBlockData *>(ui->edit->textCursor().block().userData());
 
     if (data) {
         QVector<ParenthesisInfo *> infos = data->parentheses();
@@ -226,6 +404,7 @@ void QuatschSourceEditor::on_edit_cursorPositionChanged()
 
 bool QuatschSourceEditor::matchLeftParenthesis(QTextBlock currentBlock, int i, int numLeftParentheses)
 {
+    using namespace quatschsourceeditor_detail;
     TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
     QVector<ParenthesisInfo *> infos = data->parentheses();
 
@@ -254,6 +433,7 @@ bool QuatschSourceEditor::matchLeftParenthesis(QTextBlock currentBlock, int i, i
 
 bool QuatschSourceEditor::matchRightParenthesis(QTextBlock currentBlock, int i, int numRightParentheses)
 {
+    using namespace quatschsourceeditor_detail;
     TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
     QVector<ParenthesisInfo *> parentheses = data->parentheses();
 
@@ -302,182 +482,6 @@ void QuatschSourceEditor::createParenthesisSelection(int pos)
 
 
 
-
-#include <QtGui>
-
-QuatschHighlighter::QuatschHighlighter (QTextDocument *parent)
-: QSyntaxHighlighter(parent)
-{
-        HighlightingRule rule;
-
-
-        functionFormat.setFontItalic(true);
-        functionFormat.setForeground(QBrush(QColor(200,255,200)));
-
-        keywordFormat.setForeground(QBrush(QColor(200,200,255)));
-        //keywordFormat.setFontWeight(QFont::Bold);
-        keywordFormat.setFontItalic(true);
-        QStringList keywordPatterns;
-
-        keywordPatterns
-                << QRegExp::escape("+")
-                << QRegExp::escape("-")
-                << QRegExp::escape("*")
-                << QRegExp::escape("/")
-                << QRegExp::escape("^")
-                << QRegExp::escape("<")
-                << QRegExp::escape(">")
-                << QRegExp::escape("<=")
-                << QRegExp::escape(">=")
-                << QRegExp::escape("<>")
-                << QRegExp::escape("=")
-                << QRegExp::escape("!=")
-                << QRegExp::escape("[]")
-                << QRegExp::escape("[[")
-                << QRegExp::escape("]]")
-                << QRegExp::escape("][")
-                << "\\bmin\\b"
-                << "\\bmax\\b"
-                << "\\band\\b"
-                << "\\bor\\b"
-                << "\\blerp\\b"
-
-                << "\\bsin\\b"
-                << "\\bcos\\b"
-                << "\\bfloor\\b"
-                << "\\babs\\b"
-                << "\\btrunc\\b"
-                << "\\bfrac\\b"
-                << "\\bneg\\b"
-                << "\\bnot\\b"
-                << "\\bsqrt\\b"
-                << "\\blog\\b"
-                << "\\blog10\\b"
-                << "\\bexp\\b"
-
-                << "\\bdelta\\b"
-                << "\\bxor\\b"
-
-                << "\\bif\\b"
-
-                << "\\bdefun\\b"
-                ;
-
-        foreach (QString pattern, keywordPatterns) {
-                rule.pattern = QRegExp(pattern);
-                rule.format = keywordFormat;
-                highlightingRules.append(rule);
-        }
-
-        singleLineCommentFormat.setForeground(QBrush(QColor(255,200,200)));
-        rule.pattern = QRegExp("//[^\n]*");
-        rule.format = singleLineCommentFormat;
-        highlightingRules.append(rule);
-
-
-        /*
-        parametersFormat.setForeground(Qt::darkGreen);
-        parametersFormat.setFontWeight(QFont::Bold);
-        parametersFormat.setFontItalic(true);
-        rule.pattern = QRegExp("\\b[xy]\\b");
-        rule.format = parametersFormat;
-        highlightingRules.append(rule);*/
-
-        numberFormat.setForeground(Qt::magenta);
-        rule.pattern = QRegExp("\\b[0-9]+(\\.[0-9]+)?\\b");
-        rule.format = numberFormat;
-        highlightingRules.append(rule);
-
-        multiLineCommentFormat.setForeground(QBrush(QColor(255,200,200)));
-
-        commentStartExpression = QRegExp("/\\*");
-        commentEndExpression = QRegExp("\\*/");
-}
-
-
-
-void QuatschHighlighter::setFunctionNames (QStringList names) {
-        callHighlightingRules.clear();
-
-        HighlightingRule rule;
-        foreach (QString name, names) {
-                rule.pattern = QRegExp("\\b" + name + "\\b");
-                rule.format = functionFormat;
-                callHighlightingRules.append(rule);
-        }
-
-        rehighlight(); // should only happen when functions really changed
-}
-
-
-
-void QuatschHighlighter::highlightBlock(const QString &text) {
-        // ++ Qt Quarterly 31
-        TextBlockData *data = new TextBlockData;
-        int leftPos = text.indexOf('(');
-        while (leftPos != -1) {
-                ParenthesisInfo *info = new ParenthesisInfo;
-                info->character = '(';
-                info->position = leftPos;
-
-                data->insert(info);
-                leftPos = text.indexOf('(', leftPos + 1);
-        }
-        int rightPos = text.indexOf(')');
-        while (rightPos != -1) {
-                ParenthesisInfo *info = new ParenthesisInfo;
-                info->character = ')';
-                info->position = rightPos;
-
-                data->insert(info);
-
-                rightPos = text.indexOf(')', rightPos +1);
-        }
-        setCurrentBlockUserData(data);
-        // -- Qt Quarterly 31
-
-
-        foreach (HighlightingRule rule, highlightingRules) {
-                QRegExp expression(rule.pattern);
-                int index = text.indexOf(expression);
-                while (index >= 0) {
-                        int length = expression.matchedLength();
-                        setFormat(index, length, rule.format);
-                        index = text.indexOf(expression, index + length);
-                }
-        }
-        foreach (HighlightingRule rule, callHighlightingRules) {
-                QRegExp expression(rule.pattern);
-                int index = text.indexOf(expression);
-                while (index >= 0) {
-                        int length = expression.matchedLength();
-                        setFormat(index, length, rule.format);
-                        index = text.indexOf(expression, index + length);
-                }
-        }
-        setCurrentBlockState(0);
-
-        int startIndex = 0;
-        if (previousBlockState() != 1)
-                startIndex = text.indexOf(commentStartExpression);
-
-        while (startIndex >= 0) {
-                int endIndex = text.indexOf(commentEndExpression, startIndex);
-                int commentLength;
-                if (endIndex == -1) {
-                        setCurrentBlockState(1);
-                        commentLength = text.length() - startIndex;
-                } else {
-                        commentLength = endIndex - startIndex
-                             + commentEndExpression.matchedLength();
-                }
-                setFormat(startIndex, commentLength, multiLineCommentFormat);
-                startIndex = text.indexOf(commentStartExpression,
-                                                 startIndex + commentLength);
-        }
-}
-
-
 void QuatschSourceEditor::on_compileAndRunButton_clicked() {
         ui->quatschPreview->setCode (code());
         ui->quatschPreview->compileAndRun();
@@ -493,5 +497,6 @@ void QuatschSourceEditor::on_interestingPrograms_clicked() {
         helpBrowser->gotoQuatsch(picogen::qt4::PicohelpBrowser::QuatschInterestingPrograms);
 }
 
+} }
 
 #include "quatschsourceeditor.moc"

@@ -33,63 +33,62 @@
 
 #include "../Picohelp/picohelpbrowser.h"
 
+namespace picogen { namespace qt4 {
 
-
-// Qt Quarterly 31
-struct ParenthesisInfo
-{
-    char character;
-    int position;
-};
-
-class TextBlockData : public QTextBlockUserData
-{
-public:
-    TextBlockData();
-
-    QVector<ParenthesisInfo *> parentheses();
-    void insert(ParenthesisInfo *info);
-
-private:
-    QVector<ParenthesisInfo *> m_parentheses;
-};
-
-
-
-
-// lifted from http://doc.trolltech.com/4.2/richtext-syntaxhighlighter.html
-class QuatschHighlighter : public QSyntaxHighlighter {
-        Q_OBJECT
-
-public:
-        QuatschHighlighter(QTextDocument *parent = 0);
-
-        void setFunctionNames (QStringList list);
-
-protected:
-        void highlightBlock(const QString &text);
-
-private:
-        struct HighlightingRule
+namespace quatschsourceeditor_detail {
+        // Qt Quarterly 31
+        struct ParenthesisInfo
         {
-                QRegExp pattern;
-                QTextCharFormat format;
+            char character;
+            int position;
         };
-        QVector<HighlightingRule> highlightingRules;
-        QVector<HighlightingRule> callHighlightingRules;
 
-        QRegExp commentStartExpression;
-        QRegExp commentEndExpression;
+        class TextBlockData : public QTextBlockUserData
+        {
+        public:
+            TextBlockData();
 
-        QTextCharFormat keywordFormat;
-        QTextCharFormat singleLineCommentFormat;
-        QTextCharFormat multiLineCommentFormat;
-        QTextCharFormat functionFormat;
+            QVector<ParenthesisInfo *> parentheses();
+            void insert(ParenthesisInfo *info);
 
-        QTextCharFormat parametersFormat;
-        QTextCharFormat numberFormat;
-};
+        private:
+            QVector<ParenthesisInfo *> m_parentheses;
+        };
 
+
+        // lifted from http://doc.trolltech.com/4.2/richtext-syntaxhighlighter.html
+        class QuatschHighlighter : public QSyntaxHighlighter {
+                Q_OBJECT
+
+        public:
+                QuatschHighlighter(QTextDocument *parent = 0);
+
+                void setFunctionNames (QStringList list);
+
+        protected:
+                void highlightBlock(const QString &text);
+
+        private:
+                struct HighlightingRule
+                {
+                        QRegExp pattern;
+                        QTextCharFormat format;
+                };
+                QVector<HighlightingRule> highlightingRules;
+                QVector<HighlightingRule> callHighlightingRules;
+
+                QRegExp commentStartExpression;
+                QRegExp commentEndExpression;
+
+                QTextCharFormat keywordFormat;
+                QTextCharFormat singleLineCommentFormat;
+                QTextCharFormat multiLineCommentFormat;
+                QTextCharFormat functionFormat;
+
+                QTextCharFormat parametersFormat;
+                QTextCharFormat numberFormat;
+        };
+}
 
 
 class QuatschSourceEditor : public QWidget
@@ -127,11 +126,12 @@ private:
         void createParenthesisSelection(int pos);
 
         Ui::QuatschEditor *ui;
-        QuatschHighlighter *highlighter;
+        quatschsourceeditor_detail::QuatschHighlighter *highlighter;
         bool softLock;
 
         picogen::qt4::PicohelpBrowser *helpBrowser;
 };
 
+} }
 
 #endif // QUATSCH_EDITOR_HH_INCLUDED_20090419

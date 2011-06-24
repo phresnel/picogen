@@ -197,7 +197,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QuatschSourceEditor" name="quatschCodeEditor" native="true"/>
+           <widget class="picogen::qt4::QuatschSourceEditor" name="quatschCodeEditor" native="true"/>
           </item>
          </layout>
         </widget>
@@ -232,7 +232,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QuatschSourceEditor</class>
+   <class>picogen::qt4::QuatschSourceEditor</class>
    <extends>QWidget</extends>
    <header>quatschsourceeditor.h</header>
    <container>1</container>
