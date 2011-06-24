@@ -26,6 +26,8 @@
 
 #include "redshift/include/setup.hh"
 
+namespace picogen { namespace qt4 {
+
 TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TristimulusColorPicker),
@@ -353,5 +355,6 @@ void TristimulusColorPicker::on_showCMYK_toggled(bool checked) {
     ui->cmykLabel->setVisible(checked);
 }
 
+} }
 
 #include "tristimuluscolorpicker.moc"

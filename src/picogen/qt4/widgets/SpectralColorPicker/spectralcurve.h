@@ -30,6 +30,8 @@ namespace Ui {
 #include "spectrumdisplay.h"
 #include "spectralcolorpicker.h"
 
+namespace picogen { namespace qt4 {
+
 class SpectralCurve : public QWidget {
     Q_OBJECT
 public:
@@ -51,5 +53,7 @@ private:
     SpectralColorPicker::Spectrum spectrum;
     double energyMin, energyMax;
 };
+
+} }
 
 #endif // SPECTRALCURVE_HH

@@ -25,6 +25,8 @@
 #include "ui_spectrumdisplay.h"
 #include "createspectralimage.h"
 
+namespace picogen { namespace qt4 {
+
 SpectrumDisplay::SpectrumDisplay(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SpectrumDisplay)
@@ -66,5 +68,7 @@ void SpectrumDisplay::changeEvent(QEvent *e) {
                 break;
         }
 }
+
+} }
 
 #include "spectrumdisplay.moc"

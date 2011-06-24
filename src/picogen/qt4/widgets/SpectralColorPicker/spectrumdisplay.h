@@ -28,6 +28,8 @@ namespace Ui {
     class SpectrumDisplay;
 }
 
+namespace picogen { namespace qt4 {
+
 class SpectrumDisplay : public QWidget {
         Q_OBJECT
 public:
@@ -46,5 +48,7 @@ protected:
         double scaledWidth() const;
         double left() const;
 };
+
+} }
 
 #endif // SPECTRUMDISPLAY_HH

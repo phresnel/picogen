@@ -24,6 +24,8 @@
 #include <spectralcolorpicker.h>
 #include <tristimuluscolorpicker.h>
 
+namespace picogen { namespace qt4 {
+
 struct ColorPickerColor {
         enum Mode { Spectral, Tristimulus } mode;
 
@@ -125,5 +127,7 @@ struct ColorPickerColor {
                         "unhandled mode in colorpicker.hh:toColor()");
         }*/
 };
+
+} }
 
 #endif // COLORPICKERCOLOR_HH

@@ -25,6 +25,8 @@
 #include "ui_spectralcurve.h"
 #include "createspectralimage.h"
 
+namespace picogen { namespace qt4 {
+
 SpectralCurve::SpectralCurve(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SpectralCurve),
@@ -126,5 +128,7 @@ void SpectralCurve::paintEvent (QPaintEvent *e) {
 void SpectralCurve::setSpectrum (SpectralColorPicker::Spectrum  const &spectrum) {
         this->spectrum = spectrum;
 }
+
+} }
 
 #include "spectralcurve.moc"

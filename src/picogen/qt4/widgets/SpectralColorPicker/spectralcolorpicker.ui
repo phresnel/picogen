@@ -59,7 +59,7 @@
     </layout>
    </item>
    <item>
-    <widget class="SpectralCurve" name="spectralCurve" native="true"/>
+    <widget class="picogen::qt4::SpectralCurve" name="spectralCurve" native="true"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -154,13 +154,13 @@ Amplitude</string>
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>237</width>
+          <width>241</width>
           <height>194</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="SpectrumDisplay" name="widget_2" native="true"/>
+          <widget class="picogen::qt4::SpectrumDisplay" name="widget_2" native="true"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="slidersLayout"/>
@@ -197,13 +197,13 @@ Amplitude</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SpectrumDisplay</class>
+   <class>picogen::qt4::SpectrumDisplay</class>
    <extends>QWidget</extends>
    <header>spectrumdisplay.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SpectralCurve</class>
+   <class>picogen::qt4::SpectralCurve</class>
    <extends>QWidget</extends>
    <header>spectralcurve.h</header>
    <container>1</container>

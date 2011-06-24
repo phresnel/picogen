@@ -22,6 +22,8 @@
 #include "spectralslider.h"
 #include "ui_spectralslider.h"
 
+namespace picogen { namespace qt4 {
+
 SpectralSlider::SpectralSlider(double wavelength, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SpectralSlider)
@@ -95,5 +97,7 @@ void SpectralSlider::maximumChanged (double val) {
         ui->amplitude->setMaximum(val);
         ui->verticalSlider->setMaximum(val * 100000.);
 }
+
+} }
 
 #include "spectralslider.moc"

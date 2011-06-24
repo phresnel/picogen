@@ -25,10 +25,11 @@
 #include <QWidget>
 #include "redshift/include/basictypes/spectrum.hh"
 
-
 namespace Ui {
     class SpectralColorPicker;
 }
+
+namespace picogen { namespace qt4 {
 
 struct SpectralSample {
         double wavelength, amplitude;
@@ -89,5 +90,7 @@ private:
 
         void updatePixmap();
 };
+
+} }
 
 #endif // SPECTRALCOLORPICKER_HH

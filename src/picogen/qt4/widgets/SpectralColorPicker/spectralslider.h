@@ -28,6 +28,8 @@ namespace Ui {
     class SpectralSlider;
 }
 
+namespace picogen { namespace qt4 {
+
 class SpectralSlider : public QWidget {
         Q_OBJECT
 public:
@@ -58,5 +60,7 @@ private slots:
         void on_amplitude_valueChanged(double );
         void on_verticalSlider_valueChanged(int value);
 };
+
+} }
 
 #endif // SPECTRALSLIDER_HH

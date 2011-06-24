@@ -18,8 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
 #ifndef IMPORTRAWDATAWIZARD_HH
 #define IMPORTRAWDATAWIZARD_HH
 
@@ -28,6 +26,8 @@
 namespace Ui {
         class ImportRawDataWizard;
 }
+
+namespace picogen { namespace qt4 {
 
 class ImportRawDataWizard : public QWizard {
         Q_OBJECT
@@ -79,5 +79,6 @@ private slots:
         void wizard_currentIdChanged (int id);
 };
 
+} }
 
 #endif // IMPORTRAWDATAWIZARD_HH

@@ -28,6 +28,7 @@ namespace Ui {
     class TristimulusColorPicker;
 }
 
+namespace picogen { namespace qt4 {
 
 class TristimulusColor {
         double r, g, b;
@@ -183,6 +184,6 @@ private slots:
         void on_showCMYK_toggled(bool checked);
 };
 
-
+} }
 
 #endif // TRISTIMULUSCOLORPICKER_HH

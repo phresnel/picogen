@@ -26,7 +26,7 @@
 #include <QUrl>
 #include <QDesktopServices>
 
-
+namespace picogen { namespace qt4 {
 
 namespace {
 bool readDoubleIgnoreOthers (QTextStream &in, QVariant &out) {
@@ -436,5 +436,7 @@ QVector<double> const &ImportRawDataWizard::amplitudes() const {
 QVector<double> const &ImportRawDataWizard::wavelengths() const {
         return wavelengths_;
 }
+
+} }
 
 #include "importrawdatawizard.moc"

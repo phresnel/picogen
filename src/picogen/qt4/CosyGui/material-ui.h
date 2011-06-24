@@ -28,9 +28,10 @@
 namespace Ui {
     class Material;
 }
-class ColorPickerColor;
 
 namespace picogen { namespace qt4 {
+
+class ColorPickerColor;
 
 class Material : public QWidget
 {

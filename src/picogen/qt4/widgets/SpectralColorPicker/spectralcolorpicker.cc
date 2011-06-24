@@ -18,7 +18,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 #include <fstream>
 #include <QMessageBox>
 
@@ -28,6 +27,7 @@
 
 #include "importrawdatawizard.h"
 
+namespace picogen { namespace qt4 {
 
 SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
     QWidget(parent),
@@ -284,5 +284,7 @@ void SpectralColorPicker::setSamples (QVector<SpectralSample>  const & samples) 
 /*void SpectralColorPicker::setColor (redshift::Spectrum const &) {
 
 }*/
+
+} }
 
 #include "spectralcolorpicker.moc"
