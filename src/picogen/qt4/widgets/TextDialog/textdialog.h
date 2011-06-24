@@ -29,6 +29,8 @@ namespace Ui {
     class TextDialog;
 }
 
+namespace picogen { namespace qt4 {
+
 class TextDialog : public QDialog
 {
     Q_OBJECT
@@ -44,5 +46,7 @@ public:
 private:
     Ui::TextDialog *ui;
 };
+
+} }
 
 #endif // TEXTDIALOG_HH

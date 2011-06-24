@@ -21,6 +21,8 @@
 #include "textdialog.h"
 #include "ui_textdialog.h"
 
+namespace picogen { namespace qt4 {
+
 TextDialog::TextDialog(bool readOnly, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::TextDialog)
@@ -45,5 +47,7 @@ void TextDialog::setText(std::string const & text) {
 QString TextDialog::toPlainText() const {
     return ui->textEdit->toPlainText();
 }
+
+} }
 
 #include "textdialog.moc"
