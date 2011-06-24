@@ -32,6 +32,8 @@
 #include <QTemporaryFile>
 #include "renderwindow.h"
 
+namespace picogen { namespace qt4 {
+
 RenderWidget::RenderWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderWidget),
@@ -236,5 +238,7 @@ void RenderWidgetThread::report (int /*completed*/, int /*total*/) {
                 firstReport_ = false;
         }
 }
+
+} }
 
 #include "renderwidget.moc"

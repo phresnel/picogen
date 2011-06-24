@@ -42,6 +42,8 @@ namespace redshift_file {
 }
 
 
+namespace picogen { namespace qt4 {
+
 class RenderWidgetThread;
 class RenderWidgetProgressReporter;
 class RenderWidgetUserCommandProcessor;
@@ -137,7 +139,7 @@ private:
         redshift::shared_ptr<RenderWidgetUserCommandProcessor> commandProcessor;
 };
 
-
+} }
 
 
 
@@ -146,6 +148,7 @@ private:
 
 
 #include "redshift/include/interaction/progressreporter.hh"
+namespace picogen { namespace qt4 {
 class RenderWidgetProgressReporter
 : public redshift::interaction::ProgressReporter
 {
@@ -167,8 +170,10 @@ private:
         bool done_;
         RenderWidgetThread *renderThread_;
 };
+} }
 
 #include "redshift/include/interaction/usercommandprocessor.hh"
+namespace picogen { namespace qt4 {
 class RenderWidgetUserCommandProcessor
 : public redshift::interaction::UserCommandProcessor
 {
@@ -183,6 +188,7 @@ public:
 private:
         bool quit_;
 };
+} }
 
 
 

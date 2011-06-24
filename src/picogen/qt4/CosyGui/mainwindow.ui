@@ -592,7 +592,7 @@ stop: 0 #fed, stop: 1 #bbb);
            <number>0</number>
           </property>
           <item>
-           <widget class="RenderWidget" name="renderWidget" native="true"/>
+           <widget class="picogen::qt4::RenderWidget" name="renderWidget" native="true"/>
           </item>
          </layout>
         </widget>
@@ -740,7 +740,7 @@ stop: 0 #fed, stop: 1 #bbb);
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>RenderWidget</class>
+   <class>picogen::qt4::RenderWidget</class>
    <extends>QWidget</extends>
    <header>renderwidget.h</header>
    <container>1</container>
