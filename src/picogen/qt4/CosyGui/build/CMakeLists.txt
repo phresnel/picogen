@@ -113,7 +113,7 @@ priinclude("${widgets_dir}/Picohelp")
 priinclude("${widgets_dir}/Preview")
 
 priinclude("../../Repository")
-priinclude("../../Repository/repository")
+priinclude("../../../repository")
 priinclude("../../Repository/fragment")
 priinclude("../../Repository/fragment/preset")
 
