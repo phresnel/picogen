@@ -24,7 +24,7 @@
 #include "collection.hh"
 #include "metadata.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 class Fragment : public Meta {
 public:

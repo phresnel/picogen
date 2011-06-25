@@ -33,8 +33,8 @@ namespace picogen { namespace qt4 {
 PresetListWidget::PresetListWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PresetListWidget),
-    database_(new Database()),
-    lastSelected_(optional<ParametricPreset>())
+    database_(new repository::Database()),
+    lastSelected_(optional<repository::ParametricPreset>())
 {
         ui->setupUi(this);
         ui->previewWidget->startTimer(3000);
@@ -45,25 +45,25 @@ PresetListWidget::~PresetListWidget()
         delete ui;
 }
 
-void PresetListWidget::setDatabase (shared_ptr<Database> db) {
+void PresetListWidget::setDatabase (shared_ptr<repository::Database> db) {
         database_ = db;
         resyncView();
 }
 
 void PresetListWidget::resyncView() {
-        QVector<ParametricPreset> presets;
+        QVector<repository::ParametricPreset> presets;
         database_->terrainFormationPresets(presets);
         const int count = presets.count();
 
         ui->listWidget->clear();
 
         for (int i=0; i<count; ++i) {
-                const ParametricPreset& pp = presets[i];
+                const repository::ParametricPreset& pp = presets[i];
                 addPresetToView(pp);
         }
 }
 
-void PresetListWidget::addPresetToView(const ParametricPreset &pp) {
+void PresetListWidget::addPresetToView(const repository::ParametricPreset &pp) {
         QListWidgetItem *it = new QListWidgetItem (ui->listWidget);
         PresetListItemWidget *ppui = new PresetListItemWidget (pp, this);
 
@@ -74,27 +74,27 @@ void PresetListWidget::addPresetToView(const ParametricPreset &pp) {
         ui->listWidget->scrollToItem(it);
 }
 
-optional<ParametricPreset> PresetListWidget::lastSelected() const {
+optional<repository::ParametricPreset> PresetListWidget::lastSelected() const {
         return lastSelected_;
 }
 
 void PresetListWidget::on_listWidget_itemSelectionChanged() {
         const QList<QListWidgetItem*> items = ui->listWidget->selectedItems();
         if (0 == items.count()) {
-                lastSelected_ = optional<ParametricPreset>();
+                lastSelected_ = optional<repository::ParametricPreset>();
         } else {
                 QWidget *widget = ui->listWidget->itemWidget(items[0]);
                 PresetListItemWidget *ppui = qobject_cast<PresetListItemWidget*> (widget);
                 lastSelected_ = 0 != ppui ?
                                 ppui->preset() :
-                                optional<ParametricPreset>();
+                                optional<repository::ParametricPreset>();
                 if (ppui) {
                         lastSelected_ = ppui->preset();
                         ui->previewWidget->setImages(
                                         ppui->preset().previewFilenames());
                         qDebug() << ppui->preset().previewFilenames();
                 } else {
-                        lastSelected_ = optional<ParametricPreset>();
+                        lastSelected_ = optional<repository::ParametricPreset>();
                         ui->previewWidget->reset();
                 }
         }

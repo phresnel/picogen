@@ -23,7 +23,7 @@
 
 #include <QStringList>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 class Meta {
 public:

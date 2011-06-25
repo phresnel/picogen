@@ -23,7 +23,7 @@
 #include <QDir>
 #include <QFile>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 ParametricPreset::ParametricPreset(Collection package, QString path)
         : Fragment (package, path)

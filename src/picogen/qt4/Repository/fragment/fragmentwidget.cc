@@ -34,7 +34,7 @@ FragmentWidget::~FragmentWidget() {
         delete ui;
 }
 
-void FragmentWidget::setEntity (Fragment *e) {
+void FragmentWidget::setEntity (repository::Fragment *e) {
         entity_ = e;
 
         ui->title->setText(e->title());

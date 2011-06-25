@@ -39,14 +39,14 @@ public:
         explicit PresetDialog(QWidget *parent = 0);
         ~PresetDialog();
 
-        ParametricPreset preset() const;
-        void setPreset (ParametricPreset const &);
+        repository::ParametricPreset preset() const;
+        void setPreset (repository::ParametricPreset const &);
 
         void setReadOnly (bool readOnly);
 
 private:
         Ui::PresetDialog *ui;
-        ParametricPreset preset_;
+        repository::ParametricPreset preset_;
 
 private slots:
 

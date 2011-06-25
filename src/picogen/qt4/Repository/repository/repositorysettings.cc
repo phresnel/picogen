@@ -29,7 +29,7 @@
 #include <QPushButton>
 #include <QDebug>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 //------------------------------------------------------------------------------
 namespace {

@@ -28,7 +28,7 @@ PresetDialog::PresetDialog(QWidget *parent) :
     ui(new Ui::PresetDialog)
 {
         ui->setupUi(this);
-        setPreset(ParametricPreset());
+        setPreset(repository::ParametricPreset());
         ui->preset->showSourceEditor(true);
 }
 
@@ -41,11 +41,11 @@ void PresetDialog::setReadOnly(bool readOnly) {
         ui->entity->setReadOnly(readOnly);
 }
 
-ParametricPreset PresetDialog::preset() const {
+repository::ParametricPreset PresetDialog::preset() const {
         return preset_;
 }
 
-void PresetDialog::setPreset (ParametricPreset const &pp) {
+void PresetDialog::setPreset (repository::ParametricPreset const &pp) {
         preset_ = pp;
         ui->entity->setEntity (&preset_);
         ui->preset->setPreset(pp.preset());

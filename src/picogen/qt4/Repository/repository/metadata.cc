@@ -24,7 +24,7 @@
 
 #include "metadata.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 Meta::Meta(QString path)
         : path_(path)

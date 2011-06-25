@@ -41,17 +41,17 @@ public:
         explicit PresetListWidget(QWidget *parent = 0);
         ~PresetListWidget();
 
-        void setDatabase (shared_ptr<Database>);
-        optional<ParametricPreset> lastSelected() const;
+        void setDatabase (shared_ptr<repository::Database>);
+        optional<repository::ParametricPreset> lastSelected() const;
 
 private:
         Ui::PresetListWidget *ui;
-        shared_ptr<Database> database_;
-        optional<ParametricPreset> lastSelected_;
+        shared_ptr<repository::Database> database_;
+        optional<repository::ParametricPreset> lastSelected_;
 
 private:
         void resyncView();
-        void addPresetToView(ParametricPreset const&);
+        void addPresetToView(repository::ParametricPreset const&);
 
 private slots:
         void on_readOnly_toggled(bool checked);

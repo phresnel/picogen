@@ -41,11 +41,11 @@ public:
         explicit SelectPresetDialog(QWidget *parent = 0);
         ~SelectPresetDialog();
 
-        void setDatabase (shared_ptr<Database>);
-        optional<ParametricPreset> lastSelected() const;
+        void setDatabase (shared_ptr<repository::Database>);
+        optional<repository::ParametricPreset> lastSelected() const;
 
 private:
-    Ui::SelectPresetDialog *ui;
+        Ui::SelectPresetDialog *ui;
 };
 
 } }

@@ -38,12 +38,12 @@ public:
         explicit FragmentWidget(QWidget *parent = 0);
         ~FragmentWidget();
 
-        void setEntity (Fragment *);
+        void setEntity (repository::Fragment *);
         void setReadOnly(bool readOnly);
 
 private:
         Ui::FragmentWidget *ui;
-        Fragment *entity_;
+        repository::Fragment *entity_;
 
 private slots:
         void on_email_editingFinished();

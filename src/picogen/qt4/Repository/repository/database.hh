@@ -25,7 +25,7 @@
 
 #include "collection.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 class ParametricPreset;
 

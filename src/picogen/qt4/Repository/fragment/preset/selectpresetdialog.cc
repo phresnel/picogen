@@ -34,13 +34,13 @@ SelectPresetDialog::~SelectPresetDialog() {
         delete ui;
 }
 
-void SelectPresetDialog::setDatabase (shared_ptr<Database> db) {
+void SelectPresetDialog::setDatabase (shared_ptr<repository::Database> db) {
         ui->list->setDatabase(db);
 }
 
-optional<ParametricPreset> SelectPresetDialog::lastSelected() const {
+optional<repository::ParametricPreset> SelectPresetDialog::lastSelected() const {
         if (result() == QDialog::Rejected)
-                return optional<ParametricPreset>();
+                return optional<repository::ParametricPreset>();
         return ui->list->lastSelected();
 }
 

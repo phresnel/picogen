@@ -24,7 +24,7 @@
 #include <QMessageBox>
 #include "parametricpreset.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 
 Collection::Collection(QString root) : Meta(root), root_(root) {

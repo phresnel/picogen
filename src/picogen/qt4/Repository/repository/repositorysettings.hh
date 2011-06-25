@@ -25,7 +25,7 @@
 #include <QString>
 #include "collection.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 class RepositorySettings
 {

@@ -32,7 +32,8 @@ PresetListItemWidget::PresetListItemWidget(QWidget *parent) :
         setReadOnly(true);
 }
 
-PresetListItemWidget::PresetListItemWidget(ParametricPreset const &pp, QWidget *parent) :
+PresetListItemWidget::PresetListItemWidget(repository::ParametricPreset const &pp,
+                                           QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PresetListItemWidget)
 {
@@ -44,11 +45,11 @@ PresetListItemWidget::~PresetListItemWidget() {
         delete ui;
 }
 
-ParametricPreset PresetListItemWidget::preset() const {
+repository::ParametricPreset PresetListItemWidget::preset() const {
         return preset_;
 }
 
-void PresetListItemWidget::setPreset (ParametricPreset const &pp) {
+void PresetListItemWidget::setPreset (repository::ParametricPreset const &pp) {
         preset_ = pp;
         ui->text->setText(
             QString("<big><b>%1</b></big><br>"

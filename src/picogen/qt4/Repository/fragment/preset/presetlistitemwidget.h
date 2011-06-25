@@ -36,17 +36,18 @@ class PresetListItemWidget : public QWidget
 
 public:
         explicit PresetListItemWidget(QWidget *parent = 0);
-        explicit PresetListItemWidget(ParametricPreset const &, QWidget *parent = 0);
+        explicit PresetListItemWidget(repository::ParametricPreset const &,
+                                      QWidget *parent = 0);
         ~PresetListItemWidget();
 
-        ParametricPreset preset() const;
-        void setPreset (ParametricPreset const &);
+        repository::ParametricPreset preset() const;
+        void setPreset (repository::ParametricPreset const &);
 
         void setReadOnly (bool readOnly);
 
 private:
         Ui::PresetListItemWidget *ui;
-        ParametricPreset preset_;
+        repository::ParametricPreset preset_;
         bool readOnly_;
 
 private slots:

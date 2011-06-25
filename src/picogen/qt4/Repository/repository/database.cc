@@ -23,7 +23,7 @@
 #include "parametricpreset.hh"
 #include "repositorysettings.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 void Database::establishStandardConnection() {
         addCollections (RepositorySettings().collections());

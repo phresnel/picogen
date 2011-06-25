@@ -20,7 +20,7 @@
 
 #include "fragment.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace repository {
 
 Fragment::Fragment(Collection package, QString path)
         : Meta(path), package_(package)
