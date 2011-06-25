@@ -30,7 +30,7 @@ namespace Ui {
 #include "spectrumdisplay.h"
 #include "spectralcolorpicker.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class SpectralCurve : public QWidget {
     Q_OBJECT

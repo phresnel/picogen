@@ -31,7 +31,7 @@
 
 #include <cmath>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 PitchWidget::PitchWidget(QWidget *parent)
         : QWidget(parent)
@@ -100,19 +100,19 @@ void PitchWidget::drawArtificialHorizon(QPainter *painter) {
         painter->drawLine(half_left, horizon_s90, half_right, horizon_s90);
 
         painter->drawText(QRect(half_left-20, horizon_a45-8, 20, 16),
-                          "-45°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+                          "-45", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
         painter->drawText(QRect(half_left-20, horizon_s45-8, 20, 16),
-                          "45°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+                          "45", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
         painter->drawText(QRect(half_left-20, horizon_a90-8, 20, 16),
-                          "-90°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+                          "-90", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
         painter->drawText(QRect(half_left-20, horizon_s90-8, 20, 16),
-                          "90°", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
+                          "90", QTextOption(Qt::AlignVCenter|Qt::AlignRight));
 
         // Draw observer horizon.
         painter->setPen(QPen (QColor(0,0,0,255), 1, Qt::DashLine));
         painter->drawLine(left, widgetCenter, right, widgetCenter);
         painter->drawText(QRect(0, widgetCenter, width, 16),
-                          QString::number(pitch_/0.0174532925, 'f', 1) + "°",
+                          QString::number(pitch_/0.0174532925, 'f', 1) + "",
                           QTextOption(Qt::AlignCenter));
 
         // Draw widget border

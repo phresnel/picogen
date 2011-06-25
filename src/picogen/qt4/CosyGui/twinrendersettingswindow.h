@@ -29,7 +29,7 @@ namespace Ui {
     class TwinRenderSettingsWindow;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class TwinRenderSettingsWindow : public QWidget
 {

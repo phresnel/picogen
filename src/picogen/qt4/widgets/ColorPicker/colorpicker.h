@@ -36,7 +36,7 @@ namespace Ui {
         class ColorPicker;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class ColorPicker : public QDialog {
         Q_OBJECT

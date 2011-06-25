@@ -39,7 +39,7 @@
 #include "redshift/include/rendertargets/rendertargetlock.hh"
 #include "redshift/include/basictypes/film.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 QString getImageSavePath (QWidget *parent) {
         QFileDialog dialog(parent);

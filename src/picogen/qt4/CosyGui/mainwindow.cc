@@ -47,7 +47,7 @@ void load_scene (Scene &scene, std::string const &name);
 }
 
 
-namespace picogen { namespace qt4 { namespace detail {
+namespace picogen { namespace qt4_gui { namespace detail {
         class RedshiftSceneCreator : public CreateRedshiftSceneClosure {
         public:
                 redshift::shared_ptr<redshift_file::Scene>
@@ -173,7 +173,7 @@ namespace {
 
 //////
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),

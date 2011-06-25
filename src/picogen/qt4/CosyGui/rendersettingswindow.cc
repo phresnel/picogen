@@ -30,7 +30,7 @@
 #include <QMenu>
 #include <QDesktopWidget>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 RenderSettingsWindow::RenderSettingsWindow(QWidget *parent) :
     QWidget(parent),

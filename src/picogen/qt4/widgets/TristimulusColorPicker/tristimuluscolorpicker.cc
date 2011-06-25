@@ -26,7 +26,7 @@
 
 #include "redshift/include/setup.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 TristimulusColorPicker::TristimulusColorPicker(QWidget *parent) :
     QWidget(parent),

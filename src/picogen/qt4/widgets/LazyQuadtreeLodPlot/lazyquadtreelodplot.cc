@@ -25,7 +25,7 @@
 #include <QRectF>
 #include <cmath>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 namespace {
         class LazyQuadtreeParams {

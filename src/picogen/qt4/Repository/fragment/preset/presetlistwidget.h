@@ -31,7 +31,7 @@ namespace Ui {
     class PresetListWidget;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class PresetListWidget : public QWidget
 {

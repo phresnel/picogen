@@ -27,7 +27,7 @@
 #include "cosyscene/filmsettings.hh"
 #include "cosyscene/scene.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 FilmSettingsWindow::FilmSettingsWindow(QWidget *parent) :
     QWidget(parent),

@@ -29,7 +29,7 @@ namespace Ui {
         class TerrainFormation;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class TerrainFormation : public QWidget
 {

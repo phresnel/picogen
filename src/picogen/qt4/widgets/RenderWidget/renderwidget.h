@@ -42,7 +42,7 @@ namespace redshift_file {
 }
 
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class RenderWidgetThread;
 class RenderWidgetProgressReporter;
@@ -148,7 +148,7 @@ private:
 
 
 #include "redshift/include/interaction/progressreporter.hh"
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 class RenderWidgetProgressReporter
 : public redshift::interaction::ProgressReporter
 {
@@ -173,7 +173,7 @@ private:
 } }
 
 #include "redshift/include/interaction/usercommandprocessor.hh"
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 class RenderWidgetUserCommandProcessor
 : public redshift::interaction::UserCommandProcessor
 {

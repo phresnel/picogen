@@ -32,7 +32,7 @@
 #include <QTemporaryFile>
 #include "renderwindow.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 RenderWidget::RenderWidget(QWidget *parent) :
     QWidget(parent),

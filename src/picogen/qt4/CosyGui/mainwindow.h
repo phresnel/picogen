@@ -30,12 +30,12 @@ namespace Ui {
         class MainWindow;
 }
 
-namespace picogen { namespace qt4 { namespace detail {
+namespace picogen { namespace qt4_gui { namespace detail {
         class RedshiftSceneCreator;
 } } }
 
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class MainWindow : public QMainWindow
 {

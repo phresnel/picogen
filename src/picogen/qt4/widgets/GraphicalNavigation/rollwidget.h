@@ -23,7 +23,7 @@
 
 #include <QWidget>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class RollWidget : public QWidget
 {

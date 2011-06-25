@@ -28,7 +28,7 @@ namespace Ui {
     class SpectralSlider;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class SpectralSlider : public QWidget {
         Q_OBJECT

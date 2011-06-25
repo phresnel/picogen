@@ -21,7 +21,7 @@
 #include "textdialog.h"
 #include "ui_textdialog.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 TextDialog::TextDialog(bool readOnly, QWidget *parent) :
     QDialog(parent),

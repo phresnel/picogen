@@ -27,7 +27,7 @@ namespace Ui {
         class ImportRawDataWizard;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class ImportRawDataWizard : public QWizard {
         Q_OBJECT

@@ -29,7 +29,7 @@ namespace Ui {
         class WaterWindow;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class WaterWindow : public QWidget
 {

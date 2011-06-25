@@ -22,7 +22,7 @@
 #include "spectralslider.h"
 #include "ui_spectralslider.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 SpectralSlider::SpectralSlider(double wavelength, QWidget *parent) :
     QWidget(parent),

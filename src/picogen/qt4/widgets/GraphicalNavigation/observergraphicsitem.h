@@ -26,7 +26,7 @@
 #include "heightfunction.h"
 #include "observer.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 enum AutoHeightMode {
         KeepAbsoluteHeight,

@@ -25,7 +25,7 @@
 #include "ui_spectralcurve.h"
 #include "createspectralimage.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 SpectralCurve::SpectralCurve(QWidget *parent) :
     QWidget(parent),

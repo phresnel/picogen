@@ -29,7 +29,7 @@ namespace Ui {
 
 #include "parametricpreset.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class PresetDialog : public QDialog
 {

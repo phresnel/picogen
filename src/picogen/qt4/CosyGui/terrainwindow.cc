@@ -29,7 +29,7 @@
 
 #include <QMessageBox>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 TerrainWindow::TerrainWindow(QWidget *parent) :
     QWidget(parent),

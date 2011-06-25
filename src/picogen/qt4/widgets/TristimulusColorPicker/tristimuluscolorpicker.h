@@ -28,7 +28,7 @@ namespace Ui {
     class TristimulusColorPicker;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class TristimulusColor {
         double r, g, b;

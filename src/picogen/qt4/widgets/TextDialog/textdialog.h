@@ -29,7 +29,7 @@ namespace Ui {
     class TextDialog;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class TextDialog : public QDialog
 {

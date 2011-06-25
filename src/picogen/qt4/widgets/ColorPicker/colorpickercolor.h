@@ -24,7 +24,7 @@
 #include <spectralcolorpicker.h>
 #include <tristimuluscolorpicker.h>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 struct ColorPickerColor {
         enum Mode { Spectral, Tristimulus } mode;

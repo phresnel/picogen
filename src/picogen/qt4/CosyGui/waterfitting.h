@@ -31,7 +31,7 @@ namespace picogen { namespace cosyscene {
         class WaterFitting;
 } }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class WaterFitting : public QWidget
 {

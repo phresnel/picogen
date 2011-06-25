@@ -26,7 +26,7 @@
 #include <QUrl>
 #include <QDesktopServices>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 namespace {
 bool readDoubleIgnoreOthers (QTextStream &in, QVariant &out) {

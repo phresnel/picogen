@@ -21,7 +21,7 @@
 #include "startpopup.h"
 #include "ui_startpopup.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 StartPopup::StartPopup(QWidget *parent) :
         QDialog(parent),

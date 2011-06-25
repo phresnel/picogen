@@ -29,7 +29,7 @@ namespace Ui {
     class FilmSettingsWindow;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class FilmSettingsWindow : public QWidget
 {

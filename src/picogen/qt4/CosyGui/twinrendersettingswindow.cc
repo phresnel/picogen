@@ -24,7 +24,7 @@
 #include "cosyscene/scene.hh"
 #include "cosyscene/rendersettings.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 TwinRenderSettingsWindow::TwinRenderSettingsWindow(QWidget *parent) :
     QWidget(parent),

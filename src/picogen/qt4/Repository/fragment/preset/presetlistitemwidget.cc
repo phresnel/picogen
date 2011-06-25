@@ -22,7 +22,7 @@
 #include "ui_presetlistitemwidget.h"
 #include "presetdialog.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 PresetListItemWidget::PresetListItemWidget(QWidget *parent) :
     QWidget(parent),

@@ -28,7 +28,7 @@ namespace Ui {
     class SpectrumDisplay;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class SpectrumDisplay : public QWidget {
         Q_OBJECT

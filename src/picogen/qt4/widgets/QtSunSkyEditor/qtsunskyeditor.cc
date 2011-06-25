@@ -24,7 +24,7 @@
 #include "redshift/include/backgrounds/preetham-shirley-smits/sunsky.hh"
 #include <QPainter>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 QtSunSkyEditor::QtSunSkyEditor(QWidget *parent)
 : QWidget(parent)

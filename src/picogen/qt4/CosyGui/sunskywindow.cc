@@ -27,7 +27,7 @@
 
 #include <QMessageBox>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 SunSkyWindow::SunSkyWindow(QWidget *parent) :
     QWidget(parent),

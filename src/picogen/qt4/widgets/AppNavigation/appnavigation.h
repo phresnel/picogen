@@ -34,7 +34,7 @@ class QString;
 class QIcon;
 class AppNavigation;
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class AppNavigationButton : public QToolButton {
         Q_OBJECT

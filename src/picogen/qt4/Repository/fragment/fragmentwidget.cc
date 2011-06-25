@@ -21,7 +21,7 @@
 #include "fragmentwidget.h"
 #include "ui_fragmentwidget.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 FragmentWidget::FragmentWidget(QWidget *parent) :
     QWidget(parent),

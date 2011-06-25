@@ -31,7 +31,7 @@ namespace Ui {
         class SunSkyWindow;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class SunSkyWindow : public QWidget
 {

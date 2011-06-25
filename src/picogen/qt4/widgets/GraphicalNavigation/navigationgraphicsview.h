@@ -24,7 +24,7 @@
 #include <QGraphicsView>
 #include "heightfunction.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class NavigationGraphicsView : public QGraphicsView
 {

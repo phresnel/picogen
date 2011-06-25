@@ -20,7 +20,7 @@
 
 #include "observer.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 Observer::Observer() {
 }

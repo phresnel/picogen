@@ -27,7 +27,7 @@ namespace Ui {
         class StartPopup;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class StartPopup : public QDialog
 {

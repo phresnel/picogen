@@ -26,7 +26,7 @@
 
 #include "selectpresetdialog.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 TerrainFormation::TerrainFormation(QWidget *parent) :
     QWidget(parent),

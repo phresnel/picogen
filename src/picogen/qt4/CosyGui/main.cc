@@ -55,7 +55,7 @@ int cosy_main (int argc, char *argv[]) {
         QApplication::setStyle(style);
 
         QApplication a(argc, argv);
-        picogen::qt4::MainWindow w;
+        picogen::qt4_gui::MainWindow w;
         w.show();
         return a.exec();
 }
@@ -140,7 +140,7 @@ int production_render_main (int argc, char *argv[]) {
                                 redshift::shared_ptr<redshift_file::Scene>(
                                                 new redshift_file::Scene(scene)
                                 );
-                picogen::qt4::RenderWindow w (pscene, renderSetting, cameraSetting, 0, 15.);
+                picogen::qt4_gui::RenderWindow w (pscene, renderSetting, cameraSetting, 0, 15.);
                 w.show();
                 const int ret = a.exec();
                 return ret;

@@ -48,7 +48,7 @@ private:
         FadeMode fadeMode;
 };
 */
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class PreviewImageObject : public QObject, public QGraphicsPixmapItem {
         Q_OBJECT
@@ -73,7 +73,7 @@ namespace Ui {
         class PreviewWidget;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 class PreviewWidget : public QWidget
 {
         Q_OBJECT

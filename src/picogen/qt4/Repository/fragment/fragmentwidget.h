@@ -28,7 +28,7 @@ namespace Ui {
         class FragmentWidget;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class FragmentWidget : public QWidget
 {

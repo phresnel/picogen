@@ -25,7 +25,7 @@
 #include "stashview.h"
 #include <QMessageBox>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 WaterWindow::WaterWindow(QWidget *parent) :
     QWidget(parent),

@@ -50,7 +50,7 @@ namespace redshift_file {
         class FilmSettings;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class RenderWindow;
 class RenderWindowImpl;

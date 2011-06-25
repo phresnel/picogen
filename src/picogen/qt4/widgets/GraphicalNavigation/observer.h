@@ -23,7 +23,7 @@
 
 #include <QVector3D>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class Observer
 {

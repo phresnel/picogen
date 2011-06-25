@@ -27,7 +27,7 @@
 
 #include "redshift/include/basictypes/quatsch-height-function.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 namespace quatschsourceeditor_detail {
         TextBlockData::TextBlockData()
@@ -260,7 +260,7 @@ QuatschSourceEditor::QuatschSourceEditor(QWidget *parent)
 
 
 
-void QuatschSourceEditor::setPicohelpBrowser(picogen::qt4::PicohelpBrowser *browser) {
+void QuatschSourceEditor::setPicohelpBrowser(picogen::qt4_gui::PicohelpBrowser *browser) {
         this->helpBrowser = browser;
 }
 
@@ -319,7 +319,7 @@ void QuatschSourceEditor::contextHelpTriggered() {
                 }
 
         } else {
-                helpBrowser->gotoQuatsch(picogen::qt4::PicohelpBrowser::QuatschReferencesOverview);
+                helpBrowser->gotoQuatsch(picogen::qt4_gui::PicohelpBrowser::QuatschReferencesOverview);
                 emit helpBrowserVisibilityRequested();
         }
 }
@@ -494,7 +494,7 @@ void QuatschSourceEditor::on_help_clicked() {
 }
 
 void QuatschSourceEditor::on_interestingPrograms_clicked() {
-        helpBrowser->gotoQuatsch(picogen::qt4::PicohelpBrowser::QuatschInterestingPrograms);
+        helpBrowser->gotoQuatsch(picogen::qt4_gui::PicohelpBrowser::QuatschInterestingPrograms);
 }
 
 } }

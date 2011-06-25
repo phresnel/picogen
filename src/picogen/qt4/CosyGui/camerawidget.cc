@@ -27,7 +27,7 @@
 #include "cosyscene/camera.hh"
 #include "cosyscene/scene.hh"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 CameraWidget::CameraWidget(QWidget *parent) :
         QWidget(parent),

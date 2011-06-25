@@ -30,7 +30,7 @@ namespace Ui {
 }
 class QUrl;
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class PicohelpBrowser : public QWidget {
         Q_OBJECT

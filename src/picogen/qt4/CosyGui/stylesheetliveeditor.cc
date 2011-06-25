@@ -21,7 +21,7 @@
 #include "stylesheetliveeditor.h"
 #include "ui_stylesheetliveeditor.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 StylesheetLiveEditor::StylesheetLiveEditor(QWidget *applyTo, QWidget *parent) :
     QDialog(parent),

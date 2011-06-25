@@ -29,7 +29,7 @@ namespace Ui {
         class CameraWidget;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class CameraWidget : public QWidget
 {

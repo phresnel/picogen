@@ -38,7 +38,7 @@
 
 #include "renderwindow.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 namespace {
         class QuatschHeightFunction : public HeightFunction {

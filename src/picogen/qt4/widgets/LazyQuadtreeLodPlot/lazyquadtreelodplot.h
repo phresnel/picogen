@@ -29,7 +29,7 @@ namespace Ui {
 class QPainter;
 class QRectF;
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class LazyQuadtreeLodPlot : public QWidget {
         Q_OBJECT

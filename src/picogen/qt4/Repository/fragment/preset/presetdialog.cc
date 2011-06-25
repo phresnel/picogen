@@ -21,7 +21,7 @@
 #include "presetdialog.h"
 #include "ui_presetdialog.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 PresetDialog::PresetDialog(QWidget *parent) :
     QDialog(parent),

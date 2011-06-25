@@ -38,7 +38,7 @@
 
 #include <QFormLayout>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 QuatschPresetEditor::QuatschPresetEditor(QWidget *parent) :
     QWidget(parent),

@@ -24,7 +24,7 @@
 #include <QMouseEvent>
 #include <QRect>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 namespace {
         QRect alignRect (QRectF rectf, int step) {

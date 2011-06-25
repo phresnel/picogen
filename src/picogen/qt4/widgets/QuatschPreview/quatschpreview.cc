@@ -26,7 +26,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 QuatschPreview::QuatschPreview(QWidget *parent) :
         QWidget(parent),

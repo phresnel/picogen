@@ -22,7 +22,7 @@
 #include "ui_filenameedit.h"
 #include <QFileDialog>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 FilenameEdit::FilenameEdit(QWidget *parent) :
     QWidget(parent),

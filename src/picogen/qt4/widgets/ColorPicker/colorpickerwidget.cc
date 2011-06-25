@@ -21,7 +21,7 @@
 #include "colorpickerwidget.h"
 #include "ui_colorpickerwidget.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 ColorPickerWidget::ColorPickerWidget(QWidget *parent) :
     QWidget(parent),

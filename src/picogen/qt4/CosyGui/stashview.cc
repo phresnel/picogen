@@ -25,7 +25,7 @@
 
 #include <QDateTime>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 StashView::StashView(QWidget *parent) :
         QDialog(parent),

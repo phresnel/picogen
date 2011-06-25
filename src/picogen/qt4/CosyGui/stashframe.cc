@@ -24,7 +24,7 @@
 #include <QMessageBox>
 #include <QPixmap>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 ConfirmRestash confirmRestash (QWidget *parent) {
         redshift::shared_ptr<QMessageBox> msgBox (new QMessageBox (parent));

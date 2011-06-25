@@ -35,7 +35,7 @@
 #include <QDebug>
 #include <QResizeEvent>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 PreviewImageObject::PreviewImageObject (QGraphicsItem* parent)
         : QGraphicsPixmapItem(parent)

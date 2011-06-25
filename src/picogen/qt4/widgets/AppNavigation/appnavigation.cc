@@ -23,7 +23,7 @@
 #include "appnavigation.h"
 #include "ui_appnavigation.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 AppNavigation::AppNavigation(QWidget *parent) :
     QFrame(parent),

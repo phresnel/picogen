@@ -35,7 +35,7 @@ namespace picogen { namespace cosyscene {
         class QuatschPreset;
 } }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 class QuatschPresetEditor : public QWidget {
         Q_OBJECT

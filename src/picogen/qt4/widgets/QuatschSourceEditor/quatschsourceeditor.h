@@ -33,7 +33,7 @@
 
 #include "../Picohelp/picohelpbrowser.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 namespace quatschsourceeditor_detail {
         // Qt Quarterly 31
@@ -102,7 +102,7 @@ public:
         void setCode (QString code);
         QString code () const;
 
-        void setPicohelpBrowser (picogen::qt4::PicohelpBrowser *browser);
+        void setPicohelpBrowser (picogen::qt4_gui::PicohelpBrowser *browser);
 
 signals:
         void codeChanged () ;
@@ -129,7 +129,7 @@ private:
         quatschsourceeditor_detail::QuatschHighlighter *highlighter;
         bool softLock;
 
-        picogen::qt4::PicohelpBrowser *helpBrowser;
+        picogen::qt4_gui::PicohelpBrowser *helpBrowser;
 };
 
 } }

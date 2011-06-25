@@ -27,7 +27,7 @@
 
 #include "importrawdatawizard.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 SpectralColorPicker::SpectralColorPicker(QWidget *parent) :
     QWidget(parent),

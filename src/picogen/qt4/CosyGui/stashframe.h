@@ -28,7 +28,7 @@ namespace Ui {
         class StashFrame;
 }
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 SEALED(StashFrame);
 class StashFrame : public QFrame, MAKE_SEALED(StashFrame)

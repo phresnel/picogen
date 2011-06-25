@@ -34,7 +34,7 @@
 #include <cmath>
 #include <limits>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 namespace {
         class SinCosThingy : public HeightFunction {

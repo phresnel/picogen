@@ -31,7 +31,7 @@
 
 #include <cmath>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 RollWidget::RollWidget(QWidget *parent)
         : QWidget(parent)
@@ -89,7 +89,7 @@ void RollWidget::drawArtificialHorizon(QPainter *painter) {
         const QPointF tpos = center + (radius+20)*up;
         painter->drawText(QRectF(tpos.x()-20, tpos.y()-20, 40, 40),
                           QString::number(-rollDegree,
-                                          'f', 1) + "°",
+                                          'f', 1) + "",
                           QTextOption(Qt::AlignCenter));
 
         // Observer.
@@ -106,7 +106,7 @@ void RollWidget::drawArtificialHorizon(QPainter *painter) {
                           center+QPointF(radius,0));
 
 
-        // draw 45° indicators
+        // draw 45 indicators
         painter->setPen(QPen(QColor(0,0,0,255), 1, Qt::SolidLine));
         for (int a=0; a<360; a+=45) {
                 const qreal rad = a * 0.0174532925;
@@ -159,7 +159,7 @@ void RollWidget::updateIndicators(QMouseEvent *event) {
         switch (updateIndicator) {
         case update_none: break;
         case update_roll:
-                // do atan2(y,x), but tilt 90° because users should edit by
+                // do atan2(y,x), but tilt 90 because users should edit by
                 // clicking the up-direction, and not the 'forward'-direction.
                 roll_ = std::atan2(-diff.x(),diff.y());
                 emit rollEdited(roll_);

@@ -21,7 +21,7 @@
 #include "selectpresetdialog.h"
 #include "ui_selectpresetdialog.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 SelectPresetDialog::SelectPresetDialog(QWidget *parent) :
         QDialog(parent),

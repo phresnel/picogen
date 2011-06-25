@@ -28,7 +28,7 @@
 
 #include <QDebug>
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 PresetListWidget::PresetListWidget(QWidget *parent) :
     QWidget(parent),

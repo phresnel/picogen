@@ -25,7 +25,7 @@
 #include "cosyscene/material.hh"
 #include "scopedblocksignals.h"
 
-namespace picogen { namespace qt4 {
+namespace picogen { namespace qt4_gui {
 
 Material::Material(QWidget *parent) :
     QWidget(parent),
