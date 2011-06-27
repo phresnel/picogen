@@ -24,7 +24,7 @@
 #include <string>
 #include "transform.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct Camera {
 
                 enum Type {
@@ -64,6 +64,6 @@ namespace redshift_file {
                 // Serialization.
                 template<typename Arch> void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // CAMERA_HH_20101013

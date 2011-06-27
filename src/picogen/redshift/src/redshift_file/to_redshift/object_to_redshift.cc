@@ -48,7 +48,9 @@
 
 #include "redshift/include/basictypes/rgb.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
+
+namespace redshift = ::redshift;
 
 redshift::shared_ptr<redshift::Primitive> toPrimitive(LazyQuadtreeParams const &ob) {
         using namespace redshift;
@@ -58,12 +60,12 @@ redshift::shared_ptr<redshift::Primitive> toPrimitive(LazyQuadtreeParams const &
 
         std::stringstream errors;
         /*
-        redshift::primitive::LazyQuadtree::LazyQuadtree(boost::shared_ptr<redshift::HeightFunction>&, 
-                                                        double, 
-                                                        const unsigned int&, 
-                                                        double, 
+        redshift::primitive::LazyQuadtree::LazyQuadtree(boost::shared_ptr<redshift::HeightFunction>&,
+                                                        double,
+                                                        const unsigned int&,
+                                                        double,
                                                         redshift::Color)
-        
+
         redshift::primitive::LazyQuadtree::LazyQuadtree(boost::shared_ptr<const redshift::HeightFunction>,
                                                         redshift::real_t,
                                                         unsigned int,
@@ -116,7 +118,7 @@ redshift::shared_ptr<redshift::Primitive> toPrimitive(HorizonPlaneParams const &
                 ob.height,
                 toRedshift (ob.material.color, ReflectanceSpectrum)
         ));
-}   
+}
 
 redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(ClosedSphereParams const &ob)  {
         using namespace redshift;
@@ -136,7 +138,7 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(TriangleParams c
         using namespace redshift;
         using namespace redshift::primitive;
         using redshift::BoundPrimitive;
-        
+
         redshift::Material *material = new material::Matte(
                 shared_ptr<ColorTexture>(
                         new texture::ConstantColor(redshift::Color::FromRGB(
@@ -146,7 +148,7 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(TriangleParams c
                         new texture::ConstantScalar(0)
                 )
         );
-        
+
         Triangle* triangle = new Triangle(
                 Triangle::Vertex (toRedshift(ob.A.position),
                                   Triangle::TextureCoordinates(0,0)),
@@ -251,7 +253,7 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(InstanceParams c
         if (ob.warnings())
                 return shared_ptr<redshift::BoundPrimitive>();
 
-        shared_ptr<redshift::BoundPrimitive> bp = 
+        shared_ptr<redshift::BoundPrimitive> bp =
                 toRedshift (ob.objects[0]);
 
         if (!bp) {
@@ -365,4 +367,4 @@ detail::RedshiftPrimitiveOrBoundPrimitive::operator redshift::shared_ptr<redshif
 }
 
 
-}
+} }

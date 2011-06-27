@@ -22,20 +22,20 @@
 #define CREATEREDSHIFTSCENECLOSURE_HH
 
 #include "redshift/include/smart_ptr.hh"
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         class Scene;
-}
+} }
 
 
-
+//TODO: this shouldn't be in the global namespace
 class CreateRedshiftSceneClosure {
 public:
         typedef redshift::shared_ptr<CreateRedshiftSceneClosure> Ptr;
 
 public:
-        virtual redshift::shared_ptr<redshift_file::Scene>
+        virtual redshift::shared_ptr< ::picogen::redshift_file::Scene>
                         createPreviewScene   () const = 0;
-        virtual redshift::shared_ptr<redshift_file::Scene>
+        virtual redshift::shared_ptr< ::picogen::redshift_file::Scene>
                         createProductionScene() const = 0;
 };
 

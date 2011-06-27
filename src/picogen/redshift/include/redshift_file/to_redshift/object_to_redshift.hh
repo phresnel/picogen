@@ -21,6 +21,8 @@
 #ifndef OBJECT_TO_REDSHIFT_HH_20101014
 #define OBJECT_TO_REDSHIFT_HH_20101014
 
+#include "redshift/include/smart_ptr.hh"
+
 // redshift fwd+Co.
 namespace redshift {
         class Primitive;
@@ -28,28 +30,28 @@ namespace redshift {
 }
 
 // redshift_file fwd+Co.
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         class Object;
-}
+} }
 
 #include "redshift/include/smart_ptr.hh"
 // Historically, redshift_file::Object had two functions "toPrimitive" and
 // "toBoundPrimitive", but for ease of use I wanted to name all conversion
 // functions "toRedshift()". The following closure enables this.
-namespace redshift_file { namespace detail {
+namespace picogen { namespace redshift_file { namespace detail {
 struct RedshiftPrimitiveOrBoundPrimitive {
-        operator redshift::shared_ptr<redshift::Primitive> () const;
-        operator redshift::shared_ptr<redshift::BoundPrimitive> () const;
+        operator ::redshift::shared_ptr< ::redshift::Primitive> () const;
+        operator ::redshift::shared_ptr< ::redshift::BoundPrimitive> () const;
         Object const & object;
         
         RedshiftPrimitiveOrBoundPrimitive (Object const &object)
         : object(object)
         {}
 };
-} }
+} } }
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         detail::RedshiftPrimitiveOrBoundPrimitive toRedshift (Object const &ob);
-}
+} }
 
 #endif // OBJECT_TO_REDSHIFT_HH_20101014

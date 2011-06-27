@@ -23,7 +23,7 @@
 
 #include "point.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct Vertex {
                 Point position;
 
@@ -31,6 +31,6 @@ namespace redshift_file {
                 template<typename Arch>
                 void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // VERTEX_HH_20101013

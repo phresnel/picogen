@@ -170,18 +170,17 @@ namespace redshift_file {
 
 #include "redshift_file/scene.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
   void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_);
   void save_scene (const redshift_file::Scene &scene, std::string const &name);
   void load_scene (redshift_file::Scene &scene, std::istream &fs);
   void load_scene (Scene &scene, std::string const &name);
-}
 
-redshift::shared_ptr<redshift::Scene>
- sceneDescriptionToScene (
+  redshift::shared_ptr<redshift::Scene>
+   sceneDescriptionToScene (
         redshift_file::Scene const &scene,
         redshift::shared_ptr<redshift::Film> renderBuffer,
         int renderSettingsIndex, int cameraIndex
-);
-
+  );
+} }
 #endif // JOBFILE_HH_INCLUDED_20100318

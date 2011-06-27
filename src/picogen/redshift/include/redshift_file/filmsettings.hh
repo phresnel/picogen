@@ -21,7 +21,7 @@
 #ifndef FILMSETTINGS_HH_20101013
 #define FILMSETTINGS_HH_20101013
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct FilmSettings {
                 double colorscale;
                 bool convertToSrgb;
@@ -45,6 +45,6 @@ namespace redshift_file {
                 template<typename Arch>
                 void serialize (Arch &arch);
         };
-}
+} } 
 
 #endif // FILMSETTINGS_HH_20101013

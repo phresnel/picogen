@@ -23,7 +23,7 @@
 
 #include "../surfaceintegrator.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void SurfaceIntegrator::serialize (Arch &arch) {
                 using actuarius::pack;
@@ -41,6 +41,6 @@ namespace redshift_file {
                 case debug_normals: break;
                 }
         }
-}
+} }
 
 #endif // SURFACEINTEGRATOR_SER_HH_20101013

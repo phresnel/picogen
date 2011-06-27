@@ -25,7 +25,7 @@
 #include "surfaceintegrator.ser.hh"
 #include "volumeintegrator.ser.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void RenderSettings::serialize (Arch &arch) {
                 using actuarius::pack;
@@ -47,6 +47,6 @@ namespace redshift_file {
                         ;
                 }
         }
-}
+} }
 
 #endif // RENDERSETTINGS_SER_HH_20101013

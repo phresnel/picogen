@@ -23,7 +23,7 @@
 
 #include "../transform.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void Transform::serialize (Arch &arch) {
                 using actuarius::pack;
@@ -71,6 +71,6 @@ namespace redshift_file {
                 using actuarius::pack;
                 arch & pack (&Transform::type, Transform::Typenames, transforms);
         }
-}
+} }
 
 #endif // TRANSFORM_SER_HH_20101013

@@ -24,7 +24,7 @@
 #include "filmsettings.hh"
 #include "shared_ptr.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         class Object;
         class Volume;
         class RenderSettings;
@@ -80,6 +80,6 @@ namespace redshift_file {
         private:
                 boost::shared_ptr<SceneImpl> impl;                
         };
-}
+} }
 
 #endif // SCENE_HH_20101013

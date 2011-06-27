@@ -24,12 +24,12 @@
 #include "../material.hh"
 #include "color.ser.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void Material::serialize (Arch &arch) {
                 using actuarius::pack;
                 arch & pack("color", color);
         }
-}
+} }
 
 #endif // MATERIAL_SER_HH_20101013

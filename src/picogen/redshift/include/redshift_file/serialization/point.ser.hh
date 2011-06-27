@@ -23,12 +23,12 @@
 
 #include "../point.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void Point::serialize (Arch &arch) {
                 using actuarius::pack;
                 arch & pack(x) & pack(y) & pack(z);
         }
-}
+} }
 
 #endif // POINT_SER_HH_20101013

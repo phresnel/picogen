@@ -1,5 +1,5 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Copyright (C) 2010  Sebastian Mach (*1983)
+// Copyright (C) 2011  Sebastian Mach (*1983)
 // * mail: phresnel/at/gmail/dot/com
 // * http://phresnel.org
 // * http://picogen.org
@@ -18,30 +18,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#ifndef SCENE_IMPL_HH_20101013
-#define SCENE_IMPL_HH_20101013
+#ifndef SAVE_LOAD_HH_INCLUDED_20110627
+#define SAVE_LOAD_HH_INCLUDED_20110627
 
-#include <vector>
-#include "object.hh"
-#include "volume.hh"
-#include "rendersettings.hh"
-#include "camera.hh"
-#include "background.hh"
-#include "filmsettings.hh"
+#include <iosfwd>
 
 namespace picogen { namespace redshift_file {
-        class Scene;
-        struct SceneImpl {
-        private:
-                friend class Scene;
-                SceneImpl() {}
-                std::vector<Object> objects_;
-                std::vector<Volume> volumes_;
-                std::vector<RenderSettings> renderSettings_;
-                std::vector<Camera> cameras_;
-                std::vector<Background> backgrounds_;
-                FilmSettings filmSettings_;
-        };
+	class Scene;
+	
+	void save_scene (const Scene &scene_, std::ostream &fs_);
+	void save_scene (const Scene &scene, std::string const &name);
+	void load_scene (Scene &scene, std::istream &fs);
+	void load_scene (Scene &scene, std::string const &name);
 } }
 
-#endif // SCENE_IMPL_HH_20101013
+#endif // SAVE_LOAD_HH_INCLUDED_20110627

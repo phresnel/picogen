@@ -28,9 +28,9 @@
 
 
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
          class Scene;
-}
+} }
 
 
 

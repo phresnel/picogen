@@ -23,7 +23,7 @@
 
 #include "../color.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void WavelengthAmplitudePair::serialize (Arch &arch) {
                 using actuarius::pack;
@@ -56,6 +56,6 @@ namespace redshift_file {
                         break;
                 }
         }
-}
+} }
 
 #endif // COLOR_SER_HH_20101013

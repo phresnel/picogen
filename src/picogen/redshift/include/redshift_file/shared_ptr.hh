@@ -22,8 +22,8 @@
 #define SHARED_PTR_HH_20101013
 
 #include <boost/shared_ptr.hpp>
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         using boost::shared_ptr;
-}
+} }
 
 #endif // SHARED_PTR_HH_20101013

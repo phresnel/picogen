@@ -24,12 +24,11 @@
 #include "../vertex.hh"
 #include "point.ser.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void Vertex::serialize (Arch &arch) {
                 using actuarius::pack;
                 arch & pack("position", position);
         }
-}
-
+} }
 #endif // VERTEX_SER_HH_20101013

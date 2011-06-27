@@ -39,23 +39,19 @@
 #include <QTemporaryFile>
 #include <QTime>
 
-namespace redshift_file {
-void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_);
-void save_scene (const redshift_file::Scene &scene, std::string const &name);
-void load_scene (redshift_file::Scene &scene, std::istream &fs);
-void load_scene (Scene &scene, std::string const &name);
-}
+#include "redshift_file/save_load.hh"
 
 
 namespace picogen { namespace qt4_gui { namespace detail {
+
         class RedshiftSceneCreator : public CreateRedshiftSceneClosure {
         public:
-                redshift::shared_ptr<redshift_file::Scene>
+                redshift::shared_ptr< ::picogen::redshift_file::Scene>
                  createPreviewScene() const
                 {
                         return scene->toRedshiftScene(true);
                 }
-                redshift::shared_ptr<redshift_file::Scene>
+                redshift::shared_ptr< ::picogen::redshift_file::Scene>
                   createProductionScene() const
                 {
                         return scene->toRedshiftScene(false);
@@ -392,12 +388,12 @@ void MainWindow::on_actionLoad_triggered() {
 
 void MainWindow::on_renderCommandLink_clicked() {
         // Et hop.
-        redshift::shared_ptr<redshift_file::Scene>
+        redshift::shared_ptr<picogen::redshift_file::Scene>
                         scene = this->scene->toRedshiftScene();
         ui->renderWidget->setSceneAndRender(scene, true);
 
         std::ostringstream ss;
-        redshift_file::save_scene(*scene, ss);
+        picogen::redshift_file::save_scene(*scene, ss);
         lastRedshiftJob = ss.str();
 }
 
@@ -419,13 +415,13 @@ void MainWindow::startProductionRenderProcess() {
         // anways ...
         tmp.close();
 
-        redshift::shared_ptr<redshift_file::Scene> scene =
+        redshift::shared_ptr<picogen::redshift_file::Scene> scene =
                                 redshiftSceneCreator->createProductionScene();
-        redshift_file::save_scene(*scene, tmp.fileName().toStdString());
+        picogen::redshift_file::save_scene(*scene, tmp.fileName().toStdString());
         RenderWindow::CosyGuiRenderProcess(tmp.fileName(), 0, 0);
 
         std::ostringstream ss;
-        redshift_file::save_scene(*scene, ss);
+        picogen::redshift_file::save_scene(*scene, ss);
         lastRedshiftJob = ss.str();
 
         // Would yield deadlock as no other process might remove the file
@@ -469,14 +465,14 @@ void MainWindow::startPreviewRenderProcess() {
         // anways ...
         tmp.close();
 
-        redshift::shared_ptr<redshift_file::Scene> scene =
+        redshift::shared_ptr<picogen::redshift_file::Scene> scene =
                                 redshiftSceneCreator->createPreviewScene();
 
         tmp.open();
-        redshift_file::save_scene(*scene, tmp.fileName().toStdString());
+        picogen::redshift_file::save_scene(*scene, tmp.fileName().toStdString());
 
         std::ostringstream ss;
-        redshift_file::save_scene(*scene, ss);
+        picogen::redshift_file::save_scene(*scene, ss);
         lastRedshiftJob = ss.str();
 
         RenderWindow::CosyGuiRenderProcess(QFileInfo(tmp.fileName()).canonicalFilePath(),
@@ -485,7 +481,7 @@ void MainWindow::startPreviewRenderProcess() {
 
 
 void MainWindow::on_actionShow_redshift_file_triggered() {
-        using redshift_file::save_scene;
+        using picogen::redshift_file::save_scene;
 
         QMessageBox bb;
         const QPushButton

@@ -21,7 +21,7 @@
 #ifndef POINT_HH_20101013
 #define POINT_HH_20101013
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct Point {
                 double x,y,z;
 
@@ -30,6 +30,6 @@ namespace redshift_file {
 
                 template<typename Arch> void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // POINT_HH_20101013

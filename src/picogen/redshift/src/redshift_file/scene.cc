@@ -21,7 +21,7 @@
 #include "redshift_file/scene.hh"
 #include "redshift_file/scene.impl.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
 
 Scene::Scene() : impl(new SceneImpl)
 {
@@ -105,4 +105,4 @@ void Scene::setFilmSettings (FilmSettings const &fs) {
         impl->filmSettings_ = fs;
 }
 
-}
+} }

@@ -147,6 +147,7 @@ namespace redshift{class RenderTarget;}
 
 #include "redshift/include/redshift_file/to_redshift/to_redshift.hh"
 
+namespace picogen { namespace redshift_file {
 
 redshift::shared_ptr<redshift::Scene>
  sceneDescriptionToScene (
@@ -158,11 +159,9 @@ redshift::shared_ptr<redshift::Scene>
                                           renderSettingsIndex, cameraIndex);
 }
 
-namespace redshift_file {
-
 redshift::shared_ptr<redshift::Scene>
  toRedshift (
-        redshift_file::Scene const &scene,
+        Scene const &scene,
         redshift::shared_ptr<redshift::Film> film,
         int renderSettingsIndex, int cameraIndex
 ) {
@@ -253,7 +252,7 @@ redshift::shared_ptr<redshift::Scene>
 redshift::shared_ptr<redshift::Sky> toRedshift (Background const &bg) {
         using namespace redshift;
         switch (bg.type) {
-        case redshift_file::Background::pss_sunsky: {
+        case Background::pss_sunsky: {
         #if 1
                 shared_ptr<redshift::background::PssSunSky> preetham (
                  new background::PssSunSky(
@@ -480,4 +479,4 @@ redshift::shared_ptr<redshift::VolumeIntegrator> toRedshift(VolumeIntegrator con
         return shared_ptr<redshift::VolumeIntegrator>();
 }
 
-}
+} }

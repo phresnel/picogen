@@ -23,12 +23,12 @@
 
 #include "../normal.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void Normal::serialize (Arch &arch) {
                 using actuarius::pack;
                 arch & pack(x) & pack(y) & pack(z);
         }
-}
+} }
 
 #endif // NORMAL_SER_HH_20101013

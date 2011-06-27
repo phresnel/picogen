@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct Normal {
                 double x,y,z;
 
@@ -37,6 +37,6 @@ namespace redshift_file {
 
                 template<typename Arch> void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // NORMAL_HH_20101013

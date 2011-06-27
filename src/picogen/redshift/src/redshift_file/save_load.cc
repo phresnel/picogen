@@ -25,7 +25,7 @@
 #include "actuarius/actuarius.hh"
 #include "redshift_file/serialization/scene.ser.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
 
 void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_) {
         actuarius::OArchive(fs_) & actuarius::pack("redshift", scene_);
@@ -54,4 +54,4 @@ void load_scene (Scene &scene, std::string const &name) {
         load_scene (scene, fs);
 }
 
-}
+} }

@@ -26,7 +26,7 @@
 
 #include "normal.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct Volume {
                 enum Type {
                         homogeneous,
@@ -59,6 +59,6 @@ namespace redshift_file {
                 template<typename Arch>
                 void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // VOLUME_HH_20101013

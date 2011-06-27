@@ -39,12 +39,12 @@
 #undef main
 
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
 void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_);
 void save_scene (const redshift_file::Scene &scene, std::string const &name);
 void load_scene (redshift_file::Scene &scene, std::istream &fs);
 void load_scene (Scene &scene, std::string const &name);
-}
+} }
 
 
 
@@ -116,8 +116,8 @@ int production_render_main (int argc, char *argv[]) {
 
 
         try {
-                redshift_file::Scene scene;
-                redshift_file::load_scene(scene, pathToSource.toStdString());
+                picogen::redshift_file::Scene scene;
+                picogen::redshift_file::load_scene(scene, pathToSource.toStdString());
 
                 const std::clock_t b = std::clock();
                 while (!QFile::remove(pathToSource)) {
@@ -136,9 +136,9 @@ int production_render_main (int argc, char *argv[]) {
                         return 0;
                 }
 
-                redshift::shared_ptr<redshift_file::Scene> pscene =
-                                redshift::shared_ptr<redshift_file::Scene>(
-                                                new redshift_file::Scene(scene)
+                redshift::shared_ptr<picogen::redshift_file::Scene> pscene =
+                                redshift::shared_ptr<picogen::redshift_file::Scene>(
+                                                new picogen::redshift_file::Scene(scene)
                                 );
                 picogen::qt4_gui::RenderWindow w (pscene, renderSetting, cameraSetting, 0, 15.);
                 w.show();

@@ -25,7 +25,7 @@
 #include "surfaceintegrator.hh"
 #include "volumeintegrator.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct RenderSettings {
                 unsigned int width, height, samplesPerPixel;
                 unsigned int min_y, max_y;
@@ -43,6 +43,6 @@ namespace redshift_file {
                 template<typename Arch>
                 void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // RENDERSETTINGS_HH_20101013

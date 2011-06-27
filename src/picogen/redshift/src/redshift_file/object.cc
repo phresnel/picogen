@@ -20,5 +20,3 @@
 
 #include "redshift_file/object.hh"
 
-namespace redshift_file {
-}

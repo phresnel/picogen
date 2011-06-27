@@ -36,10 +36,10 @@ namespace redshift {
         class Film;
 }
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         class Scene;
         class FilmSettings;
-}
+} }
 
 
 namespace picogen { namespace qt4_gui {

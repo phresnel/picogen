@@ -27,7 +27,7 @@
 #include "normal.hh"
 #include "color.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct Background {
                 enum Type {
                         pss_sunsky
@@ -62,6 +62,6 @@ namespace redshift_file {
 
                 template<typename Arch>  void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // BACKGROUND_HH_20101013

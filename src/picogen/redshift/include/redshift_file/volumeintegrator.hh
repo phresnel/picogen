@@ -24,7 +24,7 @@
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct VolumeIntegrator {
                 enum Type {
                         none,
@@ -41,6 +41,6 @@ namespace redshift_file {
 
                 template<typename Arch> void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // VOLUMEINTEGRATOR_HH_20101013

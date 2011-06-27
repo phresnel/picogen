@@ -28,7 +28,7 @@
 #include "shared_ptr.hh"
 #include "actuarius/bits/enum.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
 
         class Object;
 
@@ -157,6 +157,6 @@ namespace redshift_file {
                 InstanceParams instanceParams;
                 ForestParams forestParams;
         };
-}
+} }
 
 #endif // OBJECT_HH_20101013

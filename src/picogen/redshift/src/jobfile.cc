@@ -20,7 +20,7 @@
 
 #include "../include/jobfile.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
 
         const actuarius::Enum<Color::Type> Color::Typenames =
                 ( actuarius::Nvp<Color::Type>(Color::RGB, "rgb")
@@ -89,4 +89,4 @@ namespace redshift_file {
                 | actuarius::Nvp<Camera::Type>(Camera::cubemap_back, "cubemap-back")
                 );
 
-}
+} }

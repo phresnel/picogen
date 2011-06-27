@@ -39,7 +39,7 @@ namespace redshift {
 
 
 // redshift_file fwd+Co.
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         class Scene;
 
         class Background;
@@ -56,13 +56,13 @@ namespace redshift_file {
         
         class Transform;
         class TransformList;
-}
+} }
 #include "color_to_redshift.hh"
 #include "object_to_redshift.hh"
 
 #include "redshift/include/smart_ptr.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         redshift::shared_ptr<redshift::Sky>    toRedshift (Background const &);
         redshift::shared_ptr<redshift::Camera> toRedshift (Camera const &,
                                                            unsigned int width, 
@@ -83,11 +83,11 @@ namespace redshift_file {
                 redshift::shared_ptr<redshift::Film> film,
                 int renderSettingsIndex, int cameraIndex
         );
-}
-redshift::shared_ptr<redshift::Scene> sceneDescriptionToScene (
-        redshift_file::Scene const &scene,
-        redshift::shared_ptr<redshift::Film> film,
-        int renderSettingsIndex, int cameraIndex
-);
 
+	redshift::shared_ptr<redshift::Scene> sceneDescriptionToScene (
+		redshift_file::Scene const &scene,
+		redshift::shared_ptr<redshift::Film> film,
+		int renderSettingsIndex, int cameraIndex
+	);
+} }
 #endif // TO_REDSHIFT_HH_20101014

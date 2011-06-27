@@ -27,7 +27,7 @@
 #include "vertex.ser.hh"
 #include "../object.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void Object::serialize (Arch &arch) {
                 using actuarius::pack;
@@ -108,6 +108,6 @@ namespace redshift_file {
                         break;
                 };
         }
-}
+} }
 
 #endif // OBJECT_SER_HH_20101013

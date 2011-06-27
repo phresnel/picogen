@@ -31,7 +31,7 @@
 #include "background.ser.hh"
 #include "filmsettings.ser.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         template<typename Arch>
         void Scene::serialize (Arch &arch) {
                 using actuarius::pack;
@@ -43,6 +43,6 @@ namespace redshift_file {
                 arch & pack ("backgrounds", &Background::type, Background::Typenames, impl->backgrounds_);
                 arch & pack ("film-settings", impl->filmSettings_);
         }
-}
+} }
 
 #endif // SCENE_SER_HH_20101013

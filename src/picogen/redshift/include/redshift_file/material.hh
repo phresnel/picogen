@@ -23,7 +23,7 @@
 
 #include "color.hh"
 
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         struct Material {
                 Color color;
 
@@ -37,6 +37,6 @@ namespace redshift_file {
                 template<typename Arch>
                 void serialize (Arch &arch);
         };
-}
+} }
 
 #endif // MATERIAL_HH_20101013
