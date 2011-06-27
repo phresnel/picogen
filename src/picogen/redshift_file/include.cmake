@@ -4,5 +4,6 @@ set (sources ${sources}
         ${pwd}/src/scene.cc
         ${pwd}/src/to_redshift/object_to_redshift.cc
         ${pwd}/src/to_redshift/redshift_file_to_redshift.cc
+        ${pwd}/src/jobfile.cc
 )
 include_directories ("${pwd}/include/")

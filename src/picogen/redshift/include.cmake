@@ -1,6 +1,6 @@
 set (sources ${sources}
         ${pwd}/src/constants.cc
-        ${pwd}/src/jobfile.cc
+
         ${pwd}/src/quatsch-integration.cc
         ${pwd}/src/get_compilation_info.cc
         ${pwd}/src/save_openexr.cc
