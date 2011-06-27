@@ -119,6 +119,7 @@ priinclude("../../Repository/fragment/preset")
 
 priinclude("../../../cosyscene")
 priinclude("../../../redshift/")
+priinclude("../../../redshift_file")
 priinclude("${aux_dir}/xyto/")
 priinclude("${aux_dir}/quatsch-preprocessor/")
 

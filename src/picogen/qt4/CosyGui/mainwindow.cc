@@ -25,7 +25,8 @@
 #include "cosyscene/sunsky.hh"
 #include "cosyscene/save_load.hh"
 
-#include "redshift/include/redshift_file/scene.hh"
+#include "redshift_file/scene.hh"
+#include "redshift_file/save_load.hh"
 
 #include "renderwindow.h"
 #include "stylesheetliveeditor.h"
@@ -38,9 +39,6 @@
 #include <QDebug>
 #include <QTemporaryFile>
 #include <QTime>
-
-#include "redshift_file/save_load.hh"
-
 
 namespace picogen { namespace qt4_gui { namespace detail {
 

@@ -33,19 +33,13 @@
 #include "cosyscene/save_load.hh"
 
 #include "redshift/include/static_init.hh"
-#include "redshift/include/redshift_file/scene.hh"
+#include "redshift_file/scene.hh"
 #include "renderwindow.h"
 
 #undef main
 
 
-namespace picogen { namespace redshift_file {
-void save_scene (const redshift_file::Scene &scene_, std::ostream &fs_);
-void save_scene (const redshift_file::Scene &scene, std::string const &name);
-void load_scene (redshift_file::Scene &scene, std::istream &fs);
-void load_scene (Scene &scene, std::string const &name);
-} }
-
+#include "redshift_file/save_load.hh"
 
 
 int cosy_main (int argc, char *argv[]) {

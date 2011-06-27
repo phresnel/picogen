@@ -145,7 +145,7 @@ namespace redshift{class RenderTarget;}
 
 #include "redshift/include/auxiliary/filename_extension.hh"
 
-#include "redshift/include/redshift_file/to_redshift/to_redshift.hh"
+#include "redshift_file/to_redshift/to_redshift.hh"
 
 namespace picogen { namespace redshift_file {
 

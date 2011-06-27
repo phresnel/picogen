@@ -52,12 +52,6 @@ set (sources ${sources}
         ${pwd}/src/primitives/trianglebvh.cc
         ${pwd}/src/primitives/waterplane.cc
 
-        ${pwd}/src/redshift_file/object.cc
-        ${pwd}/src/redshift_file/save_load.cc
-        ${pwd}/src/redshift_file/scene.cc
-        ${pwd}/src/redshift_file/to_redshift/object_to_redshift.cc
-        ${pwd}/src/redshift_file/to_redshift/redshift_file_to_redshift.cc
-
         ${pwd}/src/rendertargets/colorrendertarget.cc
         ${pwd}/src/rendertargets/sdlrendertarget.cc
 
