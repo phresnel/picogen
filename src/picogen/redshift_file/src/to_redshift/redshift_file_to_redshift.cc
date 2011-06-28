@@ -130,7 +130,7 @@ namespace picogen { namespace redshift{class  RenderTarget; } }
 #include "redshift/include/basictypes/height-function.hh"
 #include "redshift/include/basictypes/quatsch-height-function.hh"
 #include "actuarius/actuarius.hh"
-#include "redshift/include/jobfile.hh"
+ #include "redshift_file/jobfile.hh"
 
 #include <string>
 #include <iostream>

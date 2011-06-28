@@ -28,7 +28,7 @@
 #include "filmsettings.hh"
 #include "material.hh"
 
-#include "redshift/include/jobfile.hh"
+#include "redshift_file/jobfile.hh"
 #include "quatsch-preprocessor/parsing.hh"
 
 namespace picogen { namespace cosyscene {

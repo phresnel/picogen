@@ -23,7 +23,7 @@
 
 #include <QImage>
 
-#include "redshift/include/jobfile.hh"
+#include "redshift_file/jobfile.hh"
 #include "redshift/include/auxiliary/scopedlock.hh"
 #include "redshift/include/basictypes/film.hh"
 //#include "../../redshift/include/image-export.hh"

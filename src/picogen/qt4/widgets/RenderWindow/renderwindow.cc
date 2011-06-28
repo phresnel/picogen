@@ -32,7 +32,7 @@
 
 #include "renderwindow.h"
 #include "ui_renderwindow.h"
-#include "redshift/include/jobfile.hh"
+#include "redshift_file/jobfile.hh"
 #include "redshift/include/image-export.hh"
 #include "redshift/include/interaction/progressreporter.hh"
 #include "redshift/include/rendertargets/colorrendertarget.hh"
