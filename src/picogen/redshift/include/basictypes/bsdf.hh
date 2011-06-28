@@ -29,7 +29,7 @@
 #include "spectrum.hh"
 #include "differentialgeometry.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 class Bxdf;
 class Random;
 
@@ -284,6 +284,6 @@ public:
 protected:
         const BsdfType bsdfType;
 };
-}
+} }
 
 #endif // BSDF_HH_INCLUDED_20100118

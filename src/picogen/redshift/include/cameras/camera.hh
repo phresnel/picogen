@@ -25,12 +25,12 @@
 #include "../sealed.hh"
 #include "../tuple.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class RenderTarget;
         class Sample;
-}
+} }
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Camera {
         public:
                 virtual bool hasCommonCenter () const = 0;
@@ -49,6 +49,6 @@ namespace redshift {
         protected:
                 Transform transform;
         };
-}
+} }
 
 #endif // CAMERA_HH_INCLUDED_20090310

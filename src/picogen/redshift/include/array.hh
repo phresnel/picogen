@@ -22,8 +22,8 @@
 #define ARRAY_HH_INCLUDED_20100702
 
 #include "kallisto/types/array.hh"
-namespace redshift {
+namespace picogen { namespace redshift {
         using kallisto::array;
-}
+} }
 
 #endif // ARRAY_HH_INCLUDED_20100702

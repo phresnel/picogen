@@ -50,8 +50,6 @@
 
 namespace picogen { namespace redshift_file {
 
-namespace redshift = ::redshift;
-
 redshift::shared_ptr<redshift::Primitive> toPrimitive(LazyQuadtreeParams const &ob) {
         using namespace redshift;
         using namespace redshift::primitive;
@@ -76,7 +74,7 @@ redshift::shared_ptr<redshift::Primitive> toPrimitive(LazyQuadtreeParams const &
         try {
                 heightFunction =
                  shared_ptr<redshift::HeightFunction> (
-                        new ::redshift::QuatschHeightFunction(ob.code, errors)
+                        new redshift::QuatschHeightFunction(ob.code, errors)
                 );
         } catch (quatsch::general_exception const &ex) {
                 // we are anyways replacing quatsch, so let's
@@ -101,7 +99,7 @@ redshift::shared_ptr<redshift::Primitive> toPrimitive(WaterPlaneParams const &ob
 
         shared_ptr<redshift::HeightFunction> heightFunction =
                 shared_ptr<redshift::HeightFunction> (
-                        new ::redshift::QuatschHeightFunction(ob.code)
+                        new redshift::QuatschHeightFunction(ob.code)
                 );
         return shared_ptr<redshift::Primitive>(new WaterPlane(
                 ob.height,
@@ -293,7 +291,7 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(ForestParams con
         try {
                 heightFunction =
                  shared_ptr<redshift::HeightFunction> (
-                        new ::redshift::QuatschHeightFunction(ob.heightCode, errors)
+                        new redshift::QuatschHeightFunction(ob.heightCode, errors)
                 );
         } catch (quatsch::general_exception const &ex) {
                 // we are anyways replacing quatsch, so let's
@@ -306,7 +304,7 @@ redshift::shared_ptr<redshift::BoundPrimitive> toBoundPrimitive(ForestParams con
         try {
                 distFunction =
                  shared_ptr<redshift::DistributionFunction> (
-                        new ::redshift::QuatschDistributionFunction(ob.distributionCode, errors)
+                        new redshift::QuatschDistributionFunction(ob.distributionCode, errors)
                 );
         } catch (quatsch::general_exception const &ex) {
                 // we are anyways replacing quatsch, so let's

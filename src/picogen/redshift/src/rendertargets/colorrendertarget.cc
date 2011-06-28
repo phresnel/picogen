@@ -23,19 +23,19 @@
 #include <stdexcept>
 #include <sstream>
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
-        
+
         redshift::ColorRenderTarget const & display;
-        
+
         ColorRenderTargetLock (redshift::ColorRenderTarget const & display_)
         : display (display_)
         {
         }
 
-        ~ColorRenderTargetLock () {                                       
+        ~ColorRenderTargetLock () {
         }
 
         void setPixel (int x, int y, redshift::Color const &color) {
@@ -47,7 +47,7 @@ struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
                                 ss << "Invalid coordinates passed to "
                                    << "ColorRenderTargetLock: "
                                    << '(' << x << ',' << y << ')'
-                                   << ", but resolution is " 
+                                   << ", but resolution is "
                                    << display.getWidth() << "x"
                                    << display.getHeight();
                                 throw std::out_of_range (ss.str());
@@ -65,7 +65,7 @@ struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
                                 ss << "Invalid coordinates passed to "
                                    << "ColorRenderTargetLock: "
                                    << '(' << x << ',' << y << ')'
-                                   << ", but resolution is " 
+                                   << ", but resolution is "
                                    << display.getWidth() << "x"
                                    << display.getHeight();
                                 throw std::out_of_range (ss.str());
@@ -79,7 +79,7 @@ struct ColorRenderTarget::ColorRenderTargetLock : redshift::RenderTargetLock {
 
 ColorRenderTarget::ColorRenderTarget (int width_, int height_)
 : width(width_), height(height_), display(new Color [width*height])
-{        
+{
 }
 
 
@@ -117,4 +117,4 @@ int ColorRenderTarget::getHeight() const {
         return height;
 }
 
-} // namespace redshift
+} }

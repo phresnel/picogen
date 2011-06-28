@@ -22,14 +22,14 @@
 #include "../../include/interaction/passivecommandprocessor.hh"
 
 
-namespace redshift { namespace interaction {
-        
-        
+namespace picogen { namespace redshift { namespace interaction {
+
+
 
 PassiveCommandProcessor::PassiveCommandProcessor()
 : doQuit (false)
 {
-} 
+}
 
 
 
@@ -49,12 +49,12 @@ void PassiveCommandProcessor::setQuitState (bool doQuit) {
 }
 
 
-                
+
 PassiveCommandProcessor::~PassiveCommandProcessor () {
 }
 
-                
 
-} }
+
+} } }
 
 

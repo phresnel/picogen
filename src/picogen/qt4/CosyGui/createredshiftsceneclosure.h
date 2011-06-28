@@ -27,7 +27,7 @@ namespace picogen { namespace redshift_file {
 } }
 
 
-//TODO: this shouldn't be in the global namespace
+namespace picogen { namespace qt4_gui {
 class CreateRedshiftSceneClosure {
 public:
         typedef redshift::shared_ptr<CreateRedshiftSceneClosure> Ptr;
@@ -38,5 +38,7 @@ public:
         virtual redshift::shared_ptr< ::picogen::redshift_file::Scene>
                         createProductionScene() const = 0;
 };
+
+} }
 
 #endif // CREATEREDSHIFTSCENECLOSURE_HH

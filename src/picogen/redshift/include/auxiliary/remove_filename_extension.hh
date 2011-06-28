@@ -26,6 +26,7 @@
 
 #include "filename_extension.hh"
 
+namespace picogen { namespace redshift {
 inline std::string remove_filename_extension (const std::string &str) {
         using std::string;
         const string ext = filename_extension(str);
@@ -33,5 +34,6 @@ inline std::string remove_filename_extension (const std::string &str) {
                 return str;
         return str.substr(0, (str.length()-ext.length())-1); // "ext" + "."
 }
+} }
 
 #endif // FILENAME_EXTENSION_HH_INCLUDED_20100701

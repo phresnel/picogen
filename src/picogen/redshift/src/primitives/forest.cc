@@ -32,7 +32,7 @@
 #include "../../include/basictypes/distribution-function.hh"
 
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 //-----------------------------------------------------------------------------
@@ -145,4 +145,4 @@ shared_ptr<Bsdf> Forest::getBsdf(const DifferentialGeometry & dgGeom) const {
         return aggregate->getBsdf(dgGeom);
 }
 
-} }
+} } }

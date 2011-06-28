@@ -23,9 +23,9 @@
 
 #include <utility>
 
-namespace redshift {
+namespace picogen { namespace redshift {
         using std::pair;
         using std::make_pair;
-}
+} }
 
 #endif // PAIR_HH_INCLUDED_20100703

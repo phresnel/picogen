@@ -28,7 +28,7 @@
 #include "kallisto/common.hh"
 #include "real.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         enum {
                 ALLOW_LOGSPAM = 1
@@ -73,7 +73,7 @@ namespace redshift {
         using kallisto::does_intersect;
         using kallisto::vector_cast;
         using kallisto::scalar_cast;
-}
+} }
 
 
 #endif // GEOMETRY_20100325

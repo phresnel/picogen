@@ -24,7 +24,7 @@
 #include "../cameras/camera.hh"
 #include "../smart_ptr.hh"
 
-namespace redshift { namespace camera {
+namespace picogen { namespace redshift { namespace camera {
 
         SEALED(Cylindrical);
 
@@ -48,6 +48,6 @@ namespace redshift { namespace camera {
                 real_t frontDist;
                 real_t angleRange;
         };
-} }
+} } }
 
 #endif // CYLINDRICAL_HH_INCLUDED_20100830

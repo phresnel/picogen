@@ -34,7 +34,7 @@
 #include "../interaction/progressreporter.hh"
 #include "../interaction/usercommandprocessor.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Random;
         class LiRecursion;
         class Film;
@@ -150,6 +150,6 @@ namespace redshift {
 
                 mutable unsigned int currentScanline_;
         };
-}
+} }
 
 #endif // SCENE_HH_INCLUDED_20090303

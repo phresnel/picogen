@@ -24,8 +24,8 @@
 // This might seem exaggerated, but there is actually quite a number of files
 // that do not need anything but this real definition (e.g. rgb.hh), so this is
 // a compilation time optimization.
-namespace redshift {
+namespace picogen { namespace redshift {
         typedef double real_t;
-}
+} }
 
 #endif // REAL_HH_INCLUDED_20100702

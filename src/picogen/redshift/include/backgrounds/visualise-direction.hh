@@ -22,7 +22,7 @@
 #define VISUALISE_DIRECTION_H_INCLUDED_20100112
 
 
-namespace redshift { namespace backgrounds {
+namespace picogen { namespace redshift { namespace backgrounds {
         DefineFinalizer(VisualiseDirection);
         class VisualiseDirection
         : public Background
@@ -38,6 +38,6 @@ namespace redshift { namespace backgrounds {
                         );
                 }
         };
-} }
+} } }
 
 #endif // VISUALISE_DIRECTION_H_INCLUDED_20100112

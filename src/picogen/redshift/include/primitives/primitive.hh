@@ -25,13 +25,13 @@
 #include "../optional.hh"
 #include "../smart_ptr.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Scene;
         class Intersection;
         class Bsdf;
         class DifferentialGeometry;
-}
-namespace redshift {
+} }
+namespace picogen { namespace redshift {
         class Primitive
         {
         public:
@@ -45,6 +45,6 @@ namespace redshift {
 
                 virtual ~Primitive () {}
         };
-}
+} }
 
 #endif // PRIMITIVE_H_INCLUDED_20090301

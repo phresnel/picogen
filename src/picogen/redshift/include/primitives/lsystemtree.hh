@@ -24,7 +24,7 @@
 #include "../sealed.hh"
 #include "trianglebvh.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(LSystemTree);
         class LSystemTree :
@@ -57,6 +57,6 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<TriangleBvh> mesh;
         };
-} }
+} } }
 
 #endif // LSYSTEMTREE_HH_INCLUDED_20100812

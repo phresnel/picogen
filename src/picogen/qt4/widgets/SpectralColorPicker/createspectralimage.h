@@ -21,8 +21,10 @@
 #ifndef CREATESPECTRALIMAGE_HH
 #define CREATESPECTRALIMAGE_HH
 
+#include <QImage>
 #include "redshift/include/basictypes/spectrum.hh"
 
+namespace picogen { namespace qt4_gui {
 inline QImage createSpectralImage (int height = 32) {
         // Below method is extremely wasteful, better write a
         // setAmplitude(wave,amp)-method for spectrum
@@ -71,5 +73,7 @@ inline QImage createSpectralImage (int height = 32) {
 
         return image;
 }
+
+} }
 
 #endif // CREATESPECTRALIMAGE_HH

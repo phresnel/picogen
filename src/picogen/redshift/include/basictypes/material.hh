@@ -24,7 +24,7 @@
 #include "../smart_ptr.hh"
 #include "../real.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Bsdf;
         class DifferentialGeometry;
 
@@ -34,6 +34,6 @@ namespace redshift {
                 virtual real_t alpha (const DifferentialGeometry &) const = 0;
                 virtual ~Material() {}
         };
-}
+} }
 
 #endif // MATERIAL_HH_INCLUDED_20090223

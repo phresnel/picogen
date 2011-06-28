@@ -26,14 +26,14 @@
 #include "../smart_ptr.hh"
 #include "../basictypes/material.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Bsdf;
         class DifferentialGeometry;
         class ColorTexture;
         class ScalarTexture;
-}
+} }
 
-namespace redshift { namespace material {
+namespace picogen { namespace redshift { namespace material {
         SEALED(Matte);
         class Matte : MAKE_SEALED(Matte), public Material {
         public:
@@ -46,6 +46,6 @@ namespace redshift { namespace material {
                 shared_ptr<ColorTexture> color;
                 shared_ptr<ScalarTexture> roughness;
         };
-} }
+} } }
 
 #endif // MATTE_HH_INCLUDED_20100826

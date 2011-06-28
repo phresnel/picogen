@@ -24,10 +24,10 @@
 #include "redshift/include/smart_ptr.hh"
 
 // redshift fwd+Co.
-namespace redshift {
+namespace picogen { namespace redshift {
         class Primitive;
         class BoundPrimitive;
-}
+} }
 
 // redshift_file fwd+Co.
 namespace picogen { namespace redshift_file {
@@ -40,10 +40,10 @@ namespace picogen { namespace redshift_file {
 // functions "toRedshift()". The following closure enables this.
 namespace picogen { namespace redshift_file { namespace detail {
 struct RedshiftPrimitiveOrBoundPrimitive {
-        operator ::redshift::shared_ptr< ::redshift::Primitive> () const;
-        operator ::redshift::shared_ptr< ::redshift::BoundPrimitive> () const;
+        operator redshift::shared_ptr<redshift::Primitive> () const;
+        operator redshift::shared_ptr<redshift::BoundPrimitive> () const;
         Object const & object;
-        
+
         RedshiftPrimitiveOrBoundPrimitive (Object const &object)
         : object(object)
         {}

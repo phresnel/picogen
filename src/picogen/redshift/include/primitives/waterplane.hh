@@ -26,12 +26,12 @@
 #include "../bxdf/mirror.hh"
 #include "../basictypes/height-function.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class HeightFunction;
         class Intersection;
-}
+} }
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(WaterPlane);
 
@@ -63,6 +63,6 @@ namespace redshift { namespace primitive {
                 real_t height;
                 Color color;
         };
-} }
+} } }
 
 #endif // PRIMITIVE_WaterPlane_H_INCLUDED_20100119

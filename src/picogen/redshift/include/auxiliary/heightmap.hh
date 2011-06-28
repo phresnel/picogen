@@ -27,7 +27,7 @@
 #include <cmath>
 
 // TODO: put this into kallisto
-namespace redshift { namespace aux {
+namespace picogen { namespace redshift { namespace aux {
 
 enum PixelToHeightMode {
         Average,
@@ -278,6 +278,6 @@ private:
         Heightmap & operator = (Heightmap const &) ;
 };
 
-} }
+} } }
 
 #endif // AUX_HEIGHTMAP_HH_INCLUDED_20100424

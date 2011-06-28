@@ -24,7 +24,7 @@
 #include "../sealed.hh"
 #include "../rendertargets/rendertarget.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         SEALED(ColorRenderTarget);
         class ColorRenderTarget
@@ -54,6 +54,6 @@ namespace redshift {
                 ColorRenderTarget & operator = (ColorRenderTarget const &) ;
         };
 
-} // namespace redshift
+} }
 
 #endif // COLORRENDERTARGET_HH_INCLUDED_20090307

@@ -26,9 +26,9 @@
 #include "../coordinates/lenscoordinates.hh"
 #include "../coordinates/imagecoordinates.hh"
 
-namespace redshift { class RenderTarget; }
+namespace picogen { namespace redshift { class RenderTarget; } }
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         class Sample {
         public:
@@ -46,6 +46,6 @@ namespace redshift {
                 //, renderTarget (renderTarget_)
                 {}
         };
-}
+} }
 
 #endif // SAMPLE_HH_INCLUDED_20090310

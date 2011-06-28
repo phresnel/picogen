@@ -22,19 +22,19 @@
 #define TO_REDSHIFT_HH_20101014
 
 // redshift fwd+Co.
-namespace redshift {
+namespace picogen { namespace redshift {
         class Sky;
         class Camera;
         class Primitive;
-        
+
         class Integrator;
         class VolumeIntegrator;
         class VolumeRegion;
-        
+
         class Scene;
-	
-	class Film;
-}
+
+        class Film;
+} }
 #include "redshift/include/geometry.hh"
 
 
@@ -44,16 +44,16 @@ namespace picogen { namespace redshift_file {
 
         class Background;
         class Camera;
-        
+
         class Object;
         class Volume;
-        
+
         class Point;
         class Normal;
-        
+
         class SurfaceIntegrator;
         class VolumeIntegrator;
-        
+
         class Transform;
         class TransformList;
 } }
@@ -65,29 +65,29 @@ namespace picogen { namespace redshift_file {
 namespace picogen { namespace redshift_file {
         redshift::shared_ptr<redshift::Sky>    toRedshift (Background const &);
         redshift::shared_ptr<redshift::Camera> toRedshift (Camera const &,
-                                                           unsigned int width, 
+                                                           unsigned int width,
                                                            unsigned int height);
         redshift::Point toRedshift (Point const &);
         redshift::Normal toRedshift (Normal const &);
-        
+
         redshift::shared_ptr<redshift::Integrator> toRedshift(SurfaceIntegrator const &);
         redshift::shared_ptr<redshift::VolumeIntegrator> toRedshift(VolumeIntegrator const &integrator);
 
         redshift::Transform toRedshift (Transform const &);
         redshift::Transform toRedshift (TransformList const &);
-        
+
         redshift::shared_ptr<redshift::VolumeRegion> toRedshift (Volume const &);
-        
+
         redshift::shared_ptr<redshift::Scene> toRedshift (
                 redshift_file::Scene const &scene,
                 redshift::shared_ptr<redshift::Film> film,
                 int renderSettingsIndex, int cameraIndex
         );
 
-	redshift::shared_ptr<redshift::Scene> sceneDescriptionToScene (
-		redshift_file::Scene const &scene,
-		redshift::shared_ptr<redshift::Film> film,
-		int renderSettingsIndex, int cameraIndex
-	);
+        redshift::shared_ptr<redshift::Scene> sceneDescriptionToScene (
+                redshift_file::Scene const &scene,
+                redshift::shared_ptr<redshift::Film> film,
+                int renderSettingsIndex, int cameraIndex
+        );
 } }
 #endif // TO_REDSHIFT_HH_20101014

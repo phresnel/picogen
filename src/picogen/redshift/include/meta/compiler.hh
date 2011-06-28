@@ -74,8 +74,8 @@
 //#define UI_NAME "SDL"
 #define PICOGEN_COMPILATION_INFO  "compiler:" PICOGEN_COMPILER_NAME "/arch:" PICOGEN_ARCH_NAME "/t:" __DATE__ "(" __TIME__ ")"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         const char *getCompilationInfo () ;
-}
+} }
 
 #endif // COMPILER_HH_20100516

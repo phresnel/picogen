@@ -26,7 +26,7 @@
 #include "../basictypes/spectrum.hh"
 #include "../primitives/primitive.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(HorizonPlane);
 
@@ -53,6 +53,6 @@ namespace redshift { namespace primitive {
                 real_t height;
                 Color color;
         };
-} }
+} } }
 
 #endif // PRIMITIVE_HORIZONPLANE_H_INCLUDED_20100119

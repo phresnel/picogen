@@ -59,7 +59,7 @@
 #include <cmath>
 
 
-namespace redshift { namespace background {
+namespace picogen { namespace redshift { namespace background {
 /**********************************************************
 // Atmospheric Perspective Constants
 //
@@ -766,4 +766,4 @@ PssSunSky::Spectrum PssSunSky::InscatteredRadiance(
         }
 }
 
-} }
+} } }

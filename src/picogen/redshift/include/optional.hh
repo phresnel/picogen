@@ -23,8 +23,8 @@
 
 #include <boost/optional.hpp>
 
-namespace redshift {
+namespace picogen { namespace redshift {
         using boost::optional;
-}
+} }
 
 #endif // OPTIONAL_HH_INCLUDED_20090402

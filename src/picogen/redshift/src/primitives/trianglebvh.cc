@@ -31,15 +31,9 @@
 #include <algorithm>
 
 
+namespace picogen { namespace redshift {
 namespace {
-        using redshift::real_t;
-        using redshift::Point;
-        using redshift::Vector;
-        using redshift::Normal;
-        using redshift::Ray;
-        using redshift::vector_cast;
-
-        static const real_t tri_eps = 0.00000001;
+        const real_t tri_eps = 0.00000001;
         static int
         raytri_intersect (
             const Ray &ray,
@@ -105,10 +99,11 @@ namespace {
             return 1;
         }
 }
+} }
 
 
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 //-----------------------------------------------------------------------------
 // Node
@@ -421,5 +416,5 @@ shared_ptr<TriangleBvh> TriangleBvhBuilder::toTriangleBvh() {
 }
 
 
-} }
+} } }
 

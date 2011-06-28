@@ -75,7 +75,7 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
         filter = cubic;
         wrapMode = zero;
 
-        redshift::aux::PixelToHeightMode p2hmode = redshift::aux::Average;
+        picogen::redshift::aux::PixelToHeightMode p2hmode = picogen::redshift::aux::Average;
 
         for (Map::const_iterator it=static_parameters.begin();
              it!=static_parameters.end();
@@ -88,9 +88,9 @@ Heightmap <FUNCTION, COMPILER> :: Heightmap (
                         string p2h;
                         hmmm >> p2h;
                         if (p2h == "average") {
-                                p2hmode = redshift::aux::Average;
+                                p2hmode = picogen::redshift::aux::Average;
                         } else if (p2h == "luminance") {
-                                p2hmode = redshift::aux::Luminance;
+                                p2hmode = picogen::redshift::aux::Luminance;
                         } else {
                                 throw general_exception ("Heightmap: unknown pixel-to-height type for 'pixel-to-height': '" + p2h + "' (only 'average','luminance' are supported)");
                         }

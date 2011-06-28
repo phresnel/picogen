@@ -24,7 +24,7 @@
 #include "../primitives/aggregate.hh"
 #include "../sealed.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(List);
 
@@ -49,6 +49,6 @@ namespace redshift { namespace primitive {
                 typedef std::vector<shared_ptr<Primitive> > Primitives;
                 Primitives primitives;
         };
-} }
+} } }
 
 #endif // PRIMITIVE_LIST_HH_INCLUDED_20100120

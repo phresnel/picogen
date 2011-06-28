@@ -35,11 +35,11 @@
 namespace Ui {
         class qtsunskyeditor;
 }
-namespace redshift {
+namespace picogen { namespace redshift {
         namespace backgrounds {
                 class PssAdapter;
         }
-}
+} }
 
 namespace picogen { namespace qt4_gui {
 

@@ -23,14 +23,8 @@
 #include "../../include/sampling.hh"
 #include "../../include/basictypes/intersection.hh"
 
+namespace picogen { namespace redshift {
 namespace {
-        using redshift::real_t;
-        using redshift::Point;
-        using redshift::Vector;
-        using redshift::Normal;
-        using redshift::Ray;
-        using redshift::vector_cast;
-
         static const real_t tri_eps = 0.00000001;
         static int
         raytri_intersect (
@@ -98,10 +92,11 @@ namespace {
             return 1;
         }
 }
+} }
 
-namespace redshift { namespace primitive {
 
 
+namespace picogen { namespace redshift { namespace primitive {
 
 Triangle::Triangle (Vertex A, Vertex B, Vertex C, shared_ptr<Material> mat)
 : A(A), B(B), C(C), material_(mat)
@@ -191,4 +186,4 @@ shared_ptr<Material> Triangle::material() const {
 }
 
 
-} }
+} } }

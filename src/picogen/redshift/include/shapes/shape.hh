@@ -24,11 +24,11 @@
 #include "../geometry.hh"
 #include "../optional.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class DifferentialGeometry;
-}
+} }
 
-namespace redshift { namespace shape {
+namespace picogen { namespace redshift { namespace shape {
         class Shape {
         public:
                 // If only the information is need whether the ray hits or not.
@@ -43,6 +43,6 @@ namespace redshift { namespace shape {
                 optional<DifferentialGeometry> intersect(Ray const &ray)
                 const = 0;
         };
-} }
+} } }
 
 #endif // SHAPE_H_INCLUDED_20090301

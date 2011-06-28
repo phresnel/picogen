@@ -24,11 +24,11 @@
 #include "progressreporter.hh"
 #include "../auxiliary/stopwatch.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Film;
-}
+} }
 
-namespace redshift { namespace interaction {
+namespace picogen { namespace redshift { namespace interaction {
 class FilmToRenderTargetCopyingReporter : public ProgressReporter {
 public:
 
@@ -82,6 +82,6 @@ private:
         mutable StopWatch lastTime;
 };
 
-} }
+} } }
 
 #endif // FILM_RENDERTARGET_COPYING_REPORTER_HH_INCLUDED_20100713

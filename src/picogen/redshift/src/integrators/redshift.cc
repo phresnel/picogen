@@ -21,7 +21,7 @@
 #include "ignore_strict_aliasing" // because of boost::optional
 #include "../../include/integrators/redshift.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 
@@ -155,4 +155,4 @@ DistantRadiance RedshiftIntegrator::Li (
         return Li(scene, raydiff, sample, lirec, rand, true);
 }
 
-}
+} }

@@ -24,7 +24,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 
-namespace redshift {
+namespace picogen { namespace redshift {
         struct Mutex {
                 Mutex() { omp_init_lock(&lock); }
                 ~Mutex() { omp_destroy_lock(&lock); }
@@ -40,11 +40,11 @@ namespace redshift {
         public:
                 omp_lock_t lock;
         };
-}
+} }
 #else
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 
-namespace redshift {
+namespace picogen { namespace redshift {
         struct Mutex {
                 Mutex() {  }
                 ~Mutex() {  }
@@ -60,7 +60,7 @@ namespace redshift {
         public:
                 boost::interprocess::interprocess_mutex lock;
         };
-}
+} }
 #endif
 
 #endif // MUTEX_HH_INCLUDED_20100221

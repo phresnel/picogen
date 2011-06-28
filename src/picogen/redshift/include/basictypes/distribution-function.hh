@@ -23,7 +23,7 @@
 
 #include "../real.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 class DistributionFunction {
@@ -49,7 +49,7 @@ public:
          const = 0;
 };
 
-}
+} }
 
 
 #endif // DISTRIBUTIONFUNCTION_HH_INCLUDED_20100821

@@ -21,7 +21,7 @@
 #ifndef TEXTURE2DCOORDINATES_HH_INCLUDED_20090311
 #define TEXTURE2DCOORDINATES_HH_INCLUDED_20090311
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Texture2dCoordinates : public UVCoordinates {
         public:
         
@@ -31,6 +31,6 @@ namespace redshift {
                 : UVCoordinates(u_,v_)
                 {}
         };
-}
+} }
 
 #endif // TEXTURE2DCOORDINATES_HH_INCLUDED_20090311

@@ -47,7 +47,7 @@
 #include "backgrounds/preetham-shirley-smits/sunsky.hh"
 
 
-namespace redshift { namespace background {
+namespace picogen { namespace redshift { namespace background {
 
 
 
@@ -113,8 +113,8 @@ PssSunSky::ChromaticityToSpectrum(
 {
     static bool inited = false;
     if(!inited) {
-	inited = true;
-	InitChromaticityToSpectrum();
+        inited = true;
+        InitChromaticityToSpectrum();
     }
 
     real_t M1 = (-1.3515 - 1.7703*x +  5.9114*y)/(0.0241 + 0.2562*x - 0.7341*y);
@@ -123,4 +123,4 @@ PssSunSky::ChromaticityToSpectrum(
     return riS0Spectrum + M1 * riS1Spectrum + M2 * riS2Spectrum;
 }
 
-} }
+} } }

@@ -24,7 +24,7 @@
 #include "../geometry.hh"
 #include "spectrum.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Scene;
         class Sample;
         class Random;
@@ -41,9 +41,9 @@ namespace redshift {
                 LiRecursion operator -- () const { return LiRecursion(depth_-1); }
                 unsigned int depth_;
         };
-}
+} }
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Distance {
         public:
                 Distance() : d(std::numeric_limits<real_t>::infinity()) {}
@@ -78,9 +78,9 @@ namespace redshift {
                 Color color_;
                 Distance distance_;
         };
-}
+} }
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Integrator {
         public:
                 virtual ~Integrator() {}
@@ -92,6 +92,6 @@ namespace redshift {
                         Random& rand
                 ) const = 0;
         };
-}
+} }
 
 #endif // TRANSPORT_HH_INCLUDED_20090110

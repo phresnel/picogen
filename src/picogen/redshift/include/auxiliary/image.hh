@@ -27,7 +27,7 @@
 #include <cmath>
 
 // TODO: put this into kallisto
-namespace redshift { namespace aux {
+namespace picogen { namespace redshift { namespace aux {
 
 class ColorImage {
         Color *h;
@@ -244,6 +244,6 @@ public:
         }
 };
 
-} }
+} } }
 
 #endif // AUX_IMAGE_HH_INCLUDED_20100817

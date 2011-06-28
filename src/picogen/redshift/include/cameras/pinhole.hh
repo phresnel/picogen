@@ -24,7 +24,7 @@
 #include "../cameras/camera.hh"
 #include "../smart_ptr.hh"
 
-namespace redshift { namespace camera {
+namespace picogen { namespace redshift { namespace camera {
 
         SEALED(Pinhole);
 
@@ -47,6 +47,6 @@ namespace redshift { namespace camera {
                 real_t aspect;
                 real_t frontDist;
         };
-} }
+} } }
 
 #endif // PINHOLE_HH_INCLUDED_20090312

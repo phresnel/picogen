@@ -23,7 +23,7 @@
 
 #include "../basictypes/spectrum.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         class DifferentialGeometry;
 
@@ -41,6 +41,6 @@ namespace redshift {
                 virtual ~ScalarTexture() {}
                 virtual real_t value(DifferentialGeometry const &) const = 0;
         };
-}
+} }
 
 #endif // TEXTURE_HH_INCLUDED_20100817

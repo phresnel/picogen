@@ -26,7 +26,7 @@
 #include "../basictypes/intersection.hh"
 #include "../optional.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class VisualizeDistance : public Integrator {
         public:
                 DistantRadiance Li (
@@ -64,6 +64,6 @@ namespace redshift {
                         }
                 }
         };
-}
+} }
 
 #endif // VISUALIZEDISTANCE_HH_INCLUDED_20090110

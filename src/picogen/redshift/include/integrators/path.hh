@@ -28,7 +28,7 @@
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         SEALED(PathIntegrator);
         class PathIntegrator
         : public Integrator
@@ -45,6 +45,6 @@ namespace redshift {
                 PathIntegrator ();
         private:
         };
-}
+} }
 
 #endif // PATHINTEGRATOR_INCLUDED_20100316

@@ -23,7 +23,7 @@
 #include "../../include/constants.hh"
 #include "../../include/rendertargets/rendertarget.hh"
 
-namespace redshift { namespace camera {
+namespace picogen { namespace redshift { namespace camera {
 
 
 
@@ -90,4 +90,4 @@ tuple<real_t,RayDifferential> Cylindrical::generateRay (Sample const &sample) co
 
 
 
-} } // namespace redshift::Cylindrical
+} } }

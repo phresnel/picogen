@@ -24,7 +24,7 @@
 #include "../../include/rendertargets/rendertarget.hh"
 
 
-namespace redshift { namespace camera {
+namespace picogen { namespace redshift { namespace camera {
 
 
 
@@ -98,4 +98,4 @@ tuple<real_t,RayDifferential> CubeMapFace::generateRay (Sample const &sample) co
 
 
 
-} } // namespace redshift::CubeMapFace
+} } }

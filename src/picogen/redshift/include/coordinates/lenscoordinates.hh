@@ -21,7 +21,7 @@
 #ifndef LENSCOORDINATES_HH_INCLUDED_20090311
 #define LENSCOORDINATES_HH_INCLUDED_20090311
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class LensCoordinates : public UVCoordinates {
         public:
         
@@ -31,6 +31,6 @@ namespace redshift {
                 : UVCoordinates(u_,v_)
                 {}
         };
-}
+} }
 
 #endif // LENSCOORDINATES_HH_INCLUDED_20090311

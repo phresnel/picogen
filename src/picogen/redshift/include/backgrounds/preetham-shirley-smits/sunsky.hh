@@ -51,7 +51,7 @@
 #include "../../basictypes/spectrum.hh"
 
 
-namespace redshift { namespace background {
+namespace picogen { namespace redshift { namespace background {
 /***************************************************************
 CLASS
     PssSunSky
@@ -180,6 +180,6 @@ class PssSunSky {
     bool atmInited;
 };
 
-} } // namespace redshift.background
+} } }
 
 #endif /* PssSunSky_H */

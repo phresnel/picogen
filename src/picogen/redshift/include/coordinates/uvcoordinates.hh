@@ -21,7 +21,7 @@
 #ifndef UVCOORDINATES_HH_INCLUDED_20090311
 #define UVCOORDINATES_HH_INCLUDED_20090311
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class UVCoordinates {
         public:
                 real_t u;
@@ -33,6 +33,6 @@ namespace redshift {
                 : u(u_), v(v_)
                 {}
         };
-}
+} }
 
 #endif // UVCOORDINATES_HH_INCLUDED_20090311

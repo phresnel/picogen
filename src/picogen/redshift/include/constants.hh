@@ -22,7 +22,7 @@
 #define CONSTANTS_HH_INCLUDED_20100701
 
 #include "real.hh"
-namespace redshift {
+namespace picogen { namespace redshift {
         namespace static_config {
                 enum { debug = 0 }; // should be set by #define macro
         }
@@ -97,6 +97,5 @@ namespace redshift {
                 extern real_t const one;
                 extern real_t const two;
         }
-}
-
+} }
 #endif // CONSTANTS_HH_INCLUDED_20100701

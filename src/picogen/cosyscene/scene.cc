@@ -117,7 +117,7 @@ std::string Scene::finalTerrainCode() const {
 redshift::shared_ptr<redshift_file::Scene> Scene::toRedshiftScene(
         bool usePreviewSettings
 ) const {
-        using namespace ::redshift;
+        using namespace redshift;
         shared_ptr<redshift_file::Scene> scenePtr(new redshift_file::Scene);
         redshift_file::Scene &scene = *scenePtr;
 

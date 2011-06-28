@@ -27,11 +27,11 @@
 #include "../array.hh"
 #include "rgb.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         enum { spectrum_samples = 9 };
-}
+} }
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         // The basic strategy is to derive from the expression-template
         // kallisto::array<>, and then to cherry pick the operations
@@ -164,10 +164,10 @@ namespace redshift {
         template <> struct SpectrumBaseTypeId_<long double> {
                 static const char *name () { return "long double"; }
         };
-}
+} }
 
 #include <vector>
-namespace redshift {
+namespace picogen { namespace redshift {
 
         enum { SAMPLED_LAMBDA_START = 400 };
         enum { SAMPLED_LAMBDA_END = 700 };
@@ -355,12 +355,12 @@ namespace redshift {
                         }
                 }*/
         };
-}
+} }
 
 #include "spectrum.inl.hh"
 
 
-namespace redshift {
+namespace picogen { namespace redshift {
         //class Rgb;
         //typedef Rgb Color;
         enum { longspectrum_samples = 64 };
@@ -371,7 +371,7 @@ namespace redshift {
         typedef SpectrumBase<real_t,longspectrum_samples> LongSpectrum;
         typedef SpectrumBase<real_t,referencespectrum_samples> ReferenceSpectrum;
         typedef SpectrumBase<real_t,halfreferencespectrum_samples> HalfReferenceSpectrum;
-}
+} }
 
 
 #endif // SPECTRUM_HH_INCLUDED_20100311

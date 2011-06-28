@@ -25,7 +25,7 @@
 #include "../smart_ptr.hh"
 #include "../sealed.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         SEALED(Pixel);
         struct Pixel : MAKE_SEALED(Pixel) {
                 Color sum;
@@ -97,6 +97,6 @@ namespace redshift {
                 const unsigned int width_, height_;
                 shared_array<Pixel> surface;
         };
-}
+} }
 
 #endif // FILM_HH_INCLUDED_20100709

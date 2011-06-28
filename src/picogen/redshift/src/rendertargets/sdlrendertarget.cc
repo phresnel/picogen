@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <sstream>
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 struct SdlRenderTarget::SdlRenderTargetLock : redshift::RenderTargetLock {
@@ -189,4 +189,4 @@ int SdlRenderTarget::getHeight() const {
         return height;
 }
 
-} // namespace redshift
+} }

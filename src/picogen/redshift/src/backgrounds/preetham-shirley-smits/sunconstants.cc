@@ -50,7 +50,7 @@
 #include "geometry.hh"
 #include "constants.hh"
 
-namespace redshift { namespace background {
+namespace picogen { namespace redshift { namespace background {
 
 /* All data lifted from MI */
 /* Units are either [] or cm^-1. refer when in doubt MI */
@@ -235,7 +235,7 @@ PssSunSky::ComputeAttenuatedSunlight(
     RiIrregularSpectralCurve k_gCurve(k_gAmplitudes, k_gWavelengths, 4);
     RiIrregularSpectralCurve k_waCurve(k_waAmplitudes, k_waWavelengths, 13);
     RiRegularSpectralCurve   solCurve(solAmplitudes, 380, 750, 38);  // every 10 nm  IN WRONG UNITS
-				                                     // Need a factor of 100 (done below)
+                                                                     // Need a factor of 100 (done below)
     */
 
 
@@ -243,53 +243,53 @@ PssSunSky::ComputeAttenuatedSunlight(
     Spectrum k_gCurve = Spectrum::FromSampled (k_gAmplitudes, k_gWavelengths , 4);
     Spectrum k_waCurve = Spectrum::FromSampled (k_waAmplitudes, k_waWavelengths, 13);
     Spectrum solCurve = Spectrum::FromSampled(solAmplitudes, 380, 750, 38);  // every 10 nm  IN WRONG UNITS
-				                                     // Need a factor of 100 (done below)
+                                                                     // Need a factor of 100 (done below)
     real_t  data[91];  // (800 - 350) / 5  + 1
 
     real_t beta = 0.04608365822050 * turbidity - 0.04586025928522;
     real_t tauR, tauA, tauO, tauG, tauWA;
 
     real_t m = 1.0/(cos(theta) + 0.15*pow(93.885-theta/constants::pi*180.0,-1.253));  // Relative Optical Mass
-				// equivalent
+                                // equivalent
 //    real_t m = 1.0/(cos(theta) + 0.000940 * pow(1.6386 - theta,-1.253));  // Relative Optical Mass
 
     int i;
     real_t lambda;
     for(i = 0, lambda = 350; i < 91; i++, lambda+=5) {
-				// Rayleigh Scattering
-				// Results agree with the graph (pg 115, MI) */
-	tauR = exp( -m * 0.008735 * pow(lambda/1000, real_t(-4.08)));
+                                // Rayleigh Scattering
+                                // Results agree with the graph (pg 115, MI) */
+        tauR = exp( -m * 0.008735 * pow(lambda/1000, real_t(-4.08)));
 
-				// Aerosal (water + dust) attenuation
-				// beta - amount of aerosols present
-				// alpha - ratio of small to large particle sizes. (0:4,usually 1.3)
-				// Results agree with the graph (pg 121, MI)
-	const real_t alpha = 1.3;
-	tauA = exp(-m * beta * pow(lambda/1000, -alpha));  // lambda should be in um
+                                // Aerosal (water + dust) attenuation
+                                // beta - amount of aerosols present
+                                // alpha - ratio of small to large particle sizes. (0:4,usually 1.3)
+                                // Results agree with the graph (pg 121, MI)
+        const real_t alpha = 1.3;
+        tauA = exp(-m * beta * pow(lambda/1000, -alpha));  // lambda should be in um
 
-				// Attenuation due to ozone absorption
-				// lOzone - amount of ozone in cm(NTP)
-				// Results agree with the graph (pg 128, MI)
-	const real_t lOzone = .35;
-	tauO = exp(-m * k_oCurve.at(lambda) * lOzone);
+                                // Attenuation due to ozone absorption
+                                // lOzone - amount of ozone in cm(NTP)
+                                // Results agree with the graph (pg 128, MI)
+        const real_t lOzone = .35;
+        tauO = exp(-m * k_oCurve.at(lambda) * lOzone);
 
-				// Attenuation due to mixed gases absorption
-				// Results agree with the graph (pg 131, MI)
-	tauG = exp(-1.41 * k_gCurve.at(lambda) * m / pow(1 + 118.93 * k_gCurve.at(lambda) * m, 0.45));
+                                // Attenuation due to mixed gases absorption
+                                // Results agree with the graph (pg 131, MI)
+        tauG = exp(-1.41 * k_gCurve.at(lambda) * m / pow(1 + 118.93 * k_gCurve.at(lambda) * m, 0.45));
 
-				// Attenuation due to water vapor absorbtion
-				// w - precipitable water vapor in centimeters (standard = 2)
-				// Results agree with the graph (pg 132, MI)
-	const real_t w = 2.0;
-	tauWA = exp(-0.2385 * k_waCurve.at(lambda) * w * m /
-		    pow(1 + 20.07 * k_waCurve.at(lambda) * w * m, 0.45));
+                                // Attenuation due to water vapor absorbtion
+                                // w - precipitable water vapor in centimeters (standard = 2)
+                                // Results agree with the graph (pg 132, MI)
+        const real_t w = 2.0;
+        tauWA = exp(-0.2385 * k_waCurve.at(lambda) * w * m /
+                    pow(1 + 20.07 * k_waCurve.at(lambda) * w * m, 0.45));
 
-	data[i] = 100 * solCurve.at(lambda) * tauR * tauA * tauO * tauG * tauWA;  // 100 comes from solCurve being
-	                                                                       // in wrong units.
+        data[i] = 100 * solCurve.at(lambda) * tauR * tauA * tauO * tauG * tauWA;  // 100 comes from solCurve being
+                                                                               // in wrong units.
 
     }
     return Spectrum::FromSampled(data, 350,800,91) * (1-overcast);  // Converts to Spectrum
 //#endif
 }
 
-} }
+} } }

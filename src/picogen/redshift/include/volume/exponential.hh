@@ -24,7 +24,7 @@
 #include "../basictypes/volume.hh"
 #include "../sealed.hh"
 
-namespace redshift { namespace volume {
+namespace picogen { namespace redshift { namespace volume {
 
         // VolumeRegion.
         SEALED(Exponential);
@@ -64,6 +64,6 @@ namespace redshift { namespace volume {
 
                 Plane approximateUpperPlane (real_t epsilon) const ;
         };
-} }
+} } }
 
 #endif // EXPONENTIAL_HH_INCLUDED_20100213

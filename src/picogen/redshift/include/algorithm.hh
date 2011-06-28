@@ -21,7 +21,7 @@
 #ifndef ALGORITHM_HH_INCLUDED_20100701
 #define ALGORITHM_HH_INCLUDED_20100701
 
-namespace redshift {
+namespace picogen { namespace redshift {
         template <typename T> inline T min (T const &lhs, T const &rhs) {
                 return lhs < rhs ? lhs : rhs;
         }
@@ -36,12 +36,12 @@ namespace redshift {
         ) {
                 return alpha*(end-begin) + begin;
         }
-}
+} }
 
 #include "geometry.hh"
 #include "tuple.hh"
 #include "constants.hh"
-namespace redshift {
+namespace picogen { namespace redshift {
         inline tuple<Vector,Vector,Vector> coordinateSystem (const Normal &normal_) {
                 using std::fabs; using std::sqrt;
 
@@ -62,6 +62,6 @@ namespace redshift {
                 const real_t f = dot(vector_cast<Vector>(n),in) * 2.f;
                 return in - vector_cast<Vector>(n*f);
         }
-}
+} }
 
 #endif // ALGORITHM_HH_INCLUDED_20100701

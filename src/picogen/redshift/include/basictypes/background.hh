@@ -24,7 +24,7 @@
 #include "../geometry.hh"
 #include "../basictypes/spectrum.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         class Sun {
         public:
@@ -73,6 +73,6 @@ namespace redshift {
                         return atmosphericEffectsPtr;
                 }
         };
-}
+} }
 
 #endif // BACKGROUND_H_INCLUDED_20090301

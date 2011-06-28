@@ -30,13 +30,13 @@
 #include <boost/shared_array.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
-namespace redshift {
+namespace picogen { namespace redshift {
         using boost::scoped_ptr;
         using boost::scoped_array;
         using boost::shared_ptr;
         using boost::shared_array;
         using boost::enable_shared_from_this;
         using boost::static_pointer_cast;
-}
+} }
 
 #endif // SMART_PTR_HH_INCLUDED_20090304

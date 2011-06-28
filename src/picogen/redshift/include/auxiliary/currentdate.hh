@@ -25,6 +25,8 @@
 #include <sstream>
 #include <string>
 
+namespace picogen { namespace redshift { 
+
 class CurrentDate {
 public:
         CurrentDate ()
@@ -62,5 +64,7 @@ private:
                 return *localtime (&t);
         }
 };
+
+} }
 
 #endif // CURRENTDATE_HH_INCLUDED_20100221

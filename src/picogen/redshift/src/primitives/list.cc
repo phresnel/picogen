@@ -24,7 +24,7 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/constants.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 
@@ -90,4 +90,4 @@ void List::prepare (const Scene &scene) {
 
 
 
-} }
+} } }

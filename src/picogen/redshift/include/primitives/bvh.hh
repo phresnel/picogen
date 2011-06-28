@@ -24,7 +24,7 @@
 #include "../sealed.hh"
 #include "aggregate.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         class BvhBuilder;
         class BvhNode;
@@ -71,6 +71,6 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<BvhNode> root;
         };
-} }
+} } }
 
 #endif // ACCELERATOR_HH_INCLUDED_20100811

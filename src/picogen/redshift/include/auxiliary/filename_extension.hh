@@ -24,6 +24,8 @@
 #include <cstring>
 #include <algorithm>
 
+namespace picogen { namespace redshift { 
+
 inline std::string filename_extension (const std::string &str) {
         using std::string;
         string ret;
@@ -36,5 +38,7 @@ inline std::string filename_extension (const std::string &str) {
         }
         return "";
 }
+
+} }
 
 #endif // FILENAME_EXTENSION_HH_INCLUDED_20100701

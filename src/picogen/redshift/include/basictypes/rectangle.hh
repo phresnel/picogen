@@ -21,7 +21,7 @@
 #ifndef RECTANGLE_H_INCLUDED_20090311
 #define RECTANGLE_H_INCLUDED_20090311
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Rectangle {
         public:
                 int left;
@@ -71,6 +71,6 @@ namespace redshift {
         inline int area (Rectangle const &r) {
                 return r.area();
         }
-}
+} }
 
 #endif // RECTANGLE_H_INCLUDED_20090311

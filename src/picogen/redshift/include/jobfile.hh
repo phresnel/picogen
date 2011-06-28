@@ -41,7 +41,7 @@
 #include "interaction/progressreporter.hh"
 
 // basictypes/
-namespace redshift{class RenderTarget;}
+namespace picogen { namespace redshift{class RenderTarget;} }
 #include "basictypes/rectangle.hh"
 #include "basictypes/sample.hh"
 
@@ -143,10 +143,10 @@ namespace redshift{class RenderTarget;}
 
 #include <iostream>
 #include <cstdio>
-namespace redshift_file {
+namespace picogen { namespace redshift_file {
         using redshift::shared_ptr;
         using redshift::real_t;
-}
+} }
 
 #include "redshift_file/color.hh"
 #include "redshift_file/transform.hh"

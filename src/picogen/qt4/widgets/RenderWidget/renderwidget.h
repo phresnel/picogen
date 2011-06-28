@@ -32,9 +32,9 @@ namespace Ui {
         class RenderWidget;
 }
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Film;
-}
+} }
 
 namespace picogen { namespace redshift_file {
         class Scene;

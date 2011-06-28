@@ -27,7 +27,7 @@
 //   * In this file, explicitly instantiate Spectrum on floating types
 //   * In header file, extern-explicitly-instantiate Spectrum on floating types
 
-namespace redshift {
+namespace picogen { namespace redshift {
 // Below: Copyright(c) 1998-2007 Matt Pharr and Greg Humphreys,
 /*
  pbrt is free software; you can redistribute it and/or modify
@@ -719,7 +719,7 @@ const real_t RGBIllum2SpectBlue[RGB_TO_SPECTRUM_SAMPLES] = {
     1.6624255403475907e-01, 1.6997613960634927e-01,
     1.5769743995852967e-01, 1.9069090525482305e-01 };
 
-}
+} }
 
 
 

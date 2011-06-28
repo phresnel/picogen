@@ -20,7 +20,7 @@
 
 #include "../../include/bxdf/mirror.hh"
 
-namespace redshift { namespace bsdf {
+namespace picogen { namespace redshift { namespace bsdf {
 
 
 
@@ -56,4 +56,4 @@ real_t Mirror::pdf (const Vector &/*out*/, const Vector &/*in*/) const {
 
 
 
-} }
+} } }

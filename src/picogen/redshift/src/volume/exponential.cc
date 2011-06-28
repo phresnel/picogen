@@ -24,7 +24,7 @@
 #include <cmath>
 
 
-namespace redshift { namespace volume {
+namespace picogen { namespace redshift { namespace volume {
 
 
 
@@ -110,5 +110,5 @@ real_t Exponential::density(const Point &p, Random& /*rand*/) const {
 }
 
 
-} }
+} } }
 

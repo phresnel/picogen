@@ -43,7 +43,7 @@
 
 
 int cosy_main (int argc, char *argv[]) {
-        redshift::static_init();
+        picogen::redshift::static_init();
 
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
@@ -68,7 +68,7 @@ int production_render_main (int argc, char *argv[]) {
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
 
-        redshift::static_init();
+        picogen::redshift::static_init();
         QApplication a(argc, argv);
 
         const QString pathToSource =
@@ -130,8 +130,8 @@ int production_render_main (int argc, char *argv[]) {
                         return 0;
                 }
 
-                redshift::shared_ptr<picogen::redshift_file::Scene> pscene =
-                                redshift::shared_ptr<picogen::redshift_file::Scene>(
+                picogen::redshift::shared_ptr<picogen::redshift_file::Scene> pscene =
+                                picogen::redshift::shared_ptr<picogen::redshift_file::Scene>(
                                                 new picogen::redshift_file::Scene(scene)
                                 );
                 picogen::qt4_gui::RenderWindow w (pscene, renderSetting, cameraSetting, 0, 15.);

@@ -22,7 +22,7 @@
 #include "../../include/basictypes/height-function.hh"
 #include "../../include/basictypes/intersection.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 
@@ -84,4 +84,4 @@ optional<Intersection>
 
 
 
-} }
+} } }

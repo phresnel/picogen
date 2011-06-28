@@ -22,7 +22,7 @@
 #define SCOPEDLOCK_HH_INCLUDED_20100221
 
 #include "mutex.hh"
-namespace redshift {
+namespace picogen { namespace redshift {
         struct ScopedLock {
                 explicit ScopedLock(Mutex& m) : mut(m), locked(true) { mut.Lock(); }
                 ~ScopedLock() { Unlock(); }
@@ -35,6 +35,6 @@ namespace redshift {
                 void operator=(const ScopedLock&);
                 ScopedLock(const ScopedLock&);
         };
-}
+} }
 
 #endif // SCOPEDLOCK_HH_INCLUDED_20100221

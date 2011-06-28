@@ -23,7 +23,7 @@
 
 #include "../basictypes/bsdf.hh"
 
-namespace redshift { namespace bsdf {
+namespace picogen { namespace redshift { namespace bsdf {
         SEALED(BrdfToBtdf);
         class BrdfToBtdf : public Bxdf, MAKE_SEALED(BrdfToBtdf) {
         public:
@@ -39,6 +39,6 @@ namespace redshift { namespace bsdf {
         private:
                 shared_ptr<const Bxdf> brdf;
         };
-} }
+} } }
 
 #endif // BRDFTOBTDF_HH_INCLUDED_20100825

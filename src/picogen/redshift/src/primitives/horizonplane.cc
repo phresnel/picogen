@@ -22,7 +22,7 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/bxdf/lambertian.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 
@@ -83,4 +83,4 @@ shared_ptr<Bsdf> HorizonPlane::getBsdf(
 
 
 
-} }
+} } }

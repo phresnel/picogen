@@ -37,13 +37,13 @@ namespace Ui {
     class RenderWindow;
 }
 
-namespace redshift {
+namespace picogen { namespace redshift {
         //class QImageRenderTarget;
         class RenderTargetLock;
         class ColorRenderTarget;
         class Scene;
         class Film;
-}
+} }
 
 namespace picogen { namespace redshift_file {
         class Scene;

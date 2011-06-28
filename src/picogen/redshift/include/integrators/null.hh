@@ -28,7 +28,7 @@
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         SEALED(NullIntegrator);
         class NullIntegrator : public Integrator, public VolumeIntegrator
         , MAKE_SEALED(NullIntegrator) {
@@ -69,6 +69,6 @@ namespace redshift {
                 NullIntegrator () {}
         private:
         };
-}
+} }
 
 #endif // NULLINTEGRATOR_INCLUDED_20100415

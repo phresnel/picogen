@@ -21,7 +21,7 @@
 #ifndef IMAGECOORDINATES_HH_INCLUDED_20090310
 #define IMAGECOORDINATES_HH_INCLUDED_20090310
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class ImageCoordinates : public UVCoordinates {
         public:
         
@@ -31,6 +31,6 @@ namespace redshift {
                 : UVCoordinates(u_,v_)
                 {}
         };        
-}
+} }
 
 #endif // IMAGECOORDINATES_HH_INCLUDED_20090310

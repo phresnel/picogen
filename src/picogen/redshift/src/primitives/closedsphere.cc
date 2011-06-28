@@ -27,7 +27,7 @@
 #include "../../include/bxdf/lambertian.hh"
 #include "../../include/bxdf/mirror.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 
@@ -79,4 +79,4 @@ shared_ptr<Bsdf> ClosedSphere::getBsdf(
 
 
 
-} }
+} } }

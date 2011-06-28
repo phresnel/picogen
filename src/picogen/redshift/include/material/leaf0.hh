@@ -27,15 +27,15 @@
 #include "../smart_ptr.hh"
 #include "../basictypes/material.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Bsdf;
         class DifferentialGeometry;
         class ColorTexture;
         class ScalarTexture;
         class Matte;
-}
+} }
 
-namespace redshift { namespace material {
+namespace picogen { namespace redshift { namespace material {
         SEALED(Leaf0);
         class Leaf0 : MAKE_SEALED(Leaf0), public Material {
         public:
@@ -49,6 +49,6 @@ namespace redshift { namespace material {
                 shared_ptr<ScalarTexture> transmissionProb;
                 mutable Random random;
         };
-} }
+} } }
 
 #endif // LEAF0_HH_INCLUDED_20100829

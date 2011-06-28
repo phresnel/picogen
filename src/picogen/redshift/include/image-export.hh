@@ -21,9 +21,9 @@
 #ifndef IMAGE_EXPORT_HH_INCLUDED_20100714
 #define IMAGE_EXPORT_HH_INCLUDED_20100714
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Film;
         void saveOpenEXR (Film const &, const char *filename);
-}
+} }
 
 #endif // IMAGE_EXPORT_HH_INCLUDED_20100714

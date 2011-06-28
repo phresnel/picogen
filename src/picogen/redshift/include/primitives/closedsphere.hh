@@ -25,7 +25,7 @@
 #include "../shapes/closedsphere.hh"
 #include "../primitives/boundprimitive.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(ClosedSphere);
 
@@ -54,6 +54,6 @@ namespace redshift { namespace primitive {
                 ClosedSphere(ClosedSphere const&);
                 ClosedSphere &operator = (ClosedSphere const&);
         };
-} }
+} } }
 
 #endif // PRIMITIVE_CLOSEDSPHERE_H_INCLUDED_20090313

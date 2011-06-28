@@ -25,11 +25,11 @@
 #include "../sealed.hh"
 #include "../smart_ptr.hh"
 
-namespace redshift { namespace background {
+namespace picogen { namespace redshift { namespace background {
         class PssSunSky;
-} }
+} } }
 
-namespace redshift { namespace backgrounds {
+namespace picogen { namespace redshift { namespace backgrounds {
 
         SEALED(PssAdapter);
         class PssAdapter
@@ -50,6 +50,6 @@ namespace redshift { namespace backgrounds {
                 // use dumb-pointers/references.
                 shared_ptr<redshift::background::PssSunSky> sunSky;
         };
-} }
+} } }
 
 #endif // PSSADAPTER_HH_INCLUDED_20100314

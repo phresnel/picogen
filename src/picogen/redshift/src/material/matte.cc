@@ -26,7 +26,7 @@
 #include "../../include/bxdf/lambertian.hh"
 
 
-namespace redshift { namespace material {
+namespace picogen { namespace redshift { namespace material {
 
 
 
@@ -55,5 +55,5 @@ real_t Matte::alpha (const DifferentialGeometry &dgGeom) const {
 
 
 
-} }
+} } }
 

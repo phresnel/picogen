@@ -22,7 +22,10 @@
 #define COMPUTATIONTIME_HH_INCLUDED_20100620
 
 #include <ctime>
-namespace redshift {
+namespace picogen { namespace redshift {
+
+	// Should give the total CPU time, i.e. if you have a quadcore box,
+	// then you get normal time * 4 (roughly, that is)
         class ComputationTime {
                 double begin, end;
                 bool stopped;
@@ -52,6 +55,6 @@ namespace redshift {
                 }
 
         };
-}
+} }
 
 #endif // COMPUTATIONTIME_HH_INCLUDED_20100620

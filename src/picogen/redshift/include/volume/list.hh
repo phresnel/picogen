@@ -25,7 +25,7 @@
 #include "../sealed.hh"
 #include "../smart_ptr.hh"
 
-namespace redshift { namespace volume {
+namespace picogen { namespace redshift { namespace volume {
 
         // VolumeRegion.
         SEALED(List);
@@ -62,6 +62,6 @@ namespace redshift { namespace volume {
                 std::vector<shared_ptr<VolumeRegion> > volumes;
                 typedef std::vector<shared_ptr<VolumeRegion> >::const_iterator const_iterator;
         };
-} }
+} } }
 
 #endif // VOLUME_LIST_HH_INCLUDED_20100228

@@ -25,7 +25,7 @@
 #include "triangle.hh"
 #include "aggregate.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         class TriangleBvhBuilder;
         class TriangleBvhNode;
@@ -75,6 +75,6 @@ namespace redshift { namespace primitive {
 
                 std::vector<Triangle> triangles;
         };
-} }
+} } }
 
 #endif // TRIANGLEBVH_HH_INCLUDED_20100813

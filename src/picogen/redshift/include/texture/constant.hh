@@ -23,7 +23,7 @@
 
 #include "../basictypes/texture.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         namespace texture {
                 class ConstantColor : public ColorTexture {
                 public:
@@ -59,6 +59,6 @@ namespace redshift {
                         real_t value_;
                 };
         }
-}
+} }
 
 #endif // CONSTANT_HH_INCLUDED_20100817

@@ -29,9 +29,9 @@ namespace picogen { namespace redshift_file {
         class Rgb;
         class Color;
 
-        ::redshift::Color toRedshift (Spectrum const &);
-        ::redshift::Color toRedshift (Rgb const &, ::redshift::SpectrumKind kind);
-        ::redshift::Color toRedshift (Color const &, ::redshift::SpectrumKind kind);
+        redshift::Color toRedshift (Spectrum const &);
+        redshift::Color toRedshift (Rgb const &, redshift::SpectrumKind kind);
+        redshift::Color toRedshift (Color const &, redshift::SpectrumKind kind);
 } }
 
 #endif // COLOR_TO_REDSHIFT_HH_20101014

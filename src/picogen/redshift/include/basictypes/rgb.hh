@@ -24,7 +24,7 @@
 #include <cmath>
 #include "../real.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         struct /*__attribute__((deprecated))*/ SRgb {
                 real_t r, g, b;
@@ -300,7 +300,7 @@ namespace redshift {
         inline Rgb operator - (Rgb const&lhs) {
                 return Rgb (-lhs.r,-lhs.g,-lhs.b);
         }
-}
+} }
 
 
 

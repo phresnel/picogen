@@ -24,7 +24,7 @@
 #include "../../include/random.hh"
 #include "../../include/interval.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 
@@ -72,39 +72,39 @@ tuple<real_t,Color> SingleScattering::Li (
                 return make_tuple(1.f, Color(0));
 
 
-	real_t t0, t1;
-	//if (!vr || !vr->IntersectP(ray, &t0, &t1)) return 0.f;
+        real_t t0, t1;
+        //if (!vr || !vr->IntersectP(ray, &t0, &t1)) return 0.f;
 
         // quirk: should cull against AABB here
         const bool inf = interval.max()==constants::infinity;
         t0 = interval.min();
         t1 = inf ? constants::real_max : interval.max();
 
-	// Do emission-only volume integration in _vr_
-	Color Lv = Color(0.f);
+        // Do emission-only volume integration in _vr_
+        Color Lv = Color(0.f);
 
-	// Prepare for volume integration stepping
-	// TODO phresnel: I am not sure if ceil2int is really needed
-	const double  Nf      = (ceil((t1-t0) / stepSize));
+        // Prepare for volume integration stepping
+        // TODO phresnel: I am not sure if ceil2int is really needed
+        const double  Nf      = (ceil((t1-t0) / stepSize));
         const int     N       = inf ? (std::numeric_limits<int>::max()-1)
                               : static_cast<int>(Nf);
         const real_t  step    = inf ? stepSize
                               : ((t1-t0) / N);
 
-	Color Tr = Color(1.f);
-	Point curr = ray(t0), prev;
-	const Vector w = -ray.direction;
+        Color Tr = Color(1.f);
+        Point curr = ray(t0), prev;
+        const Vector w = -ray.direction;
 
         t0 += rand()*step;
-	/*if (sample)
-		t0 += sample->oneD[scatterSampleOffset][0] * step;
-	else
-		t0 += RandomFloat() * step;
+        /*if (sample)
+                t0 += sample->oneD[scatterSampleOffset][0] * step;
+        else
+                t0 += RandomFloat() * step;
         */
 
-	for (int i = 0; i < N; ++i, t0 += step) {
-		prev = curr;
-		curr = ray(t0);
+        for (int i = 0; i < N; ++i, t0 += step) {
+                prev = curr;
+                curr = ray(t0);
 
                 const real_t offset = rand();
                 const Color stepTau =
@@ -116,22 +116,22 @@ tuple<real_t,Color> SingleScattering::Li (
                                 rand
                         );
 
-		Tr *= exp(-stepTau);
+                Tr *= exp(-stepTau);
 
-		// Terminate if transmittance is small
-		if (Tr.y() < 0.05) {
-			const real_t continueProb = .5f;
-			if (rand() > continueProb) break;
-			Tr = Tr * (1/continueProb);
-		}
-		if (t0 > cutoffDistance) {
-		        const real_t continueProb = .5f;
-			if (rand() > continueProb) break;
-			Tr = Tr * (1/continueProb);
-		}
+                // Terminate if transmittance is small
+                if (Tr.y() < 0.05) {
+                        const real_t continueProb = .5f;
+                        if (rand() > continueProb) break;
+                        Tr = Tr * (1/continueProb);
+                }
+                if (t0 > cutoffDistance) {
+                        const real_t continueProb = .5f;
+                        if (rand() > continueProb) break;
+                        Tr = Tr * (1/continueProb);
+                }
 
                 // Compute emission-only source term at _p_
-		Lv = Lv + Tr * vr->Lve(curr, w, rand);
+                Lv = Lv + Tr * vr->Lve(curr, w, rand);
                 const Color ss = vr->sigma_s (curr, w, rand);
 
                 // Background
@@ -152,8 +152,8 @@ tuple<real_t,Color> SingleScattering::Li (
                                 Lv = Lv + Tr * ss * vr->p(curr,w, -sunDir, rand) * Ld * (1.f/pdf);
                         }
                 }
-	}
-	return make_tuple(1.f,Lv * step);
+        }
+        return make_tuple(1.f,Lv * step);
 }
 
 
@@ -163,19 +163,19 @@ tuple<real_t,Color> SingleScattering::Transmittance(
         const Ray &ray, const Sample &/*sample*/,
         const Interval &interval, Random& rand
 ) const {
-	if (!scene.getVolumeRegion())
+        if (!scene.getVolumeRegion())
                 return make_tuple(1.f,Color(1));
 
-	const real_t step = stepSize;//sample ? stepSize : 4.f * stepSize;
-	const real_t offset = rand ();
-		//sample ? sample->oneD[tauSampleOffset][0] :
-		//RandomFloat();
-	const Color tau =
-		scene.getVolumeRegion()->tau(ray, interval, step, offset, rand);
-	return make_tuple(1.f,exp(-tau));
+        const real_t step = stepSize;//sample ? stepSize : 4.f * stepSize;
+        const real_t offset = rand ();
+                //sample ? sample->oneD[tauSampleOffset][0] :
+                //RandomFloat();
+        const Color tau =
+                scene.getVolumeRegion()->tau(ray, interval, step, offset, rand);
+        return make_tuple(1.f,exp(-tau));
 }
 
 
 
-}
+} }
 

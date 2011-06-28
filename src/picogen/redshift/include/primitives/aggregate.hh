@@ -25,7 +25,7 @@
 #include "boundprimitive.hh"
 #include <stdexcept>
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
         class Aggregate : public Primitive {
         public:
                 virtual ~Aggregate () {}
@@ -49,6 +49,6 @@ namespace redshift { namespace primitive {
                                 "getBsdf() called on BoundAggregate.");
                 }
         };
-} }
+} } }
 
 #endif // AGGREGATE_HH_INCLUDED_20100120

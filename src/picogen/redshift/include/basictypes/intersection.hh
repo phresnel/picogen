@@ -27,9 +27,9 @@
 #include "../basictypes/differentialgeometry.hh"
 
 
-namespace redshift { class Primitive; }
+namespace picogen { namespace redshift { class Primitive; } }
 
-namespace redshift {
+namespace picogen { namespace redshift {
         SEALED(Intersection);
 
         class Intersection : MAKE_SEALED(Intersection) {
@@ -57,6 +57,6 @@ namespace redshift {
                 Primitive const *primitive;
                 DifferentialGeometry differentialGeometry;
         };
-}
+} }
 
 #endif // INTERSECTION_H_INCLUDED_20090301

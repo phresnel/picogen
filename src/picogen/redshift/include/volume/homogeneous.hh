@@ -24,7 +24,7 @@
 #include "../basictypes/volume.hh"
 #include "../sealed.hh"
 
-namespace redshift { namespace volume {
+namespace picogen { namespace redshift { namespace volume {
 
         // VolumeRegion.
         SEALED(Homogeneous);
@@ -67,6 +67,6 @@ namespace redshift { namespace volume {
                 const Color Lve_;
                 const real_t henyeyGreensteinParameter;
         };
-} }
+} } }
 
 #endif // HOMOGENEOUS_HH_INCLUDED_20100211

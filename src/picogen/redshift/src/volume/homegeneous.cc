@@ -22,7 +22,7 @@
 #include "../../include/volume/homogeneous.hh"
 #include "../../include/interval.hh"
 
-namespace redshift { namespace volume {
+namespace picogen { namespace redshift { namespace volume {
 
 
 
@@ -99,5 +99,5 @@ Color Homogeneous::tau (
 
 
 
-} }
+} } }
 

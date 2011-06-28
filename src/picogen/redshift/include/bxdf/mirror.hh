@@ -23,7 +23,7 @@
 
 #include "../basictypes/bsdf.hh"
 
-namespace redshift { namespace bsdf {
+namespace picogen { namespace redshift { namespace bsdf {
         SEALED(Mirror);
         class Mirror : public Bxdf, MAKE_SEALED(Mirror) {
         public:
@@ -42,6 +42,6 @@ namespace redshift { namespace bsdf {
         private:
                 Color const color;
         };
-} }
+} } }
 
 #endif // LAMBERTIAN_HH_INCLUDED_20100119

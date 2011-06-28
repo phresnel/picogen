@@ -22,7 +22,7 @@
 #include "../../include/random.hh"
 #include "../../include/sampling.hh"
 
-namespace redshift { namespace bsdf {
+namespace picogen { namespace redshift { namespace bsdf {
 
 
 
@@ -61,4 +61,4 @@ real_t BrdfToBtdf::pdf (const Vector &out, const Vector &in) const {
 
 
 
-} }
+} } }

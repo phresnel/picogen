@@ -22,7 +22,7 @@
 #include "../../include/primitives/instance.hh"
 #include "../../include/basictypes/intersection.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 
@@ -68,4 +68,4 @@ shared_ptr<Bsdf> Instance::getBsdf(const DifferentialGeometry &/*dg*/) const {
 void Instance::prepare (const Scene &s) {
         primitive->prepare (s);
 }
-} }
+} } }

@@ -24,7 +24,7 @@
 #include "shape.hh"
 #include "../sealed.hh"
 
-namespace redshift { namespace shape {
+namespace picogen { namespace redshift { namespace shape {
         SEALED(ClosedSphere);
 
         class ClosedSphere : public Shape, MAKE_SEALED(ClosedSphere) {
@@ -40,6 +40,6 @@ namespace redshift { namespace shape {
                 ClosedSphere(ClosedSphere const&);
                 ClosedSphere &operator = (ClosedSphere const&);
         };
-} }
+} } }
 
 #endif // CLOSEDSPHERE_H_INCLUDED_20090301

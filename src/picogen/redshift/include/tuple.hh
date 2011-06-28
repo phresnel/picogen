@@ -23,10 +23,10 @@
 
 #include <boost/tuple/tuple.hpp>
 
-namespace redshift {
+namespace picogen { namespace redshift {
         using boost::tuple;
         using boost::get;
         using boost::make_tuple;
-}
+} }
 
 #endif // TUPLE_HH_INCLUDED_20090311

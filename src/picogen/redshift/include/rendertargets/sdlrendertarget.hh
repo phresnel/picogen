@@ -25,7 +25,7 @@
 #include "../sealed.hh"
 #include <SDL/SDL.h>
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         SEALED(SdlRenderTarget);
         class SdlRenderTarget
@@ -60,6 +60,6 @@ namespace redshift {
                 SdlRenderTarget & operator = (SdlRenderTarget const &) ;
         };
 
-} // namespace redshift
+} }
 
 #endif // SDLRENDERTARGET_HH_INCLUDED_20090307

@@ -23,12 +23,12 @@
 
 #include "primitive.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class BoundPrimitive : public Primitive {
         public:
                 virtual BoundingBox boundingBox() const = 0;
                 virtual ~BoundPrimitive () {}
         };
-}
+} }
 
 #endif // BOUNDPRIMITIVE_H_INCLUDED_20100811

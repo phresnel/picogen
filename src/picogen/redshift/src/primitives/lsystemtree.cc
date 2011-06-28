@@ -42,7 +42,7 @@ boost::optional<LSystem> compile(const char*);
 
 
 
-namespace redshift { namespace {
+namespace picogen { namespace redshift { namespace {
         class LSystemTreeMesher {
         public:
                 LSystemTreeMesher (unsigned int slices,
@@ -276,11 +276,11 @@ namespace redshift { namespace {
                 stateStack.pop();
         }
 
-} }
+} } }
 
 
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 //-----------------------------------------------------------------------------
@@ -379,4 +379,4 @@ shared_ptr<Bsdf> LSystemTree::getBsdf(
 }
 
 
-} }
+} } }

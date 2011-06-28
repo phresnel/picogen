@@ -20,7 +20,7 @@
 
 #include "../../include/basictypes/differentialgeometry.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 
@@ -95,6 +95,4 @@ void DifferentialGeometry::applyTransform (Transform const &t) {
         dndv = t * dndv;
 }
 
-
-
-}
+} }

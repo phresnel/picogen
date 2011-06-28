@@ -24,7 +24,7 @@
 #include "../sealed.hh"
 #include "usercommandprocessor.hh"
 
-namespace redshift { namespace interaction {
+namespace picogen { namespace redshift { namespace interaction {
 
         SEALED(PassiveCommandProcessor);
 
@@ -48,6 +48,6 @@ namespace redshift { namespace interaction {
         private:
                 bool doQuit;
         };
-} }
+} } }
 
 #endif // PASSIVECOMMANDPROCESSOR_HH_INCLUDED_20090404

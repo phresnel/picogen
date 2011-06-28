@@ -21,7 +21,7 @@
 #include <limits>
 #include "../include/constants.hh"
 
-namespace redshift { namespace constants {
+namespace picogen { namespace redshift { namespace constants {
 
         float const epsilon_value<float>::value = 0.01f;
         double const epsilon_value<double>::value = 0.01;
@@ -53,4 +53,4 @@ namespace redshift { namespace constants {
         real_t const zero = static_cast<real_t>(0);
         real_t const one = static_cast<real_t>(1);
         real_t const two = static_cast<real_t>(2);
-} }
+} } }

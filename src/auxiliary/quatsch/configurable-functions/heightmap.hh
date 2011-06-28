@@ -80,7 +80,7 @@ namespace quatsch {  namespace configurable_functions {
                 scalar_t width, height, depth;
                 scalar_t iwidth, iheight, idepth;
 
-                typedef redshift::aux::Heightmap<scalar_t> RedshiftHeightmap;
+                typedef picogen::redshift::aux::Heightmap<scalar_t> RedshiftHeightmap;
                 RedshiftHeightmap heightmap;
 
         public:

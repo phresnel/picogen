@@ -24,7 +24,7 @@
 #include "../basictypes/volume.hh"
 #include "../sealed.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         // VolumeIntegrator.
         SEALED (SingleScattering);
@@ -48,6 +48,6 @@ namespace redshift {
         private:
                 real_t stepSize, cutoffDistance;
         };
-}
+} }
 
 #endif // EMISSION_HH_INCLUDED_20100211

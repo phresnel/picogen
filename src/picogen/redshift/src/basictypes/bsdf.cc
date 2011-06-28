@@ -21,7 +21,7 @@
 #include "../../include/basictypes/bsdf.hh"
 #include "../../include/sampling.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 Bsdf::Bsdf (DifferentialGeometry const &shadingDG
@@ -201,6 +201,4 @@ int Bsdf::numComponents (BsdfFilter s) const {
         return ret;
 }
 
-
-
-}
+} }

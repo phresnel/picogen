@@ -26,7 +26,7 @@
 #include "constants.hh"
 #include "tuple.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         // The R postfix is for "rejection sampled"
         inline tuple<real_t,real_t> uniformDiskR (Random &rand) {
@@ -52,6 +52,6 @@ namespace redshift {
                 const real_t z = get<1>(r2);
                 return make_tuple(x, std::sqrt(1-x*x-z*z), z);
         }
-}
+} }
 
 #endif // SAMPLING_HH_INCLUDED_20100701

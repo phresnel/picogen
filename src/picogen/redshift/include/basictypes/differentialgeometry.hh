@@ -24,7 +24,7 @@
 #include "../geometry.hh"
 #include "../sealed.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         SEALED(DifferentialGeometry);
 
@@ -74,6 +74,6 @@ namespace redshift {
                 real_t u_, v_;
                 unsigned char textureId_;
         };
-}
+} }
 
 #endif // DIFFERENTIALGEOMETRY_H_INCLUDED_20090301

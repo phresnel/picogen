@@ -21,9 +21,9 @@
 #ifndef PROGRESSREPORTER_HH_INCLUDED_20090317
 #define PROGRESSREPORTER_HH_INCLUDED_20090317
 
-namespace redshift { class RenderTargetLock; }
+namespace picogen { namespace redshift { class RenderTargetLock; } }
 
-namespace redshift { namespace interaction {
+namespace picogen { namespace redshift { namespace interaction {
         class ProgressReporter {
         public:
                 virtual void report (int completed, int total) = 0;
@@ -32,6 +32,6 @@ namespace redshift { namespace interaction {
                 typedef shared_ptr<ProgressReporter> Ptr;
                 typedef shared_ptr<ProgressReporter const> ConstPtr;
         };
-} }
+} } }
 
 #endif // PROGRESSREPORTER_HH_INCLUDED_20090317

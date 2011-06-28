@@ -24,7 +24,7 @@
 #include "../cameras/camera.hh"
 #include "../smart_ptr.hh"
 
-namespace redshift { namespace camera {
+namespace picogen { namespace redshift { namespace camera {
 
         SEALED(CubeMapFace);
 
@@ -51,6 +51,6 @@ namespace redshift { namespace camera {
                 real_t invFilmWidth;
                 real_t invFilmHeight;
         };
-} }
+} } }
 
 #endif // CUBEMAPFACE_HH_INCLUDED_20100411

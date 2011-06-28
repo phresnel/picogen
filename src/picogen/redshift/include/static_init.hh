@@ -22,7 +22,7 @@
 #define STATIC_INIT_HH_INCLUDED_20100317
 
 #include "basictypes/spectrum.hh"
-namespace redshift {
+namespace picogen { namespace redshift {
         inline void static_init() {
                 redshift::SpectrumBase<float,spectrum_samples>::static_init();
                 redshift::SpectrumBase<float,longspectrum_samples>::static_init();
@@ -39,6 +39,6 @@ namespace redshift {
                 redshift::SpectrumBase<long double,referencespectrum_samples>::static_init();
                 redshift::SpectrumBase<long double,halfreferencespectrum_samples>::static_init();
         }
-}
+} }
 
 #endif // STATIC_INIT_HH_INCLUDED_20100317

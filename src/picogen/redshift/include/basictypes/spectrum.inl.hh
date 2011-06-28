@@ -26,7 +26,7 @@
 #include <sstream>
 #include "../algorithm.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 // Spectral Data Definitions
 template <typename T, unsigned int N> SpectrumBase<T,N> SpectrumBase<T,N>::X;
@@ -358,4 +358,4 @@ inline SpectrumBase<T,N> SpectrumBase<T,N>::FromRGB(color::RGB const &rgb, Spect
 }
 
 
-} // namespace redshift
+} }

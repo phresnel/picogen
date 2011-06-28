@@ -33,7 +33,7 @@
 #include "quatsch/configurable-functions/heightmapdef.hh"
 #include "quatsch/configurable-functions/libnoise-support-def.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 template <typename BASE>
 class quatsch_function : public BASE {
 private:
@@ -181,6 +181,6 @@ public:
 typedef quatsch_function<HeightFunction> QuatschHeightFunction;
 typedef quatsch_function<DistributionFunction> QuatschDistributionFunction;
 
-} // namespace redshift
+} }
 
 #endif // QUATSCH_HEIGHT_FUNCTION_HH_INCLUDED_20100227

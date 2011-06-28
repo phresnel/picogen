@@ -25,14 +25,14 @@
 #include "../basictypes/spectrum.hh"
 #include "../primitives/primitive.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Intersection;
         class Scene;
         class HeightFunction;
-}
+} }
 
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         class LazyQuadtreeImpl;
 
@@ -73,6 +73,6 @@ namespace redshift { namespace primitive {
                 shared_ptr<LazyQuadtreeImpl> impl;
                 shared_ptr<HeightFunction const> heightFun;
         };
-} }
+} } }
 
 #endif // LAZY_QUADTREE_HH_INCLUDED_20100116

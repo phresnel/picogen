@@ -23,7 +23,7 @@
 
 #include "real.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         // Should be in kallisto.
         class Interval {
@@ -52,6 +52,6 @@ namespace redshift {
                 void assert_valid() {}
                 real_t min_, max_;
         };
-}
+} } 
 
 #endif // INTERVAL_HH_INCLUDED_20100702

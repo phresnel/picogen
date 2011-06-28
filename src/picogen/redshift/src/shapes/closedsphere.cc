@@ -25,7 +25,7 @@
 #include "../../include/basictypes/differentialgeometry.hh"
 
 
-namespace redshift { namespace shape {
+namespace picogen { namespace redshift { namespace shape {
 
 
 
@@ -82,4 +82,4 @@ optional<DifferentialGeometry> ClosedSphere::intersect(Ray const &ray) const {
 
 
 
-} }
+} } }

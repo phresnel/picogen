@@ -25,7 +25,7 @@
 #include "../auxiliary/image.hh"
 #include <string>
 
-namespace redshift {
+namespace picogen { namespace redshift {
         namespace texture {
                 class ColorImage : public ColorTexture {
                 public:
@@ -39,6 +39,6 @@ namespace redshift {
                         aux::ColorImage image;
                 };
         }
-}
+} }
 
 #endif // CONSTANT_HH_INCLUDED_20100817

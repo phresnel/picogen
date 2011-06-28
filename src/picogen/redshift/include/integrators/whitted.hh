@@ -27,7 +27,7 @@
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         SEALED(WhittedIntegrator);
         class WhittedIntegrator
         : public Integrator
@@ -52,6 +52,6 @@ namespace redshift {
                         const bool doMirror
                 ) const ;
         };
-}
+} }
 
 #endif // WHITTED_INCLUDED_20100509

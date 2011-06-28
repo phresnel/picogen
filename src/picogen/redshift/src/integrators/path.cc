@@ -22,7 +22,7 @@
 #include "../../include/random.hh"
 #include "ignore_strict_aliasing" // because of boost::optional
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 
@@ -128,4 +128,4 @@ DistantRadiance PathIntegrator::Li (
         }
 }
 
-}
+} }

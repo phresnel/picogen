@@ -22,7 +22,7 @@
 #include "redshift/include/basictypes/film.hh"
 #include "redshift/include/constants.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 void saveOpenEXR (Film const &film, const char *filename) {
         typedef redshift::color::RGB PicogenRGB;
@@ -58,4 +58,4 @@ void saveOpenEXR (Film const &film, const char *filename) {
         file.writePixels (height);
 }
 
-}
+} }

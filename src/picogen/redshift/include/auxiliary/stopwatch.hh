@@ -24,7 +24,8 @@
 #ifdef _OPENMP
 #include <omp.h>
 #include <iostream>
-namespace redshift {
+namespace picogen { namespace redshift {
+        // Gives you the real world time, as opposed to ComputationTime.
         class StopWatch {
                 double begin, end;
                 bool stopped;
@@ -57,13 +58,13 @@ namespace redshift {
                 }
 
         };
-}
+} }
 #else
 #pragma message "redshift:stopwatch.hh: falling back to clock(). Is this "\
         "intentional? Otherwise, ensure that _OPENMP is defined. clock() is not"\
         " what StopWatch intends to provide."
 #include <ctime>
-namespace redshift {
+namespace picogen { namespace redshift {
         class StopWatch {
                 double begin, end;
                 bool stopped;
@@ -96,7 +97,7 @@ namespace redshift {
                 }
 
         };
-}
+} }
 #endif
 
 #endif // STOPWATCH_HH_INCLUDED_20100125

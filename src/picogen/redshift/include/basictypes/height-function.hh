@@ -23,7 +23,7 @@
 
 #include "../real.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 class HeightFunction {
 public:
@@ -34,7 +34,7 @@ public:
          const = 0;
 };
 
-}
+} }
 
 
 #endif

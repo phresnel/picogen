@@ -26,12 +26,12 @@
 #include "../basictypes/height-function.hh"
 #include "../basictypes/distribution-function.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class HeightFunction;
         class DistributionFunction;
-}
+} }
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(Forest);
         class Forest :
@@ -66,6 +66,6 @@ namespace redshift { namespace primitive {
 
                 shared_ptr<Bvh> aggregate;
         };
-} }
+} } }
 
 #endif // FOREST_HH_INCLUDED_20100816

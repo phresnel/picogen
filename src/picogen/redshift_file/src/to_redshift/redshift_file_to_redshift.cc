@@ -50,7 +50,7 @@
 #include "redshift/include/interaction/progressreporter.hh"
 
 // basictypes/
-namespace redshift{class RenderTarget;}
+namespace picogen { namespace redshift{class  RenderTarget; } }
 #include "redshift/include/basictypes/rectangle.hh"
 #include "redshift/include/basictypes/sample.hh"
 

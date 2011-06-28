@@ -35,6 +35,8 @@
 #include <omp.h>
 #include <list>
 
+namespace picogen { namespace redshift {
+namespace {
 
 // TODO outsource this to auxiliary
 template <typename T, size_t CAPACITY, bool NEED_DESTRUCTION = true>
@@ -61,9 +63,9 @@ public:
 
 template <typename T, size_t CHUNK_CAPACITY, bool NEED_DESTRUCTION = true>
 class MemoryPool {
-        typedef ::Chunk<T, CHUNK_CAPACITY, NEED_DESTRUCTION> Chunk;
+        typedef picogen::redshift::Chunk<T, CHUNK_CAPACITY, NEED_DESTRUCTION> Chunk;
         std::list<Chunk> chunks;
-        redshift::Mutex mutex;
+        Mutex mutex;
 public:
         MemoryPool() {
                 chunks.push_back(Chunk());
@@ -83,17 +85,19 @@ public:
         }
 };
 
+} } }
+
 
 //#############################################################################
 // LazyQuadtreeImpl
 //#############################################################################
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 namespace lazyquadtree {
 
         class Node;
-        typedef ::MemoryPool<Node, 1024, true> NodePool;
+        typedef MemoryPool<Node, 1024, true> NodePool;
 
         /*void clearNode (const Node *);
         typedef
@@ -826,7 +830,7 @@ private:
                 );
         }
 };
-} }
+} } }
 
 
 
@@ -836,7 +840,7 @@ private:
 //#############################################################################
 // LazyQuadtree
 //#############################################################################
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 
@@ -896,4 +900,4 @@ void LazyQuadtree::prepare (const Scene &scene) {
         impl->prepare (scene);
 }
 
-} }
+} } }

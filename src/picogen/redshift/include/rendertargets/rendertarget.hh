@@ -25,7 +25,7 @@
 #include "rendertargetlock.hh"
 #include "../smart_ptr.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class RenderTarget {
         public:
                 // TODO add a getFaceCount(), add parameter to lock()<-int face
@@ -93,6 +93,6 @@ namespace redshift {
                         targetl->setPixel (x, y, sourcel->getPixel (x, y));
                 }
         }
-}
+} }
 
 #endif // RENDERTARGET_HH_INCLUDED_20090306

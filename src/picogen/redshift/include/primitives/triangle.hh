@@ -25,12 +25,12 @@
 #include "../geometry.hh"
 #include "../primitives/boundprimitive.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class Material;
         class Intersection;
-}
+} }
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(Triangle);
 
@@ -81,6 +81,6 @@ namespace redshift { namespace primitive {
                 Vertex A, B, C;
                 shared_ptr<Material> material_;
         };
-} }
+} } }
 
 #endif // TRIANGLE_HH_INCLUDED_20100812

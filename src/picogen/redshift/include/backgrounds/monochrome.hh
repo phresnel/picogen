@@ -21,7 +21,7 @@
 #ifndef MONOCHROME_H_INCLUDED_20100112
 #define MONOCHROME_H_INCLUDED_20100112
 
-namespace redshift { namespace backgrounds {
+namespace picogen { namespace redshift { namespace backgrounds {
         DefineFinalizer(Monochrome);
         class Monochrome
         : public Background
@@ -35,6 +35,6 @@ namespace redshift { namespace backgrounds {
         private:
                 Color color;
         };
-} }
+} } }
 
 #endif // MONOCHROME_H_INCLUDED_20100112

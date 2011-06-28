@@ -49,7 +49,7 @@
 #include <RiSpectralCurve.H>
 #endif
 */
-namespace redshift { namespace background {
+namespace picogen { namespace redshift { namespace background {
 
 namespace {
         // 300-800 at 10 nm
@@ -99,10 +99,10 @@ void InitNetaTable()
 
     // samplesPositions: quick hack
     for(int i = 0; i < 1801; i++) {
-	for(int j = 0; j < 50; j++)
-	  data[j] = netaLambdaTable[j][i];
+        for(int j = 0; j < 50; j++)
+          data[j] = netaLambdaTable[j][i];
 
-	netaTable[i] = PssSunSky::Spectrum::FromSampled(data,300,790,50);
+        netaTable[i] = PssSunSky::Spectrum::FromSampled(data,300,790,50);
     }
 }
 
@@ -129,40 +129,40 @@ void  PssSunSky::CreateConstants()
 
     for (lambda = 300,i=0; lambda <= 800; lambda+=5,i++)
     {
-	lambdasi = lambda*1e-9;  /* Converstion to SI units */
+        lambdasi = lambda*1e-9;  /* Converstion to SI units */
 
-	Nlambda4 = N*lambdasi*lambdasi*lambdasi*lambdasi;
+        Nlambda4 = N*lambdasi*lambdasi*lambdasi*lambdasi;
 
-	/* Rayleigh total scattering coefficient */
-	/* (4-48), p 199, MC */
-	n2_1 = n2_1Curve.at(lambda);
-	b_m[i] =
+        /* Rayleigh total scattering coefficient */
+        /* (4-48), p 199, MC */
+        n2_1 = n2_1Curve.at(lambda);
+        b_m[i] =
                 (8*M_PI*M_PI*M_PI*n2_1*Anis_cor)/
                 (3*Nlambda4);
 
 
-	/* Mie total scattering coefficient */
-	/* (6-30). p 280; MC */
-	if (V > 3.9) K = KCurve.at(lambda); // V = 4.0;
-	else K = K25Curve.at(lambda);       // V = 2.5
+        /* Mie total scattering coefficient */
+        /* (6-30). p 280; MC */
+        if (V > 3.9) K = KCurve.at(lambda); // V = 4.0;
+        else K = K25Curve.at(lambda);       // V = 2.5
 
-	b_p[i] = 0.434*M_PI*c*pow(2*constants::pi/lambdasi,V-2) * K *
-	    pow(0.01,V-3);  /* Last term is unit correction for c */
+        b_p[i] = 0.434*M_PI*c*pow(2*constants::pi/lambdasi,V-2) * K *
+            pow(0.01,V-3);  /* Last term is unit correction for c */
 
-	/* Rayleigh Angular scattering coefficient */
-	/*  (4-55), p 200; MC */
-	/* Needs to be multiplied by (1+0.9324cos^2(theta)) to get exact
-	   angular scattering constant */
-	b_m_ang_prefix[i] = 2*M_PI*M_PI*n2_1*Anis_cor*0.7629/
-	    (3*Nlambda4);
+        /* Rayleigh Angular scattering coefficient */
+        /*  (4-55), p 200; MC */
+        /* Needs to be multiplied by (1+0.9324cos^2(theta)) to get exact
+           angular scattering constant */
+        b_m_ang_prefix[i] = 2*M_PI*M_PI*n2_1*Anis_cor*0.7629/
+            (3*Nlambda4);
 
 
-	/* Mie Angular scattering coefficient */
-	/* (6-24), p 271; MC */
-	/* Needs to be multiplied by neta(theta,lambda) to get exact
-	   angular scattering constant term */
-	b_p_ang_prefix[i] = 0.217*c*pow(2*M_PI/lambdasi,V-2)*
-	    pow(0.01,V-3);  /* Last term is unit correction for c */
+        /* Mie Angular scattering coefficient */
+        /* (6-24), p 271; MC */
+        /* Needs to be multiplied by neta(theta,lambda) to get exact
+           angular scattering constant term */
+        b_p_ang_prefix[i] = 0.217*c*pow(2*M_PI/lambdasi,V-2)*
+            pow(0.01,V-3);  /* Last term is unit correction for c */
     }
 
     beta_m = Spectrum::FromSampled(b_m, 300,800,101);
@@ -196,9 +196,9 @@ PssSunSky::Spectrum PssSunSky::GetNeta(
     theta = theta*(180.0/M_PI) * 10;
     real_t u = theta - (int)theta;
     if((theta < 0)||(theta > 1801)) {
-	std::cerr << "Error:getNeta() [theta outside range] theta=" << theta/10
-	     <<"degrees" << std::endl;
-	return Spectrum(real_t(0));
+        std::cerr << "Error:getNeta() [theta outside range] theta=" << theta/10
+             <<"degrees" << std::endl;
+        return Spectrum(real_t(0));
     }
 
     if (theta > 1800) theta=1800;
@@ -217,4 +217,4 @@ PssSunSky::Spectrum PssSunSky::GetNeta(
 
 }
 
-} }
+} } }

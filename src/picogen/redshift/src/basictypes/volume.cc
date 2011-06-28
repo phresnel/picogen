@@ -22,7 +22,7 @@
 #include "../../include/random.hh"
 #include "../../include/interval.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 // VolumeRegion.
 Color VolumeRegion::sigma_t(const Point &p, const Vector &w, Random &rand) const {
@@ -40,21 +40,21 @@ Color DensityRegion::tau (
 ) const {
         real_t t0=i.min(), t1=i.max();
 
-	Color tau (real_t(0));
+        Color tau (real_t(0));
 
-	t0 += offset * stepSize;
-	while (t0 < t1) {
-		tau = tau + this->sigma_t(rn(t0), -rn.direction, rand);
-		t0 += stepSize;
+        t0 += offset * stepSize;
+        while (t0 < t1) {
+                tau = tau + this->sigma_t(rn(t0), -rn.direction, rand);
+                t0 += stepSize;
 
-		const real_t cutoffDistance = 1000; // TODO: expose
-		if (t0 > cutoffDistance) {
-		        const real_t continueProb = .5f;
-			if (rand() > continueProb) break;
-			tau = tau * (1/continueProb);
-		}
-	}
-	return tau * stepSize;
+                const real_t cutoffDistance = 1000; // TODO: expose
+                if (t0 > cutoffDistance) {
+                        const real_t continueProb = .5f;
+                        if (rand() > continueProb) break;
+                        tau = tau * (1/continueProb);
+                }
+        }
+        return tau * stepSize;
 }
 
-}
+} }

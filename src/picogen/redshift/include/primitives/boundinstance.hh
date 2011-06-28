@@ -25,7 +25,7 @@
 #include "../sealed.hh"
 #include "../primitives/boundprimitive.hh"
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
         SEALED(BoundInstance);
 
@@ -55,6 +55,6 @@ namespace redshift { namespace primitive {
                 Transform instanceToWorld, worldToInstance;
                 shared_ptr<BoundPrimitive> primitive;
         };
-} }
+} } }
 
 #endif // BOUNDINSTANCE_HH_INCLUDED_20100815

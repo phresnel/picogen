@@ -21,7 +21,7 @@
 #include "../../include/basictypes/intersection.hh"
 #include "../../include/primitives/primitive.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 
 
@@ -95,4 +95,4 @@ void Intersection::applyTransform (Transform const &t) {
 }
 
 
-}
+} }

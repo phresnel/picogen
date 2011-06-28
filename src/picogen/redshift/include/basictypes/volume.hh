@@ -24,7 +24,7 @@
 #include "transport.hh"
 #include "../tuple.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         class Interval;
 
@@ -170,6 +170,6 @@ namespace redshift {
                         Random& rand
                 ) const = 0;
         };
-}
+} }
 
 #endif // VOLUME_HH_INCLUDED_20100210

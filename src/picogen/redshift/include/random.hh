@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include "kallisto/rng/kiss.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
         template <uint32_t m, uint32_t a, uint32_t c>
         class LCG {
@@ -85,6 +85,6 @@ namespace redshift {
 
                 kallisto::random::marsaglia::UNI rand;
         };
-}
+} }
 
 #endif

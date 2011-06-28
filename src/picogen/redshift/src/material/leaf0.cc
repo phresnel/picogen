@@ -27,7 +27,7 @@
 #include "../../include/bxdf/brdftobtdf.hh"
 
 
-namespace redshift { namespace material {
+namespace picogen { namespace redshift { namespace material {
 
 
 
@@ -62,5 +62,5 @@ real_t Leaf0::alpha (const DifferentialGeometry &dgGeom) const {
 
 
 
-} }
+} } }
 

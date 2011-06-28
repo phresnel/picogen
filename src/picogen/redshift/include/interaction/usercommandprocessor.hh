@@ -23,7 +23,7 @@
 
 #include "../smart_ptr.hh"
 
-namespace redshift { namespace interaction {
+namespace picogen { namespace redshift { namespace interaction {
         class UserCommandProcessor {
         public:
                 virtual void tick () = 0;
@@ -34,6 +34,6 @@ namespace redshift { namespace interaction {
                 typedef shared_ptr<UserCommandProcessor> Ptr;
                 typedef shared_ptr<UserCommandProcessor const> ConstPtr;
         };
-} }
+} } }
 
 #endif // USERCOMMANDPROCESSOR_HH_INCLUDED_20090318

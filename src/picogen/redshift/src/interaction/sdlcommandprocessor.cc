@@ -26,7 +26,7 @@
  #include <SDL.h>
 #endif
 
-namespace redshift { namespace interaction {
+namespace picogen { namespace redshift { namespace interaction {
 
 
 
@@ -65,4 +65,4 @@ bool SdlCommandProcessor::userWantsToQuit () const {
 
 
 
-} }
+} } }

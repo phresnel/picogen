@@ -35,7 +35,7 @@
 #include <fstream>
 
 namespace {
-        redshift::Random createRandom(
+        picogen::redshift::Random createRandom(
                 uint32_t a, uint32_t b, uint32_t c, uint32_t d
         ) {
                 using namespace kallisto::random::marsaglia;
@@ -51,7 +51,7 @@ namespace {
                 // as between the ( and the ) of a call, there is no sequence point
                 // (and thus it'd be not portable)
                 const uint32_t e=mwc(), f=mwc(), g=mwc(), h=mwc();
-                redshift::Random ret = redshift::Random (e, f, g, h);
+                picogen::redshift::Random ret = picogen::redshift::Random (e, f, g, h);
                 ret.skip(16);
                 return ret;
         }
@@ -59,7 +59,7 @@ namespace {
 
 
 
-namespace redshift {
+namespace picogen { namespace redshift {
 
 Scene::Scene (
         shared_ptr<RenderTarget> rt,
@@ -435,4 +435,4 @@ bool Scene::running() const {
         return running_;
 }
 
-} // namespace redshift
+} }

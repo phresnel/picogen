@@ -21,7 +21,7 @@
 #include "../../include/basictypes/differentialgeometry.hh"
 #include "../../include/texture/image.hh"
 
-namespace redshift { namespace texture {
+namespace picogen { namespace redshift { namespace texture {
 
 
 
@@ -61,5 +61,5 @@ real_t ColorImage::alpha(DifferentialGeometry const &dg) const {
 
 
 
-} }
+} } }
 

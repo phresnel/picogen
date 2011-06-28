@@ -22,7 +22,7 @@
 #include "../../include/backgrounds/pss-adapter.hh"
 #include "../../include/backgrounds/preetham-shirley-smits/sunsky.hh"
 
-namespace redshift { namespace backgrounds {
+namespace picogen { namespace redshift { namespace backgrounds {
 
 class PssSunAdapter : public Sun {
 public:
@@ -155,4 +155,4 @@ PssAdapter::~PssAdapter() {
         delete sun();
 }
 
-} } // namespace redshift { namespace backgrounds {
+} } }

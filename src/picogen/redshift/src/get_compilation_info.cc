@@ -20,8 +20,8 @@
 
 #include "../include/meta/compiler.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         const char *getCompilationInfo () {
                 return PICOGEN_COMPILATION_INFO;
         }
-}
+} }

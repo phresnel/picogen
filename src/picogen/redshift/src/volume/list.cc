@@ -22,7 +22,7 @@
 #include "../../include/interval.hh"
 
 
-namespace redshift { namespace volume {
+namespace picogen { namespace redshift { namespace volume {
 
 
 
@@ -124,5 +124,5 @@ Color List::tau (
 
 
 
-} }
+} } }
 

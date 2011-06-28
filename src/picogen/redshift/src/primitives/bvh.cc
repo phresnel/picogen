@@ -26,7 +26,7 @@
 #include "../../include/optional.hh"
 
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 //-----------------------------------------------------------------------------
 // Node
@@ -238,4 +238,4 @@ shared_ptr<Bvh> BvhBuilder::toBvh() {
 }
 
 
-} }
+} } }

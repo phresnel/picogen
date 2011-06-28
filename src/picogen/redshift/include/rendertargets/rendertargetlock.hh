@@ -23,13 +23,13 @@
 
 #include "../basictypes/spectrum.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         class RenderTargetLock {
         public:
                 virtual void setPixel (int x, int y, Color const & color) = 0;
                 virtual Color getPixel (int x, int y) const = 0;
                 virtual ~RenderTargetLock () {}
         };
-}
+} }
 
 #endif // RENDERTARGETLOCK_HH_INCLUDED_20090307

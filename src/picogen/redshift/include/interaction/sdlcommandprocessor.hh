@@ -25,7 +25,7 @@
 #include "../auxiliary/stopwatch.hh"
 #include "../sealed.hh"
 
-namespace redshift { namespace interaction {
+namespace picogen { namespace redshift { namespace interaction {
 
         SEALED(SdlCommandProcessor);
         class SdlCommandProcessor
@@ -45,6 +45,6 @@ namespace redshift { namespace interaction {
                 SdlCommandProcessor (SdlCommandProcessor const &);
                 SdlCommandProcessor & operator = (SdlCommandProcessor const &);
         };
-} }
+} } }
 
 #endif // SDLCOMMANDPROCESSOR_HH_INCLUDED_20090318

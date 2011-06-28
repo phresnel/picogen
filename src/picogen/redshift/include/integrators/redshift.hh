@@ -28,7 +28,7 @@
 #include "../basictypes/transport.hh"
 #include "../basictypes/bsdf.hh"
 
-namespace redshift {
+namespace picogen { namespace redshift {
         SEALED(RedshiftIntegrator);
         class RedshiftIntegrator
         : public Integrator
@@ -55,6 +55,6 @@ namespace redshift {
 
                 const int numAmbientSamples;
         };
-}
+} }
 
 #endif // REDSHIFTINTEGRATOR_INCLUDED_20100316

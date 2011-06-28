@@ -23,7 +23,7 @@
 #include "../../include/basictypes/intersection.hh"
 #include <stdexcept>
 
-namespace redshift { namespace primitive {
+namespace picogen { namespace redshift { namespace primitive {
 
 
 
@@ -75,4 +75,4 @@ BoundingBox BoundInstance::boundingBox() const {
 void BoundInstance::prepare (const Scene &s) {
         primitive->prepare (s);
 }
-} }
+} } }
