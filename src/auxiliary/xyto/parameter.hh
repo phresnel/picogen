@@ -23,7 +23,7 @@
 
 #include <string>
 #include <iostream>
-#include "soft_value.hh"
+#include "special_ptr/soft_value.hh"
 #include "constant.hh"
 
 namespace xyto {
@@ -85,7 +85,7 @@ private:
         double realval;
         std::string idval;
 
-        soft_value<Parameter> lhs_, rhs_, unary_;
+        special_ptr::soft_value<Parameter> lhs_, rhs_, unary_;
 };
 
 }

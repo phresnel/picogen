@@ -114,7 +114,7 @@ Parameter Parameter::lhs () const {
 
 
 void Parameter::setLhs (Parameter const &val) {
-        lhs_ = soft_value<Parameter>(val);
+        lhs_ = special_ptr::soft_value<Parameter>(val);
 }
 
 
@@ -130,7 +130,7 @@ Parameter Parameter::rhs () const {
 
 
 void Parameter::setRhs (Parameter const &val) {
-        rhs_ = soft_value<Parameter>(val);
+        rhs_ = special_ptr::soft_value<Parameter>(val);
 }
 
 
@@ -146,7 +146,7 @@ Parameter Parameter::unaryParameter () const {
 
 
 void Parameter::setUnaryParameter (Parameter const &val) {
-        unary_ = soft_value<Parameter>(val);
+        unary_ = special_ptr::soft_value<Parameter>(val);
 }
 
 

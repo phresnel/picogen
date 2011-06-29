@@ -22,6 +22,9 @@
 #define SOFT_VALUE_HH_INCLUDED_20100729
 
 #include <boost/scoped_ptr.hpp>
+
+namespace special_ptr {
+
 template <typename T>
 class soft_value {
 public:
@@ -58,9 +61,12 @@ void swap (soft_value<T> &lhs, soft_value<T> &rhs) {
         lhs.swap (rhs);
 }
 
+}
+
 namespace std {
-        template <typename T>
-        void swap (soft_value<T> &lhs, soft_value<T> &rhs) {
+	// TODO: check if this is legal/moral         
+	template <typename T>
+        void swap (special_ptr::soft_value<T> &lhs, special_ptr::soft_value<T> &rhs) {
                 lhs.swap (rhs);
         }
 }
