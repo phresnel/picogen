@@ -21,7 +21,7 @@
 #include "pattern.hh"
 #include "production.hh"
 #include "lsystem.hh"
-#include "kiss.hh"
+#include "random/kiss.hh"
 #include "xyto_ios.hh"
 
 namespace xyto { 

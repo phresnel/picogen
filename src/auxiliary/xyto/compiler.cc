@@ -1148,7 +1148,7 @@ void generate_warnings (LSystem const &lsys) {
 
 } }
 
-#include "kiss.hh"
+#include "random/kiss.hh"
 
 namespace xyto { 
 

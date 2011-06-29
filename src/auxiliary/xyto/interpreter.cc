@@ -369,7 +369,7 @@ Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) 
 
 } }
 
-#include "kiss.hh"
+#include "random/kiss.hh"
 
 namespace xyto { 
 

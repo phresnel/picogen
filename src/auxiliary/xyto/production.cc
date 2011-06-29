@@ -19,7 +19,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "production.hh"
-#include "kiss.hh"
+#include "random/kiss.hh"
 
 namespace xyto { 
 
