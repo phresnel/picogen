@@ -23,6 +23,8 @@
 
 #include <cmath>
 
+namespace xyto {
+
 struct TurtleVector {
         double x,y,z;
         TurtleVector () : x(0), y(0), z(0) {}
@@ -73,5 +75,7 @@ inline TurtleVector cross (TurtleVector lhs, TurtleVector rhs) {
                 lhs.z*rhs.x - lhs.x*rhs.z,
                 lhs.x*rhs.y - lhs.y*rhs.x
         );
+}
+
 }
 #endif // TURTLEVECTOR_HH_INCLUDED_20100805

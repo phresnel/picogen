@@ -23,6 +23,8 @@
 
 #include "turtlematrix.hh"
 
+namespace xyto {
+
 struct Turtle {
         TurtleVector position;
         TurtleMatrix rotation;
@@ -121,5 +123,7 @@ struct Turtle {
         }
 
 };
+
+}
 
 #endif // TURTLE_HH_INCLUDED_20100805

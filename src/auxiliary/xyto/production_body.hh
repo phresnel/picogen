@@ -23,6 +23,8 @@
 
 #include "pattern.hh"
 
+namespace xyto { 
+
 class ProductionBody {
 public:
         ProductionBody();
@@ -37,5 +39,7 @@ private:
         Pattern pattern_;
         double probability_;
 };
+
+}
 
 #endif // PRODUCTION_BODY_HH_INCLUDED_20100726

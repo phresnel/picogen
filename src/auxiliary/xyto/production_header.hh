@@ -25,6 +25,8 @@
 #include <boost/optional.hpp>
 #include "pattern.hh"
 
+namespace xyto { 
+
 class ProductionHeader {
 public:
         std::string name() const;
@@ -48,5 +50,7 @@ private:
                 pattern_;
         boost::optional<Parameter> condition_;
 };
+
+}
 
 #endif // PRODUCTION_HEADER_HH_INCLUDED_20100726

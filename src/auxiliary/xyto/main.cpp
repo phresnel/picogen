@@ -27,10 +27,13 @@
 #include "lsystem.hh"
 #include <boost/optional.hpp>
 
+namespace xyto { 
 boost::optional<LSystem> compile(const char*);
+}
 
 int main()
 {
+	using namespace xyto;
         if (1) {
                 const char * code =
                         //"foo: A B #up(25) #left(10) --> result;"

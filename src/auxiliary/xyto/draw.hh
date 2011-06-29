@@ -24,6 +24,8 @@
 #include "lsystem.hh"
 #include "turtle.hh"
 
+namespace xyto { 
+
 template <typename T>
 inline void draw (LSystem lsys, Pattern pat, Turtle turtle, T &mesh) {
         turtle.scale = 1;
@@ -107,6 +109,8 @@ inline void draw_ (Pattern pat, Turtle turtle, T &mesh, bool &first) {
         }
         if (!lastWasBranch)
                 mesh.leaf();
+}
+
 }
 
 #endif // DRAW_HH_INCLUDED_20100805

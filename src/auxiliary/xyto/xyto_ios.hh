@@ -24,6 +24,8 @@
 #include <vector>
 #include <fstream>
 
+namespace xyto {
+
 class Token;
 typedef std::vector<Token> TokenVector;
 class Pattern;
@@ -54,5 +56,7 @@ std::ostream& operator<< (std::ostream&, ProductionBody const&);
 std::ostream& operator<< (std::ostream&, std::vector<ProductionBody>const&);
 std::ostream& operator<< (std::ostream&, Production const&);
 std::ostream& operator<< (std::ostream&, std::vector<Production>const&);
+
+}
 
 #endif // XYTO_IOS_HH_INCLUDED_20100726

@@ -25,6 +25,8 @@
 #include <string>
 #include "codeiterator.hh"
 
+namespace xyto { 
+
 class Token {
 public:
         enum Type {
@@ -72,5 +74,7 @@ private:
 
 typedef std::vector<Token> TokenVector;
 typedef TokenVector::const_iterator TokenIterator;
+
+}
 
 #endif // TOKEN_HH_INCLUDED_20100726

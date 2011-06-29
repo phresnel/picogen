@@ -21,6 +21,8 @@
 #include "production.hh"
 #include "kiss.hh"
 
+namespace xyto { 
+
 ProductionHeader Production::header() const {
                 return header_;
 }
@@ -85,4 +87,6 @@ Production& Production::operator= (Production const &rhs) {
         header_ = rhs.header_;
         bodies_ = rhs.bodies_;
         return *this;
+}
+
 }

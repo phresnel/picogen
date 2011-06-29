@@ -24,6 +24,7 @@
 #include "pattern.hh"
 #include "parameterlist.hh"
 
+namespace xyto { 
 
 bool operator == (Segment const &lhs, Segment const &rhs) {
         if (lhs.type() != rhs.type())
@@ -159,4 +160,6 @@ void Segment::setType (Type type) {
 
 Segment::Type Segment::type () const {
         return type_;
+}
+
 }

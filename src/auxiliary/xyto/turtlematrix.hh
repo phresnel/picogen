@@ -23,6 +23,8 @@
 
 #include "turtlevector.hh"
 
+namespace xyto {
+
 class TurtleMatrix {
 public:
         TurtleMatrix()  :
@@ -160,5 +162,7 @@ private:
         double m10, m11, m12;
         double m20, m21, m22;
 };
+
+}
 
 #endif // TURTLEMATRIX_HH_INCLUDED_20100805

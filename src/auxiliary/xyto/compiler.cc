@@ -35,6 +35,8 @@
 #include "lsystem.hh"
 
 
+namespace xyto { 
+
 Pattern fold (Pattern const &);
 
 namespace {
@@ -1144,9 +1146,12 @@ void generate_warnings (LSystem const &lsys) {
         }
 }
 
-} // namespace {
+} }
 
 #include "kiss.hh"
+
+namespace xyto { 
+
 boost::optional<LSystem> compile (const char *code) {
         const TokenVector tokens = tokenize (code);
 
@@ -1238,4 +1243,6 @@ boost::optional<LSystem> compile (const char *code) {
                                 break;
                         }
                 }*/
+}
+
 }

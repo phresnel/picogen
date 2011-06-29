@@ -22,6 +22,8 @@
 
 #include <sstream>
 
+namespace xyto { 
+
 Token::Token (Type type_,
        const CodeIterator &from,
        const CodeIterator &to
@@ -110,4 +112,6 @@ CodeIterator Token::from() const {
 
 CodeIterator Token::to() const {
         return to_;
+}
+
 }

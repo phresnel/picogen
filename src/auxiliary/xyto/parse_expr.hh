@@ -25,6 +25,8 @@
 #include "parameter.hh"
 #include "token.hh"
 
+namespace xyto { 
+
 boost::optional<Parameter> parse_term (TokenIterator it, TokenIterator end,
                                        TokenIterator &behind);
 boost::optional<Parameter> parse_expr (TokenIterator it, TokenIterator end,
@@ -33,6 +35,6 @@ boost::optional<Parameter> parse_rel(TokenIterator it, TokenIterator end,
                                      TokenIterator &behind);
 boost::optional<Parameter> parse_logical(TokenIterator it, TokenIterator end,
                                      TokenIterator &behind);
-
+}
 
 #endif // PARSE_EXPR_HH_INCLUDED_20100730

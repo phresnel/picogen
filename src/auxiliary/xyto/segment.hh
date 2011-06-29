@@ -25,6 +25,8 @@
 #include <boost/shared_ptr.hpp>
 #include "parameterlist.hh"
 
+namespace xyto { 
+
 class ParameterList;
 class Pattern;
 
@@ -61,5 +63,7 @@ private:
 
 bool operator == (Segment const &lhs, Segment const &rhs);
 bool operator != (Segment const &lhs, Segment const &rhs);
+
+}
 
 #endif // SYMBOL_HH_INCLUDED_20100726

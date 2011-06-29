@@ -18,5 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ifndef TOKENIZE_HH_INCLUDED_20100805
+#define TOKENIZE_HH_INCLUDED_20100805
+
 #include "token.hh"
-TokenVector tokenize(const char *code);
+
+namespace xyto {
+        TokenVector tokenize(const char *code);
+}
+
+#endif

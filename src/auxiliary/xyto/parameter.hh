@@ -26,6 +26,8 @@
 #include "soft_value.hh"
 #include "constant.hh"
 
+namespace xyto {
+
 class Parameter {
 public:
         enum Type {
@@ -63,8 +65,8 @@ public:
         void toParameterIndex (int index);
         int parameterIndex() const;
 
-        void toConstant (::Constant c);
-        ::Constant constant() const;
+        void toConstant (xyto::Constant c);
+        xyto::Constant constant() const;
 
         Parameter lhs () const;
         void setLhs (Parameter const &);
@@ -85,6 +87,8 @@ private:
 
         soft_value<Parameter> lhs_, rhs_, unary_;
 };
+
+}
 
 
 #endif // PARAMETER_HH_INCLUDED_20100726

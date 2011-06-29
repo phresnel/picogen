@@ -29,6 +29,8 @@
 
 #include "turtlevector.hh"
 
+namespace xyto {
+
 std::ostream& operator<< (std::ostream& o, Token const &rhs) {
         o << "[" << rhs.value() << "]";
         return o;
@@ -209,4 +211,6 @@ std::ostream& operator<< (std::ostream &o, LSystem const &ls) {
 std::ostream& operator<< (std::ostream& o, TurtleVector const &rhs) {
         o << "[" << rhs.x << ", " << rhs.y << ", " << rhs.z << "]";
         return o;
+}
+
 }

@@ -21,7 +21,7 @@
 #include "pattern.hh"
 #include "production_header.hh"
 
-
+namespace xyto { 
 
 std::string ProductionHeader::name() const {
         return name_;
@@ -79,4 +79,6 @@ Pattern ProductionHeader::pattern() const {
 
 void ProductionHeader::setPattern(Pattern const & p) {
         pattern_ = p;
+}
+
 }

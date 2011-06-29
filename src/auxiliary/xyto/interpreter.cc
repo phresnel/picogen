@@ -25,6 +25,8 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace xyto { 
+
 namespace {
 /*
 // Returns the number of matched Segments *in the axiom*.
@@ -365,10 +367,11 @@ Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) 
         return ret;
 }
 
-} // namespace {
+} }
 
 #include "kiss.hh"
 
+namespace xyto { 
 
 Parameter fold (Parameter const &param) {
         try {
@@ -465,6 +468,8 @@ boost::optional<Pattern> apply(std::vector<Production> const &prods,
         if (axiomWasTweaked)
                 return ret;
         return boost::optional<Pattern>();
+}
+
 }
 
 

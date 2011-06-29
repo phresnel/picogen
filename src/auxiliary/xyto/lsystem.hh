@@ -31,6 +31,8 @@ namespace kallisto { namespace random { namespace marsaglia {
         class UNI;
 } } }
 
+namespace xyto { 
+
 class LSystem {
 public:
         Pattern axiom () const;
@@ -55,5 +57,7 @@ private:
         std::vector<Production> productions_;
         Pattern axiom_;
 };
+
+}
 
 #endif // LSYSTEM_HH_INCLUDED_20100802

@@ -29,6 +29,8 @@ namespace kallisto { namespace random { namespace marsaglia {
         class UNI;
 } } }
 
+namespace xyto { 
+
 class Production {
 public:
         Production();
@@ -48,5 +50,7 @@ private:
         ProductionHeader header_;
         std::vector<ProductionBody> bodies_;
 };
+
+}
 
 #endif // PRODUCTION_HH_INCLUDED_20100726

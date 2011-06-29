@@ -22,6 +22,8 @@
 #include <stdexcept>
 #include "parameter.hh"
 
+namespace xyto {
+
 Parameter::Type Parameter::type() const {
         return type_;
 }
@@ -166,28 +168,28 @@ int Parameter::parameterIndex() const {
 
 
 
-void Parameter::toConstant (::Constant c) {
+void Parameter::toConstant (xyto::Constant c) {
         if (type_ != Identifier)
                 std::cout << "internal runtime error: Parameter::"
                         "toConstant() called for non-"
                         "identifier\n";
         switch (c.type()) {
-        case ::Constant::Real:
+        case xyto::Constant::Real:
                 type_ = Real;
                 realval = c.toReal();
                 break;
-        case ::Constant::Integer:
+        case xyto::Constant::Integer:
                 type_ = Integer;
                 intval = c.toInteger();
                 break;
-        case ::Constant::String:
+        case xyto::Constant::String:
                 throw std::runtime_error(
                         "in function xyto->Paramater::toConstant(), c is of "
                         "type String");
         }
 }
 
-
+}
 
 /*Constant Parameter::constant() const {
         return constant_;

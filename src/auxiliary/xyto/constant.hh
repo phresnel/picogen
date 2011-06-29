@@ -23,6 +23,8 @@
 
 #include <string>
 
+namespace xyto { 
+
 class Constant {
 public:
         enum Type { Integer, Real, String };
@@ -63,5 +65,7 @@ private:
         int integer_;
         double real_;
 };
+
+}
 
 #endif // CONSTANT_HH_INCLUDED_20100803

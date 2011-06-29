@@ -38,8 +38,9 @@
 #include "../../include/material/matte.hh"
 #include "../../include/material/leaf0.hh"
 
+namespace xyto {
 boost::optional<LSystem> compile(const char*);
-
+}
 
 
 namespace picogen { namespace redshift { namespace {
@@ -51,8 +52,8 @@ namespace picogen { namespace redshift { namespace {
                                    real_t texuscale, real_t texvscale
                                   );
                 ~LSystemTreeMesher ();
-                void moveTo (Turtle state);
-                void drawTo (Turtle newState);
+                void moveTo (xyto::Turtle state);
+                void drawTo (xyto::Turtle newState);
                 void leaf();
                 //GLuint displayList() const;
                 //std::vector<GLuint> textures() const;
@@ -62,8 +63,8 @@ namespace picogen { namespace redshift { namespace {
                 std::vector<redshift::primitive::Triangle> triangles;
         private:
                 void leaf_();
-                Turtle state;
-                std::stack<Turtle> stateStack;
+                xyto::Turtle state;
+                std::stack<xyto::Turtle> stateStack;
                 unsigned int slices;
 
                 shared_ptr<Material> barkMaterial;
@@ -100,19 +101,20 @@ namespace picogen { namespace redshift { namespace {
 
 
 
-        void LSystemTreeMesher::moveTo (Turtle state) {
+        void LSystemTreeMesher::moveTo (xyto::Turtle state) {
                 this->state = state;
         }
 
 
 
-        void LSystemTreeMesher::drawTo (Turtle newState) {
+        void LSystemTreeMesher::drawTo (xyto::Turtle newState) {
                 using std::fabs;
                 using std::acos;
                 using redshift::primitive::Triangle;
                 typedef Triangle::Vertex Vertex;
                 typedef Triangle::TextureCoordinates TexCoords;
                 using namespace redshift;
+                using namespace xyto;
 
                 const double pi = 3.14159, pi2 = pi*2;
 
@@ -187,6 +189,8 @@ namespace picogen { namespace redshift { namespace {
                 typedef Triangle::Vertex Vertex;
                 typedef Triangle::TextureCoordinates TexCoords;
                 using namespace redshift;
+                using namespace xyto;
+
                 const unsigned int count = rand() % 10 + 5;
                 for (unsigned int i=0; i<count; ++i) {
                         const double s = 30;
@@ -293,6 +297,7 @@ LSystemTree::LSystemTree(
 )
 {
         using redshift::primitive::Triangle;
+        using namespace xyto;
 
         LSystem lsys;
         Pattern pat;

@@ -21,6 +21,8 @@
 #include "pattern.hh"
 #include "segment.hh"
 
+namespace xyto { 
+
 Segment const& Pattern::operator[] (unsigned int i) const {
         return symbols[i];
 }
@@ -98,11 +100,14 @@ bool operator == (Pattern const &lhs, Pattern const &rhs) {
         return true;
 }
 
+}
+
 
 #include <iostream>
 #include "production.hh"
 #include "xyto_ios.hh"
 
+namespace xyto { 
 
 bool operator <= (Pattern const &lhs, Pattern const &rhs) {
         /*if (lhs.size()>rhs.size())
@@ -196,4 +201,6 @@ unsigned int rmatch (Pattern const &pattern,
         return match (pattern.rbegin(), pattern.rend(),
                       axiom.rbegin(), axiom.rend(),
                       maySkipBranchesAtExtremes);
+}
+
 }

@@ -24,6 +24,8 @@
 #include "kiss.hh"
 #include "xyto_ios.hh"
 
+namespace xyto { 
+
 Pattern LSystem::axiom () const {
         return axiom_;
 }
@@ -118,4 +120,6 @@ Pattern LSystem::run (
                 }
         }
         return pat;
+}
+
 }

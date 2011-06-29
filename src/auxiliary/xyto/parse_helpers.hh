@@ -21,6 +21,8 @@
 #ifndef PARSE_HELPERS_HH_INCLUDED_20100726
 #define PARSE_HELPERS_HH_INCLUDED_20100726
 
+namespace xyto { 
+
 bool is_num(char c) {
         switch (c) {
         case '0': case '1': case '2': case '3': case '4':
@@ -68,6 +70,8 @@ bool is_white (char c) {
                 return true;
         };
         return false;
+}
+
 }
 
 #endif // PARSE_HELPERS_HH_INCLUDED_20100726

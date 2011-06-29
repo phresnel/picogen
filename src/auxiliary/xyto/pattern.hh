@@ -24,6 +24,8 @@
 #include <vector>
 #include "segment.hh"
 
+namespace xyto { 
+
 class Segment;
 
 class Pattern {
@@ -83,5 +85,7 @@ unsigned int match (Pattern const &pattern,
 unsigned int rmatch (Pattern const &pattern,
                      Pattern const &axiom,
                      bool maySkipBranchesAtExtremes);
+
+}
 
 #endif // PATTERN_HH_INCLUDED_20100726

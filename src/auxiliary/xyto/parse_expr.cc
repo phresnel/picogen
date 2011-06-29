@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include "xyto_ios.hh"
 
+namespace xyto { 
 namespace {
 
 boost::optional<Parameter> parse_factor (TokenIterator it,
@@ -218,5 +219,7 @@ boost::optional<Parameter> parse_logical(TokenIterator it, TokenIterator end,
                                      TokenIterator &behind)
 {
         return parse_term_tpl<LogTokens, parse_rel, -1>(it, end, behind);
+}
+
 }
 

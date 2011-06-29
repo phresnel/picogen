@@ -23,6 +23,8 @@
 #include "parse_helpers.hh"
 #include "tokenize.hh"
 
+namespace xyto { 
+
 TokenVector tokenize(const char *code) {
         TokenVector tokens;
         typedef CodeIterator CI;
@@ -186,3 +188,4 @@ TokenVector tokenize(const char *code) {
         return tokens;
 }
 
+}

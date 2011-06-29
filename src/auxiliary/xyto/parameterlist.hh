@@ -24,6 +24,8 @@
 #include <vector>
 #include "parameter.hh"
 
+namespace xyto { 
+
 class Parameter;
 
 class ParameterList {
@@ -41,5 +43,7 @@ public:
 private:
         std::vector<Parameter> parameters_;
 };
+
+}
 
 #endif // PARAMETERLIST_HH_INCLUDED_20100726

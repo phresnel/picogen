@@ -20,6 +20,8 @@
 
 #include "parameterlist.hh"
 
+namespace xyto { 
+
 unsigned int ParameterList::size() const {
         return parameters_.size();
 }
@@ -66,3 +68,6 @@ ParameterList& ParameterList::operator= (ParameterList const &rhs) {
         parameters_ = rhs.parameters_;
         return *this;
 }
+
+}
+

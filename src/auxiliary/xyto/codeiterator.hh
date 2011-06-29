@@ -23,6 +23,8 @@
 
 #include <boost/optional.hpp>
 
+namespace xyto { 
+
 class CodeIterator {
 public:
         CodeIterator()
@@ -107,5 +109,7 @@ private:
                 ++curr;
         }
 };
+
+} 
 
 #endif // CODEITERATOR_HH_INCLUDED_20100726

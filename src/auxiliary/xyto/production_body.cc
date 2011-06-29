@@ -21,6 +21,8 @@
 #include "pattern.hh"
 #include "production_body.hh"
 
+namespace xyto { 
+
 Pattern ProductionBody::pattern() const {
         return pattern_;
 }
@@ -62,3 +64,6 @@ ProductionBody& ProductionBody::operator= (ProductionBody const &rhs) {
         probability_ = rhs.probability_;
         return *this;
 }
+
+}
+
