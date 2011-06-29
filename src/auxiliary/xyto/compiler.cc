@@ -1148,8 +1148,6 @@ void generate_warnings (LSystem const &lsys) {
 
 } }
 
-#include "random/kiss.hh"
-
 namespace xyto { 
 
 boost::optional<LSystem> compile (const char *code) {

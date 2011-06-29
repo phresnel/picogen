@@ -27,11 +27,11 @@
 #include "production.hh"
 #include "constant.hh"
 
-namespace kallisto { namespace random { namespace marsaglia {
+namespace portable_rng { namespace marsaglia {
         class UNI;
-} } }
+} }
 
-namespace xyto { 
+namespace xyto {
 
 class LSystem {
 public:
@@ -42,7 +42,7 @@ public:
         void setProductions (std::vector<Production> const &);
         std::vector<Production> productions() const;
 
-        Pattern run (kallisto::random::marsaglia::UNI &rng,
+        Pattern run (portable_rng::marsaglia::UNI &rng,
                      unsigned int count) const;
         Pattern run (unsigned int count) const;
 

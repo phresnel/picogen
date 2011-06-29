@@ -21,7 +21,7 @@
 #include "pattern.hh"
 #include "production.hh"
 #include "lsystem.hh"
-#include "random/kiss.hh"
+#include "portable_rng/kiss.hh"
 #include "xyto_ios.hh"
 
 namespace xyto { 
@@ -88,20 +88,20 @@ std::vector<Constant> LSystem::constants () const {
 Pattern LSystem::run (
         unsigned int count
 ) const {
-        kallisto::random::marsaglia::UNI rng (1,2,3,4);
+        portable_rng::marsaglia::UNI rng (1,2,3,4);
         rng.skip(1024);
         return run (rng, count);
 }
 
 
 Pattern LSystem::run (
-        kallisto::random::marsaglia::UNI &rng,
+        portable_rng::marsaglia::UNI &rng,
         unsigned int count
 ) const {
         boost::optional<Pattern> apply(
                 std::vector<Production> const &,
                 Pattern const &,
-                kallisto::random::marsaglia::UNI &rng
+                portable_rng::marsaglia::UNI &rng
         );
 
         Pattern pat = axiom_;

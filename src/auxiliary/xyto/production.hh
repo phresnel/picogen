@@ -25,11 +25,11 @@
 #include "production_body.hh"
 #include <vector>
 
-namespace kallisto { namespace random { namespace marsaglia {
+namespace portable_rng { namespace marsaglia {
         class UNI;
-} } }
+} }
 
-namespace xyto { 
+namespace xyto {
 
 class Production {
 public:
@@ -45,7 +45,7 @@ public:
         std::vector<ProductionBody> bodies () const;
         std::vector<ProductionBody>& bodies ();
         void setBodies(std::vector<ProductionBody> const &);
-        ProductionBody pickBody(kallisto::random::marsaglia::UNI &) const;
+        ProductionBody pickBody(portable_rng::marsaglia::UNI &) const;
 private:
         ProductionHeader header_;
         std::vector<ProductionBody> bodies_;

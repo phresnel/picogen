@@ -38,7 +38,7 @@
 
 #include <inttypes.h>
 
-namespace kallisto { namespace random { namespace marsaglia {
+namespace portable_rng { namespace marsaglia {
 
         // -- Bits ----------------------------------------------------
         struct Znew {
@@ -287,5 +287,5 @@ namespace kallisto { namespace random { namespace marsaglia {
         };
         // --------------------------------------------------------------------
 
-} } }
+} }
 #endif

@@ -25,7 +25,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace xyto { 
+namespace xyto {
 
 namespace {
 /*
@@ -369,9 +369,9 @@ Segment applyStack (Segment const &symbol, std::vector<Parameter> const &stack) 
 
 } }
 
-#include "random/kiss.hh"
+#include "portable_rng/kiss.hh"
 
-namespace xyto { 
+namespace xyto {
 
 Parameter fold (Parameter const &param) {
         try {
@@ -390,7 +390,7 @@ Pattern fold (Pattern const &param) {
 
 boost::optional<Pattern> apply(std::vector<Production> const &prods,
                                Pattern const &axiom,
-                               kallisto::random::marsaglia::UNI &rng
+                               portable_rng::marsaglia::UNI &rng
 ) {
         using boost::optional;
         bool axiomWasTweaked = false;

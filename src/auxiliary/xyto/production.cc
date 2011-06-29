@@ -19,9 +19,10 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #include "production.hh"
-#include "random/kiss.hh"
+#include "portable_rng/kiss.hh"
+#include <iostream>
 
-namespace xyto { 
+namespace xyto {
 
 ProductionHeader Production::header() const {
                 return header_;
@@ -46,9 +47,8 @@ std::vector<ProductionBody> & Production::bodies() {
 }
 
 
-#include <iostream>
 ProductionBody Production::pickBody(
-        kallisto::random::marsaglia::UNI &rng
+        portable_rng::marsaglia::UNI &rng
 ) const {
         if (bodies_.size() == 1)
                 return bodies_[0];
