@@ -24,6 +24,7 @@ picogen/qt4_gui/CosyGui/build/Makefile
 picogen/qt4_gui/CosyGui/build/CosyGui
 picogen/qt4_gui/CosyGui/build/CMakeLists.txt.user
 picogen/qt4_gui/CosyGui/build/CosyGui.cbp
+picogen/qt4_gui/CosyGui/build/CosyGui.layout
 
 picogen/qt4_gui/CosyGui/widgets/QtQuatschEditor/build/Makefile
 picogen/qt4_gui/CosyGui/widgets/QtQuatschEditor/build/QtQuatschEditor
