@@ -63,12 +63,4 @@ void swap (soft_value<T> &lhs, soft_value<T> &rhs) {
 
 }
 
-namespace std {
-	// TODO: check if this is legal/moral         
-	template <typename T>
-        void swap (special_ptr::soft_value<T> &lhs, special_ptr::soft_value<T> &rhs) {
-                lhs.swap (rhs);
-        }
-}
-
 #endif // SOFT_VALUE_HH_INCLUDED_20100729
