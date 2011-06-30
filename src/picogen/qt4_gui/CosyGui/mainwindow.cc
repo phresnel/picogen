@@ -365,7 +365,7 @@ void MainWindow::on_actionSave_triggered() {
         const QString str = askForNewSaveFilename(this);
         if (str == "")
                 return;
-        cosyscene::save_scene(*this->scene, str.toStdString());
+        cosyscene::save_scene(*this->scene, QFile::encodeName(str).data());
 }
 
 void MainWindow::on_actionLoad_triggered() {
@@ -374,7 +374,7 @@ void MainWindow::on_actionLoad_triggered() {
                 return;
         try {
                 cosyscene::Scene scene;
-                cosyscene::load_scene(scene, str.toStdString());
+                cosyscene::load_scene(scene, QFile::encodeName(str).data());
                 *this->scene = scene;
                 emit sceneInvalidated(this->scene);
 
