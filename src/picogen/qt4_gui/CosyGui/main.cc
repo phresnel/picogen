@@ -41,19 +41,18 @@
 
 #include "redshift_file/save_load.hh"
 
-
+namespace picogen { namespace qt4_gui { namespace {
 int cosy_main (int argc, char *argv[]) {
-        picogen::redshift::static_init();
+        redshift::static_init();
 
         QCleanlooksStyle *style = new QCleanlooksStyle ();
         QApplication::setStyle(style);
 
         QApplication a(argc, argv);
-        picogen::qt4_gui::MainWindow w;
+        MainWindow w;
         w.show();
         return a.exec();
 }
-
 
 void showError (QString str, QString title="Error") {
         QMessageBox mb;
@@ -110,8 +109,8 @@ int production_render_main (int argc, char *argv[]) {
 
 
         try {
-                picogen::redshift_file::Scene scene;
-                picogen::redshift_file::load_scene(scene, pathToSource.toStdString());
+                redshift_file::Scene scene;
+                redshift_file::load_scene(scene, pathToSource.toStdString());
 
                 const std::clock_t b = std::clock();
                 while (!QFile::remove(pathToSource)) {
@@ -130,11 +129,9 @@ int production_render_main (int argc, char *argv[]) {
                         return 0;
                 }
 
-                picogen::redshift::shared_ptr<picogen::redshift_file::Scene> pscene =
-                                picogen::redshift::shared_ptr<picogen::redshift_file::Scene>(
-                                                new picogen::redshift_file::Scene(scene)
-                                );
-                picogen::qt4_gui::RenderWindow w (pscene, renderSetting, cameraSetting, 0, 15.);
+                redshift::shared_ptr<redshift_file::Scene> pscene (
+                                        new redshift_file::Scene(scene));
+                RenderWindow w (pscene, renderSetting, cameraSetting, 0, 15.);
                 w.show();
                 const int ret = a.exec();
                 return ret;
@@ -154,10 +151,11 @@ int production_render_main (int argc, char *argv[]) {
                 return 0;
         }
 }
+} } }
 
 int main(int argc, char *argv[]) {
         if (argc>1 && !strcmp ("--cosygui-production-render", argv[1])) {
-                return production_render_main(argc, argv);
+                return picogen::qt4_gui::production_render_main(argc, argv);
         }
-        return cosy_main(argc, argv);
+        return picogen::qt4_gui::cosy_main(argc, argv);
 }

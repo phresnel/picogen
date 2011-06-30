@@ -71,7 +71,7 @@ namespace picogen { namespace qt4_gui { namespace detail {
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMessageBox>
-
+namespace picogen { namespace qt4_gui {
 namespace {
         QString askForNewSaveFilename (QWidget *parent) {
                 again:
@@ -164,6 +164,7 @@ namespace {
         }
 
 }
+} }
 
 //////
 

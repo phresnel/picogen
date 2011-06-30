@@ -34,6 +34,7 @@
 
 #include <fstream>
 
+namespace picogen { namespace redshift {
 namespace {
         picogen::redshift::Random createRandom(
                 uint32_t a, uint32_t b, uint32_t c, uint32_t d
@@ -56,7 +57,7 @@ namespace {
                 return ret;
         }
 }
-
+} }
 
 
 namespace picogen { namespace redshift {
