@@ -2,6 +2,7 @@ dist-extras/
 DIST-EXTRAS/
 deb/deb.template/usr/share/picogen/help-content/
 deb/DEBS/
+deb/PACKAGES
 deb/picogen-*.deb
 deb/picogen-*.tar.gz
 nsis/data/*.dll
