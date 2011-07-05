@@ -2,18 +2,19 @@ for f in $(ls DEBS/); do
         #deb
 
         PACKAGE="picogen-$(cat DEBS/${f}/usr/share/picogen/version)-$f.deb"
-        if [ -f ${PACKAGE} ] ; then
-                echo ${PACKAGE} already exists, skipping.
+        if [ -f PACKAGES/${PACKAGE} ] ; then
+                echo PACKAGES/${PACKAGE} already exists, skipping.
         else
-                dpkg -b DEBS/$f ${PACKAGE}
-                lintian ${PACKAGE}
+                mkdir -p PACKAGES
+                dpkg -b DEBS/$f PACKAGES/${PACKAGE}
+                lintian PACKAGES/${PACKAGE}
         fi
 
         #tarball
         TARBALL="picogen-$(cat DEBS/${f}/usr/share/picogen/version)-$f.tar.gz"
         TAR="picogen-$(cat DEBS/${f}/usr/share/picogen/version)-$f.tar"
-        if [ -f ${TARBALL} ] ; then
-                echo ${TARBALL} already exists, skipping.
+        if [ -f PACKAGES/${TARBALL} ] ; then
+                echo PACKAGES/${TARBALL} already exists, skipping.
         else
                 mkdir -p TARBALLS/$f
 
@@ -27,9 +28,9 @@ for f in $(ls DEBS/); do
                 cp DEBS/$f/DEBIAN/control TARBALLS/$f/ABOUT
 
                 cd TARBALLS/$f
-                tar -cf ../../${TAR} *
+                tar -cf ../../PACKAGES/${TAR} *
                 cd ../..
-                gzip ${TAR}
+                gzip PACKAGES/${TAR}
 
                 echo "deleting temporary folder TARBALLS"
                 rm -rf TARBALLS
