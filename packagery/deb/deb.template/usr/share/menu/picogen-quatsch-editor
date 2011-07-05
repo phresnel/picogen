@@ -1,7 +1,0 @@
-?package(picogen):\
-	needs="X11"\
-	section="Applications/Graphics"\
-	title="picogen-quatsch-editor"\
-	longtitle="Standalone quatsch editor for picogen"\
-	icon="/usr/share/picogen/icons/quatsch-editor.xpm"\
-	command="/usr/bin/picogen-quatsch-editor"

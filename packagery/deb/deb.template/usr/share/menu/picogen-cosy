@@ -1,5 +1,5 @@
 ?package(picogen):needs="X11" section="Applications/Graphics"\
-	title="picogen-simplex" command="/usr/bin/picogen-simplex"\
+	title="picogen-cosy" command="/usr/bin/picogen-cosy"\
 	longtitle="Picogen, create and render artificial terrain"\
-	icon="/usr/share/picogen/icons/simplexgui.xpm"
+	icon="/usr/share/picogen/icons/picogen.xpm"
 

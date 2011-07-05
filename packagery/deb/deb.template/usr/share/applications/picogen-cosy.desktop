@@ -1,0 +1,14 @@
+
+[Desktop Entry]
+Name=Picogen:CosyGui
+Comment=Graphical User Interface to the Picogen Terrain Synthesizer
+GenericName=Picogen Terrain Synthesizer
+Categories=Application;Graphics;
+Exec=picogen-cosy
+Icon=/usr/share/picogen/icons/picogen.png
+StartupNotify=false
+Terminal=false
+Type=Application
+
+
+Name[de_DE]=picogen-cosy.desktop
