@@ -14,10 +14,10 @@ Provides:
 Description: Integrated 3d-terrain synthesizer and renderer
  .
  Picogen is a free terrain synthesizer and renderer.
- It is yet in early development, but already has some interesting features
- like dedicated support for rendering cubemap-face, procedural (turing-complete)
- terrain definitions, spectral colouring, a full implementation of 
- the physically based Utah-Daylight-Sky (Preetham-, Shirley-, Smits-Model), 
+ It is yet in early development, but already has some interesting features.
+ For example, it offers dedicated support for rendering non-aligned cubemap-faces, 
+ procedural (turing-complete!) terrain definitions, spectral colouring, a full 
+ implementation of the physically based Utah-Daylight-Sky (Preetham-, Shirley-, Smits-Model), 
  OpenEXR export, and more.
  .
 Homepage:http://picogen.org
