@@ -18,6 +18,8 @@ function make_arch {
         cp -r deb.template/* DEBS/${1}/
         make_control ${VERSION} ${1} > DEBS/${1}/DEBIAN/control
 
+	cp copyright.template DEBS/${1}/usr/share/doc/picogen/copyright
+
         # copy changelog and ensure unix line endings
         cp ../CHANGES.txt DEBS/${1}/usr/share/doc/picogen/changelog
         #fromdos DEBS/${1}/usr/share/doc/picogen/changelog
