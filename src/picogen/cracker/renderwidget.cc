@@ -6,6 +6,8 @@
 #include "rendertarget.h"
 #include "rendertargetrow.h"
 
+#include "glimpse/stopwatch.hh"
+
 #include <QImage>
 
 
@@ -23,17 +25,20 @@ RenderWidget::~RenderWidget()
 
 void RenderWidget::on_pushButton_clicked()
 {
+        glimpse::StopWatch totaltime;
         using namespace picogen::cracker;
         using std::shared_ptr;
 
         shared_ptr<Scene> scene (new Scene);
         shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
 
+        glimpse::StopWatch rendertime;
         picogen::cracker::render (scene, target);
 
         const unsigned int width = target->width(),
                            height = target->height();
         QImage image (width, height, QImage::Format_RGB32);
+        for (int i=0; i<200; ++i)
         for (unsigned int y=0; y<height; ++y) {
                 RenderTargetRow row = target->row(y);
                 for (unsigned int x=0; x<width; ++x) {
@@ -49,5 +54,12 @@ void RenderWidget::on_pushButton_clicked()
                                         QColor(r,g,b).rgb());
                 }
         }
+        rendertime.stop();
+        totaltime.stop();
+        ui->perf->setText ("[wallclock] total: " + QString::number(totaltime())
+                           + ", render: " + QString::number(rendertime()));
         ui->label->setPixmap(QPixmap::fromImage(image));
 }
+
+#include "renderwidget.moc"
+
