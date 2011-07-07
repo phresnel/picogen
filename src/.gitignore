@@ -9,7 +9,7 @@ moc_*
 *.moc
 ui_*
 qrc_*
-*.lo
+*.o
 *.la
 *.pro.user
 *-build-desktop
@@ -18,6 +18,9 @@ build/redshift
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
+
+picogen/cracker/Makefile
+
 picogen/qt4_gui/CosyGui/build/redshift/
 picogen/qt4_gui/CosyGui/build/__/
 picogen/qt4_gui/CosyGui/build/Makefile
