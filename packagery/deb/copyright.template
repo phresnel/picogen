@@ -1,9 +1,9 @@
 Upstream-Name: picogen
 Source: <url://gitorious.org/picogen>
 
-Files: debian/*
+Files: *
 Copyright: 2011 smach <phresnel@gmail.com>
-License: GPL-3
+License: GPL-3+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 3 of the License, or

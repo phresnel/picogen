@@ -17,8 +17,9 @@ Description: Integrated 3d-terrain synthesizer and renderer
  It is yet in early development, but already has some interesting features.
  For example, it offers dedicated support for rendering non-aligned cubemap-faces, 
  procedural (turing-complete!) terrain definitions, spectral colouring, a full 
- implementation of the physically based Utah-Daylight-Sky (Preetham-, Shirley-, Smits-Model), 
- OpenEXR export, and more.
+ implementation of the physically based Utah-Daylight-Sky 
+ (Preetham-, Shirley-, Smits-Model). IT also supports saving renderings as 
+ OpenEXR, PNG, and more.
  .
 Homepage:http://picogen.org
 Maintainer: Sebastian Mach <phresnel@gmail.com>
