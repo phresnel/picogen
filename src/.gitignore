@@ -19,7 +19,10 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 
-picogen/cracker/Makefile
+picogen/cracker/build/Makefile
+picogen/cracker/build/cracker
+picogen/cracker/build/cracker.cbp
+picogen/cracker/build/CMakeLists.txt.user
 
 picogen/qt4_gui/CosyGui/build/redshift/
 picogen/qt4_gui/CosyGui/build/__/
