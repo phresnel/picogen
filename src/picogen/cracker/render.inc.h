@@ -1,4 +1,4 @@
-#include "renderer.h"
+#include "render.h"
 #include "scene.h"
 #include "rendertarget.h"
 #include "rendertargetrow.h"
@@ -6,8 +6,11 @@
 namespace picogen  { namespace cracker {
 
 
+template <typename SurfaceIntegrator>
 void render (std::shared_ptr<Scene> scene,
-             std::shared_ptr<RenderTarget> target)
+             SurfaceIntegrator surfaceIntegrator,
+             std::shared_ptr<RenderTarget> target
+             )
 {
         RenderTarget &t = *target;
         const unsigned int width = t.width(),

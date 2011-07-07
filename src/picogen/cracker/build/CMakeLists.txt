@@ -4,14 +4,14 @@ project (cracker)
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         add_definitions (# language
                          -std=c++0x
-                         
+
                          # optimization
-                         -O3 
-			 -ffast-math -msse -mfpmath=sse
+                         -O3
+                         -ffast-math -msse -mfpmath=sse
                          -Wdisabled-optimization
 
-                         # warnings 
-			 -Wall -Wextra -D__STDC_LIMIT_MACROS)
+                         # warnings
+                         -Wall -Wextra -D__STDC_LIMIT_MACROS)
 endif()
 
 
@@ -54,11 +54,11 @@ include(${QT_USE_FILE})
 
 
 ### BOOST ###
-find_package(Boost COMPONENTS 
-		   #program_options
-		   #system
-		   #filesystem
-		   REQUIRED)
+find_package(Boost COMPONENTS
+                   #program_options
+                   #system
+                   #filesystem
+                   REQUIRED)
 link_libraries(
   #${Boost_FILESYSTEM_LIBRARY}
   #${Boost_SYSTEM_LIBRARY}
@@ -105,7 +105,7 @@ set (sources ${sources}
         ${cracker_src_dir}/color.cc
         ${cracker_src_dir}/main.cc
         ${cracker_src_dir}/mainwindow.cc
-        ${cracker_src_dir}/renderer.cc
+        ${cracker_src_dir}/render.cc
         ${cracker_src_dir}/rendertarget.cc
         ${cracker_src_dir}/rendertargetrow.cc
         ${cracker_src_dir}/renderwidget.cc

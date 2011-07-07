@@ -1,7 +1,7 @@
 #include "renderwidget.h"
 #include "ui_renderwidget.h"
 
-#include "renderer.h"
+#include "render.h"
 #include "scene.h"
 #include "rendertarget.h"
 #include "rendertargetrow.h"
@@ -33,7 +33,7 @@ void RenderWidget::on_pushButton_clicked()
         shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
 
         glimpse::StopWatch rendertime;
-        picogen::cracker::render (scene, target);
+        picogen::cracker::render (scene, int(), target);
 
         const unsigned int width = target->width(),
                            height = target->height();
