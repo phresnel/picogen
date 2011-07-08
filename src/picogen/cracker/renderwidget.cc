@@ -7,7 +7,7 @@
 #include "rendertargetrow.h"
 
 #include "cameras/pinhole.h"
-#include "surfaceintegrators/raydirection.h"
+#include "surfaceintegrators/primarydistance.h"
 
 #include "glimpse/stopwatch.hh"
 
@@ -37,7 +37,7 @@ void RenderWidget::on_pushButton_clicked()
 
         glimpse::StopWatch rendertime;
         picogen::cracker::render (scene,
-                                  RayDirectionIntegrator(),
+                                  PrimaryDistanceIntegrator(0,1000),
                                   PinholeCamera(0.001),
                                   target);
 
