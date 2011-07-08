@@ -118,6 +118,8 @@ set (sources ${sources}
 
         ${cracker_src_dir}/cameras/pinhole.cc
 
+        ${cracker_src_dir}/surfaceintegrators/raydirection.cc
+
 
 
 )

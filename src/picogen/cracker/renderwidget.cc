@@ -7,6 +7,7 @@
 #include "rendertargetrow.h"
 
 #include "cameras/pinhole.h"
+#include "surfaceintegrators/raydirection.h"
 
 #include "glimpse/stopwatch.hh"
 
@@ -35,13 +36,19 @@ void RenderWidget::on_pushButton_clicked()
         shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
 
         glimpse::StopWatch rendertime;
-        picogen::cracker::render (scene, int(), PinholeCamera(1), target);
+        picogen::cracker::render (scene,
+                                  RayDirectionIntegrator(),
+                                  PinholeCamera(0.001),
+                                  target);
 
         const unsigned int width = target->width(),
                            height = target->height();
         QImage image (width, height, QImage::Format_RGB32);
+
         for (unsigned int y=0; y<height; ++y) {
                 RenderTargetRow row = target->row(y);
+
+                #pragma omp parallel for
                 for (unsigned int x=0; x<width; ++x) {
                         Pixel const &p = row[x];
                         Color const &c = p.color();
