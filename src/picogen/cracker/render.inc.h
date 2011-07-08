@@ -2,13 +2,16 @@
 #include "scene.h"
 #include "rendertarget.h"
 #include "rendertargetrow.h"
+#include "ray.h"
 
 namespace picogen  { namespace cracker {
 
 
-template <typename SurfaceIntegrator>
+template <typename SurfaceIntegrator,
+          typename Camera>
 void render (std::shared_ptr<Scene> scene,
              SurfaceIntegrator surfaceIntegrator,
+             Camera camera,
              std::shared_ptr<RenderTarget> target
              )
 {
@@ -21,7 +24,8 @@ void render (std::shared_ptr<Scene> scene,
                 RenderTargetRow row = t.row(y);
                 for (unsigned int x=0; x<width; ++x) {
                         const real u = x/static_cast<real>(width);
-                        row[x].setColor (Color::FromRgb(u,v,u*v));
+                        //row[x].setColor (Color::FromRgb(u,v,u*v));
+                        const Ray primary = camera (u, v);
                 }
         }
 }

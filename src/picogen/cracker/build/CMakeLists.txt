@@ -110,6 +110,16 @@ set (sources ${sources}
         ${cracker_src_dir}/rendertargetrow.cc
         ${cracker_src_dir}/renderwidget.cc
         ${cracker_src_dir}/scene.cc
+
+        ${cracker_src_dir}/ray.cc
+        ${cracker_src_dir}/vector.cc
+        ${cracker_src_dir}/point.cc
+        ${cracker_src_dir}/direction.cc
+
+        ${cracker_src_dir}/cameras/pinhole.cc
+
+
+
 )
 
 

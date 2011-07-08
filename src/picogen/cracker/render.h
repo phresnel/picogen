@@ -8,9 +8,11 @@ namespace picogen { namespace cracker {
 class Scene;
 class RenderTarget;
 
-template <typename SurfaceIntegrator>
+template <typename SurfaceIntegrator,
+          typename Camera>
 inline void render(std::shared_ptr<Scene>,
                    SurfaceIntegrator,
+                   Camera,
                    std::shared_ptr<RenderTarget>
                   );
 

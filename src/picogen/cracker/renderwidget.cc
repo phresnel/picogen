@@ -6,6 +6,8 @@
 #include "rendertarget.h"
 #include "rendertargetrow.h"
 
+#include "cameras/pinhole.h"
+
 #include "glimpse/stopwatch.hh"
 
 #include <QImage>
@@ -33,12 +35,11 @@ void RenderWidget::on_pushButton_clicked()
         shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
 
         glimpse::StopWatch rendertime;
-        picogen::cracker::render (scene, int(), target);
+        picogen::cracker::render (scene, int(), PinholeCamera(1), target);
 
         const unsigned int width = target->width(),
                            height = target->height();
         QImage image (width, height, QImage::Format_RGB32);
-        for (int i=0; i<200; ++i)
         for (unsigned int y=0; y<height; ++y) {
                 RenderTargetRow row = target->row(y);
                 for (unsigned int x=0; x<width; ++x) {
