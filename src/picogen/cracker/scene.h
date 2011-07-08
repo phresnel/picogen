@@ -11,9 +11,7 @@ class Scene
 public:
         Scene();
 
-        PotentialIntersection operator() (Ray const &ray) const {
-                return PotentialIntersection();
-        }
+        PotentialIntersection operator() (Ray const &ray) const;
 };
 
 } }
