@@ -8,6 +8,7 @@
 
 #include "cameras/pinhole.h"
 #include "surfaceintegrators/primarydistance.h"
+#include "primitives/sphere.h"
 
 #include "glimpse/stopwatch.hh"
 
@@ -35,10 +36,11 @@ void RenderWidget::on_pushButton_clicked()
         shared_ptr<Scene> scene (new Scene);
         shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
 
+        scene->insertPrimitive (Sphere(Point(0,0,5), 2));
         glimpse::StopWatch rendertime;
         picogen::cracker::render (scene,
-                                  PrimaryDistanceIntegrator(0,1000),
-                                  PinholeCamera(0.001),
+                                  PrimaryDistanceIntegrator(0,100),
+                                  PinholeCamera(0.6),
                                   target);
 
         const unsigned int width = target->width(),
