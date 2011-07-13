@@ -7,13 +7,14 @@
 #include "rendertargetrow.h"
 
 #include "cameras/pinhole.h"
+#include "surfaceintegrators/cpucore.h"
 #include "surfaceintegrators/primarydistance.h"
+#include "surfaceintegrators/combiner.h"
 #include "primitives/sphere.h"
 
 #include "glimpse/stopwatch.hh"
 
 #include <QImage>
-
 
 RenderWidget::RenderWidget(QWidget *parent) :
     QWidget(parent),
@@ -29,6 +30,8 @@ RenderWidget::~RenderWidget()
 
 void RenderWidget::on_pushButton_clicked()
 {
+        //std::cout << "omp-max-threads: " << omp_get_max_threads() << std::endl;
+        //std::cout << "omp-max-threads: " << omp_get_num_threads() << std::endl;
         glimpse::StopWatch totaltime;
         using namespace picogen::cracker;
         using std::shared_ptr;
@@ -36,11 +39,18 @@ void RenderWidget::on_pushButton_clicked()
         shared_ptr<Scene> scene (new Scene);
         shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
 
-        scene->insertPrimitive (Sphere(Point(0,0,5), 2));
+        for (int i=0; i<128; ++i) {
+                const real x = rand() / (real)RAND_MAX*10 - 5;
+                const real y = rand() / (real)RAND_MAX*10 - 5;
+                const real z = rand() / (real)RAND_MAX*10 + 2;
+                scene->insertPrimitive (Sphere(Point(x,y,z), 0.7));
+        }
         glimpse::StopWatch rendertime;
         picogen::cracker::render (scene,
-                                  PrimaryDistanceIntegrator(0,6),
-                                  PinholeCamera(0.6),
+                                  combine (PrimaryDistanceIntegrator(0,6),
+                                           CpuCoreIntegrator(),
+                                           0.8),
+                                  PinholeCamera(1.0),
                                   target);
 
         const unsigned int width = target->width(),
@@ -50,7 +60,6 @@ void RenderWidget::on_pushButton_clicked()
         for (unsigned int y=0; y<height; ++y) {
                 RenderTargetRow row = target->row(y);
 
-                #pragma omp parallel for
                 for (unsigned int x=0; x<width; ++x) {
                         Pixel const &p = row[x];
                         Color const &c = p.color();

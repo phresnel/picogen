@@ -23,6 +23,8 @@ void render (std::shared_ptr<Scene> scene_,
         for (unsigned int y=0; y<height; ++y) {
                 const real v = 1 - y/static_cast<real>(height-1);
                 RenderTargetRow row = t.row(y);
+
+                #pragma omp parallel for schedule(dynamic)
                 for (unsigned int x=0; x<width; ++x) {
                         const real u = x/static_cast<real>(width);
 

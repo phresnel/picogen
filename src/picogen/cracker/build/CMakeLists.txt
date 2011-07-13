@@ -124,6 +124,8 @@ set (sources ${sources}
 
         ${cracker_src_dir}/surfaceintegrators/raydirection.cc
         ${cracker_src_dir}/surfaceintegrators/primarydistance.cc
+        ${cracker_src_dir}/surfaceintegrators/cpucore.cc
+        ${cracker_src_dir}/surfaceintegrators/combiner.cc
 
         ${cracker_src_dir}/primitives/primitive.cc
         ${cracker_src_dir}/primitives/sphere.cc
