@@ -2,6 +2,9 @@
 #define POINT_HH_20110707
 
 #include "real.h"
+#include "vector.h"
+
+#include <cassert>
 
 namespace picogen { namespace cracker {
 
@@ -14,6 +17,13 @@ public:
         real y() const { return y_; }
         real z() const { return z_; }
 
+        real operator[] (unsigned int index) const {
+                assert (index<=2);
+
+                return x_ * (index==0)
+                     + y_ * (index==1)
+                     + z_ * (index==2);
+        }
 private:
 
         real x_, y_, z_;

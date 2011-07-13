@@ -8,10 +8,18 @@ Scene::Scene()
 
 PotentialIntersection Scene::operator () (Ray const &ray) const {
 
-        for (auto it = primitives_.begin(), end=primitives_.end(); it!=end; ++it) {
+        PotentialIntersection nearest;
+        for (auto it = primitives_.begin(),
+                  end=primitives_.end();
+             it!=end; ++it)
+        {
                 const PotentialIntersection pi = (**it)(ray);
-                if (pi)
-                        return pi;
+                if (!pi) continue;
+                const bool first_or_nearest = !nearest
+                                            || nearer (pi.intersection(),
+                                                       nearest.intersection());
+                if (first_or_nearest)
+                        nearest = pi;
         }
         // Terrain
         // Water
@@ -19,7 +27,7 @@ PotentialIntersection Scene::operator () (Ray const &ray) const {
         //                     volume integration?
         //                 <-- but that again would be against the performance
         //                     argument
-        return PotentialIntersection();
+        return nearest;
 }
 
 } }

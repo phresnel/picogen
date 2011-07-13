@@ -49,6 +49,7 @@ private:
         real x_, y_, z_;
 };
 
+
 } }
 
 #endif // DIRECTION_HH_20110708

@@ -6,6 +6,7 @@
 #include "point.h"
 #include "real.h"
 #include "primitives/primitive.h"
+#include "math3d.h"
 
 namespace picogen { namespace cracker {
 
@@ -22,10 +23,22 @@ public:
 
 private:
         PotentialIntersection intersect (Ray const &ray) const {
-                if (ray.direction().x()<0) {
+                /*if (ray.direction().x()<0) {
                         const Intersection isect(std::fabs(100*ray.direction().x()));
                         return isect;
+                }*/
+                const Vector    &dst = ray.origin() - center_;
+
+                const real         B = mixed_dot (dst, ray.direction()),
+                                   C = dot(dst,dst) - radius_*radius_,
+                                   D = B*B - C,
+                                   E = -B - sqrt (D);
+
+                if ((D>=0) & (E>=0)) {
+                        return Intersection (E);
                 }
+
+
                 return PotentialIntersection();
         }
 

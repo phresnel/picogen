@@ -39,7 +39,7 @@ void RenderWidget::on_pushButton_clicked()
         scene->insertPrimitive (Sphere(Point(0,0,5), 2));
         glimpse::StopWatch rendertime;
         picogen::cracker::render (scene,
-                                  PrimaryDistanceIntegrator(0,100),
+                                  PrimaryDistanceIntegrator(0,6),
                                   PinholeCamera(0.6),
                                   target);
 
