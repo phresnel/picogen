@@ -50,7 +50,7 @@ void RenderWidget::on_pushButton_clicked()
 
         const auto integrator = combine (PrimaryDistanceIntegrator(0,6),
                                          CpuCoreIntegrator(),
-                                         0.8);
+                                         0.0);
         picogen::cracker::render (scene,
                                   integrator,
                                   PinholeCamera(1.0),

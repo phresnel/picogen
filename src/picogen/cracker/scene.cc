@@ -9,6 +9,8 @@ Scene::Scene()
 PotentialIntersection Scene::operator () (Ray const &ray) const {
 
         PotentialIntersection nearest;
+
+        nearest = terrain_(ray);
         for (auto it = primitives_.begin(),
                   end=primitives_.end();
              it!=end; ++it)

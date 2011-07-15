@@ -4,6 +4,7 @@
 #include "potentialintersection.h"
 #include "ray.h"
 #include "primitives/primitive.h"
+#include "terrain/gridterrain.h"
 
 #include <list>
 #include <memory>
@@ -34,6 +35,7 @@ public:
 
 private:
         std::list<std::shared_ptr<Primitive> > primitives_;
+        GridTerrain terrain_;
 };
 
 } }

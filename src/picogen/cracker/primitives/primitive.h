@@ -1,11 +1,14 @@
 #ifndef PRIMITIVE_H_20110811
 #define PRIMITIVE_H_20110811
 
+#include "potentialintersection.h"
+#include "ray.h"
+
 namespace picogen { namespace cracker {
 
 class Primitive {
 public:
-        PotentialIntersection operator() (Ray const &ray) {
+        PotentialIntersection operator() (Ray const &ray) const {
                 return this->intersect(ray);
         }
 

@@ -137,6 +137,8 @@ set (sources ${sources}
 
         ${cracker_src_dir}/primitives/primitive.cc
         ${cracker_src_dir}/primitives/sphere.cc
+
+        ${cracker_src_dir}/terrain/gridterrain.cc
 )
 
 

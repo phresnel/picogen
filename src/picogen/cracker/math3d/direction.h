@@ -7,9 +7,13 @@
 
 namespace picogen { namespace cracker {
 
+class Vector;
+
 class Direction {
 public:
         Direction () = delete;
+
+        explicit operator Vector () const;
 
         static Direction FromUnnormalized(real x, real y, real z) {
                 assert (x!=0 || y!=0 || z!=0);
