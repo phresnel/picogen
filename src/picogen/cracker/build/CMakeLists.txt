@@ -111,6 +111,9 @@ set (sources ${sources}
         ${cracker_src_dir}/renderwidget.cc
         ${cracker_src_dir}/scene.cc
 
+        ${cracker_src_dir}/real.cc
+        ${cracker_src_dir}/interval.cc
+        ${cracker_src_dir}/potentialinterval.cc
         ${cracker_src_dir}/ray.cc
         ${cracker_src_dir}/math3d/vector.cc
         ${cracker_src_dir}/math3d/point.cc
@@ -118,6 +121,7 @@ set (sources ${sources}
         ${cracker_src_dir}/math3d/vector.inl.cc
         ${cracker_src_dir}/math3d/point.inl.cc
         ${cracker_src_dir}/math3d/direction.inl.cc
+        ${cracker_src_dir}/aabb.cc
         ${cracker_src_dir}/intersection.cc
         ${cracker_src_dir}/potentialintersection.cc
 
