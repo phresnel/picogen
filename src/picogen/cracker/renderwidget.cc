@@ -10,6 +10,7 @@
 #include "surfaceintegrators/cpucore.h"
 #include "surfaceintegrators/primarydistance.h"
 #include "surfaceintegrators/combiner.h"
+#include "surfaceintegrators/nameof.h"
 #include "primitives/sphere.h"
 
 #include "glimpse/stopwatch.hh"
@@ -46,10 +47,12 @@ void RenderWidget::on_pushButton_clicked()
                 scene->insertPrimitive (Sphere(Point(x,y,z), 0.7));
         }
         glimpse::StopWatch rendertime;
+
+        const auto integrator = combine (PrimaryDistanceIntegrator(0,6),
+                                         CpuCoreIntegrator(),
+                                         0.8);
         picogen::cracker::render (scene,
-                                  combine (PrimaryDistanceIntegrator(0,6),
-                                           CpuCoreIntegrator(),
-                                           0.8),
+                                  integrator,
                                   PinholeCamera(1.0),
                                   target);
 
@@ -75,9 +78,15 @@ void RenderWidget::on_pushButton_clicked()
         }
         rendertime.stop();
         totaltime.stop();
-        ui->perf->setText ("[wallclock] total: " + QString::number(totaltime())
-                           + ", render: " + QString::number(rendertime()));
+        ui->perf->setText ("total: " + QString::number(totaltime())
+                          + ", render: " + QString::number(rendertime()));
         ui->label->setPixmap(QPixmap::fromImage(image));
+
+        const QString integName = QString::fromStdString(nameof(integrator));
+        if (parentWidget())
+                parentWidget()->setWindowTitle (integName);
+        else
+                setWindowTitle (integName);
 }
 
 #include "renderwidget.moc"

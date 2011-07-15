@@ -14,18 +14,22 @@ class CombinerIntegrator {
 public:
         CombinerIntegrator() = delete;
         CombinerIntegrator(IntegratorA a, IntegratorB b, real lerp)
-                : a(a), b(b), lerp(lerp)
+                : a(a), b(b), lerp_(lerp)
         {}
 
         Color operator() (Ray const &ray, Scene const &scene) const {
-                return (1-lerp)*a(ray,scene)
-                     + lerp*b(ray,scene);
+                return (1-lerp_)*a(ray,scene)
+                     + lerp_*b(ray,scene);
+        }
+
+        real lerp() const {
+                return lerp_;
         }
 
 private:
         IntegratorA a;
         IntegratorB b;
-        real lerp;
+        real lerp_;
 };
 
 template <typename IntA, typename IntB>
