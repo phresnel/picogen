@@ -1,9 +1,13 @@
 #ifndef MATH3D_H_20110813
 #define MATH3D_H_20110813
 
-#include "vector.h"
-#include "point.h"
-#include "direction.h"
+#include "math3d/vector.h"
+#include "math3d/point.h"
+#include "math3d/direction.h"
+#include "math3d/vector.inl.h"
+#include "math3d/point.inl.h"
+#include "math3d/direction.inl.h"
+
 
 namespace picogen { namespace cracker {
         // any, any

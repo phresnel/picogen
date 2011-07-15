@@ -2,8 +2,7 @@
 #define RAY_HH_20110707
 
 #include <cassert>
-#include "point.h"
-#include "direction.h"
+#include "math3d.h"
 
 namespace picogen { namespace cracker {
 

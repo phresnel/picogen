@@ -112,9 +112,12 @@ set (sources ${sources}
         ${cracker_src_dir}/scene.cc
 
         ${cracker_src_dir}/ray.cc
-        ${cracker_src_dir}/vector.cc
-        ${cracker_src_dir}/point.cc
-        ${cracker_src_dir}/direction.cc
+        ${cracker_src_dir}/math3d/vector.cc
+        ${cracker_src_dir}/math3d/point.cc
+        ${cracker_src_dir}/math3d/direction.cc
+        ${cracker_src_dir}/math3d/vector.inl.cc
+        ${cracker_src_dir}/math3d/point.inl.cc
+        ${cracker_src_dir}/math3d/direction.inl.cc
         ${cracker_src_dir}/intersection.cc
         ${cracker_src_dir}/potentialintersection.cc
 

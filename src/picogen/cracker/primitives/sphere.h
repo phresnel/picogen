@@ -3,7 +3,6 @@
 
 #include "potentialintersection.h"
 #include "ray.h"
-#include "point.h"
 #include "real.h"
 #include "primitives/primitive.h"
 #include "math3d.h"
