@@ -20,29 +20,29 @@ GridTerrain::GridTerrain()
                         const real u = x / static_cast<real>(heightfieldWidth_);
                         const real v = y / static_cast<real>(heightfieldDepth_);
 
-                        heightfield_[y*heightfieldWidth_+x] = -10;
-                                        16*std::sin(u*3) * std::cos(v*3);
+                        heightfield_[y*heightfieldWidth_+x] =
+                                        -20 + 16*std::sin(u*16) * std::sin(v*16);
                 }
         }
 }
 
 PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
 
-        const real W = 100.,
+        const real W = 200.,
                    D = W,
                    H = 10.;
 
-        const real step = 3;
+        const real step = 1;
 
-        for (real f=0; f<1000; f+=step) {
+        for (real f=0; f<300; f+=step) {
                 const Point c = ray(f);
-                const real u = c.x() / W + W/2,
-                           v = c.z() / D + D/2;
+                const real u = (c.x()+W/2) / W,
+                           v = (c.z()+D/2) / D;
                 const int x = u*heightfieldWidth_,
                           y = v*heightfieldDepth_;
-                //qDebug() << f << ":" << c.x() << ":" << c.y();
+                //qDebug() << c.y();
                 //break;
-                /*
+
                 if ((x<0)
                    | (static_cast<decltype(heightfieldWidth_)>(x)>=heightfieldWidth_)
                    | (y<0)
@@ -50,8 +50,7 @@ PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
                         continue;
                 const real ch = heightfield_[y*heightfieldWidth_
                                             +x];
-                */
-                if (c.y() < -20) { //ch) {
+                if (c.y() < ch) {
                         return Intersection (f);
                 }
         }
