@@ -35,6 +35,9 @@ public:
         real y() const { return y_; }
         real z() const { return z_; }
 
+        Vector operator* (real) const;
+        Vector operator/ (real f) const;
+
 private:
         void normalize() {
                 const real l = 1 / length();

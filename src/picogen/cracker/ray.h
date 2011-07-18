@@ -18,6 +18,10 @@ public:
         Point origin()     const { return origin_; }
         Direction direction() const { return direction_; }
 
+        Point operator() (real f) const {
+                assert (f >= 0);
+                return origin_ + direction_ * f;
+        }
 
 private:
         Point origin_;

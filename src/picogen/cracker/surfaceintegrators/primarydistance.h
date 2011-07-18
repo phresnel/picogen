@@ -27,7 +27,7 @@ public:
                 if (pi) {
                         const real
                               dist = pi.intersection().distance(),
-                              gray = (dist - min_) / range_,
+                              gray = 1 - (dist - min_) / range_,
                               gray_sat = gray < 0 ? 0 :
                                          gray > 1 ? 1 :
                                          gray;

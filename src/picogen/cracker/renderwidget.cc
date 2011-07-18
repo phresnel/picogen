@@ -41,14 +41,14 @@ void RenderWidget::on_pushButton_clicked()
         shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
 
         for (int i=0; i<128; ++i) {
-                const real x = rand() / (real)RAND_MAX*10 - 5;
-                const real y = rand() / (real)RAND_MAX*10 - 5;
-                const real z = rand() / (real)RAND_MAX*10 + 2;
-                scene->insertPrimitive (Sphere(Point(x,y,z), 0.7));
+                const real x = rand() / (real)RAND_MAX*100 - 50;
+                const real y = rand() / (real)RAND_MAX*10;
+                const real z = rand() / (real)RAND_MAX*100 + 2;
+                scene->insertPrimitive (Sphere(Point(x,y,z), 1.4));
         }
         glimpse::StopWatch rendertime;
 
-        const auto integrator = combine (PrimaryDistanceIntegrator(0,6),
+        const auto integrator = combine (PrimaryDistanceIntegrator(0,100),
                                          CpuCoreIntegrator(),
                                          0.0);
         picogen::cracker::render (scene,
