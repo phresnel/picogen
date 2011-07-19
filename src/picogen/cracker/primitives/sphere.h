@@ -34,7 +34,9 @@ private:
                                    E = -B - sqrt (D);
 
                 if ((D>=0) & (E>=0)) {
-                        return Intersection (E);
+                        const Point &poi = ray(E);
+                        const Normal n = normalize<Normal>(poi - center_);
+                        return Intersection (E, n);
                 }
 
 

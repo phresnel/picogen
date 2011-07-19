@@ -1,6 +1,7 @@
 #ifndef MATH3D_H_20110813
 #define MATH3D_H_20110813
 
+#include "real.h"
 #include "math3d/vector.h"
 #include "math3d/point.h"
 #include "math3d/direction.h"
@@ -12,6 +13,21 @@ namespace picogen { namespace cracker {
                 return lhs.x()*rhs.x() +
                        lhs.y()*rhs.y() +
                        lhs.z()*rhs.z();
+        }
+
+        inline real length_squared (Vector const &v) {
+                return v.x()*v.x() + v.y()*v.y() + v.z()*v.z();
+        }
+
+        inline real length (Vector const &v) {
+                return sqrt (length_squared (v));
+        }
+
+        //
+        template <typename Out=Vector>
+        inline Out normalize (Vector const &in) {
+                const real l = 1 / length (in);
+                return static_cast<Out>(in * l);
         }
 
         // vector, point
@@ -47,6 +63,11 @@ namespace picogen { namespace cracker {
                 return *this * (1 / f);
         }
 
+
+        // normal, normal
+        inline real dot (Normal const &lhs, Normal const &rhs) {
+                return mixed_dot (lhs, rhs);
+        }
 } }
 
 #include "math3d/vector.inl.h"

@@ -12,8 +12,10 @@
 namespace picogen { namespace cracker {
 
 GridTerrain::GridTerrain()
-: heightfieldWidth_(128), heightfieldDepth_(heightfieldWidth_)
+: size_(200, 30, 200)
+, heightfieldWidth_(128), heightfieldDepth_(heightfieldWidth_)
 , heightfield_(heightfieldWidth_*heightfieldDepth_)
+
 {
         for (unsigned int y=0; y<heightfieldDepth_; ++y) {
                 for (unsigned int x=0; x<heightfieldWidth_; ++x) {
@@ -28,9 +30,9 @@ GridTerrain::GridTerrain()
 
 PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
 
-        const real W = 200.,
-                   D = W,
-                   H = 10.;
+        const real &W = size_.x(),
+                   &D = size_.z(),
+                   &H = size_.y();
 
         const real step = 1;
 
@@ -40,36 +42,21 @@ PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
                            v = (c.z()+D/2) / D;
                 const int x = u*heightfieldWidth_,
                           y = v*heightfieldDepth_;
-                //qDebug() << c.y();
-                //break;
 
-                if ((x<0)
-                   | (static_cast<decltype(heightfieldWidth_)>(x)>=heightfieldWidth_)
-                   | (y<0)
-                   | (static_cast<decltype(heightfieldDepth_)>(y)>=heightfieldDepth_))
+                if ( (x<0) | (static_cast<decltype(heightfieldWidth_)>(x)>=heightfieldWidth_)
+                   | (y<0) | (static_cast<decltype(heightfieldDepth_)>(y)>=heightfieldDepth_))
                         continue;
                 const real ch = heightfield_[y*heightfieldWidth_
                                             +x];
                 if (c.y() < ch) {
-                        return Intersection (f);
+                        return Intersection (f, normal(c.x(), c.z()));
                 }
         }
-        /*
-        using std::pow; using std::sqrt;
-        const real hSize = sqrt(pow(heightfieldWidth_,2)
-                              + pow(heightfieldDepth_,2));
-
-        const Vector step = ray.direction() / hSize;
-        Point current = ray(0);
-        for (unsigned int s=0; s<100; ++s, current+=step) {
-                const unsigned int x = current
-                const real h =
-                if (current.y() <
-        }*/
-
         return PotentialIntersection();
-        //Intersection(std::max((real)0, ray.direction().y()*20));
 }
 
+Normal GridTerrain::normal (real u, real v) const {
+        return Normal (0,1,0);
+}
 
 } }

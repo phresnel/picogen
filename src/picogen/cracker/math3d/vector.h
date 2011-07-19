@@ -6,6 +6,8 @@
 
 namespace picogen { namespace cracker {
 
+class Normal;
+
 class Vector {
 public:
         Vector () : x_(0), y_(0), z_(0) {}
@@ -34,10 +36,14 @@ public:
                 return *this *= 1 / rhs;;
         }
 
+        explicit operator Normal() const;
+
 private:
 
         real x_, y_, z_;
 };
+
+inline Vector operator* (Vector, real);
 
 
 

@@ -121,6 +121,7 @@ set (sources ${sources}
         ${cracker_src_dir}/math3d/vector.inl.cc
         ${cracker_src_dir}/math3d/point.inl.cc
         ${cracker_src_dir}/math3d/direction.inl.cc
+        ${cracker_src_dir}/math3d/normal.inl.cc
         ${cracker_src_dir}/aabb.cc
         ${cracker_src_dir}/intersection.cc
         ${cracker_src_dir}/potentialintersection.cc
