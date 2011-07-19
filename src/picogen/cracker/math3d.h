@@ -30,6 +30,14 @@ namespace picogen { namespace cracker {
                 return static_cast<Out>(in * l);
         }
 
+
+        inline Vector cross(Vector const &lhs, Vector const &rhs) {
+                return Vector(lhs.y()*rhs.z() - lhs.z()*rhs.y(),
+                              lhs.z()*rhs.x() - lhs.x()*rhs.z(),
+                              lhs.x()*rhs.y() - lhs.y()*rhs.x()
+                             );
+        }
+
         // vector, point
         inline Vector operator- (Point const &lhs, Point const &rhs) {
                 return Vector(lhs.x()-rhs.x(),

@@ -15,7 +15,8 @@ GridTerrain::GridTerrain()
 : size_(200, 30, 200)
 , heightfieldWidth_(128), heightfieldDepth_(heightfieldWidth_)
 , heightfield_(heightfieldWidth_*heightfieldDepth_)
-
+, pixelWidth_(size_.x() / heightfieldWidth_)
+, pixelDepth_(size_.z() / heightfieldDepth_)
 {
         for (unsigned int y=0; y<heightfieldDepth_; ++y) {
                 for (unsigned int x=0; x<heightfieldWidth_; ++x) {
@@ -40,23 +41,38 @@ PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
                 const Point c = ray(f);
                 const real u = (c.x()+W/2) / W,
                            v = (c.z()+D/2) / D;
-                const int x = u*heightfieldWidth_,
-                          y = v*heightfieldDepth_;
-
-                if ( (x<0) | (static_cast<decltype(heightfieldWidth_)>(x)>=heightfieldWidth_)
-                   | (y<0) | (static_cast<decltype(heightfieldDepth_)>(y)>=heightfieldDepth_))
-                        continue;
-                const real ch = heightfield_[y*heightfieldWidth_
-                                            +x];
+                const real ch = height(u*heightfieldWidth_,
+                                       v*heightfieldDepth_);
                 if (c.y() < ch) {
-                        return Intersection (f, normal(c.x(), c.z()));
+                        return Intersection (f, normal(ch, c.x(), c.z()));
                 }
         }
         return PotentialIntersection();
 }
 
-Normal GridTerrain::normal (real u, real v) const {
-        return Normal (0,1,0);
+Normal GridTerrain::normal (real centerH, real x, real z) const {
+        const real u = (x+size_.x()/2) / size_.x(),
+                   v = (z+size_.z()/2) / size_.z();
+        const int ix = u*heightfieldWidth_,
+                  iy = v*heightfieldDepth_;
+
+        const real rightDH = height(ix+1,iy) - centerH;
+        const real bottomDH = height(ix,iy+1) - centerH;
+
+        const Vector right (pixelWidth_, rightDH, 0);
+        const Vector bottom (0, bottomDH, pixelDepth_);
+
+
+        return normalize<Normal>(cross(bottom, right));
+}
+
+real GridTerrain::height(int x, int y) const {
+        while (x<0)                       x+=heightfieldWidth_;
+        while (x>=(int)heightfieldWidth_) x-=heightfieldWidth_;
+        while (y<0)                       y+=heightfieldDepth_;
+        while (y>=(int)heightfieldDepth_) y-=heightfieldDepth_;
+
+        return heightfield_[y*heightfieldWidth_+x];
 }
 
 } }

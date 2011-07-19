@@ -16,11 +16,13 @@ public:
         GridTerrain ();
         PotentialIntersection operator() (Ray const &ray) const;
 private:
-        Normal normal(real u, real v) const;
+        Normal normal(real centerH, real x, real z) const;
+        real height (int x, int y) const;
 private:
         Vector size_;
         unsigned int heightfieldWidth_, heightfieldDepth_;
         std::vector<real> heightfield_;
+        real pixelWidth_, pixelDepth_;
 };
 
 } }
