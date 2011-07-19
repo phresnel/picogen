@@ -16,7 +16,8 @@ public:
         GridTerrain ();
         PotentialIntersection operator() (Ray const &ray) const;
 private:
-        Normal normal(real centerH, real x, real z) const;
+        Normal normal_above(real centerH, real x, real z) const;
+        Normal normal_below(real centerH, real x, real z) const;
         real height (int x, int y) const;
 private:
         Vector size_;

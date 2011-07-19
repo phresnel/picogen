@@ -35,22 +35,27 @@ PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
                    &D = size_.z(),
                    &H = size_.y();
 
-        const real step = 1;
+        const real step = 5;
 
-        for (real f=0; f<300; f+=step) {
-                const Point c = ray(f);
-                const real u = (c.x()+W/2) / W,
-                           v = (c.z()+D/2) / D;
+        Vector dstep = ray.direction() * step;
+        Point dcurr = ray(0);
+
+        for (real f=0; f<200; f+=step, dcurr+=dstep) {
+                const real u = (dcurr.x()+W/2) / W,
+                           v = (dcurr.z()+D/2) / D;
                 const real ch = height(u*heightfieldWidth_,
                                        v*heightfieldDepth_);
-                if (c.y() < ch) {
-                        return Intersection (f, normal(ch, c.x(), c.z()));
+                if (dcurr.y() < ch) {
+                        const Normal &normal = normal_above(ch,
+                                                            dcurr.x(),
+                                                            dcurr.z());
+                        return Intersection (f, normal);
                 }
         }
         return PotentialIntersection();
 }
 
-Normal GridTerrain::normal (real centerH, real x, real z) const {
+Normal GridTerrain::normal_above (real centerH, real x, real z) const {
         const real u = (x+size_.x()/2) / size_.x(),
                    v = (z+size_.z()/2) / size_.z();
         const int ix = u*heightfieldWidth_,
