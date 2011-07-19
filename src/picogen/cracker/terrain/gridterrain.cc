@@ -35,12 +35,19 @@ PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
                    &D = size_.z(),
                    &H = size_.y();
 
-        const real step = 5;
+        const Direction& direction = ray.direction();
+        real step ;
+        if(direction.x()>direction.y()) {
+                step = (1/sqrt(2)) * direction.x() * pixelWidth_;
+        } else {
+                step = (1/sqrt(2)) * direction.z() * pixelDepth_;
+        }
+        if (step<1.) step=1.;
 
-        Vector dstep = ray.direction() * step;
+        Vector dstep = direction * step;
         Point dcurr = ray(0);
 
-        for (real f=0; f<200; f+=step, dcurr+=dstep) {
+        for (real f=0; f<500; f+=step, dcurr+=dstep) {
                 const real u = (dcurr.x()+W/2) / W,
                            v = (dcurr.z()+D/2) / D;
                 const real ch = height(u*heightfieldWidth_,

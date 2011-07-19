@@ -49,9 +49,10 @@ void RenderWidget::on_pushButton_clicked()
         }
         glimpse::StopWatch rendertime;
 
-        const auto integrator = combine (PrimaryDistanceIntegrator(0,100),
-                                         SurfaceNormalIntegrator(),
-                                         0.5);
+        const auto integrator = PrimaryDistanceIntegrator(0,250);
+                                //combine (PrimaryDistanceIntegrator(0,100),
+                                //         SurfaceNormalIntegrator(),
+                                //         0.5);
         picogen::cracker::render (scene,
                                   integrator,
                                   PinholeCamera(1.0),
