@@ -9,6 +9,7 @@
 #include "cameras/pinhole.h"
 #include "surfaceintegrators/cpucore.h"
 #include "surfaceintegrators/primarydistance.h"
+#include "surfaceintegrators/surfacenormal.h"
 #include "surfaceintegrators/combiner.h"
 #include "surfaceintegrators/nameof.h"
 #include "primitives/sphere.h"
@@ -49,8 +50,8 @@ void RenderWidget::on_pushButton_clicked()
         glimpse::StopWatch rendertime;
 
         const auto integrator = combine (PrimaryDistanceIntegrator(0,100),
-                                         CpuCoreIntegrator(),
-                                         0.0);
+                                         SurfaceNormalIntegrator(),
+                                         0.5);
         picogen::cracker::render (scene,
                                   integrator,
                                   PinholeCamera(1.0),

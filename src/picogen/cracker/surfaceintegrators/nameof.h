@@ -4,6 +4,7 @@
 #include "combiner.h"
 #include "cpucore.h"
 #include "primarydistance.h"
+#include "surfacenormal.h"
 #include "raydirection.h"
 
 #include <string>
@@ -19,6 +20,9 @@ inline std::string nameof (PrimaryDistanceIntegrator) {
 }
 inline std::string nameof (RayDirectionIntegrator) {
         return "RayDirection";
+}
+inline std::string nameof (SurfaceNormalIntegrator) {
+        return "SurfaceNormal";
 }
 template<typename L, typename R>
 inline std::string nameof(CombinerIntegrator<L,R> c) {
