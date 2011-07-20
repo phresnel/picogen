@@ -129,6 +129,7 @@ set (sources ${sources}
         ${cracker_src_dir}/potentialintersection.cc
 
         ${cracker_src_dir}/math3d.cc
+        ${cracker_src_dir}/random.cc
 
         ${cracker_src_dir}/cameras/pinhole.cc
 
