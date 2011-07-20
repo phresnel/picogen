@@ -1,6 +1,6 @@
 #include "gridterrain.h"
 
-#include "potentialintersection.h"
+#include "intersection.h"
 #include "ray.h"
 #include "math3d.h"
 #include "materials/lambertmaterial.h"
@@ -30,7 +30,7 @@ GridTerrain::GridTerrain()
         }
 }
 
-PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
+Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
 
         const real &W = size_.x(),
                    &D = size_.z(),
@@ -63,7 +63,7 @@ PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
                                              );
                 }
         }
-        return PotentialIntersection();
+        return Intersection::Optional();
 }
 
 Normal GridTerrain::normal_above (real centerH, real x, real z) const {

@@ -1,7 +1,7 @@
 #ifndef SPHERE_H_20110711
 #define SPHERE_H_20110711
 
-#include "potentialintersection.h"
+#include "intersection.h"
 #include "ray.h"
 #include "real.h"
 #include "primitives/primitive.h"
@@ -17,12 +17,12 @@ public:
                 center_(center), radius_(radius)
         {}
 
-        PotentialIntersection operator() (Ray const &ray) const {
+        Intersection::Optional operator() (Ray const &ray) const {
                 return intersect(ray);
         }
 
 private:
-        PotentialIntersection intersect (Ray const &ray) const {
+        Intersection::Optional intersect (Ray const &ray) const {
                 /*if (ray.direction().x()<0) {
                         const Intersection isect(std::fabs(100*ray.direction().x()));
                         return isect;
@@ -43,7 +43,7 @@ private:
                 }
 
 
-                return PotentialIntersection();
+                return Intersection::Optional();
         }
 
         Point center_;

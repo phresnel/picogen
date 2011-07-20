@@ -6,16 +6,16 @@ Scene::Scene()
 {
 }
 
-PotentialIntersection Scene::operator () (Ray const &ray) const {
+Intersection::Optional Scene::operator () (Ray const &ray) const {
 
-        PotentialIntersection nearest;
+        Intersection::Optional nearest;
 
         nearest = terrain_(ray);
         for (auto it = genericPrimitives_.begin(),
                   end=genericPrimitives_.end();
              it!=end; ++it)
         {
-                const PotentialIntersection pi = (**it)(ray);
+                const Intersection::Optional pi = (**it)(ray);
                 if (!pi) continue;
                 const bool first_or_nearest = !nearest
                                             || nearer (pi.intersection(),

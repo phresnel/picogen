@@ -10,6 +10,10 @@ namespace picogen { namespace cracker {
 
 class Material;
 
+namespace detail {
+        class OptionalIntersection;
+}
+
 class Intersection {
 public:
         Intersection() = delete;
@@ -26,11 +30,43 @@ public:
         Normal   normal()   const { return normal_;   }
         std::shared_ptr<Material> material() const { return material_; }
 
+        typedef detail::OptionalIntersection Optional;
+
 private:
         real distance_;
         Normal normal_;
         std::shared_ptr<Material> material_;
 };
+
+namespace detail {
+
+        class OptionalIntersection {
+        public:
+                OptionalIntersection()
+                : intersection_(0,Normal(0,1,0),std::shared_ptr<Material>()),
+                  empty_(true)
+                {
+                }
+
+                OptionalIntersection (Intersection const &intersection)
+                : intersection_(intersection), empty_(false) {
+                }
+
+                explicit operator bool() const {
+                        return !empty_;
+                }
+
+                Intersection intersection() const {
+                        assert (!empty_);
+                        return intersection_;
+                }
+
+        private:
+                Intersection intersection_;
+                bool empty_;
+        };
+
+}
 
 inline bool nearer (const Intersection &lhs, const Intersection &rhs) {
         return lhs.distance() < rhs.distance();

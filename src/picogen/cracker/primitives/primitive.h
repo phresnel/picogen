@@ -1,20 +1,20 @@
 #ifndef PRIMITIVE_H_20110811
 #define PRIMITIVE_H_20110811
 
-#include "potentialintersection.h"
+#include "intersection.h"
 #include "ray.h"
 
 namespace picogen { namespace cracker {
 
 class Primitive {
 public:
-        PotentialIntersection operator() (Ray const &ray) const {
+        Intersection::Optional operator() (Ray const &ray) const {
                 return this->intersect(ray);
         }
 
         virtual ~Primitive() {}
 protected:
-        virtual PotentialIntersection intersect(Ray const &ray) const = 0;
+        virtual Intersection::Optional intersect(Ray const &ray) const = 0;
 };
 
 

@@ -1,7 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "potentialintersection.h"
+#include "intersection.h"
 #include "ray.h"
 #include "primitives/primitive.h"
 #include "terrain/gridterrain.h"
@@ -19,7 +19,7 @@ class Scene
 public:
         Scene();
 
-        PotentialIntersection operator() (Ray const &ray) const;
+        Intersection::Optional operator() (Ray const &ray) const;
 
         void setSun (Sun const &sun);
 

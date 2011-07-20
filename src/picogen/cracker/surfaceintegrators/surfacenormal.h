@@ -23,7 +23,7 @@ public:
         Color operator() (Ray const &ray,
                           Scene const &scene) const
         {
-                const PotentialIntersection pi = scene(ray);
+                const Intersection::Optional pi = scene(ray);
                 if (pi) {
                         const Intersection &i = pi.intersection();
                         const real
