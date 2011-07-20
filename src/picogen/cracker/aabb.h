@@ -3,7 +3,7 @@
 
 #include "math3d.h"
 #include "ray.h"
-#include "potentialinterval.h"
+#include "interval.h"
 
 #include <limits>
 
@@ -133,7 +133,7 @@ inline real volume (BoundingBox const &box) {
 
 
 
-inline PotentialInterval intersect (Ray const & ray, BoundingBox const & box) {
+inline Interval::Optional intersect (Ray const & ray, BoundingBox const & box) {
         using std::swap;
 
         real t0 = 0;//ray.minT;
@@ -151,7 +151,7 @@ inline PotentialInterval intersect (Ray const & ray, BoundingBox const & box) {
                 t0 = near > t0 ? near : t0;
                 t1 = far < t1 ? far : t1;
 
-                if (t0 > t1) return PotentialInterval();
+                if (t0 > t1) return Interval::Optional();
         }
 
         // Y
@@ -166,7 +166,7 @@ inline PotentialInterval intersect (Ray const & ray, BoundingBox const & box) {
                 t0 = near > t0 ? near : t0;
                 t1 = far < t1 ? far : t1;
 
-                if (t0 > t1) return PotentialInterval();
+                if (t0 > t1) return Interval::Optional();
         }
 
         // Z
@@ -181,7 +181,7 @@ inline PotentialInterval intersect (Ray const & ray, BoundingBox const & box) {
                 t0 = near > t0 ? near : t0;
                 t1 = far < t1 ? far : t1;
 
-                if (t0 > t1) return PotentialInterval();
+                if (t0 > t1) return Interval::Optional();
         }
         return Interval (t0, t1);
 }
