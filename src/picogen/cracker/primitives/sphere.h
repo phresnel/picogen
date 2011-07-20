@@ -6,6 +6,7 @@
 #include "real.h"
 #include "primitives/primitive.h"
 #include "math3d.h"
+#include "materials/lambertmaterial.h"
 
 namespace picogen { namespace cracker {
 
@@ -36,7 +37,9 @@ private:
                 if ((D>=0) & (E>=0)) {
                         const Point &poi = ray(E);
                         const Normal n = normalize<Normal>(poi - center_);
-                        return Intersection (E, n);
+                        return Intersection (E, n,
+                                             std::shared_ptr<Material>(new LambertMaterial())
+                                             );
                 }
 
 

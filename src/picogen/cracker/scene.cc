@@ -11,8 +11,8 @@ PotentialIntersection Scene::operator () (Ray const &ray) const {
         PotentialIntersection nearest;
 
         nearest = terrain_(ray);
-        for (auto it = primitives_.begin(),
-                  end=primitives_.end();
+        for (auto it = genericPrimitives_.begin(),
+                  end=genericPrimitives_.end();
              it!=end; ++it)
         {
                 const PotentialIntersection pi = (**it)(ray);

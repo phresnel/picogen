@@ -5,6 +5,7 @@
 #include "ray.h"
 #include "primitives/primitive.h"
 #include "terrain/gridterrain.h"
+#include "sun.h"
 
 #include <list>
 #include <memory>
@@ -20,22 +21,25 @@ public:
 
         PotentialIntersection operator() (Ray const &ray) const;
 
+        void setSun (Sun const &sun);
+
         // TODO: shall we use a builder pattern instead?
         // In the general case, we shouldn't be using generalized primitves in
         // cracker.
         // TODO: update: we should do this, as we can rid the virtual Primitive
         // interface away.
         template<typename T>
-        void insertPrimitive (T const &prim) {
+        void insertGenericPrimitive (T const &prim) {
                 // TODO: maybe it is a good idea to lump primitivs of the same type id
                 // into the same list
 
-                primitives_.emplace_back(new T(prim));
+                genericPrimitives_.emplace_back(new T(prim));
         }
 
 private:
-        std::list<std::shared_ptr<Primitive> > primitives_;
+        std::list<std::shared_ptr<Primitive> > genericPrimitives_;
         GridTerrain terrain_;
+        Sun sun_;
 };
 
 } }

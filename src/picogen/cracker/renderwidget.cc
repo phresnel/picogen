@@ -45,7 +45,7 @@ void RenderWidget::on_pushButton_clicked()
                 const real x = rand() / (real)RAND_MAX*100 - 50;
                 const real y = rand() / (real)RAND_MAX*10;
                 const real z = rand() / (real)RAND_MAX*100 + 2;
-                scene->insertPrimitive (Sphere(Point(x,y,z), 1.4));
+                scene->insertGenericPrimitive (Sphere(Point(x,y,z), 1.4));
         }
         glimpse::StopWatch rendertime;
 

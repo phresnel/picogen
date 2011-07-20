@@ -8,7 +8,9 @@ namespace picogen { namespace cracker {
 class PotentialIntersection {
 public:
         PotentialIntersection()
-        : intersection_(0,Normal(0,1,0)), empty_(true) {
+        : intersection_(0,Normal(0,1,0),std::shared_ptr<Material>()),
+          empty_(true)
+        {
         }
 
         PotentialIntersection (Intersection const &intersection)

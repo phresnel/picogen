@@ -3,6 +3,7 @@
 #include "potentialintersection.h"
 #include "ray.h"
 #include "math3d.h"
+#include "materials/lambertmaterial.h"
 
 #include <algorithm>
 #include <cmath>
@@ -56,7 +57,10 @@ PotentialIntersection GridTerrain::operator() (Ray const &ray) const {
                         const Normal &normal = normal_above(ch,
                                                             dcurr.x(),
                                                             dcurr.z());
-                        return Intersection (f, normal);
+                        return Intersection (f, normal,
+                                             std::shared_ptr<Material>(
+                                                     new LambertMaterial)
+                                             );
                 }
         }
         return PotentialIntersection();
