@@ -2,8 +2,13 @@
 #define COLOR_H
 
 #include "real.h"
+#include <cassert>
 
 namespace picogen { namespace cracker {
+
+namespace detail {
+        class OptionalColor;
+}
 
 class Color
 {
@@ -29,12 +34,28 @@ public:
                               b_+rhs.b_);
         }
 
+        typedef detail::OptionalColor Optional;
+
 private:
         Color (real r, real g, real b) : r_(r), g_(g), b_(b) {}
 
 private:
         real r_, g_, b_;
 };
+
+
+namespace detail {
+        class OptionalColor {
+        public:
+                OptionalColor() : empty_(true) {}
+                OptionalColor (Color const &color) : empty_(false), color_(color) {}
+                explicit operator bool () const { return !empty_; }
+                Color color() const { assert(!empty_); return color_; }
+        private:
+                bool empty_;
+                Color color_;
+        };
+}
 
 inline Color operator* (Color const &col, real f) {
         return Color(col.r_*f, col.g_*f, col.b_*f);
