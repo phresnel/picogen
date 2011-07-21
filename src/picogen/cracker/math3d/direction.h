@@ -38,6 +38,8 @@ public:
         Vector operator* (real) const;
         Vector operator/ (real f) const;
 
+        Direction operator- () const;
+
 private:
         void normalize() {
                 const real l = 1 / length();

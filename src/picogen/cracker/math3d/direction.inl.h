@@ -10,6 +10,10 @@ inline Direction::operator Vector () const {
         return Vector(x_, y_, z_);
 }
 
+inline Direction Direction::operator- () const {
+        return Direction (-x_, -y_, -z_);
+}
+
 } }
 
 #endif // DIRECTION_INL_H_20110715

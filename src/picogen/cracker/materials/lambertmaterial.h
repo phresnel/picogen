@@ -7,8 +7,8 @@ namespace picogen { namespace cracker {
 
 class LambertMaterial : public Material {
 private:
-        Color::Optional brdf_(const InVector &in,
-                              const OutVector &out,
+        Color::Optional brdf_(const InDirection &in,
+                              const OutDirection &out,
                               Random &rand) const;
 };
 

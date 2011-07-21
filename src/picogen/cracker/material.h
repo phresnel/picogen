@@ -2,43 +2,43 @@
 #define MATERIAL_H_20110720
 
 #include "color.h"
-#include "math3d/vector.h"
+#include "math3d/direction.h"
 
 namespace picogen { namespace cracker {
 class Random;
 
 
-class InVector {
+class InDirection {
 public:
-        InVector() = delete;
-        InVector(Vector const &vec) : vec_(vec) {}
-        Vector vector() const { return vec_; }
+        InDirection() = delete;
+        InDirection(Direction const &vec) : vec_(vec) {}
+        Direction direction() const { return vec_; }
 private:
-        Vector vec_;
+        Direction vec_;
 };
 
-class OutVector {
+class OutDirection {
 public:
-        OutVector() = delete;
-        OutVector(Vector const &vec) : vec_(vec) {}
-        Vector vector() const { return vec_; }
+        OutDirection() = delete;
+        OutDirection(Direction const &vec) : vec_(vec) {}
+        Direction direction() const { return vec_; }
 private:
-        Vector vec_;
+        Direction vec_;
 };
 
 
 class Material {
 public:
-        Color::Optional brdf (InVector const &in,
-                              OutVector const &out,
+        Color::Optional brdf (InDirection const &in,
+                              OutDirection const &out,
                               Random &rand) const
         {
                 return this->brdf_(in, out, rand);
         }
 
 private:
-        virtual Color::Optional brdf_ (InVector const &in,
-                                       OutVector const &out,
+        virtual Color::Optional brdf_ (InDirection const &in,
+                                       OutDirection const &out,
                                        Random &rand) const = 0;
 };
 

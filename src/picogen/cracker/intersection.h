@@ -29,6 +29,7 @@ public:
         real     distance() const { return distance_; }
         Normal   normal()   const { return normal_;   }
         std::shared_ptr<Material> material() const { return material_; }
+        const Material& material_ref() const { return *material_; }
 
         typedef detail::OptionalIntersection Optional;
 
