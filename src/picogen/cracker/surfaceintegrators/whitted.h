@@ -1,15 +1,14 @@
-#ifndef CPUCORE_H_20110713
-#define CPUCORE_H_20110713
-
-#include "color.h"
+#ifndef WHITTED_H_20110708
+#define WHITTED_H_20110708
 
 namespace picogen { namespace cracker {
 
 class Ray;
 class Scene;
 class Random;
+class Color;
 
-class CpuCoreIntegrator {
+class WhittedIntegrator {
 public:
         Color operator() (Ray const &,
                           Scene const &,
@@ -18,4 +17,4 @@ public:
 
 } }
 
-#endif // CPUCORE_H_20110713
+#endif // RAYDIRECTION_H_20110708

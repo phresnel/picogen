@@ -7,10 +7,13 @@
 
 namespace picogen { namespace cracker {
 
+class Random;
+
 class RayDirectionIntegrator {
 public:
         Color operator() (Ray const &ray,
-                          Scene const &) const
+                          Scene const &,
+                          Random &) const
         {
                 Direction d = ray.direction();
                 return Color::FromRgb(

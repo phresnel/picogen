@@ -36,7 +36,8 @@ namespace {
         }
 }
 
-Color CpuCoreIntegrator::operator() (Ray const &, Scene const &) const
+Color CpuCoreIntegrator::operator() (Ray const &, Scene const &,
+                                     Random &) const
 {
         ensure_initialized();
         return colors [omp_get_thread_num() % num_threads];

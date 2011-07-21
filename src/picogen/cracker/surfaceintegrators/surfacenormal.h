@@ -10,6 +10,8 @@
 
 namespace picogen { namespace cracker {
 
+class Random;
+
 class SurfaceNormalIntegrator {
 public:
         SurfaceNormalIntegrator () : min_(0), range_(100) {}
@@ -21,7 +23,8 @@ public:
         }
 
         Color operator() (Ray const &ray,
-                          Scene const &scene) const
+                          Scene const &scene,
+                          Random &) const
         {
                 const Intersection::Optional pi = scene(ray);
                 if (pi) {

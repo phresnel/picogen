@@ -3,6 +3,7 @@
 #include "rendertarget.h"
 #include "rendertargetrow.h"
 #include "ray.h"
+#include "random.h"
 
 namespace picogen  { namespace cracker {
 
@@ -15,6 +16,7 @@ void render (std::shared_ptr<Scene> scene_,
              std::shared_ptr<RenderTarget> target
              )
 {
+        Random random;
         RenderTarget &t = *target;
         Scene &scene = *scene_;
         const unsigned int width = t.width(),
@@ -29,7 +31,8 @@ void render (std::shared_ptr<Scene> scene_,
                         const real u = x/static_cast<real>(width);
 
                         const Ray primary = camera (u, v);
-                        const Color color = surfaceIntegrator(primary, scene);
+                        const Color color = surfaceIntegrator(primary, scene,
+                                                              random);
 
                         row[x].setColor (color);
                 }

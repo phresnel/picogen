@@ -3,6 +3,7 @@
 
 #include "combiner.h"
 #include "cpucore.h"
+#include "whitted.h"
 #include "primarydistance.h"
 #include "surfacenormal.h"
 #include "raydirection.h"
@@ -12,6 +13,9 @@
 
 namespace picogen { namespace cracker {
 
+inline std::string nameof (WhittedIntegrator) {
+        return "Whitted";
+}
 inline std::string nameof (CpuCoreIntegrator) {
         return "CpuCore";
 }
