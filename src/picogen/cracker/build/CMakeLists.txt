@@ -143,6 +143,7 @@ set (sources ${sources}
         ${cracker_src_dir}/primitives/sphere.cc
 
         ${cracker_src_dir}/materials/lambertmaterial.cc
+        ${cracker_src_dir}/materials/specularmirror.cc
 
         ${cracker_src_dir}/terrain/gridterrain.cc
 )

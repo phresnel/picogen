@@ -29,6 +29,8 @@ private:
 
 class Material {
 public:
+        Material () : whittedMirror_(false) {}
+
         Color::Optional brdf (InDirection const &in,
                               OutDirection const &out,
                               Random &rand) const
@@ -36,7 +38,14 @@ public:
                 return this->brdf_(in, out, rand);
         }
 
+        bool whittedMirror() const { return whittedMirror_; }
+
+protected:
+        Material(bool mirror) : whittedMirror_(mirror)
+        {}
+
 private:
+        bool whittedMirror_;
         virtual Color::Optional brdf_ (InDirection const &in,
                                        OutDirection const &out,
                                        Random &rand) const = 0;

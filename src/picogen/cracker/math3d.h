@@ -5,6 +5,7 @@
 #include "math3d/vector.h"
 #include "math3d/point.h"
 #include "math3d/direction.h"
+#include "math3d/normal.h"
 
 namespace picogen { namespace cracker {
         // any, any
@@ -71,6 +72,16 @@ namespace picogen { namespace cracker {
                 return *this * (1 / f);
         }
 
+        // normal, vector
+        inline Vector Normal::operator* (real f) const {
+                return Vector (x_*f, y_*f, z_*f);
+        }
+
+        inline Vector Normal::operator/ (real f) const {
+                assert (f != 0);
+                return *this * (1 / f);
+        }
+
 
         // normal, normal
         inline real dot (Normal const &lhs, Normal const &rhs) {
@@ -81,5 +92,6 @@ namespace picogen { namespace cracker {
 #include "math3d/vector.inl.h"
 #include "math3d/point.inl.h"
 #include "math3d/direction.inl.h"
+#include "math3d/normal.inl.h"
 
 #endif // MATH3D_H_20110813

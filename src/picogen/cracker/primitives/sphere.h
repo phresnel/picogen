@@ -6,7 +6,7 @@
 #include "real.h"
 #include "primitives/primitive.h"
 #include "math3d.h"
-#include "materials/lambertmaterial.h"
+#include "materials/specularmirror.h"
 
 namespace picogen { namespace cracker {
 
@@ -38,7 +38,8 @@ private:
                         const Point &poi = ray(E);
                         const Normal n = normalize<Normal>(poi - center_);
                         return Intersection (E, n,
-                                             std::shared_ptr<Material>(new LambertMaterial())
+                                             std::shared_ptr<Material>(
+                                                 new SpecularMirrorMaterial())
                                              );
                 }
 
