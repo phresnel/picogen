@@ -13,6 +13,39 @@ namespace {
         Color whitterate (Ray const &ray,
                           Scene const &scene,
                           Random &random,
+                          unsigned int max_depth);
+
+
+
+        Color specular(Ray const &ray,
+                       Scene const &scene,
+                       Random &random,
+                       unsigned int max_depth)
+        {
+                const Color::Optional &col_ =
+                                mat.brdf(InDirection(ray.direction()),// TODO: todo
+                                         OutDirection(-ray.direction()),
+                                         random);
+                assert (col_);
+                const Color &col = col_.color();
+
+                const Direction d = ray.direction();
+                const Normal n    = i.normal();
+                const Point  poi  = ray(distance) + n * 0.0001;
+                const Vector ref  = static_cast<Vector>(d)
+                                    - real(2)*mixed_dot(d,n)*n;
+
+                return col+col*whitterate(Ray(poi, static_cast<Direction>(normalize(ref))),
+                                          scene,
+                                          random,
+                                          max_depth-1);
+        }
+
+
+
+        Color whitterate (Ray const &ray,
+                          Scene const &scene,
+                          Random &random,
                           unsigned int max_depth)
         {
                 if (!max_depth)
@@ -25,23 +58,7 @@ namespace {
                         const Material &mat   = i.material_ref();
 
                         if (mat.whittedMirror()) {
-                                const Color::Optional &col_ =
-                                                mat.brdf(InDirection(ray.direction()),// TODO: todo
-                                                         OutDirection(-ray.direction()),
-                                                         random);
-                                assert (col_);
-                                const Color &col = col_.color();
-
-                                const Direction d = ray.direction();
-                                const Normal n    = i.normal();
-                                const Point  poi  = ray(distance) + n * 0.0001;
-                                const Vector ref  = static_cast<Vector>(d)
-                                                    - real(2)*mixed_dot(d,n)*n;
-
-                                return col+col*whitterate(Ray(poi, static_cast<Direction>(normalize(ref))),
-                                                          scene,
-                                                          random,
-                                                          max_depth-1);
+                                return specular(ray, scene, random, max_depth);
                         } else if (const auto &col =
                                    mat.brdf(InDirection(ray.direction()),// TODO: todo
                                             OutDirection(-ray.direction()),
