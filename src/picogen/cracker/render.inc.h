@@ -10,11 +10,9 @@ namespace picogen  { namespace cracker {
 
 template <typename SurfaceIntegrator,
           typename Camera>
-void render (std::shared_ptr<Scene> scene_,
-             SurfaceIntegrator surfaceIntegrator,
-             Camera camera,
-             std::shared_ptr<RenderTarget> target
-             )
+void Renderer<SurfaceIntegrator, Camera>::render (
+        std::shared_ptr<RenderTarget> target
+) const
 {
         Random random;
         RenderTarget &t = *target;
@@ -30,9 +28,8 @@ void render (std::shared_ptr<Scene> scene_,
                 for (unsigned int x=0; x<width; ++x) {
                         const real u = x/static_cast<real>(width);
 
-                        const Ray primary = camera (u, v);
-                        const Color color = surfaceIntegrator(primary, scene,
-                                                              random);
+                        const Ray primary = camera_ (u, v);
+                        const Color color = integrator_(primary, scene, random);
 
                         row[x].setColor (color);
                 }

@@ -55,10 +55,10 @@ void RenderWidget::on_pushButton_clicked()
                                 //combine (PrimaryDistanceIntegrator(0,100),
                                 //         SurfaceNormalIntegrator(),
                                 //         0.5);
-        picogen::cracker::render (scene,
-                                  integrator,
-                                  PinholeCamera(1.0),
-                                  target);
+        const auto renderer = createRenderer (scene,
+                                              integrator,
+                                              PinholeCamera(1.0));
+        renderer.render (target);
 
         const unsigned int width = target->width(),
                            height = target->height();

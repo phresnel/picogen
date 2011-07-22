@@ -38,6 +38,7 @@ public:
                 return this->brdf_(in, out, rand);
         }
 
+        // TODO: maybe recoin it "deterministic_brdf" or so
         bool whittedMirror() const { return whittedMirror_; }
 
 protected:

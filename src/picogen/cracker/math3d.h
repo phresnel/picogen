@@ -30,6 +30,12 @@ namespace picogen { namespace cracker {
                 const real l = 1 / length (in);
                 return static_cast<Out>(in * l);
         }
+        template <typename Out=Vector>
+        inline Out normalize (real x, real y, real z) {
+                const Vector in(x,y,z);
+                const real l = 1 / length (in);
+                return static_cast<Out>(in * l);
+        }
 
 
         inline Vector cross(Vector const &lhs, Vector const &rhs) {
