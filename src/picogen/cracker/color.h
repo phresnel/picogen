@@ -14,6 +14,7 @@ class Color
 {
 public:
         static Color FromRgb (real r, real g, real b);
+        static Color Black   ();
 
         Color() : r_(0), g_(0), b_(0) {}
 
@@ -21,17 +22,26 @@ public:
         real g() const { return g_; }
         real b() const { return b_; }
 
-        // Friend in this case is better, because whether under the hood
-        // we use rgb or not is unspecified. Otherwise, non-friends would
-        // have to rely on the r,g,b member functions, which are possibly
-        // just approximations.
-        friend Color operator* (Color const &, real f);
-        friend Color operator* (real f, Color const &);
 
-        Color operator+ (Color const &rhs) const {
-                return Color (r_+rhs.r_,
-                              g_+rhs.g_,
-                              b_+rhs.b_);
+        Color& operator+= (Color const &rhs) {
+                r_ += rhs.r_;
+                g_ += rhs.g_;
+                b_ += rhs.b_;
+                return *this;
+        }
+
+        Color& operator *= (real f) {
+                r_ *= f;
+                g_ *= f;
+                b_ *= f;
+                return *this;
+        }
+
+        Color& operator *= (Color const &rhs) {
+                r_ *= rhs.r_;
+                g_ *= rhs.g_;
+                b_ *= rhs.b_;
+                return *this;
         }
 
         typedef detail::OptionalColor Optional;
@@ -57,12 +67,20 @@ namespace detail {
         };
 }
 
-inline Color operator* (Color const &col, real f) {
-        return Color(col.r_*f, col.g_*f, col.b_*f);
+inline Color operator* (Color lhs, real rhs) {
+        return lhs *= rhs;
 }
-inline Color operator* (real f, Color const &col) {
-        return Color(f*col.r_, f*col.g_, f*col.b_);
+inline Color operator* (real lhs, Color rhs) {
+        return rhs *= lhs;
 }
+inline Color operator* (Color lhs, Color const &rhs) {
+        return lhs *= rhs;
+}
+
+inline Color operator+ (Color lhs, Color const &rhs) {
+        return lhs += rhs;
+}
+
 
 } }
 

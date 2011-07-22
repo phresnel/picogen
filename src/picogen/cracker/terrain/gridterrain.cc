@@ -4,6 +4,7 @@
 #include "ray.h"
 #include "math3d.h"
 #include "materials/lambertmaterial.h"
+#include "materials/specularmirror.h"
 
 #include <algorithm>
 #include <cmath>
@@ -25,7 +26,7 @@ GridTerrain::GridTerrain()
                         const real v = y / static_cast<real>(heightfieldDepth_);
 
                         heightfield_[y*heightfieldWidth_+x] =
-                                        -20 + 16*std::sin(u*16) * std::sin(v*16);
+                                        -8 + 4*std::sin(u*24) * std::sin(v*24);
                 }
         }
 }
@@ -38,17 +39,19 @@ Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
 
         const Direction& direction = ray.direction();
         real step ;
+
+        const real seps = 1;
         if(direction.x()>direction.y()) {
-                step = (1/sqrt(2)) * direction.x() * pixelWidth_;
+                step = seps * (1/sqrt(2)) * direction.x() * pixelWidth_;
         } else {
-                step = (1/sqrt(2)) * direction.z() * pixelDepth_;
+                step = seps * (1/sqrt(2)) * direction.z() * pixelDepth_;
         }
-        if (step<1.) step=1.;
+        if (step<seps) step=seps;
 
         Vector dstep = direction * step;
-        Point dcurr = ray(0);
+        Point dcurr = ray(step); // <-- we need to push back once we intersect
 
-        for (real f=0; f<500; f+=step, dcurr+=dstep) {
+        for (real f=step; f<100; f+=step, dcurr+=dstep) {
                 const real u = (dcurr.x()+W/2) / W,
                            v = (dcurr.z()+D/2) / D;
                 const real ch = height(u*heightfieldWidth_,
@@ -57,7 +60,7 @@ Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
                         const Normal &normal = normal_above(ch,
                                                             dcurr.x(),
                                                             dcurr.z());
-                        return Intersection (f, normal,
+                        return Intersection (f-step, normal,
                                              std::shared_ptr<Material>(
                                                      new LambertMaterial)
                                              );

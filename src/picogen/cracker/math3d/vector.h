@@ -7,9 +7,12 @@
 namespace picogen { namespace cracker {
 
 class Normal;
+class Direction;
 
 class Vector {
 public:
+        explicit operator Direction () const;
+
         Vector () : x_(0), y_(0), z_(0) {}
         Vector (real x, real y, real z) : x_(x), y_(y), z_(z) {}
 
@@ -21,6 +24,13 @@ public:
                 x_ += rhs.x_;
                 y_ += rhs.y_;
                 z_ += rhs.z_;
+                return *this;
+        }
+
+        Vector& operator -= (Vector const &rhs) {
+                x_ -= rhs.x_;
+                y_ -= rhs.y_;
+                z_ -= rhs.z_;
                 return *this;
         }
 

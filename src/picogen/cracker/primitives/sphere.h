@@ -7,6 +7,7 @@
 #include "primitives/primitive.h"
 #include "math3d.h"
 #include "materials/specularmirror.h"
+#include "materials/lambertmaterial.h"
 
 namespace picogen { namespace cracker {
 

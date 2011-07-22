@@ -9,41 +9,57 @@
 
 namespace picogen { namespace cracker {
 
+namespace {
+        Color whitterate (Ray const &ray,
+                          Scene const &scene,
+                          Random &random,
+                          unsigned int max_depth)
+        {
+                if (!max_depth)
+                        return Color::Black();
+
+                const Intersection::Optional pi = scene(ray);
+                if (pi) {
+                        const Intersection &i = pi.intersection();
+                        const real distance   = i.distance();
+                        const Material &mat   = i.material_ref();
+
+                        if (mat.whittedMirror()) {
+                                const Color::Optional &col_ =
+                                                mat.brdf(InDirection(ray.direction()),// TODO: todo
+                                                         OutDirection(-ray.direction()),
+                                                         random);
+                                assert (col_);
+                                const Color &col = col_.color();
+
+                                const Direction d = ray.direction();
+                                const Normal n    = i.normal();
+                                const Point  poi  = ray(distance) + n * 0.0001;
+                                const Vector ref  = static_cast<Vector>(d)
+                                                    - real(2)*mixed_dot(d,n)*n;
+
+                                return col+col*whitterate(Ray(poi, static_cast<Direction>(normalize(ref))),
+                                                          scene,
+                                                          random,
+                                                          max_depth-1);
+                        } else if (const auto &col =
+                                   mat.brdf(InDirection(ray.direction()),// TODO: todo
+                                            OutDirection(-ray.direction()),
+                                            random))
+                        {
+                                return col.color();
+                        }
+
+                }
+                return Color::FromRgb(0.5,0.5,0.6);
+        }
+}
+
 Color WhittedIntegrator::operator () (Ray const &ray,
                                       Scene const &scene,
                                       Random &random) const
 {
-        /*Direction d = ray.direction();
-        return Color::FromRgb(
-                d.x()*0.5+0.5,
-                d.y()*0.5+0.5,
-                d.z()*0.5+0.5
-        );*/
-
-        const Intersection::Optional pi = scene(ray);
-        if (pi) {
-                const Intersection &i = pi.intersection();
-                const real distance   = i.distance();
-                const Material &mat   = i.material_ref();
-
-                if (mat.whittedMirror()) {
-                        const Point  poi  = ray(distance);
-                        const Normal n    = i.normal();
-                        const Point  orig = poi + n * 0.0001;
-                        //const auto rd =
-                        return (*this)(Ray(orig,
-                                           Direction(n.x(), n.y(), n.z())),
-                                       scene,
-                                       random);
-                } else if (const auto &col =
-                           mat.brdf(InDirection(ray.direction()),// TODO: todo
-                                    OutDirection(-ray.direction()),
-                                    random))
-                {
-                        return col.color();
-                }
-
-        }
-        return Color::FromRgb(0.75,0.5,0.5);
+        return whitterate (ray, scene, random, 5);
 }
+
 } }

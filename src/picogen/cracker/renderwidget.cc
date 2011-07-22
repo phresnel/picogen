@@ -44,13 +44,14 @@ void RenderWidget::on_pushButton_clicked()
 
         for (int i=0; i<128; ++i) {
                 const real x = rand() / (real)RAND_MAX*100 - 50;
-                const real y = rand() / (real)RAND_MAX*10;
+                const real y = rand() / (real)RAND_MAX*10 - 5;
                 const real z = rand() / (real)RAND_MAX*100 + 2;
                 scene->insertGenericPrimitive (Sphere(Point(x,y,z), 1.4));
         }
         glimpse::StopWatch rendertime;
 
-        const auto integrator = WhittedIntegrator();
+        const auto integrator = //SurfaceNormalIntegrator();
+                                WhittedIntegrator();
                                 //combine (PrimaryDistanceIntegrator(0,100),
                                 //         SurfaceNormalIntegrator(),
                                 //         0.5);
