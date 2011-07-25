@@ -15,7 +15,7 @@ namespace picogen { namespace cracker {
 class Ray;
 class Color;
 class Point;
-class Normal;
+class Direction;
 
 class Scene
 {
@@ -23,7 +23,7 @@ public:
         Scene();
 
         Intersection::Optional operator() (Ray const &ray) const;
-        Color radiance (Point const&, Normal const &) const;
+        Color radiance (Point const&, Direction const &) const;
 
         void setSun (Sun const &sun);
 

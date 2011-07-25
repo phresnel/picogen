@@ -27,6 +27,35 @@ private:
 };
 
 
+
+class BsdfSample {
+public:
+        static BsdfSample Null () {
+                return BsdfSample (Direction(0,1,0), 0, Color::Black());;
+        }
+
+        BsdfSample () = delete;
+
+        BsdfSample(InDirection const &incident,
+                   real pdf,
+                   Color const &reflection)
+                : incident_(incident)
+                , pdf_(pdf)
+                , reflection_(reflection)
+        {
+                assert (pdf>=0 && pdf<=1);
+        }
+
+        InDirection incident()   const { return incident_;   }
+        real        pdf()        const { return pdf_;        }
+        Color       reflection() const { return reflection_; }
+
+private:
+        InDirection incident_;
+        real pdf_;
+        Color reflection_;
+};
+
 class Material {
 public:
         Material () : whittedMirror_(false) {}
@@ -36,6 +65,10 @@ public:
                               Random &rand) const
         {
                 return this->brdf_(in, out, rand);
+        }
+
+        BsdfSample sample(OutDirection const &out, Random &rand) const {
+                return this->sample_(out, rand);
         }
 
         // TODO: maybe recoin it "deterministic_brdf" or so
@@ -50,6 +83,8 @@ private:
         virtual Color::Optional brdf_ (InDirection const &in,
                                        OutDirection const &out,
                                        Random &rand) const = 0;
+        virtual BsdfSample sample_ (OutDirection const &,
+                                    Random &rand) const = 0;
 };
 
 } }

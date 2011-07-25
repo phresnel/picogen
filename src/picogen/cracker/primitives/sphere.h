@@ -40,7 +40,7 @@ private:
                         const Normal n = normalize<Normal>(poi - center_);
                         return Intersection (E, n,
                                              std::shared_ptr<Material>(
-                                                 new SpecularMirrorMaterial())
+                                                 new LambertMaterial())
                                              );
                 }
 

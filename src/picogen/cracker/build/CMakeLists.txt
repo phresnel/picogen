@@ -112,6 +112,7 @@ set (sources ${sources}
         ${cracker_src_dir}/scene.cc
 
         ${cracker_src_dir}/real.cc
+        ${cracker_src_dir}/constants.cc
         ${cracker_src_dir}/interval.cc
         ${cracker_src_dir}/ray.cc
         ${cracker_src_dir}/material.cc

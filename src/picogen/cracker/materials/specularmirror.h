@@ -12,6 +12,9 @@ private:
         Color::Optional brdf_(const InDirection &in,
                               const OutDirection &out,
                               Random &rand) const;
+
+        BsdfSample sample_ (OutDirection const &,
+                            Random &) const;
 };
 
 } }

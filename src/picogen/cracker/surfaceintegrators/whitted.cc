@@ -60,7 +60,8 @@ namespace {
                                     random))
                 {
                         return col.color() *
-                               scene.radiance(ray(i.distance()), i.normal());
+                               scene.radiance(ray(i.distance()),
+                                              static_cast<Direction>(i.normal()));
                 }
                 // no luck with brdf
                 return Color::Black();

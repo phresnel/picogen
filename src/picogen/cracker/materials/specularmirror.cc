@@ -9,4 +9,11 @@ Color::Optional SpecularMirrorMaterial::brdf_(const InDirection &,
         return Color::White();
 }
 
+
+BsdfSample SpecularMirrorMaterial::sample_ (OutDirection const &,
+                                            Random &rand) const
+{
+        return BsdfSample::Null();
+}
+
 } }
