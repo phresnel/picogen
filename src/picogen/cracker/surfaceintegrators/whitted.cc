@@ -67,8 +67,7 @@ namespace {
                                             random))
                         {
                                 return col.color() *
-                                       scene.radiance(oppositeDirection(
-                                                              moveForward (ray, distance)));
+                                       scene.radiance(ray(i.distance()), i.normal());
                         }
 
                 }

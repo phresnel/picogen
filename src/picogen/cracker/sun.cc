@@ -12,4 +12,8 @@ Ray Sun::deterministicShadowRay(Point const &from) const {
         return Ray(from, -direction_);
 }
 
+Color Sun::radiance() const {
+        return Color::FromRgb(1,1,1);
+}
+
 } }

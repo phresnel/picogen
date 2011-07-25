@@ -2,7 +2,7 @@
 #define SCENE_H
 
 #include "intersection.h"
-#include "ray.h"
+//#include "ray.h"
 #include "primitives/primitive.h"
 #include "terrain/gridterrain.h"
 #include "sun.h"
@@ -12,7 +12,10 @@
 
 namespace picogen { namespace cracker {
 
+class Ray;
 class Color;
+class Point;
+class Normal;
 
 class Scene
 {
@@ -20,7 +23,7 @@ public:
         Scene();
 
         Intersection::Optional operator() (Ray const &ray) const;
-        Color radiance (Ray const &ray) const;
+        Color radiance (Point const&, Normal const &) const;
 
         void setSun (Sun const &sun);
 

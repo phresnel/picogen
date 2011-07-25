@@ -1,6 +1,9 @@
 #include "scene.h"
 #include "color.h"
 
+#include "ray.h"
+#include "math3d.h"
+
 namespace picogen { namespace cracker {
 
 Scene::Scene()
@@ -34,8 +37,11 @@ Intersection::Optional Scene::operator () (Ray const &ray) const {
         return nearest;
 }
 
-Color Scene::radiance(const Ray &ray) const {
-        return Color::FromRgb(0,1,0);
+Color Scene::radiance(const Point &pos, const Normal &n) const {
+        Ray const &sr = sun_.deterministicShadowRay(pos);
+        if ((*this)(sr))
+                return Color::FromRgb(0,0,0);
+        return mixed_dot(n, sr.direction()) * sun_.radiance();
 }
 
 } }
