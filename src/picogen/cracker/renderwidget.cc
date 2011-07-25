@@ -8,7 +8,7 @@
 
 #include "cameras/pinhole.h"
 #include "surfaceintegrators/cpucore.h"
-#include "surfaceintegrators/whitted.h"
+#include "surfaceintegrators/path.h"
 #include "surfaceintegrators/primarydistance.h"
 #include "surfaceintegrators/surfacenormal.h"
 #include "surfaceintegrators/combiner.h"
@@ -51,7 +51,7 @@ void RenderWidget::on_pushButton_clicked()
         glimpse::StopWatch rendertime;
 
         const auto integrator = //SurfaceNormalIntegrator();
-                                WhittedIntegrator();
+                                PathIntegrator();
                                 //combine (PrimaryDistanceIntegrator(0,100),
                                 //         SurfaceNormalIntegrator(),
                                 //         0.5);

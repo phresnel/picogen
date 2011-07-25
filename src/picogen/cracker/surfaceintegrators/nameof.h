@@ -7,12 +7,16 @@
 #include "primarydistance.h"
 #include "surfacenormal.h"
 #include "raydirection.h"
+#include "path.h"
 
 #include <string>
 #include <sstream>
 
 namespace picogen { namespace cracker {
 
+inline std::string nameof (PathIntegrator) {
+        return "Path";
+}
 inline std::string nameof (WhittedIntegrator) {
         return "Whitted";
 }

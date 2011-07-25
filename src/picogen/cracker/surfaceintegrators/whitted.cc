@@ -78,10 +78,8 @@ namespace {
 
                 if (!pi) return Color::FromRgb(0.5,0.5,0.6);
 
-                return specular_or_diffuse (ray,
-                                            scene,
-                                            random,
-                                            max_depth,
+                return specular_or_diffuse (ray, scene,
+                                            random, max_depth,
                                             pi.intersection());
         }
 }

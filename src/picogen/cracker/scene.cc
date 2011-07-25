@@ -37,6 +37,7 @@ Intersection::Optional Scene::operator () (Ray const &ray) const {
         return nearest;
 }
 
+// TODO: does it make more sense to receive a direction or a normal?
 Color Scene::radiance(const Point &pos, const Normal &n) const {
         Ray const &sr = sun_.deterministicShadowRay(pos);
         if ((*this)(sr))
