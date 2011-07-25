@@ -43,7 +43,28 @@ namespace {
                                       max_depth-1);
         }
 
+        Color specular_or_diffuse (Ray const &ray,
+                                   Scene const &scene,
+                                   Random &random,
+                                   unsigned int max_depth,
+                                   Intersection const &i) {
+                const real distance   = i.distance();
+                const Material &mat   = i.material_ref();
 
+                if (mat.whittedMirror()) {
+                        return specular(ray, scene, i,
+                                        random, max_depth);
+                } else if (const auto &col =
+                           mat.brdf(InDirection(ray.direction()),// TODO: todo
+                                    OutDirection(-ray.direction()),
+                                    random))
+                {
+                        return col.color() *
+                               scene.radiance(ray(i.distance()), i.normal());
+                }
+                // no luck with brdf
+                return Color::Black();
+        }
 
         Color whitterate (Ray const &ray,
                           Scene const &scene,
@@ -52,26 +73,16 @@ namespace {
         {
                 if (!max_depth)
                         return Color::Black();
+
                 const Intersection::Optional pi = scene(ray);
-                if (pi) {
-                        const Intersection &i = pi.intersection();
-                        const real distance   = i.distance();
-                        const Material &mat   = i.material_ref();
 
-                        if (mat.whittedMirror()) {
-                                return specular(ray, scene, i,
-                                                random, max_depth);
-                        } else if (const auto &col =
-                                   mat.brdf(InDirection(ray.direction()),// TODO: todo
-                                            OutDirection(-ray.direction()),
-                                            random))
-                        {
-                                return col.color() *
-                                       scene.radiance(ray(i.distance()), i.normal());
-                        }
+                if (!pi) return Color::FromRgb(0.5,0.5,0.6);
 
-                }
-                return Color::FromRgb(0.5,0.5,0.6);
+                return specular_or_diffuse (ray,
+                                            scene,
+                                            random,
+                                            max_depth,
+                                            pi.intersection());
         }
 }
 
