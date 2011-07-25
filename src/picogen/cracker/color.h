@@ -15,6 +15,8 @@ class Color
 public:
         static Color FromRgb (real r, real g, real b);
         static Color Black   ();
+        static Color White   ();
+        static Color Gray    (real);
 
         Color() : r_(0), g_(0), b_(0) {}
 

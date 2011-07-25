@@ -9,7 +9,18 @@ Color Color::FromRgb(real r, real g, real b)
 
 Color Color::Black()
 {
-        return Color (0,0,0);
+        return Gray(0);
+}
+
+Color Color::White()
+{
+        return Gray (1);
+}
+
+Color Color::Gray(real f)
+{
+        assert (f>=0 && f<= 1);
+        return Color (f,f,f);
 }
 
 } }

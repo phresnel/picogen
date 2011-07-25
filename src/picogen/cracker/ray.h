@@ -28,6 +28,14 @@ private:
         Direction direction_;
 };
 
+inline Ray oppositeDirection (Ray const &ray) {
+        return Ray (ray.origin(), -ray.direction());
+}
+
+inline Ray moveForward (Ray const &ray, real f) {
+        return Ray (ray(f), ray.direction());
+}
+
 } }
 
 #endif

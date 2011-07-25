@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "color.h"
 
 namespace picogen { namespace cracker {
 
@@ -31,6 +32,10 @@ Intersection::Optional Scene::operator () (Ray const &ray) const {
         //                 <-- but that again would be against the performance
         //                     argument
         return nearest;
+}
+
+Color Scene::radiance(const Ray &ray) const {
+        return Color::FromRgb(0,1,0);
 }
 
 } }

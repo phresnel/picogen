@@ -12,7 +12,7 @@
 
 namespace picogen { namespace cracker {
 
-
+class Color;
 
 class Scene
 {
@@ -20,8 +20,11 @@ public:
         Scene();
 
         Intersection::Optional operator() (Ray const &ray) const;
+        Color radiance (Ray const &ray) const;
 
         void setSun (Sun const &sun);
+
+        const Sun &sun() const { return sun_; }
 
         // TODO: shall we use a builder pattern instead?
         // In the general case, we shouldn't be using generalized primitves in

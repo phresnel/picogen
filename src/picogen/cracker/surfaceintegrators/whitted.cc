@@ -37,10 +37,10 @@ namespace {
                 const Vector ref  = static_cast<Vector>(d)
                                     - real(2)*mixed_dot(d,n)*n;
 
-                return col+col*whitterate(Ray(poi, static_cast<Direction>(normalize(ref))),
-                                          scene,
-                                          random,
-                                          max_depth-1);
+                return col*whitterate(Ray(poi, static_cast<Direction>(normalize(ref))),
+                                      scene,
+                                      random,
+                                      max_depth-1);
         }
 
 
@@ -66,7 +66,9 @@ namespace {
                                             OutDirection(-ray.direction()),
                                             random))
                         {
-                                return col.color();
+                                return col.color() *
+                                       scene.radiance(oppositeDirection(
+                                                              moveForward (ray, distance)));
                         }
 
                 }
