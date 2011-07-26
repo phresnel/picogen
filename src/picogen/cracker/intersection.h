@@ -57,7 +57,7 @@ namespace detail {
                           Normal(0,1,0),
                           std::shared_ptr<Material>(),
                           DifferentialGeometry(Normal(0,1,0), Normal(0,1,0),
-                                               Normal(0,1,0), Normal(0,1,0)))
+                                               Normal(1,0,0), Normal(0,0,1)))
                 , empty_(true)
                 {
                 }

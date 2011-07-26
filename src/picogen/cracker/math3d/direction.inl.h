@@ -3,11 +3,16 @@
 
 #include "vector.h"
 #include "direction.h"
+#include "normal.h"
 
 namespace picogen { namespace cracker {
 
 inline Direction::operator Vector () const {
         return Vector(x_, y_, z_);
+}
+
+inline Direction::operator Normal () const {
+        return Normal(x_, y_, z_);
 }
 
 inline Direction Direction::operator- () const {
