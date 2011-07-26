@@ -44,6 +44,21 @@ public:
                         s().z()*v.x() + shadingNormal_.z()*v.y() + t.z()*v.z()
                 );
         }
+        Direction worldToLocal (Direction const &v) const {
+                return normalize<Direction> (
+                        mixed_dot (v, s()),
+                        mixed_dot (v, shadingNormal_),
+                        mixed_dot (v, t)
+                        );
+        }
+
+        Direction localToWorld (Direction const &v) const {
+                return normalize<Direction> (
+                        s().x()*v.x() + shadingNormal_.x()*v.y() + t.x()*v.z(),
+                        s().y()*v.x() + shadingNormal_.y()*v.y() + t.y()*v.z(),
+                        s().z()*v.x() + shadingNormal_.z()*v.y() + t.z()*v.z()
+                        );
+        }
 
 private:
         Normal geometricNormal_, shadingNormal_;

@@ -17,13 +17,15 @@ Color PathIntegrator::operator() (Ray const &ray,
         if (!pi) return Color::Gray(0.4);
 
         const Intersection &i = pi.intersection();
+        const DifferentialGeometry &dg = i.differentialGeometry();
+
         const Material &mat = i.material_ref();
-        const BsdfSample sample = mat.sample(-ray.direction(), random);
+        const BsdfSample sample = mat.sample(dg.worldToLocal(-ray.direction()),
+                                             random);
 
         if (sample.pdf() == 0) return Color::Black();
 
-        const DifferentialGeometry &dg = i.differentialGeometry();
-        const Normal d = dg.localToWorld (static_cast<Normal>(sample.incident().direction()));
+        const Direction d = dg.localToWorld (sample.incident().direction());
 
         //TODO -> need to transform ray into surface space
         return Color::FromRgb(0.5+d.x(),
