@@ -32,17 +32,16 @@ namespace picogen { namespace cracker {
         }
         template <typename Out=Vector>
         inline Out normalize (real x, real y, real z) {
-                const Vector in(x,y,z);
-                const real l = 1 / length (in);
-                return static_cast<Out>(in * l);
+                const real il = 1 / sqrt(x*x + y*y + z*z);
+                return Out(x*il, y*il, z*il);
         }
 
-
-        inline Vector cross(Vector const &lhs, Vector const &rhs) {
-                return Vector(lhs.y()*rhs.z() - lhs.z()*rhs.y(),
-                              lhs.z()*rhs.x() - lhs.x()*rhs.z(),
-                              lhs.x()*rhs.y() - lhs.y()*rhs.x()
-                             );
+        template <typename T>
+        inline T cross(T const &lhs, T const &rhs) {
+                return T(lhs.y()*rhs.z() - lhs.z()*rhs.y(),
+                         lhs.z()*rhs.x() - lhs.x()*rhs.z(),
+                         lhs.x()*rhs.y() - lhs.y()*rhs.x()
+                        );
         }
 
         // vector, point

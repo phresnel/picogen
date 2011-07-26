@@ -48,7 +48,7 @@ namespace {
                                    Random &random,
                                    unsigned int max_depth,
                                    Intersection const &i) {
-                const real distance   = i.distance();
+                //const real distance   = i.distance();
                 const Material &mat   = i.material_ref();
 
                 if (mat.whittedMirror()) {

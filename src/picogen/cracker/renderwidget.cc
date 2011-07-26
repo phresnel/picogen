@@ -51,7 +51,9 @@ void RenderWidget::on_pushButton_clicked()
         glimpse::StopWatch rendertime;
 
         const auto integrator = //SurfaceNormalIntegrator();
-                                PathIntegrator();
+                                combine (PathIntegrator(),
+                                         SurfaceNormalIntegrator(),
+                                         0.);
                                 //combine (PrimaryDistanceIntegrator(0,100),
                                 //         SurfaceNormalIntegrator(),
                                 //         0.5);

@@ -3,6 +3,7 @@
 #include "intersection.h"
 #include "ray.h"
 #include "math3d.h"
+#include "algorithm.h"
 #include "materials/lambertmaterial.h"
 #include "materials/specularmirror.h"
 
@@ -60,9 +61,17 @@ Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
                         const Normal &normal = normal_above(ch,
                                                             dcurr.x(),
                                                             dcurr.z());
+                        const std::tuple<Normal,Normal,Normal>
+                                 cs = coordinateSystem(normal);
+                        const DifferentialGeometry dg(
+                                normal, normal,
+                                std::get<0>(cs),
+                                std::get<2>(cs)
+                        );
                         return Intersection (f-step, normal,
                                              std::shared_ptr<Material>(
-                                                     new LambertMaterial)
+                                                     new LambertMaterial),
+                                             dg
                                              );
                 }
         }

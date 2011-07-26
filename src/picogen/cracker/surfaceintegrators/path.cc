@@ -22,11 +22,20 @@ Color PathIntegrator::operator() (Ray const &ray,
 
         if (sample.pdf() == 0) return Color::Black();
 
+        const DifferentialGeometry &dg = i.differentialGeometry();
+        const Normal &u = dg.dndu(),
+                     &v = dg.dndv(),
+                     &w = i.normal();
+        const Direction &inc = sample.incident().direction();
+        const Vector &d = u * inc.x()
+                        + v * inc.z()
+                        + w * inc.y();
+
         //TODO -> need to transform ray into surface space
-        // TODO -> need to transform sample-direction into world space
-        return Color::FromRgb(0.5+sample.incident().direction().x(),
-                              0.5+sample.incident().direction().y(),
-                              0.5+sample.incident().direction().z());
+        //TODO -> need to transform sample-direction into world space
+        return Color::FromRgb(0.5+d.x(),
+                              0.5+d.y(),
+                              0.5+d.z());
 }
 
 } }

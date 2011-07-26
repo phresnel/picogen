@@ -21,7 +21,7 @@ public:
         }
 
         Color operator() (Ray const &ray, Scene const &scene,
-                          Random &) const {
+                          Random &random) const {
                 if (lerp_<=0) return a(ray,scene,random);
                 if (lerp_>=1) return b(ray,scene,random);
                 return (1-lerp_)*a(ray,scene,random)

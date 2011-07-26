@@ -6,6 +6,7 @@
 #include "real.h"
 #include "primitives/primitive.h"
 #include "math3d.h"
+#include "algorithm.h"
 #include "materials/specularmirror.h"
 #include "materials/lambertmaterial.h"
 
@@ -38,9 +39,17 @@ private:
                 if ((D>=0) & (E>=0)) {
                         const Point &poi = ray(E);
                         const Normal n = normalize<Normal>(poi - center_);
+                        const std::tuple<Normal,Normal,Normal>
+                                 cs = coordinateSystem(n);
+                        DifferentialGeometry dg(
+                                n, n,
+                                std::get<0>(cs),
+                                std::get<2>(cs)
+                        );
                         return Intersection (E, n,
                                              std::shared_ptr<Material>(
-                                                 new LambertMaterial())
+                                                 new LambertMaterial()),
+                                             dg
                                              );
                 }
 

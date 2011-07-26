@@ -114,6 +114,10 @@ set (sources ${sources}
         ${cracker_src_dir}/real.cc
         ${cracker_src_dir}/constants.cc
         ${cracker_src_dir}/interval.cc
+        ${cracker_src_dir}/math3d.cc
+        ${cracker_src_dir}/algorithm.cc
+        ${cracker_src_dir}/random.cc
+
         ${cracker_src_dir}/ray.cc
         ${cracker_src_dir}/material.cc
         ${cracker_src_dir}/sun.cc
@@ -126,9 +130,6 @@ set (sources ${sources}
         ${cracker_src_dir}/math3d/normal.inl.cc
         ${cracker_src_dir}/aabb.cc
         ${cracker_src_dir}/intersection.cc
-
-        ${cracker_src_dir}/math3d.cc
-        ${cracker_src_dir}/random.cc
 
         ${cracker_src_dir}/cameras/pinhole.cc
 
