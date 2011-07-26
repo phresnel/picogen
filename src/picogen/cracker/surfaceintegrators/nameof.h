@@ -35,12 +35,22 @@ inline std::string nameof (SurfaceNormalIntegrator) {
 template<typename L, typename R>
 inline std::string nameof(CombinerIntegrator<L,R> c) {
         std::stringstream ss;
-        ss << "Combiner{"
+        ss << "Combined{"
            << nameof(L()) << ","
            << nameof(R()) << ","
            << c.lerp() << "}";
         return ss.str();
 }
+/*
+template<typename L, typename R>
+inline std::string nameof(Interlacer<L,R> c) {
+        std::stringstream ss;
+        ss << "Interlaced{"
+           << nameof(L()) << ","
+           << nameof(R()) << ","
+           << c.lerp() << "}";
+        return ss.str();
+}*/
 
 
 } }

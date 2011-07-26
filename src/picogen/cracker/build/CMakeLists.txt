@@ -130,6 +130,7 @@ set (sources ${sources}
         ${cracker_src_dir}/math3d/normal.inl.cc
         ${cracker_src_dir}/aabb.cc
         ${cracker_src_dir}/intersection.cc
+        ${cracker_src_dir}/differentialgeometry.cc
 
         ${cracker_src_dir}/cameras/pinhole.cc
 
@@ -140,6 +141,7 @@ set (sources ${sources}
         ${cracker_src_dir}/surfaceintegrators/surfacenormal.cc
         ${cracker_src_dir}/surfaceintegrators/cpucore.cc
         ${cracker_src_dir}/surfaceintegrators/combiner.cc
+        ${cracker_src_dir}/surfaceintegrators/interlacer.cc
         ${cracker_src_dir}/surfaceintegrators/nameof.cc
 
         ${cracker_src_dir}/primitives/primitive.cc

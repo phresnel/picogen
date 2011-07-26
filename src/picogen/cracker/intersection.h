@@ -3,6 +3,7 @@
 
 #include "real.h"
 #include "math3d/normal.h"
+#include "differentialgeometry.h"
 #include <cassert>
 #include <memory>
 
@@ -13,34 +14,6 @@ class Material;
 namespace detail {
         class OptionalIntersection;
 }
-
-
-class DifferentialGeometry {
-public:
-        DifferentialGeometry() = delete;
-
-        DifferentialGeometry (Normal const & geometricNormal,
-                              Normal const & shadingNormal,
-                              Normal const & dndu,
-                              Normal const & dndv)
-                : geometricNormal_(geometricNormal)
-                , shadingNormal_ (shadingNormal)
-                , dndu_ (dndu), dndv_(dndv)
-        {}
-
-        Normal geometricNormal() const { return geometricNormal_; }
-        Normal shadingNormal() const { return shadingNormal_; }
-
-        // "right" in the local geometry of the intersection.
-        Normal dndu() const { return dndu_; }
-
-        // "back" in the local geometry of the intersection.
-        Normal dndv() const { return dndu_; }
-
-private:
-        Normal geometricNormal_, shadingNormal_;
-        Normal dndu_, dndv_;
-};
 
 class Intersection {
 public:

@@ -23,8 +23,8 @@ Color PathIntegrator::operator() (Ray const &ray,
         if (sample.pdf() == 0) return Color::Black();
 
         const DifferentialGeometry &dg = i.differentialGeometry();
-        const Normal &u = dg.dndu(),
-                     &v = dg.dndv(),
+        const Normal &u = dg.dpdu(),
+                     &v = dg.dpdv(),
                      &w = i.normal();
         const Direction &inc = sample.incident().direction();
         const Vector &d = u * inc.x()
