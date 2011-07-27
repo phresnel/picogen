@@ -17,8 +17,8 @@ BsdfSample LambertMaterial::sample_ (OutDirection const &out,
 {
         using namespace std;
         const tuple<real,real,real> sphere = cosineHemisphereR(rand);
-        //const Direction in (get<0>(sphere), get<1>(sphere), get<2>(sphere));
-        const Direction in (0,1,0);
+        const Direction in (get<0>(sphere), get<1>(sphere), get<2>(sphere));
+        //const Direction in (0,1,0);
         const InDirection &ind (in);
         const Color::Optional optc = brdf(ind, out, rand);
         assert (optc);

@@ -40,7 +40,7 @@ void RenderWidget::on_pushButton_clicked()
         using std::shared_ptr;
 
         shared_ptr<Scene> scene (new Scene);
-        shared_ptr<RenderTarget> target(new RenderTarget (320, 240));
+        shared_ptr<RenderTarget> target(new RenderTarget (128, 64));
 
         for (int i=0; i<128; ++i) {
                 const real x = rand() / (real)RAND_MAX*100 - 50;
@@ -60,14 +60,32 @@ void RenderWidget::on_pushButton_clicked()
         const auto renderer = createRenderer (scene,
                                               integrator,
                                               PinholeCamera(1.0));
-        renderer.render (target);
+        for (int i=0; i<30; ++i) {
+                renderer.render (target);
+                if (i) updateDisplay (*target);
+        }
+        rendertime.stop();
+        totaltime.stop();
+        ui->perf->setText ("total: " + QString::number(totaltime())
+                          + ", render: " + QString::number(rendertime()));
+        updateDisplay (*target);
 
-        const unsigned int width = target->width(),
-                           height = target->height();
+        const QString integName = QString::fromStdString(nameof(integrator));
+        if (parentWidget())
+                parentWidget()->setWindowTitle (integName);
+        else
+                setWindowTitle (integName);
+}
+
+void RenderWidget::updateDisplay (picogen::cracker::RenderTarget const &target) {
+        using namespace picogen::cracker;
+
+        const unsigned int width = target.width(),
+                           height = target.height();
         QImage image (width, height, QImage::Format_RGB32);
 
         for (unsigned int y=0; y<height; ++y) {
-                RenderTargetRow row = target->row(y);
+                auto row = target.row(y);
 
                 for (unsigned int x=0; x<width; ++x) {
                         Pixel const &p = row[x];
@@ -82,18 +100,12 @@ void RenderWidget::on_pushButton_clicked()
                                         QColor(r,g,b).rgb());
                 }
         }
-        rendertime.stop();
-        totaltime.stop();
-        ui->perf->setText ("total: " + QString::number(totaltime())
-                          + ", render: " + QString::number(rendertime()));
-        ui->label->setPixmap(QPixmap::fromImage(image));
 
-        const QString integName = QString::fromStdString(nameof(integrator));
-        if (parentWidget())
-                parentWidget()->setWindowTitle (integName);
-        else
-                setWindowTitle (integName);
+        ui->label->setScaledContents(true);
+        ui->label->setPixmap(QPixmap::fromImage(image));
+        repaint();
 }
+
 
 #include "renderwidget.moc"
 

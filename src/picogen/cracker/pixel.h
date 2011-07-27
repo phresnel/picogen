@@ -7,14 +7,18 @@ namespace picogen { namespace cracker {
         class Pixel {
         public:
                 Color color() const {
-                        return color_;
+                        if (numSamples_ == 0)
+                                return Color::Black();
+                        return color_ / numSamples_;
                 }
 
-                void setColor (Color const & color) {
-                        color_ = color;
+                void add (Color const & color) {
+                        color_ += color;
+                        ++numSamples_;
                 }
         private:
                 Color color_;
+                unsigned int numSamples_;
         };
 } }
 

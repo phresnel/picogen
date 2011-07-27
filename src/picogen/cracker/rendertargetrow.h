@@ -15,6 +15,7 @@ public:
         }
 
         Pixel& operator[] (size_t x) {
+                assert (x<width_);
                 return row_[x];
         }
 
@@ -26,6 +27,24 @@ public:
 
 private:
         Pixel *row_;
+        unsigned int width_;
+};
+
+class ConstRenderTargetRow {
+public:
+        const Pixel& operator[] (size_t x) const {
+                assert (x<width_);
+                return row_[x];
+        }
+
+        ConstRenderTargetRow (const Pixel *row,
+                              unsigned int width)
+                : row_(row)
+                , width_ (width)
+        {}
+
+private:
+        const Pixel *row_;
         unsigned int width_;
 };
 

@@ -46,6 +46,14 @@ public:
                 return *this;
         }
 
+        Color& operator /= (real t) {
+                assert (t != 0);
+                r_ /= t;
+                g_ /= t;
+                b_ /= t;
+                return *this;
+        }
+
         typedef detail::OptionalColor Optional;
 
 private:
@@ -77,6 +85,9 @@ inline Color operator* (real lhs, Color rhs) {
 }
 inline Color operator* (Color lhs, Color const &rhs) {
         return lhs *= rhs;
+}
+inline Color operator/ (Color lhs, real t) {
+        return lhs /= t;
 }
 
 inline Color operator+ (Color lhs, Color const &rhs) {

@@ -17,6 +17,11 @@ RenderTargetRow RenderTarget::row (size_t y) {
                                 width_);
 }
 
+ConstRenderTargetRow RenderTarget::row (size_t y) const {
+        return ConstRenderTargetRow (&pixels_[y*width_],
+                                width_);
+}
+
 unsigned int RenderTarget::width () const {
         return width_;
 }

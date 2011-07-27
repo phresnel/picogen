@@ -8,6 +8,7 @@
 namespace picogen { namespace cracker {
 
 class RenderTargetRow;
+class ConstRenderTargetRow;
 
 class RenderTarget
 {
@@ -16,6 +17,7 @@ public:
                      unsigned int height);
 
         RenderTargetRow row (size_t y);
+        ConstRenderTargetRow row (size_t y) const;
         unsigned int width () const;
         unsigned int height() const;
 

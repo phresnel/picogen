@@ -31,7 +31,7 @@ void Renderer<SurfaceIntegrator, Camera>::render (
                         const Ray primary = camera_ (u, v);
                         const Color color = integrator_(primary, scene, random);
 
-                        row[x].setColor (color);
+                        row[x].add (color);
                 }
         }
 }
