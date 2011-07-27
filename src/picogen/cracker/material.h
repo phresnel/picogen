@@ -2,6 +2,7 @@
 #define MATERIAL_H_20110720
 
 #include "color.h"
+#include "real.h"
 #include "math3d/direction.h"
 
 namespace picogen { namespace cracker {
@@ -74,6 +75,10 @@ public:
         // TODO: maybe recoin it "deterministic_brdf" or so
         bool whittedMirror() const { return whittedMirror_; }
 
+        real pdf (const Direction &out, const Direction &in) const {
+                return this->pdf_(out, in);
+        }
+
 protected:
         Material(bool mirror) : whittedMirror_(mirror)
         {}
@@ -85,6 +90,8 @@ private:
                                        Random &rand) const = 0;
         virtual BsdfSample sample_ (OutDirection const &,
                                     Random &rand) const = 0;
+
+        virtual real pdf_ (const Direction &out, const Direction &in) const = 0;
 };
 
 } }

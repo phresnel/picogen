@@ -52,6 +52,7 @@ namespace picogen { namespace cracker {
                 const real z = get<1>(r2);
                 return make_tuple(x, sqrt(1-x*x-z*z), z);
         }
+
 } }
 
 #endif // SAMPLING_HH_INCLUDED_20110725

@@ -96,6 +96,13 @@ namespace picogen { namespace cracker {
         inline real dot (Normal const &lhs, Normal const &rhs) {
                 return mixed_dot (lhs, rhs);
         }
+
+
+        // aux
+        template <typename T>
+        inline bool sameHemisphere (T const &a, T const &b) {
+                return a.y() * b.y() > 0;
+        }
 } }
 
 #include "math3d/vector.inl.h"

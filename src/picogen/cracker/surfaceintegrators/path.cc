@@ -17,20 +17,22 @@ namespace detail {
         {
                 if (rec==0) return Color::Black();
 
-                const Intersection::Optional pi = scene(ray);
-                if (!pi) return Color::Gray(0.4);
+                const Intersection::Optional PI = scene(ray);
+                if (!PI) return Color::Gray(0.4);
 
-                const Intersection &i = pi.intersection();
-                const Point &poi = ray(i.distance()) + i.normal()*0.0001;
-                const DifferentialGeometry &dg = i.differentialGeometry();
+                const Intersection &I = PI.intersection();
+                const Point      &POI = ray(I.distance()) + I.normal()*0.0001;
+                const DifferentialGeometry &DG = I.differentialGeometry();
 
-                const Material &mat = i.material_ref();
-                const BsdfSample sample = mat.sample(dg.worldToLocal(-ray.direction()),
-                                                     random);
+                const Material &mat = I.material_ref();
+
+                const Direction in_dir_local = DG.worldToLocal(-ray.direction());
+                const BsdfSample sample = mat.sample(in_dir_local, random);
 
                 if (sample.pdf() == 0) return Color::Black();
 
-                const Direction d = dg.localToWorld (sample.incident().direction());
+                const Direction out_dir_local = sample.incident().direction();
+                const Direction out_dir_world = DG.localToWorld (out_dir_local);
 
                 //TODO -> need to transform ray into surface space
                 /*
@@ -38,15 +40,18 @@ namespace detail {
                                       0.5+d.y(),
                                       0.5+d.z());
                                       */
-                const Color& rad = scene.radiance(ray(i.distance()),
-                                                  d);
-                const Color::Optional& brdf = mat.brdf(InDirection(-ray.direction()),
-                                                       OutDirection(d),
+                const Color& rad = scene.radiance(POI, out_dir_world);
+                const Color::Optional& brdf = mat.brdf(InDirection(in_dir_local),
+                                                       OutDirection(out_dir_local),
                                                        random);
                 if (!brdf) return Color::Black();
 
-                const Color& c = rad * brdf.color();
-                return c + path (Ray(poi, d), scene, random, rec-1);
+                const real pdf = mat.pdf(in_dir_local, out_dir_local);
+                if (pdf == 0) return Color::Black();
+
+                const real dot = fabs(mixed_dot(out_dir_world, I.normal()));
+                const Color& c = rad * brdf.color() * (dot/pdf);
+                return c + path (Ray(POI, out_dir_world), scene, random, rec-1);
         }
 }
 

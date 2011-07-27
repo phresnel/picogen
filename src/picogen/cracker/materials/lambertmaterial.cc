@@ -9,7 +9,7 @@ Color::Optional LambertMaterial::brdf_(const InDirection &,
                                        const OutDirection &,
                                        Random &) const
 {
-        return Color::Gray(0.8);
+        return Color::Gray(0.8) / constants::pi;
 }
 
 BsdfSample LambertMaterial::sample_ (OutDirection const &out,
@@ -25,6 +25,11 @@ BsdfSample LambertMaterial::sample_ (OutDirection const &out,
         return BsdfSample(ind,
                           fabs(in.y() * (1/constants::pi)),
                           optc.color());
+}
+
+real LambertMaterial::pdf_ (const Direction &out, const Direction &in) const {
+        if (sameHemisphere (out, in)) return fabs(in.y() * (1/constants::pi));
+        return 0;
 }
 
 } }

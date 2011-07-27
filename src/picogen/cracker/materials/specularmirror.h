@@ -15,6 +15,10 @@ private:
 
         BsdfSample sample_ (OutDirection const &,
                             Random &) const;
+
+        real pdf_ (const Direction &, const Direction &) const {
+                return 0;
+        }
 };
 
 } }

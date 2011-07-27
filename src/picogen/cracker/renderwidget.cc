@@ -40,13 +40,13 @@ void RenderWidget::on_pushButton_clicked()
         using std::shared_ptr;
 
         shared_ptr<Scene> scene (new Scene);
-        shared_ptr<RenderTarget> target(new RenderTarget (128, 64));
+        shared_ptr<RenderTarget> target(new RenderTarget (128*2, 64*2));
 
-        for (int i=0; i<128; ++i) {
+        for (int i=0; i<32; ++i) {
                 const real x = rand() / (real)RAND_MAX*100 - 50;
                 const real y = rand() / (real)RAND_MAX*10 - 5;
-                const real z = rand() / (real)RAND_MAX*100 + 2;
-                scene->insertGenericPrimitive (Sphere(Point(x,y,z), 1.4));
+                const real z = rand() / (real)RAND_MAX*30 + 2;
+                scene->insertGenericPrimitive (Sphere(Point(x,y,z), 2.4));
         }
         glimpse::StopWatch rendertime;
 
@@ -60,7 +60,7 @@ void RenderWidget::on_pushButton_clicked()
         const auto renderer = createRenderer (scene,
                                               integrator,
                                               PinholeCamera(1.0));
-        for (int i=0; i<30; ++i) {
+        for (int i=0; i<150; ++i) {
                 renderer.render (target);
                 if (i) updateDisplay (*target);
         }
