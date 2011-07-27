@@ -46,7 +46,7 @@ namespace detail {
                 if (!brdf) return Color::Black();
 
                 const Color& c = rad * brdf.color();
-                return c;// + path (Ray(poi, d), scene, random, rec-1);
+                return c + path (Ray(poi, d), scene, random, rec-1);
         }
 }
 
