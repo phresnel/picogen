@@ -19,11 +19,24 @@
 
 #include <QImage>
 
+using namespace picogen::cracker;
+
 RenderWidget::RenderWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderWidget)
 {
     ui->setupUi(this);
+    target_.reset (new RenderTarget(ui->imageWidth->value(),
+                                    ui->imageHeight->value()));
+
+    scene_.reset (new Scene);
+    for (int i=0; i<32; ++i) {
+            const real x = rand() / (real)RAND_MAX*100 - 50;
+            const real y = rand() / (real)RAND_MAX*10 - 5;
+            const real z = rand() / (real)RAND_MAX*30 + 2;
+            scene_->insertGenericPrimitive (Sphere(Point(x,y,z), 2.4));
+    }
+
 }
 
 RenderWidget::~RenderWidget()
@@ -33,21 +46,19 @@ RenderWidget::~RenderWidget()
 
 void RenderWidget::on_pushButton_clicked()
 {
+        if (static_cast<unsigned>(ui->imageWidth->value())  != target_->width()
+         || static_cast<unsigned>(ui->imageHeight->value()) != target_->height())
+        {
+                target_.reset (new RenderTarget(ui->imageWidth->value(),
+                                                ui->imageHeight->value()));
+        }
+
         //std::cout << "omp-max-threads: " << omp_get_max_threads() << std::endl;
         //std::cout << "omp-max-threads: " << omp_get_num_threads() << std::endl;
         glimpse::StopWatch totaltime;
         using namespace picogen::cracker;
         using std::shared_ptr;
 
-        shared_ptr<Scene> scene (new Scene);
-        shared_ptr<RenderTarget> target(new RenderTarget (128*2, 64*2));
-
-        for (int i=0; i<32; ++i) {
-                const real x = rand() / (real)RAND_MAX*100 - 50;
-                const real y = rand() / (real)RAND_MAX*10 - 5;
-                const real z = rand() / (real)RAND_MAX*30 + 2;
-                scene->insertGenericPrimitive (Sphere(Point(x,y,z), 2.4));
-        }
         glimpse::StopWatch rendertime;
 
         const auto integrator = //SurfaceNormalIntegrator();
@@ -57,18 +68,18 @@ void RenderWidget::on_pushButton_clicked()
                                 //combine (PrimaryDistanceIntegrator(0,100),
                                 //         SurfaceNormalIntegrator(),
                                 //         0.5);
-        const auto renderer = createRenderer (scene,
+        const auto renderer = createRenderer (scene_,
                                               integrator,
                                               PinholeCamera(1.0));
-        for (int i=0; i<10; ++i) {
-                renderer.render (target);
-                if (i) updateDisplay (*target);
+        for (int i=0; i<ui->samplesPerRun->value(); ++i) {
+                renderer.render (target_);
+                if (i) updateDisplay (*target_);
         }
         rendertime.stop();
         totaltime.stop();
         ui->perf->setText ("total: " + QString::number(totaltime())
                           + ", render: " + QString::number(rendertime()));
-        updateDisplay (*target);
+        updateDisplay (*target_);
 
         const QString integName = QString::fromStdString(nameof(integrator));
         if (parentWidget())

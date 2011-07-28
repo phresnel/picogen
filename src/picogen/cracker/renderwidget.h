@@ -2,6 +2,7 @@
 #define RENDERWIDGET_H
 
 #include <QWidget>
+#include <memory>
 
 namespace Ui {
     class RenderWidget;
@@ -9,6 +10,7 @@ namespace Ui {
 
 namespace picogen { namespace cracker {
         class RenderTarget;
+        class Scene;
 } }
 
 class RenderWidget : public QWidget
@@ -26,6 +28,9 @@ private:
         void updateDisplay (picogen::cracker::RenderTarget const &);
 private:
         Ui::RenderWidget *ui;
+
+        std::shared_ptr<picogen::cracker::Scene> scene_;
+        std::shared_ptr<picogen::cracker::RenderTarget> target_;
 };
 
 #endif // RENDERWIDGET_H
