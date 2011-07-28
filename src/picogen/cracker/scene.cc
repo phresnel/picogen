@@ -10,7 +10,7 @@
 namespace picogen { namespace cracker {
 
 Scene::Scene()
-: sun_(Direction(normalize<Direction>(0,-1,0)))
+: sun_(Direction(normalize<Direction>(1,-0.5,0)))
 {
 }
 

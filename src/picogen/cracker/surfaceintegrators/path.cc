@@ -109,7 +109,8 @@ namespace detail {
                                                                random);
                         if (!brdf) break;
 
-                        const real pdf = mat.pdf(wo_local, wi_local);
+                        const real pdf = mat.pdf(InDirection(wi_local),
+                                                 OutDirection(wo_local));
                         if (pdf == 0) break;
 
                         const real dot = fabs(mixed_dot(wi_world, I.normal()));

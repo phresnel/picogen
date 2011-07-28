@@ -75,8 +75,8 @@ public:
         // TODO: maybe recoin it "deterministic_brdf" or so
         bool whittedMirror() const { return whittedMirror_; }
 
-        real pdf (const Direction &out, const Direction &in) const {
-                return this->pdf_(out, in);
+        real pdf (const InDirection &in, const OutDirection &out) const {
+                return this->pdf_(in, out);
         }
 
 protected:
@@ -91,7 +91,7 @@ private:
         virtual BsdfSample sample_ (OutDirection const &,
                                     Random &rand) const = 0;
 
-        virtual real pdf_ (const Direction &out, const Direction &in) const = 0;
+        virtual real pdf_ (const InDirection &, const OutDirection &) const = 0;
 };
 
 } }

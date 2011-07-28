@@ -60,7 +60,7 @@ void RenderWidget::on_pushButton_clicked()
         const auto renderer = createRenderer (scene,
                                               integrator,
                                               PinholeCamera(1.0));
-        for (int i=0; i<50; ++i) {
+        for (int i=0; i<10; ++i) {
                 renderer.render (target);
                 if (i) updateDisplay (*target);
         }
