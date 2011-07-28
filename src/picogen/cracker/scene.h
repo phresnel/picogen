@@ -16,6 +16,7 @@ class Ray;
 class Color;
 class Point;
 class Direction;
+class Random;
 
 class Scene
 {
@@ -24,6 +25,13 @@ public:
 
         Intersection::Optional operator() (Ray const &ray) const;
         Color radiance (Point const&, Direction const &) const;
+
+
+        Color estimateDirect (Point const &position,
+                              Normal const &normal,
+                              Direction const &wo,
+                              Material const &mat,
+                              Random &rand) const;
 
         void setSun (Sun const &sun);
 

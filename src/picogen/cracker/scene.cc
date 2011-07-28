@@ -4,10 +4,13 @@
 #include "ray.h"
 #include "math3d.h"
 
+#include "material.h"
+#include "random.h"
+
 namespace picogen { namespace cracker {
 
 Scene::Scene()
-: sun_(Direction(normalize<Direction>(-1,-1,0)))
+: sun_(Direction(normalize<Direction>(0,-1,0)))
 {
 }
 
@@ -43,5 +46,28 @@ Color Scene::radiance(const Point &pos, const Direction &n) const {
                 return Color::FromRgb(0,0,0);
         return mixed_dot(n, sr.direction()) * sun_.radiance();
 }
+
+Color Scene::estimateDirect (Point const &position,
+                             Normal const &normal,
+                             Direction const &wo,
+                             Material const &mat,
+                             Random &random) const
+{
+        const Ray &sr = sun_.deterministicShadowRay (position);
+        const Direction &wi = sr.direction();
+        const bool occluded = static_cast<bool>((*this)(sr));
+        if (occluded) return Color::Black();
+
+        const real absDot = fabs (mixed_dot(wi, normal));
+        const real pdf    = 1;
+
+        const Color::Optional f = mat.brdf(InDirection(wo),
+                                           OutDirection(wi),
+                                           random);
+        if (!f) return Color::Black();
+
+        return f.color() * sun_.radiance() * (absDot / pdf);
+}
+
 
 } }
