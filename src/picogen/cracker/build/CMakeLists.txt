@@ -151,6 +151,7 @@ set (sources ${sources}
         ${cracker_src_dir}/materials/specularmirror.cc
 
         ${cracker_src_dir}/terrain/gridterrain.cc
+        ${cracker_src_dir}/terrain/quadtree.cc
 )
 
 

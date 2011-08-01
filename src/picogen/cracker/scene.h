@@ -4,7 +4,7 @@
 #include "intersection.h"
 //#include "ray.h"
 #include "primitives/primitive.h"
-#include "terrain/gridterrain.h"
+#include "terrain/quadtree.h"
 #include "sun.h"
 
 #include <list>
@@ -52,7 +52,7 @@ public:
 
 private:
         std::list<std::shared_ptr<Primitive> > genericPrimitives_;
-        GridTerrain terrain_;
+        Quadtree terrain_;
         Sun sun_;
 };
 
