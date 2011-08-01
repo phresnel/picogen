@@ -25,6 +25,11 @@ public:
         }
 
 
+        BoundingBox (Point const &center, real width, real height, real depth)
+                : minimum_(center - Vector(width/2,height/2,depth/2))
+                , maximum_(center + Vector(width/2,height/2,depth/2))
+        {}
+
 
         BoundingBox (Point const & p)
         : minimum_ (p), maximum_ (p)

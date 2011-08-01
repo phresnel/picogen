@@ -54,11 +54,21 @@ namespace picogen { namespace cracker {
         inline Point operator+ (Point lhs, Vector const &rhs) {
                 return lhs += rhs;
         }
+        inline Point operator- (Point lhs, Vector const &rhs) {
+                return lhs -= rhs;
+        }
 
         inline Point& Point::operator += (Vector const &rhs) {
                 x_ += rhs.x();
                 y_ += rhs.y();
                 z_ += rhs.z();
+                return *this;
+        }
+
+        inline Point& Point::operator -= (Vector const &rhs) {
+                x_ -= rhs.x();
+                y_ -= rhs.y();
+                z_ -= rhs.z();
                 return *this;
         }
 

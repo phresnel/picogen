@@ -19,6 +19,7 @@ public:
         real z() const { return z_; }
 
         Point& operator += (Vector const &);
+        Point& operator -= (Vector const &);
 
         real operator[] (unsigned int index) const {
                 assert (index<=2);

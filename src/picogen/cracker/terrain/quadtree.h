@@ -3,7 +3,13 @@
 
 #include "intersection.h"
 
+#include <memory>
+
 namespace picogen { namespace cracker {
+
+namespace detail {
+        class Node;
+}
 
 class Ray;
 class Normal;
@@ -12,6 +18,8 @@ class Quadtree {
 public:
         Quadtree ();
         Intersection::Optional operator() (Ray const &ray) const;
+private:
+        std::shared_ptr<detail::Node> root_;
 };
 
 } }
