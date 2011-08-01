@@ -53,8 +53,8 @@ void RenderWidget::on_pushButton_clicked()
 
         const auto integrator = //SurfaceNormalIntegrator();
                                 combine (PathIntegrator(),
-                                         SurfaceNormalIntegrator(),
-                                         0);
+                                         PrimaryDistanceIntegrator(0,50),
+                                         1);
                                 //combine (PrimaryDistanceIntegrator(0,100),
                                 //         SurfaceNormalIntegrator(),
                                 //         0.5);

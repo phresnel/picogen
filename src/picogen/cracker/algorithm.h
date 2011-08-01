@@ -22,13 +22,13 @@
 #define ALGORITHM_HH_INCLUDED_20110726
 
 namespace picogen { namespace cracker {
-        template <typename T> inline T min (T const &lhs, T const &rhs) {
-                return lhs < rhs ? lhs : rhs;
-        }
+        //template <typename T> inline T min (T const &lhs, T const &rhs) {
+        //        return lhs < rhs ? lhs : rhs;
+        //}
 
-        template <typename T> inline T max (T const &lhs, T const &rhs) {
-                return lhs > rhs ? lhs : rhs;
-        }
+        //template <typename T> inline T max (T const &lhs, T const &rhs) {
+        //        return lhs > rhs ? lhs : rhs;
+        //}
 
         template <typename T>
         inline T lerp (

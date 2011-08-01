@@ -2,6 +2,7 @@
 #define REAL_H
 
 #include <cmath>
+#include <algorithm>
 
 namespace picogen { namespace cracker {
 
@@ -9,6 +10,8 @@ namespace picogen { namespace cracker {
 
         using std::sqrt;
         using std::pow;
+        using std::min;
+        using std::max;
 } }
 
 #endif // REAL_H

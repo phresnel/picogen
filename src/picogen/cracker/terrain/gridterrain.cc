@@ -26,8 +26,11 @@ GridTerrain::GridTerrain()
                         const real u = x / static_cast<real>(heightfieldWidth_);
                         const real v = y / static_cast<real>(heightfieldDepth_);
 
-                        heightfield_[y*heightfieldWidth_+x] =
-                                        -8 + 4*std::sin(u*24) * std::sin(v*24);
+                        const Point p((u-0.5)*heightfieldWidth_,
+                                      -8 + 4*std::sin(u*24) * std::sin(v*24),
+                                      (v-0.5)*heightfieldDepth_);
+                        aabb_ = merge (aabb_, p);
+                        heightfield_[y*heightfieldWidth_+x] =p.y();
                 }
         }
 }
@@ -37,6 +40,14 @@ Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
         const real &W = size_.x(),
                    &D = size_.z(),
                    &H = size_.y();
+
+        const Interval::Optional ointerval = intersect (ray, aabb_);
+        if (!ointerval || ointerval.interval().size()<0)
+                return Intersection::Optional();
+        const Interval interval (ointerval.interval().min()<0?0:ointerval.interval().min(),
+                                 ointerval.interval().max()<ointerval.interval().min()?
+                                         ointerval.interval().min():
+                                         ointerval.interval().max());
 
         const Direction& direction = ray.direction();
         real step ;
@@ -49,15 +60,21 @@ Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
         }
         if (step<seps) step=seps;
 
-        Vector dstep = direction * step;
-        Point dcurr = ray(step); // <-- we need to push back once we intersect
+        const Vector dstep = direction * step;
+        Point dcurr = ray(step+interval.min()); // <-- we need to push back ...
+                // ... once we intersect, so initialize to 'step' instead of '0'
 
-        for (real f=step; f<100; f+=step, dcurr+=dstep) {
-                const real u = (dcurr.x()+W/2) / W,
-                           v = (dcurr.z()+D/2) / D;
+        const real u = 0.5 + dcurr.x() / W,
+                   v = 0.5 + dcurr.z() / D;
+        const bool above = dcurr.y() > height(u*heightfieldWidth_,
+                                              v*heightfieldDepth_);
+
+        for (real f=step; f<interval.max(); f+=step, dcurr+=dstep) {
+                const real u = 0.5 + dcurr.x() / W,
+                           v = 0.5 + dcurr.z() / D;
                 const real ch = height(u*heightfieldWidth_,
                                        v*heightfieldDepth_);
-                if (dcurr.y() < ch) {
+                if ((dcurr.y() > ch) != above) {
                         const Normal &normal = normal_above(ch,
                                                             dcurr.x(),
                                                             dcurr.z());

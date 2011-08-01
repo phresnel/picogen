@@ -4,6 +4,7 @@
 #include "real.h"
 #include "intersection.h"
 #include "math3d/vector.h"
+#include "aabb.h"
 #include <vector>
 
 namespace picogen { namespace cracker {
@@ -24,6 +25,7 @@ private:
         unsigned int heightfieldWidth_, heightfieldDepth_;
         std::vector<real> heightfield_;
         real pixelWidth_, pixelDepth_;
+        BoundingBox aabb_;
 };
 
 } }
