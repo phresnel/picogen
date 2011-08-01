@@ -47,6 +47,10 @@ namespace detail {
                         delete [] children_;
                 }
 
+                Intersection::Optional operator() (Ray const &ray) const {
+                        return Intersection::Optional();
+                }
+
         private:
                 Node() {}
 
@@ -82,7 +86,7 @@ Quadtree::Quadtree () : root_(new detail::Node (4)) {
 }
 
 Intersection::Optional Quadtree::operator() (Ray const &ray) const {
-        return Intersection::Optional();
+        return (*root_)(ray);
 }
 
 } }
