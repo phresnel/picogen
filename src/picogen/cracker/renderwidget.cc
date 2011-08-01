@@ -115,6 +115,7 @@ void RenderWidget::updateDisplay (picogen::cracker::RenderTarget const &target) 
         ui->label->setScaledContents(true);
         ui->label->setPixmap(QPixmap::fromImage(image));
         repaint();
+        QApplication::processEvents();
 }
 
 

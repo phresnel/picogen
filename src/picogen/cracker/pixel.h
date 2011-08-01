@@ -12,6 +12,10 @@ namespace picogen { namespace cracker {
                         return color_ / numSamples_;
                 }
 
+                unsigned int numSamples() const {
+                        return numSamples_;
+                }
+
                 void add (Color const & color) {
                         color_ += color;
                         ++numSamples_;
