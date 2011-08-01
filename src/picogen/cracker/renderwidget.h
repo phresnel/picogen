@@ -24,6 +24,8 @@ public:
 private slots:
         void on_pushButton_clicked();
 
+        void on_resetsceneButton_clicked();
+
 private:
         void updateDisplay (picogen::cracker::RenderTarget const &);
 private:

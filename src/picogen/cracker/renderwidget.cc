@@ -26,17 +26,7 @@ RenderWidget::RenderWidget(QWidget *parent) :
     ui(new Ui::RenderWidget)
 {
     ui->setupUi(this);
-    target_.reset (new RenderTarget(ui->imageWidth->value(),
-                                    ui->imageHeight->value()));
-
-    scene_.reset (new Scene);
-    for (int i=0; i<32; ++i) {
-            const real x = rand() / (real)RAND_MAX*100 - 50;
-            const real y = rand() / (real)RAND_MAX*10 - 5;
-            const real z = rand() / (real)RAND_MAX*30 + 2;
-            scene_->insertGenericPrimitive (Sphere(Point(x,y,z), 2.4));
-    }
-
+    on_resetsceneButton_clicked();
 }
 
 RenderWidget::~RenderWidget()
@@ -118,6 +108,22 @@ void RenderWidget::updateDisplay (picogen::cracker::RenderTarget const &target) 
         QApplication::processEvents();
 }
 
+void RenderWidget::on_resetsceneButton_clicked() {
+        target_.reset (new RenderTarget(ui->imageWidth->value(),
+                                        ui->imageHeight->value()));
+
+        scene_.reset (new Scene);
+        for (int i=0; i<32; ++i) {
+                const real x = rand() / (real)RAND_MAX*100 - 50;
+                const real y = rand() / (real)RAND_MAX*10 - 5;
+                const real z = rand() / (real)RAND_MAX*30 + 2;
+                scene_->insertGenericPrimitive (Sphere(Point(x,y,z), 2.4));
+        }
+
+        const auto o = ui->samplesPerRun->value();
+        ui->samplesPerRun->setValue(1);
+        on_pushButton_clicked();
+        ui->samplesPerRun->setValue(o);
+}
 
 #include "renderwidget.moc"
-
