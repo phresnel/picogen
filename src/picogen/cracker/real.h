@@ -12,6 +12,8 @@ namespace picogen { namespace cracker {
         using std::pow;
         using std::min;
         using std::max;
+        using std::sin;
+        using std::cos;
 } }
 
 #endif // REAL_H
