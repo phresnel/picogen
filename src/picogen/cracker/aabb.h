@@ -137,7 +137,11 @@ inline real volume (BoundingBox const &box) {
 }
 
 
-
+// Returns the intersection of a ray with a bounding box. Note: As we
+// really define "Ray" as a Half-Ray with only positive distance sign,
+// only intersections with at least max>=0 are considered; if both, min and max
+// are negative, no intersection is returned; if only max>=0, then the interval
+// is max,max.
 inline Interval::Optional intersect (Ray const & ray, BoundingBox const & box) {
         using std::swap;
 
@@ -188,6 +192,8 @@ inline Interval::Optional intersect (Ray const & ray, BoundingBox const & box) {
 
                 if (t0 > t1) return Interval::Optional();
         }
+        if ((t0 < 0) & (t1 < 0)) return Interval::Optional();
+        if (t0 < 0) return Interval(t1,t1);
         return Interval (t0, t1);
 }
 

@@ -16,7 +16,7 @@ public:
         Interval (real min, real max)
                 : min_(min), max_(max)
         {
-                assert (min < max);
+                assert (min <= max);
         }
 
         real min() const { return min_; }

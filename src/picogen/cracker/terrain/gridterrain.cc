@@ -38,16 +38,14 @@ GridTerrain::GridTerrain()
 Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
 
         const real &W = size_.x(),
-                   &D = size_.z(),
-                   &H = size_.y();
+                   &D = size_.z();
+                   //&H = size_.y();
 
         const Interval::Optional ointerval = intersect (ray, aabb_);
-        if (!ointerval || ointerval.interval().size()<0)
+        if (!ointerval)
                 return Intersection::Optional();
-        const Interval interval (ointerval.interval().min()<0?0:ointerval.interval().min(),
-                                 ointerval.interval().max()<ointerval.interval().min()?
-                                         ointerval.interval().min():
-                                         ointerval.interval().max());
+        const Interval interval (ointerval.interval().min(),
+                                 ointerval.interval().max());
 
         const Direction& direction = ray.direction();
         real step ;
