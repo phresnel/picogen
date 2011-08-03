@@ -14,6 +14,10 @@ public:
         Point () : x_(0), y_(0), z_(0) {}
         Point (real x, real y, real z) : x_(x), y_(y), z_(z) {}
 
+        explicit operator Vector () const {
+                return Vector(x_,y_,z_);
+        }
+
         real x() const { return x_; }
         real y() const { return y_; }
         real z() const { return z_; }

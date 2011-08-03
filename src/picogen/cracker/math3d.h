@@ -44,6 +44,14 @@ namespace picogen { namespace cracker {
                         );
         }
 
+        template <typename C, typename LHS, typename RHS>
+        inline C mixed_cross(LHS const &lhs, RHS const &rhs) {
+                return C(lhs.y()*rhs.z() - lhs.z()*rhs.y(),
+                         lhs.z()*rhs.x() - lhs.x()*rhs.z(),
+                         lhs.x()*rhs.y() - lhs.y()*rhs.x()
+                        );
+        }
+
         // vector, point
         inline Vector operator- (Point const &lhs, Point const &rhs) {
                 return Vector(lhs.x()-rhs.x(),
