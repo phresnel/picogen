@@ -29,10 +29,11 @@ public:
                 const Intersection::Optional pi = scene(ray);
                 if (pi) {
                         const Intersection &i = pi.intersection();
+                        const Normal &n = i.differentialGeometry().geometricNormal();
                         const real
-                              r = i.normal().x()+0.5,
-                              g = i.normal().y()+0.5,
-                              b = i.normal().z()+0.5;
+                              r = n.x()+0.5,
+                              g = n.y()+0.5,
+                              b = n.z()+0.5;
                         return Color::FromRgb (r, g, b);
                 } else {
                         return Color::FromRgb(0.75,0.5,0.5);

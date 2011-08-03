@@ -20,17 +20,16 @@ public:
         Intersection() = delete;
 
         explicit Intersection (real distance,
-                               Normal const &n,
                                std::shared_ptr<Material> mat,
                                DifferentialGeometry differentialGeometry)
-        : distance_(distance), normal_(n), material_(mat)
+        : distance_(distance), material_(mat)
         , differentialGeometry_(differentialGeometry)
         {
                 assert(distance>=0);
         }
 
         real     distance() const { return distance_; }
-        Normal   normal()   const { return normal_;   }
+        //Normal   normal()   const { return differentialGeometry_.geometricNormal();   }
         std::shared_ptr<Material> material() const { return material_; }
         const Material& material_ref() const { return *material_; }
 
@@ -42,7 +41,6 @@ public:
 
 private:
         real distance_;
-        Normal normal_;
         std::shared_ptr<Material> material_;
         DifferentialGeometry differentialGeometry_;
 };
@@ -54,7 +52,6 @@ namespace detail {
                 OptionalIntersection()
                 : intersection_(
                           0,
-                          Normal(0,1,0),
                           std::shared_ptr<Material>(),
                           DifferentialGeometry(Normal(0,1,0), Normal(0,1,0),
                                                Normal(1,0,0), Normal(0,0,1)))

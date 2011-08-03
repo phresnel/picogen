@@ -46,7 +46,7 @@ private:
                                 std::get<0>(cs),
                                 std::get<2>(cs)
                         );
-                        return Intersection (E, n,
+                        return Intersection (E,
                                              std::shared_ptr<Material>(
                                                  new LambertMaterial()),
                                              dg

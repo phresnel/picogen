@@ -22,9 +22,9 @@ namespace detail {
                 if (!PI) return Color::Gray(0.4);
 
                 const Intersection &I = PI.intersection();
-                const Point      &POI = ray(I.distance()) + I.normal()*0.0001;
                 const DifferentialGeometry &DG = I.differentialGeometry();
-
+                const Normal &normal  = DG.geometricNormal();
+                const Point      &POI = ray(I.distance()) + normal*0.0001;
                 const Material &mat = I.material_ref();
 
                 const Direction in_dir_local = DG.worldToLocal(-ray.direction());
@@ -44,7 +44,7 @@ namespace detail {
                 const real pdf = mat.pdf(in_dir_local, out_dir_local);
                 if (pdf == 0) return Color::Black();
 
-                const real dot = fabs(mixed_dot(out_dir_world, I.normal()));
+                const real dot = fabs(mixed_dot(out_dir_world, normal));
                 const Color& c = rad * brdf.color() * (dot/pdf);
                 return c + c*path_recursive (Ray(POI, out_dir_world), scene, random, rec-1);
         }
@@ -84,8 +84,9 @@ namespace detail {
                         if (!PI) break;
 
                         const Intersection &I = PI.intersection();
-                        const Point      &POI = ray(I.distance()) + I.normal()*0.0001;
                         const DifferentialGeometry &DG = I.differentialGeometry();
+                        const Normal &normal = DG.geometricNormal();
+                        const Point      &POI = ray(I.distance()) + normal*0.0001;
 
                         const Material &mat = I.material_ref();
 
@@ -99,7 +100,7 @@ namespace detail {
 
 
                         // -- direct lighting ----------------------------------
-                        ret += sampleLights (scene, POI, I.normal(), wi_world, mat, random)
+                        ret += sampleLights (scene, POI, normal, wi_world, mat, random)
                                * throughput;
 
 
@@ -113,7 +114,7 @@ namespace detail {
                                                  OutDirection(wo_local));
                         if (pdf == 0) break;
 
-                        const real dot = fabs(mixed_dot(wi_world, I.normal()));
+                        const real dot = fabs(mixed_dot(wi_world, normal));
 
                         throughput *= brdf.color() * (dot / pdf);
 

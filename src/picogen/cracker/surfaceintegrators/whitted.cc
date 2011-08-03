@@ -32,7 +32,8 @@ namespace {
                 const Color &col = col_.color();
 
                 const Direction d = ray.direction();
-                const Normal n    = intersection.normal();
+                const DifferentialGeometry dg = intersection.differentialGeometry();
+                const Normal n    = dg.geometricNormal();
                 const Point  poi  = ray(intersection.distance()) + n * 0.0001;
                 const Vector ref  = static_cast<Vector>(d)
                                     - real(2)*mixed_dot(d,n)*n;
@@ -59,9 +60,11 @@ namespace {
                                     OutDirection(-ray.direction()),
                                     random))
                 {
+                        const DifferentialGeometry &dg = i.differentialGeometry();
+                        const Normal &normal = dg.geometricNormal();
                         return col.color() *
                                scene.radiance(ray(i.distance()),
-                                              static_cast<Direction>(i.normal()));
+                                              static_cast<Direction>(normal));
                 }
                 // no luck with brdf
                 return Color::Black();

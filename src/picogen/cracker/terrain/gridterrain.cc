@@ -83,7 +83,7 @@ Intersection::Optional GridTerrain::operator() (Ray const &ray) const {
                                 std::get<0>(cs),
                                 std::get<2>(cs)
                         );
-                        return Intersection (f-step, normal,
+                        return Intersection (f-step,
                                              std::shared_ptr<Material>(
                                                      new LambertMaterial),
                                              dg
