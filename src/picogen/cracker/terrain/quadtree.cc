@@ -111,10 +111,11 @@ namespace detail {
                        BoundingBox &exactBB)
                         : left_(left), right_(right), front_(front), back_(back)
                         , res_x_(res_x), res_z_(res_z)
+                        , stride_(res_x_+1)
                         , h_(new real [(res_x+1)*(res_z+1)])
                 {
-                        assert (res_x != 0);
-                        assert (res_z != 0);
+                        assert (res_x >= 2);
+                        assert (res_z >= 2);
                         assert (left < right);
                         assert (front < back);
 
@@ -122,8 +123,8 @@ namespace detail {
                              y_max = -y_min;
                         for (unsigned int uz=0; uz<=res_z; ++uz) {
                                 for (unsigned int ux=0; ux<=res_x; ++ux) {
-                                        const real u = ux/static_cast<real>(res_x-1);
-                                        const real v = uz/static_cast<real>(res_z-1);
+                                        const real u = ux/static_cast<real>(res_x);
+                                        const real v = uz/static_cast<real>(res_z);
 
                                         const real x = (1-u)*left + u*right;
                                         const real z = (1-v)*front + v*back;
@@ -138,6 +139,12 @@ namespace detail {
 
                         exactBB = BoundingBox (Point(left, y_min, front),
                                                Point(right, y_max, back));
+
+                        material_.reset (new LambertMaterial(Color::FromRgb(
+                                             rand()/(float)RAND_MAX,
+                                             rand()/(float)RAND_MAX,
+                                             rand()/(float)RAND_MAX
+                                             )));
                 }
 
                 ~Patch() {
@@ -145,8 +152,8 @@ namespace detail {
                 }
 
                 Vector vertex(unsigned int ux, unsigned int uz) const {
-                        const real u = ux/static_cast<real>(res_x_-1);
-                        const real v = uz/static_cast<real>(res_z_-1);
+                        const real u = ux/static_cast<real>(res_x_);
+                        const real v = uz/static_cast<real>(res_z_);
 
                         const real x = (1-u)*left_ + u*right_;
                         const real z = (1-v)*front_ + v*back_;
@@ -182,7 +189,7 @@ namespace detail {
                                         {
                                                 return Intersection (
                                                      t,
-                                                     std::shared_ptr<Material>(new LambertMaterial(Color::FromRgb(1,0.5,0.5))),
+                                                     material_,
                                                      DifferentialGeometry(
                                                          tn, tn,
                                                          normalize<Normal>(b-a),
@@ -200,14 +207,16 @@ namespace detail {
 
         private:
                 real left_, right_, front_, back_;
-                unsigned int res_x_, res_z_;
+                unsigned int res_x_, res_z_, stride_;
                 real *h_;
 
+                std::shared_ptr<Material> material_;
+
                 real h (unsigned int x, unsigned z) const {
-                        return h_[x + z*res_x_];
+                        return h_[x + z*stride_];
                 }
                 real& h (unsigned int x, unsigned z) {
-                        return h_[x + z*res_x_];
+                        return h_[x + z*stride_];
                 }
         };
 }
@@ -246,11 +255,11 @@ namespace detail {
                 Node (unsigned int depth,
                       std::function<real (real,real)> const & height)
                 {
-                        Point center (0, -30, 0);
+                        Point center (0, -40, 0);
                         create(depth, center, BoundingBox (center,
                                                            128,
                                                            2,
-                                                           123),
+                                                           128),
                                height);
                 }
 
@@ -326,7 +335,7 @@ namespace detail {
                                             );
                         patch_ = new Patch (aabb.min().x(), aabb.max().x(),
                                             aabb.min().z(), aabb.max().z(),
-                                            4,4,
+                                            2,2,
                                             height,
                                             aabb_);
                         //patch_->exactBoundingBox ();
@@ -393,7 +402,7 @@ namespace detail {
 
 Quadtree::Quadtree ()
 : root_(new detail::Node (4,
-                          [](real x,real y) { return -10+5*cos(x*0.1)*cos(y*0.1); }))
+                          [](real x,real y) { return -20+15*cos(x*0.1); }))
 {
 }
 
