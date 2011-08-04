@@ -7,8 +7,12 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 
                          # optimization
                          -O3
-                         -ffast-math -msse -mfpmath=sse
+                         -ffast-math
+                         -msse -mfpmath=sse
                          -Wdisabled-optimization
+
+                         # diagnosis
+                         -g
 
                          # warnings
                          -Wall -Wextra -D__STDC_LIMIT_MACROS)

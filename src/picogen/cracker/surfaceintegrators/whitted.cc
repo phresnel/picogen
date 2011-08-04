@@ -34,7 +34,7 @@ namespace {
                 const Direction d = ray.direction();
                 const DifferentialGeometry dg = intersection.differentialGeometry();
                 const Normal n    = dg.geometricNormal();
-                const Point  poi  = ray(intersection.distance()) + n * 0.0001;
+                const Point  poi  = ray(intersection.distance()) + n*1;
                 const Vector ref  = static_cast<Vector>(d)
                                     - real(2)*mixed_dot(d,n)*n;
 

@@ -24,17 +24,17 @@ namespace picogen { namespace cracker {
                 return sqrt (length_squared (v));
         }
 
-        //
-        template <typename Out=Vector>
-        inline Out normalize (Vector const &in) {
-                const real l = 1 / length (in);
-                return static_cast<Out>(in * l);
-        }
+        // TODO: not stable for some vectors
         template <typename Out=Vector>
         inline Out normalize (real x, real y, real z) {
-                const real il = 1 / sqrt(x*x + y*y + z*z);
-                return Out(x*il, y*il, z*il);
+                const real il = sqrt(x*x + y*y + z*z);
+                return Out(x/il, y/il, z/il);
         }
+        template <typename Out=Vector>
+        inline Out normalize (Vector const &in) {
+                return normalize<Out>(in.x(), in.y(), in.z());
+        }
+
 
         template <typename T>
         inline T cross(T const &lhs, T const &rhs) {

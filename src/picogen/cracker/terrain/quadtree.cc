@@ -84,7 +84,8 @@ namespace detail {
 
             if (t < 0)
                 return 0;
-            //normal_ = normalize<Normal> (normal);
+
+            normal_ = normalize<Normal>(normal);
             if (mixed_dot (ray.direction(), normal) > 0.0)
                 return -1;
             return 1;
@@ -110,7 +111,7 @@ namespace detail {
                        BoundingBox &exactBB)
                         : left_(left), right_(right), front_(front), back_(back)
                         , res_x_(res_x), res_z_(res_z)
-                        , h_(new real [res_x*res_z])
+                        , h_(new real [(res_x+1)*(res_z+1)])
                 {
                         assert (res_x != 0);
                         assert (res_z != 0);
@@ -119,10 +120,10 @@ namespace detail {
 
                         real y_min = std::numeric_limits<real>::max(),
                              y_max = -y_min;
-                        for (unsigned int uz=0; uz<res_z; ++uz) {
-                                for (unsigned int ux=0; ux<res_x; ++ux) {
+                        for (unsigned int uz=0; uz<=res_z; ++uz) {
+                                for (unsigned int ux=0; ux<=res_x; ++ux) {
                                         const real u = ux/static_cast<real>(res_x-1);
-                                        const real v = ux/static_cast<real>(res_z-1);
+                                        const real v = uz/static_cast<real>(res_z-1);
 
                                         const real x = (1-u)*left + u*right;
                                         const real z = (1-v)*front + v*back;
@@ -162,19 +163,20 @@ namespace detail {
                         for (unsigned int uz=0; uz<res_z_; ++uz) {
                                 for (unsigned int ux=0; ux<res_x_; ++ux) {
 
+                                        Vector a,b,c;
                                         real t, tu, tv;
                                         Normal tn(0,1,0);
                                         if (0 != raytri_intersect(
                                                 ray,
-                                                vertex(ux, uz),
-                                                vertex(ux, uz+1),
-                                                vertex(ux+1, uz),
+                                                (a=vertex(ux, uz)),
+                                                (b=vertex(ux, uz+1)),
+                                                (c=vertex(ux+1, uz)),
                                                 t, tu, tv, tn)
-                                         || 0 != raytri_intersect(
+                                        || 0 != raytri_intersect(
                                                 ray,
-                                                vertex(ux, uz+1),
-                                                vertex(ux+1, uz+1),
-                                                vertex(ux+1, uz),
+                                                (a=vertex(ux, uz+1)),
+                                                (b=vertex(ux+1, uz+1)),
+                                                (c=vertex(ux+1, uz)),
                                                 t, tu, tv, tn)
                                         )
                                         {
@@ -183,8 +185,8 @@ namespace detail {
                                                      std::shared_ptr<Material>(new LambertMaterial(Color::FromRgb(1,0.5,0.5))),
                                                      DifferentialGeometry(
                                                          tn, tn,
-                                                         Normal(1,0,0),
-                                                         Normal(0,0,1)));
+                                                         normalize<Normal>(b-a),
+                                                         normalize<Normal>(c-a)));
                                         }
                                 }
                         }
@@ -324,7 +326,7 @@ namespace detail {
                                             );
                         patch_ = new Patch (aabb.min().x(), aabb.max().x(),
                                             aabb.min().z(), aabb.max().z(),
-                                            8,8,
+                                            4,4,
                                             height,
                                             aabb_);
                         //patch_->exactBoundingBox ();
@@ -390,7 +392,7 @@ namespace detail {
 }
 
 Quadtree::Quadtree ()
-: root_(new detail::Node (1,
+: root_(new detail::Node (4,
                           [](real x,real y) { return -10+5*cos(x*0.1)*cos(y*0.1); }))
 {
 }

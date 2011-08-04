@@ -12,6 +12,11 @@ namespace picogen { namespace cracker {
                 return Direction(x_, y_, z_);
         }
 
+        inline Vector::operator Normal() const {
+                return Normal(x_,y_,z_);
+        }
+
+
         inline Vector operator+ (Vector lhs, Vector const &rhs) {
                 return lhs += rhs;
         }
@@ -34,10 +39,6 @@ namespace picogen { namespace cracker {
         inline Vector operator/ (Vector lhs, real rhs) {
                 assert (rhs != 0);
                 return lhs /= rhs;
-        }
-
-        inline Vector::operator Normal() const {
-                return Normal(x_,y_,z_);
         }
 } }
 #endif // VECTOR_INL_H_20110715

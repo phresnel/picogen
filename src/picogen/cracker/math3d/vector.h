@@ -12,6 +12,8 @@ class Direction;
 class Vector {
 public:
         explicit operator Direction () const;
+        explicit operator Normal() const;
+
 
         Vector () : x_(0), y_(0), z_(0) {}
         Vector (real x, real y, real z) : x_(x), y_(y), z_(z) {}
@@ -45,8 +47,6 @@ public:
                 assert (rhs != 0);
                 return *this *= 1 / rhs;;
         }
-
-        explicit operator Normal() const;
 
 private:
 
