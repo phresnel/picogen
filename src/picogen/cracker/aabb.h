@@ -76,6 +76,24 @@ public:
                 maximum_.z += z;
         }*/
 
+        real centerX() const {
+                return 0.5 * minimum_.x() + 0.5 * maximum_.x();
+        }
+        real centerY() const {
+                return 0.5 * minimum_.y() + 0.5 * maximum_.y();
+        }
+        real centerZ() const {
+                return 0.5 * minimum_.z() + 0.5 * maximum_.z();
+        }
+
+        real minX() const { return minimum_.x(); }
+        real minY() const { return minimum_.y(); }
+        real minZ() const { return minimum_.z(); }
+
+        real maxX() const { return maximum_.x(); }
+        real maxY() const { return maximum_.y(); }
+        real maxZ() const { return maximum_.z(); }
+
 private:
         Point minimum_, maximum_;
 

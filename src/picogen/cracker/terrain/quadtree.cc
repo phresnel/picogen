@@ -141,10 +141,11 @@ namespace detail {
                                                Point(right, y_max, back));
 
                         material_.reset (new LambertMaterial(Color::FromRgb(
-                                             rand()/(float)RAND_MAX,
+                                                                     0.3,0.8,0.4)));
+                                             /*rand()/(float)RAND_MAX,
                                              rand()/(float)RAND_MAX,
                                              rand()/(float)RAND_MAX
-                                             )));
+                                             )));*/
                 }
 
                 ~Patch() {
@@ -246,7 +247,6 @@ namespace detail {
         }
 
         class Node {
-                Color color_;
         public:
                 Node& operator= (Node const &) = delete;
                 Node(Node const &)             = delete;
@@ -255,12 +255,14 @@ namespace detail {
                 Node (unsigned int depth,
                       std::function<real (real,real)> const & height)
                 {
-                        Point center (0, -40, 0);
+                        qDebug() << "creating Quadtree";
+                        Point center (0, -40, 100);
                         create(depth, center, BoundingBox (center,
-                                                           128,
+                                                           200,
                                                            2,
-                                                           128),
+                                                           200),
                                height);
+                        qDebug() << "Quadtree created.";
                 }
 
                 ~Node () {
@@ -268,45 +270,192 @@ namespace detail {
                         delete patch_;
                 }
 
+
+                /*
                 Intersection::Optional operator() (Ray const &ray) const {
                         if (Interval::Optional oi = intersect(ray, aabb_)) {
+
 
                                 if (!children_) {
                                         return (*patch_)(ray);
                                 }
-//                                        return Intersection(
-//                                                    oi.interval().min(),
-//                                                    Normal(0,1,0),
-//                                                    std::shared_ptr<Material>(new LambertMaterial(color_)),
-//                                                    DifferentialGeometry(Normal(0,1,0),
-//                                                                         Normal(0,1,0),
-//                                                                         Normal(1,0,0),
-//                                                                         Normal(0,0,1)));
-                                Intersection::Optional ci[4] = {
-                                        children_[0](ray),
-                                        children_[1](ray),
-                                        children_[2](ray),
-                                        children_[3](ray)
-                                };
 
-                                int nearest = -1;
-                                real nearest_dist = -1;
-                                for (int i=0; i<4; ++i) {
-                                        if (ci[i]) {
-                                                if (nearest == -1
-                                                  || ci[i].intersection().distance()<nearest_dist)
-                                                {
-                                                        nearest = i;
-                                                        nearest_dist = ci[i].intersection().distance();
-                                                }
-                                        }
+                                // Prepare for depth first traversal.
+                                Node *c[4];
+
+                                const bool pro_x = ray.direction().x() >= 0;
+                                const bool pro_z = ray.direction().z() >= 0;
+
+                                const real d_x = (aabb_.centerX() - ray.origin().x()) / ray.direction().x();
+                                const real d_z = (aabb_.centerZ() - ray.origin().z()) / ray.direction().z();
+
+                                const bool upper_three = d_x > d_z;
+
+                                if (pro_x & pro_z) {
+                                        c[0] = children_ + 3;
+                                        c[1] = children_ + 0;
+                                        c[2] = children_ + 2;
+                                        c[3] = children_ + 1;
                                 }
-                                if (nearest >= 0) return ci[nearest];
+                                else if (pro_x & !pro_z) {
+                                        c[0] = children_ + 0;
+                                        c[1] = children_ + 1;
+                                        c[2] = children_ + 3;
+                                        c[3] = children_ + 2;
+                                }
+                                else if (!pro_x & pro_z) {
+                                        c[0] = children_ + 2;
+                                        c[1] = children_ + 3;
+                                        c[2] = children_ + 1;
+                                        c[3] = children_ + 0;
+                                }
+                                else {
+                                        c[0] = children_ + 1;
+                                        c[1] = children_ + 2;
+                                        c[2] = children_ + 0;
+                                        c[3] = children_ + 3;
+                                }
+
+                                for (int i=0; i<4; ++i) {
+                                        const Intersection::Optional I = (*c[i])(ray);
+                                        if (I) return I.intersection();
+                                }
                         }
                         return Intersection::Optional();
+                }*/
+
+
+                Intersection::Optional operator() (Ray const &ray) const {
+                        Interval::Optional i = cracker::intersect(ray, aabb_);
+                        if (!i) return Intersection::Optional();
+                        return intersect (ray, i.interval().min(),
+                                               i.interval().max());
                 }
 
         private:
+
+                Intersection::Optional intersect (
+                        Ray const &ray,
+                        real minT, real maxT
+                ) const {
+
+                        if (true) {
+                                // We can assume minT and maxT to be a correct interval on the xz plane.
+                                // But we got to check for vertical intersection now.
+                                const real p_h = ray.origin().y();
+                                const real min_h = p_h + minT * ray.direction().y();
+                                const real max_h = p_h + maxT * ray.direction().y();
+
+
+                                // BOTTLENECK when this->aabb.get...?
+                                if (((min_h < aabb_.minY()) & (max_h < aabb_.minY()))
+                                   |((min_h > aabb_.maxY()) & (max_h > aabb_.maxY())))
+                                        return Intersection::Optional();
+                        }
+
+                        if (!children_) {
+                                return (*patch_)(ray);
+                        }
+
+
+                        // Find out which ones to traverse.
+                        const bool d_right = ray.direction().x() >= 0;
+                        const bool d_up    = ray.direction().z() >= 0;
+                        const real d_x = (aabb_.centerX() - ray.origin().x()) / ray.direction().x();
+                        const real d_z = (aabb_.centerZ() - ray.origin().z()) / ray.direction().z();
+                        const bool upper_three = d_x > d_z;
+
+                        // +----+----+
+                        // | 0  | 1  |
+                        // -----+-----
+                        // | 3  | 2  |
+                        // +----+----+
+
+                        struct C {
+                                int child;
+                                real t0, t1;
+                        } t[3];
+                        if (d_right & d_up) {
+                                if (upper_three) {
+                                        // 0, 2, 3
+                                        t[0].child = 3; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 0; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 1; t[2].t0 = d_x;  t[2].t1 = maxT;
+                                } else {
+                                        // 0, 1, 3
+                                        t[0].child = 3; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 2; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 1; t[2].t0 = d_z;  t[2].t1 = maxT;
+                                }
+                        }
+                        else if (!d_right & d_up) {
+                                if (upper_three) {
+                                        // 1, 3, 2
+                                        t[0].child = 2; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 1; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 0; t[2].t0 = d_x;  t[2].t1 = maxT;
+                                } else {
+                                        // 1, 0, 2
+                                        t[0].child = 2; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 3; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 0; t[2].t0 = d_z;  t[2].t1 = maxT;
+                                }
+                        }
+                        // TODO: implement other cases
+                        else if (d_right & !d_up) {
+                                if (upper_three) {
+                                        // 2, 0, 1
+                                        t[0].child = 0; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 3; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 2; t[2].t0 = d_x;  t[2].t1 = maxT;
+                                } else {
+                                        // 2, 3, 1
+                                        t[0].child = 0; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 1; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 2; t[2].t0 = d_z;  t[2].t1 = maxT;
+                                }
+                        }
+                        else if (!d_right & !d_up) {
+                                if (upper_three) {
+                                        // 3, 1, 0
+                                        t[0].child = 1; t[0].t0 = minT; t[0].t1 = d_z;
+                                        t[1].child = 2; t[1].t0 = d_z;  t[1].t1 = d_x;
+                                        t[2].child = 3; t[2].t0 = d_x;  t[2].t1 = maxT;
+                                } else {
+                                        // 3, 2, 0
+                                        t[0].child = 1; t[0].t0 = minT; t[0].t1 = d_x;
+                                        t[1].child = 0; t[1].t0 = d_x;  t[1].t1 = d_z;
+                                        t[2].child = 3; t[2].t0 = d_z;  t[2].t1 = maxT;
+                                }
+                        }
+                        else {
+                                /*qDebug() << ray.direction().x()
+                                            << ray.direction().y()
+                                               << ray.direction().z()
+                                                  << ":" << d_right << d_up;*/
+                                return Intersection::Optional();
+                        }
+
+                        for (int i=0; i<3; ++i) {
+                                const C& c = t[i];
+                                if (c.t0 > c.t1) continue;
+                                const Intersection::Optional I =
+                                                children_[c.child].intersect(
+                                                        ray, c.t0, c.t1);
+                                if (I) return I.intersection();
+                        }
+                        /*{
+                                for (int i=0; i<3; ++i) {
+                                        dg = (*this) (ray, t[i].child, t[i].t0, t[i].t1, currentScanline);
+                                        if (dg) {
+                                                break;
+                                        }
+                                }
+                        }*/
+                        //return dg;
+                        return Intersection::Optional();
+                }
+
                 Node() {}
 
                 void create(unsigned int depth,
@@ -328,11 +477,6 @@ namespace detail {
                 {
                         children_ = 0;
                         //aabb_ = aabb;
-                        color_ = Color::FromRgb(
-                                                rand() / (float)RAND_MAX,
-                                                rand() / (float)RAND_MAX,
-                                                rand() / (float)RAND_MAX
-                                            );
                         patch_ = new Patch (aabb.min().x(), aabb.max().x(),
                                             aabb.min().z(), aabb.max().z(),
                                             2,2,
@@ -352,7 +496,7 @@ namespace detail {
                         children_[1].create (depth-1, center, childBoxes[1], height);
                         children_[2].create (depth-1, center, childBoxes[2], height);
                         children_[3].create (depth-1, center, childBoxes[3], height);
-                        refineBoundingBox();
+                        refineBoundingBox(aabb);
                 }
 
                 // BoundingBox refinement for leaf nodes
@@ -377,7 +521,7 @@ namespace detail {
                 // Refinement for inner nodes.
                 // Pre-condition: * child nodes are refined
                 //                * has child nodes
-                void refineBoundingBox () {
+                void refineBoundingBox (BoundingBox const &aabb) {
                         real min_h = children_[0].aabb_.min().y();
                         min_h = min(min_h, children_[1].aabb_.min().y());
                         min_h = min(min_h, children_[2].aabb_.min().y());
@@ -387,8 +531,8 @@ namespace detail {
                         max_h = max(max_h, children_[2].aabb_.max().y());
                         max_h = max(max_h, children_[3].aabb_.max().y());
 
-                        const Point &min = aabb_.min(),
-                                    &max = aabb_.max();
+                        const Point &min = aabb.min(),
+                                    &max = aabb.max();
                         aabb_ = BoundingBox (Point(min.x(), min_h, min.z()),
                                              Point(max.x(), max_h, max.z()));
                 }
@@ -402,7 +546,7 @@ namespace detail {
 
 Quadtree::Quadtree ()
 : root_(new detail::Node (4,
-                          [](real x,real y) { return -20+15*cos(x*0.1); }))
+                          [](real x,real y) { return -30+15 * cos(y*0.1) * cos(x*0.1); }))
 {
 }
 
