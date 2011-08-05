@@ -13,7 +13,7 @@ Ray Sun::deterministicShadowRay(Point const &from) const {
 }
 
 Color Sun::radiance() const {
-        return Color::FromRgb(6,4,2)*3;
+        return Color::FromRgb(3,2,1);
 }
 
 } }

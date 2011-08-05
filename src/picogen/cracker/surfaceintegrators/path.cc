@@ -81,7 +81,10 @@ namespace detail {
                         //} else break;
 
                         const Intersection::Optional PI = scene(ray);
-                        if (!PI) break;
+                        if (!PI) {
+                                ret += Color::FromRgb(0.5,0.5,0.8) * throughput;
+                                break;
+                        }
 
                         const Intersection &I = PI.intersection();
                         const DifferentialGeometry &DG = I.differentialGeometry();
