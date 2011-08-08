@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (cracker)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         add_definitions (# language
                          -std=c++0x

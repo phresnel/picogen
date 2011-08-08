@@ -142,10 +142,6 @@ namespace detail {
 
                         material_.reset (new LambertMaterial(Color::FromRgb(
                                                                      0.3,0.8,0.4)));
-                                             /*rand()/(float)RAND_MAX,
-                                             rand()/(float)RAND_MAX,
-                                             rand()/(float)RAND_MAX
-                                             )));*/
                 }
 
                 ~Patch() {
@@ -160,16 +156,47 @@ namespace detail {
                         const real z = (1-v)*front_ + v*back_;
                         const real y = h(ux,uz);
 
-                        return {x,y,z};
+                        return Vector(x,y,z);
                 }
 
-                Intersection::Optional operator() (Ray const &ray) const {
-                        //return Intersection::Optional();
 
-                // TODO: we need an actual "nearest" intersection, not "any".
-                //       triangles might overlap when looking through a ray.
-                        for (unsigned int uz=0; uz<res_z_; ++uz) {
-                                for (unsigned int ux=0; ux<res_x_; ++ux) {
+                Intersection::Optional operator() (Ray const &ray) const {
+                        const bool pro_x = ray.direction().x() >= 0;
+                        const bool pro_z = ray.direction().z() >= 0;
+                        if (pro_x & pro_z) {
+                                return intersect<1,1> (ray, 0, res_x_,
+                                                            0, res_z_);
+                        }
+                        if (pro_x & !pro_z) {
+                                return intersect<1,-1> (ray, 0, res_x_,
+                                                            res_z_-1, -1);
+                        }
+                        if (!pro_x & pro_z) {
+                                return intersect<-1,1> (ray, res_x_-1, -1,
+                                                             0,        res_z_);
+                        }
+                        return intersect<-1,-1> (ray, res_x_-1, -1,
+                                                      res_z_-1, -1);
+                }
+
+
+        private:
+                real left_, right_, front_, back_;
+                unsigned int res_x_, res_z_, stride_;
+                real *h_;
+
+                std::shared_ptr<Material> material_;
+
+
+                template <int step_x, int step_z>
+                Intersection::Optional intersect (
+                        Ray const &ray,
+                        int left, int right,
+                        int front, int back
+                ) const
+                {
+                        for (int uz=front; uz!=back; uz+=step_z) {
+                                for (int ux=left; ux!=right; ux+=step_x) {
 
                                         Vector a,b,c;
                                         real t, tu, tv;
@@ -201,17 +228,6 @@ namespace detail {
 
                         return Intersection::Optional();
                 }
-
-                /*BoundingBox exactBoundingBox () const {
-                        real min_y,
-                }*/
-
-        private:
-                real left_, right_, front_, back_;
-                unsigned int res_x_, res_z_, stride_;
-                real *h_;
-
-                std::shared_ptr<Material> material_;
 
                 real h (unsigned int x, unsigned z) const {
                         return h_[x + z*stride_];
@@ -269,60 +285,6 @@ namespace detail {
                         delete [] children_;
                         delete patch_;
                 }
-
-
-                /*
-                Intersection::Optional operator() (Ray const &ray) const {
-                        if (Interval::Optional oi = intersect(ray, aabb_)) {
-
-
-                                if (!children_) {
-                                        return (*patch_)(ray);
-                                }
-
-                                // Prepare for depth first traversal.
-                                Node *c[4];
-
-                                const bool pro_x = ray.direction().x() >= 0;
-                                const bool pro_z = ray.direction().z() >= 0;
-
-                                const real d_x = (aabb_.centerX() - ray.origin().x()) / ray.direction().x();
-                                const real d_z = (aabb_.centerZ() - ray.origin().z()) / ray.direction().z();
-
-                                const bool upper_three = d_x > d_z;
-
-                                if (pro_x & pro_z) {
-                                        c[0] = children_ + 3;
-                                        c[1] = children_ + 0;
-                                        c[2] = children_ + 2;
-                                        c[3] = children_ + 1;
-                                }
-                                else if (pro_x & !pro_z) {
-                                        c[0] = children_ + 0;
-                                        c[1] = children_ + 1;
-                                        c[2] = children_ + 3;
-                                        c[3] = children_ + 2;
-                                }
-                                else if (!pro_x & pro_z) {
-                                        c[0] = children_ + 2;
-                                        c[1] = children_ + 3;
-                                        c[2] = children_ + 1;
-                                        c[3] = children_ + 0;
-                                }
-                                else {
-                                        c[0] = children_ + 1;
-                                        c[1] = children_ + 2;
-                                        c[2] = children_ + 0;
-                                        c[3] = children_ + 3;
-                                }
-
-                                for (int i=0; i<4; ++i) {
-                                        const Intersection::Optional I = (*c[i])(ray);
-                                        if (I) return I.intersection();
-                                }
-                        }
-                        return Intersection::Optional();
-                }*/
 
 
                 Intersection::Optional operator() (Ray const &ray) const {
@@ -429,10 +391,6 @@ namespace detail {
                                 }
                         }
                         else {
-                                /*qDebug() << ray.direction().x()
-                                            << ray.direction().y()
-                                               << ray.direction().z()
-                                                  << ":" << d_right << d_up;*/
                                 return Intersection::Optional();
                         }
 
@@ -444,15 +402,6 @@ namespace detail {
                                                         ray, c.t0, c.t1);
                                 if (I) return I.intersection();
                         }
-                        /*{
-                                for (int i=0; i<3; ++i) {
-                                        dg = (*this) (ray, t[i].child, t[i].t0, t[i].t1, currentScanline);
-                                        if (dg) {
-                                                break;
-                                        }
-                                }
-                        }*/
-                        //return dg;
                         return Intersection::Optional();
                 }
 
@@ -479,7 +428,7 @@ namespace detail {
                         //aabb_ = aabb;
                         patch_ = new Patch (aabb.min().x(), aabb.max().x(),
                                             aabb.min().z(), aabb.max().z(),
-                                            2,2,
+                                            4,4,
                                             height,
                                             aabb_);
                         //patch_->exactBoundingBox ();
@@ -498,25 +447,6 @@ namespace detail {
                         children_[3].create (depth-1, center, childBoxes[3], height);
                         refineBoundingBox(aabb);
                 }
-
-                // BoundingBox refinement for leaf nodes
-                /*void refineBoundingBox (std::function<real(real,real)> const &height)
-                {
-                        real min_h = std::numeric_limits<real>::max(),
-                             max_h = -std::numeric_limits<real>::max();
-                        const Point min = aabb_.min(),
-                                    max = aabb_.max();
-                        for (real z=min.z(); z<=max.z(); z+=0.1) {
-                                for (real x=min.x(); x<=max.x(); x+=0.1) {
-                                        const real h = height(x,z);
-                                        if (h < min_h) min_h = h;
-                                        if (h > max_h) max_h = h;
-                                }
-                        }
-
-                        aabb_ = BoundingBox (Point(min.x(), min_h, min.z()),
-                                             Point(max.x(), max_h, max.z()));
-                }*/
 
                 // Refinement for inner nodes.
                 // Pre-condition: * child nodes are refined
