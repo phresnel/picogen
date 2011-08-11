@@ -2,6 +2,7 @@
 #define QUADTREE_H_INCLUDED_20110801
 
 #include "intersection.h"
+#include "aabb.h"
 
 #include <memory>
 
@@ -20,6 +21,7 @@ public:
         Intersection::Optional operator() (Ray const &ray) const;
 private:
         std::shared_ptr<detail::Node> root_;
+        BoundingBox aabb_;
 };
 
 } }

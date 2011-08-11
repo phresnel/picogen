@@ -108,7 +108,7 @@ namespace detail {
                        unsigned int res_x,
                        unsigned int res_z,
                        std::function<real (real, real)> fun,
-                       BoundingBox &exactBB)
+                       real &y_min, real &y_max)
                         : left_(left), right_(right), front_(front), back_(back)
                         , res_x_(res_x), res_z_(res_z)
                         , stride_(res_x_+1)
@@ -119,8 +119,8 @@ namespace detail {
                         assert (left < right);
                         assert (front < back);
 
-                        real y_min = std::numeric_limits<real>::max(),
-                             y_max = -y_min;
+                        y_min = std::numeric_limits<real>::max();
+                        y_max = -y_min;
                         for (unsigned int uz=0; uz<=res_z; ++uz) {
                                 for (unsigned int ux=0; ux<=res_x; ++ux) {
                                         const real u = ux/static_cast<real>(res_x);
@@ -137,8 +137,8 @@ namespace detail {
                                 }
                         }
 
-                        exactBB = BoundingBox (Point(left, y_min, front),
-                                               Point(right, y_max, back));
+                        /*exactBB = BoundingBox (Point(left, y_min, front),
+                                               Point(right, y_max, back));*/
 
                         material_.reset (new LambertMaterial(Color::FromRgb(
                                                                      0.3,0.8,0.4)));
@@ -240,17 +240,30 @@ namespace detail {
 
 namespace detail {
 
-        inline std::array<BoundingBox,4> child_boxen (BoundingBox const &aabb) {
-                const Point c = aabb.center();
-                const real oldW = aabb.width(),
-                           oldH = aabb.height(),
-                           oldD = aabb.depth(),
+        inline std::vector<std::vector<real> > child_boxen (
+                real left, real right, real front, real back)
+        {
+                using std::array;
+                using std::vector;
+
+                //const Point c = aabb.center();
+                const real cx = 0.5*right + 0.5*left,
+                           cz = 0.5*front + 0.5*back;
+                const real oldW = right-left,
+                           //oldH = aabb.height(),
+                           oldD = back-front,
                            newW = oldW / 2,
-                           newH = oldH,
+                           //newH = oldH,
                            newD = oldD / 2
                           ;
 
-                std::array<BoundingBox,4> ret;
+                std::vector<std::vector<real> > ret =
+                        {{cx - newW, cx       ,  cz     , cz + newD},
+                         {cx       , cx + newW,  cz     , cz + newD},
+                         {cx       , cx + newW,  cz-newD, cz       },
+                         {cx - newW, cx       ,  cz-newD, cz       }};
+
+                /*
                 ret[0] = BoundingBox (c + Vector(-newW/2, 0, +newD/2),
                                       newW, newH, newD);
                 ret[1] = BoundingBox (c + Vector(+newW/2, 0, +newD/2),
@@ -258,7 +271,7 @@ namespace detail {
                 ret[2] = BoundingBox (c + Vector(+newW/2, 0, -newD/2),
                                       newW, newH, newD);
                 ret[3] = BoundingBox (c + Vector(-newW/2, 0, -newD/2),
-                                      newW, newH, newD);
+                                      newW, newH, newD);*/
                 return ret;
         }
 
@@ -269,15 +282,25 @@ namespace detail {
 
                 // Creates a root node.
                 Node (unsigned int depth,
-                      std::function<real (real,real)> const & height)
+                      std::function<real (real,real)> const & height,
+                      BoundingBox rootBB)
                 {
                         qDebug() << "creating Quadtree";
-                        Point center (0, -40, 100);
-                        create(depth, center, BoundingBox (center,
-                                                           200,
-                                                           2,
-                                                           200),
+                        const Point center (0, -40, 100);
+                        const real left = center.x()-100,
+                                   right = center.x()+100,
+                                   front = center.z()-100,
+                                   back = center.z()+100;
+                        left_ = left;
+                        right_ = right;
+                        front_ = front;
+                        back_ = back;
+                        create(depth, center,
+                               left, right,
+                               front, back,
                                height);
+                        rootBB = BoundingBox (Point(left, min_h_, front),
+                                              Point(right, max_h_, back));
                         qDebug() << "Quadtree created.";
                 }
 
@@ -286,15 +309,6 @@ namespace detail {
                         delete patch_;
                 }
 
-
-                Intersection::Optional operator() (Ray const &ray) const {
-                        Interval::Optional i = cracker::intersect(ray, aabb_);
-                        if (!i) return Intersection::Optional();
-                        return intersect (ray, i.interval().min(),
-                                               i.interval().max());
-                }
-
-        private:
 
                 Intersection::Optional intersect (
                         Ray const &ray,
@@ -310,8 +324,8 @@ namespace detail {
 
 
                                 // BOTTLENECK when this->aabb.get...?
-                                if (((min_h < aabb_.minY()) & (max_h < aabb_.minY()))
-                                   |((min_h > aabb_.maxY()) & (max_h > aabb_.maxY())))
+                                if (((min_h < min_h_) & (max_h < min_h_))
+                                   |((min_h > max_h_) & (max_h > max_h_)))
                                         return Intersection::Optional();
                         }
 
@@ -321,10 +335,12 @@ namespace detail {
 
 
                         // Find out which ones to traverse.
+                        const real c_x = 0.5*left_+0.5*right_;
+                        const real c_z = 0.5*front_+0.5*back_;
                         const bool d_right = ray.direction().x() >= 0;
                         const bool d_up    = ray.direction().z() >= 0;
-                        const real d_x = (aabb_.centerX() - ray.origin().x()) / ray.direction().x();
-                        const real d_z = (aabb_.centerZ() - ray.origin().z()) / ray.direction().z();
+                        const real d_x = (c_x - ray.origin().x()) / ray.direction().x();
+                        const real d_z = (c_z - ray.origin().z()) / ray.direction().z();
                         const bool upper_three = d_x > d_z;
 
                         // +----+----+
@@ -409,79 +425,111 @@ namespace detail {
 
                 void create(unsigned int depth,
                             Point const &center,
-                            BoundingBox const &aabb,
+                            real left, real right, real front, real back,
                             std::function<real (real,real)> const & height
                 ) {
                         const bool leaf = (depth==0);
                         //const real distance = length (aabb.center() - center);
                         //qDebug() << distance << " <- " <<
                         //            (13/(1+0.02*distance));
+                        left_ = left;
+                        right_ = right;
+                        front_ = front;
+                        back_ = back;
 
-                        if (leaf) makeLeaf(center, aabb, height);
-                        else makeInner(center, depth, aabb, height);
+                        if (leaf)
+                                makeLeaf(center,
+                                         left, right,
+                                         front, back,
+                                         height);
+                        else makeInner(center, depth,
+                                       left, right,
+                                       front, back, height);
                 }
                 void makeLeaf (Point const &center,
-                               BoundingBox const &aabb,
+                               //BoundingBox const &aabb,
+                               real left, real right,
+                               real front, real back,
                                std::function<real (real,real)> const & height)
                 {
                         children_ = 0;
                         //aabb_ = aabb;
-                        patch_ = new Patch (aabb.min().x(), aabb.max().x(),
-                                            aabb.min().z(), aabb.max().z(),
+                        patch_ = new Patch (left, right,
+                                            front, back,
                                             4,4,
                                             height,
-                                            aabb_);
+                                            min_h_, max_h_);
                         //patch_->exactBoundingBox ();
                         //refineBoundingBox (height);
                 }
                 void makeInner(Point const &center,
-                               unsigned int depth, BoundingBox const &aabb,
+                               unsigned int depth,
+                               real left, real right,
+                               real front, real back,
                                std::function<real (real,real)> const & height)
                 {
                         patch_ = 0;
-                        const auto childBoxes = child_boxen(aabb);
+                        const auto childBoxes = child_boxen(left, right,
+                                                            front, back);
                         children_ = new Node[4];
-                        children_[0].create (depth-1, center, childBoxes[0], height);
-                        children_[1].create (depth-1, center, childBoxes[1], height);
-                        children_[2].create (depth-1, center, childBoxes[2], height);
-                        children_[3].create (depth-1, center, childBoxes[3], height);
-                        refineBoundingBox(aabb);
+                        for (size_t i=0; i<4; ++i) {
+                                children_[i].create (depth-1, center,
+                                                     childBoxes[i][0],
+                                                     childBoxes[i][1],
+                                                     childBoxes[i][2],
+                                                     childBoxes[i][3],
+                                                     height);
+                        }
+                        refineBoundingBox();
                 }
 
                 // Refinement for inner nodes.
                 // Pre-condition: * child nodes are refined
                 //                * has child nodes
-                void refineBoundingBox (BoundingBox const &aabb) {
-                        real min_h = children_[0].aabb_.min().y();
-                        min_h = min(min_h, children_[1].aabb_.min().y());
-                        min_h = min(min_h, children_[2].aabb_.min().y());
-                        min_h = min(min_h, children_[3].aabb_.min().y());
-                        real max_h = children_[0].aabb_.max().y();
-                        max_h = max(max_h, children_[1].aabb_.max().y());
-                        max_h = max(max_h, children_[2].aabb_.max().y());
-                        max_h = max(max_h, children_[3].aabb_.max().y());
+                void refineBoundingBox () {
+                        real min_h = children_[0].min_h_;
+                        min_h = min(min_h, children_[1].min_h_);
+                        min_h = min(min_h, children_[2].min_h_);
+                        min_h = min(min_h, children_[3].min_h_);
+                        real max_h = children_[0].max_h_;
+                        max_h = max(max_h, children_[1].max_h_);
+                        max_h = max(max_h, children_[2].max_h_);
+                        max_h = max(max_h, children_[3].max_h_);
 
+                        /*
                         const Point &min = aabb.min(),
                                     &max = aabb.max();
                         aabb_ = BoundingBox (Point(min.x(), min_h, min.z()),
                                              Point(max.x(), max_h, max.z()));
+                                             */
+                        this->min_h_ = min_h;
+                        this->max_h_ = max_h;
                 }
 
         private:
                 Node *children_;
                 Patch *patch_;
-                BoundingBox aabb_;
+                //BoundingBox aabb_;
+                real min_h_, max_h_;
+                real left_, right_, front_, back_;
         };
 }
 
 Quadtree::Quadtree ()
-: root_(new detail::Node (4,
-                          [](real x,real y) { return -30+15 * cos(y*0.1) * cos(x*0.1); }))
 {
+        const auto fun = [](real x,real y) {
+                return -30+15 * cos(y*0.1) * cos(x*0.1);
+        };
+
+        root_.reset (new detail::Node (1/*4*/, fun, aabb_));
+
 }
 
 Intersection::Optional Quadtree::operator() (Ray const &ray) const {
-        return (*root_)(ray);
+        Interval::Optional oi = intersect (ray, aabb_);
+        if (!oi) return Intersection::Optional();
+        return root_->intersect(ray, oi.interval().min(),
+                                     oi.interval().max());
 }
 
 } }
