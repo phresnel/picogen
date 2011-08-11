@@ -305,8 +305,8 @@ namespace detail {
                 }
 
                 ~Node () {
-                        delete [] children_;
-                        delete patch_;
+                        if (leaf_) delete patch_;
+                        else delete [] children_;
                 }
 
 
@@ -329,7 +329,7 @@ namespace detail {
                                         return Intersection::Optional();
                         }
 
-                        if (!children_) {
+                        if (leaf_) {
                                 return (*patch_)(ray);
                         }
 
@@ -452,7 +452,7 @@ namespace detail {
                                real front, real back,
                                std::function<real (real,real)> const & height)
                 {
-                        children_ = 0;
+                        leaf_ = true;
                         //aabb_ = aabb;
                         patch_ = new Patch (left, right,
                                             front, back,
@@ -468,7 +468,7 @@ namespace detail {
                                real front, real back,
                                std::function<real (real,real)> const & height)
                 {
-                        patch_ = 0;
+                        leaf_ = false;
                         const auto childBoxes = child_boxen(left, right,
                                                             front, back);
                         children_ = new Node[4];
@@ -496,20 +496,16 @@ namespace detail {
                         max_h = max(max_h, children_[2].max_h_);
                         max_h = max(max_h, children_[3].max_h_);
 
-                        /*
-                        const Point &min = aabb.min(),
-                                    &max = aabb.max();
-                        aabb_ = BoundingBox (Point(min.x(), min_h, min.z()),
-                                             Point(max.x(), max_h, max.z()));
-                                             */
                         this->min_h_ = min_h;
                         this->max_h_ = max_h;
                 }
 
         private:
-                Node *children_;
-                Patch *patch_;
-                //BoundingBox aabb_;
+                union {
+                        Node *children_;
+                        Patch *patch_;
+                };
+                bool leaf_;
                 real min_h_, max_h_;
                 real left_, right_, front_, back_;
         };
@@ -521,7 +517,9 @@ Quadtree::Quadtree ()
                 return -30+15 * cos(y*0.1) * cos(x*0.1);
         };
 
-        root_.reset (new detail::Node (1/*4*/, fun, aabb_));
+        qDebug() << "sizeof(Node) =" << sizeof(detail::Node);
+
+        root_.reset (new detail::Node (4, fun, aabb_));
 
 }
 
