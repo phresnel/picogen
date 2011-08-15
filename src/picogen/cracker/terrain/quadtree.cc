@@ -1,9 +1,10 @@
 #include "quadtree.h"
-#include "aabb.h"
 #include "color.h"
+#include "math3d.h"
 #include "materials/lambertmaterial.h"
 
 #include <array>
+#include <stack>
 #include <functional>
 #include <limits>
 
@@ -275,6 +276,22 @@ namespace detail {
                 return ret;
         }
 
+        template <bool d_right, bool d_up>
+        struct ChildIndices ;
+
+        template <> struct ChildIndices<true, true> {
+                enum { a = 3, upper_b = 0, lower_b = 2, c = 1 };
+        };
+        template <> struct ChildIndices<false, true> {
+                enum { a = 2, upper_b = 1, lower_b = 3, c = 0 };
+        };
+        template <> struct ChildIndices<true, false> {
+                enum { a = 0, upper_b = 3, lower_b = 1, c = 2 };
+        };
+        template <> struct ChildIndices<false, false> {
+                enum { a = 1, upper_b = 2, lower_b = 0, c = 3 };
+        };
+
         class Node {
         public:
                 Node& operator= (Node const &) = delete;
@@ -353,6 +370,7 @@ namespace detail {
                                 int child;
                                 real t0, t1;
                         } t[3];
+
                         if (d_right & d_up) {
                                 if (upper_three) {
                                         // 0, 2, 3
@@ -419,6 +437,102 @@ namespace detail {
                                 if (I) return I.intersection();
                         }
                         return Intersection::Optional();
+                }
+
+
+                template <bool d_right, bool d_up>
+                static Intersection::Optional intersect_iter_directed (
+                        Node *node,
+                        Ray const &ray,
+                        real minT, real maxT
+                ) {
+                        struct Todo {
+                                Todo (real minT, real maxT, Node *node)
+                                        : minT(minT), maxT(maxT), node(node) {}
+                                real minT, maxT;
+                                Node *node;
+                        };
+
+                        const Direction dir  = ray.direction();
+                        const Vector idir    = real(1) / dir;
+                        const Point  &origin = ray.origin();
+
+
+                        std::stack<Todo> todo;
+                        todo.push ({minT, maxT, node});
+                        while (!todo.empty()) {
+                                const Todo curr = todo.top();
+                                const Node &node = *curr.node;
+                                const real minT = curr.minT;
+                                const real maxT = curr.maxT;
+                                todo.pop();
+
+                                if (minT > maxT) continue;
+
+                                // We can assume minT and maxT to be a correct interval on the xz plane.
+                                // But we got to check for vertical intersection now.
+                                const real min_h = origin.y() + minT * dir.y();
+                                const real max_h = origin.y() + maxT * dir.y();
+
+
+                                // BOTTLENECK when this->aabb.get...?
+                                if (((min_h < node.min_h_) & (max_h < node.min_h_))
+                                   |((min_h > node.max_h_) & (max_h > node.max_h_)))
+                                        continue;
+
+                                if (node.leaf_) {
+                                        const auto i = (*node.patch_)(ray);
+                                        if (i) return i;
+                                } else {
+                                        // Find out which ones to traverse.
+                                        const real c_x = 0.5*node.left_+0.5*node.right_;
+                                        const real c_z = 0.5*node.front_+0.5*node.back_;
+                                        const real d_x = (c_x - origin.x()) * idir.x();
+                                        const real d_z = (c_z - origin.z()) * idir.z();
+                                        const bool upper_three = d_x > d_z;
+
+                                        // +----+----+
+                                        // | 0  | 1  |
+                                        // -----+-----
+                                        // | 3  | 2  |
+                                        // +----+----+
+
+                                        typedef ChildIndices<d_right, d_up> indices;
+
+                                        const real a = upper_three ? d_x : d_z;
+                                        const real b = upper_three ? d_z : d_x;
+                                        const int index_b = upper_three ? indices::upper_b : indices::lower_b;
+
+                                        todo.push ({a, maxT, node.children_+indices::c});
+                                        todo.push ({b, a,    node.children_+index_b});
+                                        todo.push ({minT, b, node.children_+indices::a});
+                                }
+                        }
+                        return Intersection::Optional();
+                }
+
+                static Intersection::Optional intersect_iter (
+                        Node *node,
+                        Ray const &ray,
+                        real minT, real maxT
+                ) {
+                        if (ray.direction().x()>=0) {
+                                if (ray.direction().z() >= 0) {
+                                        return intersect_iter_directed<1,1>(
+                                                node, ray, minT, maxT);
+                                } else {
+                                        return intersect_iter_directed<1,0>(
+                                                node, ray, minT, maxT);
+                                }
+                        } else {
+                                if (ray.direction().z() >= 0) {
+                                        return intersect_iter_directed<0,1>(
+                                                node, ray, minT, maxT);
+                                } else {
+                                        return intersect_iter_directed<0,0>(
+                                                node, ray, minT, maxT);
+                                }
+                        }
                 }
 
                 Node() {}
@@ -526,8 +640,15 @@ Quadtree::Quadtree ()
 Intersection::Optional Quadtree::operator() (Ray const &ray) const {
         Interval::Optional oi = intersect (ray, aabb_);
         if (!oi) return Intersection::Optional();
-        return root_->intersect(ray, oi.interval().min(),
-                                     oi.interval().max());
+
+        if (1) {
+                return detail::Node::intersect_iter(&*root_, ray,
+                                                    oi.interval().min(),
+                                                    oi.interval().max());
+        } else {
+                return root_->intersect(ray, oi.interval().min(),
+                                             oi.interval().max());
+        }
 }
 
 } }

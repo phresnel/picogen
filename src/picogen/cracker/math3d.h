@@ -95,6 +95,12 @@ namespace picogen { namespace cracker {
                 return *this * (1 / f);
         }
 
+        inline Vector operator / (real f, Direction const &v) {
+                return {f / v.x(),
+                        f / v.y(),
+                        f / v.z()};
+        }
+
         // normal, vector
         inline Vector Normal::operator* (real f) const {
                 return Vector (x_*f, y_*f, z_*f);
