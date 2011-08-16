@@ -447,6 +447,7 @@ namespace detail {
                         real minT, real maxT
                 ) {
                         struct Todo {
+                                Todo() {}
                                 Todo (real minT, real maxT, Node *node)
                                         : minT(minT), maxT(maxT), node(node) {}
                                 real minT, maxT;
@@ -454,30 +455,41 @@ namespace detail {
                         };
 
                         const Direction dir  = ray.direction();
-                        const Vector idir    = real(1) / dir;
-                        const Point  &origin = ray.origin();
+                        //const Vector idir    = real(1) / dir;
+                        //const Point  &origin = ray.origin();
+
+                        const real d_y = dir.y();
+                        const real o_y = ray.origin().y();
+                        const real o_x = ray.origin().x();
+                        const real o_z = ray.origin().z();
+
+                        const real id_x = 1 / dir.x();
+                        const real id_z = 1 / dir.z();
 
 
-                        std::stack<Todo> todo;
-                        todo.push ({minT, maxT, node});
-                        while (!todo.empty()) {
-                                const Todo curr = todo.top();
+                        //std::stack<Todo> todo; § replace me with somethint stack-framable
+                        Todo stack[128];
+                        Todo *top = stack;
+                        *top++ = Todo({minT, maxT, node});
+                        while (top != stack) {
+                                const Todo curr = *--top;
                                 const Node &node = *curr.node;
                                 const real minT = curr.minT;
                                 const real maxT = curr.maxT;
-                                todo.pop();
 
-                                if (minT > maxT) continue;
+                                //if (minT > maxT) continue;
 
                                 // We can assume minT and maxT to be a correct interval on the xz plane.
                                 // But we got to check for vertical intersection now.
-                                const real min_h = origin.y() + minT * dir.y();
-                                const real max_h = origin.y() + maxT * dir.y();
+                                const real min_h = o_y + minT * d_y;
+                                const real max_h = o_y + maxT * d_y;
 
 
                                 // BOTTLENECK when this->aabb.get...?
                                 if (((min_h < node.min_h_) & (max_h < node.min_h_))
-                                   |((min_h > node.max_h_) & (max_h > node.max_h_)))
+                                   |((min_h > node.max_h_) & (max_h > node.max_h_))
+                                   |(minT>maxT)
+                                   )
                                         continue;
 
                                 if (node.leaf_) {
@@ -487,8 +499,8 @@ namespace detail {
                                         // Find out which ones to traverse.
                                         const real c_x = 0.5*node.left_+0.5*node.right_;
                                         const real c_z = 0.5*node.front_+0.5*node.back_;
-                                        const real d_x = (c_x - origin.x()) * idir.x();
-                                        const real d_z = (c_z - origin.z()) * idir.z();
+                                        const real d_x = (c_x - o_x) * id_x;
+                                        const real d_z = (c_z - o_z) * id_z;
                                         const bool upper_three = d_x > d_z;
 
                                         // +----+----+
@@ -503,9 +515,9 @@ namespace detail {
                                         const real b = upper_three ? d_z : d_x;
                                         const int index_b = upper_three ? indices::upper_b : indices::lower_b;
 
-                                        todo.push ({a, maxT, node.children_+indices::c});
-                                        todo.push ({b, a,    node.children_+index_b});
-                                        todo.push ({minT, b, node.children_+indices::a});
+                                        *top++ = Todo ({a, maxT, node.children_+indices::c});
+                                        *top++ = Todo ({b, a,    node.children_+index_b});
+                                        *top++ = Todo ({minT, b, node.children_+indices::a});
                                 }
                         }
                         return Intersection::Optional();
