@@ -149,9 +149,9 @@ namespace detail {
                         delete [] h_;
                 }
 
-                Vector vertex(unsigned int ux, unsigned int uz) const {
-                        const real u = ux/static_cast<real>(res_x_);
-                        const real v = uz/static_cast<real>(res_z_);
+                Vector vertex(int ux, int uz, real u, real v) const {
+                        //const real u = ux/static_cast<real>(res_x_);
+                        //const real v = uz/static_cast<real>(res_z_);
 
                         const real x = (1-u)*left_ + u*right_;
                         const real z = (1-v)*front_ + v*back_;
@@ -196,23 +196,36 @@ namespace detail {
                         int front, int back
                 ) const
                 {
+                        const real ires_x = 1. / res_x_;
+                        const real ires_z = 1. / res_z_;
+
                         for (int uz=front; uz!=back; uz+=step_z) {
+                                const real v = uz* ires_z;
+                                const real v1 =v + ires_z;
+
                                 for (int ux=left; ux!=right; ux+=step_x) {
+                                        const real u = ux*ires_x;
+                                        const real u1 =u + ires_x;
+
+                                        const auto A = vertex(ux,   uz, u, v),
+                                                   B = vertex(ux,   uz+1, u, v1),
+                                                   C = vertex(ux+1, uz, u1, v),
+                                                   D = vertex(ux+1, uz+1, u1, v1);
 
                                         Vector a,b,c;
                                         real t, tu, tv;
                                         Normal tn(0,1,0);
                                         if (0 != raytri_intersect(
                                                 ray,
-                                                (a=vertex(ux, uz)),
-                                                (b=vertex(ux, uz+1)),
-                                                (c=vertex(ux+1, uz)),
+                                                (a=A),
+                                                (b=B),
+                                                (c=C),
                                                 t, tu, tv, tn)
                                         || 0 != raytri_intersect(
                                                 ray,
-                                                (a=vertex(ux, uz+1)),
-                                                (b=vertex(ux+1, uz+1)),
-                                                (c=vertex(ux+1, uz)),
+                                                (a=B),
+                                                (b=D),
+                                                (c=C),
                                                 t, tu, tv, tn)
                                         )
                                         {
@@ -444,7 +457,7 @@ namespace detail {
                 static Intersection::Optional intersect_iter_directed (
                         Node *node,
                         Ray const &ray,
-                        real minT, real maxT
+                        real minT_, real maxT_
                 ) {
                         struct Todo {
                                 Todo() {}
@@ -470,25 +483,23 @@ namespace detail {
                         //std::stack<Todo> todo; § replace me with somethint stack-framable
                         Todo stack[128];
                         Todo *top = stack;
-                        *top++ = Todo({minT, maxT, node});
+                        *top++ = Todo({minT_, maxT_, node});
                         while (top != stack) {
                                 const Todo curr = *--top;
                                 const Node &node = *curr.node;
-                                const real minT = curr.minT;
-                                const real maxT = curr.maxT;
 
                                 //if (minT > maxT) continue;
 
                                 // We can assume minT and maxT to be a correct interval on the xz plane.
                                 // But we got to check for vertical intersection now.
-                                const real min_h = o_y + minT * d_y;
-                                const real max_h = o_y + maxT * d_y;
+                                const real min_h = o_y + curr.minT * d_y;
+                                const real max_h = o_y + curr.maxT * d_y;
 
 
                                 // BOTTLENECK when this->aabb.get...?
                                 if (((min_h < node.min_h_) & (max_h < node.min_h_))
                                    |((min_h > node.max_h_) & (max_h > node.max_h_))
-                                   |(minT>maxT)
+                                   |(curr.minT>curr.maxT)
                                    )
                                         continue;
 
@@ -497,10 +508,11 @@ namespace detail {
                                         if (i) return i;
                                 } else {
                                         // Find out which ones to traverse.
-                                        const real c_x = 0.5*node.left_+0.5*node.right_;
-                                        const real c_z = 0.5*node.front_+0.5*node.back_;
+                                        const real c_x = 0.5*node.left_ + 0.5*node.right_;
+                                        const real c_z = 0.5*node.front_+ 0.5*node.back_;
                                         const real d_x = (c_x - o_x) * id_x;
                                         const real d_z = (c_z - o_z) * id_z;
+
                                         const bool upper_three = d_x > d_z;
 
                                         // +----+----+
@@ -515,9 +527,9 @@ namespace detail {
                                         const real b = upper_three ? d_z : d_x;
                                         const int index_b = upper_three ? indices::upper_b : indices::lower_b;
 
-                                        *top++ = Todo ({a, maxT, node.children_+indices::c});
+                                        *top++ = Todo ({a, curr.maxT, node.children_+indices::c});
                                         *top++ = Todo ({b, a,    node.children_+index_b});
-                                        *top++ = Todo ({minT, b, node.children_+indices::a});
+                                        *top++ = Todo ({curr.minT, b, node.children_+indices::a});
                                 }
                         }
                         return Intersection::Optional();
