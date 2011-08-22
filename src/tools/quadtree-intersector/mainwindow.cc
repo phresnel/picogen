@@ -127,12 +127,7 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         painter.setBrush(QBrush());
         painter.setRenderHint(QPainter::Antialiasing, true);
 
-
-        const qreal w = 320, h = 320;
-        //painter.drawRect(0,0,w,h);
-
         const QRectF rootBox (0.25,0.25,0.5,0.5);
-
 
         drawRect(painter, rootBox);
         drawLine(painter, from_, to_);
@@ -165,35 +160,61 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         if (min > max) return;
 
         drawBall (painter, QPointF (p_x + d_x * min,
-                                    p_z + d_z * min),
-                  "min");
+                                    p_z + d_z * min), "min");
         drawBall (painter, QPointF (p_x + d_x * max,
-                                    p_z + d_z * max),
-                  "max");
-
+                                    p_z + d_z * max), "max");
         drawCross (painter, QPointF (p_x + d_x * t_x,
-                                     p_z + d_z * t_x),
-                   10,
-                   "t_x");
+                                     p_z + d_z * t_x), 10, "t_x");
         drawCross (painter, QPointF (p_x + d_x * t_z,
-                                     p_z + d_z * t_z),
-                   10,
-                   "t_z");
-
-        const bool upper_three = t_x > t_z;
+                                     p_z + d_z * t_z), 10, "t_z");
 
         const float sub_width = rootBox.width()*0.5,
                     sub_height = rootBox.height()*0.5;
 
-        const bool children[4] = {
-                (t_x > min)  & (t_z < t_x) & (t_z < max),
-                (t_x < max)  & (t_z < max),
-                (t_z >= t_x) & (t_z >= min) & (t_x < max),
-                (t_x >= min) & (t_z >= min)
-        };
+        const bool right   = d_x >= 0,
+                   forward = d_z <= 0;
+        //const rangeÄ
+        bool children[4];
 
-        § TODO: generalize for all directions
-        § TODO: set children min/max-pairs and possibly simplify conditions (if it isn't simpler, skip it)
+        // +---+---+
+        // | 0 | 1 |
+        // +---+---+
+        // | 3 | 2 |
+        // +---+---+
+        int child_a, child_b, child_c, child_d;
+        if (forward) {
+                if (right) {
+                        child_a = 0;
+                        child_b = 1;
+                        child_c = 2;
+                        child_d = 3;
+                } else {
+                        child_a = 1;
+                        child_b = 0;
+                        child_c = 3;
+                        child_d = 2;
+                }
+        } else {
+                if (right) {
+                        child_a = 3;
+                        child_b = 2;
+                        child_c = 1;
+                        child_d = 0;
+                } else {
+                        child_a = 2;
+                        child_b = 3;
+                        child_c = 0;
+                        child_d = 1;
+                }
+        }
+
+        children[child_a] = (t_x > min)  & (t_z < t_x) & (t_z < max);
+        children[child_b] = (t_x < max)  & (t_z < max);
+        children[child_c] = (t_z >= t_x) & (t_z >= min) & (t_x < max);
+        children[child_d] = (t_x >= min) & (t_z >= min);
+
+        //§ TODO: generalize for all directions
+        //§ TODO: set children min/max-pairs and possibly simplify conditions (if it isn't simpler, skip it)
         if (children[0]) fillRect(painter, Qt::Dense6Pattern, QRectF(rootBox.left(),
                                                                      rootBox.top(),
                                                                      sub_width,
