@@ -57,7 +57,7 @@ void drawHLine (QPainter &painter, QPointF const &center, float length,
         const float c_x = x+center.x()*w;
         const float c_y = y+center.y()*w;
         painter.drawLine(c_x-length/2, c_y, c_x+length/2, c_y);
-        if (title) painter.drawText(c_x-40, c_y+5, QString::fromAscii(title));
+        if (title) painter.drawText(c_x-40, c_y+10, QString::fromAscii(title));
 }
 void drawCross (QPainter &painter, QPointF const &center, float length = -1,
                 const char *title = 0) {
@@ -153,9 +153,8 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         const float c_x = rootBox.center().x(),
                     c_z = rootBox.center().y();
 
-        float t_x = (c_x - p_x) / d_x,
-              t_z = (c_z - p_z) / d_z;
-        //if (d_x < 0) std::swap (t_x, t_z);
+        const float t_x = (c_x - p_x) / d_x,
+                    t_z = (c_z - p_z) / d_z;
 
         float min, max;
         if (!intersect (p_x, p_z, d_x, d_z,
@@ -166,8 +165,6 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         if (min < 0) min = 0;
         if (max > l) max = l;
         if (min > max) return;
-
-        const bool z_is_inf = d_z == 0;
 
         drawBall (painter, QPointF (p_x + d_x * min,
                                     p_z + d_z * min), "min");
@@ -195,95 +192,103 @@ void MainWindow::paintEvent(QPaintEvent *e) {
                 if (right) {
                         child_a = 3;
                         child_b = 2;
-                        child_c = 1;
-                        child_d = 0;
+                        child_c = 0;
+                        child_d = 1;
                 } else {
                         child_a = 2;
                         child_b = 3;
-                        child_c = 0;
-                        child_d = 1;
+                        child_c = 1;
+                        child_d = 0;
                 }
         } else {
                 if (right) {
                         child_a = 0;
                         child_b = 1;
-                        child_c = 2;
-                        child_d = 3;
+                        child_c = 3;
+                        child_d = 2;
                 } else {
                         child_a = 1;
                         child_b = 0;
-                        child_c = 3;
-                        child_d = 2;
+                        child_c = 2;
+                        child_d = 3;
                 }
         }
 
         {
-                from[child_a] = std::max(t_z,min);
-                to[child_a]   = std::min(t_x,max);
-                from[child_b] = std::max(t_x, t_z);
-                to[child_b]   = max;
-                from[child_c] = std::max(t_x, min);
-                to[child_c]   = std::min(t_z, max);
-                from[child_d] = min;
-                to[child_d]   = std::min(t_x,t_z);
+                from[child_a] = min;
+                to  [child_a] = std::min(t_x, t_z);
+
+                from[child_b] = std::max(t_x, min);
+                to  [child_b] = std::min(t_z, max);
+
+                from[child_c] = std::max(t_z, min);
+                to  [child_c] = std::min(t_x, max);
+
+                from[child_d] = std::max(t_x, t_z);
+                to  [child_d] = max;
         }
 
-        painter.drawText (0,20, QString("min=%1, max=%2, t_x=%3, t_z=%4")
-                                        .arg(min).arg(max).arg(t_x).arg(t_z));
+        painter.drawText (0,20, QString("min=%1, max=%2, t_x=%3, t_z=%4, %5|%6")
+                                        .arg(min).arg(max).arg(t_x).arg(t_z)
+                                        .arg(right?"right":"-")
+                                        .arg(forward?"forward":"-"));
+        painter.drawText(0,60, QString("child[a..d]: %1 %2 / %3 %4").arg(child_a).arg(child_b)
+                                                                    .arg(child_c).arg(child_d));
 
         /* I worked out the following tests empirically. They show you
            which children would have to be traversed, but unfortunately they
            don't tell the distances.
+           However: the indices might not be correct anymore
         children[child_a] = (t_x > min)  & (t_z < t_x) & (t_z < max);
         children[child_b] = (t_x < max)  & (t_z < max);
         children[child_c] = (t_z >= t_x) & (t_z >= min) & (t_x < max);
         children[child_d] = (t_x >= min) & (t_z >= min);
         */
 
-        //§ TODO: generalize for all directions
-        //§ TODO: set children min/max-pairs and possibly simplify conditions (if it isn't simpler, skip it)
         if (from[0] <= to[0]) {
                 fillRect(painter, Qt::Dense6Pattern, QRectF(rootBox.left(),
-                                                             rootBox.top(),
+                                                             rootBox.center().y(),
                                                              sub_width,
                                                              sub_height));
         }
         if (from[1] <= to[1]) {
                 fillRect(painter, Qt::Dense6Pattern, QRectF(rootBox.center().x(),
-                                                             rootBox.top(),
+                                                             rootBox.center().y(),
                                                              sub_width,
                                                              sub_height));
         }
         if (from[2] <= to[2]) {
                 fillRect(painter, Qt::Dense6Pattern, QRectF(rootBox.center().x(),
-                                                             rootBox.center().y(),
+                                                             rootBox.top(),
                                                              sub_width,
                                                              sub_height));
         }
         if (from[3] <= to[3]) {
                 fillRect(painter, Qt::Dense6Pattern, QRectF(rootBox.left(),
-                                                             rootBox.center().y(),
+                                                             rootBox.top(),
                                                              sub_width,
                                                              sub_height));
         }
 
-        int order[4];
-        if (right & forward) {
-                order[child_a] = 0;
-                order[child_b] = 1;
-                order[child_c] = 2;
-                order[child_d] = 3;
-        }
-        for (int i=0; i<4; ++i) {
-                if (from[i] > to[i]) continue;
-                const QString a = "min["+QString::number (order[i])+"]";
-                const QString b = "max["+QString::number (order[i])+"]";
-                drawHLine (painter,
-                           QPointF(p_x+d_x*from[i], p_z+d_z*from[i]), 25, a.toAscii());
-                drawHLine (painter,
-                           QPointF(p_x+d_x*to[i], p_z+d_z*to[i]), 25, b.toAscii());
-        }
 
+
+        {
+                int n[4] ; //= {child_a,child_b,child_c,child_d};
+                n[child_a] = 0;
+                n[child_b] = 1;
+                n[child_c] = 2;
+                n[child_d] = 3;
+                for (int i=0; i<4; ++i) {
+                        if (from[i] > to[i]) continue;
+                        //if (order[i] != ) continue;
+                        const QString a = "min[" + QString::number (n[i]) + "]";
+                        const QString b = "max["+QString::number (n[i])+"]";
+                        drawHLine (painter,
+                                   QPointF(p_x+d_x*from[i], p_z+d_z*from[i]), 25, a.toAscii());
+                        drawHLine (painter,
+                                   QPointF(p_x+d_x*to[i], p_z+d_z*to[i]), 25, b.toAscii());
+                }
+        }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e) {
