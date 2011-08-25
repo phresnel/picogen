@@ -3,7 +3,7 @@ project (cracker)
 
 set(CMAKE_BUILD_TYPE Debug)
 
-if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+if (CMAKE_COMPILER_IS_GNUCXX)
         add_definitions (# language
                          -std=c++0x
 
@@ -12,12 +12,17 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
                          -ffast-math
                          -msse -mfpmath=sse
                          -Wdisabled-optimization
+                         -march=native
 
                          # diagnosis
                          -g
 
                          # warnings
                          -Wall -Wextra -D__STDC_LIMIT_MACROS)
+
+        #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -p -fprofile-generate")
+        #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-use")
+
 endif()
 
 

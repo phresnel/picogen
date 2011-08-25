@@ -53,7 +53,7 @@ void RenderWidget::on_pushButton_clicked()
 
         const auto integrator = //SurfaceNormalIntegrator();
                                 combine (PathIntegrator(),
-                                         PrimaryDistanceIntegrator(0,50),
+                                         SurfaceNormalIntegrator(),
                                          0);
                                 //combine (PrimaryDistanceIntegrator(0,100),
                                 //         SurfaceNormalIntegrator(),
@@ -113,7 +113,7 @@ void RenderWidget::on_resetsceneButton_clicked() {
                                         ui->imageHeight->value()));
 
         scene_.reset (new Scene);
-        for (int i=0; i<32*0; ++i) {
+        for (int i=0; i<32; ++i) {
                 const real x = rand() / (real)RAND_MAX*100 - 50;
                 const real y = rand() / (real)RAND_MAX*10 - 5;
                 const real z = rand() / (real)RAND_MAX*30 + 2;

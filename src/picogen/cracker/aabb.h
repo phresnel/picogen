@@ -164,7 +164,7 @@ inline Interval::Optional intersect (Ray const & ray, BoundingBox const & box) {
         using std::swap;
 
         real t0 = 0;//ray.minT;
-        real t1 = 1000000;//ray.maxT;
+        real t1 = std::numeric_limits<real>::infinity();//ray.maxT;
 
         // X
         {
@@ -210,8 +210,12 @@ inline Interval::Optional intersect (Ray const & ray, BoundingBox const & box) {
 
                 if (t0 > t1) return Interval::Optional();
         }
-        if ((t0 < 0) & (t1 < 0)) return Interval::Optional();
-        if (t0 < 0) return Interval(t1,t1);
+        //if ((t0 < 0) & (t1 < 0)) return Interval::Optional();
+        /*if (t0 < 0) {
+                //if (std::numeric_limits<real>::infinity() != t1)
+                        return Interval(t1,t1);
+                //return Interval::Optional();
+        }*/
         return Interval (t0, t1);
 }
 
@@ -262,7 +266,7 @@ inline bool does_intersect (Ray const & ray, BoundingBox const & box) {
                 if (t0 > t1) return false;
         }
 
-        return t0<t1;
+        return true;
 }
 
 } }
