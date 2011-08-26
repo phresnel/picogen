@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (cracker)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
         add_definitions (# language
@@ -163,6 +163,7 @@ set (sources ${sources}
 
         ${cracker_src_dir}/terrain/gridterrain.cc
         ${cracker_src_dir}/terrain/quadtree.cc
+        ${cracker_src_dir}/terrain/quadtree/patch.cc
 )
 
 

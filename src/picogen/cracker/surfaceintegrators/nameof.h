@@ -36,8 +36,8 @@ template<typename L, typename R>
 inline std::string nameof(CombinerIntegrator<L,R> c) {
         std::stringstream ss;
         ss << "Combined{"
-           << nameof(L()) << ","
-           << nameof(R()) << ","
+           << nameof(c.lhs()) << ","
+           << nameof(c.rhs()) << ","
            << c.lerp() << "}";
         return ss.str();
 }

@@ -32,6 +32,8 @@ public:
                 return lerp_;
         }
 
+        IntegratorA const & lhs() const { return a; }
+        IntegratorB const & rhs() const { return b; }
 private:
         IntegratorA a;
         IntegratorB b;
