@@ -3,6 +3,8 @@
 #include "../ray.h"
 #include "../materials/lambertmaterial.h"
 
+#include <QDebug>
+
 namespace picogen { namespace cracker {
 
 
@@ -23,6 +25,10 @@ namespace detail {
             vect1 = c - a;
 
             normal = cross (vect0, vect1);
+            /*if (normal.x()==0 && normal.y()==0 && normal.z()==0) {
+                    qDebug() << "vect0:" << vect0.x() << vect0.y() << vect0.z();
+                    qDebug() << "vect1:" << vect1.x() << vect1.y() << vect1.z();
+            }*/
 
             /* orientation of the ray with respect to the triangle's normal,
                also used to calculate output parameters*/
@@ -104,7 +110,8 @@ Patch::Patch (real left, real right,
                         if (y > y_max) y_max = y;
 
                         //h(ux,uz) = y;
-                        h(ux,uz) = Vector(x,y,z);                                }
+                        h(ux,uz) = Vector(x,y,z);
+                }
         }
 
         /*exactBB = BoundingBox (Point(left, y_min, front),
@@ -121,7 +128,7 @@ Patch::~Patch() {
 Intersection::Optional Patch::operator() (Ray const &ray,
                                           real min, real max) const
 {
-        if (true) {
+        if (false) {
                 return intersect_amanatides (ray, min, max);
         } else {
                 const bool pro_x = ray.direction().x() >= 0;
@@ -241,13 +248,13 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
         int stepX, outX, X = (int)cell_x;
         int stepZ, outZ, Z = (int)cell_z;
 
-        if ((X < 0) || (X > (int)res_x_) // making this ">" gives terrain
-         || (Z < 0) || (Z > (int)res_z_)) {
+        if ((X < 0) || (X >= (int)res_x_) // making this ">" gives terrain
+         || (Z < 0) || (Z >= (int)res_z_)) {
                 return Intersection::Optional();
         }
 
         real cb_x, cb_z;
-        if (raydir.x() > 0) {
+        if (raydir.x() >= 0) {
                 stepX = 1;
                 outX = res_x_;
                 cb_x = left_ + (X + 1) * CW_x;
@@ -256,7 +263,7 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                 outX = -1;
                 cb_x = left_ + X * CW_x;
         }
-        if (raydir.z() > 0.0f) {
+        if (raydir.z() >= 0.0f) {
                 stepZ = 1;
                 outZ = res_z_;
                 cb_z = front_ + (Z + 1) * CW_z;
@@ -265,6 +272,7 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                 outZ = -1;
                 cb_z = front_ + Z * CW_z;
         }
+
         real tmax_x, tmax_z, tdelta_x = 0, tdelta_z = 0;
         real rxr, rzr;
         if (raydir.x() != 0)
@@ -283,19 +291,28 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
         }
         else tmax_z = 1000000;
 
+        //qDebug() << "start: " << "xz" << X << Z << "step" << stepX << stepZ;
+
         while (1) {
                 if (const Intersection::Optional p = intersect_quad (ray, X, Z))
                         return p;
                 if (tmax_x < tmax_z) {
                         X = X + stepX;
-                        if (X == outX) return Intersection::Optional();
+                        if (X == outX)  {
+                                //qDebug() << "no: " << "xz" << X << Z << "step" << stepX << stepZ;
+                                return Intersection::Optional();
+                        }
                         tmax_x += tdelta_x;
                 } else {
                         Z = Z + stepZ;
-                        if (Z == outZ) return Intersection::Optional();
+                        if (Z == outZ) {
+                                //qDebug() << "no: " << "xz" << X << Z << "step" << stepX << stepZ;
+                                return Intersection::Optional();
+                        }
                         tmax_z += tdelta_z;
                 }
         }
+        //qDebug() << "yes: " << "xz" << X << Z << "step" << stepX << stepZ;
 
         return Intersection::Optional();
 }

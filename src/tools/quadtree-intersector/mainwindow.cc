@@ -216,7 +216,7 @@ void MainWindow::paintEvent(QPaintEvent *e) {
 
         {
                 from[child_a] = min;
-                to  [child_a] = std::min(t_x, t_z);
+                to  [child_a] = std::min(std::min(t_x, t_z), max);
 
                 from[child_b] = std::max(t_x, min);
                 to  [child_b] = std::min(t_z, max);
@@ -224,7 +224,7 @@ void MainWindow::paintEvent(QPaintEvent *e) {
                 from[child_c] = std::max(t_z, min);
                 to  [child_c] = std::min(t_x, max);
 
-                from[child_d] = std::max(t_x, t_z);
+                from[child_d] = std::max(std::max(t_x, t_z), min);
                 to  [child_d] = max;
         }
 

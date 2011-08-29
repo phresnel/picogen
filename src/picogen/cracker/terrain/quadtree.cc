@@ -13,6 +13,10 @@
 
 namespace picogen { namespace cracker { namespace detail {
 
+        // Except for debugging, the literals below don't have a meaning.
+        enum class XDirection { Left = -1,     Right = 1 };
+        enum class ZDirection { Backward = -1, Forward = 1 };
+
         inline std::vector<std::vector<real> > child_boxen (
                 real left, real right, real front, real back)
         {
@@ -48,8 +52,8 @@ namespace picogen { namespace cracker { namespace detail {
                 return ret;
         }
 
-        template <bool d_forward, bool d_right> struct TravOrder;
-        template <> struct TravOrder<true,true> {
+        template <ZDirection d_forward, XDirection d_right> struct TravOrder;
+        template <> struct TravOrder<ZDirection::Forward, XDirection::Left> {
                 enum {
                         child_a = 3,
                         child_b = 2,
@@ -57,7 +61,7 @@ namespace picogen { namespace cracker { namespace detail {
                         child_d = 1
                 };
         };
-        template <> struct TravOrder<true,false> {
+        template <> struct TravOrder<ZDirection::Forward, XDirection::Right> {
                 enum {
                         child_a = 2,
                         child_b = 3,
@@ -65,7 +69,7 @@ namespace picogen { namespace cracker { namespace detail {
                         child_d = 0
                 };
         };
-        template <> struct TravOrder<false,true> {
+        template <> struct TravOrder<ZDirection::Backward, XDirection::Right> {
                 enum {
                         child_a = 0,
                         child_b = 1,
@@ -73,7 +77,7 @@ namespace picogen { namespace cracker { namespace detail {
                         child_d = 2
                 };
         };
-        template <> struct TravOrder<false,false> {
+        template <> struct TravOrder<ZDirection::Backward, XDirection::Left> {
                 enum {
                         child_a = 1,
                         child_b = 0,
@@ -122,9 +126,10 @@ namespace picogen { namespace cracker { namespace detail {
                                 : minT(minT), maxT(maxT), node(node) {}
                         real minT, maxT;
                         Node *node;
+                        int debug;
                 };
 
-                template <bool d_right, bool d_up>
+                template <XDirection d_right, ZDirection d_up>
                 static void determine (Todo*& top,
                                        real Min, real Max, real t_x, real t_z,
                                        Node *children) {
@@ -134,44 +139,65 @@ namespace picogen { namespace cracker { namespace detail {
                         // -----+-----
                         // | 3  | 2  |
                         // +----+----+
-                        typedef TravOrder<d_right, d_up> order;
+                        typedef TravOrder<d_up, d_right> order;
                         real from[4] = {0,0,0,0}, to[4] = {-1,-1,-1,-1};
 
                         {
                                 from[order::child_a] = Min;
-                                to  [order::child_a] = std::min(t_x, t_z);
+                                to  [order::child_a] = std::min(std::min(t_x, t_z), Max);
 
+                                //qDebug() << "child_b-min" << std::max(t_x, Min) << "child_b" << order::child_b;
                                 from[order::child_b] = std::max(t_x, Min);
                                 to  [order::child_b] = std::min(t_z, Max);
 
                                 from[order::child_c] = std::max(t_z, Min);
                                 to  [order::child_c] = std::min(t_x, Max);
 
-                                from[order::child_d] = std::max(t_x, t_z);
+                                from[order::child_d] = std::max(std::max(t_x, t_z), Min);
                                 to  [order::child_d] = Max;
+
+                                //if (from[order::child_a] < 0) qDebug () << order::child_a << from[order::child_a] << ":" << to[order::child_a] << ", " << t_x << t_z << Min;
+
+                        }
+                        //qDebug() << Min;
+                        for (int i=0; i<4; ++i) {
+                                if (from[i] < 0) qDebug () << i << from[i] << ":" << to[i] << ", " << t_x << t_z << Min;
+
                         }
 
+                        top->debug = order::child_d;
                         *top++ = Todo(from[order::child_d],
                                       to  [order::child_d],
                                       children+order::child_d);
+
+                        top->debug = order::child_c;
                         *top++ = Todo(from[order::child_c],
                                       to  [order::child_c],
                                       children+order::child_c);
+
+                        top->debug = order::child_b;
                         *top++ = Todo(from[order::child_b],
                                       to  [order::child_b],
                                       children+order::child_b);
+
+                        top->debug = order::child_a;
                         *top++ = Todo(from[order::child_a],
                                       to  [order::child_a],
                                       children+order::child_a);
                 }
 
-                template <bool d_right, bool d_up>
+                template <XDirection d_right, ZDirection d_up>
                 static Intersection::Optional intersect_iter_directed (
                         Node *node,
                         Ray const &ray,
                         real minT_, real maxT_
 
                 ) {
+                        assert(  (d_right == XDirection::Right && ray.direction().x()>=0)
+                              || (d_right == XDirection::Left  && ray.direction().x()<=0));
+                        assert(  (d_up == ZDirection::Forward  && ray.direction().z()>=0)
+                              || (d_up == ZDirection::Backward && ray.direction().z()<=0));
+
                         const Direction dir  = ray.direction();
                         const real d_y = dir.y();
                         const real o_y = ray.origin().y();
@@ -206,6 +232,17 @@ namespace picogen { namespace cracker { namespace detail {
                                         continue;
                                 }
 
+                                if (curr.minT < 0) {
+                                        qDebug() << "??" << curr.minT << curr.maxT
+                                                 << "rayd" << ray.direction().x() << ray.direction().z()
+                                                 << "-- right"<<(int)d_right
+                                                 << "up"<<(int)d_up
+                                                 << "-- child" << curr.debug;
+                                        break;
+                                }
+                                //return Intersection::Optional();
+
+
                                 if (node.leaf_) {
                                         const auto i = (*node.patch_)(ray,
                                                                       curr.minT,
@@ -217,8 +254,8 @@ namespace picogen { namespace cracker { namespace detail {
                                         const real c_z = 0.5*node.front_+ 0.5*node.back_;
                                         const real d_x = (c_x - o_x) * id_x;
                                         const real d_z = (c_z - o_z) * id_z;
-
-                                        determine<d_up, d_right> (top,
+//qDebug() << "!!!" << minT_ << maxT_ << d_x << d_z << "rdx" << ray.direction().x(); // try to find nan
+                                        determine<d_right, d_up> (top,
                                                                   curr.minT, curr.maxT,
                                                                   d_x, d_z,
                                                                   node.children_);
@@ -234,19 +271,23 @@ namespace picogen { namespace cracker { namespace detail {
                 ) {
                         if (ray.direction().x()>=0) {
                                 if (ray.direction().z() >= 0) {
-                                        return intersect_iter_directed<1,1>(
-                                                node, ray, minT, maxT);
+                                        return intersect_iter_directed<XDirection::Right,
+                                                                       ZDirection::Forward>
+                                                (node, ray, minT, maxT);
                                 } else {
-                                        return intersect_iter_directed<1,0>(
-                                                node, ray, minT, maxT);
+                                        return intersect_iter_directed<XDirection::Right,
+                                                                       ZDirection::Backward>
+                                                (node, ray, minT, maxT);
                                 }
                         } else {
                                 if (ray.direction().z() >= 0) {
-                                        return intersect_iter_directed<0,1>(
-                                                node, ray, minT, maxT);
+                                        return intersect_iter_directed<XDirection::Left,
+                                                                       ZDirection::Forward>
+                                                (node, ray, minT, maxT);
                                 } else {
-                                        return intersect_iter_directed<0,0>(
-                                                node, ray, minT, maxT);
+                                        return intersect_iter_directed<XDirection::Left,
+                                                                       ZDirection::Backward>
+                                                (node, ray, minT, maxT);
                                 }
                         }
                 }
@@ -347,13 +388,24 @@ Quadtree::Quadtree ()
         root_.reset (new detail::Node (4, fun, aabb_));
 }
 
-Intersection::Optional Quadtree::operator() (Ray const &ray) const {
+Intersection::Optional Quadtree::operator() (Ray const &ray_) const {
+        Ray ray (ray_.origin(),
+                 normalize<Direction>(
+                         ray_.direction().x()==0 ? 0.00001 : ray_.direction().x(),
+                         ray_.direction().y()==0 ? 0.00001 : ray_.direction().y(),
+                         ray_.direction().z()==0 ? 0.00001 : ray_.direction().z()
+                 ));
         Interval::Optional oi = intersect (ray, aabb_);
         if (!oi) return Intersection::Optional();
 
+        real min = oi.interval().min(),
+             max = oi.interval().max();
+        if (min < 0) min = 0;
+        if (min > max) return Intersection::Optional();
+
         return detail::Node::intersect_iter(&*root_, ray,
-                                            oi.interval().min(),
-                                            oi.interval().max());
+                                            min,
+                                            max);
 }
 
 } }

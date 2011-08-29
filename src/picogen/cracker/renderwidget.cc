@@ -55,7 +55,7 @@ void RenderWidget::on_pushButton_clicked()
                                 combine (PathIntegrator(),
                                          combine(SurfaceNormalIntegrator(),
                                                  PrimaryDistanceIntegrator(0,100),
-                                                 1),
+                                                 0),
                                          1);
         const auto renderer = createRenderer (scene_,
                                               integrator,

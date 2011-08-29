@@ -19,8 +19,8 @@ public:
 
                 u = u * 2 - 1;
                 v = v * 2 - 1;
-                return Ray (Point(),
-                            Direction::FromUnnormalized(u, v, frontPlaneDistance_));
+                return Ray (Point(0,0,100),
+                            Direction::FromUnnormalized(u, v, -frontPlaneDistance_));
         }
 
 private:
