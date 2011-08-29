@@ -43,7 +43,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-const qreal x = 100, y = 100;
+const qreal x = 30, y = 30;
 const qreal w = 320, h = 320;
 void drawRect (QPainter &painter, QRectF const &rect) {
         QRectF r (x+rect.left()*w, y+rect.top()*h,
@@ -138,7 +138,7 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         painter.setBrush(QBrush());
         painter.setRenderHint(QPainter::Antialiasing, true);
 
-        const QRectF rootBox (0.25,0.25,0.5,0.5);
+        const QRectF rootBox (0.25,0.25,0.4,0.4);
 
         drawRect(painter, rootBox);
         const int res_x_ = 8, res_z_ = res_x_;
@@ -154,10 +154,10 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         }
 
         drawLine(painter, from_, to_);
-        drawCross(painter,rootBox.center());
-
 
         // setup stub ray
+        const real left_ = rootBox.left(), right_ = rootBox.right(),
+                           front_ = rootBox.top(), back_ = rootBox.bottom();
         const real p_x = from_.x(),
                    p_z = from_.y();
         const real diff[2] = { to_.x()-from_.x(),
@@ -170,14 +170,53 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         if (!intersect (p_x, p_z, d_x, d_z, rootBox, Min, Max))
                 return;
         // dda
-/*
+
         const real gridinter_x = p_x + d_x * Min,
                    gridinter_z = p_z + d_z * Min;
 
         const int Rx = res_x_;
         const int Rz = res_z_;
-        const real width_ = right_-left_;
-        const real depth_ = back_-front_;*/
+        const real width_ = right_ - left_;
+        const real depth_ = back_ - front_;
+
+        const bool positive_x = d_x>=0,
+                   positive_z = d_z>=0;
+        const int outX = positive_x ? res_x_ : -1,
+                  outZ = positive_z ? res_z_ : -1;
+        const real tdelta_x = (width_ / Rx) / d_x,
+                   tdelta_z = (depth_ / Rz) / d_z;
+        const int stepX = positive_x ? 1 : -1,
+                  stepZ = positive_z ? 1 : -1;
+        const int cell_x = ((gridinter_x - left_) / width_) * res_x_,
+                  cell_z = ((gridinter_z - front_) / depth_) * res_z_;
+        const real vox_x = (cell_x / (real)res_x_) * width_ + left_,
+                   vox_z = (cell_z / (real)res_z_) * depth_ + front_;
+        real tmax_x = (vox_x - gridinter_x) / d_x,
+             tmax_z = (vox_z - gridinter_z) / d_z;
+        int X = cell_x,
+            Z = cell_z;
+
+
+        while (1) {
+                {
+                const real left = rootBox.left() + vw * X;
+                const real top  = rootBox.top()  + vd * Z;
+                fillRect (painter, Qt::Dense6Pattern, QRectF (left, top, vw, vd));
+                }
+
+                // TODO: can potentially optimize this:
+                //  tmax_x += (tmax_x<tmax_z) * tdelta_x
+                // etc.
+                if (tmax_x < tmax_z) {
+                        X += stepX;
+                        if (X == outX)  break;
+                        tmax_x += tdelta_x;
+                } else {
+                        Z += stepZ;
+                        if (Z == outZ) break;
+                        tmax_z += tdelta_z;
+                }
+        }
 
 }
 
