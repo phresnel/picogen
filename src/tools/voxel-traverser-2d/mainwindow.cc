@@ -141,7 +141,7 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         const QRectF rootBox (0.25,0.25,0.4,0.4);
 
         drawRect(painter, rootBox);
-        const int res_x_ = 8, res_z_ = res_x_;
+        const int res_x_ = 2, res_z_ = res_x_;
 
         const real vw = rootBox.width() / res_x_,
                    vd = rootBox.height() / res_z_;
@@ -160,8 +160,8 @@ void MainWindow::paintEvent(QPaintEvent *e) {
                            front_ = rootBox.top(), back_ = rootBox.bottom();
         const real p_x = from_.x(),
                    p_z = from_.y();
-        const real diff[2] = { to_.x()-from_.x(),
-                               to_.y()-from_.y() };
+        const real diff[2] = { real(to_.x()-from_.x()),
+                               real(to_.y()-from_.y()) };
         const real len = std::sqrt(diff[0]*diff[0] + diff[1]*diff[1]);
         const real d_x = diff[0] / len,
                    d_z = diff[1] / len;
@@ -174,8 +174,6 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         const real gridinter_x = p_x + d_x * Min,
                    gridinter_z = p_z + d_z * Min;
 
-        const int Rx = res_x_;
-        const int Rz = res_z_;
         const real width_ = right_ - left_;
         const real depth_ = back_ - front_;
 
@@ -183,25 +181,35 @@ void MainWindow::paintEvent(QPaintEvent *e) {
                    positive_z = d_z>=0;
         const int outX = positive_x ? res_x_ : -1,
                   outZ = positive_z ? res_z_ : -1;
-        const real tdelta_x = (width_ / Rx) / d_x,
-                   tdelta_z = (depth_ / Rz) / d_z;
+        const real tdelta_x = (width_ / res_x_) / d_x,
+                   tdelta_z = (depth_ / res_z_) / d_z;
         const int stepX = positive_x ? 1 : -1,
                   stepZ = positive_z ? 1 : -1;
-        const int cell_x = ((gridinter_x - left_) / width_) * res_x_,
-                  cell_z = ((gridinter_z - front_) / depth_) * res_z_;
-        const real vox_x = (cell_x / (real)res_x_) * width_ + left_,
-                   vox_z = (cell_z / (real)res_z_) * depth_ + front_;
-        real tmax_x = (vox_x - gridinter_x) / d_x,
-             tmax_z = (vox_z - gridinter_z) / d_z;
+
+        const int cell_x = ((gridinter_x - left_ ) / (width_)) * (res_x_),
+                  cell_z = ((gridinter_z - front_) / (depth_)) * (res_z_);
+
+        const auto voxelToX = [&](int x) { return left_  + (x / (real)(res_x_)) * width_; };
+        const auto voxelToZ = [&](int z) { return front_ + (z / (real)(res_z_)) * depth_; };
+
+        real tmax_x = (voxelToX(cell_x+1)-gridinter_x) / d_x,
+             tmax_z = (voxelToZ(cell_z+1)-gridinter_z) / d_z;
+
         int X = cell_x,
             Z = cell_z;
+
+        painter.drawText(20,20,QString("tmax_x=%1, t_max_z=%2").arg(tmax_x)
+                                                                 .arg(tmax_z));
+        painter.drawText(20,40,QString("tdelta_x=%1, tdelta_z=%2").arg(tdelta_x)
+                                                                  .arg(tdelta_z));
+        painter.drawText(20,60,QString("d_x=%1, d_z=%2").arg(d_x).arg(d_z));
 
 
         while (1) {
                 {
                 const real left = rootBox.left() + vw * X;
                 const real top  = rootBox.top()  + vd * Z;
-                fillRect (painter, Qt::Dense6Pattern, QRectF (left, top, vw, vd));
+                fillRect (painter, Qt::Dense4Pattern, QRectF (left, top, vw, vd));
                 }
 
                 // TODO: can potentially optimize this:

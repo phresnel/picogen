@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QMAKE_CXXFLAGS += --std=c++0x
 
 TARGET = voxel-traverser-2d
 TEMPLATE = app
