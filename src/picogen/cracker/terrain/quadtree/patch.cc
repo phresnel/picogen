@@ -2,8 +2,8 @@
 #include "patch.h"
 #include "../ray.h"
 #include "../materials/lambertmaterial.h"
-
 #include <QDebug>
+#include <algorithm>
 
 namespace picogen { namespace cracker {
 
@@ -128,7 +128,7 @@ Patch::~Patch() {
 Intersection::Optional Patch::operator() (Ray const &ray,
                                           real min, real max) const
 {
-        if (false) {
+        if (true) {
                 return intersect_amanatides (ray, min, max);
         } else {
                 const bool pro_x = ray.direction().x() >= 0;
@@ -234,24 +234,112 @@ Intersection::Optional Patch::intersect_quad (Ray const &ray,
 
 Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                                                     real minT,
-                                                    real maxT) const
+                                                    real /*maxT*/) const
 {
-        const Vector raydir = static_cast<Vector>(ray.direction()),
-                     curpos = static_cast<Vector>(ray(minT));
+        //const Vector raydir = static_cast<Vector>(ray.direction());
+        const real p_x = ray.origin().x(),
+                   p_z = ray.origin().z();
+        const real d_x = ray.direction().x(),
+                   d_z = ray.direction().z();
 
-        const real SR_x = res_x_ / (right_-left_),
-                   SR_z = res_z_ / (back_-front_);
-        const real CW_x = (right_-left_) / res_x_,
-                   CW_z = (back_-front_) / res_z_;
+        /*
+        if (!intersect (p_x, p_z, d_x, d_z, rootBox, minT, Max))
+                return;
+                */
+        // dda
+
+        const real gridinter_x = p_x + d_x * minT,
+                   gridinter_z = p_z + d_z * minT;
+
+        const real width_ = right_ - left_;
+        const real depth_ = back_ - front_;
+
+        const bool positive_x = d_x>=0,
+                   positive_z = d_z>=0;
+        const int outX = positive_x ? res_x_ : -1,
+                  outZ = positive_z ? res_z_ : -1;
+        const int stepX = positive_x ? 1 : -1,
+                  stepZ = positive_z ? 1 : -1;
+        const real voxelWidth = width_ / res_x_,
+                   voxelDepth = depth_ / res_z_;
+        const real tdelta_x = stepX * voxelWidth / d_x,
+                   tdelta_z = stepZ * voxelDepth / d_z;
+
+
+        // subtracting one from res_xy below gives in-bounds results, but yields
+        // some superfluous voxel touches
+        // TODO: check whether a max(0,cell_x) is needed
+
+        // Minimize to account for floating point inaccuracies (for some bounding
+        // boxes, this is need, for some not)
+        const int cell_x = std::min(int(res_x_)-1,
+                                    int((gridinter_x - left_ ) * (res_x_/width_))),
+                  cell_z = std::min(int(res_z_)-1,
+                                    int((gridinter_z - front_) * (res_z_/depth_)));
+        /*qDebug() << "(" << gridinter_x << "-" << left_  << ")" << "*" << (res_x_/width_);
+        qDebug() << (gridinter_x-left_)  << "*" << (res_x_/width_);
+        qDebug() << (gridinter_x-left_)*(res_x_/width_);
+        qDebug() << "res" << res_x_ << res_z_;
+        qDebug() << "left" << left_ << right_ << "front" << front_ << back_;
+        */
+        assert (cell_x >= 0);
+        assert (cell_z >= 0);
+        assert (cell_x < res_x_);
+        assert (cell_z < res_z_);
+
+        const auto voxelToX = [&](real x) -> real { return left_  + (x / (real)(res_x_)) * width_; };
+        const auto voxelToZ = [&](real z) -> real { return front_ + (z / (real)(res_z_)) * depth_; };
+
+        real tmax_x = (voxelToX(cell_x+(int)positive_x) - gridinter_x) / d_x,
+             tmax_z = (voxelToZ(cell_z+(int)positive_z) - gridinter_z) / d_z;
+
+        int X = cell_x,
+            Z = cell_z;
+
+        while (1) {
+                {
+                        /*
+                const real left = rootBox.left() + vw * X;
+                const real top  = rootBox.top()  + vd * Z;
+                fillRect (painter, Qt::Dense4Pattern, QRectF (left, top, vw, vd));
+                */
+                        //intersect (X,Z);
+                        if (const Intersection::Optional p = intersect_quad (ray, X, Z)) {
+                                //qDebug() << "yes: " << "xz" << X << Z << "step" << stepX << stepZ;
+                                return p;
+                        }
+
+                }
+                // TODO: can potentially optimize this:
+                //  tmax_x += (tmax_x<tmax_z) * tdelta_x
+                // etc.
+                if (tmax_x < tmax_z) {
+                        X += stepX;
+                        if (X == outX)  break;
+                        tmax_x += tdelta_x;
+                } else {
+                        Z += stepZ;
+                        if (Z == outZ) break;
+                        tmax_z += tdelta_z;
+                }
+        }
+
+#if 0
+
+#if 0
+        const real SR_x = Rx / width_,
+                   SR_z = Rz / depth_;
+        const real CW_x = width_ / Rx,
+                   CW_z = depth_ / Rz;
         const real cell_x = (curpos.x()-left_ )*SR_x,
                    cell_z = (curpos.z()-front_)*SR_z;
         int stepX, outX, X = (int)cell_x;
         int stepZ, outZ, Z = (int)cell_z;
 
-        if ((X < 0) || (X >= (int)res_x_) // making this ">" gives terrain
-         || (Z < 0) || (Z >= (int)res_z_)) {
-                return Intersection::Optional();
-        }
+        //if ((X < 0) || (X > (int)res_x_) // making this ">" gives terrain
+        // || (Z < 0) || (Z > (int)res_z_)) {
+        //        return Intersection::Optional();
+        //}
 
         real cb_x, cb_z;
         if (raydir.x() >= 0) {
@@ -263,14 +351,17 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                 outX = -1;
                 cb_x = left_ + X * CW_x;
         }
+
         if (raydir.z() >= 0.0f) {
                 stepZ = 1;
                 outZ = res_z_;
                 cb_z = front_ + (Z + 1) * CW_z;
+
         } else {
                 stepZ = -1;
                 outZ = -1;
                 cb_z = front_ + Z * CW_z;
+
         }
 
         real tmax_x, tmax_z, tdelta_x = 0, tdelta_z = 0;
@@ -290,29 +381,51 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                 tdelta_z = CW_z * stepZ * rzr;
         }
         else tmax_z = 1000000;
+#else
+        const bool positive_x = raydir.x()>=0,
+                   positive_z = raydir.z()>=0;
+        const int outX = positive_x ? res_x_ : -1,
+                  outZ = positive_z ? res_z_ : -1;
+        const real tdelta_x = (width_ / Rx) / raydir.x(),
+                   tdelta_z = (depth_ / Rz) / raydir.z();
+        const int stepX = positive_x ? 1 : -1,
+                  stepZ = positive_z ? 1 : -1;
+        const int cell_x = ((grid_intersection.x() - left_) / width_) * res_x_,
+                  cell_z = ((grid_intersection.z() - front_) / depth_) * res_z_;
+        const real vox_x = ph(cell_x, cell_z)->x(),
+                   vox_z = ph(cell_x, cell_z)->z();
+        real tmax_x = (vox_x - grid_intersection.x()) / raydir.x(),
+             tmax_z = (vox_z - grid_intersection.z()) / raydir.z();
+        int X = cell_x,
+            Z = cell_z;
+        qDebug() << "X" << X << "Z" << Z;
+        qDebug() << "width" << width_ << "foo" << (grid_intersection.x() - left_) / width_;
+#endif
 
-        //qDebug() << "start: " << "xz" << X << Z << "step" << stepX << stepZ;
+
+        //qDebug() << "\nstart: " << "xz" << X << Z << "step" << stepX << stepZ;
 
         while (1) {
-                if (const Intersection::Optional p = intersect_quad (ray, X, Z))
+                if (const Intersection::Optional p = intersect_quad (ray, X, Z)) {
+                        //qDebug() << "yes: " << "xz" << X << Z << "step" << stepX << stepZ;
                         return p;
+                }
+                // TODO: can potentially optimize this:
+                //  tmax_x += (tmax_x<tmax_z) * tdelta_x
+                // etc.
                 if (tmax_x < tmax_z) {
-                        X = X + stepX;
-                        if (X == outX)  {
-                                //qDebug() << "no: " << "xz" << X << Z << "step" << stepX << stepZ;
-                                return Intersection::Optional();
-                        }
+                        X += stepX;
+                        if (X == outX)  break;
                         tmax_x += tdelta_x;
                 } else {
-                        Z = Z + stepZ;
-                        if (Z == outZ) {
-                                //qDebug() << "no: " << "xz" << X << Z << "step" << stepX << stepZ;
-                                return Intersection::Optional();
-                        }
+                        Z += stepZ;
+                        if (Z == outZ) break;
                         tmax_z += tdelta_z;
                 }
         }
-        //qDebug() << "yes: " << "xz" << X << Z << "step" << stepX << stepZ;
+        //qDebug() << "no: " << "xz" << X << Z << "step" << stepX << stepZ;
+
+#endif
 
         return Intersection::Optional();
 }
