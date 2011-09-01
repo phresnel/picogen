@@ -26,6 +26,7 @@
 #include <QDebug>
 
 #include <cmath>
+#include <cassert>
 #include <limits>
 
 
@@ -43,7 +44,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-const qreal x = 30, y = 30;
+const qreal x = 230, y = 130;
 const qreal w = 320, h = 320;
 void drawRect (QPainter &painter, QRectF const &rect) {
         QRectF r (x+rect.left()*w, y+rect.top()*h,
@@ -138,7 +139,7 @@ void MainWindow::paintEvent(QPaintEvent *e) {
         painter.setBrush(QBrush());
         painter.setRenderHint(QPainter::Antialiasing, true);
 
-        const QRectF rootBox (0.25,0.25,0.4,0.4);
+        const QRectF rootBox (-0.6,-0.3,0.45,0.45);
 
         drawRect(painter, rootBox);
         const int res_x_ = 6, res_z_ = res_x_;
@@ -157,7 +158,7 @@ void MainWindow::paintEvent(QPaintEvent *e) {
 
         // setup stub ray
         const real left_ = rootBox.left(), right_ = rootBox.right(),
-                           front_ = rootBox.top(), back_ = rootBox.bottom();
+                   front_ = rootBox.top(), back_ = rootBox.bottom();
         const real p_x = from_.x(),
                    p_z = from_.y();
         const real diff[2] = { real(to_.x()-from_.x()),
@@ -183,36 +184,53 @@ void MainWindow::paintEvent(QPaintEvent *e) {
                   outZ = positive_z ? res_z_ : -1;
         const int stepX = positive_x ? 1 : -1,
                   stepZ = positive_z ? 1 : -1;
-        const real tdelta_x = stepX * (width_ / res_x_) / d_x,
-                   tdelta_z = stepZ * (depth_ / res_z_) / d_z;
+        const real voxelWidth = width_ / res_x_,
+                   voxelDepth = depth_ / res_z_;
+        const real tdelta_x = stepX * voxelWidth / d_x,
+                   tdelta_z = stepZ * voxelDepth / d_z;
 
 
-        const int cell_x = ((gridinter_x - left_ ) / (width_)) * (res_x_),
-                  cell_z = ((gridinter_z - front_) / (depth_)) * (res_z_);
+        // subtracting one from res_xy below gives in-bounds results, but yields
+        // some superfluous voxel touches
+        // TODO: check whether a max(0,cell_x) is needed
 
-        const auto voxelToX = [&](int x) { return left_  + (x / (real)(res_x_)) * width_; };
-        const auto voxelToZ = [&](int z) { return front_ + (z / (real)(res_z_)) * depth_; };
+        // Minimize to account for floating point inaccuracies (for some bounding
+        // boxes, this is need, for some not)
+        const int cell_x = std::min(res_x_-1,
+                                    int((gridinter_x - left_ ) * (res_x_/width_))),
+                  cell_z = std::min(res_z_-1,
+                                    int((gridinter_z - front_) * (res_z_/depth_)));
+        assert (cell_x >= 0);
+        assert (cell_z >= 0);
+        assert (cell_x < res_x_);
+        assert (cell_z < res_z_);
 
-        real tmax_x = (voxelToX(cell_x+(int)positive_x)-gridinter_x) / d_x,
-             tmax_z = (voxelToZ(cell_z+(int)positive_z)-gridinter_z) / d_z;
+        const auto voxelToX = [&](real x) -> real { return left_  + (x / (real)(res_x_)) * width_; };
+        const auto voxelToZ = [&](real z) -> real { return front_ + (z / (real)(res_z_)) * depth_; };
+
+        real tmax_x = (voxelToX(cell_x+(int)positive_x) - gridinter_x) / d_x,
+             tmax_z = (voxelToZ(cell_z+(int)positive_z) - gridinter_z) / d_z;
 
         int X = cell_x,
             Z = cell_z;
 
-        painter.drawText(20,20,QString("tmax_x=%1, t_max_z=%2").arg(tmax_x)
-                                                                 .arg(tmax_z));
-        painter.drawText(20,40,QString("tdelta_x=%1, tdelta_z=%2").arg(tdelta_x)
-                                                                  .arg(tdelta_z));
-        painter.drawText(20,60,QString("d_x=%1, d_z=%2").arg(d_x).arg(d_z));
-
+        const auto intersect =
+                [&] (int X, int Z) -> bool {
+                        const real left = rootBox.left() + vw * X;
+                        const real top  = rootBox.top()  + vd * Z;
+                        fillRect (painter, Qt::Dense4Pattern, QRectF (left, top, vw, vd));
+                        return true;
+                };
 
         while (1) {
                 {
+                        /*
                 const real left = rootBox.left() + vw * X;
                 const real top  = rootBox.top()  + vd * Z;
                 fillRect (painter, Qt::Dense4Pattern, QRectF (left, top, vw, vd));
+                */
+                        intersect (X,Z);
                 }
-
                 // TODO: can potentially optimize this:
                 //  tmax_x += (tmax_x<tmax_z) * tdelta_x
                 // etc.
