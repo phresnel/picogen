@@ -234,18 +234,13 @@ Intersection::Optional Patch::intersect_quad (Ray const &ray,
 
 Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                                                     real minT,
-                                                    real /*maxT*/) const
+                                                    real maxT) const
 {
-        //const Vector raydir = static_cast<Vector>(ray.direction());
         const real p_x = ray.origin().x(),
                    p_z = ray.origin().z();
         const real d_x = ray.direction().x(),
                    d_z = ray.direction().z();
 
-        /*
-        if (!intersect (p_x, p_z, d_x, d_z, rootBox, minT, Max))
-                return;
-                */
         // dda
 
         const real gridinter_x = p_x + d_x * minT,
@@ -276,12 +271,7 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                                     int((gridinter_x - left_ ) * (res_x_/width_))),
                   cell_z = std::min(int(res_z_)-1,
                                     int((gridinter_z - front_) * (res_z_/depth_)));
-        /*qDebug() << "(" << gridinter_x << "-" << left_  << ")" << "*" << (res_x_/width_);
-        qDebug() << (gridinter_x-left_)  << "*" << (res_x_/width_);
-        qDebug() << (gridinter_x-left_)*(res_x_/width_);
-        qDebug() << "res" << res_x_ << res_z_;
-        qDebug() << "left" << left_ << right_ << "front" << front_ << back_;
-        */
+
         assert (cell_x >= 0);
         assert (cell_z >= 0);
         assert (cell_x < res_x_);
@@ -297,119 +287,10 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
             Z = cell_z;
 
         while (1) {
-                {
-                        /*
-                const real left = rootBox.left() + vw * X;
-                const real top  = rootBox.top()  + vd * Z;
-                fillRect (painter, Qt::Dense4Pattern, QRectF (left, top, vw, vd));
-                */
-                        //intersect (X,Z);
-                        if (const Intersection::Optional p = intersect_quad (ray, X, Z)) {
-                                //qDebug() << "yes: " << "xz" << X << Z << "step" << stepX << stepZ;
-                                return p;
-                        }
-
-                }
-                // TODO: can potentially optimize this:
-                //  tmax_x += (tmax_x<tmax_z) * tdelta_x
-                // etc.
-                if (tmax_x < tmax_z) {
-                        X += stepX;
-                        if (X == outX)  break;
-                        tmax_x += tdelta_x;
-                } else {
-                        Z += stepZ;
-                        if (Z == outZ) break;
-                        tmax_z += tdelta_z;
-                }
-        }
-
-#if 0
-
-#if 0
-        const real SR_x = Rx / width_,
-                   SR_z = Rz / depth_;
-        const real CW_x = width_ / Rx,
-                   CW_z = depth_ / Rz;
-        const real cell_x = (curpos.x()-left_ )*SR_x,
-                   cell_z = (curpos.z()-front_)*SR_z;
-        int stepX, outX, X = (int)cell_x;
-        int stepZ, outZ, Z = (int)cell_z;
-
-        //if ((X < 0) || (X > (int)res_x_) // making this ">" gives terrain
-        // || (Z < 0) || (Z > (int)res_z_)) {
-        //        return Intersection::Optional();
-        //}
-
-        real cb_x, cb_z;
-        if (raydir.x() >= 0) {
-                stepX = 1;
-                outX = res_x_;
-                cb_x = left_ + (X + 1) * CW_x;
-        } else {
-                stepX = -1;
-                outX = -1;
-                cb_x = left_ + X * CW_x;
-        }
-
-        if (raydir.z() >= 0.0f) {
-                stepZ = 1;
-                outZ = res_z_;
-                cb_z = front_ + (Z + 1) * CW_z;
-
-        } else {
-                stepZ = -1;
-                outZ = -1;
-                cb_z = front_ + Z * CW_z;
-
-        }
-
-        real tmax_x, tmax_z, tdelta_x = 0, tdelta_z = 0;
-        real rxr, rzr;
-        if (raydir.x() != 0)
-        {
-                rxr = 1.0f / raydir.x();
-                tmax_x = (cb_x - curpos.x()) * rxr;
-                tdelta_x = CW_x * stepX * rxr;
-        }
-        else tmax_x = 1000000;
-
-        if (raydir.z() != 0)
-        {
-                rzr = 1.0f / raydir.z();
-                tmax_z = (cb_z - curpos.z()) * rzr;
-                tdelta_z = CW_z * stepZ * rzr;
-        }
-        else tmax_z = 1000000;
-#else
-        const bool positive_x = raydir.x()>=0,
-                   positive_z = raydir.z()>=0;
-        const int outX = positive_x ? res_x_ : -1,
-                  outZ = positive_z ? res_z_ : -1;
-        const real tdelta_x = (width_ / Rx) / raydir.x(),
-                   tdelta_z = (depth_ / Rz) / raydir.z();
-        const int stepX = positive_x ? 1 : -1,
-                  stepZ = positive_z ? 1 : -1;
-        const int cell_x = ((grid_intersection.x() - left_) / width_) * res_x_,
-                  cell_z = ((grid_intersection.z() - front_) / depth_) * res_z_;
-        const real vox_x = ph(cell_x, cell_z)->x(),
-                   vox_z = ph(cell_x, cell_z)->z();
-        real tmax_x = (vox_x - grid_intersection.x()) / raydir.x(),
-             tmax_z = (vox_z - grid_intersection.z()) / raydir.z();
-        int X = cell_x,
-            Z = cell_z;
-        qDebug() << "X" << X << "Z" << Z;
-        qDebug() << "width" << width_ << "foo" << (grid_intersection.x() - left_) / width_;
-#endif
-
-
-        //qDebug() << "\nstart: " << "xz" << X << Z << "step" << stepX << stepZ;
-
-        while (1) {
                 if (const Intersection::Optional p = intersect_quad (ray, X, Z)) {
-                        //qDebug() << "yes: " << "xz" << X << Z << "step" << stepX << stepZ;
                         return p;
                 }
+
                 // TODO: can potentially optimize this:
                 //  tmax_x += (tmax_x<tmax_z) * tdelta_x
                 // etc.
@@ -423,10 +304,6 @@ Intersection::Optional Patch::intersect_amanatides (Ray const &ray,
                         tmax_z += tdelta_z;
                 }
         }
-        //qDebug() << "no: " << "xz" << X << Z << "step" << stepX << stepZ;
-
-#endif
-
         return Intersection::Optional();
 }
 

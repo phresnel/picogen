@@ -51,12 +51,11 @@ void RenderWidget::on_pushButton_clicked()
 
         glimpse::StopWatch rendertime;
 
-        const auto integrator = //SurfaceNormalIntegrator();
-                                combine (PathIntegrator(),
+        const auto integrator = combine (PathIntegrator(),
                                          combine(SurfaceNormalIntegrator(),
                                                  PrimaryDistanceIntegrator(0,100),
                                                  0),
-                                         1);
+                                         0);
         const auto renderer = createRenderer (scene_,
                                               integrator,
                                               PinholeCamera(1.0));
@@ -112,7 +111,7 @@ void RenderWidget::on_resetsceneButton_clicked() {
                                         ui->imageHeight->value()));
 
         scene_.reset (new Scene);
-        for (int i=0; i<32*0; ++i) {
+        for (int i=0; i<0*32; ++i) {
                 const real x = rand() / (real)RAND_MAX*100 - 50;
                 const real y = rand() / (real)RAND_MAX*10 - 5;
                 const real z = rand() / (real)RAND_MAX*30 + 2;

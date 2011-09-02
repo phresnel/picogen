@@ -8,6 +8,7 @@
 #include <stack>
 #include <functional>
 #include <limits>
+#include <sstream>
 
 #include <QDebug>
 
@@ -17,7 +18,9 @@ namespace picogen { namespace cracker { namespace detail {
         enum class XDirection { Left = -1,     Right = 1 };
         enum class ZDirection { Backward = -1, Forward = 1 };
 
-        inline std::vector<std::vector<real> > child_boxen (
+        struct BoundingQuad { real left, right, front, back; };
+        typedef std::array<BoundingQuad,4> ChildBoundingQuads;
+        inline ChildBoundingQuads child_boxen (
                 real left, real right, real front, real back)
         {
                 using std::array;
@@ -33,40 +36,30 @@ namespace picogen { namespace cracker { namespace detail {
                            //newH = oldH,
                            newD = oldD / 2
                           ;
-
-                std::vector<std::vector<real> > ret =
-                        {{cx - newW, cx       ,  cz     , cz + newD},
-                         {cx       , cx + newW,  cz     , cz + newD},
-                         {cx       , cx + newW,  cz-newD, cz       },
-                         {cx - newW, cx       ,  cz-newD, cz       }};
-
-                /*
-                ret[0] = BoundingBox (c + Vector(-newW/2, 0, +newD/2),
-                                      newW, newH, newD);
-                ret[1] = BoundingBox (c + Vector(+newW/2, 0, +newD/2),
-                                      newW, newH, newD);
-                ret[2] = BoundingBox (c + Vector(+newW/2, 0, -newD/2),
-                                      newW, newH, newD);
-                ret[3] = BoundingBox (c + Vector(-newW/2, 0, -newD/2),
-                                      newW, newH, newD);*/
+                std::array<BoundingQuad,4> ret;
+                ret [0] = {cx - newW, cx       ,  cz     , cz + newD};
+                ret [1] = {cx       , cx + newW,  cz     , cz + newD};
+                ret [2] = {cx       , cx + newW,  cz-newD, cz       };
+                ret [3] = {cx - newW, cx       ,  cz-newD, cz       };
                 return ret;
         }
 
         template <ZDirection d_forward, XDirection d_right> struct TravOrder;
+
         template <> struct TravOrder<ZDirection::Forward, XDirection::Left> {
-                enum {
-                        child_a = 3,
-                        child_b = 2,
-                        child_c = 0,
-                        child_d = 1
-                };
-        };
-        template <> struct TravOrder<ZDirection::Forward, XDirection::Right> {
                 enum {
                         child_a = 2,
                         child_b = 3,
                         child_c = 1,
                         child_d = 0
+                };
+        };
+        template <> struct TravOrder<ZDirection::Forward, XDirection::Right> {
+                enum {
+                        child_a = 3,
+                        child_b = 2,
+                        child_c = 0,
+                        child_d = 1
                 };
         };
         template <> struct TravOrder<ZDirection::Backward, XDirection::Right> {
@@ -97,7 +90,7 @@ namespace picogen { namespace cracker { namespace detail {
                       BoundingBox &rootBB)
                 {
                         qDebug() << "creating Quadtree";
-                        const Point center (0, -40, 100);
+                        const Point center (0, -40, 50);
                         const real left = center.x()-100,
                                    right = center.x()+100,
                                    front = center.z()-100,
@@ -126,7 +119,6 @@ namespace picogen { namespace cracker { namespace detail {
                                 : minT(minT), maxT(maxT), node(node) {}
                         real minT, maxT;
                         Node *node;
-                        int debug;
                 };
 
                 template <XDirection d_right, ZDirection d_up>
@@ -146,7 +138,6 @@ namespace picogen { namespace cracker { namespace detail {
                                 from[order::child_a] = Min;
                                 to  [order::child_a] = std::min(std::min(t_x, t_z), Max);
 
-                                //qDebug() << "child_b-min" << std::max(t_x, Min) << "child_b" << order::child_b;
                                 from[order::child_b] = std::max(t_x, Min);
                                 to  [order::child_b] = std::min(t_z, Max);
 
@@ -155,35 +146,17 @@ namespace picogen { namespace cracker { namespace detail {
 
                                 from[order::child_d] = std::max(std::max(t_x, t_z), Min);
                                 to  [order::child_d] = Max;
-
-                                //if (from[order::child_a] < 0) qDebug () << order::child_a << from[order::child_a] << ":" << to[order::child_a] << ", " << t_x << t_z << Min;
-
                         }
-                        //qDebug() << Min;
-                        for (int i=0; i<4; ++i) {
-                                if (from[i] < 0) qDebug () << i << from[i] << ":" << to[i] << ", " << t_x << t_z << Min;
+                        auto push = [&] (int order) {
+                                *top++ = Todo(from[order],
+                                              to  [order],
+                                              children+order);
+                        };
 
-                        }
-
-                        top->debug = order::child_d;
-                        *top++ = Todo(from[order::child_d],
-                                      to  [order::child_d],
-                                      children+order::child_d);
-
-                        top->debug = order::child_c;
-                        *top++ = Todo(from[order::child_c],
-                                      to  [order::child_c],
-                                      children+order::child_c);
-
-                        top->debug = order::child_b;
-                        *top++ = Todo(from[order::child_b],
-                                      to  [order::child_b],
-                                      children+order::child_b);
-
-                        top->debug = order::child_a;
-                        *top++ = Todo(from[order::child_a],
-                                      to  [order::child_a],
-                                      children+order::child_a);
+                        push (order::child_d);
+                        push (order::child_c);
+                        push (order::child_b);
+                        push (order::child_a);
                 }
 
                 template <XDirection d_right, ZDirection d_up>
@@ -232,17 +205,16 @@ namespace picogen { namespace cracker { namespace detail {
                                         continue;
                                 }
 
-                                if (curr.minT < 0) {
+                                /*if (curr.minT < 0) {
                                         qDebug() << "??" << curr.minT << curr.maxT
                                                  << "rayd" << ray.direction().x() << ray.direction().z()
                                                  << "-- right"<<(int)d_right
                                                  << "up"<<(int)d_up
                                                  << "-- child" << curr.debug;
                                         break;
-                                }
+                                }*/
+                                assert (curr.minT >= 0);
                                 //return Intersection::Optional();
-
-
                                 if (node.leaf_) {
                                         const auto i = (*node.patch_)(ray,
                                                                       curr.minT,
@@ -254,7 +226,6 @@ namespace picogen { namespace cracker { namespace detail {
                                         const real c_z = 0.5*node.front_+ 0.5*node.back_;
                                         const real d_x = (c_x - o_x) * id_x;
                                         const real d_z = (c_z - o_z) * id_z;
-//qDebug() << "!!!" << minT_ << maxT_ << d_x << d_z << "rdx" << ray.direction().x(); // try to find nan
                                         determine<d_right, d_up> (top,
                                                                   curr.minT, curr.maxT,
                                                                   d_x, d_z,
@@ -299,9 +270,6 @@ namespace picogen { namespace cracker { namespace detail {
                             std::function<real (real,real)> const & height
                 ) {
                         const bool leaf = (depth==0);
-                        //const real distance = length (aabb.center() - center);
-                        //qDebug() << distance << " <- " <<
-                        //            (13/(1+0.02*distance));
                         left_  = left;
                         right_ = right;
                         front_ = front;
@@ -322,7 +290,7 @@ namespace picogen { namespace cracker { namespace detail {
                         leaf_ = true;
                         patch_ = new Patch (left, right,
                                             front, back,
-                                            4,4,
+                                            16,16,
                                             height,
                                             min_h_, max_h_);
                 }
@@ -332,15 +300,16 @@ namespace picogen { namespace cracker { namespace detail {
                                std::function<real (real,real)> const & height)
                 {
                         leaf_ = false;
-                        const auto childBoxes = child_boxen(left, right,
-                                                            front, back);
+                        const ChildBoundingQuads childBoxes =
+                                        child_boxen(left, right,
+                                                    front, back);
                         children_ = new Node[4];
                         for (size_t i=0; i<4; ++i) {
                                 children_[i].create (depth-1,
-                                                     childBoxes[i][0],
-                                                     childBoxes[i][1],
-                                                     childBoxes[i][2],
-                                                     childBoxes[i][3],
+                                                     childBoxes[i].left,
+                                                     childBoxes[i].right,
+                                                     childBoxes[i].front,
+                                                     childBoxes[i].back,
                                                      height);
                         }
                         refineBoundingBox();

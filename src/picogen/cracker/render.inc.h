@@ -48,7 +48,7 @@ inline void Renderer<SurfaceIntegrator, Camera>::render (
                 const real v = 1 - y/static_cast<real>(height-1);
                 RenderTargetRow row = t.row(y);
 
-                //#pragma omp parallel for schedule(dynamic)
+                #pragma omp parallel for schedule(dynamic)
                 for (unsigned int x=0; x<width; ++x) {
                         Random random = createRandom(x,y,row[x].numSamples(),0);
 
