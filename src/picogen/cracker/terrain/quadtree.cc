@@ -15,8 +15,9 @@
 namespace picogen { namespace cracker { namespace detail {
 
         // Except for debugging, the literals below don't have a meaning.
-        enum class XDirection { Left = -1,     Right = 1 };
-        enum class ZDirection { Backward = -1, Forward = 1 };
+        //enum class XDirection { Left = -1,     Right = 1 };
+        //enum class ZDirection { Backward = -1, Forward = 1 };
+        // currently declared in patch.h
 
         struct BoundingQuad { real left, right, front, back; };
         typedef std::array<BoundingQuad,4> ChildBoundingQuads;
@@ -172,17 +173,17 @@ namespace picogen { namespace cracker { namespace detail {
                               || (d_up == ZDirection::Backward && ray.direction().z()<=0));
 
                         const Direction dir  = ray.direction();
+                        const real d_x = dir.x();
                         const real d_y = dir.y();
+                        const real d_z = dir.z();
+                        const real id_x = 1 / d_x;
+                        const real id_z = 1 / d_z;
                         const real o_y = ray.origin().y();
                         const real o_x = ray.origin().x();
                         const real o_z = ray.origin().z();
 
                         //if (0 == dir.x()) return Intersection::Optional();
                         //if (0 == dir.z()) return Intersection::Optional();
-
-                        const real id_x = 1 / dir.x();
-                        const real id_z = 1 / dir.z();
-
 
                         //std::stack<Todo> todo; § replace me with somethint stack-framable
                         Todo stack[128];
@@ -205,20 +206,14 @@ namespace picogen { namespace cracker { namespace detail {
                                         continue;
                                 }
 
-                                /*if (curr.minT < 0) {
-                                        qDebug() << "??" << curr.minT << curr.maxT
-                                                 << "rayd" << ray.direction().x() << ray.direction().z()
-                                                 << "-- right"<<(int)d_right
-                                                 << "up"<<(int)d_up
-                                                 << "-- child" << curr.debug;
-                                        break;
-                                }*/
                                 assert (curr.minT >= 0);
-                                //return Intersection::Optional();
+
                                 if (node.leaf_) {
-                                        const auto i = (*node.patch_)(ray,
-                                                                      curr.minT,
-                                                                      curr.maxT);
+                                        const auto i = (*node.patch_)
+                                                .fast_intersect<d_up,
+                                                                d_right>
+                                                (ray, curr.minT, curr.maxT,
+                                                 o_x, o_z, d_x, d_z, id_x, id_z);
                                         if (i) return i;
                                 } else {
                                         // Find out which ones to traverse.
