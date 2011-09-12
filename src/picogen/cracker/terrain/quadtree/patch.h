@@ -7,10 +7,217 @@ namespace picogen { namespace cracker {
         class Ray;
 } }
 
+#include "ray.h"
+#include "color.h"
+#include <limits>
+#include <QDebug>
+
 namespace picogen { namespace cracker { namespace detail {
 
         enum class XDirection { Left = -1,     Right = 1 };
         enum class ZDirection { Backward = -1, Forward = 1 };
+
+        class Quad {
+        public:
+                enum class Shape {
+                        Bump,
+                        Pit
+                };
+
+                class Plane {
+                public:
+                        Normal u, v, normal;
+                        real   distance;
+
+                        Plane()
+                                : u(1,0,0), v(0,0,1), normal(0,1,0)
+                                , distance(0)
+                        {}
+
+                        real dot (Point const &point) const {
+                                return mixed_dot (normal, point) + distance;
+                        }
+
+                        /*Plane (Point point, Normal normal)
+                                : normal(normal)
+                                , distance(-mixed_dot(normal,point))
+                        {
+                        }*/
+
+                        Plane (Point a, Point b, Point c)
+                                : u(normalize<Normal>(b-a))
+                                , v(normalize<Normal>(c-a))
+                                , normal(normalize<Normal>(cross(u, v)))
+                                , distance (-mixed_dot(normal,a))
+                        {
+                        }
+
+                        real intersect (Ray const &ray) const {
+                                const real
+                                    a = mixed_dot (ray.origin(), normal) + distance,
+                                    b = mixed_dot (ray.direction(), normal),
+                                    t = -a / b;
+                                return t;
+                        }
+                };
+
+                class Rectangle {
+                public:
+                        real left, right, front, back;
+
+                        Rectangle() {}
+
+                        Rectangle (real left, real right, real front, real back)
+                                : left(left), right(right)
+                                , front(front), back(back)
+                        {}
+
+                        bool inside (real x, real z) const {
+                                return (x>=left)  & (x<=right)
+                                     & (z>=front) & (z<=back);
+                                // TODO: possibly just use  < instead of <=
+                        }
+                };
+
+                Shape shape;
+                Plane leftPlane, rightPlane;
+                Rectangle rectangle;
+
+                Quad() = default;
+
+                Quad (Rectangle rect, real h0, real h1, real h2, real h3)
+                        : rectangle(rect)
+                {
+                        const Point A { rect.left,  h0, rect.back  },
+                                    B { rect.right, h1, rect.back  },
+                                    C { rect.right, h2, rect.front },
+                                    D { rect.left,  h3, rect.front };
+                        leftPlane  = Plane (A,B,D);
+                        rightPlane = Plane (B,C,D);
+
+                        // We have a very restricted range of possible
+                        // plane normals; it should be enough when we just compare
+                        // the left plane's x component to the right plane's
+                        // (or the z component).
+                        //if (leftPlane.normal.x() < rightPlane.normal.x())
+                        if (leftPlane.dot(C) <= 0)
+                                shape = Shape::Bump;
+                        else
+                                shape = Shape::Pit;
+                }
+
+
+                bool intersect (Ray const &ray, real &t,
+                                Normal &tn, Normal &u, Normal &v,
+                                Color &color) const
+                {
+                        const real lt = leftPlane.intersect(ray),
+                                   rt = rightPlane.intersect(ray);
+
+                        const Point lp = ray(lt), rp = ray(rt);
+                        const real lpx = lp.x(), lpy = lp.y(), lpz = lp.z(),
+                                   rpx = rp.x(), rpy = rp.y(), rpz = rp.z();
+
+                        const real iwidth = 1 / (rectangle.right - rectangle.left);
+                        const real idepth = 1 / (rectangle.back - rectangle.front);
+                        // Computation of u/v values depends on layout of quads.
+                        const real lu = (lpx - rectangle.left ) * iwidth,
+                                   lv = (rectangle.back - lpz)  * idepth;
+                        const real ru = (rpx - rectangle.left ) * iwidth,
+                                   rv = (rectangle.back - rpz)  * idepth;
+
+                        const bool l = (lu>=0)&(lu<=1)&(lv>=0)&(lv<=1)//*/rectangle.inside(lpx, lpz)
+                                       & (lt>=0)
+                                       & (lu+lv <= 1)
+                                       ,
+                                   r = (ru>=0)&(ru<=1)&(rv>=0)&(rv<=1)//*/rectangle.inside(rpx, rpz)
+                                       & (rt>=0)
+                                       & (ru+rv > 1)
+                                       ;
+
+                        color = shape == Shape::Pit ?
+                                         Color::FromRgb(1,0.25,0.25) :
+                                         Color::FromRgb(0.25,1.0,0.25);
+
+                        if (l) {
+                                t = lt;
+                                tn = leftPlane.normal;
+                                u = leftPlane.u;
+                                v = leftPlane.v;
+                                return true;
+                        }
+                        if (r) {
+                                t = rt;
+                                tn = rightPlane.normal;
+                                u = rightPlane.u;
+                                v = rightPlane.v;
+                                return true;
+                        }
+                        return false;
+
+                        //if (!l && !r
+                        #if 0
+                        if (!l & !r) {
+                                return false;
+                        }
+
+                        color = shape == Shape::Pit ?
+                                         Color::FromRgb(1,0.25,0.25) :
+                                         Color::FromRgb(0.25,1.0,0.25);
+
+                        int i = 0;
+                        if (shape == Shape::Bump) {
+                                if (lpy < rpy) {
+                                        i = -1; //§ debug where it leaves too soon
+                                        if (!l) { i = 0; }
+                                } else {
+                                        i = 1;
+                                        if (!r) { i = 0; }
+                                }
+                        } else {
+                                if (lpy > rpy) {
+                                        i = -1;
+                                        if (!l)  { i = 0; }
+                                } else {
+                                        i = 1;
+                                        if (!r)  { i = 0; }
+                                }
+                        }
+                        #if 0
+                        if (r) {
+                                t = rt;
+                                tn = rightPlane.normal;
+                                u = rightPlane.u;
+                                v = rightPlane.v;
+                                return true;
+                        } else {
+                                return false;
+                        }
+                        #endif
+
+                        switch (i) {
+                        case -1:
+                                //return false;
+                                t = lt;
+                                tn = leftPlane.normal;
+                                u = leftPlane.u;
+                                v = leftPlane.v;
+                                return true;
+                        case +1:
+                                //return false;
+                                t = rt;
+                                tn = rightPlane.normal;
+                                u = rightPlane.u;
+                                v = rightPlane.v;
+                                return true;
+                        case 0:
+                                return false;
+                        }
+                        #endif
+                        assert (false && "impossible code path");
+                        return false;
+                }
+        };
 
 
         class Patch {
@@ -43,7 +250,8 @@ namespace picogen { namespace cracker { namespace detail {
         private:
                 real left_, right_, front_, back_;
                 unsigned int res_x_, res_z_, stride_;
-                Vector *h_;
+                //Vector *h_;
+                Quad *h_;
 
                 // speed ups (could be easily computed at runtime)
                 real width_, depth_;
@@ -66,8 +274,8 @@ namespace picogen { namespace cracker { namespace detail {
 
                 //template <XDir
 
-                Vector const * ph (unsigned int x, unsigned z) const;
-                Vector& h (unsigned int x, unsigned z);
+                Quad const * ph (unsigned int x, unsigned z) const;
+                Quad& h (unsigned int x, unsigned z);
         };
 
 } } }
@@ -75,6 +283,7 @@ namespace picogen { namespace cracker { namespace detail {
 
 #include "ray.h"
 #include "terrain/morton.h"
+#include "materials/lambertmaterial.h"
 
 namespace picogen { namespace cracker { namespace detail {
 
@@ -142,9 +351,31 @@ inline raytri_intersect (
     return ret[mixed_dot (ray.direction(), normal) > 0.0];
 }
 
+
+/*
+TODO: blazing fast ray/place Intersection
+      blazing fast determination of hit/no hit
+      in quadtree: calculate u/v
+TODO: memory pool for nodes
+TODO: replace width/height with just width
+*/
 inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
                                               int X, int Z) const {
 
+        Quad const *q = ph (X, Z);
+        real t=-1;
+        Normal u(1,0,0), v(0,0,1), n(0,1,0);
+        Color color;
+        if (!q->intersect(ray, t, n, u, v, color))
+                return Intersection::Optional();
+
+        return Intersection (
+             t,
+             std::shared_ptr<Material> (new LambertMaterial(color)),
+             DifferentialGeometry(n, n, u, v));
+
+
+#if 0
         // TODO: morton indexing in ph(x,z)
         const Vector *A = ph(X,   Z),
                      *B = ph(X,   Z+1),
@@ -177,14 +408,15 @@ inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
                          normalize<Normal>(*c-*a)));
         }
         return Intersection::Optional();
+#endif
 }
 
 
 
-inline Vector const * Patch::ph (unsigned int x, unsigned z) const {
+inline Quad const * Patch::ph (unsigned int x, unsigned z) const {
         return h_ + x + z*stride_;
 }
-inline Vector& Patch::h (unsigned int x, unsigned z) {
+inline Quad& Patch::h (unsigned int x, unsigned z) {
         return h_[x + z*stride_];
 }
 
@@ -296,7 +528,9 @@ inline Intersection::Optional Patch::fast_intersect (
 
         while (1) {
                 if (const Intersection::Optional p = intersect_quad (ray, X, Z)) {
-                        return p;
+                        return p.intersection().distance()<=maxT
+                               ? p
+                               : Intersection::Optional();
                 }
 
 #if 0

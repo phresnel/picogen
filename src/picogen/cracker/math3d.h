@@ -30,8 +30,8 @@ namespace picogen { namespace cracker {
                 const real il = sqrt(x*x + y*y + z*z);
                 return Out(x/il, y/il, z/il);
         }
-        template <typename Out=Vector>
-        inline Out normalize (Vector const &in) {
+        template <typename Out=Vector, typename In>
+        inline Out normalize (In const &in) {
                 return normalize<Out>(in.x(), in.y(), in.z());
         }
 

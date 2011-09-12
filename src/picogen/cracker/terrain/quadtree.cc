@@ -285,7 +285,7 @@ namespace picogen { namespace cracker { namespace detail {
                         leaf_ = true;
                         patch_ = new Patch (left, right,
                                             front, back,
-                                            16,16,
+                                            32,32,
                                             height,
                                             min_h_, max_h_);
                 }
@@ -345,11 +345,11 @@ namespace picogen { namespace cracker {
 Quadtree::Quadtree ()
 {
         const auto fun = [](real x,real y) {
-                return -30 + 15 * cos(y*0.1) * cos(x*0.1);
+                return -25 + 15 * cos(y*0.1) * /**/ cos(x*0.1);
         };
 
         qDebug() << "sizeof(Node) =" << sizeof(detail::Node);
-        root_.reset (new detail::Node (4, fun, aabb_));
+        root_.reset (new detail::Node (0, fun, aabb_));
 }
 
 Intersection::Optional Quadtree::operator() (Ray const &ray_) const {
