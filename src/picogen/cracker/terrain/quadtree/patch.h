@@ -64,12 +64,14 @@ namespace picogen { namespace cracker { namespace detail {
                 class Rectangle {
                 public:
                         real left, right, front, back;
+                        real width;
 
                         Rectangle() {}
 
                         Rectangle (real left, real right, real front, real back)
                                 : left(left), right(right)
                                 , front(front), back(back)
+                                , width ((right - left))
                         {}
 
                         bool inside (real x, real z) const {
@@ -100,44 +102,48 @@ namespace picogen { namespace cracker { namespace detail {
                         // the left plane's x component to the right plane's
                         // (or the z component).
                         //if (leftPlane.normal.x() < rightPlane.normal.x())
+                        /*
                         if (leftPlane.dot(C) <= 0)
                                 shape = Shape::Bump;
                         else
                                 shape = Shape::Pit;
+                        */
                 }
 
 
                 bool intersect (Ray const &ray, real &t,
-                                Normal &tn, Normal &u, Normal &v,
-                                Color &color) const
+                                Normal &tn, Normal &u, Normal &v) const
                 {
                         const real lt = leftPlane.intersect(ray),
                                    rt = rightPlane.intersect(ray);
 
-                        const Point lp = ray(lt), rp = ray(rt);
-                        const real lpx = lp.x(), lpy = lp.y(), lpz = lp.z(),
-                                   rpx = rp.x(), rpy = rp.y(), rpz = rp.z();
+                        const real &o_x = ray.origin().x(), &d_x = ray.direction().x(),
+                                   &o_z = ray.origin().z(), &d_z = ray.direction().z();
 
-                        const real iwidth = 1 / (rectangle.right - rectangle.left);
-                        const real idepth = 1 / (rectangle.back - rectangle.front);
+                        const real lpx = o_x + d_x*lt,
+                                   lpz = o_z + d_z*lt;
+
+                        const real rpx = o_x + d_x*rt,
+                                   rpz = o_z + d_z*rt;
+
                         // Computation of u/v values depends on layout of quads.
-                        const real lu = (lpx - rectangle.left ) * iwidth,
-                                   lv = (rectangle.back - lpz)  * idepth;
-                        const real ru = (rpx - rectangle.left ) * iwidth,
-                                   rv = (rectangle.back - rpz)  * idepth;
+                        #if 1
+                        const real lu = (lpx - rectangle.left ),// * rectangle.iwidth,
+                                   lv = (rectangle.back - lpz);//  * rectangle.idepth;
+                        const real ru = (rpx - rectangle.left ),// * rectangle.iwidth,
+                                   rv = (rectangle.back - rpz);//  * rectangle.idepth;
 
-                        const bool l = (lu>=0)&(lu<=1)&(lv>=0)&(lv<=1)//*/rectangle.inside(lpx, lpz)
+                        const bool l = (lpx>=rectangle.left)
+                                       & (rectangle.back>=lpz)
                                        & (lt>=0)
-                                       & (lu+lv <= 1)
+                                       & (lu+lv <= rectangle.width)
                                        ,
-                                   r = (ru>=0)&(ru<=1)&(rv>=0)&(rv<=1)//*/rectangle.inside(rpx, rpz)
+                                   r = (rpx<=rectangle.right)
+                                       & (rectangle.front<=rpz)
                                        & (rt>=0)
-                                       & (ru+rv > 1)
+                                       & (ru+rv > rectangle.width)
                                        ;
-
-                        color = shape == Shape::Pit ?
-                                         Color::FromRgb(1,0.25,0.25) :
-                                         Color::FromRgb(0.25,1.0,0.25);
+                        #endif
 
                         if (l) {
                                 t = lt;
@@ -366,12 +372,12 @@ inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
         real t=-1;
         Normal u(1,0,0), v(0,0,1), n(0,1,0);
         Color color;
-        if (!q->intersect(ray, t, n, u, v, color))
+        if (!q->intersect(ray, t, n, u, v))
                 return Intersection::Optional();
 
         return Intersection (
              t,
-             std::shared_ptr<Material> (new LambertMaterial(color)),
+             material_,
              DifferentialGeometry(n, n, u, v));
 
 
