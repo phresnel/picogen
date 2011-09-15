@@ -127,7 +127,6 @@ namespace picogen { namespace cracker { namespace detail {
                                    rpz = o_z + d_z*rt;
 
                         // Computation of u/v values depends on layout of quads.
-                        #if 1
                         const real lu = (lpx - rectangle.left ),// * rectangle.iwidth,
                                    lv = (rectangle.back - lpz);//  * rectangle.idepth;
                         const real ru = (rpx - rectangle.left ),// * rectangle.iwidth,
@@ -143,8 +142,6 @@ namespace picogen { namespace cracker { namespace detail {
                                        & (rt>=0)
                                        & (ru+rv > rectangle.width)
                                        ;
-                        #endif
-
                         if (l) {
                                 t = lt;
                                 tn = leftPlane.normal;
@@ -159,68 +156,6 @@ namespace picogen { namespace cracker { namespace detail {
                                 v = rightPlane.v;
                                 return true;
                         }
-                        return false;
-
-                        //if (!l && !r
-                        #if 0
-                        if (!l & !r) {
-                                return false;
-                        }
-
-                        color = shape == Shape::Pit ?
-                                         Color::FromRgb(1,0.25,0.25) :
-                                         Color::FromRgb(0.25,1.0,0.25);
-
-                        int i = 0;
-                        if (shape == Shape::Bump) {
-                                if (lpy < rpy) {
-                                        i = -1; //§ debug where it leaves too soon
-                                        if (!l) { i = 0; }
-                                } else {
-                                        i = 1;
-                                        if (!r) { i = 0; }
-                                }
-                        } else {
-                                if (lpy > rpy) {
-                                        i = -1;
-                                        if (!l)  { i = 0; }
-                                } else {
-                                        i = 1;
-                                        if (!r)  { i = 0; }
-                                }
-                        }
-                        #if 0
-                        if (r) {
-                                t = rt;
-                                tn = rightPlane.normal;
-                                u = rightPlane.u;
-                                v = rightPlane.v;
-                                return true;
-                        } else {
-                                return false;
-                        }
-                        #endif
-
-                        switch (i) {
-                        case -1:
-                                //return false;
-                                t = lt;
-                                tn = leftPlane.normal;
-                                u = leftPlane.u;
-                                v = leftPlane.v;
-                                return true;
-                        case +1:
-                                //return false;
-                                t = rt;
-                                tn = rightPlane.normal;
-                                u = rightPlane.u;
-                                v = rightPlane.v;
-                                return true;
-                        case 0:
-                                return false;
-                        }
-                        #endif
-                        assert (false && "impossible code path");
                         return false;
                 }
         };
@@ -273,7 +208,8 @@ namespace picogen { namespace cracker { namespace detail {
                                                   int left, int right,
                                                   int front, int back) const;
 
-                Intersection::Optional intersect_quad (Ray const &ray, int X, int Z) const ;
+                Intersection::Optional intersect_quad (Ray const &, int X, int Z) const ;
+                Intersection::Optional intersect_quad (Ray const &, Quad const *) const ;
                 /*Intersection::Optional intersect_amanatides (Ray const &ray,
                                                    real minT,
                                                    real maxT) const;*/
@@ -379,42 +315,21 @@ inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
              t,
              material_,
              DifferentialGeometry(n, n, u, v));
+}
 
+inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
+                                                     Quad const *q) const {
 
-#if 0
-        // TODO: morton indexing in ph(x,z)
-        const Vector *A = ph(X,   Z),
-                     *B = ph(X,   Z+1),
-                     *C = ph(X+1, Z),
-                     *D = ph(X+1, Z+1);
+        real t=-1;
+        Normal u(1,0,0), v(0,0,1), n(0,1,0);
+        Color color;
+        if (!q->intersect(ray, t, n, u, v))
+                return Intersection::Optional();
 
-        const Vector *a,*b,*c;
-        real t, tu, tv;
-        Normal tn(0,1,0);
-        if (0 != raytri_intersect(
-                ray,
-                *(a=A),
-                *(b=B),
-                *(c=C),
-                t, tu, tv, tn)
-        || 0 != raytri_intersect(
-                ray,
-                *(a=B),
-                *(b=D),
-                *c,
-                t, tu, tv, tn)
-        )
-        {
-                return Intersection (
-                     t,
-                     material_,
-                     DifferentialGeometry(
-                         tn, tn,
-                         normalize<Normal>(*b-*a),
-                         normalize<Normal>(*c-*a)));
-        }
-        return Intersection::Optional();
-#endif
+        return Intersection (
+                                t,
+                                material_,
+                                DifferentialGeometry(n, n, u, v));
 }
 
 
@@ -538,26 +453,13 @@ inline Intersection::Optional Patch::fast_intersect (
                                ? p
                                : Intersection::Optional();
                 }
-
-#if 0
-                if (tmax_x < tmax_z) {
-                        X += stepX;
-                        if (X == outX)  break;
-                        tmax_x += tdelta_x;
-                } else {
-                        Z += stepZ;
-                        if (Z == outZ) break;
-                        tmax_z += tdelta_z;
-                }
-#else
                 const int x_lt_z = tmax_x < tmax_z;
-                X      += x_lt_z ? stepX : 0;
-                Z      += x_lt_z ? 0 : stepZ;
+                X      += x_lt_z ? stepX    : 0;
+                Z      += x_lt_z ? 0        : stepZ;
                 tmax_x += x_lt_z ? tdelta_x : 0;
-                tmax_z += x_lt_z ? 0 : tdelta_z;
+                tmax_z += x_lt_z ? 0        : tdelta_z;
 
                 if ((X==outX) | (Z==outZ)) break;
-#endif
         }
         return Intersection::Optional();
 }
