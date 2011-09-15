@@ -413,8 +413,12 @@ inline Intersection::Optional Patch::fast_intersect (
         };
         const int outX = positive_x ? res_x_ : -1,
                   outZ = positive_z ? res_z_ : -1;
+        //const int stepX = positive_x ? 1 : -1,
+        //          stepZ = positive_z ? 1 : -1;
         const int stepX = positive_x ? 1 : -1,
                   stepZ = positive_z ? 1 : -1;
+        const int pstepX = positive_x ? 1 : -1,
+                  pstepZ = positive_z ? stride_ : -stride_;
         const real tdelta_x = stepX * voxelWidth_ * id_x,
                    tdelta_z = stepZ * voxelDepth_ * id_z;
 
@@ -446,16 +450,20 @@ inline Intersection::Optional Patch::fast_intersect (
 
         int X = cell_x,
             Z = cell_z;
+        Quad const * ph = this->ph (cell_x, cell_z);
 
         while (1) {
-                if (const Intersection::Optional p = intersect_quad (ray, X, Z)) {
+                if (const Intersection::Optional p = intersect_quad (ray, ph)) {
                         return p.intersection().distance()<=maxT
                                ? p
                                : Intersection::Optional();
                 }
                 const int x_lt_z = tmax_x < tmax_z;
+
                 X      += x_lt_z ? stepX    : 0;
                 Z      += x_lt_z ? 0        : stepZ;
+
+                ph += x_lt_z ? pstepX : pstepZ;
                 tmax_x += x_lt_z ? tdelta_x : 0;
                 tmax_z += x_lt_z ? 0        : tdelta_z;
 
