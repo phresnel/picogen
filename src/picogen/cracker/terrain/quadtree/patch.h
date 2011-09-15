@@ -493,8 +493,8 @@ inline Intersection::Optional Patch::fast_intersect (
                    gridinter_z = p_z + d_z * minT;
 
         enum {
-                positive_x = d_right==XDirection::Right,//d_x>=0
-                positive_z = d_forward==ZDirection::Forward//d_z>=0
+                positive_x = d_right==XDirection::Right,
+                positive_z = d_forward==ZDirection::Forward
         };
         const int outX = positive_x ? res_x_ : -1,
                   outZ = positive_z ? res_z_ : -1;
@@ -509,7 +509,7 @@ inline Intersection::Optional Patch::fast_intersect (
         // TODO: check whether a max(0,cell_x) is needed
 
         // Minimize to account for floating point inaccuracies (for some bounding
-        // boxes, this is need, for some not)
+        // boxes, this is needed, for some not)
         static real x__  = (res_x_*iwidth_);
         static real z__  = (res_z_*idepth_);
 

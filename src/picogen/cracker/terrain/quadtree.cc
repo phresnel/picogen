@@ -133,8 +133,25 @@ namespace picogen { namespace cracker { namespace detail {
                         // | 3  | 2  |
                         // +----+----+
                         typedef TravOrder<d_up, d_right> order;
-                        real from[4] = {0,0,0,0}, to[4] = {-1,-1,-1,-1};
 
+                        #if 0
+                        auto add = [&] (real from, real to, int order) {
+                                if (from<=to) {
+                                        *top++ = Todo(from, to,
+                                                      children+order);
+                                }
+                        };
+                        add (std::max(std::max(t_x, t_z), Min), Max,
+                             order::child_d);
+                        add (std::max(t_z, Min), std::min(t_x, Max),
+                             order::child_c);
+                        add (std::max(t_x, Min), std::min(t_z, Max),
+                             order::child_b);
+                        add (Min, std::min(std::min(t_x, t_z), Max),
+                             order::child_a);
+
+                        #else
+                        real from[4] = {0,0,0,0}, to[4] = {-1,-1,-1,-1};
                         {
                                 from[order::child_a] = Min;
                                 to  [order::child_a] = std::min(std::min(t_x, t_z), Max);
@@ -148,16 +165,19 @@ namespace picogen { namespace cracker { namespace detail {
                                 from[order::child_d] = std::max(std::max(t_x, t_z), Min);
                                 to  [order::child_d] = Max;
                         }
+
                         auto push = [&] (int order) {
-                                *top++ = Todo(from[order],
-                                              to  [order],
-                                              children+order);
+                                if (from[order] <= to[order])
+                                        *top++ = Todo(from[order],
+                                                      to  [order],
+                                                      children+order);
                         };
 
                         push (order::child_d);
                         push (order::child_c);
                         push (order::child_b);
                         push (order::child_a);
+                        #endif
                 }
 
                 template <XDirection d_right, ZDirection d_up>
@@ -201,7 +221,7 @@ namespace picogen { namespace cracker { namespace detail {
                                 // BOTTLENECK when this->aabb.get...?
                                 if (((min_h < node.min_h_) & (max_h < node.min_h_))
                                    |((min_h > node.max_h_) & (max_h > node.max_h_))
-                                   |(curr.minT>curr.maxT)
+                                   //|(curr.minT>curr.maxT)
                                    ) {
                                         continue;
                                 }
