@@ -520,8 +520,8 @@ inline Intersection::Optional Patch::fast_intersect (
 
         assert (cell_x >= 0);
         assert (cell_z >= 0);
-        assert (cell_x < res_x_);
-        assert (cell_z < res_z_);
+        assert (cell_x < static_cast<int>(res_x_));
+        assert (cell_z < static_cast<int>(res_z_));
 
         const auto voxelToX = [&](real x) -> real { return left_  + x * ires_x_*width_; };
         const auto voxelToZ = [&](real z) -> real { return front_ + z * ires_z_*depth_; };
