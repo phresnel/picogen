@@ -111,8 +111,7 @@ namespace picogen { namespace cracker { namespace detail {
                 }
 
 
-                bool intersect (Ray const &ray, real &t,
-                                Normal &tn, Normal &u, Normal &v) const
+                Quad::Plane const * intersect (Ray const &ray, real &t) const
                 {
                         const real lt = leftPlane.intersect(ray),
                                    rt = rightPlane.intersect(ray);
@@ -132,31 +131,29 @@ namespace picogen { namespace cracker { namespace detail {
                         const real ru = (rpx - rectangle.left ),// * rectangle.iwidth,
                                    rv = (rectangle.back - rpz);//  * rectangle.idepth;
 
-                        const bool l = (lpx>=rectangle.left)
-                                       & (rectangle.back>=lpz)
-                                       & (lt>=0)
-                                       & (lu+lv <= rectangle.width)
-                                       ,
-                                   r = (rpx<=rectangle.right)
-                                       & (rectangle.front<=rpz)
-                                       & (rt>=0)
-                                       & (ru+rv > rectangle.width)
-                                       ;
+                        const bool l = ((lpx>=rectangle.left) &
+                                        (rectangle.back>=lpz))
+                                     & ((lt>=0) &
+                                        (lu+lv <= rectangle.width)),
+                                   r = ((rpx<=rectangle.right) &
+                                        (rectangle.front<=rpz))
+                                     & ( (rt>=0) &
+                                         (ru+rv > rectangle.width));
                         if (l) {
                                 t = lt;
-                                tn = leftPlane.normal;
+                                /*tn = leftPlane.normal;
                                 u = leftPlane.u;
-                                v = leftPlane.v;
-                                return true;
+                                v = leftPlane.v;*/
+                                return &leftPlane;
                         }
                         if (r) {
                                 t = rt;
-                                tn = rightPlane.normal;
+                                /*tn = rightPlane.normal;
                                 u = rightPlane.u;
-                                v = rightPlane.v;
-                                return true;
+                                v = rightPlane.v;*/
+                                return &rightPlane;
                         }
-                        return false;
+                        return 0;//return false;
                 }
         };
 
@@ -208,8 +205,8 @@ namespace picogen { namespace cracker { namespace detail {
                                                   int left, int right,
                                                   int front, int back) const;
 
-                Intersection::Optional intersect_quad (Ray const &, int X, int Z) const ;
-                Intersection::Optional intersect_quad (Ray const &, Quad const *) const ;
+                //Intersection::Optional intersect_quad (Ray const &, int X, int Z) const ;
+                //Quad::Plane const * intersect_quad (Ray const &, Quad const *, real &t) const ;
                 /*Intersection::Optional intersect_amanatides (Ray const &ray,
                                                    real minT,
                                                    real maxT) const;*/
@@ -301,7 +298,7 @@ TODO: blazing fast ray/place Intersection
 TODO: memory pool for nodes
 TODO: replace width/height with just width
 */
-inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
+/*inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
                                               int X, int Z) const {
 
         Quad const *q = ph (X, Z);
@@ -315,10 +312,12 @@ inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
              t,
              material_,
              DifferentialGeometry(n, n, u, v));
-}
+}*/
 
-inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
-                                                     Quad const *q) const {
+#if 0
+inline Quad::Plane const * Patch::intersect_quad (Ray const &ray,
+                                                  Quad const *q,
+                                                  real &t) const {
 
         real t=-1;
         Normal u(1,0,0), v(0,0,1), n(0,1,0);
@@ -331,6 +330,7 @@ inline Intersection::Optional Patch::intersect_quad (Ray const &ray,
                                 material_,
                                 DifferentialGeometry(n, n, u, v));
 }
+#endif
 
 
 
@@ -452,12 +452,12 @@ inline Intersection::Optional Patch::fast_intersect (
             Z = cell_z;
         Quad const * ph = this->ph (cell_x, cell_z);
 
+        real t;
+        Quad::Plane const *p;
         while (1) {
-                if (const Intersection::Optional p = intersect_quad (ray, ph)) {
-                        return p.intersection().distance()<=maxT
-                               ? p
-                               : Intersection::Optional();
-                }
+                if ((p = ph->intersect (ray, t)))
+                        break;
+
                 const int x_lt_z = tmax_x < tmax_z;
 
                 X      += x_lt_z ? stepX    : 0;
@@ -469,7 +469,12 @@ inline Intersection::Optional Patch::fast_intersect (
 
                 if ((X==outX) | (Z==outZ)) break;
         }
-        return Intersection::Optional();
+        return p ?
+               Intersection (t, this->material_, DifferentialGeometry (p->normal,
+                                                                       p->normal,
+                                                                       p->u,
+                                                                       p->v)) :
+               Intersection::Optional();
 }
 } } }
 
