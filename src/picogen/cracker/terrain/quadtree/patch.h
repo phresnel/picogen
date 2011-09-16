@@ -131,26 +131,26 @@ namespace picogen { namespace cracker { namespace detail {
                         const real ru = (rpx - rectangle.left ),// * rectangle.iwidth,
                                    rv = (rectangle.back - rpz);//  * rectangle.idepth;
 
-                        const bool l = ((lpx>=rectangle.left) &
-                                        (rectangle.back>=lpz))
-                                     & ((lt>=0) &
-                                        (lu+lv <= rectangle.width)),
-                                   r = ((rpx<=rectangle.right) &
-                                        (rectangle.front<=rpz))
-                                     & ( (rt>=0) &
-                                         (ru+rv > rectangle.width));
+                        const int l0 = lpx>=rectangle.left,
+                                   l1 = rectangle.back>=lpz,
+                                   l2 = lt>=0,
+                                   l3 = lu+lv <= rectangle.width,
+                                   r0 = rpx<=rectangle.right,
+                                   r1 = rectangle.front<=rpz,
+                                   r2 = rt >= 0,
+                                   r3 = ru+rv > rectangle.width,
+                                   la = l0 & l1,
+                                   lb = l2 & l3,
+                                   ra = r0 & r1,
+                                   rb = r2 & r3,
+                                   l = la & lb,
+                                   r = ra & rb;
                         if (l) {
                                 t = lt;
-                                /*tn = leftPlane.normal;
-                                u = leftPlane.u;
-                                v = leftPlane.v;*/
                                 return &leftPlane;
                         }
                         if (r) {
                                 t = rt;
-                                /*tn = rightPlane.normal;
-                                u = rightPlane.u;
-                                v = rightPlane.v;*/
                                 return &rightPlane;
                         }
                         return 0;//return false;
