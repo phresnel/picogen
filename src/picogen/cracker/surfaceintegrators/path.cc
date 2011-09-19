@@ -82,7 +82,7 @@ namespace detail {
 
                         const Intersection::Optional PI = scene(ray);
                         if (!PI) {
-                                ret += Color::FromRgb(0.9,0.9,1.3) * throughput;
+                                ret += scene.background (ray) * throughput;
                                 break;
                         }
 

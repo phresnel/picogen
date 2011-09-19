@@ -6,6 +6,7 @@
 #include "primitives/primitive.h"
 #include "terrain/quadtree.h"
 #include "sun.h"
+#include "sky.h"
 
 #include <list>
 #include <memory>
@@ -32,6 +33,7 @@ public:
                               Direction const &wo,
                               Material const &mat,
                               Random &rand) const;
+        Color background (Ray const &ray) const;
 
         void setSun (Sun const &sun);
 
@@ -54,6 +56,7 @@ private:
         std::list<std::shared_ptr<Primitive> > genericPrimitives_;
         Quadtree terrain_;
         Sun sun_;
+        Sky sky_;
 };
 
 } }

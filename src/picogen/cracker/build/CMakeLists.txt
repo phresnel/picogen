@@ -132,6 +132,7 @@ set (sources ${sources}
         ${cracker_src_dir}/ray.cc
         ${cracker_src_dir}/material.cc
         ${cracker_src_dir}/sun.cc
+        ${cracker_src_dir}/sky.cc
         ${cracker_src_dir}/math3d/vector.cc
         ${cracker_src_dir}/math3d/point.cc
         ${cracker_src_dir}/math3d/direction.cc

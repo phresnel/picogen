@@ -32,7 +32,7 @@
         <number>32768</number>
        </property>
        <property name="value">
-        <number>32</number>
+        <number>320</number>
        </property>
       </widget>
      </item>
@@ -45,7 +45,7 @@
         <number>32768</number>
        </property>
        <property name="value">
-        <number>24</number>
+        <number>240</number>
        </property>
       </widget>
      </item>

@@ -111,7 +111,7 @@ void RenderWidget::on_resetsceneButton_clicked() {
                                         ui->imageHeight->value()));
 
         scene_.reset (new Scene);
-        for (int i=0; i<0*32; ++i) {
+        for (int i=0; i<8; ++i) {
                 const real x = rand() / (real)RAND_MAX*100 - 50;
                 const real y = rand() / (real)RAND_MAX*10 - 5;
                 const real z = rand() / (real)RAND_MAX*30 + 2;

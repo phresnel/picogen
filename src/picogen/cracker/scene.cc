@@ -11,6 +11,7 @@ namespace picogen { namespace cracker {
 
 Scene::Scene()
 : sun_(Direction(normalize<Direction>(1,-1,0)))
+, sky_()
 {
 }
 
@@ -67,6 +68,10 @@ Color Scene::estimateDirect (Point const &position,
         if (!f) return Color::Black();
 
         return f.color() * sun_.radiance() * (absDot / pdf);
+}
+
+Color Scene::background (const Ray &ray) const {
+        return sky_.radiance (ray);
 }
 
 
