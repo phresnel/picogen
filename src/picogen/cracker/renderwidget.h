@@ -11,6 +11,7 @@ namespace Ui {
 namespace picogen { namespace cracker {
         class RenderTarget;
         class Scene;
+        class PresentationFilter;
 } }
 
 class RenderWidget : public QWidget
@@ -27,7 +28,8 @@ private slots:
         void on_resetsceneButton_clicked();
 
 private:
-        void updateDisplay (picogen::cracker::RenderTarget const &);
+        void updateDisplay (picogen::cracker::RenderTarget const &,
+                            picogen::cracker::PresentationFilter const &);
 private:
         Ui::RenderWidget *ui;
 

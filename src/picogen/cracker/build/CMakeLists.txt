@@ -133,6 +133,7 @@ set (sources ${sources}
         ${cracker_src_dir}/material.cc
         ${cracker_src_dir}/sun.cc
         ${cracker_src_dir}/sky.cc
+        ${cracker_src_dir}/utah-sky/dirtydirty.cc
         ${cracker_src_dir}/math3d/vector.cc
         ${cracker_src_dir}/math3d/point.cc
         ${cracker_src_dir}/math3d/direction.cc
@@ -165,6 +166,8 @@ set (sources ${sources}
         ${cracker_src_dir}/terrain/gridterrain.cc
         ${cracker_src_dir}/terrain/quadtree.cc
         ${cracker_src_dir}/terrain/quadtree/patch.cc
+
+        ${cracker_src_dir}/presentationfilter.cc
 )
 
 

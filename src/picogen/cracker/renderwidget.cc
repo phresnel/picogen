@@ -17,6 +17,8 @@
 
 #include "glimpse/stopwatch.hh"
 
+#include "presentationfilter.h"
+
 #include <QImage>
 
 using namespace picogen::cracker;
@@ -56,18 +58,22 @@ void RenderWidget::on_pushButton_clicked()
                                                  PrimaryDistanceIntegrator(0,100),
                                                  1),
                                          0);
+        const auto presentation_filter = [] (Color const &col) {
+                return Color::FromRgb (col.r(), col.g(), col.b());
+        };
+        PresentationFilter presentationFilter;
         const auto renderer = createRenderer (scene_,
                                               integrator,
                                               PinholeCamera(1.0));
         for (int i=0; i<ui->samplesPerRun->value(); ++i) {
                 renderer.render (target_);
-                if (i) updateDisplay (*target_);
+                if (i) updateDisplay (*target_, presentationFilter);
         }
         rendertime.stop();
         totaltime.stop();
         ui->perf->setText ("total: " + QString::number(totaltime())
                           + ", render: " + QString::number(rendertime()));
-        updateDisplay (*target_);
+        updateDisplay (*target_, presentationFilter);
 
         const QString integName = QString::fromStdString(nameof(integrator));
         if (parentWidget())
@@ -76,7 +82,10 @@ void RenderWidget::on_pushButton_clicked()
                 setWindowTitle (integName);
 }
 
-void RenderWidget::updateDisplay (picogen::cracker::RenderTarget const &target) {
+void RenderWidget::updateDisplay (
+        picogen::cracker::RenderTarget const &target,
+        picogen::cracker::PresentationFilter const &filter
+) {
         using namespace picogen::cracker;
 
         const unsigned int width = target.width(),
@@ -88,7 +97,7 @@ void RenderWidget::updateDisplay (picogen::cracker::RenderTarget const &target) 
 
                 for (unsigned int x=0; x<width; ++x) {
                         Pixel const &p = row[x];
-                        Color const &c = p.color();
+                        Color const &c = filter (p.color());
                         const int r_ = c.r()*255,
                                   g_ = c.g()*255,
                                   b_ = c.b()*255,
@@ -111,7 +120,7 @@ void RenderWidget::on_resetsceneButton_clicked() {
                                         ui->imageHeight->value()));
 
         scene_.reset (new Scene);
-        for (int i=0; i<8; ++i) {
+        for (int i=0; i<10*0; ++i) {
                 const real x = rand() / (real)RAND_MAX*100 - 50;
                 const real y = rand() / (real)RAND_MAX*10 - 5;
                 const real z = rand() / (real)RAND_MAX*30 + 2;
