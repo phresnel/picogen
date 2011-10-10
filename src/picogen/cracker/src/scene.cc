@@ -7,11 +7,14 @@
 #include "material.h"
 #include "random.h"
 
+// --
+#include "background/utah-sky.h"
+
 namespace picogen { namespace cracker {
 
 Scene::Scene()
 : sun_(new Sun (Direction(normalize<Direction>(1,-1,0))))
-, sky_(new MonoSky(Color::FromRgb(0.9,0.8,0.8)*10000))
+, sky_(new UtahSky)
 {
 }
 
