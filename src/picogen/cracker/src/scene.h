@@ -5,8 +5,8 @@
 //#include "ray.h"
 #include "primitives/primitive.h"
 #include "terrain/quadtree.h"
-#include "sun.h"
-#include "sky.h"
+#include "background/sun.h"
+#include "background/sky.h"
 
 #include <list>
 #include <memory>
