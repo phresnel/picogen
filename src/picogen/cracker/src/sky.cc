@@ -17,7 +17,9 @@ Sky::Sky ()
         }
 }
 
-Color Sky::radiance(Ray const &ray) const {
+// ---
+
+Color PssSky::radiance_(Ray const &ray) const {
         static picogen::redshift::background::PssSunSky sunSky(
                                 picogen::redshift::Vector(1,0.2,1),
                                 3, 0, false);

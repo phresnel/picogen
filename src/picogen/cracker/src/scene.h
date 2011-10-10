@@ -35,9 +35,11 @@ public:
                               Random &rand) const;
         Color background (Ray const &ray) const;
 
-        void setSun (Sun const &sun);
+        void setSun (std::shared_ptr<Sun> sun);
+        void setSky (std::shared_ptr<Sky> sky);
 
-        const Sun &sun() const { return sun_; }
+        const Sun &sun_ref() const { return *sun_; }
+        const Sky &sky_ref() const { return *sky_; }
 
         // TODO: shall we use a builder pattern instead?
         // In the general case, we shouldn't be using generalized primitves in
@@ -55,8 +57,8 @@ public:
 private:
         std::list<std::shared_ptr<Primitive> > genericPrimitives_;
         Quadtree terrain_;
-        Sun sun_;
-        Sky sky_;
+        std::shared_ptr<Sun> sun_;
+        std::shared_ptr<Sky> sky_;
 };
 
 } }

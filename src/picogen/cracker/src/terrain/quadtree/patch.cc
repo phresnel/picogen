@@ -1,7 +1,7 @@
 
 #include "patch.h"
-#include "../ray.h"
-#include "../materials/lambertmaterial.h"
+#include "ray.h"
+#include "materials/lambertmaterial.h"
 #include <QDebug>
 #include <algorithm>
 

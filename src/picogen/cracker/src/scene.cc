@@ -10,8 +10,8 @@
 namespace picogen { namespace cracker {
 
 Scene::Scene()
-: sun_(Direction(normalize<Direction>(1,-1,0)))
-, sky_()
+: sun_(new Sun (Direction(normalize<Direction>(1,-1,0))))
+, sky_(new MonoSky(Color::FromRgb(0.9,0.8,0.8)*10000))
 {
 }
 
@@ -42,10 +42,10 @@ Intersection::Optional Scene::operator () (Ray const &ray) const {
 }
 
 Color Scene::radiance(const Point &pos, const Direction &n) const {
-        Ray const &sr = sun_.deterministicShadowRay(pos);
+        Ray const &sr = sun_->deterministicShadowRay(pos);
         if ((*this)(sr))
                 return Color::FromRgb(0,0,0);
-        return mixed_dot(n, sr.direction()) * sun_.radiance();
+        return mixed_dot(n, sr.direction()) * sun_->radiance();
 }
 
 Color Scene::estimateDirect (Point const &position,
@@ -54,7 +54,7 @@ Color Scene::estimateDirect (Point const &position,
                              Material const &mat,
                              Random &random) const
 {
-        const Ray &sr = sun_.deterministicShadowRay (position);
+        const Ray &sr = sun_->deterministicShadowRay (position);
         const Direction &wi = sr.direction();
         const bool occluded = static_cast<bool>((*this)(sr));
         if (occluded) return Color::Black();
@@ -67,11 +67,11 @@ Color Scene::estimateDirect (Point const &position,
                                            random);
         if (!f) return Color::Black();
 
-        return f.color() * sun_.radiance() * (absDot / pdf);
+        return f.color() * sun_->radiance() * (absDot / pdf);
 }
 
 Color Scene::background (const Ray &ray) const {
-        return sky_.radiance (ray);
+        return sky_->radiance (ray);
 }
 
 

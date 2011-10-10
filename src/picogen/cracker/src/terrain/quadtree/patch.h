@@ -1,7 +1,7 @@
 #ifndef PATCH_H_INCLUDED_20110826
 #define PATCH_H_INCLUDED_20110826
 
-#include "../intersection.h"
+#include "intersection.h"
 
 namespace picogen { namespace cracker {
         class Ray;

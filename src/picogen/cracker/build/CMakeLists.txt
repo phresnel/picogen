@@ -111,7 +111,8 @@ endif (NOT SDL_FOUND )
 # -- subs ---------------------------------------------------------------------
 
 # -- sources ------------------------------------------------------------------
-set (cracker_src_dir ..)
+set (cracker_src_dir ../src)
+include_directories (${cracker_src_dir})
 set (sources ${sources}
         ${cracker_src_dir}/color.cc
         ${cracker_src_dir}/main.cc
