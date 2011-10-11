@@ -13,7 +13,8 @@
 namespace picogen { namespace cracker {
 
 Scene::Scene()
-: sun_(new Sun (Direction(normalize<Direction>(1,-1,0))))
+        : sun_(new MonoSun (Color::Gray(15000),
+                            Direction(normalize<Direction>(1,-0.2,1))))
 , sky_(new UtahSky)
 {
 }

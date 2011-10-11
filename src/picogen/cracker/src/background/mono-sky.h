@@ -15,4 +15,4 @@ private:
 
 } }
 
-#endif MONO_SKY_H_INCLUDED_20111010
+#endif // MONO_SKY_H_INCLUDED_20111010
