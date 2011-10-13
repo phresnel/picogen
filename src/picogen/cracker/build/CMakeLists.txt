@@ -137,6 +137,8 @@ set (sources ${sources}
         ${cracker_src_dir}/background/sky.cc
         ${cracker_src_dir}/background/utah-sky.cc
         ${cracker_src_dir}/background/mono-sky.cc
+        ${cracker_src_dir}/background/utah-sun.cc
+        ${cracker_src_dir}/background/mono-sun.cc
         ${cracker_src_dir}/background/utah-sky/dirtydirty.cc
 
         ${cracker_src_dir}/math3d/vector.cc

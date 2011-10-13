@@ -27,32 +27,5 @@ private:
 
 } }
 
-namespace picogen { namespace cracker {
-
-class MonoSun : public Sun {
-public:
-        MonoSun (Color const &co, Direction const &dir);
-
-private:
-        Ray deterministicShadowRay_ (const Point&) const ;
-        Color radiance_ () const ;
-private:
-        Color     color_;
-        Direction direction_;
-};
-
-} }
-
-
-namespace picogen { namespace cracker {
-
-class UtahSun {
-public:
-
-private:
-
-};
-
-} }
 
 #endif // SUN_H_20110720

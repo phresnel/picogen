@@ -9,14 +9,18 @@
 
 // --
 #include "background/utah-sky.h"
+#include "background/utah-sun.h"
 
 namespace picogen { namespace cracker {
 
 Scene::Scene()
-        : sun_(new MonoSun (Color::Gray(15000),
-                            Direction(normalize<Direction>(1,-0.2,1))))
-, sky_(new UtahSky)
 {
+        std::shared_ptr<picogen::redshift::background::PssSunSky> pssSunSky(
+                                new picogen::redshift::background::PssSunSky(
+                                        picogen::redshift::Vector(-1,0.3,0),
+                                        3.8, 0, false));
+        sky_.reset (new UtahSky (pssSunSky));
+        sun_.reset (new UtahSun (pssSunSky));
 }
 
 Intersection::Optional Scene::operator () (Ray const &ray) const {
