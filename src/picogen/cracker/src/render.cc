@@ -2,15 +2,25 @@
 #include "color.h"
 #include "ray.h"
 #include "random.h"
+#include "volumeintegrators/volumeintegrator.h"
 
 namespace picogen { namespace cracker {
 
-Color RendererBase::transmittance (Ray const &, Random &) const {
+RendererBase::RendererBase (std::shared_ptr<Scene> scene)
+        : volumeIntegrator_(new VolumeIntegrator())
+        , scene_(scene)
+{
+}
+
+Color RendererBase::transmittance (Ray const &ray, Random &random) const {
         // PBRT:
         //  return volumeIntegrator->Transmittance(scene, this, ray, sample,
         //                                         rng, arena);
-
-        return Color::FromRgb (1,1,1);
+        return volumeIntegrator_->transmittance (*scene_,
+                                                 *this,
+                                                 ray,
+                                                 random);
+        //return Color::FromRgb (1,1,1);
 }
 
 } }

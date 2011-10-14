@@ -11,10 +11,16 @@ class Random;
 class Color;
 class Ray;
 
+class VolumeIntegrator;
+
 class RendererBase {
 public:
+        RendererBase (std::shared_ptr<Scene>);
         virtual ~RendererBase() {}
         Color transmittance (Ray const &, Random &) const ;
+protected:
+        std::shared_ptr<VolumeIntegrator> volumeIntegrator_;
+        std::shared_ptr<Scene> scene_;
 };
 
 template <typename SurfaceIntegrator, typename Camera>
@@ -23,13 +29,12 @@ public:
         Renderer (std::shared_ptr<Scene> scene,
                   SurfaceIntegrator integrator,
                   Camera camera)
-        : scene_(scene), integrator_(integrator), camera_(camera)
+        : RendererBase(scene), integrator_(integrator), camera_(camera)
         {}
 
         inline void render (std::shared_ptr<RenderTarget>) const;
 
 private:
-        std::shared_ptr<Scene> scene_;
         SurfaceIntegrator integrator_;
         Camera camera_;
 };
