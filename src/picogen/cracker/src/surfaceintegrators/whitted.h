@@ -7,11 +7,15 @@ class Ray;
 class Scene;
 class Random;
 class Color;
+class RendererBase;
+class Intersection;
 
 class WhittedIntegrator {
 public:
         Color operator() (Ray const &,
+                          Intersection const &,
                           Scene const &,
+                          RendererBase const &,
                           Random &) const;
 };
 

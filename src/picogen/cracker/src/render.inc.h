@@ -33,6 +33,7 @@ namespace {
         }
 }
 
+
 template <typename SurfaceIntegrator,
           typename Camera>
 inline void Renderer<SurfaceIntegrator, Camera>::render (
@@ -55,9 +56,14 @@ inline void Renderer<SurfaceIntegrator, Camera>::render (
                         const real u = x/static_cast<real>(width);
 
                         const Ray primary = camera_ (u, v);
-                        const Color color = integrator_(primary, scene, random);
-
-                        row[x].add (color);
+                        const Intersection::Optional PI = scene(primary);
+                        if (PI) {
+                                const Color c = integrator_(primary, PI.intersection(),
+                                                            scene, *this, random);
+                                row[x].add (c * transmittance(primary, random));
+                        } else {
+                                row[x].add (scene.background (primary));
+                        }
                 }
         }
 }

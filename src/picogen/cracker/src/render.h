@@ -7,9 +7,18 @@ namespace picogen { namespace cracker {
 
 class Scene;
 class RenderTarget;
+class Random;
+class Color;
+class Ray;
+
+class RendererBase {
+public:
+        virtual ~RendererBase() {}
+        Color transmittance (Ray const &, Random &) const ;
+};
 
 template <typename SurfaceIntegrator, typename Camera>
-class Renderer {
+class Renderer : public RendererBase {
 public:
         Renderer (std::shared_ptr<Scene> scene,
                   SurfaceIntegrator integrator,

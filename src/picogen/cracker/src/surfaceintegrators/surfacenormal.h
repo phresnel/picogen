@@ -11,6 +11,7 @@
 namespace picogen { namespace cracker {
 
 class Random;
+class RendererBase;
 
 class SurfaceNormalIntegrator {
 public:
@@ -22,22 +23,18 @@ public:
                 assert(min<max);
         }
 
-        Color operator() (Ray const &ray,
-                          Scene const &scene,
+        Color operator() (Ray const &,
+                          Intersection const &i,
+                          Scene const &,
+                          RendererBase const &,
                           Random &) const
         {
-                const Intersection::Optional pi = scene(ray);
-                if (pi) {
-                        const Intersection &i = pi.intersection();
-                        const Normal &n = i.differentialGeometry().geometricNormal();
-                        const real
-                              r = n.x()+0.5,
-                              g = n.y()+0.5,
-                              b = n.z()+0.5;
-                        return Color::FromRgb (r, g, b);
-                } else {
-                        return Color::FromRgb(0.75,0.5,0.5);
-                }
+                const Normal &n = i.differentialGeometry().geometricNormal();
+                const real
+                      r = n.x()+0.5,
+                      g = n.y()+0.5,
+                      b = n.z()+0.5;
+                return Color::FromRgb (r, g, b);
         }
 
 private:

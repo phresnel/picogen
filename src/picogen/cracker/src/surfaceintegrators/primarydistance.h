@@ -11,6 +11,7 @@
 namespace picogen { namespace cracker {
 
 class Random;
+class RendererBase;
 
 class PrimaryDistanceIntegrator {
 public:
@@ -22,23 +23,19 @@ public:
                 assert(min<max);
         }
 
-        Color operator() (Ray const &ray,
-                          Scene const &scene,
+        Color operator() (Ray const &,
+                          Intersection const &i,
+                          Scene const &,
+                          RendererBase const &,
                           Random &) const
         {
-                const Intersection::Optional pi = scene(ray);
-                if (pi) {
-                        const real
-                              dist = pi.intersection().distance(),
-                              gray = 1 - (dist - min_) / range_,
-                              gray_sat = gray < 0 ? 0 :
-                                         gray > 1 ? 1 :
-                                         gray;
-                        return Color::FromRgb (gray_sat, gray_sat, gray_sat);
-
-                } else {
-                        return Color::FromRgb(0.75,0.5,0.5);
-                }
+                const real
+                      dist = i.distance(),
+                      gray = 1 - (dist - min_) / range_,
+                      gray_sat = gray < 0 ? 0 :
+                                 gray > 1 ? 1 :
+                                 gray;
+                return Color::FromRgb (gray_sat, gray_sat, gray_sat);
         }
 
 private:

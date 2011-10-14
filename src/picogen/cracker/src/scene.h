@@ -25,8 +25,7 @@ public:
         Scene();
 
         Intersection::Optional operator() (Ray const &ray) const;
-        Color radiance (Point const&, Direction const &) const;
-
+        Color sunRadiance (Point const&, Direction const &) const;
 
         Color estimateDirect (Point const &position,
                               Normal const &normal,

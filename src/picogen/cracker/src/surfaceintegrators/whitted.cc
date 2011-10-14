@@ -11,6 +11,7 @@ namespace picogen { namespace cracker {
 
 namespace {
         Color whitterate (Ray const &ray,
+                          Intersection const &,
                           Scene const &scene,
                           Random &random,
                           unsigned int max_depth);
@@ -38,17 +39,21 @@ namespace {
                 const Vector ref  = static_cast<Vector>(d)
                                     - real(2)*mixed_dot(d,n)*n;
 
-                return col*whitterate(Ray(poi, static_cast<Direction>(normalize(ref))),
+                const Ray next (poi, static_cast<Direction>(normalize(ref)));
+                const Intersection::Optional pi = scene(next);
+                if (!pi) return Color::FromRgb(0.5,0.5,0.6);
+                return col*whitterate(next,
+                                      pi.intersection(),
                                       scene,
                                       random,
                                       max_depth-1);
         }
 
         Color specular_or_diffuse (Ray const &ray,
+                                   Intersection const &i,
                                    Scene const &scene,
                                    Random &random,
-                                   unsigned int max_depth,
-                                   Intersection const &i) {
+                                   unsigned int max_depth) {
                 //const real distance   = i.distance();
                 const Material &mat   = i.material_ref();
 
@@ -65,14 +70,15 @@ namespace {
                         const Point  poi  = ray(i.distance())
                                           + normal * 0.0001;
                         return col.color() *
-                               scene.radiance(poi,
-                                              static_cast<Direction>(normal));
+                               scene.sunRadiance(poi,
+                                                 static_cast<Direction>(normal));
                 }
                 // no luck with brdf
                 return Color::Black();
         }
 
         Color whitterate (Ray const &ray,
+                          Intersection const &i,
                           Scene const &scene,
                           Random &random,
                           unsigned int max_depth)
@@ -80,21 +86,22 @@ namespace {
                 if (!max_depth)
                         return Color::Black();
 
-                const Intersection::Optional pi = scene(ray);
+                //const Intersection::Optional pi = scene(ray);
+                //if (!pi) return Color::FromRgb(0.5,0.5,0.6);
 
-                if (!pi) return Color::FromRgb(0.5,0.5,0.6);
-
-                return specular_or_diffuse (ray, scene,
-                                            random, max_depth,
-                                            pi.intersection());
+                return specular_or_diffuse (ray, i, scene,
+                                            random, max_depth
+                                            );//pi.intersection());
         }
 }
 
 Color WhittedIntegrator::operator () (Ray const &ray,
+                                      Intersection const &i,
                                       Scene const &scene,
+                                      RendererBase const &,
                                       Random &random) const
 {
-        return whitterate (ray, scene, random, 5);
+        return whitterate (ray, i, scene, random, 5);
 }
 
 } }

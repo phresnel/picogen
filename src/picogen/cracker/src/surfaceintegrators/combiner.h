@@ -2,6 +2,7 @@
 #define COMBINER_H_20110713
 
 #include "color.h"
+#include "render.h"
 #include <string>
 
 namespace picogen { namespace cracker {
@@ -20,12 +21,15 @@ public:
                 assert(this->lerp_>=0 && this->lerp_<=1);
         }
 
-        Color operator() (Ray const &ray, Scene const &scene,
+        Color operator() (Ray const &ray,
+                          Intersection const &i,
+                          Scene const &scene,
+                          RendererBase const &renderer,
                           Random &random) const {
-                if (lerp_<=0) return a(ray,scene,random);
-                if (lerp_>=1) return b(ray,scene,random);
-                return (1-lerp_)*a(ray,scene,random)
-                     + lerp_*b(ray,scene,random);
+                if (lerp_<=0) return a(ray,i,scene,renderer,random);
+                if (lerp_>=1) return b(ray,i,scene,renderer,random);
+                return (1-lerp_)* a(ray,i,scene,renderer,random)
+                     + lerp_    * b(ray,i,scene,renderer,random);
         }
 
         real lerp() const {

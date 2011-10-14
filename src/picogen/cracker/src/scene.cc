@@ -49,7 +49,7 @@ Intersection::Optional Scene::operator () (Ray const &ray) const {
         return nearest;
 }
 
-Color Scene::radiance(const Point &pos, const Direction &n) const {
+Color Scene::sunRadiance(const Point &pos, const Direction &n) const {
         Ray const &sr = sun_->deterministicShadowRay(pos);
         if ((*this)(sr))
                 return Color::FromRgb(0,0,0);
