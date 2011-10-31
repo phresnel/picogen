@@ -18,7 +18,8 @@ Patch::Patch (real left, real right,
               unsigned int res_x,
               unsigned int res_z,
               std::function<real (real, real)> fun,
-              real &y_min, real &y_max)
+              real &y_min, real &y_max,
+              LodSmoothing)
 : left_(left), right_(right), front_(front), back_(back)
 , res_x_(res_x), res_z_(res_z)
 , stride_(res_x_)//+1)

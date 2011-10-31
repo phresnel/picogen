@@ -17,7 +17,7 @@ Scene::Scene()
 {
         std::shared_ptr<picogen::redshift::background::PssSunSky> pssSunSky(
                                 new picogen::redshift::background::PssSunSky(
-                                        picogen::redshift::Vector(-1,0.3,0),
+                                        picogen::redshift::Vector(-1,1,0),
                                         3.8, 0, false));
         sky_.reset (new UtahSky (pssSunSky));
         sun_.reset (new UtahSun (pssSunSky));

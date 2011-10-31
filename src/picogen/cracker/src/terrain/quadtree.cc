@@ -307,7 +307,9 @@ namespace picogen { namespace cracker { namespace detail {
                                             front, back,
                                             8,8,
                                             height,
-                                            min_h_, max_h_);
+                                            min_h_, max_h_,
+                                            Patch::LodSmoothing::None
+                                            );
                 }
                 void makeInner(unsigned int depth,
                                real left, real right,

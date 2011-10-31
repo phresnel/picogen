@@ -19,10 +19,6 @@ namespace picogen { namespace cracker { namespace detail {
 
         class Quad {
         public:
-                enum class Shape {
-                        Bump,
-                        Pit
-                };
 
                 class Plane {
                 public:
@@ -37,12 +33,6 @@ namespace picogen { namespace cracker { namespace detail {
                         real dot (Point const &point) const {
                                 return mixed_dot (normal, point) + distance;
                         }
-
-                        /*Plane (Point point, Normal normal)
-                                : normal(normal)
-                                , distance(-mixed_dot(normal,point))
-                        {
-                        }*/
 
                         Plane (Point a, Point b, Point c)
                                 : u(normalize<Normal>(b-a))
@@ -81,7 +71,6 @@ namespace picogen { namespace cracker { namespace detail {
                         }
                 };
 
-                Shape shape;
                 Plane leftPlane, rightPlane;
                 Rectangle rectangle;
 
@@ -96,18 +85,6 @@ namespace picogen { namespace cracker { namespace detail {
                                     D { rect.left,  h3, rect.front };
                         leftPlane  = Plane (A,B,D);
                         rightPlane = Plane (B,C,D);
-
-                        // We have a very restricted range of possible
-                        // plane normals; it should be enough when we just compare
-                        // the left plane's x component to the right plane's
-                        // (or the z component).
-                        //if (leftPlane.normal.x() < rightPlane.normal.x())
-                        /*
-                        if (leftPlane.dot(C) <= 0)
-                                shape = Shape::Bump;
-                        else
-                                shape = Shape::Pit;
-                        */
                 }
 
 
@@ -125,12 +102,13 @@ namespace picogen { namespace cracker { namespace detail {
                         const real rpx = o_x + d_x*rt,
                                    rpz = o_z + d_z*rt;
 
-                        // Computation of u/v values depends on layout of quads.
                         const real lu = (lpx - rectangle.left ),// * rectangle.iwidth,
                                    lv = (rectangle.back - lpz);//  * rectangle.idepth;
                         const real ru = (rpx - rectangle.left ),// * rectangle.iwidth,
                                    rv = (rectangle.back - rpz);//  * rectangle.idepth;
 
+                        // Barycentric test. Layout of computation was designed
+                        // to be fast.
                         const int l0 = lpx>=rectangle.left,
                                    l1 = rectangle.back>=lpz,
                                    l2 = lt>=0,
@@ -145,6 +123,7 @@ namespace picogen { namespace cracker { namespace detail {
                                    rb = r2 & r3,
                                    l = la & lb,
                                    r = ra & rb;
+                        // We either have a left hit xor a right hit xor no hit.
                         if (l) {
                                 t = lt;
                                 return &leftPlane;
@@ -153,13 +132,21 @@ namespace picogen { namespace cracker { namespace detail {
                                 t = rt;
                                 return &rightPlane;
                         }
-                        return 0;//return false;
+                        return 0;
                 }
         };
 
 
         class Patch {
         public:
+                enum class LodSmoothing {
+                        None, // Located between patches of same resolution
+                        Left, // Left neighbour has higher detail.
+                        Right, // Right neighbour has higher detail.
+                        Front, // Front neighbour has higher detail.
+                        Back   // Back neighbour has higher detail.
+                };
+
                 Patch ()                         = delete;
                 Patch (Patch const &)            = delete;
                 Patch& operator= (Patch const &) = delete;
@@ -170,7 +157,9 @@ namespace picogen { namespace cracker { namespace detail {
                        unsigned int res_x,
                        unsigned int res_z,
                        std::function<real (real, real)> fun,
-                       real &y_min, real &y_max);
+                       real &y_min, real &y_max,
+                       LodSmoothing
+                       );
                 ~Patch();
                 Intersection::Optional operator() (Ray const &ray,
                                                    real min, real max) const;
@@ -188,7 +177,10 @@ namespace picogen { namespace cracker { namespace detail {
         private:
                 real left_, right_, front_, back_;
                 unsigned int res_x_, res_z_, stride_;
-                //Vector *h_;
+
+                // I think there is no way around a switch upon a quad-type.
+                //  normal               -> Quad
+                //  lod connection patch -> Some to be named 3-Triangle quad.
                 Quad *h_;
 
                 // speed ups (could be easily computed at runtime)
@@ -205,13 +197,6 @@ namespace picogen { namespace cracker { namespace detail {
                                                   int left, int right,
                                                   int front, int back) const;
 
-                //Intersection::Optional intersect_quad (Ray const &, int X, int Z) const ;
-                //Quad::Plane const * intersect_quad (Ray const &, Quad const *, real &t) const ;
-                /*Intersection::Optional intersect_amanatides (Ray const &ray,
-                                                   real minT,
-                                                   real maxT) const;*/
-
-                //template <XDir
 
                 Quad const * ph (unsigned int x, unsigned z) const;
                 Quad& h (unsigned int x, unsigned z);
