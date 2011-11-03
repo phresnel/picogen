@@ -15,6 +15,7 @@ namespace detail {
 
 Patch::Patch (real left, real right,
               real front, real back,
+              Point cameraPosition,
               unsigned int res_x,
               unsigned int res_z,
               std::function<real (real, real)> fun,

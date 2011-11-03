@@ -84,6 +84,7 @@ namespace picogen { namespace cracker { namespace detail {
                 // Creates a root node.
                 Node (unsigned int depth,
                       std::function<real (real,real)> const & height,
+                      Point cameraPosition,
                       BoundingBox &rootBB)
                 {
                         qDebug() << "creating Quadtree";
@@ -99,6 +100,7 @@ namespace picogen { namespace cracker { namespace detail {
                         create(depth,
                                left, right,
                                front, back,
+                               cameraPosition,
                                height);
                         rootBB = BoundingBox (Point(left, min_h_, front),
                                               Point(right, max_h_, back));
@@ -278,6 +280,7 @@ namespace picogen { namespace cracker { namespace detail {
 
                 void create(unsigned int depth,
                             real left, real right, real front, real back,
+                            Point cameraPosition,
                             std::function<real (real,real)> const & height
                 ) {
                         const bool leaf = (depth==0);
@@ -289,18 +292,23 @@ namespace picogen { namespace cracker { namespace detail {
                         if (leaf)
                                 makeLeaf(left, right,
                                          front, back,
+                                         cameraPosition,
                                          height);
                         else makeInner(depth,
                                        left, right,
-                                       front, back, height);
+                                       front, back,
+                                       cameraPosition,
+                                       height);
                 }
                 void makeLeaf (real left, real right,
                                real front, real back,
+                               Point cameraPosition,
                                std::function<real (real,real)> const & height)
                 {
                         leaf_ = true;
                         patch_ = new Patch (left, right,
                                             front, back,
+                                            cameraPosition,
                                             8,8,
                                             height,
                                             min_h_, max_h_,
@@ -310,6 +318,7 @@ namespace picogen { namespace cracker { namespace detail {
                 void makeInner(unsigned int depth,
                                real left, real right,
                                real front, real back,
+                               Point cameraPosition,
                                std::function<real (real,real)> const & height)
                 {
                         leaf_ = false;
@@ -323,6 +332,7 @@ namespace picogen { namespace cracker { namespace detail {
                                                      childBoxes[i].right,
                                                      childBoxes[i].front,
                                                      childBoxes[i].back,
+                                                     cameraPosition,
                                                      height);
                         }
                         refineBoundingBox();

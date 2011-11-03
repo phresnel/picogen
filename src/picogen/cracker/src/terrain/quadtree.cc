@@ -18,14 +18,14 @@
 
 namespace picogen { namespace cracker {
 
-Quadtree::Quadtree ()
+Quadtree::Quadtree (Point cameraPosition)
 {
         const auto fun = [](real x,real y) {
                 return -25 + 15 * cos(y*0.1) * /**/ cos(x*0.1);
         };
 
         qDebug() << "sizeof(Node) =" << sizeof(detail::Node);
-        root_.reset (new detail::Node (5, fun, aabb_));
+        root_.reset (new detail::Node (5, fun, cameraPosition, aabb_));
 }
 
 Intersection::Optional Quadtree::operator() (Ray const &ray_) const {

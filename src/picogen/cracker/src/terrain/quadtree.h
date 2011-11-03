@@ -17,7 +17,8 @@ class Normal;
 
 class Quadtree {
 public:
-        Quadtree ();
+        Quadtree () = delete;
+        Quadtree (Point cameraPosition);
         Intersection::Optional operator() (Ray const &ray) const;
 private:
         std::shared_ptr<detail::Node> root_;
