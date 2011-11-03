@@ -17,7 +17,7 @@ Color VolumeIntegrator::transmittance_ (const Scene    &scene,
                                         const Random   &random
                                        ) const
 {
-        return Color::FromRgb(1,0,0);
+        return Color::FromRgb(1,1,1);
 }
 
 } }

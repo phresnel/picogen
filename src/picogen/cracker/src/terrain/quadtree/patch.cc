@@ -78,7 +78,7 @@ Patch::Patch (real left, real right,
                                Point(right, y_max, back));*/
 
         material_.reset (new LambertMaterial(Color::FromRgb(
-                                                     0.3,0.8,0.4)));
+                                                     1.0,1.0,1.0)));
 }
 
 Patch::~Patch() {
