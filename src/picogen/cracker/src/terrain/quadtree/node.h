@@ -84,6 +84,13 @@ namespace picogen { namespace cracker { namespace detail {
                         : maxRecursion (r),
                           maxDetailRange(maxD), minDetailRange(minD)
                 {}
+
+                int deepnes (Point camera, Point p) const {
+                        const real dist = length (p - camera);
+                        const real l = std::max (real(0), dist - maxDetailRange)
+                                       / (minDetailRange - maxDetailRange);
+                        return maxRecursion - maxRecursion * l;
+                }
         };
 
         class Node {
