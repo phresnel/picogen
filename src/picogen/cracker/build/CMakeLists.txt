@@ -175,6 +175,7 @@ set (sources ${sources}
         ${cracker_src_dir}/terrain/gridterrain.cc
         ${cracker_src_dir}/terrain/quadtree.cc
         ${cracker_src_dir}/terrain/quadtree/patch.cc
+        ${cracker_src_dir}/terrain/quadtree/node.cc
 
         ${cracker_src_dir}/presentationfilter.cc
 )
