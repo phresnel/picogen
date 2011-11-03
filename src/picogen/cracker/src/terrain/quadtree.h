@@ -18,7 +18,10 @@ class Normal;
 class Quadtree {
 public:
         Quadtree () = delete;
-        Quadtree (Point cameraPosition);
+        Quadtree (Point cameraPosition,
+                  int maxRecursion,          // maximum recursion depth
+                  real distanceOfMaxDetail,  // range to which max detail is used
+                  real distanceOfMinDetail); // range beyond which min detail is used
         Intersection::Optional operator() (Ray const &ray) const;
 private:
         std::shared_ptr<detail::Node> root_;

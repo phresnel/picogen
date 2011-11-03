@@ -76,13 +76,23 @@ namespace picogen { namespace cracker { namespace detail {
                 };
         };
 
+        struct NodeDetail {
+                int maxRecursion;
+                real maxDetailRange, minDetailRange;
+
+                NodeDetail (int r, real maxD, real minD)
+                        : maxRecursion (r),
+                          maxDetailRange(maxD), minDetailRange(minD)
+                {}
+        };
+
         class Node {
         public:
                 Node& operator= (Node const &) = delete;
                 Node(Node const &)             = delete;
 
                 // Creates a root node.
-                Node (unsigned int depth,
+                Node (NodeDetail detail,
                       std::function<real (real,real)> const & height,
                       Point cameraPosition,
                       BoundingBox &rootBB)
@@ -97,7 +107,7 @@ namespace picogen { namespace cracker { namespace detail {
                         right_ = right;
                         front_ = front;
                         back_ = back;
-                        create(depth,
+                        create(detail.maxRecursion,
                                left, right,
                                front, back,
                                cameraPosition,
