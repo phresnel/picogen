@@ -114,7 +114,7 @@ namespace picogen { namespace cracker { namespace detail {
                         right_ = right;
                         front_ = front;
                         back_ = back;
-                        create(detail.maxRecursion,
+                        create(0, detail,
                                left, right,
                                front, back,
                                cameraPosition,
@@ -295,12 +295,13 @@ namespace picogen { namespace cracker { namespace detail {
 
                 Node() {}
 
-                void create(unsigned int depth,
+                void create(int depth,
+                            NodeDetail detail,
                             real left, real right, real front, real back,
                             Point cameraPosition,
                             std::function<real (real,real)> const & height
                 ) {
-                        const bool leaf = (depth==0);
+                        const bool leaf = (depth==detail.maxRecursion);
                         left_  = left;
                         right_ = right;
                         front_ = front;
@@ -311,7 +312,7 @@ namespace picogen { namespace cracker { namespace detail {
                                          front, back,
                                          cameraPosition,
                                          height);
-                        else makeInner(depth,
+                        else makeInner(depth, detail,
                                        left, right,
                                        front, back,
                                        cameraPosition,
@@ -332,7 +333,7 @@ namespace picogen { namespace cracker { namespace detail {
                                             Patch::LodSmoothing::None
                                             );
                 }
-                void makeInner(unsigned int depth,
+                void makeInner(int depth, NodeDetail detail,
                                real left, real right,
                                real front, real back,
                                Point cameraPosition,
@@ -344,7 +345,7 @@ namespace picogen { namespace cracker { namespace detail {
                                                     front, back);
                         children_ = new Node[4];
                         for (size_t i=0; i<4; ++i) {
-                                children_[i].create (depth-1,
+                                children_[i].create (depth+1, detail,
                                                      childBoxes[i].left,
                                                      childBoxes[i].right,
                                                      childBoxes[i].front,

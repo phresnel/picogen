@@ -22,6 +22,9 @@ Quadtree::Quadtree (Point cameraPosition,
                     int maxRecursion,
                     real distanceOfMaxDetail, real distanceOfMinDetail
 ) {
+        assert (maxRecursion >= 0);
+        assert (distanceOfMinDetail > distanceOfMaxRecursion);
+
         const auto fun = [](real x,real y) {
                 return -25 + 15 * cos(y*0.1) * /**/ cos(x*0.1);
         };
