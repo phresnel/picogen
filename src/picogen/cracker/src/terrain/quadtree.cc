@@ -26,14 +26,15 @@ Quadtree::Quadtree (Point cameraPosition,
         assert (distanceOfMinDetail > distanceOfMaxRecursion);
 
         const auto fun = [](real x,real y) {
-                return -25 + 15 * cos(y*0.1) * /**/ cos(x*0.1);
+                return 15.1 * cos(y*0.1) * /**/ cos(x*0.1);
         };
 
-        qDebug() << "sizeof(Node) =" << sizeof(detail::Node);
+        //qDebug() << "sizeof(Node) =" << sizeof(detail::Node);
+        qDebug() << "qt c" << cameraPosition.z();
         root_.reset (new detail::Node (
                              detail::NodeDetail (maxRecursion,
-                                                 distanceOfMinDetail,
-                                                 distanceOfMaxDetail),
+                                                 distanceOfMaxDetail,
+                                                 distanceOfMinDetail),
                              fun, cameraPosition, aabb_));
 }
 
@@ -52,9 +53,8 @@ Intersection::Optional Quadtree::operator() (Ray const &ray_) const {
         if (min < 0) min = 0;
         if (min > max) return Intersection::Optional();
 
-        return detail::Node::intersect_iter(&*root_, ray,
-                                            min,
-                                            max);
+        return detail::Node::intersect_rec (&*root_, ray, min, max);
+        return detail::Node::intersect_iter(&*root_, ray, min, max);
 }
 
 } }

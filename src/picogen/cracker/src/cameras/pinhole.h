@@ -19,7 +19,7 @@ public:
 
                 u = u * 2 - 1;
                 v = v * 2 - 1;
-                return Ray (Point(0,0,0),
+                return Ray (Point(0,85,0),
                             Direction::FromUnnormalized(u, v, frontPlaneDistance_));
         }
 

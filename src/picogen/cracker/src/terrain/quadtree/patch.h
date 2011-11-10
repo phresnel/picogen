@@ -173,8 +173,28 @@ namespace picogen { namespace cracker { namespace detail {
                                                        real d_x, real d_z,
                                                        real id_x, real id_z) const;
 
-                //try that out and if won''t be fast than 0.72 secs, rollback changes
+                Intersection::Optional slow_intersect (Ray const &ray,
+                                                       real min, real max) const
+                {
+                        for (int v=0; v<res_z_; ++v) {
+                                for (int u=0; u<res_x_; ++u) {
+                                        Quad const *q = this->ph(u, v);
+                                        real t;
+                                        Quad::Plane const * p = q->intersect(ray, t);
+                                        if (p && t>=min && t<=max) {
+                                                return Intersection (t,
+                                                        this->material_,
+                                                        DifferentialGeometry (
+                                                                p->normal,
+                                                                p->normal,
+                                                                p->u,
+                                                                p->v)) ;
 
+                                        }
+                                }
+                        }
+                        return Intersection::Optional ();
+                }
         private:
                 real left_, right_, front_, back_;
                 unsigned int res_x_, res_z_, stride_;

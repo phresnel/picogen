@@ -53,11 +53,11 @@ void RenderWidget::on_pushButton_clicked()
 
         glimpse::StopWatch rendertime;
 
-        const auto integrator = combine (PathIntegrator(),
+        const auto integrator = WhittedIntegrator();/*combine (PathIntegrator(),
                                          combine(SurfaceNormalIntegrator(),
                                                  PrimaryDistanceIntegrator(0,100),
                                                  1),
-                                         0);
+                                         0);//*/
         const auto presentation_filter = [] (Color const &col) {
                 return Color::FromRgb (col.r(), col.g(), col.b());
         };

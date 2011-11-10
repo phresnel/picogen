@@ -4,6 +4,8 @@
 #include <array>
 #include <cassert>
 
+#include <iostream>
+
 #include "patch.h"
 #include "aabb.h"
 #include "real.h"
@@ -83,13 +85,60 @@ namespace picogen { namespace cracker { namespace detail {
                 NodeDetail (int r, real maxD, real minD)
                         : maxRecursion (r),
                           maxDetailRange(maxD), minDetailRange(minD)
-                {}
+                {
+                        assert (maxD < minD);
+                }
 
-                int deepnes (Point camera, Point p) const {
-                        const real dist = length (p - camera);
-                        const real l = std::max (real(0), dist - maxDetailRange)
+                int deepness (Point camera,
+                              real left, real right,
+                              real front, real back
+                ) const {
+                        assert (left <= right);
+                        assert (front <= back);
+                        const real x = camera.x(),
+                                   z = camera.z();
+                        real dist;
+                        if (x>=left && x<=right &&
+                            z>=front && z<=back)
+                        {
+                                dist = 0;
+                        } else if (x>=left && x<=right) {
+                                dist = std::min(std::fabs(z-front),
+                                                std::fabs(z-back));
+                        } else if (z>=front && z<=back) {
+                                dist = std::min(std::fabs(x-left),
+                                                std::fabs(x-right));
+                        } else {
+                                const real xl = std::fabs (x-left),
+                                           xr = std::fabs (x-right),
+                                           zf = std::fabs (z-front),
+                                           zb = std::fabs (z-back);
+                                const real a = xl*xl + zb*zb,
+                                           b = xl*xl + zf*zf,
+                                           c = xr*xr + zb*zb,
+                                           d = xr*xr + zf*zf;
+                                real min = a;
+                                if (b < min) min = b;
+                                if (c < min) min = c;
+                                if (d < min) min = d;
+
+                                dist = std::sqrt(min);
+                        }
+
+                        //const real dist = length (p - camera);
+                        const real l_ = std::max (real(0), dist - maxDetailRange)
                                        / (minDetailRange - maxDetailRange);
-                        return maxRecursion - maxRecursion * l;
+                        const real l = l_ < 0 ? 0 : l_ > 1 ? 1 : l_;
+
+                        const int ret = int(maxRecursion - real(maxRecursion) * l);
+                        /*qDebug() << "[" << camera.z() << ", l:" << l << l_ << ", dparams:"
+                                 << maxRecursion << maxDetailRange << minDetailRange << "]";*/
+                        /*qDebug() //<< dist << " --> " << l << " --> "
+                                 << ret
+                                    << "(" << 0.5*(left+right)
+                                           << 0.5*(front+back) << ")"
+                                    << "|" << dist << "|";*/
+                        return ret;
                 }
         };
 
@@ -105,15 +154,16 @@ namespace picogen { namespace cracker { namespace detail {
                       BoundingBox &rootBB)
                 {
                         qDebug() << "creating Quadtree";
-                        const Point center (0, -40, 50);
-                        const real left = center.x()-100,
-                                   right = center.x()+100,
-                                   front = center.z()-100,
-                                   back = center.z()+100;
+                        const real c_x = 0, c_z = 0;
+                        const real left = c_x-300,
+                                   right = c_x+300,
+                                   front = c_z-300,
+                                   back = c_z+300;
                         left_ = left;
                         right_ = right;
                         front_ = front;
                         back_ = back;
+                        qDebug() << "root-node c: " << cameraPosition.z();
                         create(0, detail,
                                left, right,
                                front, back,
@@ -223,7 +273,7 @@ namespace picogen { namespace cracker { namespace detail {
                         //std::stack<Todo> todo; § replace me with somethint stack-framable
                         Todo stack[128];
                         Todo *top = stack;
-                        *top++ = Todo(minT_, maxT_, node);
+                        *top++ = Todo(minT_, maxT_, node); //wrong state restore?
                         while (top != stack) {
                                 const Todo curr = *--top;
                                 const Node &node = *curr.node;
@@ -295,13 +345,57 @@ namespace picogen { namespace cracker { namespace detail {
 
                 Node() {}
 
+                static Intersection::Optional intersect_rec (Node *node,
+                                                             Ray const &ray,
+                                                             real minT, real maxT)
+                {
+                        BoundingBox aabb (Point(node->left_, node->min_h_, node->front_),
+                                          Point(node->right_, node->max_h_, node->back_));
+                        if (auto in = intersect (ray, aabb)) {
+                                if (node->leaf_) {
+                                        return node->patch_->slow_intersect(ray, minT, maxT);
+                                }
+                                real nearest = -1;
+                                Intersection::Optional n;
+                                for (int i=0; i<4; ++i) {
+                                        const Intersection::Optional op
+                                                = intersect_rec(node->children_+i,
+                                                                ray, minT, maxT);
+                                        if (op) {
+                                                const Intersection& i = op.intersection();
+                                                if (i.distance() < nearest || nearest<0) {
+                                                        n = op;
+                                                        nearest = i.distance();
+                                                }
+                                        }
+                                }
+                                return n;
+                        }
+                        return Intersection::Optional();
+                }
+
                 void create(int depth,
                             NodeDetail detail,
                             real left, real right, real front, real back,
                             Point cameraPosition,
                             std::function<real (real,real)> const & height
                 ) {
-                        const bool leaf = (depth==detail.maxRecursion);
+                        const Point center (
+                                0.5*right + 0.5*left,
+                                0,
+                                0.5*back + 0.5*front
+                        );
+                        const bool leaf = (depth>=detail.deepness(cameraPosition,
+                                                                  left, right,
+                                                                  front, back));
+
+                        /*if (leaf) {
+                                qDebug() << cameraPosition.x() << cameraPosition.y() << cameraPosition.z()
+                                        << ":" << center.x() << center.y() << center.z()
+                                        << ":" << detail.deepness(cameraPosition,
+                                                                  center);
+
+                        }*/
                         left_  = left;
                         right_ = right;
                         front_ = front;
@@ -317,6 +411,15 @@ namespace picogen { namespace cracker { namespace detail {
                                        front, back,
                                        cameraPosition,
                                        height);
+
+                        for (int i=0; i<depth; ++i)
+                                std::cout << "  ";
+                        std::cout << "  {" << depth << "} "
+                                  << this->min_h_ << ".." << this->max_h_
+                                  //<< " [" << left_ << " " << right_ << " "
+                                  //<< front_ << " " << back_ << "]"
+                                  << std::endl;;
+
                 }
                 void makeLeaf (real left, real right,
                                real front, real back,
@@ -327,7 +430,7 @@ namespace picogen { namespace cracker { namespace detail {
                         patch_ = new Patch (left, right,
                                             front, back,
                                             cameraPosition,
-                                            8,8,
+                                            4,4,//TODO: 32 is good
                                             height,
                                             min_h_, max_h_,
                                             Patch::LodSmoothing::None
