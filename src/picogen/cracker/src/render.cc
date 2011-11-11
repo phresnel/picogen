@@ -4,6 +4,8 @@
 #include "random.h"
 #include "volumeintegrators/volumeintegrator.h"
 
+int globalTravCounter;
+
 namespace picogen { namespace cracker {
 
 RendererBase::RendererBase (std::shared_ptr<Scene> scene)

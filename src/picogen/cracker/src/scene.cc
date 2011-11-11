@@ -13,7 +13,7 @@
 
 namespace picogen { namespace cracker {
 
-Scene::Scene() : terrain_(Point (0,0,0), 7, 70, 250)
+Scene::Scene() : terrain_(Point (0,0,0), 8,100,250)
 {
         std::shared_ptr<picogen::redshift::background::PssSunSky> pssSunSky(
                                 new picogen::redshift::background::PssSunSky(

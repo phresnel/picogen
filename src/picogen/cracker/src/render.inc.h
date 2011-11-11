@@ -6,7 +6,11 @@
 #include "random.h"
 #include "kallisto/rng/kiss.hh"
 
+// TODO: remove iostream and QDebug
+#include <iostream>
 #include <QDebug>
+
+extern int globalTravCounter;
 
 namespace picogen  { namespace cracker {
 
@@ -33,7 +37,6 @@ namespace {
         }
 }
 
-
 template <typename SurfaceIntegrator,
           typename Camera>
 inline void Renderer<SurfaceIntegrator, Camera>::render (
@@ -51,18 +54,25 @@ inline void Renderer<SurfaceIntegrator, Camera>::render (
 
                 #pragma omp parallel for schedule(dynamic)
                 for (unsigned int x=0; x<width; ++x) {
+                        globalTravCounter = 0;
                         Random random = createRandom(x,y,row[x].numSamples(),0);
 
                         const real u = x/static_cast<real>(width);
 
                         const Ray primary = camera_ (u, v);
                         const Intersection::Optional PI = scene(primary);
-                        if (PI) {
-                                const Color c = integrator_(primary, PI.intersection(),
-                                                            scene, *this, random);
-                                row[x].add (c * transmittance(primary, random));
+
+                        const auto T = 0*0.001*3000*Color::FromRgb(1.0, 0.2, 0.2)*globalTravCounter;
+                        if (0) {
+                                row[x].add (T);
                         } else {
-                                row[x].add (scene.background (primary));
+                                if (PI) {
+                                        const Color c = integrator_(primary, PI.intersection(),
+                                                                    scene, *this, random);
+                                        row[x].add (T+c * transmittance(primary, random));
+                                } else {
+                                        row[x].add (T+scene.background (primary));
+                                }
                         }
                 }
         }

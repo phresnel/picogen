@@ -26,7 +26,7 @@ Quadtree::Quadtree (Point cameraPosition,
         assert (distanceOfMinDetail > distanceOfMaxRecursion);
 
         const auto fun = [](real x,real y) {
-                return 15.1 * cos(y*0.1) * /**/ cos(x*0.1);
+                return 10.1 * cos(y*0.1) * /**/ cos(x*0.1);
         };
 
         //qDebug() << "sizeof(Node) =" << sizeof(detail::Node);
@@ -53,8 +53,9 @@ Intersection::Optional Quadtree::operator() (Ray const &ray_) const {
         if (min < 0) min = 0;
         if (min > max) return Intersection::Optional();
 
-        return detail::Node::intersect_rec (&*root_, ray, min, max);
-        return detail::Node::intersect_iter(&*root_, ray, min, max);
+        //return detail::Node::intersect_rec (&*root_, ray, min, max);
+        //return detail::Node::intersect_iter(&*root_, ray, min, max);
+        return detail::Node::new_intersect(&*root_, ray, min, max);
 }
 
 } }

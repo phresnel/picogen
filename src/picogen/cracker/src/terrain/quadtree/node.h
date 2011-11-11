@@ -10,6 +10,8 @@
 #include "aabb.h"
 #include "real.h"
 
+extern int globalTravCounter;
+
 namespace picogen { namespace cracker { namespace detail {
 
         // Except for debugging, the literals below don't have a meaning.
@@ -180,7 +182,7 @@ namespace picogen { namespace cracker { namespace detail {
                 }
 
                 struct Todo {
-                        Todo() {}
+                        Todo() : maxT(-2), minT(-1), node(0) {}
                         Todo (real minT, real maxT, Node *node)
                                 : minT(minT), maxT(maxT), node(node) {}
                         real minT, maxT;
@@ -199,24 +201,7 @@ namespace picogen { namespace cracker { namespace detail {
                         // +----+----+
                         typedef TravOrder<d_up, d_right> order;
 
-                        #if 0
-                        auto add = [&] (real from, real to, int order) {
-                                if (from<=to) {
-                                        *top++ = Todo(from, to,
-                                                      children+order);
-                                }
-                        };
-                        add (std::max(std::max(t_x, t_z), Min), Max,
-                             order::child_d);
-                        add (std::max(t_z, Min), std::min(t_x, Max),
-                             order::child_c);
-                        add (std::max(t_x, Min), std::min(t_z, Max),
-                             order::child_b);
-                        add (Min, std::min(std::min(t_x, t_z), Max),
-                             order::child_a);
-
-                        #else
-                        real from[4] = {0,0,0,0}, to[4] = {-1,-1,-1,-1};
+                        real from[4] = {0,0,0,0}, to[4] = {-1,-1,-1,-1}; // TODO: initialization prolly not needed
                         {
                                 from[order::child_a] = Min;
                                 to  [order::child_a] = std::min(std::min(t_x, t_z), Max);
@@ -242,12 +227,11 @@ namespace picogen { namespace cracker { namespace detail {
                         push (order::child_c);
                         push (order::child_b);
                         push (order::child_a);
-                        #endif
                 }
 
                 template <XDirection d_right, ZDirection d_up>
                 static Intersection::Optional intersect_iter_directed (
-                        Node *node,
+                        Node *root,
                         Ray const &ray,
                         real minT_, real maxT_
 
@@ -271,41 +255,48 @@ namespace picogen { namespace cracker { namespace detail {
                         //if (0 == dir.z()) return Intersection::Optional();
 
                         //std::stack<Todo> todo; § replace me with somethint stack-framable
-                        Todo stack[128];
+                        Todo stack[128]; // TODO: rid magic number
                         Todo *top = stack;
-                        *top++ = Todo(minT_, maxT_, node); //wrong state restore?
+                        *top++ = Todo(minT_, maxT_, root);
                         while (top != stack) {
                                 const Todo curr = *--top;
                                 const Node &node = *curr.node;
 
+                                ++globalTravCounter;
+
                                 // But we got to check for vertical intersection now.
-                                const real min_h = o_y + curr.minT * d_y;
-                                const real max_h = o_y + curr.maxT * d_y;
+
+                                if (1) { // TODO: re-enable
+                                        const real min_h = o_y + curr.minT * d_y;
+                                        const real max_h = o_y + curr.maxT * d_y;
 
 
-                                // BOTTLENECK when this->aabb.get...?
-                                if (((min_h < node.min_h_) & (max_h < node.min_h_))
-                                   |((min_h > node.max_h_) & (max_h > node.max_h_))
-                                   //|(curr.minT>curr.maxT)
-                                   ) {
-                                        continue;
+                                        // BOTTLENECK when this->aabb.get...?
+                                        if (((min_h < node.min_h_) & (max_h < node.min_h_))
+                                           |((min_h > node.max_h_) & (max_h > node.max_h_))
+                                           //|(curr.minT>curr.maxT)
+                                           ) {
+                                                continue;
+                                        }
                                 }
-
                                 assert (curr.minT >= 0);
 
                                 if (node.leaf_) {
                                         const auto i = (*node.patch_)
-                                                .fast_intersect<d_up,
-                                                                d_right>
+                                                .fast_intersect<d_up, d_right>
                                                 (ray, curr.minT, curr.maxT,
                                                  o_x, o_z, d_x, d_z, id_x, id_z);
+
+
+                                        //globalTravCounter = 100*(curr.maxT-curr.minT);
+                                        globalTravCounter = 100*(curr.minT);
                                         if (i) return i;
                                 } else {
                                         // Find out which ones to traverse.
-                                        const real c_x = 0.5*node.left_ + 0.5*node.right_;
-                                        const real c_z = 0.5*node.front_+ 0.5*node.back_;
-                                        const real d_x = (c_x - o_x) * id_x;
-                                        const real d_z = (c_z - o_z) * id_z;
+                                        const real c_x = 0.5*node.left_ + 0.5*node.right_,
+                                                   c_z = 0.5*node.front_+ 0.5*node.back_,
+                                                   d_x = (c_x - o_x) * id_x,
+                                                   d_z = (c_z - o_z) * id_z;
                                         determine<d_right, d_up> (top,
                                                                   curr.minT, curr.maxT,
                                                                   d_x, d_z,
@@ -374,109 +365,30 @@ namespace picogen { namespace cracker { namespace detail {
                         return Intersection::Optional();
                 }
 
+
+                static Intersection::Optional new_intersect (Node *node,
+                                                             Ray const &ray,
+                                                             real minT, real maxT);
+        private:
+
                 void create(int depth,
                             NodeDetail detail,
                             real left, real right, real front, real back,
                             Point cameraPosition,
                             std::function<real (real,real)> const & height
-                ) {
-                        const Point center (
-                                0.5*right + 0.5*left,
-                                0,
-                                0.5*back + 0.5*front
-                        );
-                        const bool leaf = (depth>=detail.deepness(cameraPosition,
-                                                                  left, right,
-                                                                  front, back));
-
-                        /*if (leaf) {
-                                qDebug() << cameraPosition.x() << cameraPosition.y() << cameraPosition.z()
-                                        << ":" << center.x() << center.y() << center.z()
-                                        << ":" << detail.deepness(cameraPosition,
-                                                                  center);
-
-                        }*/
-                        left_  = left;
-                        right_ = right;
-                        front_ = front;
-                        back_  = back;
-
-                        if (leaf)
-                                makeLeaf(left, right,
-                                         front, back,
-                                         cameraPosition,
-                                         height);
-                        else makeInner(depth, detail,
-                                       left, right,
-                                       front, back,
-                                       cameraPosition,
-                                       height);
-
-                        for (int i=0; i<depth; ++i)
-                                std::cout << "  ";
-                        std::cout << "  {" << depth << "} "
-                                  << this->min_h_ << ".." << this->max_h_
-                                  //<< " [" << left_ << " " << right_ << " "
-                                  //<< front_ << " " << back_ << "]"
-                                  << std::endl;;
-
-                }
+                );
                 void makeLeaf (real left, real right,
                                real front, real back,
                                Point cameraPosition,
-                               std::function<real (real,real)> const & height)
-                {
-                        leaf_ = true;
-                        patch_ = new Patch (left, right,
-                                            front, back,
-                                            cameraPosition,
-                                            4,4,//TODO: 32 is good
-                                            height,
-                                            min_h_, max_h_,
-                                            Patch::LodSmoothing::None
-                                            );
-                }
+                               std::function<real (real,real)> const & height);
                 void makeInner(int depth, NodeDetail detail,
                                real left, real right,
                                real front, real back,
                                Point cameraPosition,
-                               std::function<real (real,real)> const & height)
-                {
-                        leaf_ = false;
-                        const ChildBoundingQuads childBoxes =
-                                        child_boxen(left, right,
-                                                    front, back);
-                        children_ = new Node[4];
-                        for (size_t i=0; i<4; ++i) {
-                                children_[i].create (depth+1, detail,
-                                                     childBoxes[i].left,
-                                                     childBoxes[i].right,
-                                                     childBoxes[i].front,
-                                                     childBoxes[i].back,
-                                                     cameraPosition,
-                                                     height);
-                        }
-                        refineBoundingBox();
-                }
+                               std::function<real (real,real)> const & height);
+                void refineBoundingBox();
 
-                // Refinement for inner nodes.
-                // Pre-condition: * child nodes are refined
-                //                * has child nodes
-                void refineBoundingBox () {
-                        real min_h = children_[0].min_h_;
-                        min_h = min(min_h, children_[1].min_h_);
-                        min_h = min(min_h, children_[2].min_h_);
-                        min_h = min(min_h, children_[3].min_h_);
-                        real max_h = children_[0].max_h_;
-                        max_h = max(max_h, children_[1].max_h_);
-                        max_h = max(max_h, children_[2].max_h_);
-                        max_h = max(max_h, children_[3].max_h_);
 
-                        this->min_h_ = min_h;
-                        this->max_h_ = max_h;
-                }
-
-        private:
                 union {
                         Node *children_;
                         Patch *patch_;
