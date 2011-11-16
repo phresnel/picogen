@@ -313,6 +313,7 @@ namespace crystal {
                                 lhs.dir.y * f,
                                 lhs.dir.z * f};
                 }
+
         private:
                 Vector dir;
         };

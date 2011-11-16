@@ -51,7 +51,9 @@ namespace crystal {
 
         class Renderer {
         public:
-            virtual ~Renderer();
+                virtual ~Renderer() {}
+
+                void render() const { return this->render_(); }
             /*virtual void Render(const Scene *scene) = 0;
             virtual Spectrum Li(const Scene *scene, const RayDifferential &ray,
                 const Sample *sample, RNG &rng, MemoryArena &arena,
@@ -60,6 +62,10 @@ namespace crystal {
                 const RayDifferential &ray, const Sample *sample,
                 RNG &rng, MemoryArena &arena) const = 0;
                 */
+
+        private:
+                virtual void render_() const = 0;
+
         };
 
         class FlatRenderer : public Renderer {
@@ -76,9 +82,28 @@ namespace crystal {
                         , volumeIntegrator_(volumeIntegrator)
                 {
                 }
+        private:
+                void render_ () const {
+                        const int     height = film_->height();
+                        const int     width  = film_->width();
+                        const Camera& camera = *camera_;
+                        Film&         film   = *film_;
 
+                        for (int y=0; y<height; ++y) {
+                                for (int x=0; x<width; ++x) {
+                                        const CameraSample sample(x, y,
+                                                                  x/real(width),
+                                                                  y/real(height));
+                                        const Ray ray = camera(sample);
 
-                void render () const {
+                                        const Vector dir = ray.direction*1;
+                                        film.addSample(sample, Radiance::FromRgb(
+                                                                0.5+dir.x,
+                                                                0.5+dir.y,
+                                                                0.5+dir.z
+                                                               ));
+                                }
+                        }
                 }
 
         private:
@@ -116,10 +141,17 @@ void RenderWidget::updateDisplay () {
 
         using namespace crystal;
 
-        shared_ptr<const Film>       film   (new Film(320, 240));
-        shared_ptr<const Camera>     camera (new cameras::Pinhole(1));
-        //shared_ptr<const Renderer> renderer (new Film(320, 240));
+        shared_ptr<Film>           film     (new Film(320, 240));
+        shared_ptr<const Camera>   camera   (new cameras::Pinhole(1));
+        shared_ptr<const Renderer> renderer (new FlatRenderer(
+                                                film,
+                                                shared_ptr<const Scene>(),
+                                                camera,
+                                                shared_ptr<const SurfaceIntegrator>(),
+                                                shared_ptr<const VolumeIntegrator>()
+                                            ));
 
+        renderer->render();
 
         const unsigned int width = film->width(),
                            height = film->height();
