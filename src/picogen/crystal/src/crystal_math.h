@@ -23,6 +23,8 @@
 
 
 #include <cmath>
+#include <cassert>
+
 namespace crystal {
         typedef float real;
 
@@ -156,25 +158,183 @@ namespace crystal {
 namespace crystal {
         struct CameraSample {
         public:
+                real imageX, imageY; // [0..height), [0..width)
+                real lensU, lensV;   // [0..1), [0..1)
+
                 CameraSample (real imageX, real imageY, real lensU, real lensV)
-                        : imageX_(imageX), imageY_(imageY)
-                        , lensU_(lensU), lensV_(lensV)
+                        : imageX(imageX), imageY(imageY)
+                        , lensU(lensU), lensV(lensV)
                 {
                 }
-
-                real imageX() const /* [0..height) */ { return imageX_; }
-                real imageY() const /* [0..width)  */ { return imageY_; }
-                real lensU () const /* [0..1)      */ { return lensU_;  }
-                real lensV () const /* [0..1)      */ { return lensV_;  }
-        private:
-                real imageX_, imageY_, lensU_, lensV_;
         };
 }
 
+namespace crystal {
+        class Vector {
+        public:
+                real x, y, z;
 
+                Vector (real x, real y, real z) : x(x), y(y), z(z) {}
+                Vector () : x(0), y(0), z(0) {}
+
+                Vector& operator+= (Vector const &rhs) {
+                        x += rhs.x;
+                        y += rhs.y;
+                        z += rhs.z;
+                        return *this;
+                }
+
+                Vector& operator-= (Vector const &rhs) {
+                        x -= rhs.x;
+                        y -= rhs.y;
+                        z -= rhs.z;
+                        return *this;
+                }
+
+                Vector& operator*= (real rhs) {
+                        x *= rhs;
+                        y *= rhs;
+                        z *= rhs;
+                        return *this;
+                }
+
+                Vector& operator/= (real rhs) {
+                        x /= rhs;
+                        y /= rhs;
+                        z /= rhs;
+                        return *this;
+                }
+        };
+
+        inline Vector operator+ (Vector lhs, Vector const &rhs)
+        {
+                return lhs += rhs;
+        }
+
+        inline Vector operator- (Vector lhs, Vector const &rhs)
+        {
+                return lhs -= rhs;
+        }
+
+        inline Vector operator* (Vector lhs, real rhs)
+        {
+                return lhs *= rhs;
+        }
+
+        inline Vector operator/ (Vector lhs, real rhs)
+        {
+                return lhs /= rhs;
+        }
+
+        inline Vector operator* (real lhs, Vector const &rhs)
+        {
+                return {lhs*rhs.x, lhs*rhs.y, lhs*rhs.z };
+        }
+
+        inline Vector operator/ (real lhs, Vector const &rhs)
+        {
+                return {lhs/rhs.x, lhs/rhs.y, lhs/rhs.z };
+        }
+
+        inline real length_sq (Vector const &v)
+        {
+                return v.x*v.x + v.y*v.y + v.z*v.z;
+        }
+
+        inline real length (Vector const &v)
+        {
+                return sqrt (length_sq (v));
+        }
+
+        inline Vector normalize (Vector const &v)
+        {
+                const real len = length(v);
+                return {v.x/len, v.y/len, v.z/len};
+        }
+
+
+
+        class Point {
+        public:
+                real x, y, z;
+
+                Point (real x, real y, real z) : x(x), y(y), z(z) {}
+                Point () : x(0), y(0), z(0) {}
+
+                Point& operator+= (Vector const &rhs)
+                {
+                        x+=rhs.x;
+                        y+=rhs.y;
+                        z+=rhs.z;
+                        return *this;
+                }
+
+                Point& operator-= (Vector const &rhs)
+                {
+                        x-=rhs.x;
+                        y-=rhs.y;
+                        z-=rhs.z;
+                        return *this;
+                }
+        };
+
+        inline Point operator+ (Point lhs, Vector const& rhs)
+        {
+                return lhs+=rhs;
+        }
+
+        inline Point operator- (Point lhs, Vector const& rhs)
+        {
+                return lhs-=rhs;
+        }
+
+        inline Vector operator- (Point const &lhs, Point const &rhs)
+        {
+                return {lhs.x-rhs.x, lhs.y-rhs.y, lhs.z-rhs.z};
+        }
+
+
+
+
+        class Direction
+        {
+        public:
+                Direction() = delete;
+
+                Direction (real x, real y, real z) :
+                        dir (normalize(Vector(x,y,z)))
+                {
+                        assert (x!=0 || y!=0 || z!=0);
+                }
+
+                friend Vector operator* (Direction const &lhs, real f)
+                {
+                        return {lhs.dir.x * f,
+                                lhs.dir.y * f,
+                                lhs.dir.z * f};
+                }
+        private:
+                Vector dir;
+        };
+}
 
 namespace crystal {
-        class Ray {};
+        class Ray
+        {
+        public:
+                Point     origin;
+                Direction direction;
+
+                Ray (Point const &origin, Direction const &direction)
+                        : origin(origin), direction(direction)
+                {
+                }
+
+                Point operator() (real f) const
+                {
+                        return origin + direction*f;
+                }
+        };
 }
 
 #endif // CRYSTAL_MATH_H

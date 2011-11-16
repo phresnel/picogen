@@ -51,8 +51,8 @@ Film::Film (int width, int height /*real crop[4]*/)
 
 void Film::addSample (CameraSample const &cs, Radiance const &rad)
 {
-        const int out_x = cs.imageX(),
-                  out_y = cs.imageY();
+        const int out_x = cs.imageX,
+                  out_y = cs.imageY;
         if (out_x < 0 || out_x>=width_) return;
         if (out_y < 0 || out_y>=height_) return;
         surface_[out_x + out_y*width_] += rad;
