@@ -3,6 +3,26 @@
 
 #include <QImage>
 
+// Some features we want:
+// * renderer with pause+continue capabilities
+// * flexible, yet performant
+// * clean, well-engineered code
+namespace crystal {
+
+        class RenderControl {
+        public:
+                // pause is expected to have low latency,
+                // so canPause would return false e.g. in case an acceleration
+                // structure must be built
+                bool pause();
+                bool canPause() const;
+
+                void proceed();
+
+                int activeThreadCount() const;
+        };
+}
+
 RenderWidget::RenderWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RenderWidget)

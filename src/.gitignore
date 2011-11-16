@@ -24,6 +24,11 @@ picogen/cracker/build/cracker
 picogen/cracker/build/cracker.cbp
 picogen/cracker/build/CMakeLists.txt.user
 
+picogen/crystal/build/Makefile
+picogen/crystal/build/crystal
+picogen/crystal/build/crystal.cbp
+picogen/crystal/build/CMakeLists.txt.user
+
 picogen/qt4_gui/CosyGui/build/redshift/
 picogen/qt4_gui/CosyGui/build/__/
 picogen/qt4_gui/CosyGui/build/Makefile
