@@ -2,8 +2,6 @@
 #include "mainwindow.h"
 #include <cassert>
 
-void cracker_static_init();
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

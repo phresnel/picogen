@@ -103,6 +103,9 @@ set (sources ${sources}
         ${crystal_src_dir}/mainwindow.cc
         ${crystal_src_dir}/renderwidget.cc
 
+        ${crystal_src_dir}/film.cc
+
+        ${crystal_src_dir}/cameras/pinhole.cc
 )
 
 
