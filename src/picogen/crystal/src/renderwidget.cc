@@ -27,92 +27,90 @@ namespace crystal {
 #include "crystal_math.h"
 #include "film.h"
 #include "cameras/pinhole.h"
+#include "geoblocks/ray_tri_intersect.h"
 
 
-
+#include <boost/optional.hpp>
 #include <memory>
+#include <functional>
+
 namespace crystal {
         using std::shared_ptr;
+        using boost::optional;
 
         class SurfaceIntegrator;
         class VolumeIntegrator;
-        class Geometry;
-        class Volume;
 
-        namespace geobits {
-                static const real tri_eps = 0.00000001;
-                int
-                raytri_intersect (
-                    const Ray &ray,
-                    const Point &a, const Point &b, const Point &c,
-                    real &t, real &u, real &v,
-                    Normal &normal_
-                ) {
-                    Vector vect0, vect1, nvect, normal;
-                    real det, inv_det;
+        struct Intersection
+        {
+                real distance;
+                Normal normal;
 
-                    vect0 = b - a;
-                    vect1 = c - a;
+                Intersection() = delete;
 
-                    normal = cross (vect0, vect1);
-                    det = -dot((Vector)ray.direction, normal);
+                Intersection (real distance, Normal const &normal)
+                        : distance(distance), normal(normal)
+                {}
+        };
+        typedef optional<Intersection> PIntersection;
 
-                    //---------
 
-                    /* if determinant is near zero, ray is parallel to the plane of triangle */
-                    if (det > -tri_eps && det < tri_eps) return 0;
+        class Geometry
+        {
+        public:
+                virtual ~Geometry() {}
+                PIntersection intersect (Ray const &ray) const {
+                        return this->intersect_(ray);
+                }
+        private:
+                virtual PIntersection intersect_ (Ray const &ray) const = 0;
+        };
 
-                    /* calculate vector from ray origin to a */
-                    //SUB(vect0,a,orig);
-                    vect0 = a - ray.origin;
-
-                    /* normal vector used to calculate u and v parameters */
-                    //CROSS(nvect,dir,vect0);
-                    nvect = cross ((Vector)ray.direction, vect0);
-
-                    inv_det = 1.0 / det;
-                    /* calculate vector from ray origin to b*/
-                    //SUB(vect1,b,orig);
-                    vect1 = b - ray.origin;
-
-                    /* calculate v parameter and test bounds */
-                    //*v = - DOT(vect1,nvect) * inv_det;
-                    v = -dot(vect1, nvect) * inv_det;
-
-                    if (v < 0.0 || v > 1.0) return 0;
-
-                    /* calculate vector from ray origin to c*/
-                    //SUB(vect1,c,orig);
-                    vect1 = c - ray.origin;
-
-                    /* calculate v parameter and test bounds */
-                    //*u = DOT(vect1,nvect) * inv_det;
-                    u = dot(vect1,nvect) * inv_det;
-
-                    if (u < 0.0 || u + v > 1.0) return 0;
-
-                    /* calculate t, ray intersects triangle */
-                    //*t = - DOT(vect0,normal) * inv_det;
-                    t = -dot (vect0, normal) * inv_det;
-
-                    //---------
-                    // pretty crappy but sometimes useful wireframe mode
-                    //if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
-
-                    if (t < 0)
-                        return 0;
-                    normal_ = Normal (normal.x, normal.y, normal.z);
-                    if (dot ((Vector)ray.direction, normal) > 0.0)
-                        return -1;
-                    return 1;
+        class LessIntelligentTerrain : public Geometry {
+        public:
+                LessIntelligentTerrain (std::function<real(real,real)> fun)
+                        : fun_(fun)
+                {
+                }
+        private:
+                PIntersection intersect_ (Ray const &ray) const {
+                        const Point a (-1, 1, 3),
+                                    b (1,  1, 3),
+                                    c (0, 0, 3);
+                        real t_, u_, v_;
+                        Normal normal_(0,1,0);
+                        if (geoblocks::raytri_intersect (ray,
+                                                         a, b, c,
+                                                         t_, u_, v_,
+                                                         normal_))
+                        {
+                                return Intersection (t_, normal_);
+                        }
+                        return PIntersection();
                 }
 
-        }
+                std::function<real(real,real)> fun_;
+        };
+
+        class Volume;
+
+
 
 
         class Scene {
-                shared_ptr<Geometry>          geometry_;
-                shared_ptr<Volume>            volume_;
+        public:
+                Scene() = delete;
+
+                Scene (shared_ptr<const Geometry> geometry)
+                        : geometry_(geometry)
+                {}
+
+                Geometry const& geometry() const {
+                        return *geometry_;
+                }
+        private:
+                shared_ptr<const Geometry>          geometry_;
+                shared_ptr<const Volume>            volume_;
         };
 
 
@@ -157,6 +155,7 @@ namespace crystal {
                         const int     height = film_->height();
                         const int     width  = film_->width();
                         const Camera& camera = *camera_;
+                        const Geometry &geo  = scene_->geometry();
                         Film&         film   = *film_;
 
                         for (int y=0; y<height; ++y) {
@@ -166,12 +165,19 @@ namespace crystal {
                                                                   y/real(height));
                                         const Ray ray = camera(sample);
 
-                                        const Vector dir = ray.direction*1;
-                                        film.addSample(sample, Radiance::FromRgb(
-                                                                0.5+dir.x,
-                                                                0.5+dir.y,
-                                                                0.5+dir.z
-                                                               ));
+                                        const PIntersection pinter = geo.intersect(ray);
+
+                                        if (pinter) {
+                                                film.addSample (sample,
+                                                                Radiance::FromRgb(1,0,0));
+                                        } else {
+                                                const Vector dir = ray.direction*1;
+                                                film.addSample(sample, Radiance::FromRgb(
+                                                                        0.5+dir.x,
+                                                                        0.5+dir.y,
+                                                                        0.5+dir.z
+                                                                       ));
+                                        }
                                 }
                         }
                 }
@@ -213,9 +219,14 @@ void RenderWidget::updateDisplay () {
 
         shared_ptr<Film>           film     (new Film(320, 240));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(1));
+
+        shared_ptr<const Geometry> geometry (new LessIntelligentTerrain(
+                                        [](real x, real z) { return 0; }));
+        shared_ptr<const Scene>    scene    (new Scene(geometry));
+
         shared_ptr<const Renderer> renderer (new FlatRenderer(
                                                 film,
-                                                shared_ptr<const Scene>(),
+                                                scene,
                                                 camera,
                                                 shared_ptr<const SurfaceIntegrator>(),
                                                 shared_ptr<const VolumeIntegrator>()
