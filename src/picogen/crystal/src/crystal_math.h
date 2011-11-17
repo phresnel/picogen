@@ -206,6 +206,11 @@ namespace crystal {
                 }
         };
 
+        inline Vector operator- (Vector const &rhs)
+        {
+                return {-rhs.x, -rhs.y, -rhs.z};
+        }
+
         inline Vector operator+ (Vector lhs, Vector const &rhs)
         {
                 return lhs += rhs;
@@ -252,6 +257,18 @@ namespace crystal {
                 return {v.x/len, v.y/len, v.z/len};
         }
 
+        inline Vector cross (Vector const &lhs, Vector const &rhs)
+        {
+                return {lhs.y*rhs.z - lhs.z*rhs.y,
+                        lhs.z*rhs.x - lhs.x*rhs.z,
+                        lhs.x*rhs.y - lhs.y*rhs.x};
+        }
+
+        inline real dot (Vector const &lhs, Vector const &rhs)
+        {
+                return lhs.x*rhs.x + lhs.y*rhs.y + lhs.z*rhs.z;
+        }
+
 
 
         class Point {
@@ -296,6 +313,8 @@ namespace crystal {
 
 
 
+        class Normal;
+
         class Direction
         {
         public:
@@ -307,6 +326,15 @@ namespace crystal {
                         assert (x!=0 || y!=0 || z!=0);
                 }
 
+                static Direction FromNormalized (real x, real y, real z)
+                {
+                        return Direction (x,y,z, 0);
+                }
+
+                explicit operator Vector () const;
+                explicit operator Normal () const;
+
+
                 friend Vector operator* (Direction const &lhs, real f)
                 {
                         return {lhs.dir.x * f,
@@ -314,9 +342,92 @@ namespace crystal {
                                 lhs.dir.z * f};
                 }
 
+                Direction operator- () const
+                {
+                        return {-dir.x, -dir.y, -dir.z};
+                }
+
+                friend real dot (Direction const &lhs, Direction const &rhs)
+                {
+                        return dot (lhs.dir, rhs.dir);
+                }
+
         private:
                 Vector dir;
+
+                Direction (real x, real y, real z, void*) : dir (x,y,z)
+                {
+                        assert (x!=0 || y!=0 || z!=0);
+                }
         };
+
+
+        class Normal
+        {
+        public:
+                Normal() = delete;
+
+                Normal (real x, real y, real z) :
+                        n (normalize(Vector(x,y,z)))
+                {
+                        assert (x!=0 || y!=0 || z!=0);
+                }
+
+                static Normal FromNormalized (real x, real y, real z)
+                {
+                        return Normal (x,y,z, 0);
+                }
+
+                explicit operator Vector    () const;
+                explicit operator Direction () const;
+
+                Normal operator- () const
+                {
+                        return {-n.x, -n.y, -n.z};
+                }
+
+                friend real dot (Normal const &lhs, Normal const &rhs)
+                {
+                        return dot (lhs.n, rhs.n);;
+                }
+
+                friend Normal cross (Normal lhs, Normal const &rhs)
+                {
+                        lhs.n = cross (lhs.n, rhs.n);
+                        return lhs;
+                }
+        private:
+
+                Normal (real x, real y, real z, void*) : n (x,y,z)
+                {
+                        assert (x!=0 || y!=0 || z!=0);
+                }
+
+                Vector n;
+        };
+
+
+        inline Direction::operator Vector () const
+        {
+                return {dir.x, dir.y, dir.z};
+        }
+
+        inline Direction::operator Normal () const
+        {
+                return Normal::FromNormalized (dir.x, dir.y, dir.z);
+        }
+
+
+        inline Normal::operator Vector () const
+        {
+                return {n.x, n.y, n.z};
+        }
+
+        inline Normal::operator Direction () const
+        {
+                return Direction::FromNormalized (n.x, n.y, n.z);
+        }
+
 }
 
 namespace crystal {
