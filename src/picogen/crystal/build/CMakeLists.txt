@@ -106,6 +106,9 @@ set (sources ${sources}
         ${crystal_src_dir}/film.cc
 
         ${crystal_src_dir}/cameras/pinhole.cc
+
+        ${crystal_src_dir}/geometry/terrain2d.cc
+        ${crystal_src_dir}/geometry/terrain2d/patch.cc
 )
 
 

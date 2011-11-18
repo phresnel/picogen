@@ -28,74 +28,15 @@ namespace crystal {
 #include "film.h"
 #include "cameras/pinhole.h"
 #include "geoblocks/ray_tri_intersect.h"
+#include "geometry/terrain2d.h"
 
 
 #include <boost/optional.hpp>
-#include <memory>
-#include <functional>
 
 namespace crystal {
-        using std::shared_ptr;
-        using boost::optional;
-
         class SurfaceIntegrator;
         class VolumeIntegrator;
-
-        struct Intersection
-        {
-                real distance;
-                Normal normal;
-
-                Intersection() = delete;
-
-                Intersection (real distance, Normal const &normal)
-                        : distance(distance), normal(normal)
-                {}
-        };
-        typedef optional<Intersection> PIntersection;
-
-
-        class Geometry
-        {
-        public:
-                virtual ~Geometry() {}
-                PIntersection intersect (Ray const &ray) const {
-                        return this->intersect_(ray);
-                }
-        private:
-                virtual PIntersection intersect_ (Ray const &ray) const = 0;
-        };
-
-        class LessIntelligentTerrain : public Geometry {
-        public:
-                LessIntelligentTerrain (std::function<real(real,real)> fun)
-                        : fun_(fun)
-                {
-                }
-        private:
-                PIntersection intersect_ (Ray const &ray) const {
-                        const Point a (-1, 1, 3),
-                                    b (1,  1, 3),
-                                    c (0, 0, 3);
-                        real t_, u_, v_;
-                        Normal normal_(0,1,0);
-                        if (geoblocks::raytri_intersect (ray,
-                                                         a, b, c,
-                                                         t_, u_, v_,
-                                                         normal_))
-                        {
-                                return Intersection (t_, normal_);
-                        }
-                        return PIntersection();
-                }
-
-                std::function<real(real,real)> fun_;
-        };
-
         class Volume;
-
-
-
 
         class Scene {
         public:
@@ -220,7 +161,7 @@ void RenderWidget::updateDisplay () {
         shared_ptr<Film>           film     (new Film(320, 240));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(1));
 
-        shared_ptr<const Geometry> geometry (new LessIntelligentTerrain(
+        shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                         [](real x, real z) { return 0; }));
         shared_ptr<const Scene>    scene    (new Scene(geometry));
 

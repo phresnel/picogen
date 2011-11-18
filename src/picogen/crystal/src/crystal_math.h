@@ -21,9 +21,16 @@
 #ifndef CRYSTAL_MATH_H
 #define CRYSTAL_MATH_H
 
+#include <boost/optional.hpp>
 
+#include <memory>
 #include <cmath>
 #include <cassert>
+
+namespace crystal {
+        using std::shared_ptr;
+        using boost::optional;
+}
 
 namespace crystal {
         typedef float real;
@@ -448,5 +455,22 @@ namespace crystal {
                 }
         };
 }
+
+namespace crystal {
+        struct Intersection
+        {
+                real distance;
+                Normal normal;
+
+                Intersection() = delete;
+
+                Intersection (real distance, Normal const &normal)
+                        : distance(distance), normal(normal)
+                {}
+        };
+        typedef optional<Intersection> PIntersection;
+}
+
+
 
 #endif // CRYSTAL_MATH_H
