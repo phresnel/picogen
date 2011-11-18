@@ -104,11 +104,18 @@ set (sources ${sources}
         ${crystal_src_dir}/renderwidget.cc
 
         ${crystal_src_dir}/film.cc
+        ${crystal_src_dir}/film.h
 
         ${crystal_src_dir}/cameras/pinhole.cc
+        ${crystal_src_dir}/cameras/pinhole.h
 
+        ${crystal_src_dir}/geometry.h
         ${crystal_src_dir}/geometry/terrain2d.cc
+        ${crystal_src_dir}/geometry/terrain2d.h
         ${crystal_src_dir}/geometry/terrain2d/patch.cc
+        ${crystal_src_dir}/geometry/terrain2d/patch.h
+        ${crystal_src_dir}/geometry/terrain2d/quadtree.cc
+        ${crystal_src_dir}/geometry/terrain2d/quadtree.h
 )
 
 

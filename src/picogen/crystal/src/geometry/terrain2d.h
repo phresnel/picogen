@@ -1,8 +1,8 @@
-#ifndef QUADTREE_H
-#define QUADTREE_H
+#ifndef TERRAIN2D_H_20111118
+#define TERRAIN2D_H_20111118
 
 #include "geometry.h"
-#include "terrain2d/patch.h"
+#include "terrain2d/quadtree.h"
 #include <functional>
 
 namespace crystal { namespace geometry {
@@ -10,14 +10,14 @@ namespace crystal { namespace geometry {
 class Terrain2d : public Geometry {
 public:
         Terrain2d (std::function<real(real,real)> fun)
-                : patch_(fun, 5)
+                : quadtree_(fun, 5)
         {
         }
 private:
         PIntersection intersect_ (Ray const &ray) const ;
-        terrain2d::Patch patch_;
+        terrain2d::Quadtree quadtree_;
 };
 
 } }
 
-#endif // QUADTREE_H
+#endif // TERRAIN2D_H_20111118

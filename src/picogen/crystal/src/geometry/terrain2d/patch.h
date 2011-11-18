@@ -1,7 +1,7 @@
 #ifndef PATCH_H
 #define PATCH_H
 
-#include "../geometry.h"
+#include "geometry.h"
 #include <functional>
 
 namespace crystal { namespace geometry { namespace terrain2d {

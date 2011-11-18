@@ -3,7 +3,7 @@
 namespace crystal { namespace geometry {
 
 PIntersection Terrain2d::intersect_ (Ray const &ray) const {
-        return patch_.intersect (ray);
+        return quadtree_.intersect (ray);
 }
 
 } }
