@@ -162,7 +162,7 @@ void RenderWidget::updateDisplay () {
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(1));
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
-                                        [](real x, real z) { return 0; }));
+                                        [](real x, real z) { return 3*std::sin(0.3*x); }));
         shared_ptr<const Scene>    scene    (new Scene(geometry));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(

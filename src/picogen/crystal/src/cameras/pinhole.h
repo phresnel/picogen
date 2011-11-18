@@ -33,7 +33,7 @@ namespace crystal { namespace cameras {
                 {
                         const real u = 2*sample.lensU-1,
                                    v = 1-2*sample.lensV;
-                        return Ray (Point(),
+                        return Ray (Point(0, 7, -10),
                                     Direction(u, v, frontPlaneDist_));
                 }
 
