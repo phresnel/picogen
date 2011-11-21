@@ -103,11 +103,15 @@ set (sources ${sources}
         ${crystal_src_dir}/mainwindow.cc
         ${crystal_src_dir}/renderwidget.cc
 
+        ${crystal_src_dir}/crystal_math.h
+
         ${crystal_src_dir}/film.cc
         ${crystal_src_dir}/film.h
 
         ${crystal_src_dir}/cameras/pinhole.cc
         ${crystal_src_dir}/cameras/pinhole.h
+
+        ${crystal_src_dir}/geoblocks/ray_tri_intersect.h
 
         ${crystal_src_dir}/geometry.h
         ${crystal_src_dir}/geometry/terrain2d.cc
