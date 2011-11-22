@@ -8,7 +8,8 @@ namespace crystal { namespace geometry { namespace terrain2d {
         class Patch : public Geometry
         {
         public:
-                Patch(std::function<real (real, real)> fun,
+                Patch(real left, real right, real front, real back,
+                      std::function<real (real, real)> fun,
                       int resolution);
 
                 // Offer some non-virtual access.
@@ -19,6 +20,7 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 PIntersection intersect_ (const Ray &ray) const;
 
         private:
+                real left_, right_, front_, back_;
                 std::function<real (real, real)> fun_;
                 int res_;
         };

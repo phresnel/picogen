@@ -3,17 +3,23 @@
 
 namespace crystal { namespace geometry { namespace terrain2d {
 
-Patch::Patch (std::function<real (real, real)> fun, int resolution)
-        : fun_(fun), res_(resolution)
+Patch::Patch (real left, real right, real front, real back,
+              std::function<real (real, real)> fun, int resolution)
+        : left_(left), right_(right),
+          front_(front), back_(back),
+          fun_(fun), res_(resolution)
 {
 }
 
 PIntersection Patch::intersect_ (const Ray &ray) const {
-        for (real iz=-res_/real(2); iz<res_/real(2); ++iz) {
-                for (real ix=-res_/real(2); ix<res_/real(2); ++ix) {
-                        const real s = 10;
-                        const real x = ix * s;
-                        const real z = iz * s;
+        //for (real iz=-res_/real(2); iz<res_/real(2); ++iz) {
+        //        for (real ix=-res_/real(2); ix<res_/real(2); ++ix) {
+        const real rd = (back_-front_)/res_;
+        for (real iz = front_; iz<back_; iz+=rd) {
+                for (real ix = left_; ix<right_; ix+=rd) {
+                        const real s = rd;
+                        const real x = ix;
+                        const real z = iz;
 
                         const real x0 = x,     z0 = z,
                                    x1 = x,     z1 = z + s,

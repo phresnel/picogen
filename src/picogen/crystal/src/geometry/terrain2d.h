@@ -3,14 +3,16 @@
 
 #include "geometry.h"
 #include "terrain2d/quadtree.h"
+#include "terrain2d/deepness.h"
 #include <functional>
 
 namespace crystal { namespace geometry {
 
 class Terrain2d : public Geometry {
 public:
-        Terrain2d (std::function<real(real,real)> fun)
-                : quadtree_(fun, 5)
+        Terrain2d (terrain2d::Deepness const &deepness,
+                   std::function<real(real,real)> fun)
+                : quadtree_(deepness, fun, 3)
         {
         }
 private:

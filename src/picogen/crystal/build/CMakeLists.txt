@@ -43,8 +43,9 @@ find_package(Qt4 REQUIRED)
 # Include dirs.
 include_directories (
         ./                   # for generated stuff
-        ../                  # project source folder
+        ../src               # project source folder
         ${QT_INCLUDE_DIR}    # self-explaining
+        ../../../auxiliary
 )
 
 # Used Qt Modules.

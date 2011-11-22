@@ -455,6 +455,10 @@ namespace crystal {
                         lhs.n = cross (lhs.n, rhs.n);
                         return lhs;
                 }
+
+                real x() const { return n.x; }
+                real y() const { return n.y; }
+                real z() const { return n.z; }
         private:
 
                 Normal (real x, real y, real z, void*) : n (x,y,z)

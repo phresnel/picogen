@@ -1,6 +1,6 @@
 #include "renderwidget.h"
 #include "ui_renderwidget.h"
-
+#include "glimpse/stopwatch.hh"
 #include <QImage>
 
 // Some features we want:
@@ -109,8 +109,9 @@ namespace crystal {
                                         const PIntersection pinter = geo.intersect(ray);
 
                                         if (pinter) {
+                                                Intersection const &i = *pinter;
                                                 film.addSample (sample,
-                                                                Radiance::FromRgb(1,0,0));
+                                                                Radiance::White()*(1+0.5*i.normal.x()));
                                         } else {
                                                 const Vector dir = ray.direction*1;
                                                 film.addSample(sample, Radiance::FromRgb(
@@ -158,11 +159,21 @@ void RenderWidget::updateDisplay () {
 
         using namespace crystal;
 
+        glimpse::StopWatch sw;
+
+
+        sw.restart();
         shared_ptr<Film>           film     (new Film(320, 240));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(1));
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
-                                        [](real x, real z) { return 3*std::sin(0.3*x); }));
+                                                geometry::terrain2d::Deepness(
+                                                        7, 20,150
+                                                ),
+                                                [](real x, real z) {
+                                                     return 3*std::sin(0.3*x)
+                                                             *std::sin(0.3*z); }
+                                            ) );
         shared_ptr<const Scene>    scene    (new Scene(geometry));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(
@@ -172,8 +183,11 @@ void RenderWidget::updateDisplay () {
                                                 shared_ptr<const SurfaceIntegrator>(),
                                                 shared_ptr<const VolumeIntegrator>()
                                             ));
-
+        const double creationTime = sw.stop();
+        sw.restart();
         renderer->render();
+        const double renderTime = sw.stop();
+
 
         const unsigned int width = film->width(),
                            height = film->height();
@@ -195,6 +209,9 @@ void RenderWidget::updateDisplay () {
 
         ui->label->setScaledContents(true);
         ui->label->setPixmap(QPixmap::fromImage(image));
+        ui->perf->setText (QString("creation time: ") + QString::number(creationTime, 'g', 2)
+                        + " sec, render time: " + QString::number(renderTime, 'g', 2)
+                        + " sec");
         repaint();
         QApplication::processEvents();
 }
