@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <limits>
 
 namespace crystal { namespace geometry { namespace terrain2d {
 
@@ -30,8 +31,39 @@ PIntersection Quadtree::intersect_ (const Ray &ray) const {
 
         if (leaf_) return patch_->intersect (ray);
 
-        for (auto it = children_, end = children_+4; it!=end; ++it) {
-                if (auto ret = it->intersect_ (ray)) return ret;
+        const bool pdx = ray.direction.positive_x(),
+                   pdz = ray.direction.positive_z();
+        int order[4];
+
+        if (pdx && pdz) {
+                order[0] = 3;
+                order[1] = 2;
+                order[2] = 0;
+                order[3] = 1;
+        }
+        else if (!pdx && pdz) {
+                order[0] = 2;
+                order[1] = 3;
+                order[2] = 1;
+                order[3] = 0;
+        }
+        else if (pdx && !pdz) {
+                order[0] = 0;
+                order[1] = 1;
+                order[2] = 3;
+                order[3] = 2;
+        }
+        else if (!pdx && !pdz) {
+                order[0] = 1;
+                order[1] = 0;
+                order[2] = 2;
+                order[3] = 3;
+        }
+
+        for (int i=0; i<4; ++i) {
+                Quadtree const &child = children_[order[i]];
+                if (auto i = child.intersect_ (ray))
+                        return i;
         }
         return PIntersection();
 }
@@ -49,8 +81,6 @@ void Quadtree::create  (terrain2d::Deepness const &deepness,
                                          rect.left, rect.right,
                                          rect.front, rect.back);
         rect_ = rect;
-        min_h_ = -1000;
-        max_h_ = 1000;
         if (leaf_) {
                 make_leaf (fun, patchRes);
         } else {
@@ -70,6 +100,13 @@ void Quadtree::make_inner  (terrain2d::Deepness const &deepness,
         children_[1].create (deepness, cr[1], fun, patchRes, depth+1);
         children_[2].create (deepness, cr[2], fun, patchRes, depth+1);
         children_[3].create (deepness, cr[3], fun, patchRes, depth+1);
+
+        min_h_ =  std::numeric_limits<real>::max();
+        max_h_ = -std::numeric_limits<real>::max();
+        for (int i=0; i<4; ++i) {
+                if (children_[i].min_h_ < min_h_) min_h_ = children_[i].min_h_;
+                if (children_[i].max_h_ > max_h_) max_h_ = children_[i].max_h_;
+        }
 }
 
 void Quadtree::make_leaf  (std::function<real(real,real)> fun,
@@ -78,6 +115,8 @@ void Quadtree::make_leaf  (std::function<real(real,real)> fun,
         patch_ = new Patch (rect_.left, rect_.right,
                             rect_.front, rect_.back,
                             fun, patchRes);
+        min_h_ = patch_->min_h();
+        max_h_ = patch_->max_h();
 }
 
 } } }

@@ -394,6 +394,10 @@ namespace crystal {
                 real y() const { return dir.y; }
                 real z() const { return dir.z; }
 
+                bool positive_x() const { return dir.x>=0; }
+                bool positive_y() const { return dir.y>=0; }
+                bool positive_z() const { return dir.z>=0; }
+
                 friend Vector operator* (Direction const &lhs, real f)
                 {
                         return {lhs.dir.x * f,

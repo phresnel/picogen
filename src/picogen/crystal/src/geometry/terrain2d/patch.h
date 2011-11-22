@@ -16,6 +16,9 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 PIntersection intersect (const Ray &ray) const {
                         return intersect_ (ray);
                 }
+
+                real min_h() const { return min_h_; }
+                real max_h() const { return max_h_; }
         private:
                 PIntersection intersect_ (const Ray &ray) const;
 
@@ -23,6 +26,7 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 real left_, right_, front_, back_;
                 std::function<real (real, real)> fun_;
                 int res_;
+                real min_h_, max_h_;
         };
 } } }
 #endif // PATCH_H
