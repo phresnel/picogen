@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 #include "patch.h"
+#include <memory>
 
 namespace crystal { namespace geometry { namespace terrain2d {
 
@@ -11,16 +12,25 @@ namespace crystal { namespace geometry { namespace terrain2d {
         public:
                 Quadtree(std::function<real (real, real)>,
                          int res);
+                ~Quadtree();
 
                 // Offer non-virtual access.
                 PIntersection intersect (const Ray &ray) const {
                         return intersect_ (ray);
                 }
+
+                Quadtree ()                            = delete;
+                Quadtree (Quadtree const&)             = delete;
+                Quadtree& operator = (Quadtree const&) = delete;
         private:
                 PIntersection intersect_(const Ray &ray) const;
 
         private:
-                Patch patch_;
+                union {
+                        Patch *patch_;
+                        Quadtree *children_;
+                };
+                bool leaf_;
         };
 
 } } }
