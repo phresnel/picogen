@@ -2,6 +2,7 @@
 #define PATCH_H
 
 #include "geometry.h"
+#include "transition.h"
 #include <functional>
 
 namespace crystal { namespace geometry { namespace terrain2d {
