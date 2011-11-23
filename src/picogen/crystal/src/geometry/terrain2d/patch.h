@@ -23,14 +23,15 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 PIntersection intersect_ (const Ray &ray) const;
 
         private:
-                struct Quad {
+                /*struct Quad {
                         Point a, b, c, d;
                 };
-                Quad *quads_;
-
-                real left_, right_, front_, back_;
-                std::function<real (real, real)> fun_;
-                int res_;
+                Quad *quads_;*/
+                struct Triangle {
+                        Point a,b,c;
+                };
+                Triangle *triangles_;
+                int triangleCount_;
                 real min_h_, max_h_;
         };
 } } }
