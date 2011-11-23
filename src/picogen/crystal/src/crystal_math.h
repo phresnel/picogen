@@ -775,6 +775,68 @@ namespace crystal {
                 return Interval (t0, t1);
         }
 
+        inline PInterval intersect (Ray const & ray,
+                                    real left,  real bottom, real front,
+                                    real right, real top,    real back)
+        {
+                using std::swap;
+
+                real t0 = 0;//ray.minT;
+                real t1 = std::numeric_limits<real>::infinity();//ray.maxT;
+
+                // X
+                {
+                        real
+                                        i = real(1) / ray.direction.x(),
+                                        near = (left  - ray.origin.x) * i,
+                                        far  = (right - ray.origin.x) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return PInterval();
+                }
+
+                // Y
+                {
+                        real
+                                        i = real(1) / ray.direction.y(),
+                                        near = (bottom - ray.origin.y) * i,
+                                        far  = (top    - ray.origin.y) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return PInterval();
+                }
+
+                // Z
+                {
+                        real
+                                        i = real(1) / ray.direction.z(),
+                                        near = (front - ray.origin.z) * i,
+                                        far  = (back  - ray.origin.z) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return PInterval();
+                }
+                //if ((t0 < 0) & (t1 < 0)) return Interval::Optional();
+                /*if (t0 < 0) {
+                        //if (std::numeric_limits<real>::infinity() != t1)
+                                return Interval(t1,t1);
+                        //return Interval::Optional();
+                }*/
+                return Interval (t0, t1);
+        }
+
         inline bool does_intersect (Ray const & ray, BoundingBox const & box) {
                 using std::swap;
                 real t0 = 0;//ray.minT;
@@ -783,8 +845,8 @@ namespace crystal {
                 // X
                 {
                         real i = real(1) / ray.direction.x();
-                        real near = box.min().x - ray.origin.x * i;
-                        real far  = box.max().x - ray.origin.x * i;
+                        real near = (box.min().x - ray.origin.x) * i;
+                        real far  = (box.max().x - ray.origin.x) * i;
 
                         if (near > far) swap (near, far);
 
@@ -797,8 +859,8 @@ namespace crystal {
                 // Y
                 {
                         real i = real(1) / ray.direction.y();
-                        real near = box.min().y - ray.origin.y * i;
-                        real far  = box.max().y - ray.origin.y * i;
+                        real near = (box.min().y - ray.origin.y) * i;
+                        real far  = (box.max().y - ray.origin.y) * i;
 
                         if (near > far) swap (near, far);
 
@@ -811,8 +873,60 @@ namespace crystal {
                 // Z
                 {
                         real i = real(1) / ray.direction.z();
-                        real near = box.min().z - ray.origin.z * i;
-                        real far  = box.max().z - ray.origin.z * i;
+                        real near = (box.min().z - ray.origin.z)         * i;
+                        real far  = (box.max().z - ray.origin.z) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return false;
+                }
+                return true;
+        }
+
+        inline bool does_intersect (Ray const & ray,
+                                    real left, real bottom, real front,
+                                    real right, real top, real back)
+        {
+                using std::swap;
+                real t0 = 0;//ray.minT;
+                real t1 = std::numeric_limits<real>::max();
+
+                // X
+                {
+                        real i = real(1) / ray.direction.x();
+                        real near = (left  - ray.origin.x) * i;
+                        real far  = (right - ray.origin.x) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return false;
+                }
+
+                // Y
+                {
+                        real i = real(1) / ray.direction.y();
+                        real near = (bottom - ray.origin.y) * i;
+                        real far  = (top    - ray.origin.y) * i;
+
+                        if (near > far) swap (near, far);
+
+                        t0 = near > t0 ? near : t0;
+                        t1 = far < t1 ? far : t1;
+
+                        if (t0 > t1) return false;
+                }
+
+                // Z
+                {
+                        real i = real(1) / ray.direction.z();
+                        real near = (front - ray.origin.z) * i;
+                        real far  = (back  - ray.origin.z) * i;
 
                         if (near > far) swap (near, far);
 
