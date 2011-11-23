@@ -11,15 +11,12 @@ Patch::Patch (real left, real right, real front, real back,
         triangles_ = new Triangle [triangleCount_];
         //const real rd = (back_-front_)/res_;
 
-        min_h_ =  std::numeric_limits<real>::max();
-        max_h_ = -std::numeric_limits<real>::max();
-
         const real width = right - left,
                    depth = back - front;
         const real ires = 1 / real(resolution);
         int tindex = 0;
 
-        auto grid2point = [&] (int x, int z) {
+        auto grid2point = [&] (real x, real z) {
                 const real fx0 = left + x * ires * width,
                            fz0 = front + z * ires * depth,
                            fy0 = fun(fx0, fz0);
@@ -30,9 +27,8 @@ Patch::Patch (real left, real right, real front, real back,
                 for (int x=0; x<resolution; ++x) {
                 }
         }
-        for (int z=transition.front(); z<resolution; ++z) {
+        for (int z=0; z<resolution; ++z) {
                 for (int x=0; x<resolution; ++x) {
-
                         Triangle &A = triangles_[tindex++];
                         Triangle &B = triangles_[tindex++];
                         A.a = grid2point (x,  z);
@@ -41,16 +37,20 @@ Patch::Patch (real left, real right, real front, real back,
                         B.a = grid2point (x,  z);
                         B.b = grid2point (x+1,z+1);
                         B.c = grid2point (x,  z+1);
-
-                        min_h_ = min(min_h_, fy0);
-                        min_h_ = min(min_h_, fy1);
-                        min_h_ = min(min_h_, fy2);
-                        min_h_ = min(min_h_, fy3);
-                        max_h_ = max(max_h_, fy0);
-                        max_h_ = max(max_h_, fy1);
-                        max_h_ = max(max_h_, fy2);
-                        max_h_ = max(max_h_, fy3);
                 }
+        }
+
+
+        min_h_ =  std::numeric_limits<real>::max();
+        max_h_ = -std::numeric_limits<real>::max();
+        for (int i=0; i<triangleCount_; ++i) {
+                Triangle const &t = triangles_ [i];
+                min_h_ = std::min(min_h_, t.a.y);
+                min_h_ = std::min(min_h_, t.b.y);
+                min_h_ = std::min(min_h_, t.c.y);
+                max_h_ = std::max(max_h_, t.a.y);
+                max_h_ = std::max(max_h_, t.b.y);
+                max_h_ = std::max(max_h_, t.c.y);
         }
 }
 
