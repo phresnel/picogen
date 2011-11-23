@@ -24,9 +24,8 @@ Quadtree::~Quadtree() {
 }
 
 PIntersection Quadtree::intersect_ (const Ray &ray) const {
-        const BoundingBox aabb (Point (rect_.left, min_h_, rect_.front),
-                                Point (rect_.right, max_h_, rect_.back));
-        if (!crystal::intersect (ray, aabb))
+        if (!crystal::does_intersect (ray, rect_.left, min_h_, rect_.front,
+                                      rect_.right, max_h_, rect_.back))
                 return PIntersection();
 
         if (leaf_) return patch_->intersect (ray);
