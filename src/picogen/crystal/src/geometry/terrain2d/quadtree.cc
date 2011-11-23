@@ -24,12 +24,6 @@ Quadtree::~Quadtree() {
 }
 
 PIntersection Quadtree::intersect_ (const Ray &ray) const {
-        if (!crystal::does_intersect (ray, rect_.left, min_h_, rect_.front,
-                                      rect_.right, max_h_, rect_.back))
-                return PIntersection();
-
-        if (leaf_) return patch_->intersect (ray);
-
         const bool pdx = ray.direction.positive_x(),
                    pdz = ray.direction.positive_z();
         int order[4];
@@ -59,9 +53,21 @@ PIntersection Quadtree::intersect_ (const Ray &ray) const {
                 order[3] = 3;
         }
 
+        return intersect_ (ray, order);
+}
+
+PIntersection Quadtree::intersect_ (const Ray &ray, int *ordering) const
+{
+        if (!crystal::does_intersect (ray, rect_.left, min_h_, rect_.front,
+                                      rect_.right, max_h_, rect_.back))
+                return PIntersection();
+
+        if (leaf_) return patch_->intersect (ray);
+
+
         for (int i=0; i<4; ++i) {
-                Quadtree const &child = children_[order[i]];
-                if (auto i = child.intersect_ (ray))
+                Quadtree const &child = children_[ordering[i]];
+                if (auto i = child.intersect_ (ray, ordering))
                         return i;
         }
         return PIntersection();

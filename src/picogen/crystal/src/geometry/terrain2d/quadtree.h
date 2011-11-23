@@ -64,6 +64,8 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 Quadtree ()                            = default;
                 PIntersection intersect_(const Ray &ray) const;
 
+                PIntersection intersect_ (const Ray &ray, int *ordering) const;
+
         private:
                 void create (terrain2d::Deepness const &,
                              Rect const &rect,

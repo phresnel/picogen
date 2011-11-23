@@ -111,7 +111,7 @@ namespace crystal {
                                         if (pinter) {
                                                 Intersection const &i = *pinter;
                                                 film.addSample (sample,
-                                                                Radiance::White()*(1+0.5*i.normal.x()));
+                                                                Radiance::Gray(0.5+0.5*i.normal.x()));
                                         } else {
                                                 const Vector dir = ray.direction*1;
                                                 film.addSample(sample, Radiance::FromRgb(
@@ -163,12 +163,12 @@ void RenderWidget::updateDisplay () {
 
 
         sw.restart();
-        shared_ptr<Film>           film     (new Film(320, 240));
+        shared_ptr<Film>           film     (new Film(320, 320));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(1));
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 geometry::terrain2d::Deepness(
-                                                        7, 20,150
+                                                        10, 50,200
                                                 ),
                                                 [](real x, real z) {
                                                      return 3*std::sin(0.3*x)
@@ -207,7 +207,7 @@ void RenderWidget::updateDisplay () {
                 }
         }
 
-        ui->label->setScaledContents(true);
+        ui->label->setScaledContents(false);
         ui->label->setPixmap(QPixmap::fromImage(image));
         ui->perf->setText (QString("creation time: ") + QString::number(creationTime, 'g', 2)
                         + " sec, render time: " + QString::number(renderTime, 'g', 2)

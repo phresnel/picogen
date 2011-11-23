@@ -12,7 +12,7 @@ class Terrain2d : public Geometry {
 public:
         Terrain2d (terrain2d::Deepness const &deepness,
                    std::function<real(real,real)> fun)
-                : quadtree_(deepness, fun, 3)
+                : quadtree_(deepness, fun, 2)
         {
         }
 private:
