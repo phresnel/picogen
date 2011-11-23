@@ -11,7 +11,8 @@ namespace crystal { namespace geometry { namespace terrain2d {
         public:
                 Patch(real left, real right, real front, real back,
                       std::function<real (real, real)> fun,
-                      int resolution);
+                      int resolution,
+                      Transition const &transition);
 
                 // Offer some non-virtual access.
                 PIntersection intersect (const Ray &ray) const {
@@ -24,10 +25,7 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 PIntersection intersect_ (const Ray &ray) const;
 
         private:
-                /*struct Quad {
-                        Point a, b, c, d;
-                };
-                Quad *quads_;*/
+
                 struct Triangle {
                         Point a,b,c;
                 };

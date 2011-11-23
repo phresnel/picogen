@@ -4,7 +4,8 @@
 namespace crystal { namespace geometry { namespace terrain2d {
 
 Patch::Patch (real left, real right, real front, real back,
-              std::function<real (real, real)> fun, int resolution)
+              std::function<real (real, real)> fun, int resolution,
+              Transition const &transition)
 {
         triangleCount_ = resolution*resolution*2;
         triangles_ = new Triangle [triangleCount_];
@@ -17,29 +18,29 @@ Patch::Patch (real left, real right, real front, real back,
                    depth = back - front;
         const real ires = 1 / real(resolution);
         int tindex = 0;
-        for (int z=0; z<resolution; ++z) {
+
+        auto grid2point = [&] (int x, int z) {
+                const real fx0 = left + x * ires * width,
+                           fz0 = front + z * ires * depth,
+                           fy0 = fun(fx0, fz0);
+                return Point(fx0, fy0, fz0);
+        };
+
+        if (transition.front()) {
                 for (int x=0; x<resolution; ++x) {
-                        const real fx0 = left + x * ires * width,
-                                   fz0 = front + z * ires * depth,
-                                   fy0 = fun(fx0, fz0);
-                        const real fx1 = left + (1+x) * ires * width,
-                                   fz1 = front + z * ires * depth,
-                                   fy1 = fun(fx1, fz1);
-                        const real fx2 = left + (1+x) * ires * width,
-                                   fz2 = front + (1+z) * ires * depth,
-                                   fy2 = fun(fx2, fz2);
-                        const real fx3 = left + x * ires * width,
-                                   fz3 = front + (1+z) * ires * depth,
-                                   fy3 = fun(fx3, fz3);
+                }
+        }
+        for (int z=transition.front(); z<resolution; ++z) {
+                for (int x=0; x<resolution; ++x) {
 
                         Triangle &A = triangles_[tindex++];
                         Triangle &B = triangles_[tindex++];
-                        A.a = Point (fx0, fy0, fz0);
-                        A.b = Point (fx1, fy1, fz1);
-                        A.c = Point (fx2, fy2, fz2);
-                        B.a = Point (fx0, fy0, fz0);
-                        B.b = Point (fx2, fy2, fz2);
-                        B.c = Point (fx3, fy3, fz3);
+                        A.a = grid2point (x,  z);
+                        A.b = grid2point (x+1,z);
+                        A.c = grid2point (x+1,z+1);
+                        B.a = grid2point (x,  z);
+                        B.b = grid2point (x+1,z+1);
+                        B.c = grid2point (x,  z+1);
 
                         min_h_ = min(min_h_, fy0);
                         min_h_ = min(min_h_, fy1);
