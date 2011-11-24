@@ -15,7 +15,13 @@ struct Deepness {
                 assert (maxD < minD);
         }
 
-        int deepness (Point camera,
+        template <typename Rect> // TODO: make this a non-template
+        int deepness (const Point &camera, Rect const &rect) const {
+                return deepness (camera,
+                                 rect.left, rect.right, rect.front, rect.back);
+        }
+
+        int deepness (Point const &camera,
                       real left, real right,
                       real front, real back
         ) const {

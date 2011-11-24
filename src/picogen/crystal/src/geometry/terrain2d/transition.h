@@ -23,6 +23,11 @@ namespace crystal { namespace geometry { namespace terrain2d {
                                           front_ || rhs.front_,
                                           back_  || rhs.back_);
                 }
+
+                Transition& operator|= (Transition const &rhs) {
+                        *this = *this | rhs;
+                        return *this;
+                }
         private:
                 Transition(bool left, bool right, bool front, bool back)
                         : left_(left), right_(right), front_(front), back_(back)

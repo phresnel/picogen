@@ -10,14 +10,29 @@ namespace crystal { namespace geometry { namespace terrain2d {
 
         class Deepness;
 
-        struct Rect {
+        class Rect {
+        public:
                 real left, right, front, back;
+
+                real width() const { return right - left ; }
+                real depth() const { return back  - front; }
+
+                Rect front_neighbour () const { return move (0, -depth()); }
+                Rect back_neighbour  () const { return move (0,  depth()); }
+                Rect left_neighbour  () const { return move (-width(), 0); }
+                Rect right_neighbour () const { return move ( width(), 0); }
 
                 Rect () = default;
                 Rect (real left, real right,
                       real front, real back)
                         : left(left), right(right), front(front), back(back)
                 {}
+
+        private:
+                Rect move (real x, real z) const {
+                        return Rect (left+x, right+x, front+z, back+z);
+                }
+
         };
         typedef std::array<Rect,4> ChildRects;
         inline ChildRects child_boxen (
@@ -76,8 +91,10 @@ namespace crystal { namespace geometry { namespace terrain2d {
                                  std::function<real(real,real)> fun,
                                  int patchRes,
                                  int depth);
-                void make_leaf  (std::function<real(real,real)> fun,
-                                 int patchRes);
+                void make_leaf  (terrain2d::Deepness const &,
+                                 std::function<real(real,real)> fun,
+                                 int patchRes,
+                                 int depth);
         private:
                 union {
                         Patch *patch_;

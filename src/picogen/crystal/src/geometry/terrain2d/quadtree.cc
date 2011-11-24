@@ -12,7 +12,7 @@ Quadtree::Quadtree(Deepness const &deepness,
                    int patchResolution)
 {
         create (deepness,
-                Rect (-500,500, -500,500),
+                Rect (-5000,5000, -5000,5000),
                 fun,
                 patchResolution,
                 0);
@@ -87,7 +87,7 @@ void Quadtree::create  (terrain2d::Deepness const &deepness,
                                          rect.front, rect.back);
         rect_ = rect;
         if (leaf_) {
-                make_leaf (fun, patchRes);
+                make_leaf (deepness, fun, patchRes, depth);
         } else {
                 make_inner (deepness, fun, patchRes, depth);
         }
@@ -109,19 +109,33 @@ void Quadtree::make_inner  (terrain2d::Deepness const &deepness,
         min_h_ =  std::numeric_limits<real>::max();
         max_h_ = -std::numeric_limits<real>::max();
         for (int i=0; i<4; ++i) {
-                if (children_[i].min_h_ < min_h_) min_h_ = children_[i].min_h_;
-                if (children_[i].max_h_ > max_h_) max_h_ = children_[i].max_h_;
+                min_h_ = min (min_h_, children_[i].min_h_);
+                max_h_ = max (max_h_, children_[i].max_h_);
         }
 }
 
-void Quadtree::make_leaf  (std::function<real(real,real)> fun,
-                           int patchRes)
+void Quadtree::make_leaf  (terrain2d::Deepness const &deepness,
+                           std::function<real(real,real)> fun,
+                           int patchRes,
+                           int depth)
 {
+        Transition transition = Transition::None();
+
+        const Point camera(0,0,0);
+
+        if (depth < deepness.deepness (camera, rect_.front_neighbour()))
+                transition |= Transition::Front();
+        if (depth < deepness.deepness (camera, rect_.back_neighbour()))
+                transition |= Transition::Back();
+        if (depth < deepness.deepness (camera, rect_.left_neighbour()))
+                transition |= Transition::Left();
+        if (depth < deepness.deepness (camera, rect_.right_neighbour()))
+                transition |= Transition::Right();
+
         patch_ = new Patch (rect_.left, rect_.right,
                             rect_.front, rect_.back,
                             fun, patchRes,
-                            Transition::Left()|Transition::Front()|Transition::Right()|Transition::Back()
-                           );
+                            transition);
         min_h_ = patch_->min_h();
         max_h_ = patch_->max_h();
 }

@@ -163,16 +163,16 @@ void RenderWidget::updateDisplay () {
 
 
         sw.restart();
-        shared_ptr<Film>           film     (new Film(320, 320));
-        shared_ptr<const Camera>   camera   (new cameras::Pinhole(1));
+        shared_ptr<Film>           film     (new Film(480, 320));
+        shared_ptr<const Camera>   camera   (new cameras::Pinhole(0.7));
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 geometry::terrain2d::Deepness(
-                                                        6, 50,200
+                                                        12, 150,6000
                                                 ),
                                                 [](real x, real z) {
-                                                     return 0.5*std::sin(0.3*x)
-                                                             *std::sin(0.3*z); }
+                                                     return 15*std::sin(0.1*x)
+                                                             *std::sin(0.1*z); }
                                             ) );
         shared_ptr<const Scene>    scene    (new Scene(geometry));
 
