@@ -171,7 +171,7 @@ void RenderWidget::updateDisplay () {
                                                         6, 50,200
                                                 ),
                                                 [](real x, real z) {
-                                                     return 3*std::sin(0.3*x)
+                                                     return 0.5*std::sin(0.3*x)
                                                              *std::sin(0.3*z); }
                                             ) );
         shared_ptr<const Scene>    scene    (new Scene(geometry));

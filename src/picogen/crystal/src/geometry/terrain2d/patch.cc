@@ -18,24 +18,75 @@ Patch::Patch (real left, real right, real front, real back,
                 return Point(fx0, fy0, fz0);
         };
 
-        /*if (transition.front()) {
-                for (int x=0; x<resolution; ++x) {
-                        Triangle &A = triangles_[tindex++];
-                        Triangle &B = triangles_[tindex++];
-                        Triangle &B = triangles_[tindex++];
-                }
-        }*/
         std::vector<Triangle> tris_;
-        for (int z=0; z<resolution; ++z) {
-                for (int x=0; x<resolution; ++x) {
-                        tris_.emplace_back (grid2point (x,  z),
-                                            grid2point (x+1,z),
-                                            grid2point (x+1,z+1));
-                        tris_.emplace_back (grid2point (x,  z),
-                                            grid2point (x+1,z+1),
-                                            grid2point (x,  z+1));
+        if (transition.front()) {
+                for (int x=transition.left(); x<resolution-transition.right(); ++x) {
+                        const int z = 0;
+                        tris_.emplace_back (grid2point (x,    z),
+                                            grid2point (x,    z+1),
+                                            grid2point (x+0.5,z));
+                        tris_.emplace_back (grid2point (x,    z+1),
+                                            grid2point (x+1,  z+1),
+                                            grid2point (x+0.5,z));
+                        tris_.emplace_back (grid2point (x+0.5,z),
+                                            grid2point (x+1,  z+1),
+                                            grid2point (x+1,  z));
                 }
         }
+        if (transition.left()) {
+                for (int z=transition.front(); z<resolution-transition.back(); ++z) {
+                        const int x = 0;
+                        tris_.emplace_back (grid2point (x,  z),
+                                            grid2point (x,  z+0.5),
+                                            grid2point (x+1,z));
+                        tris_.emplace_back (grid2point (x,  z+0.5),
+                                            grid2point (x+1,z+1),
+                                            grid2point (x+1,z));
+                        tris_.emplace_back (grid2point (x,  z+1),
+                                            grid2point (x+1,z+1),
+                                            grid2point (x,  z+0.5));
+                }
+        }
+        if (transition.right()) {
+                for (int z=transition.front(); z<resolution-transition.back(); ++z) {
+                        const int x = resolution-1;
+                        tris_.emplace_back (grid2point (x,  z),
+                                            grid2point (x+1,z+0.5),
+                                            grid2point (x+1,z));
+                        tris_.emplace_back (grid2point (x,  z),
+                                            grid2point (x,  z+1),
+                                            grid2point (x+1,z+0.5));
+                        tris_.emplace_back (grid2point (x,  z+1),
+                                            grid2point (x+1,z+1),
+                                            grid2point (x+1,z+0.5));
+                }
+        }
+        // main set.
+        for (int z=transition.front(); z<resolution-transition.back(); ++z) {
+                for (int x=transition.left(); x<resolution-transition.right(); ++x) {
+                        tris_.emplace_back (grid2point (x,  z+1),
+                                            grid2point (x+1,z+1),
+                                            grid2point (x,  z));
+                        tris_.emplace_back (grid2point (x+1,z+1),
+                                            grid2point (x+1,z),
+                                            grid2point (x,  z));
+                }
+        }
+        if (transition.back()) {
+                for (int x=transition.left(); x<resolution-transition.right(); ++x) {
+                        const int z = resolution-1;
+                        tris_.emplace_back (grid2point (x,    z),
+                                            grid2point (x,    z+1),
+                                            grid2point (x+0.5,z+1));
+                        tris_.emplace_back (grid2point (x+0.5,z+1),
+                                            grid2point (x+1,  z),
+                                            grid2point (x,    z));
+                        tris_.emplace_back (grid2point (x+0.5,z+1),
+                                            grid2point (x+1,  z+1),
+                                            grid2point (x+1,  z));
+                }
+        }
+
         triangleCount_ = tris_.size();
         triangles_ = new Triangle [triangleCount_];
         std::copy(tris_.begin(), tris_.end(), triangles_);

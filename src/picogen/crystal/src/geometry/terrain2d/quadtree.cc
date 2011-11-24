@@ -120,7 +120,7 @@ void Quadtree::make_leaf  (std::function<real(real,real)> fun,
         patch_ = new Patch (rect_.left, rect_.right,
                             rect_.front, rect_.back,
                             fun, patchRes,
-                            Transition::Front()
+                            Transition::Left()|Transition::Right()
                            );
         min_h_ = patch_->min_h();
         max_h_ = patch_->max_h();
