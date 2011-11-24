@@ -9,6 +9,7 @@
 namespace crystal { namespace geometry { namespace terrain2d {
 
         class Deepness;
+        class EdgeDepths;
 
         class Rect {
         public:
@@ -86,11 +87,13 @@ namespace crystal { namespace geometry { namespace terrain2d {
                              Rect const &rect,
                              std::function<real(real,real)> fun,
                              int patchRes,
-                             int depth);
+                             int depth,
+                             EdgeDepths &);
                 void make_inner (terrain2d::Deepness const &,
                                  std::function<real(real,real)> fun,
                                  int patchRes,
-                                 int depth);
+                                 int depth,
+                                 EdgeDepths &);
                 void make_leaf  (terrain2d::Deepness const &,
                                  std::function<real(real,real)> fun,
                                  int patchRes,

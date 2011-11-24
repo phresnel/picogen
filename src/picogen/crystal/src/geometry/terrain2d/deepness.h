@@ -6,14 +6,19 @@
 namespace crystal { namespace geometry { namespace terrain2d {
 struct Deepness {
         int maxRecursion;
-        real maxDetailRange, minDetailRange;
+        int minRecursion;
+        real maxDetailRange,
+             minDetailRange; // just a quick-fix, we should really be maximizing on
+                             // actual recursion levels reached
 
         Deepness (int r, real maxD, real minD)
-                : maxRecursion (r),
+                : maxRecursion (r), minRecursion(3),
                   maxDetailRange(maxD), minDetailRange(minD)
         {
                 assert (maxD < minD);
         }
+
+        real maxMinRange() const { return minDetailRange - maxDetailRange; }
 
         template <typename Rect> // TODO: make this a non-template
         int deepness (const Point &camera, Rect const &rect) const {
@@ -59,10 +64,10 @@ struct Deepness {
 
                 //const real dist = length (p - camera);
                 const real l_ = std::max (real(0), dist - maxDetailRange)
-                               / (minDetailRange - maxDetailRange);
+                               / maxMinRange();
                 const real l = l_ < 0 ? 0 : l_ > 1 ? 1 : l_;
 
-                const int ret = int(maxRecursion - real(maxRecursion) * l);
+                const int ret = int(maxRecursion - real(maxRecursion-minRecursion) * l);
                 /*qDebug() << "[" << camera.z() << ", l:" << l << l_ << ", dparams:"
                          << maxRecursion << maxDetailRange << minDetailRange << "]";*/
                 /*qDebug() //<< dist << " --> " << l << " --> "

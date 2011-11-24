@@ -7,15 +7,21 @@
 
 namespace crystal { namespace geometry { namespace terrain2d {
 
+struct EdgeDepths {
+        int left, right, front, back;
+};
+
 Quadtree::Quadtree(Deepness const &deepness,
                    std::function<real(real,real)> fun,
                    int patchResolution)
 {
+        EdgeDepths ed;
         create (deepness,
                 Rect (-5000,5000, -5000,5000),
                 fun,
                 patchResolution,
-                0);
+                0,
+                ed);
 }
 
 Quadtree::~Quadtree() {
@@ -76,11 +82,17 @@ PIntersection Quadtree::intersect_ (const Ray &ray, int *ordering) const
 
 //-- creation ------------------------------------------------------------------
 
+// note: To prevent LOD-differences of more than 1, we should build the tree
+//       front-to-back, each recursion notifies
+//       the parent about its four edge detail level. The builder can then
+//       inform the other siblings about the maximum recursion allowed.
+
 void Quadtree::create  (terrain2d::Deepness const &deepness,
                         Rect const &rect,
                         std::function<real(real,real)> fun,
                         int patchRes,
-                        int depth)
+                        int depth,
+                        EdgeDepths &ed)
 {
         leaf_ = depth>=deepness.deepness(Point(0,0,0),
                                          rect.left, rect.right,
@@ -89,22 +101,51 @@ void Quadtree::create  (terrain2d::Deepness const &deepness,
         if (leaf_) {
                 make_leaf (deepness, fun, patchRes, depth);
         } else {
-                make_inner (deepness, fun, patchRes, depth);
+                make_inner (deepness, fun, patchRes, depth, ed);
         }
 }
 
 void Quadtree::make_inner  (terrain2d::Deepness const &deepness,
                             std::function<real(real,real)> fun,
                             int patchRes,
-                            int depth)
+                            int depth,
+                            EdgeDepths &ed
+                            )
 {
+        const Point camera (0,0,0);
         ChildRects cr = child_boxen (rect_.left, rect_.right,
                                      rect_.front, rect_.back);
+
         children_ = new Quadtree[4];
-        children_[0].create (deepness, cr[0], fun, patchRes, depth+1);
-        children_[1].create (deepness, cr[1], fun, patchRes, depth+1);
-        children_[2].create (deepness, cr[2], fun, patchRes, depth+1);
-        children_[3].create (deepness, cr[3], fun, patchRes, depth+1);
+
+        struct Child {
+                Rect rect;
+                Quadtree *child;
+        } crr[4];
+        for (int i=0; i<4; ++i) {
+                crr[i].rect = cr[i];
+                crr[i].child = children_+i;
+        }
+
+        // sort crr by distance
+        /*std::sort (crr+0, crr+4,
+                   [&](Child const &lhs, Child const &rhs) {
+                        return deepness.deepness(camera, lhs.rect)
+                             > deepness.deepness(camera, rhs.rect);
+                   });*/
+
+        /*for (int i=0; i<4; ++i) {
+                std::cout << deepness.deepness(camera, crr[i].rect) << " " ;
+        }
+        std::cout << std::endl;*/
+
+        for (int i=0; i<4; ++i) {
+                EdgeDepths ced;
+                crr[i].child->create (deepness, crr[i].rect,
+                                      fun, patchRes, depth+1,
+                                      ced);
+                //ed.back
+        }
 
         min_h_ =  std::numeric_limits<real>::max();
         max_h_ = -std::numeric_limits<real>::max();

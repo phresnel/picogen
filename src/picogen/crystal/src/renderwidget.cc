@@ -168,7 +168,7 @@ void RenderWidget::updateDisplay () {
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 geometry::terrain2d::Deepness(
-                                                        12, 150,6000
+                                                        11, 150,3000
                                                 ),
                                                 [](real x, real z) {
                                                      return 15*std::sin(0.1*x)
