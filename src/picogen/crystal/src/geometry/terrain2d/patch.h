@@ -28,6 +28,16 @@ namespace crystal { namespace geometry { namespace terrain2d {
 
                 struct Triangle {
                         Point a,b,c;
+
+                        Triangle() = default;
+
+                        Triangle (Point const &a,
+                                  Point const &b,
+                                  Point const &c)
+                                : a(a), b(b), c(c)
+                        {
+                        }
+
                 };
                 Triangle *triangles_;
                 int triangleCount_;

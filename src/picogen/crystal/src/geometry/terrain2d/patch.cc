@@ -7,14 +7,9 @@ Patch::Patch (real left, real right, real front, real back,
               std::function<real (real, real)> fun, int resolution,
               Transition const &transition)
 {
-        triangleCount_ = resolution*resolution*2;
-        triangles_ = new Triangle [triangleCount_];
-        //const real rd = (back_-front_)/res_;
-
         const real width = right - left,
                    depth = back - front;
         const real ires = 1 / real(resolution);
-        int tindex = 0;
 
         auto grid2point = [&] (real x, real z) {
                 const real fx0 = left + x * ires * width,
@@ -23,22 +18,28 @@ Patch::Patch (real left, real right, real front, real back,
                 return Point(fx0, fy0, fz0);
         };
 
-        if (transition.front()) {
-                for (int x=0; x<resolution; ++x) {
-                }
-        }
-        for (int z=0; z<resolution; ++z) {
+        /*if (transition.front()) {
                 for (int x=0; x<resolution; ++x) {
                         Triangle &A = triangles_[tindex++];
                         Triangle &B = triangles_[tindex++];
-                        A.a = grid2point (x,  z);
-                        A.b = grid2point (x+1,z);
-                        A.c = grid2point (x+1,z+1);
-                        B.a = grid2point (x,  z);
-                        B.b = grid2point (x+1,z+1);
-                        B.c = grid2point (x,  z+1);
+                        Triangle &B = triangles_[tindex++];
+                }
+        }*/
+        std::vector<Triangle> tris_;
+        for (int z=0; z<resolution; ++z) {
+                for (int x=0; x<resolution; ++x) {
+                        tris_.emplace_back (grid2point (x,  z),
+                                            grid2point (x+1,z),
+                                            grid2point (x+1,z+1));
+                        tris_.emplace_back (grid2point (x,  z),
+                                            grid2point (x+1,z+1),
+                                            grid2point (x,  z+1));
                 }
         }
+        triangleCount_ = tris_.size();
+        triangles_ = new Triangle [triangleCount_];
+        std::copy(tris_.begin(), tris_.end(), triangles_);
+
 
 
         min_h_ =  std::numeric_limits<real>::max();
