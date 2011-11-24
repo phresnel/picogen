@@ -87,6 +87,68 @@ Patch::Patch (real left, real right, real front, real back,
                 }
         }
 
+        // corner transitions
+        if (transition.left() && transition.front()) {
+                const int x = 0, z = 0;
+                tris_.emplace_back (grid2point (x,    z),
+                                    grid2point (x,    z+0.5),
+                                    grid2point (x+1,  z+1));
+                tris_.emplace_back (grid2point (x,    z+0.5),
+                                    grid2point (x,    z+1),
+                                    grid2point (x+1,  z+1));
+                tris_.emplace_back (grid2point (x+1,  z+1),
+                                    grid2point (x+0.5,z),
+                                    grid2point (x,    z));
+                tris_.emplace_back (grid2point (x+1,  z+1),
+                                    grid2point (x+1,  z),
+                                    grid2point (x+0.5,z));
+        }
+        if (transition.right() && transition.front()) {
+                const int x = resolution-1, z = 0;
+                tris_.emplace_back (grid2point (x,    z+1),
+                                    grid2point (x+1,  z+1),
+                                    grid2point (x+1,  z+0.5));
+                tris_.emplace_back (grid2point (x,    z+1),
+                                    grid2point (x+1,  z+0.5),
+                                    grid2point (x+1,  z+0));
+                tris_.emplace_back (grid2point (x,    z+1),
+                                    grid2point (x+1,  z),
+                                    grid2point (x+0.5,z));
+                tris_.emplace_back (grid2point (x,    z+1),
+                                    grid2point (x+0.5,z),
+                                    grid2point (x,    z));
+        }
+        if (transition.left() && transition.back()) {
+                const int x = 0, z = resolution-1;
+                tris_.emplace_back (grid2point (x+1,  z),
+                                    grid2point (x,    z),
+                                    grid2point (x,    z+0.5));
+                tris_.emplace_back (grid2point (x+1,  z),
+                                    grid2point (x,    z+0.5),
+                                    grid2point (x,    z+1));
+                tris_.emplace_back (grid2point (x+1,  z),
+                                    grid2point (x,    z+1),
+                                    grid2point (x+0.5,z+1));
+                tris_.emplace_back (grid2point (x+1,  z),
+                                    grid2point (x+0.5,z+1),
+                                    grid2point (x+1,  z+1));
+        }
+        if (transition.right() && transition.back()) {
+                const int x = resolution-1, z = resolution-1;
+                tris_.emplace_back (grid2point (x,    z),
+                                    grid2point (x,    z+1),
+                                    grid2point (x+0.5,z+1));
+                tris_.emplace_back (grid2point (x,    z),
+                                    grid2point (x+0.5,z+1),
+                                    grid2point (x+1,  z+1));
+                tris_.emplace_back (grid2point (x,    z),
+                                    grid2point (x+1,  z+1),
+                                    grid2point (x+1,  z+0.5));
+                tris_.emplace_back (grid2point (x,    z),
+                                    grid2point (x+1,  z+0.5),
+                                    grid2point (x+1,  z));
+        }
+
         triangleCount_ = tris_.size();
         triangles_ = new Triangle [triangleCount_];
         std::copy(tris_.begin(), tris_.end(), triangles_);
