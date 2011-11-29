@@ -121,6 +121,10 @@ set (sources ${sources}
         ${crystal_src_dir}/geometry/terrain2d/patch.h
         ${crystal_src_dir}/geometry/terrain2d/quadtree.cc
         ${crystal_src_dir}/geometry/terrain2d/quadtree.h
+
+        ${crystal_src_dir}/surfaceintegrator.h
+        ${crystal_src_dir}/surfaceintegrators/constant.h
+        ${crystal_src_dir}/surfaceintegrators/constant.cc
 )
 
 

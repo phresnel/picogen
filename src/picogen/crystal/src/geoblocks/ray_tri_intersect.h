@@ -3,7 +3,7 @@
 
 #include "../crystal_math.h"
 namespace crystal { namespace geoblocks {
-        static const real tri_eps = 0.00000001;
+        static const real tri_eps = 0.001;
         inline int
         raytri_intersect (
             const Ray &ray,
@@ -60,7 +60,7 @@ namespace crystal { namespace geoblocks {
 
             //---------
             // pretty crappy but sometimes useful wireframe mode
-            if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
+            //if ((u>0.1&&u<0.9) && (v>0.1&&v<0.9) && ((u+v)>0.1 && (u+v)<0.9)) return 0;
 
             if (t < 0)
                 return 0;

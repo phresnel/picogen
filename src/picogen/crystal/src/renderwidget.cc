@@ -29,6 +29,7 @@ namespace crystal {
 #include "cameras/pinhole.h"
 #include "geoblocks/ray_tri_intersect.h"
 #include "geometry/terrain2d.h"
+#include "surfaceintegrators/constant.h"
 
 
 #include <boost/optional.hpp>
@@ -97,6 +98,7 @@ namespace crystal {
                         const int     width  = film_->width();
                         const Camera& camera = *camera_;
                         const Geometry &geo  = scene_->geometry();
+                        const SurfaceIntegrator &sint = *surfaceIntegrator_;
                         Film&         film   = *film_;
 
                         for (int y=0; y<height; ++y) {
@@ -105,7 +107,10 @@ namespace crystal {
                                                                   x/real(width),
                                                                   y/real(height));
                                         const Ray ray = camera(sample);
+                                        film.addSample (sample,
+                                                        sint(ray));
 
+                                        /*
                                         const PIntersection pinter = geo.intersect(ray);
 
                                         if (pinter) {
@@ -119,7 +124,7 @@ namespace crystal {
                                                                         0.5+dir.y,
                                                                         0.5+dir.z
                                                                        ));
-                                        }
+                                        }*/
                                 }
                         }
                 }
@@ -163,24 +168,26 @@ void RenderWidget::updateDisplay () {
 
 
         sw.restart();
-        shared_ptr<Film>           film     (new Film(480, 320));
+        shared_ptr<Film>           film     (new Film(320, 320));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(0.7));
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 geometry::terrain2d::Deepness(
-                                                        11, 150,3000
+                                                        11, 200,3000
                                                 ),
                                                 [](real x, real z) {
                                                      return 15*std::sin(0.1*x)
                                                              *std::sin(0.1*z); }
                                             ) );
+
+        shared_ptr<const SurfaceIntegrator> surface_integrator (new surfaceintegrators::Constant());
         shared_ptr<const Scene>    scene    (new Scene(geometry));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(
                                                 film,
                                                 scene,
                                                 camera,
-                                                shared_ptr<const SurfaceIntegrator>(),
+                                                surface_integrator,
                                                 shared_ptr<const VolumeIntegrator>()
                                             ));
         const double creationTime = sw.stop();
