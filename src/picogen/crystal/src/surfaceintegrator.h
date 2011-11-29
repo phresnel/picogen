@@ -5,14 +5,16 @@
 
 namespace crystal {
 
+        class Scene;
+
         class SurfaceIntegrator {
         public:
                 virtual ~SurfaceIntegrator() {}
-                Radiance operator() (Ray const &ray) const {
-                        return get (ray);
+                Radiance operator() (Ray const &ray, Scene const &scene) const {
+                        return get (ray, scene);
                 }
         private:
-                virtual Radiance get(Ray const &) const = 0;
+                virtual Radiance get(Ray const &, Scene const &) const = 0;
         };
 
 }

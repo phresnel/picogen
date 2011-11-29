@@ -8,10 +8,11 @@ namespace crystal { namespace surfaceintegrators {
 class Constant : public SurfaceIntegrator
 {
 public:
-    Constant();
+    Constant(Radiance const &surfaceColor, Radiance const &skyColor);
 
 private:
-    Radiance get (Ray const &ray) const;
+    Radiance get (Ray const &ray, Scene const &scene) const;
+    Radiance const surfaceColor_, skyColor_;
 };
 
 } }

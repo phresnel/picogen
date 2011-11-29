@@ -106,6 +106,9 @@ set (sources ${sources}
 
         ${crystal_src_dir}/crystal_math.h
 
+        ${crystal_src_dir}/scene.h
+        ${crystal_src_dir}/scene.cc
+
         ${crystal_src_dir}/film.cc
         ${crystal_src_dir}/film.h
 

@@ -30,6 +30,7 @@ namespace crystal {
 #include "geoblocks/ray_tri_intersect.h"
 #include "geometry/terrain2d.h"
 #include "surfaceintegrators/constant.h"
+#include "scene.h"
 
 
 #include <boost/optional.hpp>
@@ -38,25 +39,6 @@ namespace crystal {
         class SurfaceIntegrator;
         class VolumeIntegrator;
         class Volume;
-
-        class Scene {
-        public:
-                Scene() = delete;
-
-                Scene (shared_ptr<const Geometry> geometry)
-                        : geometry_(geometry)
-                {}
-
-                Geometry const& geometry() const {
-                        return *geometry_;
-                }
-        private:
-                shared_ptr<const Geometry>          geometry_;
-                shared_ptr<const Volume>            volume_;
-        };
-
-
-
 
 
         class Renderer {
@@ -97,8 +79,8 @@ namespace crystal {
                         const int     height = film_->height();
                         const int     width  = film_->width();
                         const Camera& camera = *camera_;
-                        const Geometry &geo  = scene_->geometry();
-                        const SurfaceIntegrator &sint = *surfaceIntegrator_;
+                        const Scene&  scene  = *scene_;
+                        const SurfaceIntegrator &surfaceInteg = *surfaceIntegrator_;
                         Film&         film   = *film_;
 
                         for (int y=0; y<height; ++y) {
@@ -108,23 +90,7 @@ namespace crystal {
                                                                   y/real(height));
                                         const Ray ray = camera(sample);
                                         film.addSample (sample,
-                                                        sint(ray));
-
-                                        /*
-                                        const PIntersection pinter = geo.intersect(ray);
-
-                                        if (pinter) {
-                                                Intersection const &i = *pinter;
-                                                film.addSample (sample,
-                                                                Radiance::Gray(0.5+0.5*i.normal.x()));
-                                        } else {
-                                                const Vector dir = ray.direction*1;
-                                                film.addSample(sample, Radiance::FromRgb(
-                                                                        0.5+dir.x,
-                                                                        0.5+dir.y,
-                                                                        0.5+dir.z
-                                                                       ));
-                                        }*/
+                                                        surfaceInteg(ray, scene));
                                 }
                         }
                 }
@@ -180,7 +146,10 @@ void RenderWidget::updateDisplay () {
                                                              *std::sin(0.1*z); }
                                             ) );
 
-        shared_ptr<const SurfaceIntegrator> surface_integrator (new surfaceintegrators::Constant());
+        shared_ptr<const SurfaceIntegrator> surface_integrator (
+                                        new surfaceintegrators::Constant(
+                                                Radiance::FromRgb(0.4, 0.9, 0.5),
+                                                Radiance::FromRgb(0.4, 0.5, 0.7)));
         shared_ptr<const Scene>    scene    (new Scene(geometry));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(
