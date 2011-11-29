@@ -128,6 +128,8 @@ set (sources ${sources}
         ${crystal_src_dir}/surfaceintegrator.h
         ${crystal_src_dir}/surfaceintegrators/constant.h
         ${crystal_src_dir}/surfaceintegrators/constant.cc
+        ${crystal_src_dir}/surfaceintegrators/whitted.h
+        ${crystal_src_dir}/surfaceintegrators/whitted.cc
 )
 
 

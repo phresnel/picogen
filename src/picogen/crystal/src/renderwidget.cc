@@ -30,6 +30,7 @@ namespace crystal {
 #include "geoblocks/ray_tri_intersect.h"
 #include "geometry/terrain2d.h"
 #include "surfaceintegrators/constant.h"
+#include "surfaceintegrators/whitted.h"
 #include "scene.h"
 
 
@@ -147,9 +148,7 @@ void RenderWidget::updateDisplay () {
                                             ) );
 
         shared_ptr<const SurfaceIntegrator> surface_integrator (
-                                        new surfaceintegrators::Constant(
-                                                Radiance::FromRgb(0.4, 0.9, 0.5),
-                                                Radiance::FromRgb(0.4, 0.5, 0.7)));
+                                                new surfaceintegrators::Whitted());
         shared_ptr<const Scene>    scene    (new Scene(geometry));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(

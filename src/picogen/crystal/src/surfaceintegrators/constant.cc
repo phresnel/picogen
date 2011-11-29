@@ -10,7 +10,6 @@ Constant::Constant(Radiance const &surf, Radiance const &sky)
 
 Radiance Constant::get (Ray const &ray, Scene const &scene) const {
         const PIntersection pinter = scene.geometry().intersect(ray);
-
         return pinter ? surfaceColor_ : skyColor_;
         /*
         if (pinter) {
