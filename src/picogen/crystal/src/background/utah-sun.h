@@ -16,7 +16,7 @@ namespace crystal { namespace background {
 
 class UtahSun : public Sun {
 public:
-        UtahSun (std::shared_ptr<crystal::redshift::background::PssSunSky> pssSunSky)
+        UtahSun (std::shared_ptr<const crystal::redshift::background::PssSunSky> pssSunSky)
                 : pssSunSky_ (pssSunSky),
                   pPssSunSky_(pssSunSky.get()),
                   sunDirection_ (redshift_vector_to_direction (pPssSunSky_->
@@ -36,9 +36,8 @@ private:
                 return Radiance::FromRgb (rgb.R, rgb.G, rgb.B);
         }
 private:
-        std::shared_ptr<crystal::redshift::background::PssSunSky> pssSunSky_;
-        crystal::redshift::background::PssSunSky
-                                             *pPssSunSky_; // < faster dispatch
+        std::shared_ptr<const crystal::redshift::background::PssSunSky> pssSunSky_;
+        crystal::redshift::background::PssSunSky const *pPssSunSky_; // < faster dispatch
 
         Direction sunDirection_;
         Radiance sunRadiance_;

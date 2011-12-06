@@ -8,12 +8,12 @@ namespace crystal { namespace background {
 
 class UtahSky : public Sky {
 public:
-        UtahSky (std::shared_ptr<crystal::redshift::background::PssSunSky>);
+        UtahSky (std::shared_ptr<const crystal::redshift::background::PssSunSky>);
 private:
         Radiance radiance_ (const Ray &) const ;
 
 private:
-        std::shared_ptr<crystal::redshift::background::PssSunSky> pssSunSky_;
+        std::shared_ptr<const crystal::redshift::background::PssSunSky> pssSunSky_;
 };
 
 } }

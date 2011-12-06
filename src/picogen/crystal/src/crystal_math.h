@@ -537,6 +537,11 @@ namespace crystal {
                         return origin + direction*f;
                 }
         };
+
+        inline Ray flip_direction(Ray const &ray)
+        {
+                return Ray (ray.origin, -ray.direction);
+        }
 }
 
 namespace crystal {

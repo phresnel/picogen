@@ -31,6 +31,11 @@ namespace crystal {
 #include "geometry/terrain2d.h"
 #include "surfaceintegrators/constant.h"
 #include "surfaceintegrators/whitted.h"
+
+#include "background/utah-sun.h"
+#include "background/utah-sky.h"
+#include "background/utah-sky/sunsky.hh"
+
 #include "scene.h"
 
 
@@ -40,6 +45,31 @@ namespace crystal {
         class SurfaceIntegrator;
         class VolumeIntegrator;
         class Volume;
+
+        class PixelShader {
+        public:
+                Radiance operator() (Radiance const &rad) const {
+                        return this->shade_ (rad);
+                }
+        private:
+                virtual Radiance shade_ (Radiance const &) const = 0;
+        };
+        namespace pixel_shaders {
+                class Scale : public PixelShader {
+                public:
+                        Scale() : factor_ (1) {}
+                        Scale (real factor) : factor_ (factor) {}
+
+                private:
+                        Radiance shade_ (Radiance const &rad) const {
+                                return rad * factor_;
+                        }
+
+                        real factor_;
+                };
+        }
+        class SurfaceShader {
+        };
 
 
         class Renderer {
@@ -67,22 +97,25 @@ namespace crystal {
                               shared_ptr<const Scene> scene,
                               shared_ptr<const Camera> camera,
                               shared_ptr<const SurfaceIntegrator> surfaceIntegrator,
-                              shared_ptr<const VolumeIntegrator>  volumeIntegrator)
+                              shared_ptr<const VolumeIntegrator>  volumeIntegrator,
+                              shared_ptr<const PixelShader> pixelShader)
                         : film_(film)
                         , scene_(scene)
                         , camera_(camera)
                         , surfaceIntegrator_(surfaceIntegrator)
                         , volumeIntegrator_(volumeIntegrator)
+                        , pixelShader_ (pixelShader)
                 {
                 }
         private:
                 void render_ () const {
-                        const int     height = film_->height();
-                        const int     width  = film_->width();
-                        const Camera& camera = *camera_;
-                        const Scene&  scene  = *scene_;
+                        const int     height  = film_->height();
+                        const int     width   = film_->width();
+                        const Camera& camera  = *camera_;
+                        const Scene&  scene   = *scene_;
                         const SurfaceIntegrator &surfaceInteg = *surfaceIntegrator_;
-                        Film&         film   = *film_;
+                        Film&         film    = *film_;
+                        const PixelShader& ps = *pixelShader_;
 
                         for (int y=0; y<height; ++y) {
                                 for (int x=0; x<width; ++x) {
@@ -90,8 +123,9 @@ namespace crystal {
                                                                   x/real(width),
                                                                   y/real(height));
                                         const Ray ray = camera(sample);
-                                        film.addSample (sample,
-                                                        surfaceInteg(ray, scene));
+                                        const Radiance rad = surfaceInteg(ray, scene);
+                                        const Radiance shaded = ps (rad);
+                                        film.addSample (sample, shaded);
                                 }
                         }
                 }
@@ -102,6 +136,7 @@ namespace crystal {
                 shared_ptr<const Camera>            camera_;
                 shared_ptr<const SurfaceIntegrator> surfaceIntegrator_;
                 shared_ptr<const VolumeIntegrator>  volumeIntegrator_;
+                shared_ptr<const PixelShader>       pixelShader_;
         };
 }
 
@@ -149,15 +184,26 @@ void RenderWidget::updateDisplay () {
 
         shared_ptr<const SurfaceIntegrator> surface_integrator (
                                                 new surfaceintegrators::Whitted());
-        shared_ptr<const Scene>    scene    (new Scene(geometry));
+
+        shared_ptr<const redshift::background::PssSunSky> pssSunSky (
+                                new redshift::background::PssSunSky(redshift::Vector(1,0.4,0),
+                                                                    4,
+                                                                    0,
+                                                                    false));
+        shared_ptr<const Scene> scene(new Scene(
+                geometry,
+                shared_ptr<const background::UtahSun> (new background::UtahSun(pssSunSky)),
+                shared_ptr<const background::UtahSky> (new background::UtahSky(pssSunSky))
+                ));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(
-                                                film,
-                                                scene,
-                                                camera,
-                                                surface_integrator,
-                                                shared_ptr<const VolumeIntegrator>()
-                                            ));
+                film,
+                scene,
+                camera,
+                surface_integrator,
+                shared_ptr<const VolumeIntegrator>(),
+                shared_ptr<const PixelShader>(new pixel_shaders::Scale(0.000075))
+        ));
         const double creationTime = sw.stop();
         sw.restart();
         renderer->render();

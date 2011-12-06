@@ -4,7 +4,7 @@
 
 namespace crystal { namespace background {
 
-UtahSky::UtahSky (std::shared_ptr<crystal::redshift::background::PssSunSky> pssSunSky)
+UtahSky::UtahSky (std::shared_ptr<const crystal::redshift::background::PssSunSky> pssSunSky)
         : pssSunSky_(pssSunSky)
 {
 }
