@@ -130,6 +130,44 @@ set (sources ${sources}
         ${crystal_src_dir}/surfaceintegrators/constant.cc
         ${crystal_src_dir}/surfaceintegrators/whitted.h
         ${crystal_src_dir}/surfaceintegrators/whitted.cc
+
+        ${crystal_src_dir}/background/mono-sky.cc
+        ${crystal_src_dir}/background/mono-sky.h
+        ${crystal_src_dir}/background/mono-sun.cc
+        ${crystal_src_dir}/background/mono-sun.h
+        ${crystal_src_dir}/background/sky.cc
+        ${crystal_src_dir}/background/sky.h
+        ${crystal_src_dir}/background/sun.cc
+        ${crystal_src_dir}/background/sun.h
+        ${crystal_src_dir}/background/utah-sky/algorithm.hh
+
+${crystal_src_dir}/background/utah-sky/array.hh
+${crystal_src_dir}/background/utah-sky/atmconstants.cc
+${crystal_src_dir}/background/utah-sky/constants.cc
+${crystal_src_dir}/background/utah-sky/constants.hh
+${crystal_src_dir}/background/utah-sky/dirtydirty.cc
+${crystal_src_dir}/background/utah-sky/geometry.hh
+#${crystal_src_dir}/background/utah-sky/K25.spectrum
+#${crystal_src_dir}/background/utah-sky/K.spectrum
+#Neta.Table
+${crystal_src_dir}/background/utah-sky/real.hh
+${crystal_src_dir}/background/utah-sky/rgb.hh
+${crystal_src_dir}/background/utah-sky/setup.hh
+${crystal_src_dir}/background/utah-sky/spectrum.cc
+${crystal_src_dir}/background/utah-sky/spectrum.hh
+${crystal_src_dir}/background/utah-sky/spectrum.inl.hh
+${crystal_src_dir}/background/utah-sky/static_init.hh
+${crystal_src_dir}/background/utah-sky/sunconstants.cc
+${crystal_src_dir}/background/utah-sky/sunsky.cc
+${crystal_src_dir}/background/utah-sky/sunsky.hh
+${crystal_src_dir}/background/utah-sky/tospectrum.cc
+
+
+        ${crystal_src_dir}/background/utah-sky.cc
+        ${crystal_src_dir}/background/utah-sky.h
+        ${crystal_src_dir}/background/utah-sun.cc
+        ${crystal_src_dir}/background/utah-sun.h
+
 )
 
 

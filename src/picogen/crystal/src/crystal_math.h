@@ -160,6 +160,11 @@ namespace crystal {
                 return lhs *= rhs;
         }
 
+        inline Radiance operator * (real lhs, Radiance rhs)
+        {
+                return rhs *= lhs;
+        }
+
         inline Radiance operator / (Radiance lhs, real rhs)
         {
                 return lhs /= rhs;
@@ -263,10 +268,28 @@ namespace crystal {
                 return sqrt (length_sq (v));
         }
 
-        inline Vector normalize (Vector const &v)
+        inline real length_sq (real x, real y, real z)
+        {
+                return x*x + y*y + z*z;
+        }
+
+        inline real length (real x, real y, real z)
+        {
+                return sqrt (length_sq (x,y,z));
+        }
+
+        template <typename Target=Vector>
+        inline Target normalize (Vector const &v)
         {
                 const real len = length(v);
                 return {v.x/len, v.y/len, v.z/len};
+        }
+
+        template <typename Target=Vector>
+        inline Target normalize (real x, real y, real z)
+        {
+                const real len = length(x,y,z);
+                return {x/len, y/len, z/len};
         }
 
         inline Vector cross (Vector const &lhs, Vector const &rhs)

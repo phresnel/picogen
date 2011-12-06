@@ -109,7 +109,7 @@ void Quadtree::make_inner  (terrain2d::Deepness const &deepness,
                             std::function<real(real,real)> fun,
                             int patchRes,
                             int depth,
-                            EdgeDepths &ed
+                            EdgeDepths &
                             )
 {
         const Point camera (0,0,0);
