@@ -38,6 +38,7 @@ namespace crystal {
 
 #include "scene.h"
 
+#include "quatsch-height-function.h"
 
 #include <boost/optional.hpp>
 
@@ -173,13 +174,23 @@ void RenderWidget::updateDisplay () {
         shared_ptr<Film>           film     (new Film(320, 320));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(0.7));
 
+        crystal::quatsch::height_function qh ("(* 100 ([LibnoisePerlin   "
+                                              "         frequency{0.003} "
+                                              "         octave-count{8}  "
+                                              "         ] x y))          "
+                                              //"(* 15 (sin (* 0.025 x))"
+                                              //"      (sin (* 0.025 y)))"
+                                             );
+        std::function<real(real,real)> h = qh;
+
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 geometry::terrain2d::Deepness(
-                                                        11, 200,3000
+                                                        9, 200,3000
                                                 ),
-                                                [](real x, real z) {
-                                                     return 15*std::sin(0.1*x)
-                                                             *std::sin(0.1*z); }
+                                                h
+                                                /*[](real x, real z) {
+                                                     return 15*std::sin(0.025*x)
+                                                             *std::sin(0.025*z); }*/
                                             ) );
 
         shared_ptr<const SurfaceIntegrator> surface_integrator (

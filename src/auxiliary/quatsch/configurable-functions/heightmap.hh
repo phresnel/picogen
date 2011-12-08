@@ -32,7 +32,7 @@
 #include "../frontend/jux.hh"
 #include "../backend/est/backend.hh"
 
-#include "redshift/include/auxiliary/heightmap.hh"
+#include "heightmap.h"
 
 #include <map>
 //#include <picogen/picogen.h>
