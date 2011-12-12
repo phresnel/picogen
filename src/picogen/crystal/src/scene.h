@@ -6,6 +6,7 @@
 
 #include "background/sun.h"
 #include "background/sky.h"
+#include "background/atmosphere.h"
 
 
 namespace crystal {
@@ -22,10 +23,13 @@ public:
 
         Scene (shared_ptr<const Geometry> geometry,
                shared_ptr<const background::Sun> sun,
-               shared_ptr<const background::Sky> sky)
+               shared_ptr<const background::Sky> sky,
+               shared_ptr<const background::Atmosphere> atmosphere
+               )
                 : geometry_(geometry),
                   sun_(sun),
-                  sky_(sky)
+                  sky_(sky),
+                  atmosphere_(atmosphere)
         {}
 
         Geometry const& geometry() const {
@@ -39,11 +43,16 @@ public:
         background::Sky const& sky() const {
                 return *sky_;
         }
+
+        background::Atmosphere const& atmosphere() const {
+                return *atmosphere_;
+        }
 private:
         shared_ptr<const Geometry>          geometry_;
         shared_ptr<const Volume>            volume_;
         shared_ptr<const background::Sun>   sun_;
         shared_ptr<const background::Sky>   sky_;
+        shared_ptr<const background::Atmosphere> atmosphere_;
 
 };
 

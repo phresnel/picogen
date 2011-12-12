@@ -16,13 +16,22 @@ Radiance Whitted::get (Ray const &ray, Scene const &scene) const {
 
                 const bool  shadow    = scene.geometry().intersect(shadowRay);
                 const real  s         = shadow ? real(0) : real(1);
-                //return Radiance::Gray(f*0.5+0.5) * s;
-                return scene.sun().radiance()*f*s;
 
+                const background::AtmosphericEffects ae = scene.atmosphere().atmosphericEffects(ray.origin,
+                                                                                                poi);
+                const Radiance no_fx   = scene.sun().radiance()*f*s;
+                return ae.apply (no_fx);;
         } else {
                 const Radiance sky = scene.sky().radiance(ray);
                 //const Radiance sun = scene.sun().radiance(ray);
-                return sky;
+                //return sky;
+
+                const background::AtmosphericEffects ae = scene.atmosphere().atmosphericEffects(
+                                                                  ray.origin,
+                                                                  ray(1000*13));//TODO: parametrize this
+                                                                  //ray(std::numeric_limits<real>::max()));
+                return ae.apply(sky);
+
         }
 }
 

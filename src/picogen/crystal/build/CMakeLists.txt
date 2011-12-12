@@ -139,6 +139,8 @@ set (sources ${sources}
         ${crystal_src_dir}/background/sky.h
         ${crystal_src_dir}/background/sun.cc
         ${crystal_src_dir}/background/sun.h
+        ${crystal_src_dir}/background/atmosphere.cc
+        ${crystal_src_dir}/background/atmosphere.h
 
         # --- redshift utah sky integration ------------------------------------
         ${crystal_src_dir}/background/utah-sky/algorithm.hh
@@ -167,6 +169,8 @@ set (sources ${sources}
         ${crystal_src_dir}/background/utah-sky.h
         ${crystal_src_dir}/background/utah-sun.cc
         ${crystal_src_dir}/background/utah-sun.h
+        ${crystal_src_dir}/background/utah-atmosphere.cc
+        ${crystal_src_dir}/background/utah-atmosphere.h
 
         # --- redshift quatsch integration -------------------------------------
         ${crystal_src_dir}/quatsch-integration.cc

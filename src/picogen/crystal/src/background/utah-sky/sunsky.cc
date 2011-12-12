@@ -471,7 +471,7 @@ void PssSunSky::GetAtmosphericEffects(const Vector &viewer_, const Vector &sourc
         const Vector direction = normalize (diff);
 
         // Clean up the 1000 problem
-        real_t h0 = viewer.up();//1000 added to make sure ray doesnt go below zero.
+        real_t h0 = viewer.up()+1000;//1000 added to make sure ray doesnt go below zero.
 
 
         const real_t thetav    = acos (direction.up());
