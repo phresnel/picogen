@@ -14,7 +14,10 @@ public:
                 : attenuation(att), inScatter (ins)
         {}
 
-        AtmosphericEffects() = default;
+        AtmosphericEffects() :
+                attenuation(Radiance::White()),
+                inScatter (Radiance::Black())
+        {}
 
         Radiance apply (Radiance const &in) const {
                 return inScatter + attenuation * in;

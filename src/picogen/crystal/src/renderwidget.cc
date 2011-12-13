@@ -34,7 +34,7 @@ namespace crystal {
 
 #include "background/utah-sun.h"
 #include "background/utah-sky.h"
-#include "background/utah-atmosphere.h"
+#include "background/noatmosphere.h"
 #include "background/utah-sky/sunsky.hh"
 
 #include "scene.h"
@@ -186,7 +186,7 @@ void RenderWidget::updateDisplay () {
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 geometry::terrain2d::Deepness(
-                                                        7, 200,3000
+                                                        9, 200,3000
                                                 ),
                                                 h
                                                 /*[](real x, real z) {
@@ -201,12 +201,13 @@ void RenderWidget::updateDisplay () {
                                 new redshift::background::PssSunSky(redshift::Vector(1,0.4,0),
                                                                     4,
                                                                     0,
-                                                                    true));
+                                                                    false));
         shared_ptr<const Scene> scene(new Scene(
                 geometry,
-                shared_ptr<const background::UtahSun> (new background::UtahSun(pssSunSky)),
-                shared_ptr<const background::UtahSky> (new background::UtahSky(pssSunSky)),
-                shared_ptr<const background::UtahAtmosphere> (new background::UtahAtmosphere(pssSunSky))
+                shared_ptr<const background::Sun> (new background::UtahSun(pssSunSky)),
+                shared_ptr<const background::Sky> (new background::UtahSky(pssSunSky)),
+                shared_ptr<const background::Atmosphere> (new background::NoAtmosphere())
+                                                      //new background::UtahAtmosphere(pssSunSky))
                 ));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(

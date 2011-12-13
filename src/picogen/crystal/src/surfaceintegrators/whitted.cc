@@ -9,7 +9,7 @@ Radiance Whitted::get (Ray const &ray, Scene const &scene) const {
         if (pinter) {
                 Intersection const &i = *pinter;
 
-                const Point poi       = ray(i.distance) + static_cast<Vector>(i.normal)*0.0001;
+                const Point poi       = ray(i.distance) + static_cast<Vector>(i.normal)*0.01;
                 const Ray   shadowRay = scene.sun().deterministicShadowRay(poi);
                 const real  f_        = dot (static_cast<Normal>(shadowRay.direction), i.normal);
                 const real  f         = f_ < 0 ? 0 : f_;

@@ -2,7 +2,10 @@
 #define UTAH_ATMOSPHERE_H_20111209
 
 #include "atmosphere.h"
-#include "utah-sky/sunsky.hh"
+
+namespace crystal { namespace redshift { namespace background {
+        class PssSunSky;
+} } }
 
 namespace crystal { namespace background {
 

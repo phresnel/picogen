@@ -17,7 +17,7 @@ Quadtree::Quadtree(Deepness const &deepness,
 {
         EdgeDepths ed;
         create (deepness,
-                Rect (-5000,5000, -5000,5000),
+                Rect (-50000,50000, -50000,50000),
                 fun,
                 patchResolution,
                 0,

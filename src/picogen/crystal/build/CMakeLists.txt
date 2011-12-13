@@ -171,6 +171,8 @@ set (sources ${sources}
         ${crystal_src_dir}/background/utah-sun.h
         ${crystal_src_dir}/background/utah-atmosphere.cc
         ${crystal_src_dir}/background/utah-atmosphere.h
+        ${crystal_src_dir}/background/noatmosphere.cc
+        ${crystal_src_dir}/background/noatmosphere.h
 
         # --- redshift quatsch integration -------------------------------------
         ${crystal_src_dir}/quatsch-integration.cc
