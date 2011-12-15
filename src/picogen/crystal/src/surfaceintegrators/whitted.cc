@@ -19,7 +19,7 @@ Radiance Whitted::get (Ray const &ray, Scene const &scene) const {
 
                 const background::AtmosphericEffects ae = scene.atmosphere().atmosphericEffects(ray.origin,
                                                                                                 poi);
-                const Radiance no_fx   = scene.sun().radiance()*f*s;
+                const Radiance no_fx   = scene.sun().radiance()*f*s*i.color;
                 return ae.apply (no_fx);;
         } else {
                 const Radiance sky = scene.sky().radiance(ray);

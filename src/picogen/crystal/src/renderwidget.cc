@@ -175,23 +175,25 @@ void RenderWidget::updateDisplay () {
         shared_ptr<Film>           film     (new Film(320, 320));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(0.7));
 
-        crystal::quatsch::height_function qh ("(* 100 ([LibnoisePerlin   "
-                                              "         frequency{0.003} "
-                                              "         octave-count{8}  "
-                                              "         ] x y))          "
-                                              //"(* 15 (sin (* 0.025 x))"
-                                              //"      (sin (* 0.025 y)))"
-                                             );
-        std::function<real(real,real)> h = qh;
+        std::function<real(real,real)> height_fun =
+                crystal::quatsch::height_function  (
+                        "(* 100 ([LibnoisePerlin   "
+                        "         frequency{0.003} "
+                        "         octave-count{8}  "
+                        "         ] x y))          "
+                );
+        auto color_fun = [](Point const &p) {
+                return lerp (ilerp_sat(p.y, real(0), real(40)),
+                             Radiance::FromRgb(0.5,0.9,0.4),
+                             Radiance::FromRgb(1,1,1));
+        };
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
+                                                color_fun,
                                                 geometry::terrain2d::Deepness(
-                                                        9, 200,3000
+                                                        12, 200,3000
                                                 ),
-                                                h
-                                                /*[](real x, real z) {
-                                                     return 15*std::sin(0.025*x)
-                                                             *std::sin(0.025*z); }*/
+                                                height_fun
                                             ) );
 
         shared_ptr<const SurfaceIntegrator> surface_integrator (

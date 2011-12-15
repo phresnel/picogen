@@ -29,14 +29,7 @@ namespace crystal { namespace cameras {
                 Pinhole (real frontPlaneDist) : frontPlaneDist_(frontPlaneDist)
                 {}
         private:
-                Ray gen (CameraSample const &sample) const
-                {
-                        const real u = 2*sample.lensU-1,
-                                   v = 1-2*sample.lensV;
-                        return Ray (Point(0, 500, 0), Direction(u, v, frontPlaneDist_));
-                                    //Point(-2500, 2500, -2500), Direction(u, -frontPlaneDist_, v));
-                }
-
+                Ray gen (CameraSample const &sample) const;
                 real frontPlaneDist_;
         };
 } }

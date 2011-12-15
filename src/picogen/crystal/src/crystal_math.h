@@ -43,6 +43,26 @@ namespace crystal {
         using std::max;
         using std::sin;
         using std::cos;
+
+
+        template <typename T>
+        inline T lerp (real const & alpha, T const & begin, T const & end)
+        {
+                return begin + alpha*(end-begin);
+        }
+
+        template <typename T>
+        inline real ilerp (T const &value, T const &begin, T const &end)
+        {
+                return (value-begin) / (end-begin);
+        }
+
+        template <typename T>
+        inline real ilerp_sat (T const &value, T const &begin, T const &end)
+        {
+                const real f = ilerp (value, begin, end);
+                return f<0?0:f>1?1:f;
+        }
 }
 
 namespace crystal {
@@ -549,11 +569,12 @@ namespace crystal {
         {
                 real distance;
                 Normal normal;
+                Radiance color; // TODO: should be some real material/bxdf
 
                 Intersection() = delete;
 
                 Intersection (real distance, Normal const &normal)
-                        : distance(distance), normal(normal)
+                        : distance(distance), normal(normal), color(Radiance::White())
                 {}
         };
         typedef optional<Intersection> PIntersection;

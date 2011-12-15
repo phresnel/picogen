@@ -10,13 +10,18 @@ namespace crystal { namespace geometry {
 
 class Terrain2d : public Geometry {
 public:
-        Terrain2d (terrain2d::Deepness const &deepness,
+        Terrain2d (std::function<Radiance(Point const &p)> color,
+                   terrain2d::Deepness const &deepness,
                    std::function<real(real,real)> fun)
-                : quadtree_(deepness, fun, 4)
+                : color_(color),
+                  quadtree_(deepness, fun, 4)
         {
         }
 private:
         PIntersection intersect_ (Ray const &ray) const ;
+
+private:
+        std::function<Radiance(Point const &p)> color_;
         terrain2d::Quadtree quadtree_;
 };
 

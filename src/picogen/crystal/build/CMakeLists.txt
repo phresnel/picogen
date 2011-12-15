@@ -178,6 +178,12 @@ set (sources ${sources}
         ${crystal_src_dir}/quatsch-integration.cc
         ${crystal_src_dir}/quatsch-height-function.h
         ${crystal_src_dir}/heightmap.h
+
+        # --- texturing --------------------------------------------------------
+        ${crystal_src_dir}/texture/pointtoradiance.h
+        ${crystal_src_dir}/texture/terrain/lerp.h
+        ${crystal_src_dir}/texture/terrain/lerp.cc
+
 )
 
 
