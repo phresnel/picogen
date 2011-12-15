@@ -3,6 +3,109 @@
 
 namespace crystal { namespace geometry { namespace terrain2d {
 
+
+Patch::Patch (real left, real right, real front, real back,
+              std::function<real (real, real)> fun, int resolution,
+              Transition const &transition)
+: fanCount_ (resolution*resolution),
+  fans_ (new Fan [fanCount_])
+{
+        const real width = right - left,
+                   depth = back - front;
+        const real ires = 1 / real(resolution);
+
+        auto grid2point = [&] (real x, real z) {
+                const real fx0 = left + x * ires * width,
+                           fz0 = front + z * ires * depth,
+                           fy0 = fun(fx0, fz0);
+                return Point(fx0, fy0, fz0);
+        };
+
+
+        for (int z_=0; z_<resolution; ++z_) {
+                for (int x_=0; x_<resolution; ++x_) {
+                        Fan &fan = fans_[x_+z_*resolution];
+
+                        const int size = 6;
+                        fan.vertices = new Point[size];
+                        fan.size = size;
+
+                        const real x = x_ + 0.5,
+                                   z = z_ + 0.5;
+                        Point *it = fan.vertices;
+
+                        const real t = 0.5;
+                        *(it++) = grid2point(x,   z  );
+                        *(it++) = grid2point(x-t, z+t);
+                        *(it++) = grid2point(x+t, z+t);
+                        *(it++) = grid2point(x+t, z-t);
+                        *(it++) = grid2point(x-t, z-t);
+                        *(it++) = grid2point(x-t, z+t);
+                }
+        }
+
+        // Find maximum and minimum height of grid.
+        min_h_ =  std::numeric_limits<real>::max();
+        max_h_ = -std::numeric_limits<real>::max();
+        for (int i=0; i<fanCount_; ++i) {
+                Fan const &fan = fans_ [i];
+                for (int i=0; i<fan.size; ++i) {
+                        const real &h = fan.vertices[i].y;
+                        min_h_ = std::min(min_h_, h);
+                        max_h_ = std::max(max_h_, h);
+                }
+        }
+
+}
+
+Patch::~Patch()
+{
+}
+
+
+
+
+PIntersection Patch::Fan::intersect (Ray const &ray) const
+{
+        Point const &a = vertices[0];
+
+        Normal nearest_n(0,1,0);
+        real nearest_t = std::numeric_limits<real>::infinity();
+        for (int i=1; i<size-1; ++i) {
+                Point const &b = vertices[i];
+                Point const &c = vertices[i+1];
+
+                real t_, u_, v_;
+                Normal normal_(0,1,0);
+                if (geoblocks::raytri_intersect (ray,
+                                                 a, b, c,
+                                                 t_, u_, v_,
+                                                 normal_))
+                {
+                        if (t_ < nearest_t) {
+                                nearest_t = t_;
+                                nearest_n = normal_;
+                        }
+                }
+        }
+        if (nearest_t != std::numeric_limits<real>::infinity())
+                return Intersection (nearest_t, nearest_n);
+        return PIntersection();
+}
+
+
+PIntersection Patch::intersect_ (const Ray &ray) const
+{
+        for (int i=0; i<fanCount_; ++i) {
+                if (PIntersection p = fans_[i].intersect (ray)) {
+                        return p;
+                }
+        }
+        return PIntersection();
+}
+
+
+#if 0
 Patch::Patch (real left, real right, real front, real back,
               std::function<real (real, real)> fun, int resolution,
               Transition const &transition)
@@ -184,6 +287,8 @@ PIntersection Patch::intersect_ (const Ray &ray) const {
         }
         return PIntersection();
 }
+
+#endif
 
 
 } } }

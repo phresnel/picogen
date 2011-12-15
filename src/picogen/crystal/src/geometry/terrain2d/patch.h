@@ -4,6 +4,7 @@
 #include "geometry.h"
 #include "transition.h"
 #include <functional>
+#include <boost/scoped_array.hpp>
 
 namespace crystal { namespace geometry { namespace terrain2d {
         class Patch : public Geometry
@@ -13,6 +14,7 @@ namespace crystal { namespace geometry { namespace terrain2d {
                       std::function<real (real, real)> fun,
                       int resolution,
                       Transition const &transition);
+                ~Patch();
 
                 // Offer some non-virtual access.
                 PIntersection intersect (const Ray &ray) const {
@@ -26,6 +28,7 @@ namespace crystal { namespace geometry { namespace terrain2d {
 
         private:
 
+                #if 0
                 struct Triangle {
                         Point a,b,c;
 
@@ -40,7 +43,22 @@ namespace crystal { namespace geometry { namespace terrain2d {
 
                 };
                 Triangle *triangles_;
-                int triangleCount_;
+                int triangleCount_;*/
+                #endif
+
+                struct Fan {
+                        Point *vertices;
+                        char size;
+
+                        Fan() : vertices(0), size(0) {}
+                        ~Fan() { delete [] vertices; }
+
+                        PIntersection intersect (Ray const &ray) const;
+                };
+                int fanCount_;
+                boost::scoped_array<Fan> fans_;
+
+
                 real min_h_, max_h_;
         };
 } } }

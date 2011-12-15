@@ -173,7 +173,7 @@ void RenderWidget::updateDisplay () {
 
         sw.restart();
         shared_ptr<Film>           film     (new Film(320, 320));
-        shared_ptr<const Camera>   camera   (new cameras::Pinhole(0.7));
+        shared_ptr<const Camera>   camera   (new cameras::Pinhole(1.0));
 
         std::function<real(real,real)> height_fun =
                 crystal::quatsch::height_function  (
@@ -191,7 +191,8 @@ void RenderWidget::updateDisplay () {
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 color_fun,
                                                 geometry::terrain2d::Deepness(
-                                                        12, 200,3000
+                                                        12,
+                                                        200,3000
                                                 ),
                                                 height_fun
                                             ) );
