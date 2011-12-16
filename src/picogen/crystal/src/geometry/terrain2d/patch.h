@@ -58,8 +58,13 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 int fanCount_;
                 boost::scoped_array<Fan> fans_;
 
-
+                int res_;
+                real left_, right_, front_, back_;
                 real min_h_, max_h_;
+
+                const Fan *ph (int x, int z) const {
+                        return fans_.get() + x + z * res_;
+                }
         };
 } } }
 #endif // PATCH_H

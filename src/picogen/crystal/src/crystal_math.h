@@ -588,22 +588,19 @@ namespace crystal {
         public:
                 Interval() = delete;
                 Interval (real min, real max)
-                        : min_(min), max_(max)
+                        : min(min), max(max)
                 {
                         assert (min <= max);
                 }
 
-                real min() const { return min_; }
-                real max() const { return max_; }
-                real size() const { return max_ - min_; }
+                real size() const { return max - min; }
 
                 void merge (real f) {
-                        if (f < min_) min_ = f;
-                        if (f < max_) max_ = f;
+                        if (f < min) min = f;
+                        if (f > max) max = f;
                 }
-        private:
-                real min_, max_;
 
+                real min, max;
         };
 
         typedef boost::optional<Interval> PInterval;

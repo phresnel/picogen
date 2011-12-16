@@ -183,7 +183,7 @@ void RenderWidget::updateDisplay () {
                         "         ] x y))          "
                 );
         auto color_fun = [](Point const &p) {
-                return lerp (ilerp_sat(p.y, real(0), real(40)),
+                return lerp (ilerp_sat(p.y, real(80), real(110)),
                              Radiance::FromRgb(0.5,0.9,0.4),
                              Radiance::FromRgb(1,1,1));
         };
@@ -191,9 +191,10 @@ void RenderWidget::updateDisplay () {
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 color_fun,
                                                 geometry::terrain2d::Deepness(
-                                                        12,
+                                                        10,
                                                         200,3000
                                                 ),
+                                                8,
                                                 height_fun
                                             ) );
 
