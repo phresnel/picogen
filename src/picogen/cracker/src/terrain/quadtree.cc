@@ -54,8 +54,8 @@ Intersection::Optional Quadtree::operator() (Ray const &ray_) const {
         if (min > max) return Intersection::Optional();
 
         //return detail::Node::intersect_rec (&*root_, ray, min, max);
-        //return detail::Node::intersect_iter(&*root_, ray, min, max);
-        return detail::Node::new_intersect(&*root_, ray, min, max);
+        return detail::Node::intersect_iter(&*root_, ray, min, max);
+        //return detail::Node::new_intersect(&*root_, ray, min, max);
 }
 
 } }

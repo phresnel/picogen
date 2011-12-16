@@ -435,6 +435,7 @@ inline Intersection::Optional Patch::fast_intersect (
 
         // Minimize to account for floating point inaccuracies (for some bounding
         // boxes, this is needed, for some not)
+        /*
         static real x__  = (res_x_*iwidth_);
         static real z__  = (res_z_*idepth_);
 
@@ -442,6 +443,12 @@ inline Intersection::Optional Patch::fast_intersect (
                                     int((gridinter_x - left_ ) * x__)),
                   cell_z = std::min(int(res_z_)-1,
                                     int((gridinter_z - front_) * z__));
+                                    */
+        const int cell_x_ = res_x_ * (gridinter_x - left_)  * iwidth_,
+                  cell_z_ = res_z_ * (gridinter_z - front_) * idepth_;
+        const int cell_x = std::max (0, std::min(int(res_x_)-1, cell_x_)),
+                  cell_z = std::max (0, std::min(int(res_z_)-1, cell_z_));
+
 
         assert (cell_x >= 0);
         assert (cell_z >= 0);

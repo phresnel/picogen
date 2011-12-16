@@ -53,7 +53,7 @@ void Node::makeLeaf (real left, real right,
         patch_ = new Patch (left, right,
                             front, back,
                             cameraPosition,
-                            4,4,//TODO: 32 is good
+                            8,8,//TODO: 32 is good
                             height,
                             min_h_, max_h_,
                             Patch::LodSmoothing::None
