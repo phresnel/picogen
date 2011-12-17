@@ -120,6 +120,7 @@ namespace crystal {
                         const PixelShader& ps = *pixelShader_;
 
                         for (int y=0; y<height; ++y) {
+                                #pragma omp parallel for
                                 for (int x=0; x<width; ++x) {
                                         const CameraSample sample(x, y,
                                                                   x/real(width),
