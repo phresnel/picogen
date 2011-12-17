@@ -61,6 +61,10 @@ namespace crystal { namespace geometry { namespace terrain2d {
         }
 
 
+        enum class XDirection { Left = -1,     Right = 1 };
+        enum class ZDirection { Backward = -1, Forward = 1 };
+
+
         class Quadtree : public Geometry
         {
         public:
@@ -80,7 +84,11 @@ namespace crystal { namespace geometry { namespace terrain2d {
                 Quadtree ()                            = default;
                 PIntersection intersect_(const Ray &ray) const;
 
-                PIntersection intersect_ (const Ray &ray, int *ordering) const;
+                PIntersection intersect_slow (const Ray &ray, int *ordering) const;
+
+
+                template <XDirection, ZDirection>
+                PIntersection intersect_ (const Ray &ray, real min_t, real max_t) const;
 
         private:
                 void create (terrain2d::Deepness const &,

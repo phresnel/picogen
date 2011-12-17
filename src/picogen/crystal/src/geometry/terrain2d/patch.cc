@@ -182,12 +182,6 @@ PIntersection Patch::intersect_ (const Ray &ray) const
         return p ?
                 Intersection (p->distance, p->normal) :
                 PIntersection();
-               /*Intersection (t, this->material_, DifferentialGeometry (p->normal,
-                                                                       p->normal,
-                                                                       p->u,
-                                                                       p->v)) :
-               Intersection::Optional();*/
-
 #else
         for (int i=0; i<fanCount_; ++i) {
                 if (PIntersection p = fans_[i].intersect (ray)) {
