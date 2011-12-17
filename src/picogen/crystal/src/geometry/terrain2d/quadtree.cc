@@ -143,7 +143,7 @@ template <> struct TravOrder<ZDirection::Backward, XDirection::Left> {
         };
 };
 struct Todo {
-        Todo() : minT(-1), maxT(-2), node(0) {}
+        Todo() = default;
         Todo (real minT, real maxT, Quadtree const *node)
                 : minT(minT), maxT(maxT), node(node) {}
         real minT, maxT;
@@ -162,7 +162,7 @@ static void determine (Todo*& top,
         // +----+----+
         typedef TravOrder<d_up, d_right> order;
 
-        real from[4] = {0,0,0,0}, to[4] = {-1,-1,-1,-1}; // TODO: initialization prolly not needed
+        real from[4], to[4]; // TODO: initialization prolly not needed
         {
                 from[order::child_a] = Min;
                 to  [order::child_a] = std::min(std::min(t_x, t_z), Max);
@@ -177,17 +177,20 @@ static void determine (Todo*& top,
                 to  [order::child_d] = Max;
         }
 
-        auto push = [&] (int order) {
-                if (from[order] <= to[order])
-                        *top++ = Todo(from[order],
-                                      to  [order],
-                                      children+order);
+        //auto push = [&] (int order) {
+        #define push_child_damn_macro(order) { \
+                if (from[order] <= to[order])\
+                        *top++ = Todo(from[order],\
+                                      to  [order],\
+                                      children+order);\
         };
 
-        push (order::child_d);
-        push (order::child_c);
-        push (order::child_b);
-        push (order::child_a);
+        push_child_damn_macro (order::child_d);
+        push_child_damn_macro (order::child_c);
+        push_child_damn_macro (order::child_b);
+        push_child_damn_macro (order::child_a);
+
+        #undef push_child_damn_macro
 }
 
 template <XDirection d_right, ZDirection d_up>
