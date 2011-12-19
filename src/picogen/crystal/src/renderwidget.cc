@@ -39,7 +39,10 @@ namespace crystal {
 
 #include "scene.h"
 
-#include "quatsch-height-function.h"
+//#include "quatsch-height-function.h"
+namespace crystal {
+        std::function<real(real,real)> quatsch_function_2d(std::string const &program);
+}
 
 #include <boost/optional.hpp>
 
@@ -176,13 +179,12 @@ void RenderWidget::updateDisplay () {
         shared_ptr<Film>           film     (new Film(320, 320));
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(1.0));
 
-        std::function<real(real,real)> height_fun =
-                crystal::quatsch::height_function  (
-                        "(* 100 ([LibnoisePerlin   "
-                        "         frequency{0.003} "
-                        "         octave-count{8}  "
-                        "         ] x y))          "
-                );
+
+        std::function<real(real,real)> height_fun = quatsch_function_2d(
+                                                "(* 100 ([LibnoisePerlin   "
+                                                "         frequency{0.003} "
+                                                "         octave-count{8}  "
+                                                "         ] x y))          ");
         auto color_fun = [](Point const &p) {
                 return lerp (ilerp_sat(p.y, real(80), real(110)),
                              Radiance::FromRgb(0.5,0.9,0.4),

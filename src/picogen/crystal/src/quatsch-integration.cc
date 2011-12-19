@@ -42,3 +42,11 @@ template class quatsch::frontend::jux::Compiler <
 //template class quatsch::frontend::jux::Compiler <
 //    quatsch::backend::est::Backend <double, const double *>
 //>;
+
+#include "quatsch-height-function.h"
+#include <functional>
+namespace crystal {
+std::function<real(real,real)> quatsch_function_2d(std::string const &program) {
+        return crystal::quatsch::height_function(program);
+}
+}
