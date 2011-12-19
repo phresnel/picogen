@@ -332,7 +332,8 @@ void Quadtree::make_inner  (terrain2d::Deepness const &deepness,
         min_h_ =  std::numeric_limits<real>::max();
         max_h_ = -std::numeric_limits<real>::max();
         for (int i=0; i<4; ++i) {
-
+                min_h_ = min (min_h_, children_[i].min_h_);
+                max_h_ = max (max_h_, children_[i].max_h_);
         }
 }
 
