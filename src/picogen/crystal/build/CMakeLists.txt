@@ -184,6 +184,10 @@ set (sources ${sources}
         ${crystal_src_dir}/texture/terrain/lerp.h
         ${crystal_src_dir}/texture/terrain/lerp.cc
 
+        # --- builtins ---------------------------------------------------------
+        ${crystal_src_dir}/builtin/terrain-texture/alpine.cc
+        ${crystal_src_dir}/builtin/terrain-texture/alpine.h
+
 )
 
 

@@ -34,8 +34,10 @@ namespace crystal {
 
 #include "background/utah-sun.h"
 #include "background/utah-sky.h"
-#include "background/noatmosphere.h"
+#include "background/utah-atmosphere.h"
 #include "background/utah-sky/sunsky.hh"
+
+#include "builtin/terrain-texture/alpine.h"
 
 #include "scene.h"
 
@@ -181,20 +183,19 @@ void RenderWidget::updateDisplay () {
 
 
         std::function<real(real,real)> height_fun = quatsch_function_2d(
-                                                "(* 100 ([LibnoisePerlin   "
-                                                "         frequency{0.003} "
-                                                "         octave-count{8}  "
+                                                "(* 1000 ([LibnoiseRidgedMulti "
+                                                "         frequency{0.0002} "
+                                                "         octave-count{14}  "
+                                                "         seed{57}          "
+                                                "         lacunarity{2.1}   "
                                                 "         ] x y))          ");
-        auto color_fun = [](Point const &p) {
-                return lerp (ilerp_sat(p.y, real(80), real(110)),
-                             Radiance::FromRgb(0.5,0.9,0.4),
-                             Radiance::FromRgb(1,1,1));
-        };
+
+        auto color_fun = builtin::terrain_tex::create_alpine ();
 
         shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
                                                 color_fun,
                                                 geometry::terrain2d::Deepness(
-                                                        10,
+                                                        9,
                                                         200,3000
                                                 ),
                                                 8,
@@ -205,16 +206,16 @@ void RenderWidget::updateDisplay () {
                                                 new surfaceintegrators::Whitted());
 
         shared_ptr<const redshift::background::PssSunSky> pssSunSky (
-                                new redshift::background::PssSunSky(redshift::Vector(1,0.4,0),
-                                                                    4,
+                                new redshift::background::PssSunSky(redshift::Vector(1,0.5,1),
+                                                                    5.8,
                                                                     0,
-                                                                    false));
+                                                                    true));
         shared_ptr<const Scene> scene(new Scene(
                 geometry,
                 shared_ptr<const background::Sun> (new background::UtahSun(pssSunSky)),
                 shared_ptr<const background::Sky> (new background::UtahSky(pssSunSky)),
-                shared_ptr<const background::Atmosphere> (new background::NoAtmosphere())
-                                                      //new background::UtahAtmosphere(pssSunSky))
+                shared_ptr<const background::Atmosphere> (//new background::NoAtmosphere())
+                                                      new background::UtahAtmosphere(pssSunSky))
                 ));
 
         shared_ptr<const Renderer> renderer (new FlatRenderer(
@@ -223,7 +224,7 @@ void RenderWidget::updateDisplay () {
                 camera,
                 surface_integrator,
                 shared_ptr<const VolumeIntegrator>(),
-                shared_ptr<const PixelShader>(new pixel_shaders::Scale(0.000075))
+                shared_ptr<const PixelShader>(new pixel_shaders::Scale(0.0001))
         ));
         const double creationTime = sw.stop();
         sw.restart();
