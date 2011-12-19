@@ -321,19 +321,18 @@ void Quadtree::make_inner  (terrain2d::Deepness const &deepness,
         }
         std::cout << std::endl;*/
 
+        #pragma omp parallel for
         for (int i=0; i<4; ++i) {
                 EdgeDepths ced;
                 crr[i].child->create (deepness, crr[i].rect,
                                       fun, patchRes, depth+1,
                                       ced);
-                //ed.back
         }
 
         min_h_ =  std::numeric_limits<real>::max();
         max_h_ = -std::numeric_limits<real>::max();
         for (int i=0; i<4; ++i) {
-                min_h_ = min (min_h_, children_[i].min_h_);
-                max_h_ = max (max_h_, children_[i].max_h_);
+
         }
 }
 
