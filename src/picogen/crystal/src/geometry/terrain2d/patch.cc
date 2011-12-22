@@ -1,5 +1,6 @@
 #include "patch.h"
 #include "geoblocks/ray_tri_intersect.h"
+#include <vector>
 
 namespace crystal { namespace geometry { namespace terrain2d {
 
@@ -26,23 +27,30 @@ Patch::Patch (real left, real right, real front, real back,
 
         for (int z_=0; z_<resolution; ++z_) {
                 for (int x_=0; x_<resolution; ++x_) {
-                        Fan &fan = fans_[x_+z_*resolution];
-
-                        const int size = 6;
-                        fan.vertices = new Point[size];
-                        fan.size = size;
-
                         const real x = x_ + 0.5,
                                    z = z_ + 0.5;
-                        Point *it = fan.vertices;
 
                         const real t = 0.5;
-                        *(it++) = grid2point(x,   z  );
-                        *(it++) = grid2point(x-t, z+t);
-                        *(it++) = grid2point(x+t, z+t);
-                        *(it++) = grid2point(x+t, z-t);
-                        *(it++) = grid2point(x-t, z-t);
-                        *(it++) = grid2point(x-t, z+t);
+                        std::vector<Point> points;
+                        points.push_back (grid2point(x,   z  ));
+                        points.push_back (grid2point(x-t, z+t));
+
+                        if (z_==resolution-1 && transition.back())  points.push_back (grid2point(x, z+t));
+                        points.push_back (grid2point(x+t, z+t));
+
+                        if (x_==resolution-1 && transition.right()) points.push_back (grid2point(x+t, z));
+                        points.push_back (grid2point(x+t, z-t));
+
+                        if (z_==0 && transition.front()) points.push_back (grid2point(x, z-t));
+                        points.push_back (grid2point(x-t, z-t));
+
+                        if (x_==0 && transition.left())  points.push_back (grid2point(x-t, z));
+                        points.push_back (grid2point(x-t, z+t));
+
+                        Fan &fan = fans_[x_+z_*resolution];
+                        fan.vertices = new Point [points.size()];
+                        std::copy (points.begin(), points.end(), fan.vertices);
+                        fan.size     = points.size();
                 }
         }
 

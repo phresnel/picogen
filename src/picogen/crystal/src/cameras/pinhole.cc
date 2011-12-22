@@ -26,7 +26,7 @@ Ray Pinhole::gen (CameraSample const &sample) const
 {
         const real u = 2*sample.lensU-1,
                    v = 1-2*sample.lensV;
-        return Ray (Point(-200, 550, 500), Direction(u, v, frontPlaneDist_));
+        return Ray (Point(0, 20, -20), Direction(u, v, frontPlaneDist_));
                     //Point(-2500, 2500, -2500), Direction(u, -frontPlaneDist_, v));
 }
 
