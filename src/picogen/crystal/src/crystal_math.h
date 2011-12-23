@@ -148,6 +148,10 @@ namespace crystal {
                         return *this;
                 }
 
+                friend Radiance pow (Radiance lhs, real rhs);
+                friend Radiance pow (Radiance lhs, Radiance rhs);
+                friend Radiance operator / (real lhs, Radiance rhs);
+
         private:
                 Radiance (real r, real g, real b) : r_(r), g_(g), b_(b)
                 {
@@ -188,6 +192,27 @@ namespace crystal {
         inline Radiance operator / (Radiance lhs, real rhs)
         {
                 return lhs /= rhs;
+        }
+
+        inline Radiance operator / (real lhs, Radiance rhs)
+        {
+                return Radiance(lhs / rhs.r_,
+                                lhs / rhs.g_,
+                                lhs / rhs.b_);
+        }
+
+        inline Radiance pow (Radiance lhs, real rhs)
+        {
+                return Radiance(pow (lhs.r_, rhs),
+                                pow (lhs.g_, rhs),
+                                pow (lhs.b_, rhs));
+        }
+
+        inline Radiance pow (Radiance lhs, Radiance rhs)
+        {
+                return Radiance(pow (lhs.r_, rhs.r_),
+                                pow (lhs.g_, rhs.g_),
+                                pow (lhs.b_, rhs.b_));
         }
 }
 

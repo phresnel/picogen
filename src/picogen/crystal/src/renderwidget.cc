@@ -41,6 +41,9 @@ namespace crystal {
 
 #include "scene.h"
 
+#include <initializer_list>
+#include <numeric>
+
 //#include "quatsch-height-function.h"
 namespace crystal {
         std::function<real(real,real)> quatsch_function_2d(std::string const &program);
@@ -73,6 +76,51 @@ namespace crystal {
                         }
 
                         real factor_;
+                };
+
+                class Gamma : public PixelShader {
+                public:
+                        Gamma (real g) :
+                                g(g),
+                                ig(g!=0 ? real(1)/g : 0)
+                        {}
+                private:
+                        Radiance shade_ (Radiance const &rad) const {
+                                return pow (rad, ig);
+                        }
+
+                        real g, ig;
+                };
+                class GammaRadiance : public PixelShader {
+                public:
+                        GammaRadiance (Radiance g) :
+                                g(g),
+                                ig(real(1)/g)
+                        {}
+                private:
+                        Radiance shade_ (Radiance const &rad) const {
+                                return pow (rad, ig);
+                        }
+
+                        Radiance g, ig;
+                };
+
+                class Multiply : public PixelShader {
+                public:
+                        Multiply (std::initializer_list<std::function<Radiance(Radiance)> >
+                                  shaders_)
+                                : shaders_(shaders_)
+                        {
+                        }
+                private:
+                        Radiance shade_ (Radiance const &rad) const {
+                                Radiance ret = Radiance::White();
+                                for (auto shader : shaders_) {
+                                        ret *= shader (rad);
+                                }
+                                return ret;
+                        }
+                        std::vector<std::function<Radiance(Radiance)> > shaders_;
                 };
         }
         class SurfaceShader {
@@ -224,7 +272,10 @@ void RenderWidget::updateDisplay () {
                 camera,
                 surface_integrator,
                 shared_ptr<const VolumeIntegrator>(),
-                shared_ptr<const PixelShader>(new pixel_shaders::Scale(0.00008))
+                shared_ptr<const PixelShader>(new pixel_shaders::Multiply{
+                        pixel_shaders::GammaRadiance(Radiance::FromRgb(2.6, 2.4, 2.3)),
+                        pixel_shaders::Scale(0.0000015)
+                        })
         ));
         const double creationTime = sw.stop();
         sw.restart();
