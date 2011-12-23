@@ -28,7 +28,6 @@ namespace crystal {
 #include "film.h"
 #include "cameras/pinhole.h"
 #include "geoblocks/ray_tri_intersect.h"
-#include "geometry/terrain2d.h"
 #include "surfaceintegrators/constant.h"
 #include "surfaceintegrators/whitted.h"
 
@@ -43,13 +42,12 @@ namespace crystal {
 
 #include "scene.h"
 
+#include "api/terrain.h"
+
 #include <initializer_list>
 #include <numeric>
 
 //#include "quatsch-height-function.h"
-namespace crystal {
-        std::function<real(real,real)> quatsch_function_2d(std::string const &program);
-}
 
 #include <boost/optional.hpp>
 
@@ -164,26 +162,6 @@ void RenderWidget::updateDisplay () {
         shared_ptr<const Camera>   camera   (new cameras::Pinhole(1.0));
 
 
-        std::function<real(real,real)> height_fun = quatsch_function_2d(
-                                                "(* 1000 ([LibnoiseRidgedMulti "
-                                                "         frequency{0.0002} "
-                                                "         octave-count{7}  "
-                                                "         seed{57}          "
-                                                "         lacunarity{2.1}   "
-                                                "         ] (+ x 1500) (- y 3400)))          ");
-
-        auto color_fun = builtin::terrain_tex::create_alpine ();
-
-        shared_ptr<const Geometry> geometry (new geometry::Terrain2d(
-                                                color_fun,
-                                                geometry::terrain2d::Deepness(
-                                                        9,
-                                                        400,3000
-                                                ),
-                                                8,
-                                                height_fun
-                                            ) );
-
         shared_ptr<const SurfaceIntegrator> surface_integrator (
                                                 new surfaceintegrators::Whitted());
 
@@ -192,8 +170,20 @@ void RenderWidget::updateDisplay () {
                                                                     5.8,
                                                                     0,
                                                                     false));
+
+        auto terrain = api::create_quatsch_terrain_2d (
+                            "(* 1000 ([LibnoiseRidgedMulti "
+                            "         frequency{0.0002} "
+                            "         octave-count{7}  "
+                            "         seed{57}          "
+                            "         lacunarity{2.1}   "
+                            "         ] (+ x 1500) (- y 3400))) ",
+                            builtin::terrain_tex::create_alpine (),
+                            geometry::terrain2d::Deepness(9, 30,2000),
+                            8);
+
         shared_ptr<const Scene> scene(new Scene(
-                geometry,
+                terrain,
                 shared_ptr<const background::Sun> (new background::UtahSun(pssSunSky)),
                 shared_ptr<const background::Sky> (new background::UtahSky(pssSunSky)),
                 shared_ptr<const background::Atmosphere> (new background::NoAtmosphere())

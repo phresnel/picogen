@@ -195,6 +195,11 @@ set (sources ${sources}
         ${crystal_src_dir}/pixel_shaders/scale.h
         ${crystal_src_dir}/pixel_shaders/multiply.h
         ${crystal_src_dir}/pixel_shaders/all.h
+
+
+        # --- api --------------------------------------------------------------
+        ${crystal_src_dir}/api/terrain.h
+        ${crystal_src_dir}/api/terrain.cc
 )
 
 
