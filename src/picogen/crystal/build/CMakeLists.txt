@@ -188,6 +188,13 @@ set (sources ${sources}
         ${crystal_src_dir}/builtin/terrain-texture/alpine.cc
         ${crystal_src_dir}/builtin/terrain-texture/alpine.h
 
+
+        # --- pixel shaders ----------------------------------------------------
+        ${crystal_src_dir}/pixel_shaders/gamma.h
+        ${crystal_src_dir}/pixel_shaders/gammaradiance.h
+        ${crystal_src_dir}/pixel_shaders/scale.h
+        ${crystal_src_dir}/pixel_shaders/multiply.h
+        ${crystal_src_dir}/pixel_shaders/all.h
 )
 
 

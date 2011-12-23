@@ -39,6 +39,8 @@ namespace crystal {
 
 #include "builtin/terrain-texture/alpine.h"
 
+#include "pixel_shaders/all.h"
+
 #include "scene.h"
 
 #include <initializer_list>
@@ -56,66 +58,6 @@ namespace crystal {
         class VolumeIntegrator;
         class Volume;
 
-        namespace pixel_shaders {
-                class Scale {
-                public:
-                        Scale() : factor_ (1) {}
-                        Scale (real factor) : factor_ (factor) {}
-
-                        Radiance operator() (Radiance const &rad) const {
-                                return rad * factor_;
-                        }
-                private:
-                        real factor_;
-                };
-
-                class Gamma {
-                public:
-                        Gamma (real g) :
-                                g(g),
-                                ig(g!=0 ? real(1)/g : 0)
-                        {}
-
-                        Radiance operator() (Radiance const &rad) const {
-                                return pow (rad, ig);
-                        }
-                private:
-                        real g, ig;
-                };
-                class GammaRadiance : public PixelShader {
-                public:
-                        GammaRadiance (Radiance g) :
-                                g(g),
-                                ig(real(1)/g)
-                        {}
-
-                        Radiance operator() (Radiance const &rad) const {
-                                return pow (rad, ig);
-                        }
-
-                private:
-                        Radiance g, ig;
-                };
-
-                class Multiply {
-                public:
-                        Multiply (std::initializer_list<std::function<Radiance(Radiance)> >
-                                  shaders_)
-                                : shaders_(shaders_)
-                        {
-                        }
-
-                        Radiance operator() (Radiance const &rad) const {
-                                Radiance ret = Radiance::White();
-                                for (auto shader : shaders_) {
-                                        ret *= shader (rad);
-                                }
-                                return ret;
-                        }
-                private:
-                        std::vector<std::function<Radiance(Radiance)> > shaders_;
-                };
-        }
         class SurfaceShader {
         };
 
