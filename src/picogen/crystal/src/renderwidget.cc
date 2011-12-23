@@ -196,10 +196,8 @@ void RenderWidget::updateDisplay () {
                 camera,
                 surface_integrator,
                 shared_ptr<const VolumeIntegrator>(),
-                pixel_shaders::Multiply{
-                        pixel_shaders::GammaRadiance(Radiance::FromRgb(2.6, 2.4, 2.3)),
-                        pixel_shaders::Scale(0.0000015)
-                        }
+                pixel_shaders::ColorBalance(Radiance::FromRgb(0.7, 0.95, 1)
+                                            * 0.00007)
         ));
         const double creationTime = sw.stop();
         sw.restart();

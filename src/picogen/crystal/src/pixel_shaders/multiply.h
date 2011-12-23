@@ -11,9 +11,9 @@ public:
         }
 
         Radiance operator() (Radiance const &rad) const {
-                Radiance ret = Radiance::White();
+                Radiance ret = rad;
                 for (auto shader : shaders_) {
-                        ret *= shader (rad);
+                        ret = shader (ret);
                 }
                 return ret;
         }

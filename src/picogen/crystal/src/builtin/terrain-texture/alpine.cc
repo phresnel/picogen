@@ -11,7 +11,7 @@ Radiance alpine (Point const &p)
         static auto noise = quatsch_function_2d(
                             "(* 575 ([LibnoisePerlin   "
                             "         frequency{0.01}   "
-                            "         octave-count{12} "
+                            "         octave-count{5} "
                             "         persistence{0.5} "
                             "         ] x y))          ");
 

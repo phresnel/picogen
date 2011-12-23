@@ -190,6 +190,7 @@ set (sources ${sources}
 
 
         # --- pixel shaders ----------------------------------------------------
+        ${crystal_src_dir}/pixel_shaders/colorbalance.h
         ${crystal_src_dir}/pixel_shaders/gamma.h
         ${crystal_src_dir}/pixel_shaders/gammaradiance.h
         ${crystal_src_dir}/pixel_shaders/scale.h
