@@ -56,39 +56,30 @@ namespace crystal {
         class VolumeIntegrator;
         class Volume;
 
-        class PixelShader {
-        public:
-                Radiance operator() (Radiance const &rad) const {
-                        return this->shade_ (rad);
-                }
-        private:
-                virtual Radiance shade_ (Radiance const &) const = 0;
-        };
         namespace pixel_shaders {
-                class Scale : public PixelShader {
+                class Scale {
                 public:
                         Scale() : factor_ (1) {}
                         Scale (real factor) : factor_ (factor) {}
 
-                private:
-                        Radiance shade_ (Radiance const &rad) const {
+                        Radiance operator() (Radiance const &rad) const {
                                 return rad * factor_;
                         }
-
+                private:
                         real factor_;
                 };
 
-                class Gamma : public PixelShader {
+                class Gamma {
                 public:
                         Gamma (real g) :
                                 g(g),
                                 ig(g!=0 ? real(1)/g : 0)
                         {}
-                private:
-                        Radiance shade_ (Radiance const &rad) const {
+
+                        Radiance operator() (Radiance const &rad) const {
                                 return pow (rad, ig);
                         }
-
+                private:
                         real g, ig;
                 };
                 class GammaRadiance : public PixelShader {
@@ -97,29 +88,31 @@ namespace crystal {
                                 g(g),
                                 ig(real(1)/g)
                         {}
-                private:
-                        Radiance shade_ (Radiance const &rad) const {
+
+                        Radiance operator() (Radiance const &rad) const {
                                 return pow (rad, ig);
                         }
 
+                private:
                         Radiance g, ig;
                 };
 
-                class Multiply : public PixelShader {
+                class Multiply {
                 public:
                         Multiply (std::initializer_list<std::function<Radiance(Radiance)> >
                                   shaders_)
                                 : shaders_(shaders_)
                         {
                         }
-                private:
-                        Radiance shade_ (Radiance const &rad) const {
+
+                        Radiance operator() (Radiance const &rad) const {
                                 Radiance ret = Radiance::White();
                                 for (auto shader : shaders_) {
                                         ret *= shader (rad);
                                 }
                                 return ret;
                         }
+                private:
                         std::vector<std::function<Radiance(Radiance)> > shaders_;
                 };
         }
@@ -153,7 +146,7 @@ namespace crystal {
                               shared_ptr<const Camera> camera,
                               shared_ptr<const SurfaceIntegrator> surfaceIntegrator,
                               shared_ptr<const VolumeIntegrator>  volumeIntegrator,
-                              shared_ptr<const PixelShader> pixelShader)
+                              std::function<Radiance(Radiance)> pixelShader)
                         : film_(film)
                         , scene_(scene)
                         , camera_(camera)
@@ -170,7 +163,6 @@ namespace crystal {
                         const Scene&  scene   = *scene_;
                         const SurfaceIntegrator &surfaceInteg = *surfaceIntegrator_;
                         Film&         film    = *film_;
-                        const PixelShader& ps = *pixelShader_;
 
                         for (int y=0; y<height; ++y) {
                                 #pragma omp parallel for
@@ -180,7 +172,7 @@ namespace crystal {
                                                                   y/real(height));
                                         const Ray ray = camera(sample);
                                         const Radiance rad = surfaceInteg(ray, scene);
-                                        const Radiance shaded = ps (rad);
+                                        const Radiance shaded = pixelShader_(rad);
                                         film.addSample (sample, shaded);
                                 }
                         }
@@ -192,7 +184,7 @@ namespace crystal {
                 shared_ptr<const Camera>            camera_;
                 shared_ptr<const SurfaceIntegrator> surfaceIntegrator_;
                 shared_ptr<const VolumeIntegrator>  volumeIntegrator_;
-                shared_ptr<const PixelShader>       pixelShader_;
+                std::function<Radiance (Radiance)>  pixelShader_;
         };
 }
 
@@ -272,10 +264,10 @@ void RenderWidget::updateDisplay () {
                 camera,
                 surface_integrator,
                 shared_ptr<const VolumeIntegrator>(),
-                shared_ptr<const PixelShader>(new pixel_shaders::Multiply{
+                pixel_shaders::Multiply{
                         pixel_shaders::GammaRadiance(Radiance::FromRgb(2.6, 2.4, 2.3)),
                         pixel_shaders::Scale(0.0000015)
-                        })
+                        }
         ));
         const double creationTime = sw.stop();
         sw.restart();
