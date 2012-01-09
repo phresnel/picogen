@@ -28,6 +28,8 @@
 #include <cassert>
 #include <algorithm>
 
+#include "random.h"
+
 namespace crystal {
         using std::shared_ptr;
         using boost::optional;

@@ -105,6 +105,10 @@ set (sources ${sources}
         ${crystal_src_dir}/renderwidget.cc
 
         ${crystal_src_dir}/crystal_math.h
+        ${crystal_src_dir}/random.h
+        ${crystal_src_dir}/random.cc
+
+
 
         ${crystal_src_dir}/scene.h
         ${crystal_src_dir}/scene.cc
@@ -130,6 +134,8 @@ set (sources ${sources}
         ${crystal_src_dir}/surfaceintegrators/constant.cc
         ${crystal_src_dir}/surfaceintegrators/whitted.h
         ${crystal_src_dir}/surfaceintegrators/whitted.cc
+        ${crystal_src_dir}/surfaceintegrators/path.h
+        ${crystal_src_dir}/surfaceintegrators/path.cc
 
         ${crystal_src_dir}/background/mono-sky.cc
         ${crystal_src_dir}/background/mono-sky.h
@@ -141,6 +147,7 @@ set (sources ${sources}
         ${crystal_src_dir}/background/sun.h
         ${crystal_src_dir}/background/atmosphere.cc
         ${crystal_src_dir}/background/atmosphere.h
+
 
         # --- redshift utah sky integration ------------------------------------
         ${crystal_src_dir}/background/utah-sky/algorithm.hh

@@ -30,6 +30,7 @@ namespace crystal {
 #include "geoblocks/ray_tri_intersect.h"
 #include "surfaceintegrators/constant.h"
 #include "surfaceintegrators/whitted.h"
+#include "surfaceintegrators/path.h"
 
 #include "background/utah-sun.h"
 #include "background/utah-sky.h"
@@ -163,7 +164,7 @@ void RenderWidget::updateDisplay () {
 
 
         shared_ptr<const SurfaceIntegrator> surface_integrator (
-                                                new surfaceintegrators::Whitted());
+                                                new surfaceintegrators::Path());
 
         shared_ptr<const redshift::background::PssSunSky> pssSunSky (
                                 new redshift::background::PssSunSky(redshift::Vector(-1.4,1,0),

@@ -47,6 +47,16 @@ public:
         background::Atmosphere const& atmosphere() const {
                 return *atmosphere_;
         }
+
+        Radiance sunRadiance(const Point &pos, const Direction &n) const;
+        Radiance estimateDirect (Point const &position,
+                                 Normal const &normal,
+                                 Direction const &wo,
+                                 //Material const &mat,
+                                 Radiance const &mat,
+                                 Random &random) const;
+
+
 private:
         shared_ptr<const Geometry>          geometry_;
         shared_ptr<const Volume>            volume_;
