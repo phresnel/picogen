@@ -12,7 +12,7 @@ include_directories (${src_dir})
 # -- sources ------------------------------------------------------------------
 set (sources ${sources}
         ${src_dir}/main.cc
-        ${src_dir}/code_iterator.h
+        ${src_dir}/code_iterator.h   ${src_dir}/code_iterator.cc
         ${src_dir}/quatsch_except.h
 
         ${src_dir}/phase1/Token.h    ${src_dir}/phase1/Token.cc

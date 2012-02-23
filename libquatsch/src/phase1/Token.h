@@ -46,9 +46,6 @@ namespace quatsch { namespace compiler { namespace phase1 {
                 Type type_;
         };
 
-        std::ostream& operator<< (std::ostream &os, Token::Type t);
-        std::ostream& operator<< (std::ostream &os, Token const &tok);
-
         bool operator== (Token const&tok, Token::Type t);
         bool operator!= (Token const&tok, Token::Type t);
 

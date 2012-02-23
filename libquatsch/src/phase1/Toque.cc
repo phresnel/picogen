@@ -101,17 +101,4 @@ bool Toque::is_seq (std::initializer_list<Token::Type> toks) const
         return true;
 }
 
-std::ostream& operator<< (std::ostream &os, Toque const& toq)
-{
-        auto it = toq.begin(),
-             end = toq.end();
-        if (it != end) {
-                os << *it;
-                for (; it!=end; ++it) {
-                        os << " " << *it;
-                }
-        }
-        return os;
-}
-
 } } }

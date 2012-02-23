@@ -9,24 +9,23 @@ namespace quatsch { namespace compiler { namespace phase5 {
 using phase3::Program;
 void tree (phase3::Tree const &, std::ostream &);
 
+std::string to_string (phase2::Typename t)
+{
+        switch (t) {
+        case phase2::Typename::Integer: return "int";
+        case phase2::Typename::Float: return "float";
+        }
+        throw std::runtime_error("unhandled case in to_C99.cc:to_string(Typename)");
+}
+
 void argument (phase2::Argument const &arg, std::ostream &os)
 {
-        switch (arg.type()) {
-        case phase2::Typename::Integer: os << "int "; break;
-        case phase2::Typename::Float: os << "float "; break;
-        default: throw std::runtime_error ("unhandled case in to_C99.cc:argument()");
-        }
-        os << arg.name();
+        os << to_string(arg.type()) << " " << arg.name();
 }
 
 void defun_header (phase3::Defun const &d, std::ostream &os)
 {
-
-        switch (d.return_type()) {
-        throw;
-        }
-
-        os << "float " << d.name() << " (";
+        os << to_string (d.return_type()) << " " << d.name() << " (";
 
         auto args = d.arguments();
         auto it = args.begin(), end = args.end();
@@ -140,13 +139,10 @@ void definitions (Program const &program, std::ostream &os)
 
 void main_ (Program const &program, std::ostream &os)
 {
-        os << "// Main function.\n";
-        switch (program.main()->return_type()) {
-        throw;
-        }
-
-        os << "float f (float x, float z)\n{\n";
-        os << "    return ";
+        os << "// Main function.\n"
+           << to_string(program.main()->expression_type())
+           << " f (float x, float z)\n{\n"
+           << "    return ";
         tree (*program.main(), os);
         os << ";\n";
         os << "}\n";

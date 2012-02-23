@@ -53,8 +53,6 @@ private:
         std::deque<Token> tokens_;
 };
 
-std::ostream& operator<< (std::ostream &os, Toque const& toq) ;
-
 } } }
 
 #endif // TOQUE_H_INCLUDED_20120125

@@ -23,18 +23,23 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const &,
 
 class ErrorState {
 public:
-        typedef std::list<std::string>::const_iterator const_iterator;
+        typedef boost::optional<code_iterator> optional_code_iterator;// just as an interim solution
+        typedef std::pair<std::string, optional_code_iterator> message_position_pair;
+        typedef std::list<message_position_pair>::const_iterator const_iterator;
 
         bool has_errors() const { return !errors_.empty(); }
         void post_error (std::string const &msg) {
-                errors_.push_back(msg);
+                errors_.emplace_back (msg, optional_code_iterator());
+        }
+        void post_error (std::string const &msg, code_iterator pos) {
+                errors_.emplace_back (msg, pos);
         }
 
-        std::list<std::string> errors() const { return errors_; }
+        //std::list<std::string> errors() const { return errors_; }
         const_iterator begin() const { return errors_.begin(); }
         const_iterator end  () const { return errors_.end  (); }
 private:
-        std::list<std::string> errors_;
+        std::list<message_position_pair> errors_;
 };
 ErrorState::const_iterator begin (ErrorState const& e) { return e.begin(); }
 ErrorState::const_iterator end   (ErrorState const& e) { return e.end  (); }
@@ -285,13 +290,14 @@ TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
         std::list<phase2::Argument> args = dp->arguments();
         auto arg_iter = args.begin();
         OperandList ops;
-        for (auto op : tree->call_operands()) {
-                if (TreePtr p = resolve_tree (defuns, op, err, tab)) {
-                        if (arg_iter->type() != p->expression_type()) {
+        for (phase2::TreePtr p2op : tree->call_operands()) {
+                if (phase3::TreePtr p3op = resolve_tree (defuns, p2op, err, tab)) {
+                        if (arg_iter->type() != p3op->expression_type()) {
                                 err.post_error ("call to '" + dp->name() + "': " +
-                                                "passing incomaptible arguments");
+                                                "passing incompatible arguments",
+                                                p2op->code_begin());
                         } else {
-                                ops.push_back (p);
+                                ops.push_back (p3op);
                         }
                 }
                 ++arg_iter;
@@ -517,8 +523,11 @@ void evaluate_constants (phase2::Program const &prog, SymbolTable &tab,
 
 void print_errors (ErrorState const &err)
 {
-        for (auto e : err)
-                std::cerr << "error: " << e << '\n';
+        for (auto e : err) {
+                std::cerr << "error:";
+                if (e.second) std::cerr << *e.second << ":";
+                std::cerr << e.first << '\n';
+        }
 }
 
 

@@ -2,6 +2,7 @@
 #define CODE_ITERATOR_H_20120118
 
 #include <string>
+#include <iosfwd>
 
 namespace quatsch { namespace compiler {
 
@@ -21,7 +22,7 @@ namespace quatsch { namespace compiler {
 
                 code_iterator& operator++ ()
                 {
-                        if (*curr_ == '\n') next_line(); 
+                        if (*curr_ == '\n') next_line();
                         else next_column();
 
                         ++curr_;
@@ -29,7 +30,7 @@ namespace quatsch { namespace compiler {
                 }
                 code_iterator  operator++ (int)
                 {
-                        code_iterator ci = *this; 
+                        code_iterator ci = *this;
                         ++(*this);
                         return ci;
                 }
@@ -44,6 +45,9 @@ namespace quatsch { namespace compiler {
 
                 std::string::const_iterator str_iter() const { return curr_; }
 
+                int line  () const { return line_;   }
+                int column() const { return column_; }
+
         private:
                 std::string::const_iterator curr_;
                 int line_, column_;
@@ -57,6 +61,8 @@ namespace quatsch { namespace compiler {
                         ++column_;
                 }
         };
+
+        std::ostream& operator<< (std::ostream& os, code_iterator const &ci);
 
 } }
 
