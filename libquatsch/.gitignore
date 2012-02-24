@@ -1,0 +1,8 @@
+build/CMakeCache.txt
+build/CMakeFiles
+build/CMakeLists.txt.user
+build/Makefile
+build/cmake_install.cmake
+build/quac
+build/quatsch-compiler.cbp
+
