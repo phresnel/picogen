@@ -175,7 +175,9 @@ Defun::argument_list arg_list (phase1::Toque &toque)
         toque.pop();
 
         while (!toque.empty() && toque.front() == phase1::Token::Identifier) {
-                ret.push_back(toque.front().value<std::string>());
+                phase1::Token argtok = toque.front();
+                ret.emplace_back(argtok.value<std::string>(),
+                                 argtok.begin(), argtok.end());
                 auto &arg = ret.back(); // possibly need to re-assign type.
                 toque.pop();
 
@@ -208,6 +210,7 @@ void defun_impl (phase1::Toque &toque, DefunPtr& dptr)
 {
         if (toque.front() != phase1::Token::Identifier) throw unexpected();
 
+        code_iterator const code_begin = toque.front().begin();
         auto name = toque.front().value<std::string>();
         toque.pop();
 
@@ -226,7 +229,8 @@ void defun_impl (phase1::Toque &toque, DefunPtr& dptr)
         const Defun::argument_list args = arg_list  (toque);
         const TreePtr              body = expression(toque);
 
-        dptr.reset (new Defun (name, args, rtype, body));
+        dptr.reset (new Defun (name, args, rtype, body,
+                               code_begin, body->code_end()));
 }
 
 bool try_defun (phase1::Toque &toque, DefunPtr &out)
@@ -252,9 +256,9 @@ bool try_let (phase1::Toque &toque, ConstantPtr &out)
                            phase1::Token::Let,
                            phase1::Token::Identifier))
                 return false;
-        toque.pop(2);
-        const std::string id = toque.front().value<std::string>();
-        toque.pop();
+        const code_iterator code_begin = toque.peek(2)->begin();
+        const std::string id = toque.peek(2)->value<std::string>();
+        toque.pop(3);
 
         Typename typename_ = Typename::Float;
         if (toque.is_seq(phase1::Token::Colon)) {
@@ -276,11 +280,19 @@ bool try_let (phase1::Toque &toque, ConstantPtr &out)
                 throw constexpr_expected();
         }
 
+        if (toque.empty()) throw unexpected_eof();
+
+        const code_iterator code_end = toque.front().end();
         ConstantPtr ret;
         switch (typename_) {
-        case Typename::Integer: ret = Constant::Integer (id, expr); break;
-        case Typename::Float: ret = Constant::Floating (id, expr); break;
-        default: throw unknown_typename();
+        case Typename::Integer:
+                ret = Constant::Integer (id, expr, code_begin, code_end);
+                break;
+        case Typename::Float:
+                ret = Constant::Floating (id, expr, code_begin, code_end);
+                break;
+        default:
+                throw unknown_typename();
         }
 
         if (toque.front() != phase1::Token::CloseParen) throw unexpected();

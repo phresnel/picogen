@@ -3,20 +3,24 @@
 
 namespace quatsch { namespace compiler { namespace phase2 {
 
-Constant::Constant (Type type, std::string const &name, TreePtr expr)
-        : type_(type), name_(name), expression_(expr)
+Constant::Constant (Type type, std::string const &name, TreePtr expr,
+                    code_iterator begin, code_iterator end)
+        : type_(type), name_(name), expression_(expr),
+          code_begin_(begin), code_end_(end)
 {
 }
 
-ConstantPtr Constant::Floating (std::string const &name, TreePtr expr)
+ConstantPtr Constant::Floating (std::string const &name, TreePtr expr,
+                                code_iterator begin, code_iterator end)
 {
-        ConstantPtr ret{new Constant (Type::Floating, name, expr)};
+        ConstantPtr ret{new Constant (Type::Floating, name, expr, begin, end)};
         return ret;
 }
 
-ConstantPtr Constant::Integer (std::string const &name, TreePtr expr)
+ConstantPtr Constant::Integer (std::string const &name, TreePtr expr,
+                               code_iterator begin, code_iterator end)
 {
-        ConstantPtr ret{new Constant (Type::Integer, name, expr)};
+        ConstantPtr ret{new Constant (Type::Integer, name, expr, begin, end)};
         return ret;
 }
 
@@ -51,6 +55,16 @@ void Constant::assert_type (Type t, const char *message) const
 {
         if (this->type_ != t)
                 throw std::runtime_error (message);
+}
+
+code_iterator Constant::code_begin() const
+{
+        return code_begin_;
+}
+
+code_iterator Constant::code_end() const
+{
+        return code_end_;
 }
 
 } } }

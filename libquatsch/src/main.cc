@@ -13,10 +13,11 @@ int main () {
         "\n"
         "(let pi:float 3.14159)\n"
         "(let two:float 3.14159)\n"
-        "(let two2:float 3.14159)\n"
-        "(defun main:float (x:int y) (main 2i 3))\n" // TODO: shall we? would have re-nameable program input
+        "(let two:float 3.14159)\n"
+        "(defun main:int (x:int y) (main 2i 3))\n" // TODO: shall we? would have re-nameable program input
         "(defun foo (x:int) (bar 0.5))\n"
         "(defun bar (x) (foo 1i))\n"
+        "(defun bar_ (x) (foo_ 1i))\n"
         "(foo (main 2i 1337))"
         ;
         std::cout << "quatsch code:\n------------\n" << code

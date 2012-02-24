@@ -17,19 +17,25 @@ public:
         Defun (std::string const &name,
                argument_list const &args,
                Typename returnType,
-               TreePtr body);
+               TreePtr body,
+               code_iterator begin, code_iterator end);
 
-        std::string                   name       () const;
-        argument_list const&          arguments  () const;
-        TreePtr                       body       () const;
-        Typename                      return_type() const;
+        std::string           name       () const;
+        argument_list const&  arguments  () const;
+        TreePtr               body       () const;
+        Typename              return_type() const;
 
-        size_t                        arg_count() const;
+        size_t                arg_count  () const;
+
+        code_iterator         code_begin () const;
+        code_iterator         code_end   () const;
 private:
         std::string name_;
         argument_list args_;
         Typename return_type_;
         TreePtr body_;
+
+        code_iterator code_begin_, code_end_;
 };
 typedef std::shared_ptr<Defun> DefunPtr;
 

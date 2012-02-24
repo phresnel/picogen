@@ -23,23 +23,28 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const &,
 
 class ErrorState {
 public:
+        /*
         typedef boost::optional<code_iterator> optional_code_iterator;// just as an interim solution
         typedef std::pair<std::string, optional_code_iterator> message_position_pair;
         typedef std::list<message_position_pair>::const_iterator const_iterator;
+        */
+        typedef std::pair<code_iterator, code_iterator> code_range;
+        typedef std::pair<std::string, code_range> message_code_range_pair;
+        typedef std::list<message_code_range_pair>::const_iterator const_iterator;
 
         bool has_errors() const { return !errors_.empty(); }
-        void post_error (std::string const &msg) {
-                errors_.emplace_back (msg, optional_code_iterator());
-        }
-        void post_error (std::string const &msg, code_iterator pos) {
-                errors_.emplace_back (msg, pos);
+
+        void post_error (std::string const &msg,
+                         code_iterator from, code_iterator to)
+        {
+                errors_.emplace_back (msg, code_range{from, to});
         }
 
         //std::list<std::string> errors() const { return errors_; }
         const_iterator begin() const { return errors_.begin(); }
         const_iterator end  () const { return errors_.end  (); }
 private:
-        std::list<message_position_pair> errors_;
+        std::list<message_code_range_pair> errors_;
 };
 ErrorState::const_iterator begin (ErrorState const& e) { return e.begin(); }
 ErrorState::const_iterator end   (ErrorState const& e) { return e.end  (); }
@@ -272,9 +277,12 @@ TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
                       SymbolTable &tab)
 {
         phase3::DefunPtr dp = find_p3_defun (defuns, tree->call_callee());
+        std::cout << tree->call_callee() << std::endl;
         if (!dp) {
                 err.post_error ("unresolved function call to \""
-                                + tree->call_callee() + "\"");
+                                + tree->call_callee() + "\"",
+                                tree->code_begin(), tree->code_end());
+                return TreePtr();
         }
         else {
                 phase3::Defun& d = *dp;
@@ -283,7 +291,8 @@ TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
                                         "with " + std::to_string(d.arg_count()) + " "
                                         "arguments, but called with " +
                                         std::to_string(tree->call_operands().size()) +
-                                        " arguments.");
+                                        " arguments.",
+                                        tree->code_begin(), tree->code_end());
                 }
         }
 
@@ -295,7 +304,7 @@ TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
                         if (arg_iter->type() != p3op->expression_type()) {
                                 err.post_error ("call to '" + dp->name() + "': " +
                                                 "passing incompatible arguments",
-                                                p2op->code_begin());
+                                                p2op->code_begin(), p2op->code_end());
                         } else {
                                 ops.push_back (p3op);
                         }
@@ -336,7 +345,8 @@ void resolve_template_call (std::list<DefunPtr> const &defuns,
         phase2::DefunPtr d = find_template (tree->template_call_callee());
         if (!d) {
                 err.post_error ("unresolved function template call to \""
-                                + tree->template_call_callee() + "\"");
+                                + tree->template_call_callee() + "\"",
+                                tree->code_begin(), tree->code_end());
         }
 }
 
@@ -361,10 +371,11 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
                 else if (tab.argument_declared (tree->identifier())) {
                         const std::string& name = tree->identifier();
                         const size_t index      = tab.argument_index(name);
-                        return Tree::StackRef (index, name);
+                        return Tree::StackRef (index, tab.argument(name));
                 }
                 else {
-                        err.post_error ("unresolved id \"" + tree->identifier() + "\"");
+                        err.post_error ("unresolved id \"" + tree->identifier() + "\"",
+                                        tree->code_begin(), tree->code_end());
                         return TreePtr();
                 }
         case phase2::Tree::Type::Integer:
@@ -375,7 +386,8 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
                 return resolve_call (defuns, tree, err, tab);
         case phase2::Tree::Type::TemplateCall:
                 resolve_template_call (defuns, tree, err, tab);
-                err.post_error ("templates not implemented in phase3");
+                err.post_error ("templates not implemented in phase3",
+                                tree->code_begin(), tree->code_end());
                 break;
         case phase2::Tree::Type::Builtin:
                 return resolve_builtin (defuns, tree, err, tab);
@@ -402,9 +414,11 @@ void resolve_defun (std::list<DefunPtr> const &defuns,
         for (auto arg : defun.arguments()) {
                 if (tab.declared (arg.name())) { // TODO: should emit hiding warning instead of erroring
                         err.post_error ("argument or constant \"" + arg.name() +
-                                        + "\" already defined.");
+                                        + "\" already defined.",
+                                        arg.code_begin(), arg.code_end()
+                                        );
                 }
-                else tab.declare_argument (arg.name());
+                else tab.declare_argument (arg);
         }
 
         TreePtr body = resolve_tree (defuns, defun.body(), err, tab);
@@ -450,24 +464,28 @@ evalue_constexpr (phase2::Tree const& expr, ErrorState &err)
         switch (expr.type())
         {
         case phase2::Tree::Type::Identifier:
-                err.post_error ("identifiers are not allowed in constant expressions");
+                err.post_error ("identifiers are not allowed in constant expressions",
+                                expr.code_begin(), expr.code_end());
                 break;
         case phase2::Tree::Type::Integer:
                 if (!same_type<int,T>::value) {
-                        err.post_error("used integer literal for non-integer constant");
+                        err.post_error("used integer literal for non-integer constant",
+                                       expr.code_begin(), expr.code_end());
                 } else {
                         return expr.integer();
                 }
         case phase2::Tree::Type::Floating: {
                 if (!same_type<float,T>::value) {
-                        err.post_error("used float literal for non-float constant");
+                        err.post_error("used float literal for non-float constant",
+                                       expr.code_begin(), expr.code_end());
                 } else {
                         return expr.floating();
                 }
         } break;
         case phase2::Tree::Type::Call:
         case phase2::Tree::Type::TemplateCall:
-                err.post_error ("calls are not allowed in constant expressions");
+                err.post_error ("calls are not allowed in constant expressions",
+                                expr.code_begin(), expr.code_end());
                 break;
         case phase2::Tree::Type::Builtin:
                 throw std::runtime_error ("builtin expressions currently not supported within constant expressions");
@@ -507,14 +525,16 @@ void evaluate_constants (phase2::Program const &prog, SymbolTable &tab,
                 if (auto c = evaluate_constant (*cptr, err)) {
                         if (tab.constant_declared (c->name())) {
                                 err.post_error("constant \"" + c->name()
-                                               + "\" defined multiple times");
+                                               + "\" defined multiple times",
+                                               cptr->code_begin(), cptr->code_end());
                         } else {
                                 tab.declare_constant (c);
                         }
                 }
                 else {
                         err.post_error ("constant expression for '" +
-                                        cptr->name() + "' can't be evaluated");
+                                        cptr->name() + "' can't be evaluated",
+                                        cptr->code_begin(), cptr->code_end());
                 }
         }
 }
@@ -525,8 +545,9 @@ void print_errors (ErrorState const &err)
 {
         for (auto e : err) {
                 std::cerr << "error:";
-                if (e.second) std::cerr << *e.second << ":";
-                std::cerr << e.first << '\n';
+                ErrorState::message_code_range_pair const &mcr = e;
+                ErrorState::code_range const &cr = mcr.second;
+                std::cerr << cr.first << ":" << e.first << '\n';
         }
 }
 
@@ -538,7 +559,8 @@ void check_for_multiple_defuns (phase2::Program const &prog, ErrorState &err)
         for (auto dptr : prog.defuns()) {
                 if (names.find (dptr->name()) != names.end())
                         err.post_error("function \"" + dptr->name()
-                                       + "\" defined multiple times");
+                                       + "\" defined multiple times",
+                                       dptr->code_begin(), dptr->code_end());
                 names.insert (dptr->name());
         }
 }
