@@ -45,8 +45,8 @@ namespace {
 
         template <typename Iter>
         optional<Iter> identifier (Iter it, Iter end) {
-                if (is_alpha (*it)) {
-                        while (it != end && is_alnum (*it))
+                if (is_alpha (*it) || *it == '_') {
+                        while (it != end && (is_alnum (*it)||*it=='_'))
                                 ++it;
                         return it;
                 }
