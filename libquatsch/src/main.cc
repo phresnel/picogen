@@ -7,7 +7,84 @@
 #include "phase3/resolve_and_verify.h"
 #include "phase5/C99/to_C99.h"
 
+
+#include <initializer_list>
+#include <vector>
+#include <stdexcept>
+namespace quatsch { namespace extern_template {
+        class StaticArgument {
+        public:
+                enum Type {
+                        String,
+                        Integer,
+                        Float
+                };
+
+                StaticArgument (std::string const &name,
+                                Type type)
+                        : name_(name), type_(type)
+                {}
+
+                std::string name() const { return name_; }
+                Type        type() const { return type_; }
+
+        private:
+                std::string name_;
+                Type type_;
+        };
+        class Template {
+        public:
+                virtual ~Template() ;
+
+                bool static_argument_exists (std::string const &name) const;
+                StaticArgument static_argument (std::string const &name) const;
+        protected:
+                Template (std::initializer_list<StaticArgument>) ;
+
+                /* boils down to this with delegating constructors
+                template <typename ...Args>
+                Template (Args ...args) : Template ({args...}) {}
+                */
+
+        private:
+                std::vector<StaticArgument> static_args_;
+        };
+
+        Template::Template (std::initializer_list<StaticArgument>)
+        {}
+
+        Template::~Template()
+        {}
+
+        bool Template::static_argument_exists (std::string const &name) const
+        {
+                for (auto const &s : static_args_)
+                     if (s.name() == name) return true;
+                return false;
+        }
+
+        StaticArgument Template::static_argument (std::string const &name) const
+        {
+                for (auto const &s : static_args_)
+                        if (s.name() == name) return s;
+                throw std::runtime_error ("quatsch::extern_template::Template::"
+                                          "static_argument(\"" + name + "\") "
+                                          "called, but '" + name + "' does not "
+                                          "exist.");
+        }
+
+
+        class Test : public Template {
+        public:
+                Test() : Template({StaticArgument("foo", StaticArgument::String),
+                                   StaticArgument("bar", StaticArgument::Float) })
+                {}
+        };
+} }
+
 int main () {
+        quatsch::extern_template::Test tpl;
+        tpl.static_argument ("foo");
         using namespace quatsch::compiler;
         const std::string code =
         "\n"
