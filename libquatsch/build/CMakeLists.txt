@@ -21,6 +21,7 @@ set (sources ${sources}
 
         ${src_dir}/phase2/Program.h  ${src_dir}/phase2/Program.cc
         ${src_dir}/phase2/Tree.h     ${src_dir}/phase2/Tree.cc
+        ${src_dir}/phase2/Builtin.h  ${src_dir}/phase2/Builtin.cc
         ${src_dir}/phase2/Defun.h    ${src_dir}/phase2/Defun.cc
         ${src_dir}/phase2/Constant.h ${src_dir}/phase2/Constant.cc
         ${src_dir}/phase2/Argument.h ${src_dir}/phase2/Argument.cc
