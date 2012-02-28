@@ -119,12 +119,12 @@ namespace quatsch { namespace extern_template {
                 bool static_argument_exists (std::string const &name) const;
                 StaticArgument static_argument (std::string const &name) const;
 
-                void incarnate (std::list<StaticParameter> parameters) const
+                void instantiate (std::list<StaticParameter> parameters) const
                 {
                         for (auto p : parameters) {
                                 if (!static_argument_exists (p.name()))
                                         throw std::runtime_error( "parameter '"
-                                         + p.name() + "' given to incarnate(), "
+                                         + p.name() + "' given to instantiate(), "
                                          "but it doesn't exist");
                                 StaticArgument sa = static_argument(p.name());
                                 if (sa.type() != p.type())
@@ -135,9 +135,9 @@ namespace quatsch { namespace extern_template {
                 }
 
                 template <typename ...Args>
-                void incarnate (Args... args) const
+                void instantiate (Args... args) const
                 {
-                        return incarnate (std::list<StaticParameter>{args...});
+                        return instantiate (std::list<StaticParameter>{args...});
                 }
 
         protected:
@@ -188,7 +188,7 @@ namespace quatsch { namespace extern_template {
 int main () {
         using namespace quatsch::extern_template;
         Test tpl;
-        tpl.incarnate (StaticParameter::String("foo", "meh!"),
+        tpl.instantiate (StaticParameter::String("foo", "meh!"),
                        StaticParameter::String("bar", "oops"));
         return 0;
 
