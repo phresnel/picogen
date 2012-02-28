@@ -13,8 +13,15 @@ include_directories (${src_dir})
 set (sources ${sources}
         ${src_dir}/main.cc
         ${src_dir}/code_iterator.h   ${src_dir}/code_iterator.cc
-        ${src_dir}/Template.h        ${src_dir}/Template.cc
         ${src_dir}/quatsch_except.h
+
+        ${src_dir}/Template.h
+        ${src_dir}/Template.cc
+        ${src_dir}/template/StaticType.h
+        ${src_dir}/template/StaticParameter.h
+        ${src_dir}/template/StaticParameter.cc
+        ${src_dir}/template/StaticArgument.h
+        ${src_dir}/template/StaticArgument.cc
 
         ${src_dir}/phase1/Token.h    ${src_dir}/phase1/Token.cc
         ${src_dir}/phase1/Toque.h    ${src_dir}/phase1/Toque.cc
