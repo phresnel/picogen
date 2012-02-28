@@ -12,32 +12,134 @@
 #include <vector>
 #include <stdexcept>
 namespace quatsch { namespace extern_template {
+        enum StaticType {
+                String,
+                Integer,
+                Float
+        };
+
         class StaticArgument {
         public:
-                enum Type {
-                        String,
-                        Integer,
-                        Float
-                };
-
                 StaticArgument (std::string const &name,
-                                Type type)
+                                StaticType type)
                         : name_(name), type_(type)
                 {}
 
                 std::string name() const { return name_; }
-                Type        type() const { return type_; }
+                StaticType  type() const { return type_; }
 
         private:
                 std::string name_;
-                Type type_;
+                StaticType type_;
         };
+
+        class StaticParameter {
+        public:
+                static StaticParameter String  (std::string const &name, std::string const& val);
+                static StaticParameter Integer (std::string const &name, int val);
+                static StaticParameter Float   (std::string const &name, float val);
+
+                std::string name() const;
+                StaticType  type() const;
+
+                std::string string  () const;
+                int         integer () const;
+                float       floating() const;
+        private:
+                StaticParameter (std::string const &name,  StaticType type);
+        private:
+                std::string name_;
+                StaticType type_;
+                std::string string_;
+                int integer_;
+                float float_;
+        };
+
+        StaticParameter::StaticParameter (std::string const &name,  StaticType type)
+                : name_(name), type_(type)
+        {
+        }
+
+        StaticParameter StaticParameter::String (std::string const &name,
+                                                 std::string const &val)
+        {
+                StaticParameter ret {name, StaticType::String};
+                ret.string_ = val;
+                return ret;
+        }
+        StaticParameter StaticParameter::Integer (std::string const &name,
+                                                  int val)
+        {
+                StaticParameter ret {name, StaticType::Integer};
+                ret.integer_ = val;
+                return ret;
+        }
+        StaticParameter StaticParameter::Float (std::string const &name,
+                                                float val)
+        {
+                StaticParameter ret {name, StaticType::Float};
+                ret.float_ = val;
+                return ret;
+        }
+        std::string StaticParameter::name() const
+        {
+                return name_;
+        }
+        StaticType StaticParameter::type() const
+        {
+                return type_;
+        }
+
+        std::string StaticParameter::string() const
+        {
+                if (type_ != StaticType::String)
+                        throw std::runtime_error ("StaticParameter::string() "
+                                                  "called for non-string");
+                return string_;
+        }
+        int StaticParameter::integer() const
+        {
+                if (type_ != StaticType::Integer)
+                        throw std::runtime_error ("StaticParameter::integer() "
+                                                  "called for non-integer");
+                return integer_;
+        }
+        float StaticParameter::floating() const
+        {
+                if (type_ != StaticType::Float)
+                        throw std::runtime_error ("StaticParameter::floating() "
+                                                  "called for non-float");
+                return float_;
+        }
+
         class Template {
         public:
                 virtual ~Template() ;
 
                 bool static_argument_exists (std::string const &name) const;
                 StaticArgument static_argument (std::string const &name) const;
+
+                void incarnate (std::list<StaticParameter> parameters) const
+                {
+                        for (auto p : parameters) {
+                                if (!static_argument_exists (p.name()))
+                                        throw std::runtime_error( "parameter '"
+                                         + p.name() + "' given to incarnate(), "
+                                         "but it doesn't exist");
+                                StaticArgument sa = static_argument(p.name());
+                                if (sa.type() != p.type())
+                                        throw std::runtime_error("parameter '" +
+                                         p.name() + "' passed with incompatible"
+                                         " type.");
+                        }
+                }
+
+                template <typename ...Args>
+                void incarnate (Args... args) const
+                {
+                        return incarnate (std::list<StaticParameter>{args...});
+                }
+
         protected:
                 Template (std::initializer_list<StaticArgument>) ;
 
@@ -50,7 +152,8 @@ namespace quatsch { namespace extern_template {
                 std::vector<StaticArgument> static_args_;
         };
 
-        Template::Template (std::initializer_list<StaticArgument>)
+        Template::Template (std::initializer_list<StaticArgument> args)
+                : static_args_(args)
         {}
 
         Template::~Template()
@@ -76,15 +179,19 @@ namespace quatsch { namespace extern_template {
 
         class Test : public Template {
         public:
-                Test() : Template({StaticArgument("foo", StaticArgument::String),
-                                   StaticArgument("bar", StaticArgument::Float) })
+                Test() : Template({StaticArgument("foo", StaticType::String),
+                                   StaticArgument("bar", StaticType::Float) })
                 {}
         };
 } }
 
 int main () {
-        quatsch::extern_template::Test tpl;
-        tpl.static_argument ("foo");
+        using namespace quatsch::extern_template;
+        Test tpl;
+        tpl.incarnate (StaticParameter::String("foo", "meh!"),
+                       StaticParameter::String("bar", "oops"));
+        return 0;
+
         using namespace quatsch::compiler;
         const std::string code =
         "\n"
