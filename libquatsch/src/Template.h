@@ -41,7 +41,8 @@ namespace quatsch { namespace extern_template {
         {
         public:
                 Test() : Template({StaticArgument("foo", StaticType::String),
-                                   StaticArgument("bar", StaticType::Float) })
+                                   StaticArgument("bar", StaticType::Float),
+                                   StaticArgument("frob", StaticType::Float, required)})
                 {}
         };
 } }

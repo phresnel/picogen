@@ -12,7 +12,7 @@ int main () {
         using namespace quatsch::extern_template;
         Test tpl;
         tpl.instantiate (StaticParameter::String("foo", "meh!"),
-                       StaticParameter::String("bar", "oops"));
+                         StaticParameter::Float("bar", 5));
         return 0;
 
         using namespace quatsch::compiler;

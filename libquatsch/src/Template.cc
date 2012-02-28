@@ -1,5 +1,6 @@
 #include "Template.h"
 #include <stdexcept>
+#include <set>
 
 namespace quatsch { namespace extern_template {
 
@@ -35,7 +36,14 @@ StaticArgument Template::static_argument (std::string const &name) const
 
 void Template::instantiate (std::list<StaticParameter> parameters) const
 {
+        std::set<std::string> defined_names;
         for (auto p : parameters) {
+                const bool defined = defined_names.find(p.name())
+                                     != defined_names.end();
+                if (defined)
+                        throw std::runtime_error ("parameter '" + p.name() +
+                                                  "' already defined");
+
                 if (!static_argument_exists (p.name()))
                         throw std::runtime_error( "parameter '"
                          + p.name() + "' given to instantiate(), "
@@ -45,6 +53,17 @@ void Template::instantiate (std::list<StaticParameter> parameters) const
                         throw std::runtime_error("parameter '" +
                          p.name() + "' passed with incompatible"
                          " type.");
+                defined_names.insert (p.name());
+        }
+
+        for (auto a : static_args_) {
+                if (a.required()) {
+                        const bool defined = defined_names.find(a.name())
+                                             != defined_names.end();
+                        if (!defined)
+                                throw std::runtime_error("required parameter '"
+                                                      + a.name() + "' not set");
+                }
         }
 }
 

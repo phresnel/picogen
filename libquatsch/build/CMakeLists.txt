@@ -17,6 +17,7 @@ set (sources ${sources}
 
         ${src_dir}/Template.h
         ${src_dir}/Template.cc
+        ${src_dir}/template/required.h
         ${src_dir}/template/StaticType.h
         ${src_dir}/template/StaticParameter.h
         ${src_dir}/template/StaticParameter.cc
