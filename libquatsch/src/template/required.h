@@ -3,7 +3,7 @@
 
 namespace quatsch { namespace extern_template {
 
-        enum required_t { required };
+        enum required_t { required }; // Allows to overload on required_t.
 
 } }
 
