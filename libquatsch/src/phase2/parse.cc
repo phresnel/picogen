@@ -188,9 +188,9 @@ Defun::argument_list arg_list (phase1::Toque &toque)
                         phase1::Token typetok = toque.front();
                         std::string typename_ = typetok.value<std::string>();
                         if (typename_ == "int") {
-                                arg.reset_type (phase2::Typename::Integer);
+                                arg.reset_type (Typename::Integer);
                         } else if (typename_ == "float") {
-                                arg.reset_type (phase2::Typename::Float);
+                                arg.reset_type (Typename::Float);
                         } else {
                                 throw unknown_typename();
                         }

@@ -363,8 +363,8 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
                 if (tab.constant_declared (tree->identifier())) {
                         ConstantPtr cptr = tab.constant (tree->identifier());
                         switch (cptr->type()) {
-                         case phase2::Typename::Integer: return phase3::Tree::Integer (cptr->integer());
-                         case phase2::Typename::Float: return phase3::Tree::Floating (cptr->floating());
+                         case Typename::Integer: return phase3::Tree::Integer (cptr->integer());
+                         case Typename::Float: return phase3::Tree::Floating (cptr->floating());
                          default: throw std::runtime_error ("non-implemented constant-type case in resolve_tree()");
                         }
                 }

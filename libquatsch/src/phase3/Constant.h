@@ -1,7 +1,7 @@
 #ifndef CONSTANT_H_INCLUDED_20120215
 #define CONSTANT_H_INCLUDED_20120215
 
-#include "phase2/Typename.h"
+#include "Typename.h"
 #include <memory>
 #include <string>
 
@@ -15,7 +15,7 @@ public:
         static ConstantPtr Floating (std::string const &name, float value);
         static ConstantPtr Integer  (std::string const &name, int value);
 
-        phase2::Typename type() const;
+        Typename type() const;
 
         std::string name() const;
 
@@ -23,11 +23,11 @@ public:
         int   integer  () const;
 
 private:
-        Constant (phase2::Typename t, std::string const &name);
-        void assert_type (phase2::Typename t, std::string const &message) const;
+        Constant (Typename t, std::string const &name);
+        void assert_type (Typename t, std::string const &message) const;
 
 private:
-        phase2::Typename type_;
+        Typename type_;
         std::string name_;
         float floating_;
         int integer_;

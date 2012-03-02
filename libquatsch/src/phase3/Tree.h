@@ -34,7 +34,7 @@ namespace quatsch { namespace compiler { namespace phase3 {
                 static TreePtr Call     (DefunPtr, OperandList);
 
                 Type type() const;
-                phase2::Typename expression_type() const;
+                Typename expression_type() const;
 
                 int integer() const;
                 float floating() const;
@@ -48,14 +48,14 @@ namespace quatsch { namespace compiler { namespace phase3 {
                 phase2::BuiltinPtr builtin() const;
                 OperandList builtin_args() const;
         private:
-                Tree (Type type, phase2::Typename etype) :
+                Tree (Type type, Typename etype) :
                         type_(type), expression_type_ (etype) {}
 
                 void assert_type (Type type, const char *message) const;
 
         private:
                 Type type_;
-                phase2::Typename expression_type_;
+                Typename expression_type_;
 
                 size_t stackvar_index_;
                 boost::optional<phase2::Argument> stackvar_arg_;

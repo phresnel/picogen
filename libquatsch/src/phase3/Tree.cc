@@ -11,7 +11,7 @@ void assert_coherent_types (OperandList const &operands,
 {
         if (operands.empty())
                 return;
-        const phase2::Typename etype = operands.front()->expression_type();
+        const Typename etype = operands.front()->expression_type();
         for (auto it=operands.begin(), end=operands.end(); it!=end; ++it) {
                 if (etype != (**it).expression_type())
                         throw std::runtime_error(message);
@@ -36,14 +36,14 @@ TreePtr Tree::StackRef (size_t index, phase2::Argument const& arg)
 
 TreePtr Tree::Integer (int value)
 {
-        TreePtr ret {new Tree(Type::Integer, phase2::Typename::Integer)};
+        TreePtr ret {new Tree(Type::Integer, Typename::Integer)};
         ret->integer_value_ = value;
         return ret;
 }
 
 TreePtr Tree::Floating (float value)
 {
-        TreePtr ret {new Tree(Type::Floating, phase2::Typename::Float)};
+        TreePtr ret {new Tree(Type::Floating, Typename::Float)};
         ret->floating_value_ = value;
         return ret;
 }
@@ -83,7 +83,7 @@ Tree::Type Tree::type() const
         return type_;
 }
 
-phase2::Typename Tree::expression_type() const
+Typename Tree::expression_type() const
 {
         return expression_type_;
 }

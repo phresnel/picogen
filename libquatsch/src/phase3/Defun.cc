@@ -5,7 +5,7 @@ namespace quatsch { namespace compiler { namespace phase3 {
 
 DefunPtr Defun::ForwardDeclare (std::string name,
                                 std::list<phase2::Argument> args,
-                                phase2::Typename returnType)
+                                Typename returnType)
 {
         DefunPtr ret {new Defun()};
         ret->name_ = name;
@@ -39,7 +39,7 @@ size_t Defun::arg_count() const
         return args_.size();
 }
 
-phase2::Typename Defun::return_type () const
+Typename Defun::return_type () const
 {
         return return_type_;
 }

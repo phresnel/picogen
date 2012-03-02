@@ -15,7 +15,7 @@ namespace quatsch { namespace compiler { namespace phase3 {
         public:
                 static DefunPtr ForwardDeclare (std::string name,
                                                 std::list<phase2::Argument> args,
-                                                phase2::Typename returnType);
+                                                Typename returnType);
 
                 void set_body (TreePtr body);
 
@@ -23,7 +23,7 @@ namespace quatsch { namespace compiler { namespace phase3 {
                 std::list<phase2::Argument> arguments() const;
                 TreePtr                     body()      const;
 
-                phase2::Typename return_type() const;
+                Typename return_type() const;
 
                 size_t arg_count() const;
         private:
@@ -33,6 +33,6 @@ namespace quatsch { namespace compiler { namespace phase3 {
                 std::string name_;
                 std::list<phase2::Argument> args_;
                 TreePtr body_;
-                phase2::Typename return_type_;
+                Typename return_type_;
         };
 } } }
