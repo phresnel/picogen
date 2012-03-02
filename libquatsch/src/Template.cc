@@ -4,7 +4,7 @@
 
 namespace quatsch { namespace extern_template {
 
-Template::Template (std::initializer_list<StaticArgument> args)
+Template::Template (std::initializer_list<ArgumentDeclaration> args)
         : static_args_(args)
 {
 }
@@ -23,7 +23,7 @@ bool Template::static_argument_exists (std::string const &name) const
 }
 
 
-StaticArgument Template::static_argument (std::string const &name) const
+ArgumentDeclaration Template::static_argument (std::string const &name) const
 {
         for (auto const &s : static_args_)
                 if (s.name() == name) return s;
@@ -34,7 +34,7 @@ StaticArgument Template::static_argument (std::string const &name) const
 }
 
 
-void Template::instantiate (std::list<StaticParameter> parameters) const
+Instantiation Template::instantiate (std::list<StaticParameter> parameters) const
 {
         std::set<std::string> defined_names;
         for (auto p : parameters) {
@@ -48,7 +48,7 @@ void Template::instantiate (std::list<StaticParameter> parameters) const
                         throw std::runtime_error( "parameter '"
                          + p.name() + "' given to instantiate(), "
                          "but it doesn't exist");
-                StaticArgument sa = static_argument(p.name());
+                ArgumentDeclaration sa = static_argument(p.name());
                 if (sa.type() != p.type())
                         throw std::runtime_error("parameter '" +
                          p.name() + "' passed with incompatible"
@@ -65,6 +65,8 @@ void Template::instantiate (std::list<StaticParameter> parameters) const
                                                       + a.name() + "' not set");
                 }
         }
+
+        return Instantiation();
 }
 
 } }

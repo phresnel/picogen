@@ -21,8 +21,10 @@ set (sources ${sources}
         ${src_dir}/template/StaticType.h
         ${src_dir}/template/StaticParameter.h
         ${src_dir}/template/StaticParameter.cc
-        ${src_dir}/template/StaticArgument.h
-        ${src_dir}/template/StaticArgument.cc
+        ${src_dir}/template/ArgumentDeclaration.h
+        ${src_dir}/template/ArgumentDeclaration.cc
+        ${src_dir}/template/Instantiation.h
+        ${src_dir}/template/Instantiation.cc
 
         ${src_dir}/phase1/Token.h    ${src_dir}/phase1/Token.cc
         ${src_dir}/phase1/Toque.h    ${src_dir}/phase1/Toque.cc

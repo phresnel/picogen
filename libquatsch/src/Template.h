@@ -5,8 +5,9 @@
 #include <vector>
 #include <list>
 
-#include "template/StaticArgument.h"
+#include "template/ArgumentDeclaration.h"
 #include "template/StaticParameter.h"
+#include "template/Instantiation.h"
 
 namespace quatsch { namespace extern_template {
 
@@ -16,16 +17,16 @@ namespace quatsch { namespace extern_template {
                 virtual ~Template() ;
 
                 bool static_argument_exists (std::string const &name) const;
-                StaticArgument static_argument (std::string const &name) const;
+                ArgumentDeclaration static_argument (std::string const &name) const;
 
-                void instantiate (std::list<StaticParameter> parameters) const;
+                Instantiation instantiate (std::list<StaticParameter> parameters) const;
 
                 template <typename ...Args>
-                void instantiate (Args... args) const
+                Instantiation instantiate (Args... args) const
                 { return instantiate (std::list<StaticParameter>{args...}); }
 
         protected:
-                Template (std::initializer_list<StaticArgument>) ;
+                Template (std::initializer_list<ArgumentDeclaration>) ;
 
                 /* boils down to this with delegating constructors
                 template <typename ...Args>
@@ -33,16 +34,16 @@ namespace quatsch { namespace extern_template {
                 */
 
         private:
-                std::vector<StaticArgument> static_args_;
+                std::vector<ArgumentDeclaration> static_args_;
         };
 
 
         class Test : public Template
         {
         public:
-                Test() : Template({StaticArgument("foo", StaticType::String),
-                                   StaticArgument("bar", StaticType::Float),
-                                   StaticArgument("frob", StaticType::Float, required)})
+                Test() : Template({ArgumentDeclaration("foo", StaticType::String),
+                                   ArgumentDeclaration("bar", StaticType::Float),
+                                   ArgumentDeclaration("frob", StaticType::Float, required)})
                 {}
         };
 } }
