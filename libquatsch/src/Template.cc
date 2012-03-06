@@ -4,7 +4,7 @@
 
 namespace quatsch { namespace extern_template {
 
-Template::Template (std::initializer_list<ArgumentDeclaration> args)
+Template::Template (std::initializer_list<StaticArgumentMeta> args)
         : static_args_(args)
 {
 }
@@ -23,7 +23,7 @@ bool Template::static_argument_exists (std::string const &name) const
 }
 
 
-ArgumentDeclaration Template::static_argument (std::string const &name) const
+StaticArgumentMeta Template::static_argument (std::string const &name) const
 {
         for (auto const &s : static_args_)
                 if (s.name() == name) return s;
@@ -48,7 +48,7 @@ Instantiation Template::instantiate (std::list<StaticParameter> parameters) cons
                         throw std::runtime_error( "parameter '"
                          + p.name() + "' given to instantiate(), "
                          "but it doesn't exist");
-                ArgumentDeclaration sa = static_argument(p.name());
+                StaticArgumentMeta sa = static_argument(p.name());
                 if (sa.type() != p.type())
                         throw std::runtime_error("parameter '" +
                          p.name() + "' passed with incompatible"

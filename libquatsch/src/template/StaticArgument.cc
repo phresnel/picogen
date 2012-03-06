@@ -1,4 +1,4 @@
-#include "StaticParameter.h"
+#include "StaticArgument.h"
 #include <stdexcept>
 
 namespace quatsch { namespace extern_template {

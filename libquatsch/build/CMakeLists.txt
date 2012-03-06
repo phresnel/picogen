@@ -15,14 +15,16 @@ set (sources ${sources}
         ${src_dir}/code_iterator.h   ${src_dir}/code_iterator.cc
         ${src_dir}/quatsch_except.h
 
+        ${src_dir}/Typename.h
+
         ${src_dir}/Template.h
         ${src_dir}/Template.cc
         ${src_dir}/template/required.h
         ${src_dir}/template/StaticType.h
-        ${src_dir}/template/StaticParameter.h
-        ${src_dir}/template/StaticParameter.cc
-        ${src_dir}/template/ArgumentDeclaration.h
-        ${src_dir}/template/ArgumentDeclaration.cc
+        ${src_dir}/template/StaticArgument.h
+        ${src_dir}/template/StaticArgument.cc
+        ${src_dir}/template/StaticArgumentMeta.h
+        ${src_dir}/template/StaticArgumentMeta.cc
         ${src_dir}/template/Instantiation.h
         ${src_dir}/template/Instantiation.cc
 
@@ -36,7 +38,7 @@ set (sources ${sources}
         ${src_dir}/phase2/Defun.h    ${src_dir}/phase2/Defun.cc
         ${src_dir}/phase2/Constant.h ${src_dir}/phase2/Constant.cc
         ${src_dir}/phase2/Argument.h ${src_dir}/phase2/Argument.cc
-        ${src_dir}/phase2/Typename.h
+
         ${src_dir}/phase2/parse.h    ${src_dir}/phase2/parse.cc
 
         ${src_dir}/phase3/Program.cc ${src_dir}/phase3/Program.h

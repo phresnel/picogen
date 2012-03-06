@@ -5,8 +5,8 @@
 #include <vector>
 #include <list>
 
-#include "template/ArgumentDeclaration.h"
-#include "template/StaticParameter.h"
+#include "template/StaticArgumentMeta.h"
+#include "template/StaticArgument.h"
 #include "template/Instantiation.h"
 
 namespace quatsch { namespace extern_template {
@@ -17,7 +17,7 @@ namespace quatsch { namespace extern_template {
                 virtual ~Template() ;
 
                 bool static_argument_exists (std::string const &name) const;
-                ArgumentDeclaration static_argument (std::string const &name) const;
+                StaticArgumentMeta static_argument (std::string const &name) const;
 
                 Instantiation instantiate (std::list<StaticParameter> parameters) const;
 
@@ -26,7 +26,7 @@ namespace quatsch { namespace extern_template {
                 { return instantiate (std::list<StaticParameter>{args...}); }
 
         protected:
-                Template (std::initializer_list<ArgumentDeclaration>) ;
+                Template (std::initializer_list<StaticArgumentMeta>) ;
 
                 /* boils down to this with delegating constructors
                 template <typename ...Args>
@@ -34,16 +34,16 @@ namespace quatsch { namespace extern_template {
                 */
 
         private:
-                std::vector<ArgumentDeclaration> static_args_;
+                std::vector<StaticArgumentMeta> static_args_;
         };
 
 
         class Test : public Template
         {
         public:
-                Test() : Template({ArgumentDeclaration("foo", StaticType::String),
-                                   ArgumentDeclaration("bar", StaticType::Float),
-                                   ArgumentDeclaration("frob", StaticType::Float, required)})
+                Test() : Template({StaticArgumentMeta("foo", StaticType::String),
+                                   StaticArgumentMeta("bar", StaticType::Float),
+                                   StaticArgumentMeta("frob", StaticType::Float, required)})
                 {}
         };
 } }

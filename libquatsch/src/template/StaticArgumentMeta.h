@@ -7,11 +7,11 @@
 
 namespace quatsch { namespace extern_template {
 
-class ArgumentDeclaration
+class StaticArgumentMeta
 {
 public:
-        ArgumentDeclaration (std::string const &name, StaticType type);
-        ArgumentDeclaration (std::string const &name, StaticType type, required_t);
+        StaticArgumentMeta (std::string const &name, StaticType type);
+        StaticArgumentMeta (std::string const &name, StaticType type, required_t);
 
         std::string name()     const ;
         StaticType  type()     const ;
