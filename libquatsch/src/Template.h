@@ -28,24 +28,25 @@ namespace quatsch { namespace extern_template {
         protected:
                 Template (std::initializer_list<StaticArgumentMeta>) ;
 
-                /* boils down to this with delegating constructors
+                /*boils down to this with delegating constructors
                 template <typename ...Args>
                 Template (Args ...args) : Template ({args...}) {}
                 */
+                template <typename ...Args>
+                Template (Args ...args) : static_args_({args...}) {}
 
+        private:
+
+                // Precondition: the list of parameters is type- and
+                //               requiredness-validated.
+                // Postcondition: A valid Instantiation object.
+                virtual
+                  Instantiation instantiate_ (std::list<StaticParameter> const &)
+                  const = 0;
         private:
                 std::vector<StaticArgumentMeta> static_args_;
         };
 
-
-        class Test : public Template
-        {
-        public:
-                Test() : Template({StaticArgumentMeta("foo", StaticType::String),
-                                   StaticArgumentMeta("bar", StaticType::Float),
-                                   StaticArgumentMeta("frob", StaticType::Float, required)})
-                {}
-        };
 } }
 
 #endif // TEMPLATE_H_INCLUDED_20120228

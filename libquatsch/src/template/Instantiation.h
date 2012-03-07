@@ -3,24 +3,27 @@
 
 #include "Typename.h"
 #include <list>
+#include <functional>
+#include <vector>
 
 namespace quatsch { namespace extern_template {
 
-class DynamicArgument {
+class DynamicVariant {
 public:
-        static DynamicArgument Floating (float value);
-        static DynamicArgument Integer  (int   value);
+        static DynamicVariant Floating (float value);
+        static DynamicVariant Integer  (int   value);
 
         float floating() const;
         int   integer () const;
 private:
         // No need for a public type() function. The call should be verified already.
-        DynamicArgument (Typename type_);
+        DynamicVariant (Typename type_);
 
         Typename type_;
         float floating_;
         int   integer_;
 };
+typedef std::vector<DynamicVariant> DynamicArguments;
 
 
 class DynamicArgumentsMeta {
@@ -49,12 +52,22 @@ inline DynamicArgumentsMeta::const_iterator end   (DynamicArgumentsMeta const &l
 class Instantiation // should also describe runtime-argument list!
 {
 public:
+        Instantiation(Typename return_type, DynamicArgumentsMeta const&,
+                      std::function<DynamicVariant(DynamicArguments)> const &);
         Typename return_type() const;
         DynamicArgumentsMeta arguments_meta() const;
+
+        // TODO: I think the above meta functions should directly given back
+        //       to the caller of incarnate(), as the caller will only have
+        //       to validate once.
+        // TODO: should instantiate_() just return std::function?
+
+        DynamicVariant operator() (DynamicArguments const& in) const;
 
 private:
         Typename return_type_;
         DynamicArgumentsMeta arg_desc_;
+        std::function<DynamicVariant(DynamicArguments)> fun_;
 };
 
 } }

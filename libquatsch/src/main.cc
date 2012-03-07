@@ -8,11 +8,58 @@
 #include "phase5/C99/to_C99.h"
 #include "Template.h"
 
+
+namespace quatsch { namespace extern_template {
+
+class Test : public Template
+{
+public:
+        Test() : Template(StaticArgumentMeta("foo", StaticType::String),
+                          StaticArgumentMeta("bar", StaticType::Float),
+                          StaticArgumentMeta("frob", StaticType::Float, required))
+        {}
+
+private:
+        Instantiation instantiate_ (std::list<StaticParameter> const &) const;
+};
+
+Instantiation
+Test::instantiate_ (std::list<StaticParameter> const &params) const
+{
+        class CopyProbe {
+        public:
+                DynamicVariant operator() (DynamicArguments const&args) const
+                {
+                        return DynamicVariant::Floating(0.123);
+                }
+        };
+
+        for (auto const &p : params) {
+                std::cout << p.name() << " : ";
+                switch (p.type()) {
+                case Integer: std::cout << "int <- " << p.integer(); break;
+                case Float:   std::cout << "float <- " << p.floating(); break;
+                case String:  std::cout << "string <- " << p.string(); break;
+                }
+                std::cout << '\n';
+        }
+        return Instantiation(Typename::Float, {Typename::Float,
+                                               Typename::Float},
+                             CopyProbe());
+}
+
+} }
+
+
 int main () {
         using namespace quatsch::extern_template;
+        std::cout << '\n';
         Test tpl;
-        tpl.instantiate (StaticParameter::String("foo", "meh!"),
-                         StaticParameter::Float("bar", 5));
+        Instantiation i = tpl.instantiate (StaticParameter::String("foo", "meh!"),
+                                           StaticParameter::Float("frob", 5));
+
+        std::cout << i(DynamicArguments()).floating() << std::endl;
+
         return 0;
 
         using namespace quatsch::compiler;

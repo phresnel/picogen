@@ -3,35 +3,42 @@
 
 namespace quatsch { namespace extern_template {
 
-DynamicArgument::DynamicArgument (Typename type)
+DynamicVariant::DynamicVariant (Typename type)
         : type_(type)
 {
 }
 
-DynamicArgument DynamicArgument::Floating (float value)
+DynamicVariant DynamicVariant::Floating (float value)
 {
-        DynamicArgument ret {Typename::Float};
+        DynamicVariant ret {Typename::Float};
         ret.floating_ = value;
         return ret;
 }
 
-DynamicArgument DynamicArgument::Integer (int value)
+DynamicVariant DynamicVariant::Integer (int value)
 {
-        DynamicArgument ret {Typename::Integer};
+        DynamicVariant ret {Typename::Integer};
         ret.integer_ = value;
         return ret;
 }
 
-float DynamicArgument::floating() const
+float DynamicVariant::floating() const
 {
         return floating_;
 }
 
-int DynamicArgument::integer() const
+int DynamicVariant::integer() const
 {
         return integer_;
 }
 
+
+Instantiation::Instantiation (
+        Typename return_type,
+        DynamicArgumentsMeta const &dam,
+        std::function<DynamicVariant(DynamicArguments)> const &fun)
+ : return_type_(return_type), arg_desc_(dam), fun_(fun)
+{}
 
 Typename Instantiation::return_type() const
 {
@@ -43,5 +50,9 @@ DynamicArgumentsMeta Instantiation::arguments_meta() const
         return arg_desc_;
 }
 
+DynamicVariant Instantiation::operator() (DynamicArguments const& in) const
+{
+        return fun_(in);
+}
 
 } }

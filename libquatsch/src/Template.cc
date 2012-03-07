@@ -56,6 +56,7 @@ Instantiation Template::instantiate (std::list<StaticParameter> parameters) cons
                 defined_names.insert (p.name());
         }
 
+        // Check if required arguments are set.
         for (auto a : static_args_) {
                 if (a.required()) {
                         const bool defined = defined_names.find(a.name())
@@ -65,8 +66,7 @@ Instantiation Template::instantiate (std::list<StaticParameter> parameters) cons
                                                       + a.name() + "' not set");
                 }
         }
-
-        return Instantiation();
+        return this->instantiate_ (parameters);
 }
 
 } }
