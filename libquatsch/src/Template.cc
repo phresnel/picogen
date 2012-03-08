@@ -34,7 +34,7 @@ StaticArgumentMeta Template::static_argument (std::string const &name) const
 }
 
 
-Instantiation Template::instantiate (std::list<StaticParameter> parameters) const
+Instantiation Template::instantiate (std::list<StaticParameter> const &parameters) const
 {
         std::set<std::string> defined_names;
         for (auto p : parameters) {

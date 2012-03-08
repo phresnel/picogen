@@ -33,6 +33,7 @@ int DynamicVariant::integer() const
 }
 
 
+/*
 Instantiation::Instantiation (
         Typename return_type,
         DynamicArgumentsMeta const &dam,
@@ -54,5 +55,6 @@ DynamicVariant Instantiation::operator() (DynamicArguments const& in) const
 {
         return fun_(in);
 }
+*/
 
 } }

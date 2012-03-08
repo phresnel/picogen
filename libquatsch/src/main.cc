@@ -26,14 +26,6 @@ private:
 Instantiation
 Test::instantiate_ (std::list<StaticParameter> const &params) const
 {
-        class CopyProbe {
-        public:
-                DynamicVariant operator() (DynamicArguments const&args) const
-                {
-                        return DynamicVariant::Floating(0.123);
-                }
-        };
-
         for (auto const &p : params) {
                 std::cout << p.name() << " : ";
                 switch (p.type()) {
@@ -43,9 +35,10 @@ Test::instantiate_ (std::list<StaticParameter> const &params) const
                 }
                 std::cout << '\n';
         }
-        return Instantiation(Typename::Float, {Typename::Float,
-                                               Typename::Float},
-                             CopyProbe());
+        return { [](DynamicArguments const&){return DynamicVariant::Floating(0.234);},
+                 Typename::Float,
+                 {Typename::Float, Typename::Float}
+               };
 }
 
 } }
@@ -58,7 +51,7 @@ int main () {
         Instantiation i = tpl.instantiate (StaticParameter::String("foo", "meh!"),
                                            StaticParameter::Float("frob", 5));
 
-        std::cout << i(DynamicArguments()).floating() << std::endl;
+        std::cout << i.function(DynamicArguments()).floating() << std::endl;
 
         return 0;
 

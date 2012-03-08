@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <vector>
 #include <list>
+#include <functional>
 
 #include "template/StaticArgumentMeta.h"
 #include "template/StaticArgument.h"
@@ -19,7 +20,8 @@ namespace quatsch { namespace extern_template {
                 bool static_argument_exists (std::string const &name) const;
                 StaticArgumentMeta static_argument (std::string const &name) const;
 
-                Instantiation instantiate (std::list<StaticParameter> parameters) const;
+                Instantiation
+                instantiate (std::list<StaticParameter> const &parameters) const;
 
                 template <typename ...Args>
                 Instantiation instantiate (Args... args) const

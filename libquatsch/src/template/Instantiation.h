@@ -49,6 +49,7 @@ inline DynamicArgumentsMeta::const_iterator end   (DynamicArgumentsMeta const &l
 
 
 
+/*
 class Instantiation // should also describe runtime-argument list!
 {
 public:
@@ -68,7 +69,17 @@ private:
         Typename return_type_;
         DynamicArgumentsMeta arg_desc_;
         std::function<DynamicVariant(DynamicArguments)> fun_;
+};*/
+
+
+struct Instantiation
+{
+        std::function<DynamicVariant(DynamicArguments const&)>
+                             function;
+        Typename             return_type;
+        DynamicArgumentsMeta arguments_meta;
 };
+
 
 } }
 
