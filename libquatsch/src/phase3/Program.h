@@ -15,6 +15,7 @@ public:
         Program (TreePtr main, std::list<DefunPtr> defuns);
         TreePtr main() const;
         std::list<DefunPtr> defuns() const;
+
 private:
         TreePtr main_;
         std::list<DefunPtr> defuns_;

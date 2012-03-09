@@ -4,14 +4,21 @@
 
 namespace quatsch { namespace extern_template {
 
-Template::Template (std::initializer_list<StaticArgumentMeta> args)
-        : static_args_(args)
+Template::Template (std::string const &name,
+                    std::initializer_list<StaticArgumentMeta> args)
+        : name_(name), static_args_(args)
 {
 }
 
 
 Template::~Template()
 {
+}
+
+
+std::string Template::name() const
+{
+        return name_;
 }
 
 

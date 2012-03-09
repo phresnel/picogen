@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <functional>
+#include <memory>
 
 #include "template/StaticArgumentMeta.h"
 #include "template/StaticArgument.h"
@@ -17,6 +18,8 @@ namespace quatsch { namespace extern_template {
         public:
                 virtual ~Template() ;
 
+                std::string name() const;
+
                 bool static_argument_exists (std::string const &name) const;
                 StaticArgumentMeta static_argument (std::string const &name) const;
 
@@ -28,14 +31,17 @@ namespace quatsch { namespace extern_template {
                 { return instantiate (std::list<StaticParameter>{args...}); }
 
         protected:
-                Template (std::initializer_list<StaticArgumentMeta>) ;
+                Template (std::string const &name,
+                          std::initializer_list<StaticArgumentMeta>) ;
 
                 /*boils down to this with delegating constructors
                 template <typename ...Args>
                 Template (Args ...args) : Template ({args...}) {}
                 */
                 template <typename ...Args>
-                Template (Args ...args) : static_args_({args...}) {}
+                Template (std::string const &name, Args ...args)
+                        : name_(name), static_args_({args...})
+                {}
 
         private:
 
@@ -46,8 +52,11 @@ namespace quatsch { namespace extern_template {
                   Instantiation instantiate_ (std::list<StaticParameter> const &)
                   const = 0;
         private:
+                std::string name_;
                 std::vector<StaticArgumentMeta> static_args_;
         };
+
+        typedef std::shared_ptr<Template> TemplatePtr;
 
 } }
 

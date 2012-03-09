@@ -3,6 +3,8 @@
 #include "Defun.h"
 #include "Constant.h"
 #include "Program.h"
+#include "Template.h"
+
 #include <boost/optional.hpp>
 #include <iostream>
 #include <vector>
@@ -16,7 +18,9 @@ using boost::optional;
 
 class ErrorState;
 class SymbolTable;
-TreePtr resolve_tree (std::list<phase3::DefunPtr> const &,
+
+TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
+                      std::list<extern_template::TemplatePtr> const &templates,
                       phase2::TreePtr tree,
                       ErrorState &err,
                       SymbolTable &tab);
@@ -262,16 +266,55 @@ phase3::DefunPtr find_p3_defun (std::list<phase3::DefunPtr> const &defuns,
 
 
 
-phase2::DefunPtr find_template (std::string name)
-{
+phase2::DefunPtr instantiate_template (
+        phase2::Tree const &tree,
+        //std::string const &name,
+        //std::list<std::pair<std::string,std::string> > const &static_params, // TODO: need to rework that monstrum
+        std::list<extern_template::TemplatePtr> const &templates,
+        std::list<DefunPtr> const &defuns
+) {
         //for (auto defun : prog.defuns())
         //        if (defun->name() == name) return defun;
+        const auto &name = tree.template_call_callee();
+        for (auto const& tplp : templates) {
+                if (name == tplp->name()) {
+
+                        extern_template::Template const &tpl = *tplp;
+                        std::list<extern_template::StaticParameter> static_args;
+                        for (auto const& kv : tree.template_static_operands()) {
+                                //static_args.emplace_back
+                                std::cout << "{" << kv.first << ":" << kv.second << "}\n";
+                        }
+
+                        extern_template::Instantiation inst = tpl.instantiate (static_args);
+                        phase2::Defun::argument_list arguments_list;
+                        int i=0;
+                        for (auto const &arg_type : inst.arguments_meta) {
+                                const auto arg_name = "__auto" + std::to_string(i);
+                                std::cout << "{" << arg_name << "}" << '\n';
+                                arguments_list.emplace_back(arg_name,
+                                                            arg_type,
+                                                            tree.code_begin(),
+                                                            tree.code_end());
+                        }
+                        /*
+                        new phase2::Defun(name,
+                                          arguments_list,
+                                          inst.return_type,
+                                          body,
+                                          tree.code_begin(), tree.code_end());*/
+
+                        throw std::runtime_error("found it");
+                }
+        }
+        throw std::runtime_error("unknown template \"" + name + "\"");
         return phase2::DefunPtr();
 }
 
 
 
 TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
+                      std::list<extern_template::TemplatePtr> const &templates,
                       phase2::TreePtr tree,
                       ErrorState &err,
                       SymbolTable &tab)
@@ -300,7 +343,9 @@ TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
         auto arg_iter = args.begin();
         OperandList ops;
         for (phase2::TreePtr p2op : tree->call_operands()) {
-                if (phase3::TreePtr p3op = resolve_tree (defuns, p2op, err, tab)) {
+                if (phase3::TreePtr p3op = resolve_tree (defuns, templates,
+                                                         p2op, err, tab))
+                {
                         if (arg_iter->type() != p3op->expression_type()) {
                                 err.post_error ("call to '" + dp->name() + "': " +
                                                 "passing incompatible arguments",
@@ -316,6 +361,7 @@ TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
 }
 
 TreePtr resolve_builtin (std::list<DefunPtr> const & defuns,
+                         std::list<extern_template::TemplatePtr> const &templates,
                          phase2::TreePtr tree,
                          ErrorState &err,
                          SymbolTable &tab)
@@ -330,29 +376,34 @@ TreePtr resolve_builtin (std::list<DefunPtr> const & defuns,
         phase2::BuiltinPtr bt = tree->builtin();//builtin_type_from_string (tree->builtin_operator());
         OperandList ops;
         for (auto it : tree->builtin_operands ()) {
-                TreePtr op = resolve_tree (defuns, it, err, tab);
+                TreePtr op = resolve_tree (defuns, templates, it, err, tab);
                 if (op) ops.push_back(op);
         }
         return Tree::Builtin (bt, ops);
 }
 
 
-void resolve_template_call (std::list<DefunPtr> const &defuns,
-                            phase2::TreePtr tree,
+void resolve_template_call (std::list<extern_template::TemplatePtr> const &templates,
+                            std::list<DefunPtr> const &defuns,
+                            phase2::TreePtr treeptr,
                             ErrorState &err,
                             SymbolTable &tab)
 {
-        phase2::DefunPtr d = find_template (tree->template_call_callee());
+        const phase2::Tree &tree = *treeptr;
+        phase2::DefunPtr d = instantiate_template (tree,
+                                                   templates,
+                                                   defuns);
         if (!d) {
                 err.post_error ("unresolved function template call to \""
-                                + tree->template_call_callee() + "\"",
-                                tree->code_begin(), tree->code_end());
+                                + tree.template_call_callee() + "\"",
+                                tree.code_begin(), tree.code_end());
         }
 }
 
 
 
 TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
+                      std::list<extern_template::TemplatePtr> const &templates,
                       phase2::TreePtr tree,
                       ErrorState &err,
                       SymbolTable &tab)
@@ -383,14 +434,14 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
         case phase2::Tree::Type::Floating:
                 return Tree::Floating (tree->floating());
         case phase2::Tree::Type::Call:
-                return resolve_call (defuns, tree, err, tab);
+                return resolve_call (defuns, templates, tree, err, tab);
         case phase2::Tree::Type::TemplateCall:
-                resolve_template_call (defuns, tree, err, tab);
+                resolve_template_call (templates, defuns, tree, err, tab);
                 err.post_error ("templates not implemented in phase3",
                                 tree->code_begin(), tree->code_end());
                 break;
         case phase2::Tree::Type::Builtin:
-                return resolve_builtin (defuns, tree, err, tab);
+                return resolve_builtin (defuns, templates, tree, err, tab);
         default:
                 throw std::runtime_error("unhandled case in resolve_tree(...)");
         }
@@ -400,6 +451,7 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
 
 
 void resolve_defun (std::list<DefunPtr> const &defuns,
+                    std::list<extern_template::TemplatePtr> const &templates,
                     phase2::DefunPtr dptr,
                     ErrorState &err,
                     const SymbolTable &intab,
@@ -421,13 +473,14 @@ void resolve_defun (std::list<DefunPtr> const &defuns,
                 else tab.declare_argument (arg);
         }
 
-        TreePtr body = resolve_tree (defuns, defun.body(), err, tab);
+        TreePtr body = resolve_tree (defuns, templates, defun.body(), err, tab);
         out->set_body (body);
 }
 
 
 
 void resolve_defuns (phase2::Program const &prog,
+                     std::list<extern_template::TemplatePtr> const &templates,
                      ErrorState &err, SymbolTable &tab,
                      std::list<DefunPtr> &p3_defuns)
 {
@@ -435,7 +488,8 @@ void resolve_defuns (phase2::Program const &prog,
                 resolve_defun (prog, dptr, err, tab);*/
         for (auto p3_defun : p3_defuns) {
                 phase2::DefunPtr p2_defun = find_p2_defun (prog, p3_defun->name());
-                resolve_defun (p3_defuns, p2_defun, err, tab, p3_defun);
+                resolve_defun (p3_defuns, templates,
+                               p2_defun, err, tab, p3_defun);
         }
 }
 
@@ -566,15 +620,18 @@ void check_for_multiple_defuns (phase2::Program const &prog, ErrorState &err)
 }
 
 
-ProgramPtr resolve_and_verify (phase2::Program const &prog) {
+ProgramPtr resolve_and_verify (
+        phase2::Program const &prog,
+        std::list<extern_template::TemplatePtr> const &templates)
+{
 
         ErrorState err;
         SymbolTable tab;
         check_for_multiple_defuns (prog, err);
         evaluate_constants (prog, tab, err);
         std::list<DefunPtr> defuns = forward_declare_defuns (prog);
-        resolve_defuns (prog, err, tab, defuns);
-        TreePtr main = resolve_tree (defuns, prog.main(), err, tab);
+        resolve_defuns (prog, templates, err, tab, defuns);
+        TreePtr main = resolve_tree (defuns, templates, prog.main(), err, tab);
 
         print_errors (err);
         if (err.has_errors()) return ProgramPtr();

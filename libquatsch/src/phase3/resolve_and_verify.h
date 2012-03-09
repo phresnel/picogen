@@ -3,8 +3,11 @@
 
 #include "phase2/Program.h"
 #include "phase3/Program.h"
+#include "Template.h"
 
 namespace quatsch { namespace compiler { namespace phase3 {
-        ProgramPtr resolve_and_verify (phase2::Program const &);
+ProgramPtr resolve_and_verify (phase2::Program const &prog,
+                               std::list<extern_template::TemplatePtr> const &templates);
+
 } } }
 #endif // RESOLVE_AND_VERIFY_H_INCLUDED_20120130

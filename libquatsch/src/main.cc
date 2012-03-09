@@ -14,7 +14,8 @@ namespace quatsch { namespace extern_template {
 class Test : public Template
 {
 public:
-        Test() : Template(StaticArgumentMeta("foo", StaticType::String),
+        Test() : Template("Test",
+                          StaticArgumentMeta("foo", StaticType::String),
                           StaticArgumentMeta("bar", StaticType::Float),
                           StaticArgumentMeta("frob", StaticType::Float, required))
         {}
@@ -53,7 +54,7 @@ int main () {
 
         std::cout << i.function(DynamicArguments()).floating() << std::endl;
 
-        return 0;
+        //return 0;
 
         using namespace quatsch::compiler;
         const std::string code =
@@ -65,7 +66,8 @@ int main () {
         "(defun foo (x:int) (bar 0.5))\n"
         "(defun bar (x) (foo 1i))\n"
         "(defun bar_ (x) (foo_ 1i))\n"
-        "(foo (main 2i 1337))"
+        "([Test frob{3}] (main 2i 1337))"
+
         ;
         std::cout << "quatsch code:\n------------\n" << code
                   << "\n------------\n";
@@ -81,7 +83,9 @@ int main () {
         }
 
         std::cout << "-- phase 3 -----" << std::endl;
-        phase3::ProgramPtr P3 = phase3::resolve_and_verify (*P2);
+        std::list<quatsch::extern_template::TemplatePtr> templates;
+        templates.emplace_back (new Test());
+        phase3::ProgramPtr P3 = phase3::resolve_and_verify (*P2, templates);
         if (!P3) {
                 std::cerr << "verficiation/resolution error" << std::endl;
                 return 0;
