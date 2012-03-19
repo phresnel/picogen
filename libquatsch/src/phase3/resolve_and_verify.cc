@@ -267,46 +267,39 @@ phase3::DefunPtr find_p3_defun (std::list<phase3::DefunPtr> const &defuns,
 
 
 
-phase2::DefunPtr instantiate_template (
+TreePtr instantiate_template (
         phase2::Tree const &tree,
-        //std::string const &name,
-        //std::list<std::pair<std::string,std::string> > const &static_params, // TODO: need to rework that monstrum
         std::list<extern_template::TemplatePtr> const &templates,
-        std::list<DefunPtr> const &defuns
+        std::list<DefunPtr> const &defuns,
+        ErrorState &err
 ) {
-        //for (auto defun : prog.defuns())
-        //        if (defun->name() == name) return defun;
         const auto &name = tree.template_call_callee();
         for (auto const& tplp : templates) {
                 if (name == tplp->name()) {
 
-                        extern_template::Template const &tpl = *tplp;
-                        std::list<extern_template::StaticParameter> static_args;
-                        for (auto const& kv : tree.template_static_operands()) {
-                                switch (kv.type()) {
-                                case extern_template::StaticType::Integer:
-                                        std::cout << kv.integer() << ", integer\n";
-                                        break;
-                                case extern_template::StaticType::Float:
-                                        std::cout << kv.floating() << ", float\n";
-                                        break;
-                                case extern_template::StaticType::String:
-                                        std::cout << kv.string() << ", string\n";
-                                        break;
-                                }
-                        }
+                        extern_template::Template      const &tpl = *tplp;
+                        extern_template::Instantiation const inst =
+                                        tpl.instantiate (tree.template_static_operands());
 
-                        extern_template::Instantiation inst = tpl.instantiate (static_args);
-                        phase2::Defun::argument_list arguments_list;
+                        const auto &ops = tree.template_call_operands();
+                        if (ops.size() != inst.arguments_meta.size()) {
+                                err.post_error ("incorrect number of arguments passed to"
+                                                " \"" + name + "\", expected " +
+                                                std::to_string(inst.arguments_meta.size()),
+                                                tree.code_begin(), tree.code_end());
+                                return TreePtr();
+                        }
+                        /*phase2::Defun::argument_list arguments_list;
                         int i=0;
                         for (auto const &arg_type : inst.arguments_meta) {
-                                const auto arg_name = "__auto" + std::to_string(i);
+                                const auto arg_name = "__auto" + std::to_string(i++);
                                 std::cout << "{" << arg_name << "}" << '\n';
                                 arguments_list.emplace_back(arg_name,
                                                             arg_type,
                                                             tree.code_begin(),
                                                             tree.code_end());
-                        }
+                        }*/
+
                         /*
                         new phase2::Defun(name,
                                           arguments_list,
@@ -318,7 +311,7 @@ phase2::DefunPtr instantiate_template (
                 }
         }
         throw std::runtime_error("unknown template \"" + name + "\"");
-        return phase2::DefunPtr();
+        return TreePtr();
 }
 
 
@@ -400,9 +393,7 @@ void resolve_template_call (std::list<extern_template::TemplatePtr> const &templ
                             SymbolTable &tab)
 {
         const phase2::Tree &tree = *treeptr;
-        phase2::DefunPtr d = instantiate_template (tree,
-                                                   templates,
-                                                   defuns);
+        TreePtr d = instantiate_template (tree, templates, defuns, err);
         if (!d) {
                 err.post_error ("unresolved function template call to \""
                                 + tree.template_call_callee() + "\"",

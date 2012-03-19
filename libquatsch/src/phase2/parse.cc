@@ -120,7 +120,6 @@ try_template_call_arg (phase1::Toque &toque)
         const std::string name  (name_tok.begin().str_iter(),
                                  name_tok.end().str_iter());
 
-        //TODO§ need typing here
         if (*peeked == phase1::Token::TemplateArg_Integer) {
                 return StaticParameter::Integer (name, value_tok.value<int>());
         }
@@ -145,7 +144,7 @@ bool try_template_call (phase1::Toque &toque, TreePtr &out)
         toque.pop(); if (toque.empty()) throw unexpected();
 
         const std::string name = toque.take().value<std::string>();
-std::cout << name << "]]" << std::endl;
+
         // parse static arguments
         std::list<extern_template::StaticParameter> targs;
         while (auto const param = try_template_call_arg (toque)) {

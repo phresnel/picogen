@@ -24,6 +24,7 @@ namespace quatsch { namespace compiler { namespace phase3 {
                         Integer, Floating,
                         Call,
                         TemplateCall,
+                        ExternCall,
                         Builtin     // e.g. '*'
                 };
 

@@ -27,6 +27,7 @@ typedef std::vector<DynamicVariant> DynamicArguments;
 
 
 class DynamicArgumentsMeta {
+        typedef std::list<Typename>::size_type size_type;
 public:
         typedef Typename value_type;
         typedef std::list<Typename>::const_iterator const_iterator;
@@ -40,6 +41,8 @@ public:
 
         const_iterator begin() const { return list_.begin(); }
         const_iterator end  () const { return list_.end  (); }
+
+        size_type size() const { return list_.size(); }
 
 private:
         std::list<Typename> list_;
