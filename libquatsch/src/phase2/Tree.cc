@@ -57,7 +57,7 @@ TreePtr Tree::Builtin(code_iterator from, code_iterator to,
 
 TreePtr Tree::TemplateCall(code_iterator from, code_iterator to,
                            std::string callee,
-                           std::list<std::pair<std::string,std::string> > const& targs,
+                           std::list<extern_template::StaticParameter> const& targs,
                            std::list<TreePtr> operands)
 {
         TreePtr ret{new Tree(from, to)};
@@ -135,7 +135,7 @@ TreePtrList Tree::template_call_operands() const
                                          " for non-template-call");
         return operands_;
 }
-std::list<std::pair<std::string,std::string> >
+std::list<extern_template::StaticParameter>
 Tree::template_static_operands() const {
         assert_type (Type::TemplateCall, "Called Tree::template_static_operands()"
                                          " for non-template-call");

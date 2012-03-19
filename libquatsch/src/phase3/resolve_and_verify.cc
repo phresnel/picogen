@@ -4,6 +4,7 @@
 #include "Constant.h"
 #include "Program.h"
 #include "Template.h"
+#include "detail/parse_primitive.h"
 
 #include <boost/optional.hpp>
 #include <iostream>
@@ -282,8 +283,17 @@ phase2::DefunPtr instantiate_template (
                         extern_template::Template const &tpl = *tplp;
                         std::list<extern_template::StaticParameter> static_args;
                         for (auto const& kv : tree.template_static_operands()) {
-                                //static_args.emplace_back
-                                std::cout << "{" << kv.first << ":" << kv.second << "}\n";
+                                switch (kv.type()) {
+                                case extern_template::StaticType::Integer:
+                                        std::cout << kv.integer() << ", integer\n";
+                                        break;
+                                case extern_template::StaticType::Float:
+                                        std::cout << kv.floating() << ", float\n";
+                                        break;
+                                case extern_template::StaticType::String:
+                                        std::cout << kv.string() << ", string\n";
+                                        break;
+                                }
                         }
 
                         extern_template::Instantiation inst = tpl.instantiate (static_args);

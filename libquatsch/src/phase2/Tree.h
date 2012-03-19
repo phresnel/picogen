@@ -3,6 +3,7 @@
 
 #include "Typename.h"
 #include "Builtin.h"
+#include "Template.h"
 #include "code_iterator.h"
 #include <memory>
 #include <list>
@@ -12,6 +13,7 @@ namespace quatsch { namespace compiler { namespace phase2 {
 class Tree;
 typedef std::shared_ptr<Tree> TreePtr;
 typedef std::list<TreePtr> TreePtrList;
+
 
 class Tree {
 public:
@@ -35,7 +37,7 @@ public:
                                    std::list<TreePtr> operands);
         static TreePtr TemplateCall(code_iterator from, code_iterator to,
                                     std::string callee,
-                                    std::list<std::pair<std::string,std::string> > const&,
+                                    std::list<extern_template::StaticParameter> const&,
                                     std::list<TreePtr> operands);
         static TreePtr Builtin    (code_iterator from, code_iterator to,
                                    BuiltinPtr builtin, std::list<TreePtr> operands);
@@ -54,7 +56,7 @@ public:
 
         std::string template_call_callee  () const;
         TreePtrList template_call_operands() const;
-        std::list<std::pair<std::string,std::string> > template_static_operands() const;
+        std::list<extern_template::StaticParameter> template_static_operands() const;
 
         BuiltinPtr builtin() const;
         TreePtrList builtin_operands() const;
@@ -78,7 +80,7 @@ private:
 
         phase2::BuiltinPtr builtin_;
 
-        std::list<std::pair<std::string,std::string> > template_args_;
+        std::list<extern_template::StaticParameter> template_args_;
 
 };
 

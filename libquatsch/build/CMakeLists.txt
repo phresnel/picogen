@@ -15,6 +15,8 @@ set (sources ${sources}
         ${src_dir}/code_iterator.h   ${src_dir}/code_iterator.cc
         ${src_dir}/quatsch_except.h
 
+        ${src_dir}/detail/parse_primitive.h
+
         ${src_dir}/Typename.h
 
         ${src_dir}/Template.h

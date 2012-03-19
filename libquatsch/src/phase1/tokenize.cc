@@ -1,5 +1,6 @@
 #include "tokenize.h"
 #include "quatsch_except.h"
+#include "detail/parse_primitive.h"
 #include <boost/optional.hpp>
 
 namespace quatsch { namespace compiler { namespace phase1 {
@@ -7,40 +8,13 @@ namespace quatsch { namespace compiler { namespace phase1 {
 using boost::optional;
 
 namespace {
-        bool is_whitespace (char c)
+        using namespace compiler::detail;
+
+        template <typename Iter>
+        Iter eat_whitespace (Iter it, Iter end)
         {
-                return c==' ' || c=='\n' || c == '\r';
-        }
-
-        bool is_alpha (char c) {
-                switch (c) {
-                case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-                case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
-                case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
-                case 's': case 't': case 'u': case 'v': case 'w': case 'x':
-                case 'y': case 'z':
-                case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-                case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
-                case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
-                case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
-                case 'Y': case 'Z':
-                         return true;
-                default: return false;
-                }
-        }
-
-        bool is_num (char c) {
-                switch (c) {
-                case '0': case '1': case '2': case '3': case '4':
-                case '5': case '6': case '7': case '8': case '9':
-                         return true;
-                default: return false;
-                }
-        }
-
-        bool is_alnum (char c)
-        {
-                return is_num(c) || is_alpha(c);
+                while (it != end && is_whitespace (*it)) ++it;
+                return it;
         }
 
         template <typename Iter>
@@ -52,31 +26,8 @@ namespace {
                 }
                 return optional<Iter>();
         }
-        template <typename Iter>
-        optional<Iter> integer (Iter it, Iter end) {
-                if (is_num (*it)) {
-                        while (it != end && is_num (*it))
-                                ++it;
-                        if (*it == 'i') return ++it; // must end with 'i'
-                }
-                return optional<Iter>();
-        }
 
-        template <typename Iter>
-        optional<Iter> floating (Iter it, Iter end) {
-                if (is_num (*it) || *it == '.') { // must begin with number or .
-                        while (it != end && is_num (*it))
-                                ++it;
-                        if (*it == '.') { // fractional is optional
-                                ++it;
-                                while (it != end && is_num (*it))
-                                        ++it;
-                        }
-                        return it;
-                }
-                return optional<Iter>();
-        }
-
+        /*
         template <typename Iter>
         optional<Iter> template_arg (Iter it, Iter end) {
                 if (*it != '{') return optional<Iter>();
@@ -85,6 +36,62 @@ namespace {
                         ++it;
                 if (it == end) throw tokenization_error();
                 return ++it;
+        }
+        */
+
+        struct TemplateStaticArgRet {
+                code_iterator end;
+                code_iterator val_begin, val_end;
+        };
+
+        template <typename Iter>
+        optional<TemplateStaticArgRet>
+        template_staticarg_integer(Iter it, Iter end)
+        {
+                if (*it != '{') return optional<TemplateStaticArgRet>();
+                it = eat_whitespace (++it, end);
+                const code_iterator val_begin = it;
+
+                if (auto v = compiler::detail::integer (it, end)) it = *v;
+                else return optional<TemplateStaticArgRet>();
+
+                if (it == end) throw tokenization_error();
+                const auto val_end = it;
+                it = eat_whitespace (it, end);
+                if (*it != '}') return optional<TemplateStaticArgRet>();
+
+                return TemplateStaticArgRet{++it, val_begin, val_end};
+        }
+        template <typename Iter>
+        optional<TemplateStaticArgRet>
+        template_staticarg_floating(Iter it, Iter end)
+        {
+                if (*it != '{') return optional<TemplateStaticArgRet>();
+                it = eat_whitespace (++it, end);
+                const auto val_begin = it;
+                if (auto v = compiler::detail::floating (it, end)) it = *v;
+                else return optional<TemplateStaticArgRet>();
+
+                if (it == end) throw tokenization_error();
+                const auto val_end = it;
+                it = eat_whitespace (it, end);
+                if (*it != '}') return optional<TemplateStaticArgRet>();
+
+                return TemplateStaticArgRet{++it, val_begin, val_end};
+        }
+        template <typename Iter>
+        optional<TemplateStaticArgRet>
+        template_staticarg_string(Iter it, Iter end)
+        {
+                if (*it != '{') return optional<TemplateStaticArgRet>();
+                ++it;
+                const auto val_begin = it;
+                auto val_end = it;
+                while (it != end && *it != '}') {
+                        val_end = ++it;
+                }
+                if (it == end) throw tokenization_error();
+                return TemplateStaticArgRet{++it, val_begin, val_end};
         }
 
         template <typename Iter>
@@ -128,7 +135,7 @@ Toque tokenize (code_iterator it, code_iterator end)
 {
         Toque ret;
         while (it != end) {
-                while (is_whitespace (*it)) ++it;
+                while (compiler::detail::is_whitespace (*it)) ++it;
                 if (it == end) break;
 
                 auto inc_it = it;
@@ -168,9 +175,20 @@ Toque tokenize (code_iterator it, code_iterator end)
                         ++it;
                         ret.emplace (prev, it, Token::Type::Operator);
                 }
-                else if (auto opt = template_arg (it, end)) {
-                        ret.emplace (it, *opt, Token::Type::TemplateArg);
-                        it = *opt;
+                else if (auto opt = template_staticarg_integer (it, end)) {
+                        ret.emplace (opt->val_begin, opt->val_end,
+                                     Token::Type::TemplateArg_Integer);
+                        it = opt->end;
+                }
+                else if (auto opt = template_staticarg_floating (it, end)) {
+                        ret.emplace (opt->val_begin, opt->val_end,
+                                     Token::Type::TemplateArg_Floating);
+                        it = opt->end;
+                }
+                else if (auto opt = template_staticarg_string (it, end)) {
+                        ret.emplace (opt->val_begin, opt->val_end,
+                                     Token::Type::TemplateArg_String);
+                        it = opt->end;
                 }
                 else if (auto opt = defun (it, end)) {
                         ret.emplace (it, *opt, Token::Type::Defun);

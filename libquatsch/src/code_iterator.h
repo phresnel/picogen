@@ -13,6 +13,10 @@ namespace quatsch { namespace compiler {
                 code_iterator (std::string::const_iterator curr)
                 : curr_(curr), line_(1), column_(1) {}
 
+                code_iterator()                                  = delete;
+                code_iterator (code_iterator const &)            = default;
+                code_iterator& operator= (code_iterator const &) = default;
+
                 typedef       char  value_type;
                 typedef const char* pointer;
                 typedef const char& reference;

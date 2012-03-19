@@ -19,7 +19,10 @@ namespace quatsch { namespace compiler { namespace phase1 {
                         OpenParen, CloseParen,
                         OpenBracket, CloseBracket,
                         //OpenCurly, CloseCurly,
-                        TemplateArg,
+                        //TemplateArg,
+                        TemplateArg_Integer,
+                        TemplateArg_Floating,
+                        TemplateArg_String,
                         Operator
                 };
 

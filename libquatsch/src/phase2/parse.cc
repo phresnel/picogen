@@ -1,9 +1,14 @@
 #include "parse.h"
 #include "quatsch_except.h"
+#include "Template.h"
+#include "detail/parse_primitive.h"
 #include <iostream>
 #include <list>
+#include <boost/optional.hpp>
 
 namespace quatsch { namespace compiler { namespace phase2 {
+
+using boost::optional;
 
 bool try_expression (phase1::Toque &, phase2::TreePtr &);
 
@@ -93,22 +98,39 @@ bool try_call (phase1::Toque &toque, TreePtr &out)
         return true;
 }
 
-bool try_template_call_arg (phase1::Toque &toque,
-                            std::pair<std::string,std::string> &out)
+optional<extern_template::StaticParameter>
+try_template_call_arg (phase1::Toque &toque)
 {
-        if (!toque.is_seq({phase1::Token::Identifier,
-                           phase1::Token::TemplateArg}))
-                return false;
+        using namespace extern_template;
+
+        if (!toque.is_seq(phase1::Token::Identifier))
+                return optional<StaticParameter>();
+
+        auto const peeked = toque.peek(1);
+        if (!peeked) return optional<StaticParameter>();
+
+        if (*peeked != phase1::Token::TemplateArg_Integer
+         && *peeked != phase1::Token::TemplateArg_Floating
+         && *peeked != phase1::Token::TemplateArg_String)
+                return optional<StaticParameter>();
 
         // syntax: "foo{bar frob}"
         auto name_tok  = toque.take(),
              value_tok = toque.take();
         const std::string name  (name_tok.begin().str_iter(),
-                                   name_tok.end().str_iter());
-        const std::string value (value_tok.begin().str_iter()+1,
-                                   value_tok.end().str_iter()-1);
-        out = make_pair (name, value);
-        return true;
+                                 name_tok.end().str_iter());
+
+        //TODO§ need typing here
+        if (*peeked == phase1::Token::TemplateArg_Integer) {
+                return StaticParameter::Integer (name, value_tok.value<int>());
+        }
+        if (*peeked == phase1::Token::TemplateArg_Floating) {
+                return StaticParameter::Float (name, value_tok.value<float>());
+        }
+        if (*peeked == phase1::Token::TemplateArg_String) {
+                return StaticParameter::String (name, value_tok.value<std::string>());
+        }
+        throw std::runtime_error ("impossible codepath in try_template_call_arg");
 }
 
 bool try_template_call (phase1::Toque &toque, TreePtr &out)
@@ -123,12 +145,11 @@ bool try_template_call (phase1::Toque &toque, TreePtr &out)
         toque.pop(); if (toque.empty()) throw unexpected();
 
         const std::string name = toque.take().value<std::string>();
-
+std::cout << name << "]]" << std::endl;
         // parse static arguments
-        std::list<std::pair<std::string,std::string> > targs;
-        std::pair<std::string,std::string> name_value;
-        while (try_template_call_arg (toque, name_value)) {
-                targs.push_back (name_value);
+        std::list<extern_template::StaticParameter> targs;
+        while (auto const param = try_template_call_arg (toque)) {
+                targs.push_back (*param);
         }
         if (toque.front() != phase1::Token::CloseBracket) {
                 throw unexpected();
@@ -142,7 +163,6 @@ bool try_template_call (phase1::Toque &toque, TreePtr &out)
 
         out = Tree::TemplateCall(begin, args.back()->code_end(), name,
                                  targs, args);
-
         return true;
 }
 
