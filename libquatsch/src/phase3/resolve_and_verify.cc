@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <set>
 #include <algorithm>
+#include <cctype>
 
 namespace quatsch { namespace compiler { namespace phase3 {
 
@@ -266,6 +267,28 @@ phase3::DefunPtr find_p3_defun (std::list<phase3::DefunPtr> const &defuns,
 }
 
 
+std::string idfy (extern_template::StaticParameter const &sp) {
+        std::string ret = sp.name() + "_";
+        switch (sp.type()) {
+        case extern_template::StaticType::Float:
+                ret += std::to_string (sp.floating());
+                break;
+        case extern_template::StaticType::Integer:
+                ret += std::to_string (sp.integer());
+                break;
+        case extern_template::StaticType::String:
+                ret += sp.string();
+                break;
+        }
+        auto pred = [](char c) {
+                // TODO: use regexes, that ascii trick is just temporary
+                return !((c>='a' && c<='z') ||
+                         (c>='A' && c<='Z') ||
+                         (c>='0' && c<='9'));
+        };
+        std::replace_if (ret.begin(), ret.end(), pred, '_');
+        return ret;
+}
 TreePtr instantiate_template (
         phase2::Tree const &tree,
         std::list<extern_template::TemplatePtr> const &templates,
@@ -295,7 +318,13 @@ TreePtr instantiate_template (
                         //auto op_iter = ops.begin(), ops_end = ops.end();
                         auto meta_iter = metas.begin();
 
+                        int forge_index = 0;
+                        auto gen_arg_name = [&forge_index] () {
+                                return "__tpl_arg_" + std::to_string(forge_index++);
+                        };
+
                         OperandList p3ops;
+                        std::list<phase2::Argument> p2arglist;
                         for (auto const &p2op : p2ops) {
                                 if (phase3::TreePtr p3op = resolve_tree (defuns, templates,
                                                                          p2op, err, tab))
@@ -306,21 +335,26 @@ TreePtr instantiate_template (
                                                                 p2op->code_begin(), p2op->code_end());
                                         } else {
                                                 p3ops.push_back (p3op);
+                                                p2arglist.emplace_back (
+                                                        gen_arg_name(),
+                                                        *meta_iter, tree.code_begin(),
+                                                        tree.code_end());
                                         }
                                 }
                                 ++meta_iter;
                         }
 
-                        return TreePtr();
+                        std::string forged_name = "__tpl_" + name + "_";
+                        for (auto const &sta : tree.template_static_operands()) {
+                                forged_name += idfy(sta) + "__";
+                        }
 
-                        /*
-                        new phase2::Defun(name,
-                                          arguments_list,
-                                          inst.return_type,
-                                          body,
-                                          tree.code_begin(), tree.code_end());*/
-
-                        throw std::runtime_error("found it");
+                        TreePtr  body = Tree::Instantiation (inst);
+                        DefunPtr dptr (new Defun (forged_name,
+                                                  p2arglist,
+                                                  inst.return_type,
+                                                  body));
+                        return Tree::Call (dptr, p3ops);
                 }
         }
         throw std::runtime_error("unknown template \"" + name + "\"");
@@ -399,11 +433,11 @@ TreePtr resolve_builtin (std::list<DefunPtr> const & defuns,
 }
 
 
-void resolve_template_call (std::list<extern_template::TemplatePtr> const &templates,
-                            std::list<DefunPtr> const &defuns,
-                            phase2::TreePtr treeptr,
-                            ErrorState &err,
-                            SymbolTable &tab)
+TreePtr resolve_template_call (std::list<extern_template::TemplatePtr> const &templates,
+                               std::list<DefunPtr> const &defuns,
+                               phase2::TreePtr treeptr,
+                               ErrorState &err,
+                               SymbolTable &tab)
 {
         const phase2::Tree &tree = *treeptr;
         TreePtr d = instantiate_template (tree, templates, defuns, err, tab);
@@ -412,6 +446,7 @@ void resolve_template_call (std::list<extern_template::TemplatePtr> const &templ
                                 + tree.template_call_callee() + "\"",
                                 tree.code_begin(), tree.code_end());
         }
+        return d;
 }
 
 
@@ -450,10 +485,7 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
         case phase2::Tree::Type::Call:
                 return resolve_call (defuns, templates, tree, err, tab);
         case phase2::Tree::Type::TemplateCall:
-                resolve_template_call (templates, defuns, tree, err, tab);
-                err.post_error ("templates not implemented in phase3",
-                                tree->code_begin(), tree->code_end());
-                break;
+                return resolve_template_call (templates, defuns, tree, err, tab);
         case phase2::Tree::Type::Builtin:
                 return resolve_builtin (defuns, templates, tree, err, tab);
         default:

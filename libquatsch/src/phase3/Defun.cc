@@ -3,6 +3,17 @@
 
 namespace quatsch { namespace compiler { namespace phase3 {
 
+Defun::Defun (std::string const &name,
+       std::list<phase2::Argument> const &args,
+       Typename return_type,
+       TreePtr body)
+        : name_(name),
+          args_ (args),
+          body_ (body),
+          return_type_ (return_type)
+{
+}
+
 DefunPtr Defun::ForwardDeclare (std::string name,
                                 std::list<phase2::Argument> args,
                                 Typename returnType)

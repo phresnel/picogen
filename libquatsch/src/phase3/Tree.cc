@@ -63,14 +63,20 @@ TreePtr Tree::Builtin (phase2::BuiltinPtr builtin, OperandList operands)
 
 TreePtr Tree::Call (DefunPtr defun, OperandList operands)
 {
-        /*assert_coherent_types (operands, "Tree::Call() called with incoherent "
-                                         "operand types");*/
         const auto etype = defun->return_type();
         TreePtr ret{new Tree (Type::Call, etype)};
         ret->callee_   = defun;
         ret->operands_ = operands;
         return ret;
 }
+
+TreePtr Tree::Instantiation (extern_template::Instantiation ef)
+{
+        TreePtr ret{new Tree(Type::Instantiation, ef.return_type)};
+        ret->instantiation_ = ef;
+        return ret;
+}
+
 
 void Tree::assert_type (Tree::Type type, const char *message) const
 {

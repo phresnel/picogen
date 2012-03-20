@@ -24,7 +24,7 @@ namespace quatsch { namespace compiler { namespace phase3 {
                         Integer, Floating,
                         Call,
                         TemplateCall,
-                        ExternCall,
+                        Instantiation,
                         Builtin     // e.g. '*'
                 };
 
@@ -33,6 +33,7 @@ namespace quatsch { namespace compiler { namespace phase3 {
                 static TreePtr Floating (float value);
                 static TreePtr Builtin  (phase2::BuiltinPtr, OperandList);
                 static TreePtr Call     (DefunPtr, OperandList);
+                static TreePtr Instantiation (extern_template::Instantiation);
 
                 Type type() const;
                 Typename expression_type() const;
@@ -66,6 +67,8 @@ namespace quatsch { namespace compiler { namespace phase3 {
                 phase2::BuiltinPtr builtin_;
                 phase3::DefunPtr callee_;
                 OperandList operands_;
+
+                extern_template::Instantiation instantiation_;
         };
 } } }
 

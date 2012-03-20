@@ -106,7 +106,10 @@ void builtin (phase3::Tree const &tree_, std::ostream &os)
 
 void floating (float value, std::ostream &os)
 {
-        os << boost::lexical_cast<std::string> (value) << 'f';
+        std::string lit = boost::lexical_cast<std::string> (value);
+        if (lit.find_first_of ('.') == std::string::npos)
+                lit += '.';
+        os << lit << 'f';
 }
 
 void tree (phase3::Tree const &tree, std::ostream &os)

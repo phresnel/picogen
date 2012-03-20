@@ -13,6 +13,11 @@ namespace quatsch { namespace compiler { namespace phase3 {
         typedef std::shared_ptr<Defun> DefunPtr;
         class Defun {
         public:
+                Defun (std::string const &name,
+                       std::list<phase2::Argument> const &args,
+                       Typename return_type,
+                       TreePtr body);
+
                 static DefunPtr ForwardDeclare (std::string name,
                                                 std::list<phase2::Argument> args,
                                                 Typename returnType);

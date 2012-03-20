@@ -73,12 +73,11 @@ private:
         DynamicArgumentsMeta arg_desc_;
         std::function<DynamicVariant(DynamicArguments)> fun_;
 };*/
-
+typedef std::function<DynamicVariant(DynamicArguments const&)> extern_function;
 
 struct Instantiation
 {
-        std::function<DynamicVariant(DynamicArguments const&)>
-                             function;
+        extern_function      function;
         Typename             return_type;
         DynamicArgumentsMeta arguments_meta;
 };
