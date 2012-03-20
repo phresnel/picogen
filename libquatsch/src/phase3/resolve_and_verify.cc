@@ -266,12 +266,12 @@ phase3::DefunPtr find_p3_defun (std::list<phase3::DefunPtr> const &defuns,
 }
 
 
-
 TreePtr instantiate_template (
         phase2::Tree const &tree,
         std::list<extern_template::TemplatePtr> const &templates,
         std::list<DefunPtr> const &defuns,
-        ErrorState &err
+        ErrorState &err,
+        SymbolTable &tab
 ) {
         const auto &name = tree.template_call_callee();
         for (auto const& tplp : templates) {
@@ -281,24 +281,37 @@ TreePtr instantiate_template (
                         extern_template::Instantiation const inst =
                                         tpl.instantiate (tree.template_static_operands());
 
-                        const auto &ops = tree.template_call_operands();
-                        if (ops.size() != inst.arguments_meta.size()) {
+                        const auto &p2ops = tree.template_call_operands();
+                        const auto &metas = inst.arguments_meta;
+
+                        if (p2ops.size() != metas.size()) {
                                 err.post_error ("incorrect number of arguments passed to"
                                                 " \"" + name + "\", expected " +
                                                 std::to_string(inst.arguments_meta.size()),
                                                 tree.code_begin(), tree.code_end());
                                 return TreePtr();
                         }
-                        /*phase2::Defun::argument_list arguments_list;
-                        int i=0;
-                        for (auto const &arg_type : inst.arguments_meta) {
-                                const auto arg_name = "__auto" + std::to_string(i++);
-                                std::cout << "{" << arg_name << "}" << '\n';
-                                arguments_list.emplace_back(arg_name,
-                                                            arg_type,
-                                                            tree.code_begin(),
-                                                            tree.code_end());
-                        }*/
+
+                        //auto op_iter = ops.begin(), ops_end = ops.end();
+                        auto meta_iter = metas.begin();
+
+                        OperandList p3ops;
+                        for (auto const &p2op : p2ops) {
+                                if (phase3::TreePtr p3op = resolve_tree (defuns, templates,
+                                                                         p2op, err, tab))
+                                {
+                                        if (*meta_iter != p3op->expression_type()) {
+                                                err.post_error ("call to '" + name + "': " +
+                                                                "passing incompatible arguments",
+                                                                p2op->code_begin(), p2op->code_end());
+                                        } else {
+                                                p3ops.push_back (p3op);
+                                        }
+                                }
+                                ++meta_iter;
+                        }
+
+                        return TreePtr();
 
                         /*
                         new phase2::Defun(name,
@@ -393,7 +406,7 @@ void resolve_template_call (std::list<extern_template::TemplatePtr> const &templ
                             SymbolTable &tab)
 {
         const phase2::Tree &tree = *treeptr;
-        TreePtr d = instantiate_template (tree, templates, defuns, err);
+        TreePtr d = instantiate_template (tree, templates, defuns, err, tab);
         if (!d) {
                 err.post_error ("unresolved function template call to \""
                                 + tree.template_call_callee() + "\"",
