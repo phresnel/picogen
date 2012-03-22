@@ -6,6 +6,7 @@
 #include "phase2/parse.h"
 #include "phase3/resolve_and_verify.h"
 #include "phase5/C99/to_C99.h"
+#include "phase5/callable/to_callable.h"
 #include "Template.h"
 
 
@@ -92,6 +93,11 @@ int main () {
         std::string c99 = phase5::to_C99 (*P3);
         std::cout << "C99 code:\n------------\n" << c99
                   << "\n------------\n";
+
+        auto fun = phase5::to_callable (*P3);
+        DynamicArguments args ({DynamicVariant::Floating(0.5),
+                                DynamicVariant::Floating(0.5)});
+        std::cout << fun (args).floating() << std::endl;
 }
 
 

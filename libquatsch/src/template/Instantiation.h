@@ -73,6 +73,8 @@ private:
         DynamicArgumentsMeta arg_desc_;
         std::function<DynamicVariant(DynamicArguments)> fun_;
 };*/
+
+// TODO: extract that typedef into separate file
 typedef std::function<DynamicVariant(DynamicArguments const&)> extern_function;
 
 struct Instantiation

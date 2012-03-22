@@ -52,6 +52,9 @@ set (sources ${sources}
 
         ${src_dir}/phase5/C99/to_C99.h ${src_dir}/phase5/C99/to_C99.cc
 
+        ${src_dir}/phase5/callable/to_callable.h
+        ${src_dir}/phase5/callable/to_callable.cc
+
 )
 
 
