@@ -1,5 +1,6 @@
 
 #include "to_callable.h"
+#include "phase3/Defun.h"
 #include <stdexcept>
 #include <iostream>
 #include <numeric>
@@ -94,6 +95,8 @@ DynamicVariant accumulate (DynamicArguments const &args, Tree const &tree)
                 return DynamicVariant::Integer(sum);
         }
         };
+
+        throw std::runtime_error("unhandled case in to_callable:accumulate");
 }
 
 template <template <typename> class Operator>
@@ -106,6 +109,7 @@ DynamicVariant binary_op (DynamicArguments const &args, Tree const &tree)
         auto it = builtin_args.begin();
         DynamicVariant const lhs = exec (args, **it);
         DynamicVariant const rhs = exec (args, **(++it));
+
         switch (lhs.type()) {
         case Typename::Float:
                 return DynamicVariant::Floating (Operator<float>()(lhs.floating(),
@@ -132,22 +136,34 @@ DynamicVariant builtin (DynamicArguments const &args, Tree const &tree)
         throw std::runtime_error ("unhandled builtin type in to_callable::builtin");
 }
 
+DynamicVariant call (DynamicArguments const &args, Tree const &tree)
+{
+        phase3::Defun const &def = *tree.call_callee();
+
+        DynamicArguments call_arg_results;
+        for (auto const t : tree.call_args()) {
+                DynamicVariant const &res = exec (args, *t);
+                call_arg_results.push_back (res);
+        }
+
+        return exec (call_arg_results, *def.body());
+}
+
 DynamicVariant exec (DynamicArguments const &args, Tree const &tree)
 {
         typedef Tree::Type Type;
 
         switch (tree.type()) {
-        case Type::StackRef: throw std::runtime_error("unsupported"); break;
-        case Type::Integer: return DynamicVariant::Integer(tree.integer());
+        case Type::StackRef: return args[tree.stackref_index()];
+        case Type::Integer:  return DynamicVariant::Integer(tree.integer());
         case Type::Floating: return DynamicVariant::Floating(tree.floating());
-        case Type::Call: break;
-        case Type::TemplateCall: break;
+        case Type::Call:     return call (args, tree);
+        case Type::TemplateCall:  break;
         case Type::Instantiation: break;
-        case Type::Builtin: return builtin (args, tree);
+        case Type::Builtin:  return builtin (args, tree);
         }
         throw std::runtime_error ("to_callable::exec(): unsupported tree-type");
 }
-
 
 extern_function to_callable (phase3::Program const &prog)
 {

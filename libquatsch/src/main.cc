@@ -63,11 +63,9 @@ int main () {
         "(let pi:float 3.14159)\n"
         "(let two:float 3.14159)\n"
         "(defun main:int (x:int y) (main 2i 3))\n" // TODO: shall we? would have re-nameable program input
-        "(defun foo (x:int) (bar 0.5))\n"
-        "(defun bar (x) (foo 1i))\n"
-        "(defun bar_ (x) (foo 1i))\n"
         //"([Test frob{3} foo{1 2 3}] 2 2)"
-        "(/ 7i 4i)"
+        "(defun T (x:int) (* x x))\n"
+        "(T 13i)"
 
         ;
         std::cout << "quatsch code:\n------------\n" << code
