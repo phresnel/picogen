@@ -120,7 +120,7 @@ void tree (phase3::Tree const &tree, std::ostream &os)
         case Type::Integer:   os << tree.integer(); break;
         case Type::Floating:  floating(tree.floating(), os); break;
         case Type::Call:      call(tree, os); break;
-        case Type::Builtin: builtin (tree, os); break;
+        case Type::Builtin:   builtin (tree, os); break;
         default: throw std::runtime_error (std::string("unsupported case '") +
                                            std::to_string((int)tree.type()) +
                                            "' in to_C99::tree()");

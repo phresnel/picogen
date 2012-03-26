@@ -37,7 +37,11 @@ Test::instantiate_ (std::list<StaticParameter> const &params) const
                 }
                 std::cout << '\n';
         }
-        return { [](DynamicArguments const&){return DynamicVariant::Floating(0.234);},
+        return { [](DynamicArguments const &args){
+                        return DynamicVariant::Floating(args[0].floating()*
+                                                        args[1].floating());
+
+                 },
                  Typename::Float,
                  {Typename::Float, Typename::Float}
                };
@@ -49,13 +53,6 @@ Test::instantiate_ (std::list<StaticParameter> const &params) const
 int main () {
         using namespace quatsch::extern_template;
         std::cout << '\n';
-        Test tpl;
-        Instantiation i = tpl.instantiate (StaticParameter::String("foo", "meh!"),
-                                           StaticParameter::Float("frob", 5));
-
-        std::cout << i.function(DynamicArguments()).floating() << std::endl;
-
-        //return 0;
 
         using namespace quatsch::compiler;
         const std::string code =
@@ -65,7 +62,7 @@ int main () {
         "(defun main:int (x:int y) (main 2i 3))\n" // TODO: shall we? would have re-nameable program input
         //"([Test frob{3} foo{1 2 3}] 2 2)"
         "(defun T (x:int) (* x x))\n"
-        "(T 13i)"
+        "([Test frob{1.5}] 13 2)"
 
         ;
         std::cout << "quatsch code:\n------------\n" << code

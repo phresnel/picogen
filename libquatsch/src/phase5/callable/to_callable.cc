@@ -158,7 +158,8 @@ DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
         case Type::Integer:  return DynamicVariant::Integer(tree.integer());
         case Type::Floating: return DynamicVariant::Floating(tree.floating());
         case Type::Call:     return call (tree, args);
-        case Type::Instantiation: break;
+        case Type::Instantiation:
+                             return tree.instantiation().function(args);
         case Type::Builtin:  return builtin (tree, args);
         }
         throw std::runtime_error ("to_callable::exec(): unsupported tree-type");

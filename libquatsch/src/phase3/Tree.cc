@@ -142,4 +142,11 @@ OperandList Tree::builtin_args() const
         return operands_;
 }
 
+extern_template::Instantiation Tree::instantiation() const
+{
+        assert_type (Type::Instantiation, "instantiation() called for non-instantiation");
+        return instantiation_;
+}
+
+
 } } }

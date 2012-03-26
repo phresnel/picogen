@@ -48,6 +48,8 @@ namespace quatsch { namespace compiler { namespace phase3 {
 
                 phase2::BuiltinPtr builtin() const;
                 OperandList builtin_args() const;
+
+                extern_template::Instantiation instantiation() const;
         private:
                 Tree (Type type, Typename etype) :
                         type_(type), expression_type_ (etype) {}
