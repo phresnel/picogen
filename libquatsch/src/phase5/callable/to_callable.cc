@@ -56,7 +56,7 @@ typedef extern_template::DynamicVariant   DynamicVariant;
 typedef extern_template::DynamicArguments DynamicArguments;
 
 
-DynamicVariant exec (DynamicArguments const &args, Tree const &tree);
+DynamicVariant exec (Tree const &tree, DynamicArguments const &args);
 
 template <typename T>
 struct AddOperator {
@@ -79,19 +79,19 @@ struct DivOperator {
 };
 
 template <template <typename> class Operator>
-DynamicVariant accumulate (DynamicArguments const &args, Tree const &tree)
+DynamicVariant accumulate (Tree const &tree, DynamicArguments const &args)
 {
         switch (tree.expression_type()) {
         case Typename::Float: {
                 float sum = Operator<float>().start();
                 for (auto const &op : tree.builtin_args ())
-                        sum = Operator<float>() (sum, exec (args, *op).floating());
+                        sum = Operator<float>() (sum, exec (*op, args).floating());
                 return DynamicVariant::Floating(sum);
         }
         case Typename::Integer: {
                 int sum = Operator<int>().start();
                 for (auto const &op : tree.builtin_args ())
-                        sum = Operator<int>() (sum, exec (args, *op).integer());
+                        sum = Operator<int>() (sum, exec (*op, args).integer());
                 return DynamicVariant::Integer(sum);
         }
         };
@@ -100,15 +100,15 @@ DynamicVariant accumulate (DynamicArguments const &args, Tree const &tree)
 }
 
 template <template <typename> class Operator>
-DynamicVariant binary_op (DynamicArguments const &args, Tree const &tree)
+DynamicVariant binary_op (Tree const &tree, DynamicArguments const &args)
 {
         const auto &builtin_args = tree.builtin_args();
         if (builtin_args.size() != 2)
                 throw std::runtime_error("to_callable::binary_op: not enough or "
                                          "too many arguments");
         auto it = builtin_args.begin();
-        DynamicVariant const lhs = exec (args, **it);
-        DynamicVariant const rhs = exec (args, **(++it));
+        DynamicVariant const lhs = exec (**it, args);
+        DynamicVariant const rhs = exec (**(++it), args);
 
         switch (lhs.type()) {
         case Typename::Float:
@@ -122,34 +122,34 @@ DynamicVariant binary_op (DynamicArguments const &args, Tree const &tree)
         throw std::runtime_error ("unhandled typename in to_callable::binary_op");
 }
 
-DynamicVariant builtin (DynamicArguments const &args, Tree const &tree)
+DynamicVariant builtin (Tree const &tree, DynamicArguments const &args)
 {
         typedef phase2::Builtin Builtin;
 
         phase2::Builtin const &b = *tree.builtin();
         switch (b.type) {
-        case Builtin::Addition:       return accumulate<AddOperator> (args, tree);
-        case Builtin::Subtraction:    return accumulate<SubOperator> (args, tree);
-        case Builtin::Multiplication: return accumulate<MulOperator> (args, tree);
-        case Builtin::Division:       return binary_op<DivOperator> (args, tree);
+        case Builtin::Addition:       return accumulate<AddOperator> (tree, args);
+        case Builtin::Subtraction:    return accumulate<SubOperator> (tree, args);
+        case Builtin::Multiplication: return accumulate<MulOperator> (tree, args);
+        case Builtin::Division:       return binary_op<DivOperator>  (tree, args);
         }
         throw std::runtime_error ("unhandled builtin type in to_callable::builtin");
 }
 
-DynamicVariant call (DynamicArguments const &args, Tree const &tree)
+DynamicVariant call (Tree const &tree, DynamicArguments const &args)
 {
         phase3::Defun const &def = *tree.call_callee();
 
         DynamicArguments call_arg_results;
         for (auto const t : tree.call_args()) {
-                DynamicVariant const &res = exec (args, *t);
+                DynamicVariant const &res = exec (*t, args);
                 call_arg_results.push_back (res);
         }
 
-        return exec (call_arg_results, *def.body());
+        return exec (*def.body(), call_arg_results);
 }
 
-DynamicVariant exec (DynamicArguments const &args, Tree const &tree)
+DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
 {
         typedef Tree::Type Type;
 
@@ -157,10 +157,10 @@ DynamicVariant exec (DynamicArguments const &args, Tree const &tree)
         case Type::StackRef: return args[tree.stackref_index()];
         case Type::Integer:  return DynamicVariant::Integer(tree.integer());
         case Type::Floating: return DynamicVariant::Floating(tree.floating());
-        case Type::Call:     return call (args, tree);
+        case Type::Call:     return call (tree, args);
         case Type::TemplateCall:  break;
         case Type::Instantiation: break;
-        case Type::Builtin:  return builtin (args, tree);
+        case Type::Builtin:  return builtin (tree, args);
         }
         throw std::runtime_error ("to_callable::exec(): unsupported tree-type");
 }
@@ -171,9 +171,9 @@ extern_function to_callable (phase3::Program const &prog)
         using extern_template::DynamicVariant;
 
         //Compiler c (prog);
-        DynamicVariant result = exec({DynamicVariant::Floating(0.5),
-                                      DynamicVariant::Floating(0.3)},
-                                     *prog.main()
+        DynamicVariant result = exec(*prog.main(),
+                                     {DynamicVariant::Floating(0.5),
+                                      DynamicVariant::Floating(0.3)}
                                     );
 
         switch (result.type()) {
