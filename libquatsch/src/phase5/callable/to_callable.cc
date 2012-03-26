@@ -7,49 +7,6 @@
 
 namespace quatsch { namespace compiler { namespace phase5 {
 
-/*
-class ExecTree {
-public:
-        virtual ~ExecTree() {}
-};
-
-class Compiler {
-        typedef phase3::Tree Tree;
-
-public:
-        Compiler (phase3::Program const &prog)
-                : prog_(prog)
-        {
-                main ();
-        }
-
-private:
-
-        void main ()
-        {
-                tree (*prog_.main ());
-        }
-
-        void tree (Tree const &tree)
-        {
-                typedef Tree::Type Type;
-
-                switch (tree.type()) {
-                case Type::StackRef: break;
-                case Type::Integer: break;
-                case Type::Floating: break;
-                case Type::Call: break;
-                case Type::TemplateCall: break;
-                case Type::Instantiation: break;
-                case Type::Builtin: break;
-                }
-        }
-
-private:
-        phase3::Program const &prog_;
-
-};*/
-
 typedef phase3::Tree    Tree;
 typedef phase3::TreePtr TreePtr;
 typedef extern_template::DynamicVariant   DynamicVariant;
@@ -57,6 +14,8 @@ typedef extern_template::DynamicArguments DynamicArguments;
 
 
 DynamicVariant exec (Tree const &tree, DynamicArguments const &args);
+
+
 
 template <typename T>
 struct AddOperator {
@@ -78,6 +37,8 @@ struct DivOperator {
         T operator () (T lhs, T rhs) const { return lhs / rhs; }
 };
 
+
+
 template <template <typename> class Operator>
 DynamicVariant accumulate (Tree const &tree, DynamicArguments const &args)
 {
@@ -98,6 +59,8 @@ DynamicVariant accumulate (Tree const &tree, DynamicArguments const &args)
 
         throw std::runtime_error("unhandled case in to_callable:accumulate");
 }
+
+
 
 template <template <typename> class Operator>
 DynamicVariant binary_op (Tree const &tree, DynamicArguments const &args)
@@ -122,6 +85,8 @@ DynamicVariant binary_op (Tree const &tree, DynamicArguments const &args)
         throw std::runtime_error ("unhandled typename in to_callable::binary_op");
 }
 
+
+
 DynamicVariant builtin (Tree const &tree, DynamicArguments const &args)
 {
         typedef phase2::Builtin Builtin;
@@ -136,6 +101,8 @@ DynamicVariant builtin (Tree const &tree, DynamicArguments const &args)
         throw std::runtime_error ("unhandled builtin type in to_callable::builtin");
 }
 
+
+
 DynamicVariant call (Tree const &tree, DynamicArguments const &args)
 {
         phase3::Defun const &def = *tree.call_callee();
@@ -149,21 +116,24 @@ DynamicVariant call (Tree const &tree, DynamicArguments const &args)
         return exec (*def.body(), call_arg_results);
 }
 
+
+
 DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
 {
         typedef Tree::Type Type;
 
         switch (tree.type()) {
-        case Type::StackRef: return args[tree.stackref_index()];
-        case Type::Integer:  return DynamicVariant::Integer(tree.integer());
-        case Type::Floating: return DynamicVariant::Floating(tree.floating());
-        case Type::Call:     return call (tree, args);
-        case Type::Instantiation:
-                             return tree.instantiation().function(args);
-        case Type::Builtin:  return builtin (tree, args);
+        case Type::StackRef:     return args[tree.stackref_index()];
+        case Type::Integer:      return DynamicVariant::Integer(tree.integer());
+        case Type::Floating:     return DynamicVariant::Floating(tree.floating());
+        case Type::Call:         return call (tree, args);
+        case Type::Instantiation:return tree.instantiation().function(args);
+        case Type::Builtin:      return builtin (tree, args);
         }
         throw std::runtime_error ("to_callable::exec(): unsupported tree-type");
 }
+
+
 
 extern_function to_callable (phase3::Program const &prog)
 {
@@ -171,7 +141,13 @@ extern_function to_callable (phase3::Program const &prog)
         using extern_template::DynamicVariant;
 
         //Compiler c (prog);
-        DynamicVariant result = exec(*prog.main(),
+
+        auto ret = [prog](DynamicArguments const &args)->DynamicVariant {
+                return exec(*prog.main(),
+                            args);
+        };
+        return ret;
+        /*DynamicVariant result = exec(*prog.main(),
                                      {DynamicVariant::Floating(0.5),
                                       DynamicVariant::Floating(0.3)}
                                     );
@@ -183,7 +159,7 @@ extern_function to_callable (phase3::Program const &prog)
 
         return [] (DynamicArguments const &da) {
                 return DynamicVariant::Floating (0.33);
-        };
+        };*/
 }
 
 } } }
