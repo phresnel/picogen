@@ -15,8 +15,9 @@ public:
 
         float floating() const;
         int   integer () const;
+
+        Typename type() const;
 private:
-        // No need for a public type() function. The call should be verified already.
         DynamicVariant (Typename type_);
 
         Typename type_;

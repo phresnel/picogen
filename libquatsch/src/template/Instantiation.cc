@@ -23,6 +23,11 @@ DynamicVariant DynamicVariant::Integer (int value)
         return ret;
 }
 
+Typename DynamicVariant::type() const
+{
+        return type_;
+}
+
 float DynamicVariant::floating() const
 {
         if (type_ != Typename::Float)

@@ -67,7 +67,7 @@ int main () {
         "(defun bar (x) (foo 1i))\n"
         "(defun bar_ (x) (foo 1i))\n"
         //"([Test frob{3} foo{1 2 3}] 2 2)"
-        "12.34"
+        "(/ 7i 4i)"
 
         ;
         std::cout << "quatsch code:\n------------\n" << code
