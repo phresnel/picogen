@@ -158,7 +158,6 @@ DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
         case Type::Integer:  return DynamicVariant::Integer(tree.integer());
         case Type::Floating: return DynamicVariant::Floating(tree.floating());
         case Type::Call:     return call (tree, args);
-        case Type::TemplateCall:  break;
         case Type::Instantiation: break;
         case Type::Builtin:  return builtin (tree, args);
         }

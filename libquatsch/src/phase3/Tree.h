@@ -23,7 +23,6 @@ namespace quatsch { namespace compiler { namespace phase3 {
                         StackRef,
                         Integer, Floating,
                         Call,
-                        TemplateCall,
                         Instantiation,
                         Builtin     // e.g. '*'
                 };
