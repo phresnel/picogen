@@ -142,7 +142,7 @@ extern_function to_callable (phase3::Program const &prog)
 
         //Compiler c (prog);
 
-        auto ret = [prog](DynamicArguments const &args)->DynamicVariant {
+        auto ret = [prog](DynamicArguments const &args) -> DynamicVariant {
                 return exec(*prog.main(),
                             args);
         };

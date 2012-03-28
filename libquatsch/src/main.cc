@@ -61,8 +61,8 @@ int main () {
         "(let two:float 3.14159)\n"
         "(defun main:int (x:int y) (main 2i 3))\n" // TODO: shall we? would have re-nameable program input
         //"([Test frob{3} foo{1 2 3}] 2 2)"
-        "(defun T (x:int) (* x x))\n"
-        "([Test frob{1.5}] 13 2)"
+        "(defun T (x:int) (/ y y))\n"
+        "([Test frob{1.5}] x y)"
 
         ;
         std::cout << "quatsch code:\n------------\n" << code

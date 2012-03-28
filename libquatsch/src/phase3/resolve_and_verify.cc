@@ -13,6 +13,7 @@
 #include <set>
 #include <algorithm>
 #include <cctype>
+#include <sstream>
 
 namespace quatsch { namespace compiler { namespace phase3 {
 
@@ -416,18 +417,32 @@ TreePtr resolve_builtin (std::list<DefunPtr> const & defuns,
                          ErrorState &err,
                          SymbolTable &tab)
 {
-        /*struct BuiltinDescription {
-                bool commutative;
-        };
-        enum */
-        // find builtin definition
-        // check tree validity
-        // resolve operands
-        phase2::BuiltinPtr bt = tree->builtin();//builtin_type_from_string (tree->builtin_operator());
+        phase2::BuiltinPtr bt = tree->builtin();
         OperandList ops;
         for (auto it : tree->builtin_operands ()) {
                 TreePtr op = resolve_tree (defuns, templates, it, err, tab);
                 if (op) ops.push_back(op);
+        }
+        if (ops.size() < bt->min_operand_count
+            || ops.size() > bt->max_operand_count)
+        {
+                std::stringstream ss;
+                ss << "Builtin operator '" << bt->mnemonic_info << "' used "
+                   << "with " << ops.size() << " operand(s), but requires ";
+
+                if (bt->has_exact_operand_count()) {
+                        ss << bt->min_operand_count << " operand(s)";
+                }
+                else if (bt->has_upper_limit()) {
+                        ss << "between " << bt->min_operand_count
+                           << " and " << bt->max_operand_count << " operand(s)";
+                }
+                else {
+                        ss << "at least " << bt->min_operand_count
+                           << " operand(s).";
+                }
+                err.post_error (ss.str(), tree->code_begin(), tree->code_end());
+                return TreePtr();
         }
         return Tree::Builtin (bt, ops);
 }
@@ -518,7 +533,6 @@ void resolve_defun (std::list<DefunPtr> const &defuns,
                 }
                 else tab.declare_argument (arg);
         }
-
         TreePtr body = resolve_tree (defuns, templates, defun.body(), err, tab);
         out->set_body (body);
 }
@@ -673,6 +687,11 @@ ProgramPtr resolve_and_verify (
 
         ErrorState err;
         SymbolTable tab;
+        tab.declare_argument (phase2::Argument("x", Typename::Float,
+                                               prog.main()->code_begin(), prog.main()->code_end()));
+        tab.declare_argument (phase2::Argument("y", Typename::Float,
+                                               prog.main()->code_begin(), prog.main()->code_end()));
+
         check_for_multiple_defuns (prog, err);
         evaluate_constants (prog, tab, err);
         std::list<DefunPtr> defuns = forward_declare_defuns (prog);
