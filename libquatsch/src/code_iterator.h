@@ -4,7 +4,7 @@
 #include <string>
 #include <iosfwd>
 
-namespace quatsch { namespace compiler {
+namespace quatsch {
 
         // Internal use only. This is not necessarily compatible to STL iterators.
         class code_iterator
@@ -68,6 +68,6 @@ namespace quatsch { namespace compiler {
 
         std::ostream& operator<< (std::ostream& os, code_iterator const &ci);
 
-} }
+}
 
 #endif // CODE_ITERATOR_H_20120118

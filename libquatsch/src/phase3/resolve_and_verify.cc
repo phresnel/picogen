@@ -19,7 +19,6 @@ namespace quatsch { namespace compiler { namespace phase3 {
 
 using boost::optional;
 
-class ErrorState;
 class SymbolTable;
 
 TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
@@ -27,34 +26,6 @@ TreePtr resolve_tree (std::list<phase3::DefunPtr> const & defuns,
                       phase2::TreePtr tree,
                       ErrorState &err,
                       SymbolTable &tab);
-
-class ErrorState {
-public:
-        /*
-        typedef boost::optional<code_iterator> optional_code_iterator;// just as an interim solution
-        typedef std::pair<std::string, optional_code_iterator> message_position_pair;
-        typedef std::list<message_position_pair>::const_iterator const_iterator;
-        */
-        typedef std::pair<code_iterator, code_iterator> code_range;
-        typedef std::pair<std::string, code_range> message_code_range_pair;
-        typedef std::list<message_code_range_pair>::const_iterator const_iterator;
-
-        bool has_errors() const { return !errors_.empty(); }
-
-        void post_error (std::string const &msg,
-                         code_iterator from, code_iterator to)
-        {
-                errors_.emplace_back (msg, code_range{from, to});
-        }
-
-        //std::list<std::string> errors() const { return errors_; }
-        const_iterator begin() const { return errors_.begin(); }
-        const_iterator end  () const { return errors_.end  (); }
-private:
-        std::list<message_code_range_pair> errors_;
-};
-ErrorState::const_iterator begin (ErrorState const& e) { return e.begin(); }
-ErrorState::const_iterator end   (ErrorState const& e) { return e.end  (); }
 
 class Symbol {
 public:
@@ -682,10 +653,9 @@ void check_for_multiple_defuns (phase2::Program const &prog, ErrorState &err)
 
 ProgramPtr resolve_and_verify (
         phase2::Program const &prog,
-        std::list<extern_template::TemplatePtr> const &templates)
+        std::list<extern_template::TemplatePtr> const &templates,
+        ErrorState &err)
 {
-
-        ErrorState err;
         SymbolTable tab;
         tab.declare_argument (phase2::Argument("x", Typename::Float,
                                                prog.main()->code_begin(), prog.main()->code_end()));

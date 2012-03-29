@@ -9,6 +9,7 @@
 #include "phase5/callable/to_callable.h"
 #include "Template.h"
 
+#include "ErrorState.h"
 
 namespace quatsch { namespace extern_template {
 
@@ -56,7 +57,8 @@ compile_phase3_program (std::string const &code,
                 return 0;
         }
 
-        phase3::ProgramPtr P3 = phase3::resolve_and_verify (*P2, templates);
+        quatsch::ErrorState err;
+        phase3::ProgramPtr P3 = phase3::resolve_and_verify (*P2, templates, err);
         if (!P3) {
                 std::cerr << "verficiation/resolution error" << std::endl;
                 return 0;
