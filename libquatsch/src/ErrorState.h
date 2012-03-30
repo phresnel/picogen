@@ -4,6 +4,7 @@
 #include "code_iterator.h"
 #include <list>
 #include <utility>
+#include <iosfwd>
 
 namespace quatsch {
 
@@ -12,6 +13,10 @@ public:
         typedef std::pair<code_iterator, code_iterator> code_range;
         typedef std::pair<std::string, code_range> message_code_range_pair;
         typedef std::list<message_code_range_pair>::const_iterator const_iterator;
+
+        explicit operator bool() const {
+                return has_errors();
+        }
 
         bool has_errors() const;
         void post_error (std::string const &msg,
@@ -24,6 +29,8 @@ private:
 };
 ErrorState::const_iterator begin (ErrorState const& e) ;
 ErrorState::const_iterator end   (ErrorState const& e) ;
+
+void print_errors (ErrorState const &err, std::ostream &os);
 
 }
 

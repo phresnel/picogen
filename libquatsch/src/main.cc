@@ -1,5 +1,6 @@
 #include <iostream>
 #include <deque>
+#include <stdexcept>
 #include <boost/optional.hpp>
 
 #include "phase1/tokenize.h"
@@ -44,20 +45,28 @@ Test::instantiate_ (std::list<StaticParameter> const &params) const
 
 quatsch::compiler::phase3::ProgramPtr
 compile_phase3_program (std::string const &code,
-                        std::list<quatsch::extern_template::TemplatePtr> const & templates
+                        std::list<quatsch::extern_template::TemplatePtr> const & templates,
+                        quatsch::ErrorState &err
                         )
 {
         using namespace quatsch::extern_template;
         using namespace quatsch::compiler;
 
-        phase1::Toque toks = phase1::tokenize (code.begin(), code.end());
+        phase1::Toque toks = phase1::tokenize (code.begin(), code.end(), err);
+        if (err.has_errors()) {
+                return 0;
+        }
+        if (toks.empty()) {
+                err.post_error ("cannot compile an empty program\n",
+                                code.begin(), code.end());
+                return 0;
+        }
         phase2::ProgramPtr P2 = phase2::parse(toks);
         if (!P2) {
                 std::cerr << "parse error" << std::endl;
                 return 0;
         }
 
-        quatsch::ErrorState err;
         phase3::ProgramPtr P3 = phase3::resolve_and_verify (*P2, templates, err);
         if (!P3) {
                 std::cerr << "verficiation/resolution error" << std::endl;
@@ -71,10 +80,16 @@ std::function<quatsch::extern_template::DynamicVariant(
                 quatsch::extern_template::DynamicArguments const&
               )>
 compile_callable (std::string const &code,
-                  std::list<quatsch::extern_template::TemplatePtr> const & templates)
+                  std::list<quatsch::extern_template::TemplatePtr> const & templates,
+                  quatsch::ErrorState &err)
 {
         using namespace quatsch::compiler;
-        phase3::ProgramPtr P3 = compile_phase3_program (code, templates);
+        phase3::ProgramPtr P3 = compile_phase3_program (code, templates, err);
+        if (err.has_errors()) {
+                return [] (quatsch::extern_template::DynamicArguments const&)
+                       -> quatsch::extern_template::DynamicVariant
+                        { throw std::runtime_error ("invalid quatsch program"); };
+        }
         return phase5::to_callable (*P3);
 }
 
@@ -83,22 +98,31 @@ int main () {
         using namespace quatsch;
         namespace qe = quatsch::extern_template;
 
+
+        quatsch::ErrorState err;
+
         std::list<qe::TemplatePtr> templates;
         templates.emplace_back (new qe::Test());
         auto fun = compile_callable (
-                "\n"
                 "(let pi:float 3.14159)\n"
                 "(let two:float 3.14159)\n"
                 "(defun main:int (x:int y) (main 2i 3))\n"
                 //"([Test frob{3} foo{1 2 3}] 2 2)"
                 "(defun T (x:int) (/ y y))\n"
                 "([Test frob{1.5}] x y)",
-                templates
+                templates,
+                err
         );
+        if (err) {
+                print_errors (err, std::cerr);
+                return EXIT_FAILURE;
+        }
 
         qe::DynamicArguments args ({qe::DynamicVariant::Floating(0.5),
                                     qe::DynamicVariant::Floating(0.5)});
         std::cout << fun (args).floating() << std::endl;
+
+        return EXIT_SUCCESS;
 }
 
 

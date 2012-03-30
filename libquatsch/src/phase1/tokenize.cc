@@ -131,7 +131,7 @@ namespace {
         }
 }
 
-Toque tokenize (code_iterator it, code_iterator end)
+Toque tokenize (code_iterator it, code_iterator end, ErrorState &err)
 {
         Toque ret;
         while (it != end) {
@@ -210,7 +210,18 @@ Toque tokenize (code_iterator it, code_iterator end)
                         ret.emplace (it, *opt, Token::Type::Floating);
                         it = *opt;
                 }
-                else throw tokenization_error();
+                else {
+                        std::stringstream ss;
+                        ss << "tokenization error: unknown sequence \"";
+
+                        auto a = it.str_iter(), b = end.str_iter();
+                        if (distance (a, b) < 10) ss << std::string(a,b);
+                        else ss << std::string(a,a+10) << "...";
+                        ss << "\"";
+
+                        err.post_error(ss.str(), it, end);
+                        return ret;
+                };
         }
         return ret;
 }

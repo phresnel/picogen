@@ -58,75 +58,6 @@ bool operator!= (Symbol const &lhs, std::string const& rhs) {
         return !(lhs == rhs);
 }
 
-/*
-class SymbolTable {
-public:
-        typedef std::vector<Symbol>::iterator       iterator;
-        typedef std::vector<Symbol>::const_iterator const_iterator;
-
-        SymbolTable() : stack_(1) {}
-
-        const_iterator begin () const { return stack_.back().begin(); }
-        const_iterator end   () const { return stack_.back().end();   }
-
-        void push_frame() {
-                frame_t &curr = stack_.back();
-                stack_.push_back (curr);
-                stackvar_index_.push_back (0);
-        }
-        void pop_frame() {
-                stackvar_index_.pop_back();
-                stack_.pop_back();
-        }
-
-        void declare_symbol (Symbol sym) {
-                if (declared (sym.name()))
-                        throw std::runtime_error("Symbol::declare_symbol(): "
-                                                 "\"" + sym.name() + "\" already "
-                                                 "defined");
-                if (sym.type() == Symbol::Argument) {
-                        sym.set_argument_index(stackvar_index_.back()++);
-                }
-                stack_.back().push_back (sym);
-        }
-
-        void declare_symbol (Symbol::Type t, std::string const& name) {
-                declare_symbol (Symbol (t, name));
-        }
-
-        Symbol symbol (std::string const &name) {
-                for (auto sym : stack_.back())
-                        if (sym == name)  return sym;
-                throw std::runtime_error("Symbols::symbol(): unknown symbol \""
-                                         + name + "\"");
-        }
-
-        bool declared (std::string const &name) const {
-                for (auto sym : stack_.back())
-                        if (sym == name) return true;
-                return false;
-        }
-
-private:
-        typedef std::vector<Symbol> frame_t;
-        typedef std::vector<frame_t> stack_t;
-
-        std::vector<int> stackvar_index_;
-        stack_t stack_;
-};
-class scoped_push_frame {
-public:
-        scoped_push_frame (SymbolTable &st) : st(st) { st.push_frame(); }
-        ~scoped_push_frame() { st.pop_frame(); }
-
-        scoped_push_frame ()                                    = delete;
-        scoped_push_frame (scoped_push_frame const &)           = delete;
-        scoped_push_frame operator= (scoped_push_frame const &) = delete;
-private:
-        SymbolTable &st;
-};
-*/
-
 class SymbolTable {
 public:
         SymbolTable            (const SymbolTable &) = delete;
@@ -626,18 +557,6 @@ void evaluate_constants (phase2::Program const &prog, SymbolTable &tab,
 
 
 
-void print_errors (ErrorState const &err)
-{
-        for (auto e : err) {
-                std::cerr << "error:";
-                ErrorState::message_code_range_pair const &mcr = e;
-                ErrorState::code_range const &cr = mcr.second;
-                std::cerr << cr.first << ":" << e.first << '\n';
-        }
-}
-
-
-
 void check_for_multiple_defuns (phase2::Program const &prog, ErrorState &err)
 {
         std::set<std::string> names;
@@ -668,7 +587,6 @@ ProgramPtr resolve_and_verify (
         resolve_defuns (prog, templates, err, tab, defuns);
         TreePtr main = resolve_tree (defuns, templates, prog.main(), err, tab);
 
-        print_errors (err);
         if (err.has_errors()) return ProgramPtr();
         return ProgramPtr (new Program (main, defuns));
 }

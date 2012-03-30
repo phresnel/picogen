@@ -1,4 +1,5 @@
 #include "ErrorState.h"
+#include <ostream>
 
 namespace quatsch {
 
@@ -33,5 +34,16 @@ ErrorState::const_iterator end   (ErrorState const& e)
 {
         return e.end();
 }
+
+void print_errors (ErrorState const &err, std::ostream &os)
+{
+        for (auto e : err) {
+                os << "error:";
+                ErrorState::message_code_range_pair const &mcr = e;
+                ErrorState::code_range const &cr = mcr.second;
+                os << cr.first << ":" << e.first << '\n';
+        }
+}
+
 
 }
