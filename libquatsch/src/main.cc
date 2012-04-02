@@ -76,8 +76,8 @@ compile_phase3_program (std::string const &code,
 }
 
 
-std::function<quatsch::extern_template::DynamicVariant(
-                quatsch::extern_template::DynamicArguments const&
+std::function<quatsch::DynamicVariant(
+                quatsch::DynamicArguments const&
               )>
 compile_callable (std::string const &code,
                   std::list<quatsch::extern_template::TemplatePtr> const & templates,
@@ -86,8 +86,8 @@ compile_callable (std::string const &code,
         using namespace quatsch::compiler;
         phase3::ProgramPtr P3 = compile_phase3_program (code, templates, err);
         if (err.has_errors()) {
-                return [] (quatsch::extern_template::DynamicArguments const&)
-                       -> quatsch::extern_template::DynamicVariant
+                return [] (quatsch::DynamicArguments const&)
+                       -> quatsch::DynamicVariant
                         { throw std::runtime_error ("invalid quatsch program"); };
         }
         return phase5::to_callable (*P3);
@@ -118,8 +118,8 @@ int main () {
                 return EXIT_FAILURE;
         }
 
-        qe::DynamicArguments args ({qe::DynamicVariant::Floating(0.5),
-                                    qe::DynamicVariant::Floating(0.5)});
+        DynamicArguments args ({DynamicVariant::Floating(0.5),
+                                DynamicVariant::Floating(0.5)});
         std::cout << fun (args).floating() << std::endl;
 
         return EXIT_SUCCESS;

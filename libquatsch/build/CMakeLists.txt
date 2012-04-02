@@ -11,6 +11,10 @@ include_directories (${src_dir})
 
 # -- sources ------------------------------------------------------------------
 set (sources ${sources}
+        ${src_dir}/quatsch.h
+        ${src_dir}/quatsch_function.h
+        ${src_dir}/DynamicVariant.h  ${src_dir}/DynamicVariant.cc
+
         ${src_dir}/main.cc
         ${src_dir}/code_iterator.h   ${src_dir}/code_iterator.cc
         ${src_dir}/quatsch_except.h
@@ -28,6 +32,8 @@ set (sources ${sources}
         ${src_dir}/template/StaticArgument.cc
         ${src_dir}/template/StaticArgumentMeta.h
         ${src_dir}/template/StaticArgumentMeta.cc
+        ${src_dir}/template/DynamicArgumentsMeta.h
+        ${src_dir}/template/DynamicArgumentsMeta.cc
         ${src_dir}/template/Instantiation.h
         ${src_dir}/template/Instantiation.cc
 

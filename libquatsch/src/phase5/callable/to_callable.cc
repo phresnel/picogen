@@ -1,4 +1,5 @@
 
+#include "DynamicVariant.h"
 #include "to_callable.h"
 #include "phase3/Defun.h"
 #include <stdexcept>
@@ -9,8 +10,8 @@ namespace quatsch { namespace compiler { namespace phase5 {
 
 typedef phase3::Tree    Tree;
 typedef phase3::TreePtr TreePtr;
-typedef extern_template::DynamicVariant   DynamicVariant;
-typedef extern_template::DynamicArguments DynamicArguments;
+typedef DynamicVariant   DynamicVariant;
+typedef DynamicArguments DynamicArguments;
 
 
 DynamicVariant exec (Tree const &tree, DynamicArguments const &args);
@@ -135,13 +136,8 @@ DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
 
 
 
-extern_function to_callable (phase3::Program const &prog)
+quatsch_function to_callable (phase3::Program const &prog)
 {
-        using extern_template::DynamicArguments;
-        using extern_template::DynamicVariant;
-
-        //Compiler c (prog);
-
         auto ret = [prog](DynamicArguments const &args) -> DynamicVariant {
                 return exec(*prog.main(),
                             args);

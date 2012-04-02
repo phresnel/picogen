@@ -10,6 +10,7 @@
 #include "template/StaticArgumentMeta.h"
 #include "template/StaticArgument.h"
 #include "template/Instantiation.h"
+#include "DynamicVariant.h"
 
 namespace quatsch { namespace extern_template {
 
