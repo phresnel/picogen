@@ -35,7 +35,6 @@ set (sources ${sources}
         ${src_dir}/template/DynamicArgumentsMeta.h
         ${src_dir}/template/DynamicArgumentsMeta.cc
         ${src_dir}/template/Instantiation.h
-        ${src_dir}/template/Instantiation.cc
 
         ${src_dir}/phase1/Token.h    ${src_dir}/phase1/Token.cc
         ${src_dir}/phase1/Toque.h    ${src_dir}/phase1/Toque.cc
