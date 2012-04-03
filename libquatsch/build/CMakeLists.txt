@@ -61,6 +61,9 @@ set (sources ${sources}
         ${src_dir}/phase5/callable/to_callable.h
         ${src_dir}/phase5/callable/to_callable.cc
 
+        ${src_dir}/compile_phase3_program.h
+        ${src_dir}/compile_phase3_program.cc
+        ${src_dir}/compile.h ${src_dir}/compile.cc
 )
 
 

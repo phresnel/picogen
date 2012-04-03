@@ -138,9 +138,10 @@ DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
 
 quatsch_function to_callable (phase3::Program const &prog)
 {
+        //const phase3::Program &prog = *pprog;
+
         auto ret = [prog](DynamicArguments const &args) -> DynamicVariant {
-                return exec(*prog.main(),
-                            args);
+                return exec(*prog.main(), args);
         };
         return ret;
         /*DynamicVariant result = exec(*prog.main(),
