@@ -1,14 +1,6 @@
 #include <iostream>
-#include <deque>
-#include <stdexcept>
-#include <boost/optional.hpp>
-
+#include "quatsch.h"
 #include "phase5/callable/to_callable.h"
-#include "Template.h"
-
-#include "compile.h"
-
-#include "ErrorState.h"
 
 namespace quatsch { namespace extern_template {
 
