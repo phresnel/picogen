@@ -1,5 +1,4 @@
 #include "Token.h"
-#include <ostream>
 #include <stdexcept>
 
 namespace quatsch { namespace compiler { namespace phase1 {

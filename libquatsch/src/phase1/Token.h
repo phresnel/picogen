@@ -2,13 +2,9 @@
 #define TOKEN_H_INCLUDED_20120125
 
 #include "code_iterator.h"
-#include <iosfwd>
-#include <boost/optional.hpp>
 #include <boost/lexical_cast.hpp>
 
 namespace quatsch { namespace compiler { namespace phase1 {
-
-        using boost::optional;
 
         class Token {
         public:

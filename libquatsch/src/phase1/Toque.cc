@@ -1,7 +1,5 @@
 #include "Toque.h"
-#include <ostream>
 #include <stdexcept>
-#include <iostream>
 
 namespace quatsch { namespace compiler { namespace phase1 {
 

@@ -3,7 +3,6 @@
 
 #include "Token.h"
 #include <deque>
-#include <iosfwd>
 #include <boost/optional.hpp>
 #include <initializer_list>
 
