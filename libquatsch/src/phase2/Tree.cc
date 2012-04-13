@@ -5,7 +5,6 @@
 
 namespace quatsch { namespace compiler { namespace phase2 {
 
-// Constructors.
 Tree::Tree (code_iterator from, code_iterator to)
         : from_(from), to_(to)
 {

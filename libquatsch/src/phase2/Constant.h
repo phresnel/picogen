@@ -8,9 +8,9 @@
 namespace quatsch { namespace compiler { namespace phase2 {
 
 // A constant with a to-be-verified constexpr.
-
 class Constant;
 typedef std::shared_ptr<Constant> ConstantPtr;
+
 class Constant {
 public:
         enum class Type {
@@ -27,8 +27,6 @@ public:
         Type type() const;
 
         TreePtr expression() const;
-//        int   integer () const;
-//        float floating() const;
 
         code_iterator code_begin() const;
         code_iterator code_end  () const;
@@ -43,8 +41,6 @@ private:
         std::string name_;
         TreePtr expression_;
         code_iterator code_begin_, code_end_;
-        //int integer_;
-        //float floating_;
 };
 
 } } }

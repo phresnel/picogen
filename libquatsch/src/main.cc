@@ -33,7 +33,6 @@ Test::instantiate_ (std::list<StaticParameter> const &params) const
 } }
 
 
-
 int main () {
         using namespace quatsch;
         namespace qe = quatsch::extern_template;

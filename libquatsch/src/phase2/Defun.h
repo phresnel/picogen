@@ -37,9 +37,10 @@ private:
 
         code_iterator code_begin_, code_end_;
 };
+
 typedef std::shared_ptr<Defun> DefunPtr;
 
-std::ostream& operator<< (std::ostream &os, Defun const&);
+
 } } }
 
 #endif // DEFUN_H_INCLUDED_20120125
