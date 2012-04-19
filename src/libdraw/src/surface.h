@@ -5,7 +5,7 @@
 #include <vector>
 #include <stdexcept>
 
-namespace image {
+namespace draw {
 
 
 template <typename Pixel, typename Indexer=indexer::Classic>

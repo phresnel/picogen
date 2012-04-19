@@ -1,7 +1,7 @@
 #ifndef INDEXER_H_20120413
 #define INDEXER_H_20120413
 
-namespace image { namespace indexer {
+namespace draw { namespace indexer {
         struct Classic
         {
                 Classic() = delete;

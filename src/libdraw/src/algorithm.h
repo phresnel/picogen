@@ -1,7 +1,7 @@
 #ifndef ALGORITHM_H_20120413
 #define ALGORITHM_H_20120413
 
-namespace image {
+namespace draw {
 
         // For each pixel P, set P = f(P).
         // fun shall be pure.
