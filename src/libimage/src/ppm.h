@@ -1,11 +1,15 @@
+#ifndef PPM_H_INCLUDED_20120419
+#define PPM_H_INCLUDED_20120419
+
 #include <ostream>
 #include <stdexcept>
 #include <tuple>
 
-namespace ppm {
+namespace image {
 
 // PixelFun: p(x,y) -> tuple<float,float,float>{[0..1), [0..1), [0..1)}
 template <typename PixelFun>
+inline
 void write_ppm (std::ostream &os, int width, int height, PixelFun p)
 {
         // Example from wikipedia:
@@ -46,21 +50,4 @@ void write_ppm (std::ostream &os, int width, int height, PixelFun p)
 
 }
 
-#include <iostream>
-#include <vector>
-int main ()
-{
-        struct rgb {
-                float r,g,b;
-                rgb (float r, float g, float b) : r(r), g(g), b(b) {}
-                rgb() = default;
-        };
-        std::vector<rgb> img(3*3);
-        img[0 + 0] = rgb(0,0,0); img[0 + 1] = rgb(0,0,0.5); img[0 + 2] = rgb(0,0,1);
-        img[3 + 0] = rgb(0.5,0,0); img[6 + 1] = rgb(0.5,0,0.5); img[3 + 2] = rgb(0.5,0,1);
-        img[6 + 0] = rgb(1,0,0); img[6 + 1] = rgb(1,0,0.5); img[6 + 2] = rgb(1,0,1);
-
-        ppm::write_ppm (std::cout, 3, 3,
-                        [&img] (int x, int y) { auto const &rgb =  img[y*3 + x];
-                                                return std::make_tuple(rgb.r, rgb.g, rgb.b); });
-}
+#endif // PPM_H_INCLUDED_20120419

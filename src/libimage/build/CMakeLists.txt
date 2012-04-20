@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (libppm)
+project (libimage)
 
 if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         add_definitions (--std=c++0x -O3 -Wall -Wextra -D__STDC_LIMIT_MACROS)
@@ -11,6 +11,7 @@ include_directories (${src_dir})
 
 # -- sources ------------------------------------------------------------------
 set (sources ${sources}
+        ${src_dir}/ppm.h
 )
 
 set (sources_test
