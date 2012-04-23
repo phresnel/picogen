@@ -1,0 +1,6 @@
+#ifndef COLOR_H_INCLUDED_20120420
+#define COLOR_H_INCLUDED_20120420
+
+#include "basic_rgb.h"
+
+#endif // COLOR_H_INCLUDED_20120420
