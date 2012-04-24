@@ -3,6 +3,7 @@ build/CMakeFiles
 build/CMakeLists.txt.user
 build/Makefile
 build/cmake_install.cmake
-build/quac
-build/libquatsch.cbp
+bin/quac
+bin/libquatsch.a
+bin/libquatsch.cbp
 
