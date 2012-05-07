@@ -14,6 +14,7 @@ compile (std::string const &code,
 {
         using namespace quatsch::compiler;
         phase3::ProgramPtr P3 = compile_phase3_program (code, templates, err);
+
         if (err.has_errors()) {
                 return [] (quatsch::DynamicArguments const&)
                        -> quatsch::DynamicVariant

@@ -273,7 +273,6 @@ TreePtr resolve_call (std::list<phase3::DefunPtr> const & defuns,
                       SymbolTable &tab)
 {
         phase3::DefunPtr dp = find_p3_defun (defuns, tree->call_callee());
-        std::cout << tree->call_callee() << std::endl;
         if (!dp) {
                 err.post_error ("unresolved function call to \""
                                 + tree->call_callee() + "\"",
@@ -436,6 +435,14 @@ void resolve_defun (std::list<DefunPtr> const &defuns,
                 else tab.declare_argument (arg);
         }
         TreePtr body = resolve_tree (defuns, templates, defun.body(), err, tab);
+
+        if (defun.return_type() != body->expression_type()) {
+                err.post_error ("function '" + defun.name() + "' declared with return type "
+                                + to_string (defun.return_type()) + ", but expression yields "
+                                + to_string (body->expression_type()),
+                                defun.code_begin(), defun.code_end());
+        }
+
         out->set_body (body);
 }
 

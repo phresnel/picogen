@@ -9,15 +9,6 @@ namespace quatsch { namespace compiler { namespace phase5 {
 using phase3::Program;
 void tree (phase3::Tree const &, std::ostream &);
 
-std::string to_string (Typename t)
-{
-        switch (t) {
-        case Typename::Integer: return "int";
-        case Typename::Float: return "float";
-        }
-        throw std::runtime_error("unhandled case in to_C99.cc:to_string(Typename)");
-}
-
 void argument (phase2::Argument const &arg, std::ostream &os)
 {
         os << to_string(arg.type()) << " " << arg.name();

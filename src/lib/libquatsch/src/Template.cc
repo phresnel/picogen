@@ -44,7 +44,6 @@ StaticArgumentMeta Template::static_argument (std::string const &name) const
 
 Instantiation Template::instantiate (std::list<StaticParameter> const &parameters) const
 {
-        std::cout << "instantiate([" << parameters.size() << "])\n";
         std::set<std::string> defined_names;
         for (auto p : parameters) {
                 const bool defined = defined_names.find(p.name())

@@ -14,6 +14,10 @@ public:
         typedef std::pair<std::string, code_range> message_code_range_pair;
         typedef std::list<message_code_range_pair>::const_iterator const_iterator;
 
+        ErrorState()                               = default;
+        ErrorState (ErrorState const &)            = delete;
+        ErrorState& operator= (ErrorState const &) = delete;
+
         explicit operator bool() const {
                 return has_errors();
         }

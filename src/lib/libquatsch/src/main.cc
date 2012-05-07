@@ -32,6 +32,14 @@ Test::instantiate_ (std::list<StaticParameter> const &params) const
 
 } }
 
+std::ostream& operator<< (std::ostream& os, quatsch::Typename t) {
+        using quatsch::Typename;
+        switch (t) {
+        case Typename::Float:    os << "floating"; break;
+        case Typename::Integer:  os << "integer"; break;
+        }
+        return os;
+}
 
 int main () {
         using namespace quatsch;
@@ -43,12 +51,15 @@ int main () {
         quatsch::TemplatePtrList templates;
         templates.emplace_back (new qe::Test());
         auto fun = quatsch::compile (
+                /*
                 "(let pi:float 3.14159)\n"
                 "(let two:float 3.14159)\n"
                 "(defun main:int (x:int y) (main 2i 3))\n"
                 //"([Test frob{3} foo{1 2 3}] 2 2)"
                 "(defun T (x:int) (/ y y))\n"
-                "([Test frob{1.5}] x y)",
+                "([Test frob{1.5}] x y)"*/
+                "(defun f (x:int) (* x x))\n"
+                "(f 3i)",
                 templates,
                 err,
                 compiler::phase5::to_callable
@@ -60,7 +71,7 @@ int main () {
 
         DynamicArguments args ({DynamicVariant::Floating(0.5),
                                 DynamicVariant::Floating(0.5)});
-        std::cout << fun (args).floating() << std::endl;
+        std::cout << fun (args).type() << std::endl;
 
         return EXIT_SUCCESS;
 }
