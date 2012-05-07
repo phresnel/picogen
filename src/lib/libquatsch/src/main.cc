@@ -1,5 +1,6 @@
 #include <iostream>
 #include "quatsch.h"
+#include "ProgramType.h"
 #include "phase5/callable/to_callable.h"
 
 namespace quatsch { namespace extern_template {
@@ -50,6 +51,10 @@ int main () {
 
         quatsch::TemplatePtrList templates;
         templates.emplace_back (new qe::Test());
+
+        quatsch::ProgramType ptype (Typename::Float,
+                                    {{"x", Typename::Float}, {"y", Typename::Float}});
+
         auto fun = quatsch::compile (
                 /*
                 "(let pi:float 3.14159)\n"
@@ -58,8 +63,9 @@ int main () {
                 //"([Test frob{3} foo{1 2 3}] 2 2)"
                 "(defun T (x:int) (/ y y))\n"
                 "([Test frob{1.5}] x y)"*/
-                "(defun f (x:int) (* x x))\n"
-                "(f 3i)",
+                "(defun f:int (x:int) (* x x))\n"
+                "y",
+
                 templates,
                 err,
                 compiler::phase5::to_callable
