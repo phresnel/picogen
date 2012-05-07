@@ -20,6 +20,11 @@ namespace quatsch {
                 ProgramType (Typename return_type,
                              std::initializer_list<ProgramArgumentMeta>);
         };
+
+        namespace compiler { namespace phase3 { class Program; } }
+
+        bool coherent (ProgramType const ptype, compiler::phase3::Program const & prog);
+
 }
 
 #endif // PROGRAMTYPE_H_INCLUDED_20120507

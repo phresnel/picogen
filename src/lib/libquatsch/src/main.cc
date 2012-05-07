@@ -65,8 +65,8 @@ int main () {
                 "([Test frob{1.5}] x y)"*/
                 "(defun f:int (x:int) (* x x))\n"
                 "y",
-
                 templates,
+                ptype,
                 err,
                 compiler::phase5::to_callable
         );
