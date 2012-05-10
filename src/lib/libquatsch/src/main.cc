@@ -53,7 +53,7 @@ int main () {
         templates.emplace_back (new qe::Test());
 
         quatsch::ProgramType ptype (Typename::Float,
-                                    {{"x", Typename::Float}, {"y", Typename::Float}});
+                                    {{"z", Typename::Float}, {"y", Typename::Float}});
 
         auto fun = quatsch::compile (
                 /*
@@ -64,7 +64,7 @@ int main () {
                 "(defun T (x:int) (/ y y))\n"
                 "([Test frob{1.5}] x y)"*/
                 "(defun f:int (x:int) (* x x))\n"
-                "y",
+                "z",
                 templates,
                 ptype,
                 err,

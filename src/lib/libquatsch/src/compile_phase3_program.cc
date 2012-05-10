@@ -1,5 +1,6 @@
 #include "compile_phase3_program.h"
 
+#include "ProgramType.h"
 #include "phase1/tokenize.h"
 #include "phase2/parse.h"
 #include "phase3/resolve_and_verify.h"
@@ -9,6 +10,7 @@ namespace quatsch { namespace compiler {
 quatsch::compiler::phase3::ProgramPtr
 compile_phase3_program (std::string const &code,
                         std::list<quatsch::extern_template::TemplatePtr> const & templates,
+                        ProgramType const &ptype,
                         quatsch::ErrorState &err
                         )
 {
@@ -30,7 +32,7 @@ compile_phase3_program (std::string const &code,
                 return quatsch::compiler::phase3::ProgramPtr();
         }
 
-        phase3::ProgramPtr P3 = phase3::resolve_and_verify (*P2, templates, err);
+        phase3::ProgramPtr P3 = phase3::resolve_and_verify (*P2, templates, ptype, err);
         if (!P3) {
                 std::cerr << "verficiation/resolution error" << std::endl;
                 return quatsch::compiler::phase3::ProgramPtr();
