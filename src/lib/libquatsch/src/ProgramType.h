@@ -26,6 +26,7 @@ namespace quatsch {
 
         bool coherent (ProgramType const &, compiler::phase3::Program const &, std::string &err);
 
+        std::string to_string(ProgramType const &);
 }
 
 #endif // PROGRAMTYPE_H_INCLUDED_20120507

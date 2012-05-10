@@ -28,4 +28,21 @@ bool coherent (ProgramType const &ptype, compiler::phase3::Program const &prog, 
         return is_awesome;
 }
 
+std::string to_string(ProgramType const &ptype) {
+
+        std::string ret;
+        auto pit  = ptype.arguments.begin(),
+             pend = ptype.arguments.end();
+
+        ret += "(";
+        if (pit != pend) {
+                ret += pit->name + ":" + to_string(pit->type);
+                for (++pit; pit!=pend; ++pit)
+                        ret += ", " + pit->name + ":" + to_string(pit->type);
+        }
+        ret += ")";
+        ret += " -> " + to_string(ptype.return_type);
+        return ret;
+}
+
 }

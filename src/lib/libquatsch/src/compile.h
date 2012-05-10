@@ -20,7 +20,8 @@ compile (std::string const &code,
          TemplatePtrList const & templates,
          ProgramType const &ptype,
          ErrorState &err,
-         std::function<quatsch_function (compiler::phase3::Program const &)> target
+         std::function<quatsch_function (compiler::phase3::Program const &,
+                                         ProgramType const &)> target
         ) ;
 
 }

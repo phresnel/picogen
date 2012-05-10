@@ -19,7 +19,7 @@ private:
 };
 
 Instantiation
-Test::instantiate_ (std::list<StaticParameter> const &params) const
+Test::instantiate_ (std::list<StaticParameter> const &) const
 {
         return { [](DynamicArguments const &args){
                         return DynamicVariant::Floating(args[0].floating()*
@@ -52,8 +52,9 @@ int main () {
         quatsch::TemplatePtrList templates;
         templates.emplace_back (new qe::Test());
 
-        quatsch::ProgramType ptype (Typename::Float,
-                                    {{"z", Typename::Float}, {"y", Typename::Float}});
+        quatsch::ProgramType ptype (Typename::Integer,
+                                    {{"z", Typename::Integer}, {"y", Typename::Float}});
+
 
         auto fun = quatsch::compile (
                 /*

@@ -11,7 +11,7 @@ compile (std::string const &code,
          TemplatePtrList const &templates,
          ProgramType const &ptype,
          quatsch::ErrorState &err,
-         std::function<quatsch_function (compiler::phase3::Program const &)> target)
+         std::function<quatsch_function (compiler::phase3::Program const &, ProgramType const &)> target)
 {
         using namespace quatsch::compiler;
         phase3::ProgramPtr P3 = compile_phase3_program (code, templates, ptype, err);
@@ -21,6 +21,7 @@ compile (std::string const &code,
                        -> quatsch::DynamicVariant
                         { throw std::runtime_error ("invalid quatsch program"); };
         }
+
 
         std::string conerr;
         if (!coherent (ptype, *P3, conerr)) {
@@ -32,7 +33,7 @@ compile (std::string const &code,
         }
 
 
-        return target (*P3);
+        return target (*P3, ptype);
 }
 
 }

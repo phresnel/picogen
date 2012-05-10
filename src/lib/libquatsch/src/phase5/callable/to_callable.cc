@@ -1,8 +1,10 @@
 
 #include "DynamicVariant.h"
+#include "ProgramType.h"
 #include "to_callable.h"
 #include "phase3/Defun.h"
 #include <stdexcept>
+#include <sstream>
 #include <iostream>
 #include <numeric>
 
@@ -131,11 +133,40 @@ DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
         throw std::runtime_error ("to_callable::exec(): unsupported tree-type");
 }
 
-
-
-quatsch_function to_callable (phase3::Program const &prog)
+quatsch_function to_callable (phase3::Program const &prog, ProgramType const &ptype)
 {
-        auto ret = [prog](DynamicArguments const &args) -> DynamicVariant {
+
+        auto ret = [prog, ptype](DynamicArguments const &args) -> DynamicVariant {
+
+                // Check argument contract.
+                auto pit  = ptype.arguments.begin(),
+                     pend = ptype.arguments.end();
+                auto ait  = args.begin(),
+                     aend = args.end();
+
+                for (; pit!=pend && ait!=aend; ++pit, ++ait) {
+                        if (pit->type != ait->type()) {
+                                // Call distance() here so we don't have to add another loop-variable.
+                                const int nb = std::distance(ptype.arguments.begin(), pit);
+
+                                std::stringstream ss;
+                                ss << "quatsch runtime contract error: argument nb. "
+                                   << (1+nb) << " has type " << to_string(ait->type())
+                                   << ", but " << to_string(pit->type) << " was expected.\n";
+                                ss << "complete contract: " << to_string(ptype) << '\n';
+                                throw std::runtime_error(ss.str());
+                        }
+                }
+                if (pit != pend || ait != aend) {
+                        std::stringstream ss;
+                        ss << "quatsch runtime contract error: incorrect number of arguments, "
+                           << "passed " << args.size() << " arguments, but "
+                           << ptype.arguments.size() << " were expected\n";
+                        ss << "complete contract: " << to_string(ptype) << '\n';
+                        throw std::runtime_error (ss.str());
+                }
+
+                // Run it.
                 return exec(*prog.main(), args);
         };
         return ret;
