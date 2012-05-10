@@ -22,8 +22,9 @@ compile (std::string const &code,
                         { throw std::runtime_error ("invalid quatsch program"); };
         }
 
-        if (!coherent (ptype, *P3)) {
-                err.post_error ("The quatsch program is valid but it does not fulfill the contract",
+        std::string conerr;
+        if (!coherent (ptype, *P3, conerr)) {
+                err.post_error ("contract errors:\n" + conerr,
                                 code.begin(), code.begin());
                 return [] (quatsch::DynamicArguments const&)
                         -> quatsch::DynamicVariant

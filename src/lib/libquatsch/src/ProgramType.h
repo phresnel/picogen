@@ -3,6 +3,7 @@
 
 #include "Typename.h"
 #include <list>
+#include <string>
 
 namespace quatsch {
 
@@ -23,7 +24,7 @@ namespace quatsch {
 
         namespace compiler { namespace phase3 { class Program; } }
 
-        bool coherent (ProgramType const ptype, compiler::phase3::Program const & prog);
+        bool coherent (ProgramType const &, compiler::phase3::Program const &, std::string &err);
 
 }
 
