@@ -150,10 +150,10 @@ quatsch_function to_callable (phase3::Program const &prog, ProgramType const &pt
                                 const int nb = std::distance(ptype.arguments.begin(), pit);
 
                                 std::stringstream ss;
-                                ss << "quatsch runtime contract error: argument nb. "
+                                ss << "quatsch runtime contract error: passed argument nb. "
                                    << (1+nb) << " has type " << to_string(ait->type())
                                    << ", but " << to_string(pit->type) << " was expected.\n";
-                                ss << "complete contract: " << to_string(ptype) << '\n';
+                                ss << "complete contract: " << to_string(ptype);
                                 throw std::runtime_error(ss.str());
                         }
                 }
@@ -162,7 +162,7 @@ quatsch_function to_callable (phase3::Program const &prog, ProgramType const &pt
                         ss << "quatsch runtime contract error: incorrect number of arguments, "
                            << "passed " << args.size() << " arguments, but "
                            << ptype.arguments.size() << " were expected\n";
-                        ss << "complete contract: " << to_string(ptype) << '\n';
+                        ss << "complete contract: " << to_string(ptype);
                         throw std::runtime_error (ss.str());
                 }
 

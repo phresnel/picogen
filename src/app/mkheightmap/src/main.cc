@@ -6,13 +6,16 @@ int main ()
         using namespace quatsch;
 
         try {
-                std::string code = "(defun foo (x:int y:int) (* x y))\n"
+                std::string code = "(defun foo (x y) (* x y))\n"
                                    "(foo 1 2)";
                 TemplatePtrList templates;
                 ErrorState errors;
+                ProgramType ptype (Typename::Float,
+                                  {{"x",Typename::Float},
+                                   {"z",Typename::Float}});
 
                 quatsch::quatsch_function fun = quatsch::compile (
-                                code, templates, errors, compiler::phase5::to_callable);
+                                code, templates, ptype, errors, compiler::phase5::to_callable);
 
                 if (errors) {
                         print_errors (errors, std::cerr);
@@ -20,9 +23,8 @@ int main ()
                 }
 
                 DynamicArguments args;
-                args.push_back (DynamicVariant::Floating (2));
+                args.push_back (DynamicVariant::Integer (2));
                 args.push_back (DynamicVariant::Floating (3));
-                args.push_back (DynamicVariant::Floating (4));
                 //$ TODO: expected error
                 const DynamicVariant ret = fun (args);
 
