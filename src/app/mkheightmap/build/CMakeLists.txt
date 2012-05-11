@@ -9,10 +9,10 @@ endif()
 set (src_dir ../src)
 set (lib_dir ../../../lib)
 
-# -- search paths -------------------------------------------------------------
+# -- search-paths -------------------------------------------------------------
 include_directories (${src_dir})
-include_directories (${lib_dir}/libquatsch/src)
-link_directories (${lib_dir}/libquatsch/bin)
+include_directories (${lib_dir}/libquatsch/src ${lib_dir}/libimage/src)
+link_directories (${lib_dir}/libquatsch/bin    ${lib_dir}/libimage/bin)
 
 # -- sources ------------------------------------------------------------------
 set (sources ${sources}
