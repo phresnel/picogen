@@ -1,6 +1,6 @@
 #include "compile_phase3_program.h"
 
-#include "ProgramType.h"
+#include "ProgramContract.h"
 #include "phase1/tokenize.h"
 #include "phase2/parse.h"
 #include "phase3/resolve_and_verify.h"
@@ -10,7 +10,7 @@ namespace quatsch { namespace compiler {
 quatsch::compiler::phase3::ProgramPtr
 compile_phase3_program (std::string const &code,
                         std::list<quatsch::extern_template::TemplatePtr> const & templates,
-                        ProgramType const &ptype,
+                        ProgramContract const &ptype,
                         quatsch::ErrorState &err
                         )
 {

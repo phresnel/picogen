@@ -4,7 +4,7 @@
 #include "Constant.h"
 #include "Program.h"
 #include "Template.h"
-#include "ProgramType.h"
+#include "ProgramContract.h"
 #include "detail/parse_primitive.h"
 
 #include <boost/optional.hpp>
@@ -581,7 +581,7 @@ void check_for_multiple_defuns (phase2::Program const &prog, ErrorState &err)
 ProgramPtr resolve_and_verify (
         phase2::Program const &prog,
         std::list<extern_template::TemplatePtr> const &templates,
-        ProgramType const &ptype,
+        ProgramContract const &ptype,
         ErrorState &err)
 {
         SymbolTable tab;

@@ -7,13 +7,13 @@
 #include "ErrorState.h"
 
 namespace quatsch {
-        class ProgramType;
+        class ProgramContract;
 }
 
 namespace quatsch { namespace compiler { namespace phase3 {
 ProgramPtr resolve_and_verify (phase2::Program const &prog,
                                std::list<extern_template::TemplatePtr> const &templates,
-                               ProgramType const &,
+                               ProgramContract const &,
                                ErrorState &err);
 
 } } }

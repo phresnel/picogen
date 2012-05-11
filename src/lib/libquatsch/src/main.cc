@@ -1,6 +1,6 @@
 #include <iostream>
 #include "quatsch.h"
-#include "ProgramType.h"
+#include "ProgramContract.h"
 #include "phase5/callable/to_callable.h"
 
 namespace quatsch { namespace extern_template {
@@ -52,7 +52,7 @@ int main () {
         quatsch::TemplatePtrList templates;
         templates.emplace_back (new qe::Test());
 
-        quatsch::ProgramType ptype (Typename::Integer,
+        quatsch::ProgramContract ptype (Typename::Integer,
                                     {{"z", Typename::Integer}, {"y", Typename::Float}});
 
 

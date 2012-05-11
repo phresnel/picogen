@@ -1,6 +1,6 @@
 
 #include "DynamicVariant.h"
-#include "ProgramType.h"
+#include "ProgramContract.h"
 #include "to_callable.h"
 #include "phase3/Defun.h"
 #include <stdexcept>
@@ -133,7 +133,7 @@ DynamicVariant exec (Tree const &tree, DynamicArguments const &args)
         throw std::runtime_error ("to_callable::exec(): unsupported tree-type");
 }
 
-quatsch_function to_callable (phase3::Program const &prog, ProgramType const &ptype)
+quatsch_function to_callable (phase3::Program const &prog, ProgramContract const &ptype)
 {
 
         auto ret = [prog, ptype](DynamicArguments const &args) -> DynamicVariant {

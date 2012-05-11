@@ -8,7 +8,7 @@
 #include <list>
 
 namespace quatsch {
-        class ProgramType;
+        class ProgramContract;
 }
 
 namespace quatsch { namespace compiler {
@@ -16,7 +16,7 @@ namespace quatsch { namespace compiler {
 phase3::ProgramPtr
 compile_phase3_program (std::string const &code,
                         std::list<quatsch::extern_template::TemplatePtr> const & templates,
-                        ProgramType const &ptype,
+                        ProgramContract const &ptype,
                         quatsch::ErrorState &err
                         );
 } }

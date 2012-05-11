@@ -26,8 +26,8 @@ set (sources ${sources}
         ${src_dir}/detail/parse_primitive.h
 
         ${src_dir}/Typename.h
-        ${src_dir}/ProgramType.h ${src_dir}/ProgramType.cc
-        ${src_dir}/ErrorState.cc ${src_dir}/ErrorState.h
+        ${src_dir}/ProgramContract.h ${src_dir}/ProgramContract.cc
+        ${src_dir}/ErrorState.cc     ${src_dir}/ErrorState.h
 
         ${src_dir}/Template.h
         ${src_dir}/Template.cc

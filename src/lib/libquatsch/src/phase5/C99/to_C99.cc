@@ -149,7 +149,7 @@ void includes (Program const &, std::ostream &os)
            << "\n";
 }
 
-std::string to_C99 (phase3::Program const &program, ProgramType const &)
+std::string to_C99 (phase3::Program const &program, ProgramContract const &)
 {
         std::stringstream ss;
         includes     (program, ss);

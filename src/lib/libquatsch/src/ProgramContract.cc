@@ -1,11 +1,11 @@
-#include "ProgramType.h"
+#include "ProgramContract.h"
 #include "phase3/Program.h"
 #include <sstream>
 
 namespace quatsch {
 
-ProgramType::ProgramType (Typename return_type,
-                          std::initializer_list<ProgramArgumentMeta> arguments)
+ProgramContract::ProgramContract (Typename return_type,
+                          std::initializer_list<ProgramContractArgument> arguments)
         : return_type (return_type)
         , arguments (arguments)
 {
@@ -13,7 +13,7 @@ ProgramType::ProgramType (Typename return_type,
 
 
 
-bool coherent (ProgramType const &ptype, compiler::phase3::Program const &prog, std::string &err)
+bool coherent (ProgramContract const &ptype, compiler::phase3::Program const &prog, std::string &err)
 {
         bool is_awesome = true;
         if (prog.main()->expression_type() != ptype.return_type) {
@@ -28,7 +28,7 @@ bool coherent (ProgramType const &ptype, compiler::phase3::Program const &prog, 
         return is_awesome;
 }
 
-std::string to_string(ProgramType const &ptype) {
+std::string to_string(ProgramContract const &ptype) {
 
         std::string ret;
         auto pit  = ptype.arguments.begin(),

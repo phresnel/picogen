@@ -10,7 +10,7 @@ int main ()
                                    "(foo 1 2)";
                 TemplatePtrList templates;
                 ErrorState errors;
-                ProgramType ptype (Typename::Float,
+                ProgramContract ptype (Typename::Float,
                                   {{"x",Typename::Float},
                                    {"z",Typename::Float}});
 
