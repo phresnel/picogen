@@ -111,7 +111,6 @@ parse (int argc, char *argv[])
         Arguments ret;
         for (auto s : detail::catenate (argc, argv))
                 ret.push_back (detail::argument(s));
-        }
         return ret;
 }
 
@@ -159,6 +158,13 @@ T mandatory (Arguments &args, names const &n)
         ss.str (it->value);
         T ret;
         ss >> ret;
+
+        // fail() is set if nothing can be extracted (e.g.: int <- abc)
+        // but we may also have partial extraction (e.g. int <- 2a), which
+        // is covered by eof().
+        if (ss.fail() || !ss.eof()) {
+                throw std::runtime_error ("type error: unknown format"); // TODO: more error detail
+        }
         return ret;
 }
 
@@ -166,8 +172,7 @@ T mandatory (Arguments &args, names const &n)
 int main (int argc, char *argv[]) {
 
         auto parsed = parse (argc, argv);
-        auto const x = mandatory<int>(parsed,
-                                      names("x", "Coeff"));
+        auto const x = mandatory<float>(parsed, names("x", "Coeff"));
 
         /*
         int y = optional(parsed,
