@@ -140,6 +140,43 @@ Arguments::const_iterator find (Arguments const &args, names const &n)
         });
 }
 
+namespace detail {
+        template <typename T>
+        bool convert (std::string const &str, T &ret)
+        {
+                std::stringstream ss;
+                ss.str (str);
+                ss >> ret;
+
+                // fail() is set if nothing can be extracted (e.g.: int <- abc)
+                // but we may also have partial extraction (e.g. int <- 2a), which
+                // is covered by eof().
+                if (ss.fail() || !ss.eof()) {
+                        return false;
+                }
+                return true;
+        }
+
+
+        template <typename T> struct format_helper {
+                //static_assert ("Missing format_helper-specialisation");
+        };
+        template <> struct format_helper<int> {
+                static const char* format_example() { return "[+-]?[0-9]+"; }
+        };
+        template <> struct format_helper<unsigned int> {
+                static const char* format_example() { return "[0-9]+"; }
+        };
+        template <> struct format_helper<float> {
+                static const char* format_example() { return "[0-9]+.[0-9]+"; }
+        };
+
+        template <typename T>
+        const char* format_example() {
+                return format_helper<T>::format_example();
+        }
+}
+
 template <typename T>
 T mandatory (Arguments &args, names const &n)
 {
@@ -154,16 +191,16 @@ T mandatory (Arguments &args, names const &n)
                                          "Write  '--" + n.long_opt + "=<value>' "
                                          "or '-" + n.short_opt + "<value>'");
 
-        std::stringstream ss;
-        ss.str (it->value);
         T ret;
-        ss >> ret;
-
-        // fail() is set if nothing can be extracted (e.g.: int <- abc)
-        // but we may also have partial extraction (e.g. int <- 2a), which
-        // is covered by eof().
-        if (ss.fail() || !ss.eof()) {
-                throw std::runtime_error ("type error: unknown format"); // TODO: more error detail
+        if (!detail::convert (it->value, ret)) {
+                std::stringstream ss;
+                ss << "Format error: '"
+                   << it->value << "', passed for option "
+                   << "'--" << n.long_opt << "' (or "
+                   << "'-"  << n.short_opt << "') "
+                   << "has bad format. It must be in format "
+                   << detail::format_example<T>();
+                throw std::runtime_error (ss.str());
         }
         return ret;
 }
