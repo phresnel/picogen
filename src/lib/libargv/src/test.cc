@@ -188,6 +188,8 @@ namespace detail {
         }
 
 
+
+
         template <typename T> struct type_helper;
 
         template <> struct type_helper<int> {
@@ -221,6 +223,57 @@ namespace detail {
                 return type_helper<T>::type_name();
         }
 
+
+        template <typename T> struct limit_diagnostic
+        {
+                friend std::ostream& operator<< (std::ostream& os, limit_diagnostic)
+                {
+                        if (std::numeric_limits<T>::is_signed) {
+                                os << std::fixed
+                                   << "Must be between " << -std::numeric_limits<T>::max()
+                                   << " and " << std::numeric_limits<T>::max();
+                        } else {
+                                os << "Must be between 0 and " << std::numeric_limits<T>::max();
+                        }
+                        return os << ".";
+                }
+        };
+        template <> struct limit_diagnostic<std::string>
+        {
+                friend std::ostream& operator<< (std::ostream &os, limit_diagnostic) {
+                        return os;
+                }
+        };
+        template <> struct limit_diagnostic<bool>
+        {
+                friend std::ostream& operator<< (std::ostream &os, limit_diagnostic) {
+                        return os << "Must be 0 or 1.";
+                }
+        };
+
+        template <typename T>
+        T convert_argument_value (names const &n, Argument const &arg) {
+
+                if (!arg.has_value)
+                        throw std::runtime_error("Missing value for argument '--" + n.long_opt +
+                                                 "' (or '-" + n.short_opt + "'). "
+                                                 "Write  '--" + n.long_opt + "=<value>' "
+                                                 "or '-" + n.short_opt + "<value>'");
+
+
+                T ret;
+                if (!detail::convert (arg.value, ret)) {
+                        std::stringstream ss;
+                        ss << "Format error: Passed value '" << arg.value << "' for option "
+                           << n << ", but " << type_name<T>() << " is expected"
+                           << ". Examples for valid formats: " << detail::format_example<T>()
+                           << ". ";
+                        ss << limit_diagnostic<T>();
+                        throw std::runtime_error (ss.str());
+                }
+                return ret;
+        }
+
 }
 
 template <typename T>
@@ -231,30 +284,30 @@ T mandatory (Arguments &args, names const &n)
                 throw std::runtime_error("Mandatory argument '--" + n.long_opt +
                                          "' (or '-" + n.short_opt + "') missing.");
 
-        if (!it->has_value)
-                throw std::runtime_error("Missing value for argument '--" + n.long_opt +
-                                         "' (or '-" + n.short_opt + "'). "
-                                         "Write  '--" + n.long_opt + "=<value>' "
-                                         "or '-" + n.short_opt + "<value>'");
+        return detail::convert_argument_value<T> (n, *it);
+}
 
-        T ret;
-        if (!detail::convert (it->value, ret)) {
-                std::stringstream ss;
-                ss << "Format error: Passed value '" << it->value << "' for option "
-                   << n << ", but " << detail::type_name<T>() << " is expected"
-                   << ". Examples for valid formats: " << detail::format_example<T>();
-                throw std::runtime_error (ss.str());
-        }
-        return ret;
+template <typename T>
+T optional_with_default (Arguments &args, names const &n, T const &default_value)
+{
+        auto it = find (args, n);
+        if (it == args.end())
+                return default_value;
+
+        return detail::convert_argument_value<T> (n, *it);
 }
 
 
 int main (int argc, char *argv[]) {
 
-        auto parsed = parse (argc, argv);
-        auto const x = mandatory<std::string>(parsed, names("x", "Coeff"));
+        try {
+                auto parsed = parse (argc, argv);
+                auto const x = mandatory<unsigned int>(parsed, names("x", "Coeff"));
 
-        std::cout << "{" << x << "}" << std::endl;
+                std::cout << "{" << x << "}" << std::endl;
+        } catch (std::exception &e) {
+                std::cerr << e.what() << '\n';
+        }
         /*
         int y = optional(parsed,
                          default_value(11),
