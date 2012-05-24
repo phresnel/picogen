@@ -125,6 +125,10 @@ public:
 
         std::string short_opt, long_opt;
 };
+inline std::ostream& operator<< (std::ostream &os, names const& n)
+{
+        return os << "\"--" << n.long_opt << "\" (or alias \"-" << n.short_opt << "\")";
+}
 
 Arguments::const_iterator find (Arguments const &args, names const &n)
 {
@@ -139,42 +143,84 @@ Arguments::const_iterator find (Arguments const &args, names const &n)
                 return arg.has_name && arg.name == n.long_opt;
         });
 }
-
+#include <limits>
 namespace detail {
+
+
+        template <typename T>
+        struct convert_helper {
+                static bool convert (std::string const &str, T &ret) {
+                        std::stringstream ss;
+                        ss.str (str);
+                        ss >> ret;
+
+                        // The following is needed because streams accept negative signs
+                        // even for unsigned types.
+                        constexpr bool forbid_minus = std::numeric_limits<T>::is_integer &&
+                                                      !std::numeric_limits<T>::is_signed;
+                        if (forbid_minus) {
+                                if (std::string::npos != str.find_first_of('-'))
+                                        return false;
+                        }
+
+                        // fail() is set if nothing can be extracted (e.g.: int <- abc)
+                        // but we may also have partial extraction (e.g. int <- 2a), which
+                        // is covered by eof().
+                        if (ss.fail() || !ss.eof()) {
+                                return false;
+                        }
+                        return true;
+                }
+        };
+
+        template <>
+        struct convert_helper<std::string> {
+                static bool convert (std::string const &str, std::string &ret) {
+                        ret = str;
+                        return true;
+                }
+        };
+
         template <typename T>
         bool convert (std::string const &str, T &ret)
         {
-                std::stringstream ss;
-                ss.str (str);
-                ss >> ret;
-
-                // fail() is set if nothing can be extracted (e.g.: int <- abc)
-                // but we may also have partial extraction (e.g. int <- 2a), which
-                // is covered by eof().
-                if (ss.fail() || !ss.eof()) {
-                        return false;
-                }
-                return true;
+                return convert_helper<T>::convert (str, ret);
         }
 
 
-        template <typename T> struct format_helper {
-                //static_assert ("Missing format_helper-specialisation");
+        template <typename T> struct type_helper;
+
+        template <> struct type_helper<int> {
+                static const char* format_example() { return "1, 0, -99, +20"; }
+                static const char* type_name () { return "integer"; }
         };
-        template <> struct format_helper<int> {
-                static const char* format_example() { return "[+-]?[0-9]+"; }
+        template <> struct type_helper<unsigned int> {
+                static const char* format_example() { return "10, +500, 99"; }
+                static const char* type_name () { return "positive integer"; }
         };
-        template <> struct format_helper<unsigned int> {
-                static const char* format_example() { return "[0-9]+"; }
+        template <> struct type_helper<float> {
+                static const char* format_example() { return "0.5, -2.3, 1e10"; }
+                static const char* type_name () { return "real"; }
         };
-        template <> struct format_helper<float> {
-                static const char* format_example() { return "[0-9]+.[0-9]+"; }
+        template <> struct type_helper<bool> {
+                static const char* format_example() { return "1, 0"; }
+                static const char* type_name() { return "boolean"; }
+        };
+        template <> struct type_helper<std::string> {
+                static const char* format_example() { return "\"foobar\""; }
+                static const char* type_name() { return "string"; }
         };
 
-        template <typename T>
-        const char* format_example() {
-                return format_helper<T>::format_example();
+        template <typename T> const char* format_example()
+        {
+                return type_helper<T>::format_example();
         }
+
+        template <typename T> const char* type_name()
+        {
+                return type_helper<T>::type_name();
+        }
+
 }
 
 template <typename T>
@@ -194,12 +240,9 @@ T mandatory (Arguments &args, names const &n)
         T ret;
         if (!detail::convert (it->value, ret)) {
                 std::stringstream ss;
-                ss << "Format error: '"
-                   << it->value << "', passed for option "
-                   << "'--" << n.long_opt << "' (or "
-                   << "'-"  << n.short_opt << "') "
-                   << "has bad format. It must be in format "
-                   << detail::format_example<T>();
+                ss << "Format error: Passed value '" << it->value << "' for option "
+                   << n << ", but " << detail::type_name<T>() << " is expected"
+                   << ". Examples for valid formats: " << detail::format_example<T>();
                 throw std::runtime_error (ss.str());
         }
         return ret;
@@ -209,8 +252,9 @@ T mandatory (Arguments &args, names const &n)
 int main (int argc, char *argv[]) {
 
         auto parsed = parse (argc, argv);
-        auto const x = mandatory<float>(parsed, names("x", "Coeff"));
+        auto const x = mandatory<std::string>(parsed, names("x", "Coeff"));
 
+        std::cout << "{" << x << "}" << std::endl;
         /*
         int y = optional(parsed,
                          default_value(11),
