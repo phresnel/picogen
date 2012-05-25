@@ -274,6 +274,33 @@ namespace detail {
                 return ret;
         }
 
+
+        // lightweight wrapper. does nothing fancy nor performant
+        // (it is NOT a replacement for boost::optional!)
+        template <typename T>
+        class optional {
+        public:
+                optional (names const &n) : arg_names_(n), has_value_(false) {}
+                optional (names const &n, T const &v) : arg_names_(n), value_(v) {}
+
+                explicit operator bool () const {
+                        return has_value_;
+                }
+
+                T operator* () const {
+                        if (!*this) {
+                                std::ostringstream ss;
+                                ss << "Value for optional " << arg_names_
+                                   << " dereferenced, but it wasn't given a value";
+                                throw std::runtime_error(ss.str());
+                        }
+                        return value_;
+                }
+        private:
+                names arg_names_;
+                bool has_value_;
+                T    value_;
+        };
 }
 
 template <typename T>
@@ -293,18 +320,29 @@ T optional_with_default (Arguments &args, names const &n, T const &default_value
         auto it = find (args, n);
         if (it == args.end())
                 return default_value;
-
         return detail::convert_argument_value<T> (n, *it);
 }
 
+template <typename T>
+detail::optional<T> optional (Arguments &args, names const &n)
+{
+        auto it = find (args, n);
+        if (it == args.end())
+                return {n};
+        return {n, detail::convert_argument_value<T> (n, *it)};
+}
 
 int main (int argc, char *argv[]) {
 
         try {
                 auto parsed = parse (argc, argv);
-                auto const x = mandatory<unsigned int>(parsed, names("x", "Coeff"));
+                auto const x = optional<unsigned int>(parsed, names("x", "Coeff"));
 
-                std::cout << "{" << x << "}" << std::endl;
+                if (x) {
+                        std::cout << "{" << *x << "}" << std::endl;
+                } else {
+                        std::cout << "!{}" << std::endl;
+                }
         } catch (std::exception &e) {
                 std::cerr << e.what() << '\n';
         }
