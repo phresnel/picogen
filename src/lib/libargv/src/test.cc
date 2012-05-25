@@ -332,10 +332,31 @@ detail::optional<T> optional (Arguments &args, names const &n)
         return {n, detail::convert_argument_value<T> (n, *it)};
 }
 
+bool flag (Arguments &args, names const &n)
+{
+        auto it = find (args, n);
+        if (it == args.end())
+                return false;
+        if (it->has_value) {
+                std::ostringstream ss;
+                ss << "Argument " << n << " doesn't expect any value.";
+                throw std::runtime_error(ss.str());
+        }
+        return true;
+}
+
 int main (int argc, char *argv[]) {
 
         try {
                 auto parsed = parse (argc, argv);
+
+                auto const f = flag(parsed, names("f", "foobar"));
+                if (f) {
+                        std::cout << "foobar enabled\n";
+                } else {
+                        std::cout << "foobar disabled\n";
+                }
+
                 auto const x = optional<unsigned int>(parsed, names("x", "Coeff"));
 
                 if (x) {
