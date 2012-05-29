@@ -14,6 +14,8 @@ include_directories (${src_dir})
 
 # -- sources ------------------------------------------------------------------
 set (sources ${sources}
+     ${src_dir}/argxx.h
+     ${src_dir}/detail.h
 )
 
 set (sources_test
