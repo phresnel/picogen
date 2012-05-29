@@ -56,8 +56,16 @@ struct Argument {
 private:
         Argument () : has_name(false), has_value(false) {}
 };
+Argument shift (Argument const &arg)
+{
+        if (arg.value.size() <= 1) {
+                return Argument::NameOnly (arg.value);
+        }
+        return Argument::NameValue (arg.value.substr(0, 1),
+                                    arg.value.substr(1));
+}
 
-typedef std::vector<Argument> Arguments;
+typedef std::list<Argument> Arguments;
 
 
 namespace detail {
@@ -130,7 +138,7 @@ inline std::ostream& operator<< (std::ostream &os, names const& n)
         return os << "\"--" << n.long_opt << "\" (or alias \"-" << n.short_opt << "\")";
 }
 
-Arguments::const_iterator find (Arguments const &args, names const &n)
+Arguments::iterator find (Arguments &args, names const &n)
 {
         auto it = std::find_if (args.begin(), args.end(), [&](Argument const &arg)
         {
@@ -337,24 +345,56 @@ bool flag (Arguments &args, names const &n)
         auto it = find (args, n);
         if (it == args.end())
                 return false;
+
+        // If there's a value, the end-user possibly combined multiple flags
+        // at once (e.g. "tar -xzvf foobar.tar.gz"). In that case, we 'shift'
+        // the argument to the left, like "tar -zvf foobar.tar.gz".
         if (it->has_value) {
-                std::ostringstream ss;
-                ss << "Argument " << n << " doesn't expect any value.";
-                throw std::runtime_error(ss.str());
+                *it = shift (*it);
+        } else {
+                args.erase (it);
         }
+
         return true;
 }
+
+#if 0
+enum nflag_value {
+        not_present,
+        positive,
+        negative
+};
+nflag_value nflag (Arguments &args, names const &n)
+{
+        if (flag (args, n)) return nflag_value::positive;
+        const names nn {"no-"+n.short_opt, "no-"+n.long_opt};
+        if (flag (args, nn)) return nflag_value::negative;
+        return nflag_value::not_present;
+}
+#endif
 
 int main (int argc, char *argv[]) {
 
         try {
                 auto parsed = parse (argc, argv);
 
-                auto const f = flag(parsed, names("f", "foobar"));
-                if (f) {
-                        std::cout << "foobar enabled\n";
-                } else {
-                        std::cout << "foobar disabled\n";
+
+                for (Argument const & x : parsed) std::cout << x.name << ":" << x.value << std::endl;
+
+                bool x = flag (parsed, names ("x", "extract"));
+                bool v = flag (parsed, names ("v", "verbose"));
+                bool f = flag (parsed, names ("f", "filename"));
+
+                for (Argument const & x : parsed) std::cout << x.name << ":" << x.value << std::endl;
+
+
+                /*auto const f = nflag(parsed, names("f", "foobar"));
+                if (f == nflag_value::not_present) {
+                        std::cout << "not presen\n";
+                } else if (f == nflag_value::positive) {
+                        std::cout << "foobar positive\n";
+                } else if (f == nflag_value::negative) {
+                        std::cout << "foobar negative\n";
                 }
 
                 auto const x = optional<unsigned int>(parsed, names("x", "Coeff"));
@@ -363,9 +403,9 @@ int main (int argc, char *argv[]) {
                         std::cout << "{" << *x << "}" << std::endl;
                 } else {
                         std::cout << "!{}" << std::endl;
-                }
+                }*/
         } catch (std::exception &e) {
-                std::cerr << e.what() << '\n';
+                std::cerr << "caught exception: " << e.what() << '\n';
         }
         /*
         int y = optional(parsed,
