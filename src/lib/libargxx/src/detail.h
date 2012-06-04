@@ -60,6 +60,23 @@ namespace argxx { namespace detail {
         private:
                 Argument () : has_name(false), has_value(false) {}
         };
+
+        typedef std::list<Argument> Arguments;
+
+
+        struct State {
+                Arguments arguments;
+                bool non_flag_parsed;
+
+                State () : non_flag_parsed(false) {}
+                State (Arguments const &args) : arguments (args), non_flag_parsed(false) {}
+        };
+        Arguments::iterator begin (detail::State &state) { return state.arguments.begin(); }
+        Arguments::iterator end   (detail::State &state) { return state.arguments.end(); }
+        Arguments::const_iterator begin (detail::State const &state) { return state.arguments.begin(); }
+        Arguments::const_iterator end   (detail::State const &state) { return state.arguments.end(); }
+
+
         Argument shift (Argument const &arg)
         {
                 if (arg.value.size() <= 1) {
@@ -68,9 +85,6 @@ namespace argxx { namespace detail {
                 return Argument::NameValue (arg.value.substr(0, 1),
                                             arg.value.substr(1));
         }
-
-        typedef std::list<Argument> Arguments;
-
 
         Argument long_argument (std::string str)
         {

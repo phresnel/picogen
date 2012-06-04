@@ -17,6 +17,9 @@ nflag_value nflag (Arguments &args, names const &n)
 
 int main (int argc, char *argv[]) {
 
+        // TODO: make flag combination optional. Run with the current code
+        //       ./test -ghfbar to see.
+
         try {
                 auto parsed = argxx::parse (argc, argv);
 
@@ -27,6 +30,8 @@ int main (int argc, char *argv[]) {
                 bool v = flag (parsed, argxx::names ("v", "verbose"));
                 std::string f = argxx::mandatory<std::string> (parsed,
                                                         argxx::names ("f", "filename"));
+                bool z = flag (parsed, argxx::names ("z", "zortech"));
+
 
                 for (auto const & x : parsed) std::cout << x.name << ":" << x.value << std::endl;
 

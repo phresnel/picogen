@@ -29,8 +29,11 @@ namespace argxx {
         using detail::Arguments;
 
         template <typename T>
-        T mandatory (Arguments &args, names const &n)
+        T mandatory (detail::State &state, names const &n)
         {
+                state.non_flag_parsed = true;
+                auto &args = state.arguments;
+
                 auto it = find (args, n);
                 if (it == args.end())
                         throw std::runtime_error("Mandatory argument '--" + n.long_opt +
@@ -40,8 +43,11 @@ namespace argxx {
         }
 
         template <typename T>
-        T optional_with_default (Arguments &args, names const &n, T const &default_value)
+        T optional_with_default (detail::State &state, names const &n, T const &default_value)
         {
+                state.non_flag_parsed = true;
+                auto &args = state.arguments;
+
                 auto it = find (args, n);
                 if (it == args.end())
                         return default_value;
@@ -49,18 +55,29 @@ namespace argxx {
         }
 
         template <typename T>
-        detail::optional<T> optional (Arguments &args, names const &n)
+        detail::optional<T> optional (detail::State &state, names const &n)
         {
+                state.non_flag_parsed = true;
+                auto &args = state.arguments;
                 auto it = find (args, n);
                 if (it == args.end())
                         return {n};
                 return {n, detail::convert_argument_value<T> (n, *it)};
         }
 
-        bool flag (Arguments &args, names const &n)
+        bool flag (detail::State &state, names const &n)
         {
+                if (state.non_flag_parsed)
+                        throw std::logic_error ("program logic error: tried to parse a flag after a non-flag "
+                                                "has been parsed already; "
+                                                "in order to prevent ambiguities when handling "
+                                                "flag combinations (e.g. 'foo -xvf x'), this is "
+                                                "forbidden. Fix this error before shipping.");
+
+                auto &args = state.arguments;
+
                 auto it = find (args, n);
-                if (it == args.end())
+                if (it == end(args))
                         return false;
 
                 // If there's a value, the end-user possibly combined multiple flags
@@ -76,14 +93,13 @@ namespace argxx {
         }
 
 
-
-        Arguments
+        detail::State
         parse (int argc, char *argv[])
         {
                 Arguments ret;
                 for (auto s : detail::catenate (argc, argv))
                         ret.push_back (detail::argument(s));
-                return ret;
+                return detail::State{ret};
         }
 }
 
