@@ -2,6 +2,7 @@
 #include "phase5/callable/to_callable.h"
 #include "ppm.h"
 #include "argxx.h"
+#include <fstream>
 
 int main (int argc, char *argv[])
 {
@@ -9,8 +10,27 @@ int main (int argc, char *argv[])
 
         try {
                 auto args = argxx::parse (argc, argv);
-                const std::string code = argxx::mandatory<std::string> (args, argxx::names("c", "code"));
+                const auto code_opt     = argxx::optional<std::string> (args, argxx::names("c", "code"));
+                const auto filename_opt = argxx::optional<std::string> (args, argxx::names("f", "filename"));
+                if ((!code_opt && !filename_opt) || (code_opt && filename_opt))
+                        throw std::runtime_error("error: either pass --code=<code>, "
+                                                 "or --filename=<quatsch-file>");
                 argxx::assert_no_unparsed_present (args);
+
+                // TODO: extract function
+                std::string code;
+                if (filename_opt) {
+                        std::ifstream ifs (*filename_opt);
+                        if (!ifs.good())
+                                throw std::runtime_error("error: could not open file \""
+                                                         + *filename_opt + "\"");
+
+                        std::string line;
+                        while (getline (ifs, line))
+                                code += line;
+                } else {
+                        code = *code_opt;
+                }
                 /*
                 std::string     code = "(defun foo (x y) (* x y))\n"
                                        "(* x z)";
