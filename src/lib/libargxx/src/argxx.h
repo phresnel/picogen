@@ -97,9 +97,35 @@ namespace argxx {
         parse (int argc, char *argv[])
         {
                 Arguments ret;
+                if (argc) {
+                        ret.push_back (detail::Argument::ProgramName (*argv));
+                        --argc;
+                        ++argv;
+                }
                 for (auto s : detail::catenate (argc, argv))
                         ret.push_back (detail::argument(s));
                 return detail::State{ret};
+        }
+
+
+        void assert_no_unparsed_present (detail::State const &state)
+        {
+                if (state.arguments.empty())
+                        return;
+                if (state.arguments.size() == 1 &&
+                    state.arguments.front().is_program_name)
+                        return;
+
+                std::stringstream ss;
+                for (detail::Argument arg : state.arguments) {
+                        if (arg.is_program_name) continue;
+                        ss << "\n * name:<";
+                        if (arg.has_name) ss << arg.name;
+                        ss << ">, value:<";
+                        if (arg.has_value) ss << arg.value;
+                        ss << ">";
+                }
+                throw std::runtime_error ("unrecognized command line arguments:" + ss.str());
         }
 }
 

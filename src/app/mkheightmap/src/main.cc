@@ -10,7 +10,7 @@ int main (int argc, char *argv[])
         try {
                 auto args = argxx::parse (argc, argv);
                 const std::string code = argxx::mandatory<std::string> (args, argxx::names("c", "code"));
-
+                argxx::assert_no_unparsed_present (args);
                 /*
                 std::string     code = "(defun foo (x y) (* x y))\n"
                                        "(* x z)";

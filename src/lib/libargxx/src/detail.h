@@ -34,6 +34,14 @@ namespace argxx { namespace detail {
                 bool has_value;
                 std::string value;
 
+                bool is_program_name;
+
+                static Argument ProgramName (std::string value) {
+                        Argument ret = Positional (value);
+                        ret.is_program_name = true;
+                        return ret;
+                }
+
                 static Argument Positional (std::string value) {
                         Argument ret;
                         ret.has_value = true;
@@ -58,7 +66,7 @@ namespace argxx { namespace detail {
                 }
 
         private:
-                Argument () : has_name(false), has_value(false) {}
+                Argument () : has_name(false), has_value(false), is_program_name(false) {}
         };
 
         typedef std::list<Argument> Arguments;
