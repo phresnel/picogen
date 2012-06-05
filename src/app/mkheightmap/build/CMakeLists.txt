@@ -11,8 +11,12 @@ set (lib_dir ../../../lib)
 
 # -- search-paths -------------------------------------------------------------
 include_directories (${src_dir})
-include_directories (${lib_dir}/libquatsch/src ${lib_dir}/libimage/src)
-link_directories (${lib_dir}/libquatsch/bin    ${lib_dir}/libimage/bin)
+include_directories (${lib_dir}/libquatsch/src
+                     ${lib_dir}/libimage/src
+                     ${lib_dir}/libargxx/src)
+link_directories (${lib_dir}/libquatsch/bin
+                  ${lib_dir}/libimage/bin
+                  ${lib_dir}/libargxx/bin)
 
 # -- sources ------------------------------------------------------------------
 set (sources ${sources}

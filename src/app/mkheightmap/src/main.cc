@@ -1,14 +1,20 @@
 #include "quatsch.h"
 #include "phase5/callable/to_callable.h"
 #include "ppm.h"
+#include "argxx.h"
 
-int main ()
+int main (int argc, char *argv[])
 {
         using namespace quatsch;
 
         try {
+                auto args = argxx::parse (argc, argv);
+                const std::string code = argxx::mandatory<std::string> (args, argxx::names("c", "code"));
+
+                /*
                 std::string     code = "(defun foo (x y) (* x y))\n"
                                        "(* x z)";
+                */
                 TemplatePtrList templates;
                 ErrorState      errors;
                 ProgramContract ptype (Typename::Float,
