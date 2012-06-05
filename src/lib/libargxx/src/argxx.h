@@ -39,7 +39,9 @@ namespace argxx {
                         throw std::runtime_error("Mandatory argument '--" + n.long_opt +
                                                  "' (or '-" + n.short_opt + "') missing.");
 
-                return detail::convert_argument_value<T> (n, *it);
+                const auto ret = detail::convert_argument_value<T> (n, *it);
+                args.erase (it);
+                return ret;
         }
 
         template <typename T>
@@ -51,7 +53,10 @@ namespace argxx {
                 auto it = find (args, n);
                 if (it == args.end())
                         return default_value;
-                return detail::convert_argument_value<T> (n, *it);
+
+                const auto ret = detail::convert_argument_value<T> (n, *it);
+                args.erase (it);
+                return ret;
         }
 
         template <typename T>
@@ -62,7 +67,10 @@ namespace argxx {
                 auto it = find (args, n);
                 if (it == args.end())
                         return {n};
-                return {n, detail::convert_argument_value<T> (n, *it)};
+
+                const auto ret = detail::optional<T>{n, detail::convert_argument_value<T> (n, *it)};
+                args.erase (it);
+                return ret;
         }
 
         bool flag (detail::State &state, names const &n)
