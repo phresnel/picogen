@@ -72,7 +72,7 @@ namespace argxx {
                                                 "has been parsed already; "
                                                 "in order to prevent ambiguities when handling "
                                                 "flag combinations (e.g. 'foo -xvf x'), this is "
-                                                "forbidden. Fix this error before shipping.");
+                                                "forbidden. Fix this error before shipping: Query all flags first.");
 
                 auto &args = state.arguments;
 
