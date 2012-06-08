@@ -26,11 +26,11 @@ int main (int argc, char *argv[]) {
 
                 for (auto const & x : parsed) std::cout << x.name << ":" << x.value << std::endl;
 
-                bool x = flag (parsed, argxx::names ("x", "extract"));
-                bool v = flag (parsed, argxx::names ("v", "verbose"));
+                bool x = flag (parsed, {'x', "extract"});
+                bool v = flag (parsed, {'v', "verbose"});
                 std::string f = argxx::mandatory<std::string> (parsed,
-                                                        argxx::names ("f", "filename"));
-                bool z = flag (parsed, argxx::names ("z", "zortech"));
+                                                              {'f', "filename"});
+                bool z = flag (parsed, {'z', "zortech"});
 
 
                 for (auto const & x : parsed) std::cout << x.name << ":" << x.value << std::endl;

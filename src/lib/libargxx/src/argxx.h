@@ -7,11 +7,11 @@
 namespace argxx {
         class names {
         public:
-                names (std::string const &short_opt,
-                       std::string const &long_opt)
-                        : short_opt (short_opt)
-                        , long_opt (long_opt)
+                names (char const &short_opt_,
+                       std::string const &long_opt_)
+                        : long_opt (long_opt_)
                 {
+                        short_opt = short_opt_;
                 }
 
                 std::string short_opt, long_opt;
@@ -29,7 +29,8 @@ namespace argxx {
         using detail::Arguments;
 
         template <typename T>
-        T mandatory (detail::State &state, names const &n)
+        inline
+        T mandatory (State &state, names const &n)
         {
                 state.non_flag_parsed = true;
                 auto &args = state.arguments;
@@ -45,7 +46,8 @@ namespace argxx {
         }
 
         template <typename T>
-        T optional_with_default (detail::State &state, names const &n, T const &default_value)
+        inline
+        T optional_with_default (State &state, names const &n, T const &default_value)
         {
                 state.non_flag_parsed = true;
                 auto &args = state.arguments;
@@ -60,7 +62,8 @@ namespace argxx {
         }
 
         template <typename T>
-        detail::optional<T> optional (detail::State &state, names const &n)
+        inline
+        detail::optional<T> optional (State &state, names const &n)
         {
                 state.non_flag_parsed = true;
                 auto &args = state.arguments;
@@ -73,7 +76,8 @@ namespace argxx {
                 return ret;
         }
 
-        bool flag (detail::State &state, names const &n)
+        inline
+        bool flag (State &state, names const &n)
         {
                 if (state.non_flag_parsed)
                         throw std::logic_error ("program logic error: tried to parse a flag after a non-flag "
@@ -101,8 +105,8 @@ namespace argxx {
         }
 
 
-        detail::State
-        parse (int argc, char *argv[])
+        inline
+        State parse (int argc, char *argv[])
         {
                 Arguments ret;
                 if (argc) {
@@ -112,11 +116,11 @@ namespace argxx {
                 }
                 for (auto s : detail::catenate (argc, argv))
                         ret.push_back (detail::argument(s));
-                return detail::State{ret};
+                return State{ret};
         }
 
 
-        void assert_no_unparsed_present (detail::State const &state)
+        void assert_no_unparsed_present (State const &state)
         {
                 if (state.arguments.empty())
                         return;

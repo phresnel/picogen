@@ -9,9 +9,14 @@
 #include <sstream>
 #include <limits>
 
+namespace argxx {
+        struct State;
+        State parse (int argc, char *argv[]);
+}
+
 namespace argxx { namespace detail {
 
-        bool starts_with (std::string const& str, std::string const &seq) {
+        inline bool starts_with (std::string const& str, std::string const &seq) {
                 auto a = str.begin(), b = str.end(),
                      x = seq.begin(), y = seq.end();
                 for (; a != b && x != y; ++a, ++x) {
@@ -71,20 +76,34 @@ namespace argxx { namespace detail {
 
         typedef std::list<Argument> Arguments;
 
+} }
 
+namespace argxx {
+
+        // Put State into namespace argxx (instead of detail) so ADL
+        // triggers properly when the user types
+        //    const auto foo = xxx<> (state, ...);
+        // .
         struct State {
-                Arguments arguments;
+                detail::Arguments arguments;
                 bool non_flag_parsed;
 
+        private:
+                friend State parse (int argc, char *argv[]);
+
                 State () : non_flag_parsed(false) {}
-                State (Arguments const &args) : arguments (args), non_flag_parsed(false) {}
+                State (detail::Arguments const &args) : arguments (args), non_flag_parsed(false) {}
         };
-        Arguments::iterator begin (detail::State &state) { return state.arguments.begin(); }
-        Arguments::iterator end   (detail::State &state) { return state.arguments.end(); }
-        Arguments::const_iterator begin (detail::State const &state) { return state.arguments.begin(); }
-        Arguments::const_iterator end   (detail::State const &state) { return state.arguments.end(); }
 
+        inline detail::Arguments::iterator begin (State &state) { return state.arguments.begin(); }
+        inline detail::Arguments::iterator end   (State &state) { return state.arguments.end(); }
+        inline detail::Arguments::const_iterator begin (State const &state) { return state.arguments.begin(); }
+        inline detail::Arguments::const_iterator end   (State const &state) { return state.arguments.end(); }
+}
 
+namespace argxx { namespace detail {
+
+        inline
         Argument shift (Argument const &arg)
         {
                 if (arg.value.size() <= 1) {
@@ -94,6 +113,7 @@ namespace argxx { namespace detail {
                                             arg.value.substr(1));
         }
 
+        inline
         Argument long_argument (std::string str)
         {
                 str = str.substr(2);
@@ -102,17 +122,20 @@ namespace argxx { namespace detail {
                         return Argument::NameOnly (str);
                 return Argument::NameValue(str.substr(0, e), str.substr(1+e));
         }
+        inline
         Argument short_argument (std::string str)
         {
                 if (str.size() <= 2)
                         return Argument::NameOnly(str.substr(1));
                 return Argument::NameValue(str.substr(1,1), str.substr(2));
         }
+        inline
         Argument positional_argument (std::string str)
         {
                 return Argument::Positional(str);
         }
 
+        inline
         Argument argument (std::string const &curr)
         {
                 if (starts_with (curr, "--")) return long_argument (curr);
@@ -120,6 +143,7 @@ namespace argxx { namespace detail {
                 return positional_argument (curr);
         }
 
+        inline
         std::vector<std::string> catenate (int argc, char *argv[])
         {
                 std::list<std::string> raw_args (argv, argv+argc);
@@ -139,6 +163,7 @@ namespace argxx { namespace detail {
 
 
 
+        inline
         Arguments::iterator find (Arguments &args, names const &n)
         {
                 auto it = std::find_if (args.begin(), args.end(), [&](Argument const &arg)
@@ -188,6 +213,7 @@ namespace argxx { namespace detail {
         };
 
         template <typename T>
+        inline
         bool convert (std::string const &str, T &ret)
         {
                 return convert_helper<T>::convert (str, ret);
@@ -258,6 +284,7 @@ namespace argxx { namespace detail {
         };
 
         template <typename T>
+        inline
         T convert_argument_value (names const &n, Argument const &arg) {
 
                 if (!arg.has_value)
