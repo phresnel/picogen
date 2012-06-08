@@ -15,13 +15,15 @@ ProgramOptions parse_options (int argc, char *argv[])
         auto args = argxx::parse (argc, argv);
         const auto code_opt     = argxx::optional<std::string> (args, {'c', "code"});
         const auto filename_opt = argxx::optional<std::string> (args, {'f', "filename"});
+
         if ((!code_opt && !filename_opt) || (code_opt && filename_opt)) {
                 throw std::runtime_error("error: either pass --code=<code>, "
                                          "or --filename=<quatsch-file>");
         }
+
+
         const auto width  = argxx::optional_with_default<unsigned> (args, {'w', "width"}, 256);
         const auto height = argxx::optional_with_default<unsigned> (args, {'h', "height"}, width);
-
         const auto output_filename = argxx::optional<std::string> (args, {'o', "output"});
         argxx::assert_no_unparsed_present (args);
 
@@ -68,10 +70,13 @@ int main (int argc, char *argv[])
                 const auto iwidth  = 1. / static_cast<double> (opts.width),
                            iheight = 1. / static_cast<double> (opts.height);
 
-                std::ofstream ofs (opts.output_filename);
-                if (!opts.output_filename.empty() && !ofs.is_open())
-                        throw std::runtime_error("file '" + opts.output_filename + "' "
-                                                 "could not be opened for writing");
+                std::ofstream ofs;
+                if (!opts.output_filename.empty()) {
+                        ofs.open (opts.output_filename.c_str());
+                        if (!ofs.is_open())
+                                throw std::runtime_error("file '" + opts.output_filename + "' "
+                                                         "could not be opened for writing");
+                }
 
                 std::ostream &os = ofs.is_open() ? ofs : std::cout;
                 image::write_ppm (std::cout, opts.width, opts.height, [=](int x, int y) {
