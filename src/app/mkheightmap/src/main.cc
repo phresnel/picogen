@@ -7,6 +7,7 @@
 struct ProgramOptions {
         int width, height;
         std::string code;
+        std::string output_filename;
 };
 
 ProgramOptions parse_options (int argc, char *argv[])
@@ -20,6 +21,8 @@ ProgramOptions parse_options (int argc, char *argv[])
         }
         const auto width  = argxx::optional_with_default<unsigned> (args, {'w', "width"}, 256);
         const auto height = argxx::optional_with_default<unsigned> (args, {'h', "height"}, width);
+
+        const auto output_filename = argxx::optional<std::string> (args, {'o', "output"});
         argxx::assert_no_unparsed_present (args);
 
         std::string code;
@@ -36,8 +39,10 @@ ProgramOptions parse_options (int argc, char *argv[])
                 code = *code_opt;
         }
 
-        return {width, height, code};
+        return {width, height, code,
+                output_filename?*output_filename:""};
 }
+
 
 int main (int argc, char *argv[])
 {
@@ -63,6 +68,12 @@ int main (int argc, char *argv[])
                 const auto iwidth  = 1. / static_cast<double> (opts.width),
                            iheight = 1. / static_cast<double> (opts.height);
 
+                std::ofstream ofs (opts.output_filename);
+                if (!opts.output_filename.empty() && !ofs.is_open())
+                        throw std::runtime_error("file '" + opts.output_filename + "' "
+                                                 "could not be opened for writing");
+
+                std::ostream &os = ofs.is_open() ? ofs : std::cout;
                 image::write_ppm (std::cout, opts.width, opts.height, [=](int x, int y) {
                         // Transform [0..image-size) -> [-0.5..0.5)
                         const double u_ = -0.5 + iwidth * x,
