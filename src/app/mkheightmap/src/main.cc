@@ -10,11 +10,14 @@ int main (int argc, char *argv[])
 
         try {
                 auto args = argxx::parse (argc, argv);
-                const auto code_opt     = argxx::optional<std::string> (args, argxx::names("c", "code"));
-                const auto filename_opt = argxx::optional<std::string> (args, argxx::names("f", "filename"));
-                if ((!code_opt && !filename_opt) || (code_opt && filename_opt))
+                const auto code_opt     = argxx::optional<std::string> (args, {'c', "code"});
+                const auto filename_opt = argxx::optional<std::string> (args, {'f', "filename"});
+                if ((!code_opt && !filename_opt) || (code_opt && filename_opt)) {
                         throw std::runtime_error("error: either pass --code=<code>, "
                                                  "or --filename=<quatsch-file>");
+                }
+                const auto width  = argxx::optional_with_default<unsigned> (args, {'w', "width"}, 256);
+                const auto height = argxx::optional_with_default<unsigned> (args, {'h', "height"}, width);
                 argxx::assert_no_unparsed_present (args);
 
                 // TODO: extract function
@@ -49,8 +52,6 @@ int main (int argc, char *argv[])
                         print_errors (errors, std::cerr);
                         return EXIT_FAILURE;
                 }
-
-                const int width = 240, height = 240;
 
                 image::write_ppm (std::cout, width, height, [=](int x, int y) {
                         // Transform [0..image-size) -> [-0.5..0.5)
