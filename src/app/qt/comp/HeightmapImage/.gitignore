@@ -1,1 +1,5 @@
 Makefile
+ui_*
+moc_*
+*.o
+HeightmapImage
