@@ -31,16 +31,16 @@ struct HeightmapRegion { float left, right, front, back;
 struct HeightmapMaxima { float min, max; };
 
 void map (std::function<float(float,float)> source,
-          HeightmapSize size,
-          HeightmapRegion region,
+          HeightmapSize targetSize,
+          HeightmapRegion sourceRegion,
           std::function<void (int, int, float)> target)
 {
-        for (unsigned int y=0; y!=size.height; ++y) {
-                for (unsigned int x=0; x!=size.width; ++x) {
-                        const float fx = x / float(size.width),
-                                    fy = y / float(size.height),
-                                    u = fx * region.width() + region.left,
-                                    v = fy * region.depth() + region.front;
+        for (unsigned int y=0; y!=targetSize.height; ++y) {
+                for (unsigned int x=0; x!=targetSize.width; ++x) {
+                        const float fx = x / float(targetSize.width),
+                                    fy = y / float(targetSize.height),
+                                    u = fx * sourceRegion.width() + sourceRegion.left,
+                                    v = fy * sourceRegion.depth() + sourceRegion.front;
                         target(x, y, source(u,v));
                 }
         }
@@ -83,7 +83,7 @@ void HeightmapImage::paintEvent (QPaintEvent *)
                 } else {
                         using quatsch::DynamicVariant;
 
-                        QImage image (256, 256, QImage::Format_RGB888);
+                        QImage image (width(), height(), QImage::Format_RGB888);
 
                         const auto adapter = [&] (float u, float v) -> float {
                                          return fun({DynamicVariant::Floating(u),
