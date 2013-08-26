@@ -1,3 +1,17 @@
+
+
+## Important: picogen is no longer actively maintained.
+
+The successor to picogen is excygen. Find more info at
+
+* http://github.com/phresnel/excygen
+* http://excygen.deviantart.com
+
+That is not to say, parts of picogen survive within excygen.
+
+
+-----
+
 Main directory for those seeking to build picogen and the frontend.
 
 to build picogen ...
